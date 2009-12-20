@@ -3,7 +3,7 @@
 namespace kiwix {
 
   /* Count word */
-  unsigned int countWords(const string &text) {
+  unsigned int Indexer::countWords(const string &text) {
     unsigned int numWords = 1;
     for(int i=0; i<text.size();) {
       while(i<text.size() && text[i] != ' ') {
@@ -21,37 +21,30 @@ namespace kiwix {
       stemmer(Xapian::Stem("english")),
       articleCount(0), 
       stepSize(0) {
-
+    
     /* Open the ZIM file */
     this->zimFileHandler = new zim::File(zimFilePath);
     
-    if (this->zimFileHandler != NULL) {
-      this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
-      this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
-      this->currentArticleOffset = this->firstArticleOffset;
-    } else {
-      throw("Unable to open " + zimFilePath);
-    }
-
     /* Open the Xapian directory */
-    this->writableDatabase = Xapian::WritableDatabase(xapianDirectoryPath, 
-						      Xapian::DB_CREATE_OR_OVERWRITE);
+    this->writableDatabase = new Xapian::WritableDatabase(xapianDirectoryPath, 
+							  Xapian::DB_CREATE_OR_OVERWRITE);
+    
+    /* Prepare the indexation */
+    this->prepareIndexing();
   }
   
   /* Destructor */
   Indexer::~Indexer() {
-
-    /* delete the zimFileHandler */
-    if (this->zimFileHandler != NULL) {
-      delete this->zimFileHandler;
-    }
-
-    /* delte the Xapian writableDatabase */
-    this->writableDatabase.~WritableDatabase();
+    this->stopIndexing();
   }
   
   /* Start indexing */
-  void Indexer::startIndexing() {
+  void Indexer::prepareIndexing() {
+
+    /* Define a few values */
+    this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
+    this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
+    this->currentArticleOffset = this->firstArticleOffset;
     
     /* Compute few things */
     this->articleCount = this->zimFileHandler->getNamespaceCount('A');
@@ -62,11 +55,16 @@ namespace kiwix {
   bool Indexer::indexNextPercent() {
     float thresholdOffset = this->currentArticleOffset + this->stepSize;
     size_t found;
+
+    /* Check if we can start */
+    if (this->zimFileHandler == NULL || this->writableDatabase == NULL) {
+      return false;
+    }
     
     while(this->currentArticleOffset < thresholdOffset && 
 	  this->currentArticleOffset < this->lastArticleOffset) {
       
-      /* get next non redirect article */
+      /* Get next non redirect article */
       do {
 	currentArticle = this->zimFileHandler->getArticle(this->currentArticleOffset);
       } while (this->currentArticleOffset++ &&
@@ -74,17 +72,20 @@ namespace kiwix {
 	       this->currentArticleOffset != this->lastArticleOffset);
       
       if (!currentArticle.isRedirect()) {
+	
 	/* Index the content */
 	this->htmlParser.reset();
 	string content (currentArticle.getData().data(), currentArticle.getData().size());
 
+	/* The parser generate a lot of exceptions which should be avoided */
 	try {
 	  this->htmlParser.parse_html(content, "UTF-8", true);
 	} catch (...) {
 	}
 	
-	/* if content does not have the noindex meta tag */
-	found=this->htmlParser.dump.find("NOINDEX");
+	/* If content does not have the noindex meta tag */
+	/* Seems that the parser generates an exception in such case */
+	found = this->htmlParser.dump.find("NOINDEX");
 	
 	if (found == string::npos) {
 	  
@@ -119,14 +120,14 @@ namespace kiwix {
 	  }
 	  
 	  /* add to the database */
-	  this->writableDatabase.add_document(document);
+	  this->writableDatabase->add_document(document);
 	}
       }
     }
     
     /* Write Xapian DB to the disk */
-    this->writableDatabase.flush();
-
+    this->writableDatabase->flush();
+    
     /* increment the offset and set returned value */
     if (this->currentArticleOffset < this->lastArticleOffset) {
       this->currentArticleOffset++;
@@ -139,8 +140,17 @@ namespace kiwix {
   
   /* Stop indexing. TODO: using it crashs the soft under windows. Have to do it in indexNextPercent() */
   void Indexer::stopIndexing() {
-    this->currentArticleOffset = this->firstArticleOffset;
-    this->writableDatabase.~WritableDatabase();
+    /* Delete the zimFileHandler */
+    if (this->zimFileHandler != NULL) {
+      delete this->zimFileHandler;
+      this->zimFileHandler = NULL;
+    }
+    
+    /* Delete the Xapian writableDatabase */
+    if (this->writableDatabase != NULL) {
+      delete this->writableDatabase;
+      this->writableDatabase = NULL;
+    }
   }
   
 }

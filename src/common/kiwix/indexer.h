@@ -16,25 +16,28 @@ namespace kiwix {
     
   public:
     Indexer(const string &zimFilePath, const string &xapianDirectoryPath);
-    ~Indexer();    
+    ~Indexer();
     
-    void startIndexing();
     bool indexNextPercent();
-    void stopIndexing();
-
+    
   protected:
+    void prepareIndexing();
+    void stopIndexing();
+    unsigned int countWords(const string &text);
+
+    unsigned int articleCount;
+    float stepSize;
+
     zim::File* zimFileHandler;
     zim::size_type firstArticleOffset;
     zim::size_type lastArticleOffset;
     zim::size_type currentArticleOffset;
     zim::Article currentArticle;
     
-    unsigned int articleCount;
-    float stepSize;
-    
-    Xapian::WritableDatabase writableDatabase;
+    Xapian::WritableDatabase *writableDatabase;
     Xapian::Stem stemmer;
     Xapian::TermGenerator indexer;
+
     MyHtmlParser htmlParser;
   };
 
