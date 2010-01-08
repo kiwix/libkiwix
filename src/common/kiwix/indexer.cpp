@@ -96,11 +96,11 @@ namespace kiwix {
 	  /* Put the data in the document */
 	  Xapian::Document document;
 	  document.add_value(0, this->htmlParser.title);
-	  document.set_data(currentArticle.getUrl().getValue().c_str());
+	  document.set_data(currentArticle.getLongUrl().c_str());
 	  indexer.set_document(document);
 	  
 	  /* Debug output */
-	  std::cout << "Indexing " << currentArticle.getUrl().getValue() << "..." << std::endl;
+	  std::cout << "Indexing " << currentArticle.getLongUrl() << "..." << std::endl;
 	  
 	  /* Index the title */
 	  if (!this->htmlParser.title.empty()) {
