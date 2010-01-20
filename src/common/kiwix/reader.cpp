@@ -5,17 +5,14 @@ namespace kiwix {
   /* Constructor */
   Reader::Reader(const string &zimFilePath) 
     : zimFileHandler(NULL) {
-
-    try {    
-      this->zimFileHandler = new zim::File(zimFilePath);
-      
-      if (this->zimFileHandler != NULL) {
-	this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
-	this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
-	this->currentArticleOffset = this->firstArticleOffset;
-	this->articleCount = this->zimFileHandler->getNamespaceCount('A');
-      }
-    } catch(...) {
+    
+    this->zimFileHandler = new zim::File(zimFilePath);
+    
+    if (this->zimFileHandler != NULL) {
+      this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
+      this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
+      this->currentArticleOffset = this->firstArticleOffset;
+      this->articleCount = this->zimFileHandler->getNamespaceCount('A');
     }
   }
   
@@ -66,7 +63,6 @@ string Reader::getMainPageUrl() {
 
 /* Get a content from a zim file */
  bool Reader::getContent(const string &urlStr, string &content, unsigned int &contentLength, string &contentType) {
-
    bool retVal = false;
    const char *url = urlStr.c_str();
 
@@ -100,41 +96,46 @@ string Reader::getMainPageUrl() {
    }
    title[titleOffset] = 0;
    
-   /* Extract the content from the zim file */
-   try {
-     std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns[0], title);
-     
-     /* Test if the article was found */
-     if (resultPair.first == true) {
-       
-       /* Get the article */
-       zim::Article article = zimFileHandler->getArticle(resultPair.second.getIndex());
-       
-       /* If redirect */
-       unsigned int loopCounter = 0;
-       while (article.isRedirect() && loopCounter++<42) {
-	 article = article.getRedirectArticle();
-       }
-       
-       /* Get the content mime-type */
-       contentType = string(article.getMimeType().data(), article.getMimeType().size()); 
-       
-       /* Get the data */
-       content = string(article.getData().data(), article.getArticleSize());
-       
-       /* Get the data length */
-       contentLength = article.getArticleSize();
-       
-       /* Set return value */
-       retVal = true;
-     } else {
-       /* The found article is not the good one */
-       content="";
-       contentType="";
-       contentLength = 0;
-       retVal = false;
+   /* Main page */
+   if (strcmp(title, "") == 0 && strcmp(ns, "") == 0) {
+     if (zimFileHandler->getFileheader().hasMainPage()) {
+       zim::Article article = zimFileHandler->getArticle(zimFileHandler->getFileheader().getMainPage());
+       ns[0] = article.getNamespace();
+       strcpy(title, article.getUrl().c_str());
      }
-   } catch(...) {
+   }
+
+   /* Extract the content from the zim file */
+   std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns[0], title);
+   
+   /* Test if the article was found */
+   if (resultPair.first == true) {
+     
+     /* Get the article */
+     zim::Article article = zimFileHandler->getArticle(resultPair.second.getIndex());
+     
+     /* If redirect */
+     unsigned int loopCounter = 0;
+     while (article.isRedirect() && loopCounter++<42) {
+       article = article.getRedirectArticle();
+     }
+     
+     /* Get the content mime-type */
+     contentType = string(article.getMimeType().data(), article.getMimeType().size()); 
+     
+     /* Get the data */
+     content = string(article.getData().data(), article.getArticleSize());
+     
+     /* Get the data length */
+     contentLength = article.getArticleSize();
+     
+     /* Set return value */
+     retVal = true;
+   } else {
+     /* The found article is not the good one */
+     content="";
+     contentType="";
+     contentLength = 0;
      retVal = false;
    }
    
