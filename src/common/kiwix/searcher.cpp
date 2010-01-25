@@ -23,13 +23,16 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void Searcher::search(const string &search, const unsigned int resultsCount) {
+  void Searcher::search(string search, const unsigned int resultsCount) {
     /* Reset the results */
     this->results.clear();
     this->resultOffset = this->results.begin();
     
     /* Create the enquire object */
     Xapian::Enquire enquire(this->readableDatabase);
+
+    /* lowercase the search pattern */
+    std::transform(search.begin(), search.end(), search.begin(), ::tolower);
     
     /* Create the query term vector */
     std::vector<std::string> queryTerms = split(removeAccents(search.c_str()), " #@%$0/\\_-*()[]{},;:");
