@@ -6,6 +6,7 @@
 #include <zim/article.h>
 #include <zim/fileiterator.h>
 #include <string>
+#include <sstream>
 
 using namespace std;
 

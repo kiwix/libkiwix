@@ -35,8 +35,9 @@ unsigned int Reader::getArticleCount() {
 
 /* Return the UID of the ZIM file */
 string Reader::getId() {
-  return string(this->zimFileHandler->getFileheader().getUuid().data, 
-		this->zimFileHandler->getFileheader().getUuid().size());
+  std::ostringstream s;
+  s << this->zimFileHandler->getFileheader().getUuid();
+  return  s.str();
 }
  
 /* Return a random article URL */
