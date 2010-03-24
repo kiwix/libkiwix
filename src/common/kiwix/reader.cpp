@@ -1,5 +1,22 @@
 #include "reader.h"
 
+static char charFromHex(std::string a) {
+  std::istringstream Blat (a);
+  int Z;
+  Blat >> std::hex >> Z;
+  return char (Z);
+}
+
+void unescapeUrl(string &url) {
+  std::string::size_type pos;
+  std::string hex;
+  while (std::string::npos != (pos = url.find('%'))) {
+      hex = url.substr(pos + 1, 2);
+      url.replace(pos, 3, 1, charFromHex(hex));
+  }
+  return;
+}
+
 namespace kiwix {
 
   /* Constructor */
@@ -63,7 +80,7 @@ string Reader::getMainPageUrl() {
  }
 
 /* Get a content from a zim file */
- bool Reader::getContent(const string &urlStr, string &content, unsigned int &contentLength, string &contentType) {
+ bool Reader::getContentByUrl(const string &urlStr, string &content, unsigned int &contentLength, string &contentType) {
    bool retVal = false;
    const char *url = urlStr.c_str();
 
@@ -97,17 +114,21 @@ string Reader::getMainPageUrl() {
    }
    title[titleOffset] = 0;
    
+   /* unescape url */
+   string titleStr = string(title);
+   unescapeUrl(titleStr);
+
    /* Main page */
-   if (strcmp(title, "") == 0 && strcmp(ns, "") == 0) {
+   if (titleStr == "" && strcmp(ns, "") == 0) {
      if (zimFileHandler->getFileheader().hasMainPage()) {
        zim::Article article = zimFileHandler->getArticle(zimFileHandler->getFileheader().getMainPage());
        ns[0] = article.getNamespace();
-       strcpy(title, article.getUrl().c_str());
+       titleStr = article.getUrl();
      }
    }
 
    /* Extract the content from the zim file */
-   std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns[0], title);
+   std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns[0], titleStr);
    
    /* Test if the article was found */
    if (resultPair.first == true) {
@@ -152,7 +173,6 @@ string Reader::getMainPageUrl() {
   this->suggestions.clear();
 
   if (prefix.size()) {
-
     cout << prefix << endl;
 
     for (zim::File::const_iterator it = zimFileHandler->findByTitle('A', prefix); 
