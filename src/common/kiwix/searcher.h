@@ -35,7 +35,7 @@ namespace kiwix {
     std::vector<Result> results;
     std::vector<Result>::iterator resultOffset;
     
-    void search(string search, const unsigned int resultsCount);
+    void search(string search, const unsigned int resultsCount, bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
     void closeDatabase();
     void reset();

@@ -23,7 +23,7 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void Searcher::search(string search, const unsigned int resultsCount) {
+  void Searcher::search(string search, const unsigned int resultsCount, bool verbose) {
     /* Reset the results */
     this->results.clear();
     this->resultOffset = this->results.begin();
@@ -44,9 +44,11 @@ namespace kiwix {
     /* Set the query in the enquire object */
     enquire.set_query(query);
     
-    cout << "Performing query `" <<
-      query.get_description() << "'" << endl;
-    
+    if (verbose == true) {
+      cout << "Performing query `" <<
+	query.get_description() << "'" << endl;
+    }
+
     /* Get the results */
     Xapian::MSet matches = enquire.get_mset(0, resultsCount);
     
@@ -61,9 +63,11 @@ namespace kiwix {
       
       this->results.push_back(result);
       
-      cout << "Document ID " << *i << "   \t";
-      cout << i.get_percent() << "% ";
-      cout << "\t[" << doc.get_data() << "] - " << doc.get_value(0) << endl;
+      if (verbose == true) {
+	cout << "Document ID " << *i << "   \t";
+	cout << i.get_percent() << "% ";
+	cout << "\t[" << doc.get_data() << "] - " << doc.get_value(0) << endl;
+      }
     }
     
     /* Set the cursor to the begining */
