@@ -18,7 +18,6 @@ namespace kiwix {
   /* Constructor */
   Indexer::Indexer(const string &zimFilePath, const string &xapianDirectoryPath) 
     : zimFileHandler(NULL), 
-      stemmer(Xapian::Stem("english")),
       articleCount(0), 
       stepSize(0) {
     
@@ -28,7 +27,25 @@ namespace kiwix {
     /* Open the Xapian directory */
     this->writableDatabase = new Xapian::WritableDatabase(xapianDirectoryPath, 
 							  Xapian::DB_CREATE_OR_OVERWRITE);
-    
+
+    /* Stemming *
+    /*
+    stemmer = Xapian::Stem("french");
+    indexer.set_stemmer(stemmer);
+    */
+
+    /* Read the stopwords file */
+    /*
+    this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
+    std::vector<std::string>::const_iterator stopWordsIterator = this->stopWords.begin();
+    this->stopper.add("ceci");
+    while (stopWordsIterator != this->stopWords.end()) {
+      this->stopper.add(*stopWordsIterator);
+      stopWordsIterator++;
+    }
+    indexer.set_stopper(&(this->stopper));
+    */
+
     /* Prepare the indexation */
     this->prepareIndexing();
   }
@@ -89,10 +106,6 @@ namespace kiwix {
 	
 	if (found == string::npos) {
 	  
-	  /* Set the stemmer */
-	  /* TODO, autodetect the language */
-	  //indexer.set_stemmer(stemmer);
-	  
 	  /* Put the data in the document */
 	  Xapian::Document document;
 	  document.add_value(0, this->htmlParser.title);
@@ -151,6 +164,20 @@ namespace kiwix {
       delete this->writableDatabase;
       this->writableDatabase = NULL;
     }
+  }
+
+  /* Read the file containing the stopwords */
+  bool Indexer::readStopWordsFile(const string path) {
+    std::string stopWord;
+    std::ifstream file(path.c_str(), std::ios_base::in);
+
+    this->stopWords.clear();
+
+    while (getline(file, stopWord, '\n')) {
+      this->stopWords.push_back(stopWord);
+    }
+
+    std::cout << "Read " << this->stopWords.size() << " lines.\n";
   }
   
 }

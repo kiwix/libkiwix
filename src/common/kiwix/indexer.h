@@ -1,6 +1,11 @@
 #ifndef KIWIX_INDEXER_H
 #define KIWIX_INDEXER_H
 
+#include <string>
+#include <vector>
+#include <fstream>
+#include <iostream>
+
 #include <xapian.h>
 #include <unaccent.h>
 #include <zim/file.h>
@@ -11,7 +16,7 @@
 using namespace std;
 
 namespace kiwix {
-
+  
   class Indexer {
     
   public:
@@ -25,6 +30,8 @@ namespace kiwix {
     void stopIndexing();
     unsigned int countWords(const string &text);
 
+    bool readStopWordsFile(const string path);
+
     unsigned int articleCount;
     float stepSize;
 
@@ -36,8 +43,10 @@ namespace kiwix {
     
     Xapian::WritableDatabase *writableDatabase;
     Xapian::Stem stemmer;
+    Xapian::SimpleStopper stopper;
     Xapian::TermGenerator indexer;
-
+    
+    std::vector<std::string> stopWords;
     MyHtmlParser htmlParser;
   };
 
