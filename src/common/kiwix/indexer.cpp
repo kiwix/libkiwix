@@ -80,6 +80,8 @@ namespace kiwix {
     
     while(this->currentArticleOffset < thresholdOffset && 
 	  this->currentArticleOffset < this->lastArticleOffset) {
+
+      zim::Article currentArticle;
       
       /* Get next non redirect article */
       do {

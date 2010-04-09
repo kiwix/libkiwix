@@ -39,7 +39,6 @@ namespace kiwix {
     zim::size_type firstArticleOffset;
     zim::size_type lastArticleOffset;
     zim::size_type currentArticleOffset;
-    zim::Article currentArticle;
     
     Xapian::WritableDatabase *writableDatabase;
     Xapian::Stem stemmer;
