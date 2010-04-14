@@ -77,11 +77,15 @@ namespace kiwix {
     if (this->zimFileHandler == NULL || this->writableDatabase == NULL) {
       return false;
     }
-    
+
+    /* Begin the Xapian transation */
+    this->writableDatabase->begin_transaction(true);
+
     while(this->currentArticleOffset < thresholdOffset && 
 	  this->currentArticleOffset < this->lastArticleOffset) {
 
       zim::Article currentArticle;
+      Xapian::Document currentDocument;
       
       /* Get next non redirect article */
       do {
@@ -109,10 +113,10 @@ namespace kiwix {
 	if (found == string::npos) {
 	  
 	  /* Put the data in the document */
-	  Xapian::Document document;
-	  document.add_value(0, this->htmlParser.title);
-	  document.set_data(currentArticle.getLongUrl().c_str());
-	  indexer.set_document(document);
+	  currentDocument.clear_values();
+	  currentDocument.add_value(0, this->htmlParser.title);
+	  currentDocument.set_data(currentArticle.getLongUrl().c_str());
+	  indexer.set_document(currentDocument);
 	  
 	  /* Debug output */
 	  std::cout << "Indexing " << currentArticle.getLongUrl() << "..." << std::endl;
@@ -135,14 +139,14 @@ namespace kiwix {
 	  }
 	  
 	  /* add to the database */
-	  this->writableDatabase->add_document(document);
+	  this->writableDatabase->add_document(currentDocument);
 	}
       }
     }
     
-    /* Write Xapian DB to the disk */
-    this->writableDatabase->flush();
-    
+    /* Flush and close Xapian transaction*/
+    this->writableDatabase->commit_transaction();
+
     /* increment the offset and set returned value */
     if (this->currentArticleOffset < this->lastArticleOffset) {
       this->currentArticleOffset++;
@@ -180,6 +184,7 @@ namespace kiwix {
     }
 
     std::cout << "Read " << this->stopWords.size() << " lines.\n";
+    return true;
   }
   
 }
