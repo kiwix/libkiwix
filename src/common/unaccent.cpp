@@ -57,23 +57,12 @@ void UnaccentTransliterator::handleTransliterate(Replaceable& text,
 
 /* Remove accents from a String */
 UnaccentTransliterator unaccent;
-char *unaccentedString = NULL;
-unsigned unaccentedStringSize=0;
 UnicodeString unicodeAccentedString;
 
-const char* removeAccents(const char *accentedString, const unsigned size) {
-
-  /* Realloc memory if necessary */
-  if (size > unaccentedStringSize) {
-    unaccentedString = (char*)realloc(unaccentedString, size+1);
-    unaccentedStringSize = size+1;
-  }
-
-  /* Transcode the String */
-  unicodeAccentedString = UnicodeString(accentedString);
+std::string &removeAccents(std::string &text) {
+  unicodeAccentedString = UnicodeString(text.c_str());
   unaccent.transliterate(unicodeAccentedString);
-  
-  /* Extract and return the result */
-  unicodeAccentedString.extract(0, size, unaccentedString, size, "UTF-8");
-  return unaccentedString;
+  text.clear();
+  unicodeAccentedString.toUTF8String(text);
+  return text;
 }

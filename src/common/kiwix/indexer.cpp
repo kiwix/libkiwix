@@ -123,19 +123,19 @@ namespace kiwix {
 	  
 	  /* Index the title */
 	  if (!this->htmlParser.title.empty()) {
-	    indexer.index_text_without_positions(removeAccents(this->htmlParser.title.c_str(), this->htmlParser.title.size()), 
+	    indexer.index_text_without_positions(removeAccents(this->htmlParser.title), 
 						 ((this->htmlParser.dump.size() / 100) + 1) / 
 						 countWords(this->htmlParser.title) );
 	  }
 	  
 	  /* Index the keywords */
 	  if (!this->htmlParser.keywords.empty()) {
-	    indexer.index_text_without_positions(removeAccents(this->htmlParser.keywords.c_str(), this->htmlParser.keywords.size()), 3);
+	    indexer.index_text_without_positions(removeAccents(this->htmlParser.keywords), 3);
 	  }
 	  
 	  /* Index the content */
 	  if (!this->htmlParser.dump.empty()) {
-	    indexer.index_text_without_positions(removeAccents(this->htmlParser.dump.c_str(), this->htmlParser.dump.size()));
+	    indexer.index_text_without_positions(removeAccents(this->htmlParser.dump));
 	  }
 	  
 	  /* add to the database */

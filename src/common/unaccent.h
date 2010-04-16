@@ -95,4 +95,4 @@ private:
     static const char fgClassID;
 };
 
-const char* removeAccents(const char *, const unsigned);
+std::string &removeAccents(std::string &text);
