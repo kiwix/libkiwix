@@ -36,7 +36,7 @@ namespace kiwix {
     
     /* Create the query term vector */
     /* I have the doublequote " because bug ID: 2939690 */
-    std::vector<std::string> queryTerms = split(removeAccents(search.c_str()), " #@%$0/\\_-*()[]{},;:\"´`'");
+    std::vector<std::string> queryTerms = split(removeAccents(search.c_str(), search.size()), " #@%$0/\\_-*()[]{},;:\"´`'");
     
     /* Create query object */
     Xapian::Query query(Xapian::Query::OP_OR, queryTerms.begin(), queryTerms.end());
