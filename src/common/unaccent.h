@@ -10,7 +10,6 @@
 #include <unicode/rep.h>
 #include <unicode/translit.h>
 #include <unicode/uniset.h>
-#include <unicode/bytestream.h>
 #include <iostream>
 #include <string>
 
