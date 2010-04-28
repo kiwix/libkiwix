@@ -5,7 +5,7 @@ namespace kiwix {
   /* Count word */
   unsigned int Indexer::countWords(const string &text) {
     unsigned int numWords = 1;
-    for(int i=0; i<text.size();) {
+    for(unsigned int i=0; i<text.size();) {
       while(i<text.size() && text[i] != ' ') {
 	i++;
       }
