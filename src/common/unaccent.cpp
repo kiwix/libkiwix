@@ -66,3 +66,15 @@ std::string &removeAccents(std::string &text) {
   unicodeAccentedString.toUTF8String(text);
   return text;
 }
+
+void printStringInHexadecimal(const char *s) {
+  std::cout << std::showbase << std::hex;
+  for (char const* pc = s; *pc; ++pc) {
+    if (*pc & 0x80)
+      std::cout << (*pc & 0xff);
+    else
+      std::cout << *pc;
+    std::cout << ' ';
+  }
+  std::cout << std::endl;
+}

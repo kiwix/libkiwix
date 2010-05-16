@@ -95,3 +95,4 @@ private:
 };
 
 std::string &removeAccents(std::string &text);
+void printStringInHexadecimal(const char *s);
