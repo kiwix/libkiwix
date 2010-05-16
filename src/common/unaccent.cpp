@@ -60,11 +60,25 @@ UnaccentTransliterator unaccent;
 UnicodeString unicodeAccentedString;
 
 std::string &removeAccents(std::string &text) {
+  printStringInHexadecimal(text.c_str());
   unicodeAccentedString = UnicodeString(text.c_str());
+  printStringInHexadecimal(unicodeAccentedString);
   unaccent.transliterate(unicodeAccentedString);
   text.clear();
   unicodeAccentedString.toUTF8String(text);
   return text;
+}
+
+void printStringInHexadecimal(UnicodeString s) {
+  std::cout << std::showbase << std::hex;
+  for (int i=0; i<s.length(); i++) {
+    char c = (char)((s.getTerminatedBuffer())[i]);
+    if (c & 0x80)
+      std::cout << (c & 0xff) << " ";
+    else
+      std::cout << c << " ";
+  }
+  std::cout << std::endl;
 }
 
 void printStringInHexadecimal(const char *s) {

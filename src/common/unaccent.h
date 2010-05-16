@@ -13,6 +13,8 @@
 #include <iostream>
 #include <string>
 
+//#define U_CHARSET_IS_UTF8 1
+
 class UnaccentTransliterator : public Transliterator {
     
  public:
@@ -96,3 +98,4 @@ private:
 
 std::string &removeAccents(std::string &text);
 void printStringInHexadecimal(const char *s);
+void printStringInHexadecimal(UnicodeString s);
