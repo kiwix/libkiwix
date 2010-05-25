@@ -31,13 +31,10 @@ namespace kiwix {
     /* Create the enquire object */
     Xapian::Enquire enquire(this->readableDatabase);
 
-    /* lowercase the search pattern */
-    std::transform(search.begin(), search.end(), search.begin(), ::tolower);
-    
     /* Create the query term vector */
     /* I have the doublequote " because bug ID: 2939690 */
     std::vector<std::string> queryTerms = split(removeAccents(search), " #@%$0/\\_-*()[]{},;:\"´`'");
-    
+
     /* Create query object */
     Xapian::Query query(Xapian::Query::OP_OR, queryTerms.begin(), queryTerms.end());
     
