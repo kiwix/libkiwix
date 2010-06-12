@@ -85,7 +85,6 @@ string Reader::getFirstPageUrl() {
    
    zim::size_type firstPageOffset = zimFileHandler->getNamespaceBeginOffset('A');
    zim::Article article = zimFileHandler->getArticle(firstPageOffset);
-   std::cout << article.getTitle() << std::endl;
    url = article.getLongUrl();
    
    return url;
