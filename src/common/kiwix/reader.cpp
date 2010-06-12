@@ -79,6 +79,18 @@ string Reader::getMainPageUrl() {
    
  }
 
+/* Return the first page URL */
+string Reader::getFirstPageUrl() {
+   string url = "";
+   
+   zim::size_type firstPageOffset = zimFileHandler->getNamespaceBeginOffset('A');
+   zim::Article article = zimFileHandler->getArticle(firstPageOffset);
+   std::cout << article.getTitle() << std::endl;
+   url = article.getLongUrl();
+   
+   return url;
+ }
+
 /* Get a content from a zim file */
  bool Reader::getContentByUrl(const string &urlStr, string &content, unsigned int &contentLength, string &contentType) {
    bool retVal = false;

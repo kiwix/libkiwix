@@ -22,6 +22,7 @@ namespace kiwix {
     unsigned int getArticleCount();
     string getId();
     string getRandomPageUrl();
+    string getFirstPageUrl();
     string getMainPageUrl();
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
     bool searchSuggestions(const string &prefix, unsigned int suggestionsCount);
