@@ -29,17 +29,12 @@ namespace kiwix {
     this->results.clear();
     this->resultOffset = this->results.begin();
     
+    /* Create the query */
+    Xapian::QueryParser queryParser;
+    Xapian::Query query = queryParser.parse_query(removeAccents(search));    
+
     /* Create the enquire object */
     Xapian::Enquire enquire(this->readableDatabase);
-
-    /* Create the query term vector */
-    /* I have the doublequote " because bug ID: 2939690 */
-    std::vector<std::string> queryTerms = split(removeAccents(search), " #@%$0/\\_-*()[]{},;:\"'");
-
-    /* Create query object */
-    Xapian::Query query(Xapian::Query::OP_OR, queryTerms.begin(), queryTerms.end());
-
-    /* Set the query in the enquire object */
     enquire.set_query(query);
     
     if (verbose == true) {

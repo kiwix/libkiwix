@@ -11,7 +11,6 @@
 #include <vector>
 #include <xapian.h>
 #include <unaccent.h>
-#include <splitString.h>
 
 using namespace std;
 
