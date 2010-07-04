@@ -24,6 +24,7 @@ namespace kiwix {
     string getRandomPageUrl();
     string getFirstPageUrl();
     string getMainPageUrl();
+    bool getMetatag(const string &url, string &content);
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
     bool searchSuggestions(const string &prefix, unsigned int suggestionsCount);
     bool getNextSuggestion(string &title);
