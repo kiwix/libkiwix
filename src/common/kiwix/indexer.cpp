@@ -28,7 +28,7 @@ namespace kiwix {
     this->writableDatabase = new Xapian::WritableDatabase(xapianDirectoryPath, 
 							  Xapian::DB_CREATE_OR_OVERWRITE);
 
-    /* Stemming *
+    /* Stemming */
     /*
     stemmer = Xapian::Stem("french");
     indexer.set_stemmer(stemmer);
@@ -69,7 +69,7 @@ namespace kiwix {
   }
   
   /* Index next percent */
-  bool Indexer::indexNextPercent() {
+  bool Indexer::indexNextPercent(const bool &verbose) {
     float thresholdOffset = this->currentArticleOffset + this->stepSize;
     size_t found;
 
@@ -119,7 +119,9 @@ namespace kiwix {
 	  indexer.set_document(currentDocument);
 	  
 	  /* Debug output */
-	  std::cout << "Indexing " << currentArticle.getLongUrl() << "..." << std::endl;
+	  if (verbose) {
+	    std::cout << "Indexing " << currentArticle.getLongUrl() << "..." << std::endl;
+	  }
 	  
 	  /* Index the title */
 	  if (!this->htmlParser.title.empty()) {

@@ -23,7 +23,7 @@ namespace kiwix {
     Indexer(const string &zimFilePath, const string &xapianDirectoryPath);
     ~Indexer();
     
-    bool indexNextPercent();
+    bool indexNextPercent(const bool &verbose = false);
     
   protected:
     void prepareIndexing();
