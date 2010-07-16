@@ -169,7 +169,6 @@ namespace kiwix {
 
       /* Try to set a stub HTML header/footer if necesssary */
       if (contentType == "text/html" && std::string::npos == content.find("<body>")) {
-	cout << content << endl;
 	content = "<html><head><title>" + article.getTitle() + "</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>" + content + "</body></html>";
       }
       
