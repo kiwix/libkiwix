@@ -166,10 +166,16 @@ namespace kiwix {
       
       /* Get the data */
       content = string(article.getData().data(), article.getArticleSize());
+
+      /* Try to set a stub HTML header/footer if necesssary */
+      if (contentType == "text/html" && std::string::npos == content.find("<body>")) {
+	cout << content << endl;
+	content = "<html><head><title>" + article.getTitle() + "</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>" + content + "</body></html>";
+      }
       
       /* Get the data length */
       contentLength = article.getArticleSize();
-      
+
       /* Set return value */
       retVal = true;
     } else {
