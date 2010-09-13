@@ -108,12 +108,12 @@ namespace kiwix {
     unsigned int offset = 0;
     
     /* Ignore the '/' */
-    while((offset < urlLength) && (url[offset] == '/')) offset++;
+    while ((offset < urlLength) && (url[offset] == '/')) offset++;
     
     /* Get namespace */
     char ns[1024];
     unsigned int nsOffset = 0;
-    while((offset < urlLength) && (url[offset] != '/')) {
+    while ((offset < urlLength) && (url[offset] != '/')) {
       ns[nsOffset] = url[offset];
       offset++;
       nsOffset++;
@@ -121,12 +121,12 @@ namespace kiwix {
     ns[nsOffset] = 0;
     
     /* Ignore the '/' */
-    while((offset < urlLength) && (url[offset] == '/')) offset++;  
+    while ((offset < urlLength) && (url[offset] == '/')) offset++;  
     
     /* Get content title */
     char title[1024];
     unsigned int titleOffset = 0;
-    while((offset < urlLength) && (url[offset] != '/')) {
+    while (offset < urlLength) {
       title[titleOffset] = url[offset];
       offset++;
       titleOffset++;
