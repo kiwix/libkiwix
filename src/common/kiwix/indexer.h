@@ -21,34 +21,30 @@ namespace kiwix {
     
   public:
     Indexer(const string &zimFilePath, const string &xapianDirectoryPath);
-    ~Indexer();
-    
-    bool indexNextPercent(const bool &verbose = false);
+    virtual bool indexNextPercent(const bool &verbose = false) = 0;
     
   protected:
-    void prepareIndexing();
-    void stopIndexing();
-    unsigned int countWords(const string &text);
-
-    bool readStopWordsFile(const string path);
-
-    unsigned int articleCount;
-    float stepSize;
-
+    virtual void prepareIndexing() = 0;
+    virtual void stopIndexing() = 0;
+    
+    /* ZIM file handling */
     zim::File* zimFileHandler;
     zim::size_type firstArticleOffset;
     zim::size_type lastArticleOffset;
     zim::size_type currentArticleOffset;
     
-    Xapian::WritableDatabase *writableDatabase;
-    Xapian::Stem stemmer;
-    Xapian::SimpleStopper stopper;
-    Xapian::TermGenerator indexer;
-    
-    std::vector<std::string> stopWords;
+    /* HTML parsing */
     MyHtmlParser htmlParser;
-  };
+    unsigned int countWords(const string &text);
 
+    /* Stopwords */
+    bool readStopWordsFile(const string path);
+    std::vector<std::string> stopWords;
+
+    /* Others */
+    unsigned int articleCount;
+    float stepSize;
+  };
 }
 
 #endif
