@@ -20,11 +20,14 @@ namespace kiwix {
   class Indexer {
     
   public:
-    Indexer(const string &zimFilePath, const string &xapianDirectoryPath);
-    virtual bool indexNextPercent(const bool &verbose = false) = 0;
+    Indexer(const string &zimFilePath);
+    bool indexNextPercent(const bool &verbose = false);
     
   protected:
-    virtual void prepareIndexing() = 0;
+    virtual void indexNextPercentPre() = 0;
+    virtual void indexNextArticle(string &url, string &title, string &unaccentedTitle,
+				  string &keywords, string &content) = 0;
+    virtual void indexNextPercentPost() = 0;
     virtual void stopIndexing() = 0;
     
     /* ZIM file handling */

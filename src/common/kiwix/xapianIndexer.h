@@ -22,18 +22,19 @@ namespace kiwix {
     
   public:
     XapianIndexer(const string &zimFilePath, const string &xapianDirectoryPath);
-    ~XapianIndexer();
-    
-    bool indexNextPercent(const bool &verbose = false);
     
   protected:
-    void prepareIndexing();
+    void indexNextPercentPre();
+    void indexNextArticle(string &url, string &title, string &unaccentedTitle,
+			  string &keywords, string &content);
+    void indexNextPercentPost();
     void stopIndexing();
     
     Xapian::WritableDatabase *writableDatabase;
     Xapian::Stem stemmer;
     Xapian::SimpleStopper stopper;
     Xapian::TermGenerator indexer;
+    Xapian::Document currentDocument;
   };
 
 }

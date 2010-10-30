@@ -4,7 +4,7 @@ namespace kiwix {
 
   /* Constructor */
   XapianIndexer::XapianIndexer(const string &zimFilePath, const string &xapianDirectoryPath) :
-    Indexer(zimFilePath, xapianDirectoryPath) {
+    Indexer(zimFilePath) {
     
     /* Open the Xapian directory */
     this->writableDatabase = new Xapian::WritableDatabase(xapianDirectoryPath, 
@@ -16,9 +16,7 @@ namespace kiwix {
     indexer.set_stemmer(stemmer);
     */
 
-    /* Read the stopwords file */
-    /*
-    this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
+    /* Stop words
     std::vector<std::string>::const_iterator stopWordsIterator = this->stopWords.begin();
     this->stopper.add("ceci");
     while (stopWordsIterator != this->stopWords.end()) {
@@ -27,118 +25,43 @@ namespace kiwix {
     }
     indexer.set_stopper(&(this->stopper));
     */
-
-    /* Prepare the indexation */
-    this->prepareIndexing();
   }
   
-  /* Destructor */
-  XapianIndexer::~XapianIndexer() {
-    this->stopIndexing();
-  }
-  
-  /* Start indexing */
-  void XapianIndexer::prepareIndexing() {
-
-    /* Define a few values */
-    this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
-    this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
-    this->currentArticleOffset = this->firstArticleOffset;
-    
-    /* Compute few things */
-    this->articleCount = this->zimFileHandler->getNamespaceCount('A');
-    this->stepSize = (float)this->articleCount / (float)100;
-  }
-  
-  /* Index next percent */
-  bool XapianIndexer::indexNextPercent(const bool &verbose) {
-    float thresholdOffset = this->currentArticleOffset + this->stepSize;
-    size_t found;
-
-    /* Check if we can start */
-    if (this->zimFileHandler == NULL || this->writableDatabase == NULL) {
-      return false;
-    }
-
-    /* Begin the Xapian transation */
+  void XapianIndexer::indexNextPercentPre() {
     this->writableDatabase->begin_transaction(true);
+  }
+  
+  void XapianIndexer::indexNextArticle(string &url, string &title, string &unaccentedTitle,
+				       string &keywords, string &content) {
+    
+    /* Put the data in the document */
+    currentDocument.clear_values();
+    currentDocument.add_value(0, title);
+    currentDocument.set_data(url);
+    indexer.set_document(currentDocument);
 
-    while(this->currentArticleOffset < thresholdOffset && 
-	  this->currentArticleOffset < this->lastArticleOffset) {
-
-      zim::Article currentArticle;
-      Xapian::Document currentDocument;
-      
-      /* Get next non redirect article */
-      do {
-	currentArticle = this->zimFileHandler->getArticle(this->currentArticleOffset);
-      } while (this->currentArticleOffset++ &&
-	       currentArticle.isRedirect() && 
-	       this->currentArticleOffset != this->lastArticleOffset);
-      
-      if (!currentArticle.isRedirect()) {
-	
-	/* Index the content */
-	this->htmlParser.reset();
-	string content (currentArticle.getData().data(), currentArticle.getData().size());
-
-	/* The parser generate a lot of exceptions which should be avoided */
-	try {
-	  this->htmlParser.parse_html(content, "UTF-8", true);
-	} catch (...) {
-	}
-	
-	/* If content does not have the noindex meta tag */
-	/* Seems that the parser generates an exception in such case */
-	found = this->htmlParser.dump.find("NOINDEX");
-	
-	if (found == string::npos) {
-	  
-	  /* Put the data in the document */
-	  currentDocument.clear_values();
-	  currentDocument.add_value(0, this->htmlParser.title);
-	  currentDocument.set_data(currentArticle.getLongUrl().c_str());
-	  indexer.set_document(currentDocument);
-	  
-	  /* Debug output */
-	  if (verbose) {
-	    std::cout << "Indexing " << currentArticle.getLongUrl() << "..." << std::endl;
-	  }
-	  
-	  /* Index the title */
-	  if (!this->htmlParser.title.empty()) {
-	    indexer.index_text_without_positions(removeAccents(this->htmlParser.title), 
-						 ((this->htmlParser.dump.size() / 100) + 1) / 
-						 countWords(this->htmlParser.title) );
-	  }
-	  
-	  /* Index the keywords */
-	  if (!this->htmlParser.keywords.empty()) {
-	    indexer.index_text_without_positions(removeAccents(this->htmlParser.keywords), 3);
-	  }
-	  
-	  /* Index the content */
-	  if (!this->htmlParser.dump.empty()) {
-	    indexer.index_text_without_positions(removeAccents(this->htmlParser.dump));
-	  }
-	  
-	  /* add to the database */
-	  this->writableDatabase->add_document(currentDocument);
-	}
-      }
+    /* Index the title */
+    if (!unaccentedTitle.empty()) {
+      indexer.index_text_without_positions(unaccentedTitle, 5);
     }
     
+    /* Index the keywords */
+    if (!keywords.empty()) {
+      indexer.index_text_without_positions(keywords, 3);
+    }
+    
+    /* Index the content */
+    if (!content.empty()) {
+      indexer.index_text_without_positions(content);
+    }
+    
+    /* add to the database */
+    this->writableDatabase->add_document(currentDocument);
+  }
+
+  void XapianIndexer::indexNextPercentPost() {
     /* Flush and close Xapian transaction*/
     this->writableDatabase->commit_transaction();
-
-    /* increment the offset and set returned value */
-    if (this->currentArticleOffset < this->lastArticleOffset) {
-      this->currentArticleOffset++;
-      return true;
-    } else {
-      this->stopIndexing();
-      return false;
-    }
   }
   
   /* Stop indexing. TODO: using it crashs the soft under windows. Have to do it in indexNextPercent() */
