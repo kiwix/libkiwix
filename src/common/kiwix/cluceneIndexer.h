@@ -10,7 +10,7 @@
 #include <zim/file.h>
 #include <zim/article.h>
 #include <zim/fileiterator.h>
-#include "clucene/myhtmlparse.h"
+#include "xapian/myhtmlparse.h"
 #include "indexer.h"
 
 using namespace std;
