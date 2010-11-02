@@ -31,10 +31,14 @@ namespace kiwix {
     this->writableDatabase->begin_transaction(true);
   }
   
-  void XapianIndexer::indexNextArticle(string &url, string &title, string &unaccentedTitle,
-				       string &keywords, string &content) {
-    
+  void XapianIndexer::indexNextArticle(const string &url, 
+				       const string &title, 
+				       const string &unaccentedTitle,
+				       const string &keywords, 
+				       const string &content) {
+
     /* Put the data in the document */
+    Xapian::Document currentDocument; 
     currentDocument.clear_values();
     currentDocument.add_value(0, title);
     currentDocument.set_data(url);
@@ -42,17 +46,17 @@ namespace kiwix {
 
     /* Index the title */
     if (!unaccentedTitle.empty()) {
-      indexer.index_text_without_positions(unaccentedTitle, 5);
+      this->indexer.index_text_without_positions(unaccentedTitle, content.size() / 500 + 1);
     }
     
     /* Index the keywords */
     if (!keywords.empty()) {
-      indexer.index_text_without_positions(keywords, 3);
+      this->indexer.index_text_without_positions(keywords, 3);
     }
     
     /* Index the content */
     if (!content.empty()) {
-      indexer.index_text_without_positions(content);
+      this->indexer.index_text_without_positions(content);
     }
     
     /* add to the database */
