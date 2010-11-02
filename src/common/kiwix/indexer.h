@@ -25,8 +25,11 @@ namespace kiwix {
     
   protected:
     virtual void indexNextPercentPre() = 0;
-    virtual void indexNextArticle(string &url, string &title, string &unaccentedTitle,
-				  string &keywords, string &content) = 0;
+    virtual void indexNextArticle(const string &url, 
+				  const string &title, 
+				  const string &unaccentedTitle,
+				  const string &keywords, 
+				  const string &content) = 0;
     virtual void indexNextPercentPost() = 0;
     virtual void stopIndexing() = 0;
     

@@ -100,7 +100,8 @@ namespace kiwix {
 	    std::cout << "Indexing " << url << "..." << std::endl;
 	  }
 
-	  this->indexNextArticle(url, this->htmlParser.title,
+	  this->indexNextArticle(url, 
+				 this->htmlParser.title,
 				 removeAccents(this->htmlParser.title), 
 				 removeAccents(this->htmlParser.keywords),
 				 removeAccents(this->htmlParser.dump));
