@@ -1,19 +1,17 @@
 #ifndef KIWIX_CLUCENE_INDEXER_H
 #define KIWIX_CLUCENE_INDEXER_H
 
-#include <string>
-#include <vector>
-#include <fstream>
-#include <iostream>
-
-#include <unaccent.h>
-#include <zim/file.h>
-#include <zim/article.h>
-#include <zim/fileiterator.h>
-#include "xapian/myhtmlparse.h"
+#include <CLucene.h>
 #include "indexer.h"
 
 using namespace std;
+
+using namespace lucene::analysis;
+using namespace lucene::index;
+using namespace lucene::document;
+using namespace lucene::queryParser;
+using namespace lucene::search;
+using namespace lucene::store;
 
 namespace kiwix {
   
@@ -24,10 +22,17 @@ namespace kiwix {
     
   protected:
     void indexNextPercentPre();
-    void indexNextArticle(string &url, string &title, string &unaccentedTitle,
-			  string &keywords, string &content);
+    void indexNextArticle(const string &url, 
+			  const string &title, 
+			  const string &unaccentedTitle,
+			  const string &keywords, 
+			  const string &content);
     void indexNextPercentPost();
     void stopIndexing();
+
+    FSDirectory* dir;
+    IndexWriter* writer;
+    SimpleAnalyzer analyzer;
   };
 
 }
