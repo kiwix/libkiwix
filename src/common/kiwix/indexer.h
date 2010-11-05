@@ -32,7 +32,7 @@ namespace kiwix {
 				  const string &content) = 0;
     virtual void indexNextPercentPost() = 0;
     virtual void stopIndexing() = 0;
-    
+
     /* ZIM file handling */
     zim::File* zimFileHandler;
     zim::size_type firstArticleOffset;
@@ -50,6 +50,12 @@ namespace kiwix {
     /* Others */
     unsigned int articleCount;
     float stepSize;
+
+    /* Boost factor */
+    const unsigned int keywordsBoostFactor;
+    inline const unsigned int getTitleBoostFactor(const unsigned int contentLength) {
+      return contentLength / 500 + 1;
+    }
   };
 }
 

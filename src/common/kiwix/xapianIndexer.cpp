@@ -46,12 +46,12 @@ namespace kiwix {
 
     /* Index the title */
     if (!unaccentedTitle.empty()) {
-      this->indexer.index_text_without_positions(unaccentedTitle, content.size() / 500 + 1);
+      this->indexer.index_text_without_positions(unaccentedTitle, this->getTitleBoostFactor(content.size()));
     }
     
     /* Index the keywords */
     if (!keywords.empty()) {
-      this->indexer.index_text_without_positions(keywords, 3);
+      this->indexer.index_text_without_positions(keywords, keywordsBoostFactor);
     }
     
     /* Index the content */

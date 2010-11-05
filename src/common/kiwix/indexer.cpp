@@ -19,7 +19,8 @@ namespace kiwix {
   Indexer::Indexer(const string &zimFilePath) 
     : zimFileHandler(NULL), 
       articleCount(0), 
-      stepSize(0) {
+      stepSize(0),
+      keywordsBoostFactor(3) {
     
     /* Open the ZIM file */
     this->zimFileHandler = new zim::File(zimFilePath);
