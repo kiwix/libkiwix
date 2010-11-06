@@ -15,7 +15,7 @@ namespace kiwix {
       cout << "Performing query `" << search << "'" << endl;
     }
 
-    searchInIndex(search, resultsCount);
+    searchInIndex(removeAccents(search), resultsCount);
 
     this->resultOffset = this->results.begin();
 

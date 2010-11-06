@@ -23,7 +23,7 @@ namespace kiwix {
   void XapianSearcher::searchInIndex(string &search, const unsigned int resultsCount) {
     /* Create the query */
     Xapian::QueryParser queryParser;
-    Xapian::Query query = queryParser.parse_query(removeAccents(search));    
+    Xapian::Query query = queryParser.parse_query(search);    
 
     /* Create the enquire object */
     Xapian::Enquire enquire(this->readableDatabase);
