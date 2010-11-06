@@ -9,7 +9,6 @@
 #include <locale>
 #include <cctype>
 #include <vector>
-#include <xapian.h>
 #include <unaccent.h>
 
 using namespace std;
@@ -26,21 +25,18 @@ namespace kiwix {
   class Searcher {
     
   public:
-    Searcher(const string &xapianDirectoryPath);
-    ~Searcher();
+    Searcher();
 
-    Xapian::Database readableDatabase;
-    Xapian::Stem stemmer;
-    std::vector<Result> results;
-    std::vector<Result>::iterator resultOffset;
-    
-    void search(string search, const unsigned int resultsCount, bool verbose=false);
+    void search(std::string &search, const unsigned int resultsCount, bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
-    void closeDatabase();
     void reset();
 
   protected:
-    void openDatabase(const string &xapianDirectoryPath);
+    virtual void closeIndex() = 0;
+    virtual void searchInIndex(string &search, const unsigned int resultsCount) = 0;
+
+    std::vector<Result> results;
+    std::vector<Result>::iterator resultOffset;
   };
 
 }

@@ -3,67 +3,20 @@
 namespace kiwix {
 
   /* Constructor */
-  Searcher::Searcher(const string &xapianDirectoryPath) 
-    : stemmer(Xapian::Stem("english")) {
-    this->openDatabase(xapianDirectoryPath);
-  }
-  
-  /* Destructor */
-  Searcher::~Searcher() {
-  }
-
-  /* Open Xapian readable database */
-  void Searcher::openDatabase(const string &directoryPath) {
-    this->readableDatabase = Xapian::Database(directoryPath);
-  }
-  
-  /* Close Xapian writable database */
-  void Searcher::closeDatabase() {
-    return;
+  Searcher::Searcher() {
   }
   
   /* Search strings in the database */
-  void Searcher::search(string search, const unsigned int resultsCount, bool verbose) {
+  void Searcher::search(std::string &search, const unsigned int resultsCount, bool verbose) {
 
-    /* Reset the results */
-    this->results.clear();
-    this->resultOffset = this->results.begin();
-    
-    /* Create the query */
-    Xapian::QueryParser queryParser;
-    Xapian::Query query = queryParser.parse_query(removeAccents(search));    
-
-    /* Create the enquire object */
-    Xapian::Enquire enquire(this->readableDatabase);
-    enquire.set_query(query);
+    this->reset();
     
     if (verbose == true) {
-      cout << "Performing query `" <<
-	query.get_description() << "'" << endl;
+      cout << "Performing query `" << search << "'" << endl;
     }
 
-    /* Get the results */
-    Xapian::MSet matches = enquire.get_mset(0, resultsCount);
-    
-    Xapian::MSetIterator i;
-    for (i = matches.begin(); i != matches.end(); ++i) {
-      Xapian::Document doc = i.get_document();
-      
-      Result result;
-      result.url = doc.get_data();
-      result.title = doc.get_value(0);
-      result.score = i.get_percent();
-      
-      this->results.push_back(result);
-      
-      if (verbose == true) {
-	cout << "Document ID " << *i << "   \t";
-	cout << i.get_percent() << "% ";
-	cout << "\t[" << doc.get_data() << "] - " << doc.get_value(0) << endl;
-      }
-    }
-    
-    /* Set the cursor to the begining */
+    searchInIndex(search, resultsCount);
+
     this->resultOffset = this->results.begin();
 
     return;

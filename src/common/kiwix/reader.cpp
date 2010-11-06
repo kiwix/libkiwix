@@ -61,8 +61,8 @@ namespace kiwix {
   string Reader::getRandomPageUrl() {
     zim::size_type idx = this->firstArticleOffset + 
       (zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->articleCount); 
-    
     zim::Article article = zimFileHandler->getArticle(idx);
+
     return article.getLongUrl().c_str();
   }
   
