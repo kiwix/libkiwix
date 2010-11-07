@@ -27,13 +27,13 @@ namespace kiwix {
   public:
     Searcher();
 
-    void search(std::string &search, const unsigned int resultsCount, bool verbose=false);
+    void search(std::string &search, const unsigned int resultsCount, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
     void reset();
 
   protected:
     virtual void closeIndex() = 0;
-    virtual void searchInIndex(string &search, const unsigned int resultsCount) = 0;
+    virtual void searchInIndex(string &search, const unsigned int resultsCount, const bool verbose=false) = 0;
 
     std::vector<Result> results;
     std::vector<Result>::iterator resultOffset;

@@ -43,7 +43,7 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void CluceneSearcher::searchInIndex(string &search, const unsigned int resultsCount) {
+  void CluceneSearcher::searchInIndex(string &search, const unsigned int resultsCount, const bool verbose) {
     IndexSearcher searcher(reader);
     SimpleAnalyzer analyzer;
     QueryParser parser(_T("content"), &analyzer);

@@ -20,7 +20,7 @@ namespace kiwix {
   public:
     CluceneSearcher(const string &cluceneDirectoryPath);
 
-    void searchInIndex(string &search, const unsigned int resultsCount);
+    void searchInIndex(string &search, const unsigned int resultsCount, const bool verbose=false);
 
   protected:
     void closeIndex();

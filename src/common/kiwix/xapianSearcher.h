@@ -13,7 +13,7 @@ namespace kiwix {
   public:
     XapianSearcher(const string &xapianDirectoryPath);
 
-    void searchInIndex(string &search, const unsigned int resultsCount);
+    void searchInIndex(string &search, const unsigned int resultsCount, const bool verbose=false);
 
   protected:
     void closeIndex();

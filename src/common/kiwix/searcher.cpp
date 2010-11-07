@@ -7,7 +7,7 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void Searcher::search(std::string &search, const unsigned int resultsCount, bool verbose) {
+  void Searcher::search(std::string &search, const unsigned int resultsCount, const bool verbose) {
 
     this->reset();
     
@@ -15,7 +15,7 @@ namespace kiwix {
       cout << "Performing query `" << search << "'" << endl;
     }
 
-    searchInIndex(removeAccents(search), resultsCount);
+    searchInIndex(removeAccents(search), resultsCount, verbose);
 
     this->resultOffset = this->results.begin();
 

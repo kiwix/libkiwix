@@ -20,7 +20,7 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void XapianSearcher::searchInIndex(string &search, const unsigned int resultsCount) {
+  void XapianSearcher::searchInIndex(string &search, const unsigned int resultsCount, const bool verbose) {
     /* Create the query */
     Xapian::QueryParser queryParser;
     Xapian::Query query = queryParser.parse_query(search);    
@@ -42,6 +42,13 @@ namespace kiwix {
       result.score = i.get_percent();
       
       this->results.push_back(result);
+
+      if (verbose) {
+	std::cout << "Document ID " << *i << "   \t";
+	std::cout << i.get_percent() << "% ";
+	std::cout << "\t[" << doc.get_data() << "] - " << doc.get_value(0) << std::endl;
+      }
+
     }
 
     return;
