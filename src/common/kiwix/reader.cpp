@@ -31,6 +31,9 @@ namespace kiwix {
       this->currentArticleOffset = this->firstArticleOffset;
       this->articleCount = this->zimFileHandler->getNamespaceCount('A');
     }
+
+    /* initialize random seed: */
+    srand ( time(NULL) );
   }
   
   /* Destructor */
