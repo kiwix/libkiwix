@@ -7,6 +7,7 @@
 #include <zim/fileiterator.h>
 #include <string>
 #include <sstream>
+#include "time.h"
 
 using namespace std;
 
