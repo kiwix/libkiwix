@@ -5,6 +5,8 @@
 #include <CLucene/queryParser/MultiFieldQueryParser.h>
 #include "searcher.h"
 
+#define MAX_BUFFER_SIZE 4200000
+
 using namespace std;
 using namespace lucene::analysis;
 using namespace lucene::index;
@@ -27,6 +29,8 @@ namespace kiwix {
     void openIndex(const string &cluceneDirectoryPath);
 
     IndexReader* reader;
+    lucene::analysis::standard::StandardAnalyzer analyzer;
+
   };
 
 }

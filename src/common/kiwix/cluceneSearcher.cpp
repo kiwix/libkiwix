@@ -2,29 +2,7 @@
 
 namespace kiwix {
 
- 
-  typedef std::basic_string<TCHAR> tstring;  
- 
-  TCHAR* StringToTCHAR(string& s)
-  {
-    tstring tstr;
-    const char* all = s.c_str();
-    int len = 1 + strlen(all);
-    wchar_t* t = new wchar_t[len]; 
-    if (NULL == t) throw std::bad_alloc();
-    mbstowcs(t, all, len);
-    return (TCHAR*)t;
-  }
- 
-  std::string TCHARToString(const TCHAR* ptsz)
-  {
-    int len = wcslen((wchar_t*)ptsz);
-    char* psz = new char[2*len + 1];
-    wcstombs(psz, (wchar_t*)ptsz, 2*len + 1);
-    std::string s = psz;
-    delete [] psz;
-    return s;
-  }
+  TCHAR buffer[MAX_BUFFER_SIZE];
 
   /* Constructor */
   CluceneSearcher::CluceneSearcher(const string &cluceneDirectoryPath) 
@@ -45,9 +23,9 @@ namespace kiwix {
   /* Search strings in the database */
   void CluceneSearcher::searchInIndex(string &search, const unsigned int resultsCount, const bool verbose) {
     IndexSearcher searcher(reader);
-    SimpleAnalyzer analyzer;
     QueryParser parser(_T("content"), &analyzer);
-    Query* query = parser.parse(StringToTCHAR(search));
+    STRCPY_AtoT(buffer, search.c_str(), MAX_BUFFER_SIZE);
+    Query* query = parser.parse(buffer);
     Hits* hits = searcher.search(query);
     cout << "--------------------------------" << hits->length() << endl;
     

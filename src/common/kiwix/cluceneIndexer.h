@@ -4,6 +4,8 @@
 #include <CLucene.h>
 #include "indexer.h"
 
+#define MAX_BUFFER_SIZE 4200000
+
 using namespace std;
 
 using namespace lucene::analysis;
@@ -32,7 +34,7 @@ namespace kiwix {
 
     FSDirectory* dir;
     IndexWriter* writer;
-    SimpleAnalyzer analyzer;
+    lucene::analysis::standard::StandardAnalyzer analyzer;
   };
 
 }
