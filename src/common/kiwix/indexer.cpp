@@ -101,8 +101,9 @@ namespace kiwix {
 	    std::cout << "Indexing " << url << "..." << std::endl;
 	  }
 
+	  string accentedTitle = this->htmlParser.title;
 	  this->indexNextArticle(url, 
-				 this->htmlParser.title,
+				 accentedTitle,
 				 removeAccents(this->htmlParser.title), 
 				 removeAccents(this->htmlParser.keywords),
 				 removeAccents(this->htmlParser.dump));
