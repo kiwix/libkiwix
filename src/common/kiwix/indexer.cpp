@@ -66,7 +66,7 @@ namespace kiwix {
     this->indexNextPercentPre();
 
     while(this->currentArticleOffset < thresholdOffset && 
-	  this->currentArticleOffset < this->lastArticleOffset) {
+	  this->currentArticleOffset <= this->lastArticleOffset) {
 
       zim::Article currentArticle;
       
@@ -76,7 +76,7 @@ namespace kiwix {
       } while (this->currentArticleOffset++ &&
 	       currentArticle.isRedirect() && 
 	       this->currentArticleOffset != this->lastArticleOffset);
-      
+
       if (!currentArticle.isRedirect()) {
 	
 	/* Index the content */
@@ -114,8 +114,7 @@ namespace kiwix {
     this->indexNextPercentPost();
     
     /* increment the offset and set returned value */
-    if (this->currentArticleOffset < this->lastArticleOffset) {
-      this->currentArticleOffset++;
+    if (this->currentArticleOffset <= this->lastArticleOffset) {
       return true;
     } else {
       this->stopIndexing();
