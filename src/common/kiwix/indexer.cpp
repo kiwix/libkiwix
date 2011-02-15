@@ -101,7 +101,12 @@ namespace kiwix {
 	    std::cout << "Indexing " << url << "..." << std::endl;
 	  }
 
+	  /* Get the title */
 	  string accentedTitle = this->htmlParser.title;
+	  if (accentedTitle.empty()) {
+	    accentedTitle = currentArticle.getTitle();
+	  }
+
 	  this->indexNextArticle(url, 
 				 accentedTitle,
 				 removeAccents(this->htmlParser.title), 
