@@ -236,4 +236,22 @@ namespace kiwix {
 
     return retVal;
   }
+
+  /* Check if the file has as checksum */
+  bool Reader::canCheckIntegrity() {
+    return this->zimFileHandler->getChecksum() != "";
+  }
+
+  /* Return true if corrupted, false otherwise */
+  bool Reader::isCorrupted() {
+    try {
+      if (this->zimFileHandler->verify() == true)
+	return false;
+    } catch (exception &e) {
+      cerr << e.what() << endl;
+      return true;
+    }
+
+    return true;
+  }
 }
