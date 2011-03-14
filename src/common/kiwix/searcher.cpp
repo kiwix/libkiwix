@@ -74,7 +74,7 @@ namespace kiwix {
 
   const string Searcher::searchInIndexAndReturnHtml(string &search, const unsigned int resultsCount, 
 					const string templatePath, const bool verbose) {
-    
+
 	VMOpcodeCollector  oVMOpcodeCollector;
 	StaticText         oSyscalls;
 	StaticData         oStaticData;
