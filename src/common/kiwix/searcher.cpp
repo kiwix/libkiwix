@@ -71,5 +71,10 @@ namespace kiwix {
 
     return retVal;
   }
+
+  const string Searcher::searchInIndexAndReturnHtml(string &search, const unsigned int resultsCount, 
+					const string templatePath, const bool verbose) {
+    return "";
+  }
   
 }
