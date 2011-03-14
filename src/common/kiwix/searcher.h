@@ -30,7 +30,15 @@
 #include <vector>
 #include <unaccent.h>
 
+#include <CTPP2Parser.hpp>
+#include <CTPP2FileSourceLoader.hpp>
+#include <CTPP2ParserException.hpp>
+#include <CTPP2HashTable.hpp>
+#include <CTPP2VMDumper.hpp>
+#include <CTPP2VMOpcodes.h>
+
 using namespace std;
+using namespace CTPP;
 
 struct Result
 {

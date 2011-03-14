@@ -74,6 +74,30 @@ namespace kiwix {
 
   const string Searcher::searchInIndexAndReturnHtml(string &search, const unsigned int resultsCount, 
 					const string templatePath, const bool verbose) {
+    
+	VMOpcodeCollector  oVMOpcodeCollector;
+	StaticText         oSyscalls;
+	StaticData         oStaticData;
+	StaticText         oStaticText;
+	HashTable          oHashTable;
+	CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
+
+	try
+	{
+		// Load template
+		CTPP2FileSourceLoader oSourceLoader;
+		oSourceLoader.LoadTemplate(search.c_str());
+
+		// Create template parser
+		CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, search.c_str());
+
+		// Compile template
+		oCTPP2Parser.Compile();
+	}
+	catch(...)
+	{
+	}
+
     return "";
   }
   
