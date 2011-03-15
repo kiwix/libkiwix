@@ -117,7 +117,17 @@ namespace kiwix {
 
     // Fill data
     CDT oData;
-    oData["hello"] = "Hello, World!";
+    CDT resultsCDT(CDT::ARRAY_VAL);
+    CDT result1;
+    result1["title"] = "title1";
+    result1["url"] = "url1";
+    CDT result2;
+    result2["title"] = "title2";
+    result2["url"] = "url2";
+
+    resultsCDT[0] = result1;
+    resultsCDT[1] = result2;
+    oData["results"] = resultsCDT;
 
     STLW::string sResult;
     StringOutputCollector oDataCollector(sResult);
