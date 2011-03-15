@@ -73,32 +73,61 @@ namespace kiwix {
   }
 
   const string Searcher::searchInIndexAndReturnHtml(string &search, const unsigned int resultsCount, 
-					const string templatePath, const bool verbose) {
+						    const string templatePath, const bool verbose) {
+    
+    const STLW::string & sSourceFile = "/tmp/hello.tmpl";
+    VMOpcodeCollector  oVMOpcodeCollector;
+    StaticText         oSyscalls;
+    StaticData         oStaticData;
+    StaticText         oStaticText;
+    HashTable          oHashTable;
+    CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
+    
+    // Load template
+    CTPP2FileSourceLoader oSourceLoader;
+    oSourceLoader.LoadTemplate(sSourceFile.c_str());
+    
+    // Create template parser
+    CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, sSourceFile);
+    
+    // Compile template
+    oCTPP2Parser.Compile();
 
-	VMOpcodeCollector  oVMOpcodeCollector;
-	StaticText         oSyscalls;
-	StaticData         oStaticData;
-	StaticText         oStaticText;
-	HashTable          oHashTable;
-	CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
+    // Get program core
+    UINT_32 iCodeSize = 0;
+    const VMInstruction * oVMInstruction = oVMOpcodeCollector.GetCode(iCodeSize);
 
-	try
-	{
-		// Load template
-		CTPP2FileSourceLoader oSourceLoader;
-		oSourceLoader.LoadTemplate(search.c_str());
+    // Dump program
+    VMDumper oDumper(iCodeSize, oVMInstruction, oSyscalls, oStaticData, oStaticText, oHashTable);
+    UINT_32 iSize = 0;
+    const VMExecutable * aProgramCore = oDumper.GetExecutable(iSize);
 
-		// Create template parser
-		CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, search.c_str());
+    // Memory core
+    const VMMemoryCore vm_core(aProgramCore);
 
-		// Compile template
-		oCTPP2Parser.Compile();
-	}
-	catch(...)
-	{
-	}
+    // Initiate the VM
+    SyscallFactory oSyscallFactory(100);
+    // Load standard library
+    STDLibInitializer::InitLibrary(oSyscallFactory);
 
-    return "";
+    VM * pVM = new VM(&oSyscallFactory);
+
+    // Initiate the logger
+    FileLogger oLogger(stderr);
+
+    // Fill data
+    CDT oData;
+    oData["hello"] = "Hello, World!";
+
+    STLW::string sResult;
+    StringOutputCollector oDataCollector(sResult);
+
+    // Run VM
+    pVM->Init(&vm_core, &oDataCollector, &oLogger);
+    UINT_32 iIP = 0;
+    pVM -> Run(&vm_core, &oDataCollector, iIP, oData, &oLogger);
+
+    return sResult;
   }
   
 }

@@ -36,6 +36,11 @@
 #include <CTPP2HashTable.hpp>
 #include <CTPP2VMDumper.hpp>
 #include <CTPP2VMOpcodes.h>
+#include <CTPP2VM.hpp>
+#include <CTPP2VMSTDLib.hpp>
+#include <CTPP2StringOutputCollector.hpp>
+#include <CTPP2SyscallFactory.hpp>
+#include <CTPP2FileLogger.hpp>
 
 using namespace std;
 using namespace CTPP;
