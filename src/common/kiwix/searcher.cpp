@@ -22,12 +22,13 @@
 namespace kiwix {
 
   /* Constructor */
-  Searcher::Searcher() {
+  Searcher::Searcher() :
+    estimatedResultCount(0) {
   }
   
   /* Search strings in the database */
   void Searcher::search(std::string &search, const unsigned int resultsCount, const bool verbose) {
-
+    
     this->reset();
     
     if (verbose == true) {
@@ -44,7 +45,13 @@ namespace kiwix {
   void Searcher::reset() {
     this->results.clear();
     this->resultOffset = this->results.begin();
+    this->estimatedResultCount = 0;
     return;
+  }
+
+  /* Return the result count estimation */
+  const unsigned int Searcher::getEstimatedResultCount() {
+    return this->estimatedResultCount;
   }
   
   /* Get next result */

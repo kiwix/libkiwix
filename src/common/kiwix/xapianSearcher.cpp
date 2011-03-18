@@ -67,8 +67,10 @@ namespace kiwix {
 	std::cout << i.get_percent() << "% ";
 	std::cout << "\t[" << doc.get_data() << "] - " << doc.get_value(0) << std::endl;
       }
-
     }
+
+    /* Update the global resultCount value*/
+    this->estimatedResultCount = matches.get_matches_estimated();
 
     return;
   }

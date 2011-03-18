@@ -61,6 +61,7 @@ namespace kiwix {
 
     void search(std::string &search, const unsigned int resultsCount, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
+    const unsigned int getEstimatedResultCount();
     void reset();
     const string getHtml();
 
@@ -70,6 +71,7 @@ namespace kiwix {
 
     std::vector<Result> results;
     std::vector<Result>::iterator resultOffset;
+    unsigned int estimatedResultCount;
   };
 
 }
