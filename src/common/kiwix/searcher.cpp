@@ -135,6 +135,7 @@ namespace kiwix {
     this->resultOffset = this->results.begin();
 
     oData["results"] = resultsCDT;
+    oData["count"] = this->estimatedResultCount;
 
     STLW::string sResult;
     StringOutputCollector oDataCollector(sResult);
