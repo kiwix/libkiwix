@@ -62,8 +62,7 @@ namespace kiwix {
     void search(std::string &search, const unsigned int resultsCount, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
     void reset();
-    const string searchInIndexAndReturnHtml(string &search, const unsigned int resultsCount, 
-			  const string templatePath, const bool verbose=false);
+    const string getHtml();
 
   protected:
     virtual void closeIndex() = 0;

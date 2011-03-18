@@ -35,7 +35,6 @@ namespace kiwix {
     }
 
     searchInIndex(removeAccents(search), resultsCount, verbose);
-
     this->resultOffset = this->results.begin();
 
     return;
@@ -72,10 +71,9 @@ namespace kiwix {
     return retVal;
   }
 
-  const string Searcher::searchInIndexAndReturnHtml(string &search, const unsigned int resultsCount, 
-						    const string templatePath, const bool verbose) {
+  const string Searcher::getHtml() {
     
-    const STLW::string & sSourceFile = "/tmp/hello.tmpl";
+    const STLW::string & sSourceFile = "/var/www/kiwix/moulinkiwix/templates/results.tmpl";
     VMOpcodeCollector  oVMOpcodeCollector;
     StaticText         oSyscalls;
     StaticData         oStaticData;
@@ -118,15 +116,17 @@ namespace kiwix {
     // Fill data
     CDT oData;
     CDT resultsCDT(CDT::ARRAY_VAL);
-    CDT result1;
-    result1["title"] = "title1";
-    result1["url"] = "url1";
-    CDT result2;
-    result2["title"] = "title2";
-    result2["url"] = "url2";
 
-    resultsCDT[0] = result1;
-    resultsCDT[1] = result2;
+    this->resultOffset = this->results.begin();
+    while (this->resultOffset != this->results.end()) {
+      CDT result;
+      result["title"] = this->resultOffset->title;
+      result["url"] = this->resultOffset->url;
+      resultsCDT.PushBack(result);
+      this->resultOffset++;
+    }
+    this->resultOffset = this->results.begin();
+
     oData["results"] = resultsCDT;
 
     STLW::string sResult;
