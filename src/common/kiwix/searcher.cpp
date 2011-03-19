@@ -23,7 +23,8 @@ namespace kiwix {
 
   /* Constructor */
   Searcher::Searcher() :
-    estimatedResultCount(0) {
+    estimatedResultCount(0),
+    resultTemplatePath("") {
   }
   
   /* Search strings in the database */
@@ -78,9 +79,14 @@ namespace kiwix {
     return retVal;
   }
 
+  const bool Searcher::setResultTemplatePath(const std::string path) {
+    this->resultTemplatePath = path;
+    return true;
+  }
+
   const string Searcher::getHtml() {
     
-    const STLW::string & sSourceFile = "/var/www/kiwix/moulinkiwix/templates/results.tmpl";
+    const STLW::string & sSourceFile = this->resultTemplatePath;
     VMOpcodeCollector  oVMOpcodeCollector;
     StaticText         oSyscalls;
     StaticData         oStaticData;
