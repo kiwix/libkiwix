@@ -50,6 +50,9 @@ struct Result
   string url;
   string title;
   int score;
+  string snippet;
+  int wordCount;
+  int size;
 }; 
 
 namespace kiwix {

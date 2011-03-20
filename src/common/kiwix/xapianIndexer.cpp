@@ -54,12 +54,18 @@ namespace kiwix {
 				       const string &title, 
 				       const string &unaccentedTitle,
 				       const string &keywords, 
-				       const string &content) {
+				       const string &content,
+				       const string &snippet,
+				       const string &size,
+				       const string &wordCount) {
 
     /* Put the data in the document */
     Xapian::Document currentDocument; 
     currentDocument.clear_values();
     currentDocument.add_value(0, title);
+    currentDocument.add_value(1, snippet);
+    currentDocument.add_value(2, size);
+    currentDocument.add_value(3, wordCount);
     currentDocument.set_data(url);
     indexer.set_document(currentDocument);
 

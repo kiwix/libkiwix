@@ -24,6 +24,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <xapian.h>
 #include <unaccent.h>
@@ -48,7 +49,10 @@ namespace kiwix {
 				  const string &title, 
 				  const string &unaccentedTitle,
 				  const string &keywords, 
-				  const string &content) = 0;
+				  const string &content,
+				  const string &snippet,
+				  const string &size,
+				  const string &wordCount) = 0;
     virtual void indexNextPercentPost() = 0;
     virtual void stopIndexing() = 0;
 

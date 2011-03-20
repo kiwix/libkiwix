@@ -47,7 +47,10 @@ namespace kiwix {
 			  const string &title, 
 			  const string &unaccentedTitle,
 			  const string &keywords, 
-			  const string &content);
+			  const string &content,
+			  const string &snippet,
+			  const string &size,
+			  const string &wordCount);
     void indexNextPercentPost();
     void stopIndexing();
 

@@ -135,6 +135,9 @@ namespace kiwix {
       CDT result;
       result["title"] = this->resultOffset->title;
       result["url"] = this->resultOffset->url;
+      result["snippet"] = this->resultOffset->snippet;
+      result["size"] = this->resultOffset->size;
+      result["wordCount"] = this->resultOffset->wordCount;
       resultsCDT.PushBack(result);
       this->resultOffset++;
     }

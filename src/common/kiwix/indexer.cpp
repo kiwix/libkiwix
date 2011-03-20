@@ -126,11 +126,28 @@ namespace kiwix {
 	    accentedTitle = currentArticle.getTitle();
 	  }
 
+	  /* count words */
+	  stringstream st;
+	  st << countWords(this->htmlParser.dump);
+	  const std::string wordCountString = st.str();
+
+	  /* snippet */
+	  const std::string snippet = std::string(this->htmlParser.dump, 0, 300);
+
+	  /* size */
+	  st << content.size();
+	  const std::string size = st.str();
+
 	  this->indexNextArticle(url, 
 				 accentedTitle,
 				 removeAccents(this->htmlParser.title), 
 				 removeAccents(this->htmlParser.keywords),
-				 removeAccents(this->htmlParser.dump));
+				 removeAccents(this->htmlParser.dump),
+				 snippet,
+				 size,
+				 wordCountString
+				 );
+
 	}
       }
     }
