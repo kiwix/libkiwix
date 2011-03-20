@@ -24,7 +24,8 @@ namespace kiwix {
   /* Constructor */
   Searcher::Searcher() :
     estimatedResultCount(0),
-    resultTemplatePath("") {
+    resultTemplatePath(""),
+    searchPattern("") {
   }
   
   /* Search strings in the database */
@@ -36,6 +37,7 @@ namespace kiwix {
       cout << "Performing query `" << search << "'" << endl;
     }
 
+    this->searchPattern = search;
     searchInIndex(removeAccents(search), resultsCount, verbose);
     this->resultOffset = this->results.begin();
 
@@ -47,6 +49,7 @@ namespace kiwix {
     this->results.clear();
     this->resultOffset = this->results.begin();
     this->estimatedResultCount = 0;
+    this->searchPattern = "";
     return;
   }
 
@@ -145,6 +148,7 @@ namespace kiwix {
 
     oData["results"] = resultsCDT;
     oData["count"] = this->estimatedResultCount;
+    oData["searchPattern"] = this->searchPattern;
 
     STLW::string sResult;
     StringOutputCollector oDataCollector(sResult);

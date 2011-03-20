@@ -127,16 +127,17 @@ namespace kiwix {
 	  }
 
 	  /* count words */
-	  stringstream st;
-	  st << countWords(this->htmlParser.dump);
-	  const std::string wordCountString = st.str();
+	  stringstream countWordStringStream;
+	  countWordStringStream << countWords(this->htmlParser.dump);
+	  const std::string wordCountString = countWordStringStream.str();
 
 	  /* snippet */
 	  const std::string snippet = std::string(this->htmlParser.dump, 0, 300);
 
 	  /* size */
-	  st << content.size();
-	  const std::string size = st.str();
+	  stringstream sizeStringStream;
+	  sizeStringStream << content.size() / 1024;
+	  const std::string size = sizeStringStream.str();
 
 	  this->indexNextArticle(url, 
 				 accentedTitle,

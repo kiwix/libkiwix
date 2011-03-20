@@ -77,6 +77,7 @@ namespace kiwix {
     std::vector<Result>::iterator resultOffset;
     std::string resultTemplatePath;
     unsigned int estimatedResultCount;
+    std::string searchPattern;
   };
 
 }
