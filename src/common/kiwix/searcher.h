@@ -25,6 +25,9 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <sstream>
 #include <locale>
 #include <cctype>
 #include <vector>
@@ -64,12 +67,13 @@ namespace kiwix {
 
     void search(std::string &search, const unsigned int resultsCount, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
-    const unsigned int getEstimatedResultCount();
-    const bool setResultTemplatePath(const std::string path);
-    const string getHtml();
+    unsigned int getEstimatedResultCount();
+    bool setResultTemplatePath(const std::string path);
+    string getHtml();
     void reset();
 
   protected:
+    std::string beautifyInteger(const unsigned int number);
     virtual void closeIndex() = 0;
     virtual void searchInIndex(string &search, const unsigned int resultsCount, const bool verbose=false) = 0;
 

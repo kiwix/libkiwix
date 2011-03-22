@@ -21,6 +21,20 @@
 
 namespace kiwix {
 
+  /* Count word */
+  std::string Searcher::beautifyInteger(const unsigned int number) {
+    stringstream numberStream;
+    numberStream << number;
+    std::string numberString = numberStream.str();
+
+    signed int offset = numberString.size() - 3;
+    while (offset > 0) {
+      numberString.insert(offset, ".");
+      offset -= 3;
+    }
+    return numberString;
+  }
+
   /* Constructor */
   Searcher::Searcher() :
     estimatedResultCount(0),
@@ -54,7 +68,7 @@ namespace kiwix {
   }
 
   /* Return the result count estimation */
-  const unsigned int Searcher::getEstimatedResultCount() {
+  unsigned int Searcher::getEstimatedResultCount() {
     return this->estimatedResultCount;
   }
   
@@ -82,12 +96,12 @@ namespace kiwix {
     return retVal;
   }
 
-  const bool Searcher::setResultTemplatePath(const std::string path) {
+  bool Searcher::setResultTemplatePath(const std::string path) {
     this->resultTemplatePath = path;
     return true;
   }
 
-  const string Searcher::getHtml() {
+  string Searcher::getHtml() {
     
     const STLW::string & sSourceFile = this->resultTemplatePath;
     VMOpcodeCollector  oVMOpcodeCollector;
@@ -139,8 +153,8 @@ namespace kiwix {
       result["title"] = this->resultOffset->title;
       result["url"] = this->resultOffset->url;
       result["snippet"] = this->resultOffset->snippet;
-      result["size"] = this->resultOffset->size;
-      result["wordCount"] = this->resultOffset->wordCount;
+      result["size"] = this->beautifyInteger(this->resultOffset->size);
+      result["wordCount"] = this->beautifyInteger(this->resultOffset->wordCount);
       resultsCDT.PushBack(result);
       this->resultOffset++;
     }
