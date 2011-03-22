@@ -39,7 +39,8 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void XapianSearcher::searchInIndex(string &search, const unsigned int resultsCount, const bool verbose) {
+  void XapianSearcher::searchInIndex(string &search, const unsigned int resultStart, 
+				     const unsigned int resultEnd, const bool verbose) {
     /* Create the query */
     Xapian::QueryParser queryParser;
     Xapian::Query query = queryParser.parse_query(search);    
@@ -49,7 +50,7 @@ namespace kiwix {
     enquire.set_query(query);
 
     /* Get the results */
-    Xapian::MSet matches = enquire.get_mset(0, resultsCount);
+    Xapian::MSet matches = enquire.get_mset(resultStart, resultEnd - resultStart);
     
     Xapian::MSetIterator i;
     for (i = matches.begin(); i != matches.end(); ++i) {

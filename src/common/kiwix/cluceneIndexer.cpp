@@ -45,24 +45,29 @@ namespace kiwix {
     Document doc;
     
     /* Not indexed but stored */
-    STRCPY_AtoT(buffer, title.c_str(), MAX_BUFFER_SIZE);
+    //STRCPY_AtoT(buffer, title.c_str(), MAX_BUFFER_SIZE);
+    ::mbstowcs(buffer,title.c_str(),MAX_BUFFER_SIZE);
     doc.add(*_CLNEW Field(_T("title"), buffer, Field::STORE_YES | Field::INDEX_UNTOKENIZED));
 
-    STRCPY_AtoT(buffer, url.c_str(), MAX_BUFFER_SIZE);
+    //STRCPY_AtoT(buffer, url.c_str(), MAX_BUFFER_SIZE);
+    ::mbstowcs(buffer,url.c_str(),MAX_BUFFER_SIZE);
     doc.add(*_CLNEW Field(_T("url"), buffer, Field::STORE_YES | Field::INDEX_UNTOKENIZED));
 
     /* indexed but not stored */
-    STRCPY_AtoT(buffer, unaccentedTitle.c_str(), MAX_BUFFER_SIZE);
+    //STRCPY_AtoT(buffer, unaccentedTitle.c_str(), MAX_BUFFER_SIZE);
+    ::mbstowcs(buffer,unaccentedTitle.c_str(),MAX_BUFFER_SIZE);
     Field *titleField = new Field(_T("utitle"), buffer, Field::STORE_NO | Field::INDEX_TOKENIZED);
     titleField->setBoost(getTitleBoostFactor(content.size()));
     doc.add(*titleField);
 
-    STRCPY_AtoT(buffer, keywords.c_str(), MAX_BUFFER_SIZE);
+    //STRCPY_AtoT(buffer, keywords.c_str(), MAX_BUFFER_SIZE);
+    ::mbstowcs(buffer,keywords.c_str(),MAX_BUFFER_SIZE);
     Field *keywordsField = new Field(_T("keywords"), buffer, Field::STORE_NO | Field::INDEX_TOKENIZED);
     keywordsField->setBoost(keywordsBoostFactor);
     doc.add(*keywordsField);
 
-    STRCPY_AtoT(buffer, content.c_str(), MAX_BUFFER_SIZE);
+    //STRCPY_AtoT(buffer, content.c_str(), MAX_BUFFER_SIZE);
+    ::mbstowcs(buffer,content.c_str(),MAX_BUFFER_SIZE);
     doc.add(*_CLNEW Field(_T("content"), buffer, Field::STORE_NO | Field::INDEX_TOKENIZED));
 
     /* Add the document to the index */

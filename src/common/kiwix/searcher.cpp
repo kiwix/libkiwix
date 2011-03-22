@@ -43,7 +43,8 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void Searcher::search(std::string &search, const unsigned int resultsCount, const bool verbose) {
+  void Searcher::search(std::string &search, const unsigned int resultStart, 
+			const unsigned int resultEnd, const bool verbose) {
     
     this->reset();
     
@@ -52,7 +53,10 @@ namespace kiwix {
     }
 
     this->searchPattern = search;
-    searchInIndex(removeAccents(search), resultsCount, verbose);
+    this->resultCountPerPage = resultEnd - resultStart;
+    this->resultStart = resultStart;
+    this->resultEnd = resultEnd;
+    searchInIndex(removeAccents(search), resultStart, resultEnd, verbose);
     this->resultOffset = this->results.begin();
 
     return;
@@ -159,10 +163,25 @@ namespace kiwix {
       this->resultOffset++;
     }
     this->resultOffset = this->results.begin();
-
     oData["results"] = resultsCDT;
+
+    // pages
+    CDT pagesCDT(CDT::ARRAY_VAL);
+    unsigned int pageCount = this->estimatedResultCount / this->resultCountPerPage + 1;
+    if (pageCount > 10)
+      pageCount = 10;
+    for (int i=0; i<pageCount; i++) {
+      CDT page;
+      page["start"] = i * this->resultCountPerPage;
+      page["end"] = (i+1) * this->resultCountPerPage;
+      pagesCDT.PushBack(page);
+    }
+    oData["pages"] = pagesCDT;
+
     oData["count"] = this->estimatedResultCount;
     oData["searchPattern"] = this->searchPattern;
+    oData["resultStart"] = this->resultStart;
+    oData["resultEnd"] = this->resultEnd;
 
     STLW::string sResult;
     StringOutputCollector oDataCollector(sResult);

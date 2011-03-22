@@ -65,7 +65,8 @@ namespace kiwix {
   public:
     Searcher();
 
-    void search(std::string &search, const unsigned int resultsCount, const bool verbose=false);
+    void search(std::string &search, const unsigned int resultStart, 
+		const unsigned int resultEnd, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
     unsigned int getEstimatedResultCount();
     bool setResultTemplatePath(const std::string path);
@@ -75,11 +76,15 @@ namespace kiwix {
   protected:
     std::string beautifyInteger(const unsigned int number);
     virtual void closeIndex() = 0;
-    virtual void searchInIndex(string &search, const unsigned int resultsCount, const bool verbose=false) = 0;
+    virtual void searchInIndex(string &search, const unsigned int resultStart, 
+			       const unsigned int resultEnd, const bool verbose=false) = 0;
 
     std::vector<Result> results;
     std::vector<Result>::iterator resultOffset;
     std::string resultTemplatePath;
+    unsigned int resultCountPerPage;
+    unsigned int resultStart;
+    unsigned int resultEnd;
     unsigned int estimatedResultCount;
     std::string searchPattern;
   };

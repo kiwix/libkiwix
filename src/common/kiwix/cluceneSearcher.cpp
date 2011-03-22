@@ -40,10 +40,12 @@ namespace kiwix {
   }
   
   /* Search strings in the database */
-  void CluceneSearcher::searchInIndex(string &search, const unsigned int resultsCount, const bool verbose) {
+  void CluceneSearcher::searchInIndex(string &search, const unsigned int resultStart, 
+				      const unsigned int resultEnd, const bool verbose) {
     IndexSearcher searcher(reader);
     QueryParser parser(_T("content"), &analyzer);
-    STRCPY_AtoT(buffer, search.c_str(), MAX_BUFFER_SIZE);
+    //STRCPY_AtoT(buffer, search.c_str(), MAX_BUFFER_SIZE);
+    ::mbstowcs(buffer,search.c_str(),MAX_BUFFER_SIZE);
     Query* query = parser.parse(buffer);
     Hits* hits = searcher.search(query);
     cout << "--------------------------------" << hits->length() << endl;
