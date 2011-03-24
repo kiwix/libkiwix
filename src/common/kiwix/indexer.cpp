@@ -135,6 +135,8 @@ namespace kiwix {
 	  std::string snippet = std::string(this->htmlParser.dump, 0, 300);
 	  std::string::size_type last = snippet.find_last_of('.');
 	  if (last != snippet.npos)
+	    last = snippet.find_last_of(' ');
+	  if (last != snippet.npos)
 	    snippet = snippet.substr(0, last+1);
 
 	  /* size */
