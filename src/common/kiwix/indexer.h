@@ -75,8 +75,8 @@ namespace kiwix {
     float stepSize;
 
     /* Boost factor */
-    const unsigned int keywordsBoostFactor;
-    inline const unsigned int getTitleBoostFactor(const unsigned int contentLength) {
+    unsigned int keywordsBoostFactor;
+    inline unsigned int getTitleBoostFactor(const unsigned int contentLength) {
       return contentLength / 500 + 1;
     }
   };

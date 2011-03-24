@@ -82,11 +82,11 @@ namespace kiwix {
     std::vector<Result> results;
     std::vector<Result>::iterator resultOffset;
     std::string resultTemplatePath;
+    std::string searchPattern;
     unsigned int resultCountPerPage;
+    unsigned int estimatedResultCount;
     unsigned int resultStart;
     unsigned int resultEnd;
-    unsigned int estimatedResultCount;
-    std::string searchPattern;
   };
 
 }

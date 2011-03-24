@@ -37,9 +37,12 @@ namespace kiwix {
 
   /* Constructor */
   Searcher::Searcher() :
-    estimatedResultCount(0),
     resultTemplatePath(""),
-    searchPattern("") {
+    searchPattern(""),
+    resultCountPerPage(0),
+    estimatedResultCount(0),
+    resultStart(0),
+    resultEnd(0) {
   }
   
   /* Search strings in the database */
