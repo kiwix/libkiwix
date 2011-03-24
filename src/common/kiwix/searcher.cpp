@@ -178,7 +178,7 @@ namespace kiwix {
     }
     oData["pages"] = pagesCDT;
 
-    oData["count"] = this->estimatedResultCount;
+    oData["count"] = this->beautifyInteger(this->estimatedResultCount);
     oData["searchPattern"] = this->searchPattern;
     oData["resultStart"] = this->resultStart;
     oData["resultEnd"] = this->resultEnd;
