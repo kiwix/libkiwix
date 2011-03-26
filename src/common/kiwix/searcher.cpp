@@ -173,6 +173,9 @@ namespace kiwix {
     unsigned int pageCount = this->estimatedResultCount / this->resultCountPerPage + 1;
     if (pageCount > 10)
       pageCount = 10;
+    else if (pageCount == 1)
+      pageCount = 0;
+
     for (unsigned int i=0; i<pageCount; i++) {
       CDT page;
       page["start"] = i * this->resultCountPerPage;

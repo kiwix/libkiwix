@@ -79,7 +79,31 @@ namespace kiwix {
     return  s.str();
   }
   
-  /* Return a random article URL */
+  /* Return a page url from a title */
+  bool Reader::getPageUrlFromTitle(const string &title, string &url) {
+    /* Extract the content from the zim file */
+    std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findxByTitle('A', title);
+
+    /* Test if the article was found */
+    if (resultPair.first == true) {
+      
+      /* Get the article */
+      zim::Article article = zimFileHandler->getArticle(resultPair.second.getIndex());
+
+      /* If redirect */
+      unsigned int loopCounter = 0;
+      while (article.isRedirect() && loopCounter++<42) {
+	article = article.getRedirectArticle();
+      }
+
+      url = article.getLongUrl();
+      return true;
+    }
+
+    return false;
+  }
+
+  /* Return an URL from a title*/
   string Reader::getRandomPageUrl() {
     zim::size_type idx = this->firstArticleOffset + 
       (zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->articleCount); 
