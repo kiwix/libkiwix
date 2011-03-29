@@ -88,7 +88,7 @@ namespace kiwix {
     if (resultPair.first == true) {
       
       /* Get the article */
-      zim::Article article = zimFileHandler->getArticle(resultPair.second.getIndex());
+      zim::Article article = *resultPair.second;
 
       /* If redirect */
       unsigned int loopCounter = 0;
