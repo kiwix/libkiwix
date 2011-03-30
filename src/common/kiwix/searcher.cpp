@@ -187,7 +187,7 @@ namespace kiwix {
     oData["count"] = this->beautifyInteger(this->estimatedResultCount);
     oData["searchPattern"] = this->searchPattern;
     oData["resultStart"] = this->resultStart;
-    oData["resultEnd"] = this->resultEnd;
+    oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
 
     STLW::string sResult;
     StringOutputCollector oDataCollector(sResult);
