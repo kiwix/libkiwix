@@ -160,8 +160,13 @@ namespace kiwix {
       result["title"] = this->resultOffset->title;
       result["url"] = this->resultOffset->url;
       result["snippet"] = this->resultOffset->snippet;
-      result["size"] = this->beautifyInteger(this->resultOffset->size);
-      result["wordCount"] = this->beautifyInteger(this->resultOffset->wordCount);
+
+      if (this->resultOffset->size >= 0)
+	result["size"] = this->beautifyInteger(this->resultOffset->size);
+
+      if (this->resultOffset->wordCount >= 0)
+	result["wordCount"] = this->beautifyInteger(this->resultOffset->wordCount);
+
       resultsCDT.PushBack(result);
       this->resultOffset++;
     }

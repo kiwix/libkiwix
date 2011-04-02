@@ -60,8 +60,8 @@ namespace kiwix {
       result.url = doc.get_data();
       result.title = doc.get_value(0);
       result.snippet = doc.get_value(1);
-      result.size = atoi(doc.get_value(2).c_str());
-      result.wordCount = atoi(doc.get_value(3).c_str());
+      result.size = (doc.get_value(2).empty() == true ? -1 : atoi(doc.get_value(2).c_str()));
+      result.wordCount = (doc.get_value(3).empty() == true ? -1 : atoi(doc.get_value(3).c_str()));
       result.score = i.get_percent();
       
       this->results.push_back(result);
