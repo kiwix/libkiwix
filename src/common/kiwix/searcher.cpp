@@ -29,7 +29,7 @@ namespace kiwix {
 
     signed int offset = numberString.size() - 3;
     while (offset > 0) {
-      numberString.insert(offset, ".");
+      numberString.insert(offset, ",");
       offset -= 3;
     }
     return numberString;
