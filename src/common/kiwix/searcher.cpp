@@ -185,6 +185,10 @@ namespace kiwix {
       CDT page;
       page["start"] = i * this->resultCountPerPage;
       page["end"] = (i+1) * this->resultCountPerPage;
+
+      if (i * this->resultCountPerPage == this->resultStart)
+	page["selected"] = true;
+
       pagesCDT.PushBack(page);
     }
     oData["pages"] = pagesCDT;
