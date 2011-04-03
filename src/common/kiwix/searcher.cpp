@@ -175,14 +175,18 @@ namespace kiwix {
 
     // pages
     CDT pagesCDT(CDT::ARRAY_VAL);
-    unsigned int pageCount = this->estimatedResultCount / this->resultCountPerPage + 1;
+
+    unsigned int pageStart = this->resultStart / this->resultCountPerPage >= 5 ? this->resultStart / this->resultCountPerPage - 4 : 0;
+
+    unsigned int pageCount = this->estimatedResultCount / this->resultCountPerPage + 1 - pageStart;
     if (pageCount > 10)
       pageCount = 10;
     else if (pageCount == 1)
       pageCount = 0;
-
-    for (unsigned int i=0; i<pageCount; i++) {
+    
+    for (unsigned int i=pageStart; i<pageStart+pageCount; i++) {
       CDT page;
+      page["label"] = i + 1;
       page["start"] = i * this->resultCountPerPage;
       page["end"] = (i+1) * this->resultCountPerPage;
 
