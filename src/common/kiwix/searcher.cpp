@@ -42,7 +42,9 @@ namespace kiwix {
     resultCountPerPage(0),
     estimatedResultCount(0),
     resultStart(0),
-    resultEnd(0) {
+    resultEnd(0),
+    protocolPrefix("zim://"),
+    searchProtocolPrefix("search://?") {
   }
   
   /* Search strings in the database */
@@ -105,6 +107,16 @@ namespace kiwix {
 
   bool Searcher::setResultTemplatePath(const std::string path) {
     this->resultTemplatePath = path;
+    return true;
+  }
+
+  bool Searcher::setProtocolPrefix(const std::string prefix) {
+    this->protocolPrefix = prefix;
+    return true;
+  }
+
+  bool Searcher::setSearchProtocolPrefix(const std::string prefix) {
+    this->searchProtocolPrefix = prefix;
     return true;
   }
 
@@ -201,6 +213,8 @@ namespace kiwix {
     oData["searchPattern"] = this->searchPattern;
     oData["resultStart"] = this->resultStart;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
+    oData["protocolPrefix"] = this->protocolPrefix;
+    oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
 
     STLW::string sResult;
     StringOutputCollector oDataCollector(sResult);

@@ -70,6 +70,8 @@ namespace kiwix {
     bool getNextResult(string &url, string &title, unsigned int &score);
     unsigned int getEstimatedResultCount();
     bool setResultTemplatePath(const std::string path);
+    bool setProtocolPrefix(const std::string prefix);
+    bool setSearchProtocolPrefix(const std::string prefix);
     string getHtml();
     void reset();
 
@@ -87,6 +89,8 @@ namespace kiwix {
     unsigned int estimatedResultCount;
     unsigned int resultStart;
     unsigned int resultEnd;
+    std::string protocolPrefix;
+    std::string searchProtocolPrefix;
   };
 
 }
