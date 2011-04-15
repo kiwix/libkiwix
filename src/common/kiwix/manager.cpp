@@ -18,6 +18,7 @@
  */
 
 #include "manager.h"
+#include <pugixml.hpp>
 
 namespace kiwix {
 
@@ -28,4 +29,12 @@ namespace kiwix {
   /* Destructor */
   Manager::~Manager() {
   }
+
+  bool Manager::readFile(const string path) {
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(path.c_str());
+
+    return result;
+  }
+
 }

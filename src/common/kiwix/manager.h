@@ -38,6 +38,8 @@ namespace kiwix {
     Manager();
     ~Manager();
 
+    bool readFile(const string path);
+    
   protected:
   };
 
