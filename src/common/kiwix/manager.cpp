@@ -34,7 +34,27 @@ namespace kiwix {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.c_str());
 
+    if (result) {
+      pugi::xml_node libraryNode = doc.child("library");
+      library.current = libraryNode.attribute("current").value();
+
+      for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode; bookNode = bookNode.next_sibling("book")) {
+	kiwix::Book book;
+	book.id = bookNode.attribute("id").value();
+	book.path = bookNode.attribute("path").value();
+	book.last = bookNode.attribute("last").value();
+	book.indexPath = bookNode.attribute("indexPath").value();
+	book.indexType = bookNode.attribute("indexType").value() == "xapian" ? XAPIAN: CLUCENE;
+	library.addBook(book);
+      }
+
+    }
+
     return result;
+  }
+
+  kiwix::Library Manager::cloneLibrary() {
+    return this->library;
   }
 
 }

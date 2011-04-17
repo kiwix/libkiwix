@@ -17,33 +17,42 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_MANAGER_H
-#define KIWIX_MANAGER_H
+#ifndef KIWIX_LIBRARY_H
+#define KIWIX_LIBRARY_H
 
-#include <zim/zim.h>
-#include <zim/file.h>
-#include <zim/article.h>
-#include <zim/fileiterator.h>
-#include <kiwix/library.h>
 #include <string>
-#include <sstream>
-#include "time.h"
+#include <vector>
 
 using namespace std;
 
 namespace kiwix {
 
-  class Manager {
+  enum supportedIndexType { XAPIAN, CLUCENE };
+
+  class Book {
+
+  public:
+    Book();
+    ~Book();
+
+    string id;
+    string path;
+    string last;
+    string indexPath;
+    supportedIndexType indexType;
+
+  };
+
+  class Library {
     
   public:
-    Manager();
-    ~Manager();
+    Library();
+    ~Library();
 
-    bool readFile(const string path);
-    kiwix::Library cloneLibrary();
-    
-  protected:
-    kiwix::Library library;
+    string current;
+    bool addBook(const Book &book);
+    vector <kiwix::Book> books;
+
   };
 
 }

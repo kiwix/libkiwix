@@ -17,35 +17,34 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_MANAGER_H
-#define KIWIX_MANAGER_H
-
-#include <zim/zim.h>
-#include <zim/file.h>
-#include <zim/article.h>
-#include <zim/fileiterator.h>
-#include <kiwix/library.h>
-#include <string>
-#include <sstream>
-#include "time.h"
-
-using namespace std;
+#include "library.h"
 
 namespace kiwix {
 
-  class Manager {
-    
-  public:
-    Manager();
-    ~Manager();
+  /* Constructor */
+  Book::Book():
+    id(""),
+    path(""),
+    last(""),
+    indexPath(""),
+    indexType(XAPIAN) {
+  }
+  
+  /* Destructor */
+  Book::~Book() {
+  }
 
-    bool readFile(const string path);
-    kiwix::Library cloneLibrary();
-    
-  protected:
-    kiwix::Library library;
-  };
+  /* Constructor */
+  Library::Library() {
+  }
+  
+  /* Destructor */
+  Library::~Library() {
+  }
+
+  bool Library::addBook(const Book &book) {
+    this->books.push_back(book);
+    return true;
+  }
 
 }
-
-#endif
