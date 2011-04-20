@@ -47,4 +47,9 @@ namespace kiwix {
     return true;
   }
 
+  bool Library::removeBookByIndex(const unsigned int bookIndex) {
+    books.erase(books.begin()+bookIndex-1);
+    return true;
+  }
+
 }

@@ -53,6 +53,25 @@ namespace kiwix {
     return result;
   }
 
+  bool Manager::writeFile(const string path) {
+    pugi::xml_document doc;
+
+    /* Add the library node */
+    pugi::xml_node libraryNode = doc.append_child("library");
+    libraryNode.append_attribute("current") = library.current.c_str();
+    
+    /* Add each book */
+
+    /* saving file */
+    doc.save_file(path.c_str());
+
+    return true;
+  }
+
+  bool Manager::removeBookByIndex(const unsigned int bookIndex) {
+    return this->library.removeBookByIndex(bookIndex);
+  }
+
   kiwix::Library Manager::cloneLibrary() {
     return this->library;
   }

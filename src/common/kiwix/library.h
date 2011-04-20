@@ -51,6 +51,7 @@ namespace kiwix {
 
     string current;
     bool addBook(const Book &book);
+    bool removeBookByIndex(const unsigned int bookIndex);
     vector <kiwix::Book> books;
 
   };

@@ -40,6 +40,8 @@ namespace kiwix {
     ~Manager();
 
     bool readFile(const string path);
+    bool writeFile(const string path);
+    bool removeBookByIndex(const unsigned int bookIndex);
     kiwix::Library cloneLibrary();
     
   protected:
