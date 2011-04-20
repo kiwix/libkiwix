@@ -45,6 +45,11 @@ namespace kiwix {
     string getFirstPageUrl();
     string getMainPageUrl();
     bool getMetatag(const string &url, string &content);
+    string getTitle();
+    string getDescription();
+    string getLanguage();
+    string getDate();
+    string getCreator();
     bool getPageUrlFromTitle(const string &title, string &url);
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
     bool searchSuggestions(const string &prefix, unsigned int suggestionsCount);

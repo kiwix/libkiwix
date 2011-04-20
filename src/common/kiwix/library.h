@@ -40,7 +40,11 @@ namespace kiwix {
     string last;
     string indexPath;
     supportedIndexType indexType;
-
+    string title;
+    string description;
+    string language;
+    string creator;
+    string date;
   };
 
   class Library {

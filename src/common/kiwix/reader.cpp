@@ -133,6 +133,36 @@ namespace kiwix {
 				  contentLength, contentType);
   }
   
+  string Reader::getTitle() {
+    string value="";
+    this->getMetatag("Title", value);
+    return value;
+  }
+
+  string Reader::getDescription() {
+    string value="";
+    this->getMetatag("Description", value);
+    return value;
+  }
+
+  string Reader::getLanguage() {
+    string value="";
+    this->getMetatag("Language", value);
+    return value;
+  }
+
+  string Reader::getDate() {
+    string value="";
+    this->getMetatag("Date", value);
+    return value;
+  }
+
+  string Reader::getCreator() {
+    string value="";
+    this->getMetatag("Creator", value);
+    return value;
+  }
+
   /* Return the first page URL */
   string Reader::getFirstPageUrl() {
     string url = "";

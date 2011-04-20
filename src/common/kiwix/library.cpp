@@ -27,7 +27,12 @@ namespace kiwix {
     path(""),
     last(""),
     indexPath(""),
-    indexType(XAPIAN) {
+    indexType(XAPIAN),
+    title(""),
+    description(""),
+    language(""),
+    date(""),
+    creator("") {
   }
   
   /* Destructor */

@@ -20,11 +20,8 @@
 #ifndef KIWIX_MANAGER_H
 #define KIWIX_MANAGER_H
 
-#include <zim/zim.h>
-#include <zim/file.h>
-#include <zim/article.h>
-#include <zim/fileiterator.h>
 #include <kiwix/library.h>
+#include <kiwix/reader.h>
 #include <string>
 #include <sstream>
 #include "time.h"
@@ -42,6 +39,7 @@ namespace kiwix {
     bool readFile(const string path);
     bool writeFile(const string path);
     bool removeBookByIndex(const unsigned int bookIndex);
+    bool addBookFromPath(const string path);
     kiwix::Library cloneLibrary();
     
   protected:

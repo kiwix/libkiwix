@@ -45,6 +45,11 @@ namespace kiwix {
 	book.last = bookNode.attribute("last").value();
 	book.indexPath = bookNode.attribute("indexPath").value();
 	book.indexType = bookNode.attribute("indexType").value() == "xapian" ? XAPIAN: CLUCENE;
+	book.title = bookNode.attribute("title").value();
+	book.description = bookNode.attribute("description").value();
+	book.language = bookNode.attribute("language").value();
+	book.date = bookNode.attribute("date").value();
+	book.creator = bookNode.attribute("creator").value();
 	library.addBook(book);
       }
 
@@ -61,10 +66,59 @@ namespace kiwix {
     libraryNode.append_attribute("current") = library.current.c_str();
     
     /* Add each book */
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      pugi::xml_node bookNode = libraryNode.append_child("book");
+      bookNode.append_attribute("id") = itr->id.c_str();
+      bookNode.append_attribute("path") = itr->path.c_str();
+
+      if (itr->last != "")
+	bookNode.append_attribute("last") = itr->last.c_str();
+
+      if (itr->indexPath != "") {
+	bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
+	if (itr->indexType == XAPIAN)
+	  bookNode.append_attribute("indexType") = "xapian";
+	else
+	  bookNode.append_attribute("indexType") = "clucene";
+      }
+
+      if (itr->title != "")
+	bookNode.append_attribute("title") = itr->title.c_str();
+
+      if (itr->description != "")
+	bookNode.append_attribute("description") = itr->description.c_str();
+
+      if (itr->language != "")
+	bookNode.append_attribute("language") = itr->language.c_str();
+
+      if (itr->date != "")
+	bookNode.append_attribute("date") = itr->date.c_str();
+
+      if (itr->creator != "")
+	bookNode.append_attribute("creator") = itr->creator.c_str();
+
+    }
 
     /* saving file */
     doc.save_file(path.c_str());
 
+    return true;
+  }
+
+  bool Manager::addBookFromPath(const string path) {
+    kiwix::Book book;
+    
+    /* Open the ZIM file */
+    kiwix::Reader reader = kiwix::Reader(path);
+    book.path = path;
+    book.id = reader.getId();
+    book.title = reader.getTitle();
+    book.description = reader.getDescription();
+    book.language = reader.getLanguage();
+    book.date = reader.getDate();
+    book.creator = reader.getCreator();
+    library.addBook(book);
     return true;
   }
 
