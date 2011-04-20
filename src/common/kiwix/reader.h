@@ -40,6 +40,7 @@ namespace kiwix {
 
     void reset();
     unsigned int getArticleCount();
+    unsigned int getMediaCount();
     string getId();
     string getRandomPageUrl();
     string getFirstPageUrl();
@@ -56,13 +57,14 @@ namespace kiwix {
     bool getNextSuggestion(string &title);
     bool canCheckIntegrity();
     bool isCorrupted();
-
+    
   protected:
     zim::File* zimFileHandler;
     zim::size_type firstArticleOffset;
     zim::size_type lastArticleOffset;
     zim::size_type currentArticleOffset;
     zim::size_type articleCount;
+    zim::size_type mediaCount;
     
     std::vector<std::string> suggestions;
     std::vector<std::string>::iterator suggestionsOffset;

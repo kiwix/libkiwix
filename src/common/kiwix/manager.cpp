@@ -50,6 +50,9 @@ namespace kiwix {
 	book.language = bookNode.attribute("language").value();
 	book.date = bookNode.attribute("date").value();
 	book.creator = bookNode.attribute("creator").value();
+	book.url = bookNode.attribute("url").value();
+	book.articleCount = bookNode.attribute("articleCount").value();
+	book.mediaCount = bookNode.attribute("mediaCount").value();
 	library.addBook(book);
       }
 
@@ -63,7 +66,9 @@ namespace kiwix {
 
     /* Add the library node */
     pugi::xml_node libraryNode = doc.append_child("library");
-    libraryNode.append_attribute("current") = library.current.c_str();
+
+    if (library.current != "")
+      libraryNode.append_attribute("current") = library.current.c_str();
     
     /* Add each book */
     std::vector<kiwix::Book>::iterator itr;
@@ -98,6 +103,15 @@ namespace kiwix {
       if (itr->creator != "")
 	bookNode.append_attribute("creator") = itr->creator.c_str();
 
+      if (itr->url != "")
+	bookNode.append_attribute("url") = itr->url.c_str();
+
+      if (itr->articleCount != "")
+	bookNode.append_attribute("articleCount") = itr->articleCount.c_str();
+
+      if (itr->mediaCount != "")
+	bookNode.append_attribute("mediaCount") = itr->mediaCount.c_str();
+
     }
 
     /* saving file */
@@ -106,7 +120,7 @@ namespace kiwix {
     return true;
   }
 
-  bool Manager::addBookFromPath(const string path) {
+  bool Manager::addBookFromPath(const string path, const string url) {
     kiwix::Book book;
     
     /* Open the ZIM file */
@@ -118,7 +132,18 @@ namespace kiwix {
     book.language = reader.getLanguage();
     book.date = reader.getDate();
     book.creator = reader.getCreator();
+    book.url = url;
+   
+    std::ostringstream articleCountStream;
+    articleCountStream << reader.getArticleCount();
+    book.articleCount = articleCountStream.str();
+
+    std::ostringstream mediaCountStream;
+    mediaCountStream << reader.getMediaCount();
+    book.mediaCount = mediaCountStream.str();
+
     library.addBook(book);
+
     return true;
   }
 

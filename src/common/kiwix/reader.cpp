@@ -49,6 +49,7 @@ namespace kiwix {
       this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
       this->currentArticleOffset = this->firstArticleOffset;
       this->articleCount = this->zimFileHandler->getNamespaceCount('A');
+      this->mediaCount = this->zimFileHandler->getNamespaceCount('I');
     }
 
     /* initialize random seed: */
@@ -70,6 +71,10 @@ namespace kiwix {
   /* Get the count of articles which can be indexed/displayed */
   unsigned int Reader::getArticleCount() {
     return this->articleCount;
+  }
+
+  unsigned int Reader::getMediaCount() {
+    return this->mediaCount;
   }
   
   /* Return the UID of the ZIM file */

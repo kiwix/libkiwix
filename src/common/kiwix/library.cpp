@@ -32,7 +32,10 @@ namespace kiwix {
     description(""),
     language(""),
     date(""),
-    creator("") {
+    creator(""),
+    url(""),
+    articleCount(""),
+    mediaCount("") {
   }
   
   /* Destructor */

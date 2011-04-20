@@ -45,6 +45,9 @@ namespace kiwix {
     string language;
     string creator;
     string date;
+    string url;
+    string articleCount;
+    string mediaCount;
   };
 
   class Library {

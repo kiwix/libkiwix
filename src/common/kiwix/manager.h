@@ -39,7 +39,7 @@ namespace kiwix {
     bool readFile(const string path);
     bool writeFile(const string path);
     bool removeBookByIndex(const unsigned int bookIndex);
-    bool addBookFromPath(const string path);
+    bool addBookFromPath(const string path, const string url = "");
     kiwix::Library cloneLibrary();
     
   protected:
