@@ -37,6 +37,8 @@ namespace kiwix {
     if (result) {
       pugi::xml_node libraryNode = doc.child("library");
       library.current = libraryNode.attribute("current").value();
+      string libraryVersion = libraryNode.attribute("version").value();
+      bool ok = true;
 
       for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode; bookNode = bookNode.next_sibling("book")) {
 	kiwix::Book book;
@@ -53,7 +55,16 @@ namespace kiwix {
 	book.url = bookNode.attribute("url").value();
 	book.articleCount = bookNode.attribute("articleCount").value();
 	book.mediaCount = bookNode.attribute("mediaCount").value();
-	library.addBook(book);
+
+	/* Update the book properties with the new importer */
+	if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
+	  if (!book.path.empty())
+	    ok = this->readBookFromPath(book.path, book);
+	}
+
+	if (ok) {
+	  library.addBook(book);
+	}
       }
 
     }
@@ -69,6 +80,9 @@ namespace kiwix {
 
     if (library.current != "")
       libraryNode.append_attribute("current") = library.current.c_str();
+
+    if (library.version != "")
+      libraryNode.append_attribute("version") = library.version.c_str();
     
     /* Add each book */
     std::vector<kiwix::Book>::iterator itr;
@@ -123,32 +137,54 @@ namespace kiwix {
   bool Manager::addBookFromPath(const string path, const string url) {
     kiwix::Book book;
     
-    /* Open the ZIM file */
-    kiwix::Reader reader = kiwix::Reader(path);
-    book.path = path;
-    book.id = reader.getId();
-    book.title = reader.getTitle();
-    book.description = reader.getDescription();
-    book.language = reader.getLanguage();
-    book.date = reader.getDate();
-    book.creator = reader.getCreator();
-    book.url = url;
-   
-    std::ostringstream articleCountStream;
-    articleCountStream << reader.getArticleCount();
-    book.articleCount = articleCountStream.str();
+    if (this->readBookFromPath(path, book)) {
+      book.url = url;
+      library.addBook(book);
+      return true;
+    }
 
-    std::ostringstream mediaCountStream;
-    mediaCountStream << reader.getMediaCount();
-    book.mediaCount = mediaCountStream.str();
+    return false;
+  }
+  
+  bool Manager::readBookFromPath(const string path, kiwix::Book &book) {
 
-    library.addBook(book);
+    try {
+      kiwix::Reader reader = kiwix::Reader(path);
+      book.path = path;
+      book.id = reader.getId();
+      book.title = reader.getTitle();
+      book.description = reader.getDescription();
+      book.language = reader.getLanguage();
+      book.date = reader.getDate();
+      book.creator = reader.getCreator();
+      
+      std::ostringstream articleCountStream;
+      articleCountStream << reader.getArticleCount();
+      book.articleCount = articleCountStream.str();
+      
+      std::ostringstream mediaCountStream;
+      mediaCountStream << reader.getMediaCount();
+      book.mediaCount = mediaCountStream.str();
+    } catch (...) {
+      return false;
+    }
 
     return true;
   }
 
   bool Manager::removeBookByIndex(const unsigned int bookIndex) {
     return this->library.removeBookByIndex(bookIndex);
+  }
+
+  bool Manager::removeBookById(const string id) {
+    unsigned int bookIndex = 0;
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+      if ( itr->id == id) 
+	return this->library.removeBookByIndex(bookIndex);
+      bookIndex++;
+    }
+    return false;
   }
 
   kiwix::Library Manager::cloneLibrary() {

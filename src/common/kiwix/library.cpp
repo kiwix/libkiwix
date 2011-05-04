@@ -43,7 +43,9 @@ namespace kiwix {
   }
 
   /* Constructor */
-  Library::Library() {
+  Library::Library():
+    current(""),
+    version(KIWIX_LIBRARY_VERSION) {
   }
   
   /* Destructor */

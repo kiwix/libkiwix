@@ -20,6 +20,8 @@
 #ifndef KIWIX_LIBRARY_H
 #define KIWIX_LIBRARY_H
 
+#define KIWIX_LIBRARY_VERSION "20110503"
+
 #include <string>
 #include <vector>
 
@@ -57,6 +59,7 @@ namespace kiwix {
     ~Library();
 
     string current;
+    string version;
     bool addBook(const Book &book);
     bool removeBookByIndex(const unsigned int bookIndex);
     vector <kiwix::Book> books;
