@@ -134,6 +134,15 @@ namespace kiwix {
     return true;
   }
 
+  bool Manager::setCurrentBookId(const string id) {
+    library.current = id;
+    return true;
+  }
+
+  string Manager::getCurrentBookId() {
+    return library.current;
+  }
+
   bool Manager::addBookFromPath(const string path, const string url) {
     kiwix::Book book;
     

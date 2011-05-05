@@ -40,6 +40,8 @@ namespace kiwix {
     bool writeFile(const string path);
     bool removeBookByIndex(const unsigned int bookIndex);
     bool removeBookById(const string id);
+    bool setCurrentBookId(const string id);
+    string getCurrentBookId();
     bool addBookFromPath(const string path, const string url = "");
     Library cloneLibrary();
     
