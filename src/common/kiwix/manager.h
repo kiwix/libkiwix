@@ -36,7 +36,7 @@ namespace kiwix {
     Manager();
     ~Manager();
 
-    bool readFile(const string path);
+    bool readFile(const string path, const bool readOnly = true);
     bool writeFile(const string path);
     bool removeBookByIndex(const unsigned int bookIndex);
     bool removeBookById(const string id);
@@ -44,6 +44,9 @@ namespace kiwix {
     string getCurrentBookId();
     bool addBookFromPath(const string path, const string url = "");
     Library cloneLibrary();
+    bool getBookById(const string id, Book &book);
+    
+    string writableLibraryPath;
     
   protected:
     kiwix::Library library;

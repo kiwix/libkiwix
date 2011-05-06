@@ -50,6 +50,7 @@ namespace kiwix {
     string url;
     string articleCount;
     string mediaCount;
+    bool readOnly;
   };
 
   class Library {

@@ -23,14 +23,15 @@
 namespace kiwix {
 
   /* Constructor */
-  Manager::Manager() {
+  Manager::Manager() :
+    writableLibraryPath("") {
   }
   
   /* Destructor */
   Manager::~Manager() {
   }
 
-  bool Manager::readFile(const string path) {
+  bool Manager::readFile(const string path, const bool readOnly) {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.c_str());
 
@@ -42,11 +43,12 @@ namespace kiwix {
 
       for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode; bookNode = bookNode.next_sibling("book")) {
 	kiwix::Book book;
+	book.readOnly = readOnly;
 	book.id = bookNode.attribute("id").value();
 	book.path = bookNode.attribute("path").value();
 	book.last = bookNode.attribute("last").value();
 	book.indexPath = bookNode.attribute("indexPath").value();
-	book.indexType = bookNode.attribute("indexType").value() == "xapian" ? XAPIAN: CLUCENE;
+	book.indexType = bookNode.attribute("indexType").value() == "xapian" ? XAPIAN : CLUCENE;
 	book.title = bookNode.attribute("title").value();
 	book.description = bookNode.attribute("description").value();
 	book.language = bookNode.attribute("language").value();
@@ -67,6 +69,9 @@ namespace kiwix {
 	}
       }
 
+      if (!readOnly)
+	this->writableLibraryPath = path;
+
     }
 
     return result;
@@ -78,8 +83,9 @@ namespace kiwix {
     /* Add the library node */
     pugi::xml_node libraryNode = doc.append_child("library");
 
-    if (library.current != "")
+    if (library.current != "") {
       libraryNode.append_attribute("current") = library.current.c_str();
+    }
 
     if (library.version != "")
       libraryNode.append_attribute("version") = library.version.c_str();
@@ -87,45 +93,48 @@ namespace kiwix {
     /* Add each book */
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-      pugi::xml_node bookNode = libraryNode.append_child("book");
-      bookNode.append_attribute("id") = itr->id.c_str();
-      bookNode.append_attribute("path") = itr->path.c_str();
 
-      if (itr->last != "")
-	bookNode.append_attribute("last") = itr->last.c_str();
-
-      if (itr->indexPath != "") {
-	bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
-	if (itr->indexType == XAPIAN)
-	  bookNode.append_attribute("indexType") = "xapian";
-	else
-	  bookNode.append_attribute("indexType") = "clucene";
+      if (!itr->readOnly) {
+	pugi::xml_node bookNode = libraryNode.append_child("book");
+	bookNode.append_attribute("id") = itr->id.c_str();
+	bookNode.append_attribute("path") = itr->path.c_str();
+	
+	if (itr->last != "")
+	  bookNode.append_attribute("last") = itr->last.c_str();
+	
+	if (itr->indexPath != "") {
+	  bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
+	  if (itr->indexType == XAPIAN)
+	    bookNode.append_attribute("indexType") = "xapian";
+	  else
+	    bookNode.append_attribute("indexType") = "clucene";
+	}
+	
+	if (itr->title != "")
+	  bookNode.append_attribute("title") = itr->title.c_str();
+	
+	if (itr->description != "")
+	  bookNode.append_attribute("description") = itr->description.c_str();
+	
+	if (itr->language != "")
+	  bookNode.append_attribute("language") = itr->language.c_str();
+	
+	if (itr->date != "")
+	  bookNode.append_attribute("date") = itr->date.c_str();
+	
+	if (itr->creator != "")
+	  bookNode.append_attribute("creator") = itr->creator.c_str();
+	
+	if (itr->url != "")
+	  bookNode.append_attribute("url") = itr->url.c_str();
+	
+	if (itr->articleCount != "")
+	  bookNode.append_attribute("articleCount") = itr->articleCount.c_str();
+	
+	if (itr->mediaCount != "")
+	  bookNode.append_attribute("mediaCount") = itr->mediaCount.c_str();
+	
       }
-
-      if (itr->title != "")
-	bookNode.append_attribute("title") = itr->title.c_str();
-
-      if (itr->description != "")
-	bookNode.append_attribute("description") = itr->description.c_str();
-
-      if (itr->language != "")
-	bookNode.append_attribute("language") = itr->language.c_str();
-
-      if (itr->date != "")
-	bookNode.append_attribute("date") = itr->date.c_str();
-
-      if (itr->creator != "")
-	bookNode.append_attribute("creator") = itr->creator.c_str();
-
-      if (itr->url != "")
-	bookNode.append_attribute("url") = itr->url.c_str();
-
-      if (itr->articleCount != "")
-	bookNode.append_attribute("articleCount") = itr->articleCount.c_str();
-
-      if (itr->mediaCount != "")
-	bookNode.append_attribute("mediaCount") = itr->mediaCount.c_str();
-
     }
 
     /* saving file */
@@ -200,4 +209,14 @@ namespace kiwix {
     return this->library;
   }
 
+  bool Manager::getBookById(const string id, Book &book) {
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+      if ( itr->id == id) {
+	book = *itr;
+	return true;
+      }
+    }
+    return false;
+  }
 }
