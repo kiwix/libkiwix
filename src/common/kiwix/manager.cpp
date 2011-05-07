@@ -68,10 +68,10 @@ namespace kiwix {
 	  library.addBook(book);
 	}
       }
+    }
 
-      if (!readOnly)
-	this->writableLibraryPath = path;
-
+    if (!readOnly) {
+      this->writableLibraryPath = path;
     }
 
     return result;
@@ -228,6 +228,19 @@ namespace kiwix {
 	char unixdate[12];
 	sprintf (unixdate, "%d", (int)time(NULL));
 	itr->last = unixdate;
+	return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool Manager::setBookIndex(const string id, const string path, const supportedIndexType type) {
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+      if ( itr->id == id) {
+	itr->indexPath = path;
+	itr->indexType = type;
 	return true;
       }
     }
