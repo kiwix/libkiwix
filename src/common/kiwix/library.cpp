@@ -43,6 +43,10 @@ namespace kiwix {
   Book::~Book() {
   }
 
+  bool Book::sortByLastOpen(const kiwix::Book &a, const kiwix::Book &b) {
+    return atoi(a.last.c_str()) > atoi(b.last.c_str());
+  }
+
   /* Constructor */
   Library::Library():
     current(""),

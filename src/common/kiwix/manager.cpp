@@ -46,7 +46,7 @@ namespace kiwix {
 	book.readOnly = readOnly;
 	book.id = bookNode.attribute("id").value();
 	book.path = bookNode.attribute("path").value();
-	book.last = bookNode.attribute("last").value();
+	book.last = bookNode.attribute("last").value() != "undefined" ? bookNode.attribute("last").value() : "";
 	book.indexPath = bookNode.attribute("indexPath").value();
 	book.indexType = bookNode.attribute("indexType").value() == "xapian" ? XAPIAN : CLUCENE;
 	book.title = bookNode.attribute("title").value();
@@ -99,8 +99,9 @@ namespace kiwix {
 	bookNode.append_attribute("id") = itr->id.c_str();
 	bookNode.append_attribute("path") = itr->path.c_str();
 	
-	if (itr->last != "")
+	if (itr->last != "" && itr->last != "undefined") {
 	  bookNode.append_attribute("last") = itr->last.c_str();
+	}
 	
 	if (itr->indexPath != "") {
 	  bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
@@ -219,4 +220,43 @@ namespace kiwix {
     }
     return false;
   }
+
+  bool Manager::updateBookLastOpenDateById(const string id) {
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+      if ( itr->id == id) {
+	char unixdate[12];
+	sprintf (unixdate, "%d", (int)time(NULL));
+	itr->last = unixdate;
+	return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool Manager::listBooks(const supportedListMode mode) {
+    this->bookIdList.clear();
+    std::vector<kiwix::Book>::iterator itr;
+
+    if (mode == LASTOPEN) {
+      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLastOpen);
+      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+	this->bookIdList.push_back(itr->id);
+      }
+    } else if (mode == REMOTE) {
+      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+	if (itr->path == "")
+	  this->bookIdList.push_back(itr->id);
+      }
+    } else {
+      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+	if (itr->path != "")
+	  this->bookIdList.push_back(itr->id);
+      }
+    }
+
+    return true;
+  }
+
 }

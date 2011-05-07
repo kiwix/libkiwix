@@ -24,11 +24,14 @@
 #include <kiwix/reader.h>
 #include <string>
 #include <sstream>
-#include "time.h"
+#include <stdio.h>
+#include <time.h>
 
 using namespace std;
 
 namespace kiwix {
+
+  enum supportedListMode { LASTOPEN, REMOTE, LOCAL };
 
   class Manager {
     
@@ -45,13 +48,17 @@ namespace kiwix {
     bool addBookFromPath(const string path, const string url = "");
     Library cloneLibrary();
     bool getBookById(const string id, Book &book);
-    
+    bool updateBookLastOpenDateById(const string id);
+    bool listBooks(const supportedListMode);
+
     string writableLibraryPath;
+
+    vector <std::string> bookIdList;
     
   protected:
     kiwix::Library library;
     
-    bool readBookFromPath(const string path, kiwix::Book &book);
+    bool readBookFromPath(const string path, Book &book);
   };
 
 }

@@ -20,10 +20,12 @@
 #ifndef KIWIX_LIBRARY_H
 #define KIWIX_LIBRARY_H
 
-#define KIWIX_LIBRARY_VERSION "20110503"
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <vector>
+
+#define KIWIX_LIBRARY_VERSION "20110503"
 
 using namespace std;
 
@@ -36,6 +38,8 @@ namespace kiwix {
   public:
     Book();
     ~Book();
+
+    static bool sortByLastOpen(const Book &a, const Book &b);
 
     string id;
     string path;
