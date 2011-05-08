@@ -20,12 +20,17 @@
 #ifndef KIWIX_MANAGER_H
 #define KIWIX_MANAGER_H
 
-#include <kiwix/library.h>
-#include <kiwix/reader.h>
 #include <string>
 #include <sstream>
-#include <stdio.h>
 #include <time.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+#include <kiwix/library.h>
+#include <kiwix/reader.h>
 
 using namespace std;
 

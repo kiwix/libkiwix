@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-#define KIWIX_LIBRARY_VERSION "20110503"
+#define KIWIX_LIBRARY_VERSION "20110512"
 
 using namespace std;
 
@@ -55,6 +55,7 @@ namespace kiwix {
     string articleCount;
     string mediaCount;
     bool readOnly;
+    string size;
   };
 
   class Library {

@@ -57,6 +57,7 @@ namespace kiwix {
 	book.url = bookNode.attribute("url").value();
 	book.articleCount = bookNode.attribute("articleCount").value();
 	book.mediaCount = bookNode.attribute("mediaCount").value();
+	book.size = bookNode.attribute("size").value();
 
 	/* Update the book properties with the new importer */
 	if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
@@ -134,7 +135,9 @@ namespace kiwix {
 	
 	if (itr->mediaCount != "")
 	  bookNode.append_attribute("mediaCount") = itr->mediaCount.c_str();
-	
+
+	if (itr->size != "")
+	  bookNode.append_attribute("size") = itr->size.c_str();
       }
     }
 
@@ -184,6 +187,14 @@ namespace kiwix {
       std::ostringstream mediaCountStream;
       mediaCountStream << reader.getMediaCount();
       book.mediaCount = mediaCountStream.str();
+      
+      struct stat filestatus;
+      stat( path.c_str(), &filestatus );
+      unsigned int size = filestatus.st_size / 1024;
+      char csize[42];
+      sprintf (csize, "%u", size);
+      book.size = csize;
+
     } catch (...) {
       return false;
     }

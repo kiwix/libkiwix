@@ -36,7 +36,8 @@ namespace kiwix {
     url(""),
     articleCount(""),
     mediaCount(""),
-    readOnly(false) {
+    readOnly(false),
+    size("") {
   }
   
   /* Destructor */
