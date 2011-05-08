@@ -31,7 +31,7 @@ using namespace std;
 
 namespace kiwix {
 
-  enum supportedIndexType { XAPIAN, CLUCENE };
+  enum supportedIndexType { UNKNOWN, XAPIAN, CLUCENE };
 
   class Book {
 

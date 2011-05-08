@@ -46,9 +46,9 @@ namespace kiwix {
 	book.readOnly = readOnly;
 	book.id = bookNode.attribute("id").value();
 	book.path = bookNode.attribute("path").value();
-	book.last = bookNode.attribute("last").value() != "undefined" ? bookNode.attribute("last").value() : "";
+	book.last = (std::string(bookNode.attribute("last").value()) != "undefined" ? bookNode.attribute("last").value() : "");
 	book.indexPath = bookNode.attribute("indexPath").value();
-	book.indexType = bookNode.attribute("indexType").value() == "xapian" ? XAPIAN : CLUCENE;
+	book.indexType = (std::string(bookNode.attribute("indexType").value()) == "xapian" ? XAPIAN : CLUCENE);
 	book.title = bookNode.attribute("title").value();
 	book.description = bookNode.attribute("description").value();
 	book.language = bookNode.attribute("language").value();
@@ -107,7 +107,7 @@ namespace kiwix {
 	  bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
 	  if (itr->indexType == XAPIAN)
 	    bookNode.append_attribute("indexType") = "xapian";
-	  else
+	  else if (itr->indexType == CLUCENE)
 	    bookNode.append_attribute("indexType") = "clucene";
 	}
 	

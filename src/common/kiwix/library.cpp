@@ -27,7 +27,7 @@ namespace kiwix {
     path(""),
     last(""),
     indexPath(""),
-    indexType(XAPIAN),
+    indexType(UNKNOWN),
     title(""),
     description(""),
     language(""),
