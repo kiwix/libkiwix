@@ -86,7 +86,7 @@ namespace kiwix {
     pugi::xml_parse_result result = doc.load_file(path.c_str());
 
     if (result) {
-      //      this->parseXmlDom(doc, readOnly);
+      this->parseXmlDom(doc, readOnly);
     }
 
     if (!readOnly) {
@@ -116,7 +116,9 @@ namespace kiwix {
       if (!itr->readOnly) {
 	pugi::xml_node bookNode = libraryNode.append_child("book");
 	bookNode.append_attribute("id") = itr->id.c_str();
-	bookNode.append_attribute("path") = itr->path.c_str();
+
+	if (itr->path != "")
+	  bookNode.append_attribute("path") = itr->path.c_str();
 	
 	if (itr->last != "" && itr->last != "undefined") {
 	  bookNode.append_attribute("last") = itr->last.c_str();
