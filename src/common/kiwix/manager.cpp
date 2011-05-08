@@ -42,7 +42,8 @@ namespace kiwix {
       book.readOnly = readOnly;
       book.id = bookNode.attribute("id").value();
       book.path = bookNode.attribute("path").value();
-      book.last = (std::string(bookNode.attribute("last").value()) != "undefined" ? bookNode.attribute("last").value() : "");
+      book.last = (std::string(bookNode.attribute("last").value()) != "undefined" ? 
+		   bookNode.attribute("last").value() : "");
       book.indexPath = bookNode.attribute("indexPath").value();
       book.indexType = (std::string(bookNode.attribute("indexType").value()) == "xapian" ? XAPIAN : CLUCENE);
       book.title = bookNode.attribute("title").value();
@@ -57,10 +58,10 @@ namespace kiwix {
       
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
-	if (!book.path.empty())
+	if (!book.path.empty()) {
 	  ok = this->readBookFromPath(book.path, book);
+	}
       }
-      
 
       if (ok) {
 	library.addBook(book);
@@ -297,8 +298,9 @@ namespace kiwix {
       }
     } else if (mode == REMOTE) {
       for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-	if (itr->path == "")
+	if (itr->path == "") {
 	  this->bookIdList.push_back(itr->id);
+	}
       }
     } else {
       for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
