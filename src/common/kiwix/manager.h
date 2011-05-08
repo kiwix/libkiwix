@@ -29,6 +29,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <pugixml.hpp>
+
 #include <kiwix/library.h>
 #include <kiwix/reader.h>
 
@@ -45,6 +47,7 @@ namespace kiwix {
     ~Manager();
 
     bool readFile(const string path, const bool readOnly = true);
+    bool readXml(const string xml, const bool readOnly = true);
     bool writeFile(const string path);
     bool removeBookByIndex(const unsigned int bookIndex);
     bool removeBookById(const string id);
@@ -55,6 +58,7 @@ namespace kiwix {
     Library cloneLibrary();
     bool getBookById(const string id, Book &book);
     bool updateBookLastOpenDateById(const string id);
+    void removeBookPaths();
     bool listBooks(const supportedListMode);
 
     string writableLibraryPath;
@@ -65,6 +69,7 @@ namespace kiwix {
     kiwix::Library library;
     
     bool readBookFromPath(const string path, Book &book);
+    bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly);
   };
 
 }
