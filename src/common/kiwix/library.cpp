@@ -59,6 +59,28 @@ namespace kiwix {
   }
 
   bool Library::addBook(const Book &book) {
+
+    /* Try to find it */
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = this->books.begin(); itr != this->books.end(); ++itr ) {
+      if (itr->id == book.id) {
+
+	if (itr->path.empty()) 
+	  itr->path = book.path;
+
+	if (itr->url.empty())
+	  itr->url = book.url;
+
+	if (itr->indexPath.empty()) {
+	  itr->indexPath = book.indexPath;
+	  itr->indexType = book.indexType;
+	}
+
+	return false;
+      }
+    }
+
+    /* otherwise */
     this->books.push_back(book);
     return true;
   }

@@ -32,7 +32,10 @@ namespace kiwix {
 
   bool Manager::parseXmlDom(const pugi::xml_document &doc, const bool readOnly) {
     pugi::xml_node libraryNode = doc.child("library");
-    library.current = libraryNode.attribute("current").value();
+
+    if (strlen(libraryNode.attribute("current").value()))
+      library.current = libraryNode.attribute("current").value();
+
     string libraryVersion = libraryNode.attribute("version").value();
     
     for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode; bookNode = bookNode.next_sibling("book")) {
@@ -294,6 +297,7 @@ namespace kiwix {
     if (mode == LASTOPEN) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLastOpen);
       for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+	if (!itr->last.empty())
 	this->bookIdList.push_back(itr->id);
       }
     } else if (mode == REMOTE) {
