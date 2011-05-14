@@ -77,6 +77,11 @@ namespace kiwix {
 	  itr->indexType = book.indexType;
 	}
 
+	if (itr->faviconMimeType.empty()) {
+	  itr->favicon = book.favicon;
+	  itr->faviconMimeType = book.faviconMimeType;
+	}
+
 	return false;
       }
     }

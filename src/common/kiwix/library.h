@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-#define KIWIX_LIBRARY_VERSION "20110514"
+#define KIWIX_LIBRARY_VERSION "20110515"
 
 using namespace std;
 
