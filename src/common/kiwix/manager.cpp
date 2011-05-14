@@ -58,6 +58,8 @@ namespace kiwix {
       book.articleCount = bookNode.attribute("articleCount").value();
       book.mediaCount = bookNode.attribute("mediaCount").value();
       book.size = bookNode.attribute("size").value();
+      book.favicon = bookNode.attribute("favicon").value();
+      book.faviconMimeType = bookNode.attribute("faviconMimeType").value();
       
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
@@ -162,6 +164,12 @@ namespace kiwix {
 
 	if (itr->size != "")
 	  bookNode.append_attribute("size") = itr->size.c_str();
+
+	if (itr->favicon != "")
+	  bookNode.append_attribute("favicon") = itr->favicon.c_str();
+
+	if (itr->faviconMimeType != "")
+	  bookNode.append_attribute("faviconMimeType") = itr->faviconMimeType.c_str();
       }
     }
 
@@ -219,6 +227,12 @@ namespace kiwix {
       sprintf (csize, "%u", size);
       book.size = csize;
 
+      string favicon;
+      string faviconMimeType;
+      if (reader.getFavicon(favicon, faviconMimeType)) {
+	book.favicon = base64_encode(reinterpret_cast<const unsigned char*>(favicon.c_str()), favicon.length());
+	book.faviconMimeType = faviconMimeType;
+      }
     } catch (...) {
       return false;
     }

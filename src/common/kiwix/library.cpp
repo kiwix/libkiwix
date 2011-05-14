@@ -37,7 +37,8 @@ namespace kiwix {
     articleCount(""),
     mediaCount(""),
     readOnly(false),
-    size("") {
+    size(""),
+    faviconMimeType("") {
   }
   
   /* Destructor */

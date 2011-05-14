@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-#define KIWIX_LIBRARY_VERSION "20110512"
+#define KIWIX_LIBRARY_VERSION "20110514"
 
 using namespace std;
 
@@ -56,6 +56,8 @@ namespace kiwix {
     string mediaCount;
     bool readOnly;
     string size;
+    string favicon;
+    string faviconMimeType;
   };
 
   class Library {

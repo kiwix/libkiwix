@@ -129,6 +129,20 @@ namespace kiwix {
     return url;
   }
   
+  bool Reader::getFavicon(string &content, string &mimeType) {
+    unsigned int contentLength = 0;
+    
+    this->getContentByUrl( "/-/favicon.png", content, 
+			   contentLength, mimeType);
+    
+    if (content.empty()) {
+      this->getContentByUrl( "/I/favicon.png", content, 
+			     contentLength, mimeType);
+    }
+
+    return content.empty() ? false : true;
+  }
+
   /* Return a metatag value */
   bool Reader::getMetatag(const string &name, string &value) {
     unsigned int contentLength = 0;
