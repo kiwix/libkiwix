@@ -54,6 +54,7 @@ namespace kiwix {
     bool removeBookById(const string id);
     bool setCurrentBookId(const string id);
     bool setBookIndex(const string id, const string path, const supportedIndexType type);
+    bool setBookPath(const string id, const string path);
     string getCurrentBookId();
     bool addBookFromPath(const string path, const string url = "");
     Library cloneLibrary();

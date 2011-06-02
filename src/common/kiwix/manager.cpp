@@ -297,6 +297,18 @@ namespace kiwix {
     return false;
   }
 
+  bool Manager::setBookPath(const string id, const string path) {
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+      if ( itr->id == id) {
+	itr->path = path;
+	return true;
+      }
+    }
+
+    return false;
+  }
+
   void Manager::removeBookPaths() {
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
