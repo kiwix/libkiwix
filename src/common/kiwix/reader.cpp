@@ -292,15 +292,11 @@ namespace kiwix {
     this->suggestions.clear();
     
     if (prefix.size()) {
-      cout << prefix << endl;
-      
       for (zim::File::const_iterator it = zimFileHandler->findByTitle('A', prefix); 
 	   it != zimFileHandler->end() && it->getTitle().compare(0, prefix.size(), prefix) == 0 
 	     && this->suggestions.size() < suggestionsCount ; ++it) {
 	
 	this->suggestions.push_back(it->getTitle());
-	
-	cout << "  " << it->getTitle() << endl;      
       }
     } else {
       retVal = false;
