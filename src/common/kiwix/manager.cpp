@@ -248,8 +248,9 @@ namespace kiwix {
     unsigned int bookIndex = 0;
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
-      if ( itr->id == id) 
+      if ( itr->id == id) {
 	return this->library.removeBookByIndex(bookIndex);
+      }
       bookIndex++;
     }
     return false;

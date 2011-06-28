@@ -92,7 +92,7 @@ namespace kiwix {
   }
 
   bool Library::removeBookByIndex(const unsigned int bookIndex) {
-    books.erase(books.begin()+bookIndex-1);
+    books.erase(books.begin()+bookIndex);
     return true;
   }
 
