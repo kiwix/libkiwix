@@ -30,7 +30,7 @@
 
 #include <pugixml.hpp>
 
-#include <base64.h>
+#include "../base64.h"
 #include <kiwix/library.h>
 #include <kiwix/reader.h>
 
