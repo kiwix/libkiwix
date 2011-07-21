@@ -188,13 +188,17 @@ namespace kiwix {
     return library.current;
   }
 
-  bool Manager::addBookFromPath(const string path, const string url) {
+  bool Manager::addBookFromPath(const string path, const string url, const bool checkMetaData) {
     kiwix::Book book;
     
     if (this->readBookFromPath(path, book)) {
-      book.url = url;
-      library.addBook(book);
-      return true;
+
+      if (!checkMetaData || 
+	  checkMetaData && !book.title.empty() && !book.language.empty() && !book.date.empty()) {
+	book.url = url;
+	library.addBook(book);
+	return true;
+      }
     }
 
     return false;
