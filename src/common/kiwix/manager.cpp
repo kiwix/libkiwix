@@ -333,13 +333,13 @@ namespace kiwix {
       }
     } else if (mode == REMOTE) {
       for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-	if (itr->path == "") {
+	if (itr->path.empty() && !itr->url.empty()) {
 	  this->bookIdList.push_back(itr->id);
 	}
       }
     } else {
       for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-	if (itr->path != "")
+	if (!itr->path.empty())
 	  this->bookIdList.push_back(itr->id);
       }
     }
