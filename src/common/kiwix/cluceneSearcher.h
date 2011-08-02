@@ -43,13 +43,15 @@ namespace kiwix {
 
     void searchInIndex(string &search, const unsigned int resultStart, 
 		       const unsigned int resultEnd, const bool verbose=false);
+    
+    static void terminate();
 
   protected:
     void closeIndex();
     void openIndex(const string &cluceneDirectoryPath);
 
-    IndexReader* reader;
-    lucene::analysis::standard::StandardAnalyzer analyzer;
+    static IndexSearcher* searcher;
+    static Directory* dir;
 
   };
 

@@ -20,35 +20,79 @@
 #include "cluceneSearcher.h"
 
 namespace kiwix {
+  
+  IndexSearcher* CluceneSearcher::searcher = NULL;
+  Directory* CluceneSearcher::dir = NULL;
 
   TCHAR buffer[MAX_BUFFER_SIZE];
 
   /* Constructor */
   CluceneSearcher::CluceneSearcher(const string &cluceneDirectoryPath) 
     : kiwix::Searcher() {
-    this->openIndex(cluceneDirectoryPath);
+      if (searcher == NULL)
+	this->openIndex(cluceneDirectoryPath);
   }
 
   /* Open Clucene readable database */
   void CluceneSearcher::openIndex(const string &directoryPath) {
-    this->reader = IndexReader::open(directoryPath.c_str());
+    cout << "Open index folder at " << directoryPath << endl;
+    dir = FSDirectory::getDirectory(directoryPath.c_str(), false);
+    searcher = new IndexSearcher(dir);
   }
   
   /* Close Clucene writable database */
   void CluceneSearcher::closeIndex() {
-    return;
   }
+  
+void CluceneSearcher::terminate()
+{
+  dir->close();
+  searcher->close();
+  delete searcher;
+  _CLLDECDELETE(dir);
+}
+  
+std::string toString(const TCHAR* s){
+  int32_t len = _tcslen(s);
+  char* buf = new char[len+1];
+  STRCPY_WtoA(buf,s,len+1);
+  string ret = buf;
+  delete[] buf;
+  return ret;
+}
   
   /* Search strings in the database */
   void CluceneSearcher::searchInIndex(string &search, const unsigned int resultStart, 
 				      const unsigned int resultEnd, const bool verbose) {
-    IndexSearcher searcher(reader);
-    QueryParser parser(_T("content"), &analyzer);
-    //STRCPY_AtoT(buffer, search.c_str(), MAX_BUFFER_SIZE);
-    ::mbstowcs(buffer,search.c_str(),MAX_BUFFER_SIZE);
-    Query* query = parser.parse(buffer);
-    Hits* hits = searcher.search(query);
-    cout << "--------------------------------" << hits->length() << endl;
+    
+    // Parse query
+    lucene::analysis::standard::StandardAnalyzer* analyzer = new lucene::analysis::standard::StandardAnalyzer();
+    QueryParser* parser = new QueryParser(_T("content"), analyzer);
+    STRCPY_AtoT(buffer, search.c_str(), MAX_BUFFER_SIZE);
+    
+    //lucene::util::Misc::_cpycharToWide();
+    //::mbstowcs(buffer,search.c_str(),MAX_BUFFER_SIZE);
+    //search.c_str();
+    Query* query = parser->parse(_T("between"));
+    
+    cout << "Query: " << search << endl;
+    wcout << "Buffer: " << buffer;
+    cout << endl;
+    
+    const wchar_t* querystring = query->toString();
+    wcout << L"Query2string: " << querystring << endl;
+    
+    //string q = toString(querystring);
+    //STRCPY_TtoA(querystring, buffer, MAX_BUFFER_SIZE);
+    //cout << "Query object: " << q << endl;
+    delete[] querystring;
+    
+    delete parser;
+    delete analyzer;
+
+    // Search
+    Hits* hits = searcher->search(query);
+    cout << "Hits length:" << hits->length() << endl;
     
     /*
     for (size_t i=0; i < hits->length() && i<10; i++) {
@@ -66,6 +110,12 @@ namespace kiwix {
       
       this->results.push_back(result);
     */
+  
+    searcher->close();
+    
+    delete searcher;
+    delete hits;
+    delete query;
 
     return;
   }
