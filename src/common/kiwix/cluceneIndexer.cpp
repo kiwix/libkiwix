@@ -28,6 +28,7 @@ namespace kiwix {
 
     this->dir = FSDirectory::getDirectory(cluceneDirectoryPath.c_str(), true);
     this->writer = new IndexWriter(dir, &analyzer, true);
+    writer->setUseCompoundFile(false);
   }
   
   void CluceneIndexer::indexNextPercentPre() {
@@ -47,7 +48,7 @@ namespace kiwix {
     /* Not indexed but stored */
     //STRCPY_AtoT(buffer, title.c_str(), MAX_BUFFER_SIZE);
     ::mbstowcs(buffer,title.c_str(),MAX_BUFFER_SIZE);
-    doc.add(*_CLNEW Field(_T("title"), buffer, Field::STORE_YES | Field::INDEX_UNTOKENIZED));
+    doc.add(*_CLNEW Field(_T("title"), buffer, Field::STORE_YES | Field::INDEX_UNTOKENIZED)); // TODO: Why store, not analyzed? what is utitle?
 
     //STRCPY_AtoT(buffer, url.c_str(), MAX_BUFFER_SIZE);
     ::mbstowcs(buffer,url.c_str(),MAX_BUFFER_SIZE);
@@ -68,7 +69,7 @@ namespace kiwix {
 
     //STRCPY_AtoT(buffer, content.c_str(), MAX_BUFFER_SIZE);
     ::mbstowcs(buffer,content.c_str(),MAX_BUFFER_SIZE);
-    doc.add(*_CLNEW Field(_T("content"), buffer, Field::STORE_NO | Field::INDEX_TOKENIZED));
+    doc.add(*_CLNEW Field(_T("content"), buffer, Field::STORE_NO | Field::INDEX_TOKENIZED)); // TODO: TermVectors if you want to highlight
 
     /* Add the document to the index */
     this->writer->addDocument(&doc);
@@ -78,9 +79,10 @@ namespace kiwix {
   }
   
   void CluceneIndexer::stopIndexing() {
+    writer->setUseCompoundFile(true);
     this->writer->optimize();
     this->writer->close();
     delete this->writer;
-    delete this->dir;
+    _CLDECDELETE(this->dir);
   }
 }

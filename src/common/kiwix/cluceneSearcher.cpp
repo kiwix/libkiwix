@@ -70,50 +70,41 @@ std::string toString(const TCHAR* s){
     QueryParser* parser = new QueryParser(_T("content"), analyzer);
     STRCPY_AtoT(buffer, search.c_str(), MAX_BUFFER_SIZE);
     
-    //lucene::util::Misc::_cpycharToWide();
-    //::mbstowcs(buffer,search.c_str(),MAX_BUFFER_SIZE);
-    //search.c_str();
-    Query* query = parser->parse(_T("between"));
+    Query* query = parser->parse(buffer);
+    delete parser;
+    delete analyzer;
     
     cout << "Query: " << search << endl;
-    wcout << "Buffer: " << buffer;
-    cout << endl;
+    wcout << "Buffer: " << buffer << endl;
+    
+    if (query == NULL){
+      cout << "Hits length:0 (null query)" << endl;
+      return;
+    }
     
     const wchar_t* querystring = query->toString();
     wcout << L"Query2string: " << querystring << endl;
-    
-    //string q = toString(querystring);
-    //STRCPY_TtoA(querystring, buffer, MAX_BUFFER_SIZE);
-    //cout << "Query object: " << q << endl;
     delete[] querystring;
     
-    delete parser;
-    delete analyzer;
-
     // Search
     Hits* hits = searcher->search(query);
     cout << "Hits length:" << hits->length() << endl;
     
-    /*
-    for (size_t i=0; i < hits->length() && i<10; i++) {
+    for (int32_t i=0; i < hits->length() && i<10; i++) {
       Document* d = &hits->doc(i);
-      _tprintf(_T("#%d. %s (score: %f)\n"),
-	       i, d->get(_T("contents")),
+      _tprintf(_T("#%d. %s, url: %s (score: %f)\n"),
+	       i + 1, d->get(_T("title")), d->get(_T("url")),
 	       hits->score(i));
     }
-    */
-    /*
+/*
       Result result;
       result.url = doc.get_data();
       result.title = doc.get_value(0);
       result.score = i.get_percent();
       
       this->results.push_back(result);
-    */
+*/
   
-    searcher->close();
-    
-    delete searcher;
     delete hits;
     delete query;
 
