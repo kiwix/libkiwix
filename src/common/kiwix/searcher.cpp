@@ -211,7 +211,7 @@ namespace kiwix {
 
     oData["count"] = this->beautifyInteger(this->estimatedResultCount);
     oData["searchPattern"] = this->searchPattern;
-    oData["resultStart"] = this->resultStart;
+    oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
     oData["protocolPrefix"] = this->protocolPrefix;
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
