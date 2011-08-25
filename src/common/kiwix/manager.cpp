@@ -321,6 +321,16 @@ namespace kiwix {
     }
   }
 
+  unsigned int Manager::getBookCount(const bool localBooks, const bool remoteBooks) {
+    unsigned int result = 0;
+    std::vector<kiwix::Book>::iterator itr;
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      if (!itr->path.empty() && localBooks || itr->path.empty() && remoteBooks)
+	result++;
+    }
+    return result;
+  }
+
   bool Manager::listBooks(const supportedListMode mode) {
     this->bookIdList.clear();
     std::vector<kiwix::Book>::iterator itr;
