@@ -47,7 +47,7 @@ namespace kiwix {
     ~Manager();
 
     bool readFile(const string path, const bool readOnly = true);
-    bool readXml(const string xml, const bool readOnly = true);
+    bool readXml(const string xml, const bool readOnly = true, const string libraryPath = "");
     bool writeFile(const string path);
     bool removeBookByIndex(const unsigned int bookIndex);
     bool removeBookById(const string id);
@@ -71,7 +71,11 @@ namespace kiwix {
     kiwix::Library library;
     
     bool readBookFromPath(const string path, Book &book);
-    bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly);
+    bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath);
+    bool isRelativePath(const string &path);
+    string computeAbsolutePath(const string libraryPath, const string relativePath);
+    string removeLastPathElement(const string path, const bool removePreSeparator = false, 
+				 const bool removePostSeparator = false);
   };
 
 }

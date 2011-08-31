@@ -30,7 +30,7 @@ namespace kiwix {
   Manager::~Manager() {
   }
 
-  bool Manager::parseXmlDom(const pugi::xml_document &doc, const bool readOnly) {
+  bool Manager::parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath) {
     pugi::xml_node libraryNode = doc.child("library");
 
     if (strlen(libraryNode.attribute("current").value()))
@@ -61,10 +61,21 @@ namespace kiwix {
       book.favicon = bookNode.attribute("favicon").value();
       book.faviconMimeType = bookNode.attribute("faviconMimeType").value();
       
+      /* Compute absolute paths if relative one are used */
+      if (!book.path.empty() && isRelativePath(book.path))
+	book.pathAbsolute = computeAbsolutePath(libraryPath, book.path);
+      else
+	book.pathAbsolute = book.path;
+
+      if (book.indexPath.empty() && isRelativePath(book.indexPath))
+	book.indexPathAbsolute = computeAbsolutePath(libraryPath, book.indexPath);
+      else
+	book.indexPathAbsolute = book.indexPath;
+
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
 	if (!book.path.empty()) {
-	  ok = this->readBookFromPath(book.path, book);
+	  ok = this->readBookFromPath(book.pathAbsolute, book);
 	}
       }
 
@@ -76,12 +87,63 @@ namespace kiwix {
     return true;
   }
 
-  bool Manager::readXml(const string xml, const bool readOnly) {
+  bool Manager::isRelativePath(const string &path) {
+#ifdef _WIN32
+    return path.substr(1, 2) == ":\\" ? false : true;
+#else
+    return path.substr(0, 1) == "/" ? false : true;
+#endif
+  }
+
+  string Manager::computeAbsolutePath(const string libraryPath, const string relativePath) {
+#ifdef _WIN32
+    string separator = "\\";
+#else
+    string separator = "/";
+#endif
+    string absolutePath = removeLastPathElement(libraryPath, true, false);
+    char *cRelativePath = strdup(relativePath.c_str());
+    char *token = strtok(cRelativePath, separator.c_str());
+    while (token != NULL) {
+      if (string(token) == "..") {
+	absolutePath = removeLastPathElement(absolutePath, true, false);
+	token = strtok(NULL, separator.c_str());
+      } else if (token != "." && token != "") {
+	absolutePath += string(token);
+	token = strtok(NULL, separator.c_str());
+	if (token != NULL)
+	  absolutePath += separator;
+      } else {
+	token = strtok(NULL, separator.c_str());
+      }
+    }
+
+    return absolutePath;
+  }
+
+  string Manager::removeLastPathElement(const string path, const bool removePreSeparator, const bool removePostSeparator) {
+#ifdef _WIN32
+    string separator = "\\";
+#else
+    string separator = "/";
+#endif
+    
+    string newPath = path;
+    size_t offset = newPath.find_last_of(separator);
+    if (removePreSeparator && offset != newPath.find_first_of(separator) && offset == newPath.length()-1) {
+      newPath = newPath.substr(0, offset);
+      offset = newPath.find_last_of(separator);
+    }
+    newPath = removePostSeparator ? newPath.substr(0, offset) : newPath.substr(0, offset+1);
+    return newPath;
+  }
+  
+  bool Manager::readXml(const string xml, const bool readOnly, const string libraryPath) {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_buffer_inplace((void*)xml.data(), xml.size());
 
     if (result) {
-      this->parseXmlDom(doc, readOnly);
+      this->parseXmlDom(doc, readOnly, libraryPath);
     }
 
     return true;
@@ -92,7 +154,7 @@ namespace kiwix {
     pugi::xml_parse_result result = doc.load_file(path.c_str());
 
     if (result) {
-      this->parseXmlDom(doc, readOnly);
+      this->parseXmlDom(doc, readOnly, path);
     }
 
     if (!readOnly) {
@@ -209,6 +271,7 @@ namespace kiwix {
     try {
       kiwix::Reader reader = kiwix::Reader(path);
       book.path = path;
+      book.pathAbsolute = path;
       book.id = reader.getId();
       book.title = reader.getTitle();
       book.description = reader.getDescription();
@@ -294,6 +357,7 @@ namespace kiwix {
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
       if ( itr->id == id) {
 	itr->indexPath = path;
+	itr->indexPathAbsolute = path;
 	itr->indexType = type;
 	return true;
       }
@@ -307,6 +371,7 @@ namespace kiwix {
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
       if ( itr->id == id) {
 	itr->path = path;
+	itr->pathAbsolute = path;
 	return true;
       }
     }
@@ -318,6 +383,7 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
       itr->path = "";
+      itr->pathAbsolute = "";
     }
   }
 

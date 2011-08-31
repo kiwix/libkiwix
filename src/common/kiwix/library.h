@@ -43,8 +43,10 @@ namespace kiwix {
 
     string id;
     string path;
+    string pathAbsolute;
     string last;
     string indexPath;
+    string indexPathAbsolute;
     supportedIndexType indexType;
     string title;
     string description;
