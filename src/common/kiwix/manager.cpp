@@ -89,9 +89,9 @@ namespace kiwix {
 
   bool Manager::isRelativePath(const string &path) {
 #ifdef _WIN32
-    return path.substr(1, 2) == ":\\" ? false : true;
+    return path.empty() || path.substr(1, 2) == ":\\" ? false : true;
 #else
-    return path.substr(0, 1) == "/" ? false : true;
+    return path.empty() || path.substr(0, 1) == "/" ? false : true;
 #endif
   }
 
