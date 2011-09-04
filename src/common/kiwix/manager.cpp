@@ -62,16 +62,16 @@ namespace kiwix {
       book.faviconMimeType = bookNode.attribute("faviconMimeType").value();
       
       /* Compute absolute paths if relative one are used */
-      if (!book.path.empty() && isRelativePath(book.path))
+      if (isRelativePath(book.path))
 	book.pathAbsolute = computeAbsolutePath(libraryPath, book.path);
       else
 	book.pathAbsolute = book.path;
-
-      if (book.indexPath.empty() && isRelativePath(book.indexPath))
+      
+      if (isRelativePath(book.indexPath))
 	book.indexPathAbsolute = computeAbsolutePath(libraryPath, book.indexPath);
       else
 	book.indexPathAbsolute = book.indexPath;
-
+      
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
 	if (!book.path.empty()) {
