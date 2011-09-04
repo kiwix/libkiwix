@@ -71,7 +71,7 @@ namespace kiwix {
 	book.indexPathAbsolute = computeAbsolutePath(libraryPath, book.indexPath);
       else
 	book.indexPathAbsolute = book.indexPath;
-      
+
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
 	if (!book.path.empty()) {
@@ -103,18 +103,19 @@ namespace kiwix {
 #endif
     string absolutePath = removeLastPathElement(libraryPath, true, false);
     char *cRelativePath = strdup(relativePath.c_str());
-    char *token = strtok(cRelativePath, separator.c_str());
+    char *token = strtok(cRelativePath, "/");
+
     while (token != NULL) {
       if (string(token) == "..") {
 	absolutePath = removeLastPathElement(absolutePath, true, false);
-	token = strtok(NULL, separator.c_str());
+	token = strtok(NULL, "/");
       } else if (token != "." && token != "") {
 	absolutePath += string(token);
-	token = strtok(NULL, separator.c_str());
+	token = strtok(NULL, "/");
 	if (token != NULL)
 	  absolutePath += separator;
       } else {
-	token = strtok(NULL, separator.c_str());
+	token = strtok(NULL, "/");
       }
     }
 
