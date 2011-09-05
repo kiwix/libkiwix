@@ -24,7 +24,7 @@ const char *nsStringToCString(const nsAString &str) {
   nsCString tmpStr;
 
 #ifdef _WIN32
-  LossyCopyUTF16toASCII(str, tmpStr):
+  LossyCopyUTF16toASCII(str, tmpStr);
 #else
   CopyUTF16toUTF8(str, tmpStr);
 #endif
