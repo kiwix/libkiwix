@@ -23,5 +23,6 @@
 #include "nsStringAPI.h"
 
 const char *nsStringToCString(const nsAString &path);
+const char *nsStringToUTF8(const nsAString &str);
 
 #endif

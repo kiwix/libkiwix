@@ -32,3 +32,11 @@ const char *nsStringToCString(const nsAString &str) {
   NS_CStringGetData(tmpStr, &cStr);
   return cStr;
 }
+
+const char *nsStringToUTF8(const nsAString &str) {
+  const char *cStr;
+  nsCString tmpStr;
+  CopyUTF16toUTF8(str, tmpStr);
+  NS_CStringGetData(tmpStr, &cStr);
+  return cStr;
+}
