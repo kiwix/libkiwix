@@ -253,19 +253,19 @@ namespace kiwix {
 
   bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData) {
     kiwix::Book book;
-    
+
     if (this->readBookFromPath(pathToOpen, book)) {
+
+      if (!pathToSave.empty() && pathToSave != pathToOpen) {
+	book.path = pathToSave;
+	book.pathAbsolute = pathToSave;
+      }
 
       if (!checkMetaData || 
 	  checkMetaData && !book.title.empty() && !book.language.empty() && !book.date.empty()) {
 	book.url = url;
 	library.addBook(book);
 	return true;
-      }
-
-      if (!pathToSave.empty() && pathToSave != pathToOpen) {
-	book.path = pathToSave;
-	book.pathAbsolute = pathToSave;
       }
     }
 
