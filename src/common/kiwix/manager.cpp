@@ -421,8 +421,9 @@ namespace kiwix {
       }
     } else {
       for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-	if (!itr->path.empty())
+	if (!itr->path.empty()) {
 	  this->bookIdList.push_back(itr->id);
+	}
       }
     }
 
