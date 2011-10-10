@@ -403,9 +403,20 @@ namespace kiwix {
     return result;
   }
 
-  bool Manager::listBooks(const supportedListMode mode) {
+  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy) {
     this->bookIdList.clear();
     std::vector<kiwix::Book>::iterator itr;
+
+    /* Sort */
+    if (sortBy == TITLE) {
+      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByTitle);      
+    } else if (sortBy == SIZE) {
+      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortBySize);
+    } else if (sortBy == DATE) {
+      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByDate);
+    } else if (sortBy == PUBLISHER) {
+      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
+    }
 
     if (mode == LASTOPEN) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLastOpen);

@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <string.h>
 #include <vector>
 
 #define KIWIX_LIBRARY_VERSION "20110515"
@@ -40,6 +41,10 @@ namespace kiwix {
     ~Book();
 
     static bool sortByLastOpen(const Book &a, const Book &b);
+    static bool sortByTitle(const Book &a, const Book &b);
+    static bool sortBySize(const Book &a, const Book &b);
+    static bool sortByDate(const Book &a, const Book &b);
+    static bool sortByPublisher(const Book &a, const Book &b);
 
     string id;
     string path;

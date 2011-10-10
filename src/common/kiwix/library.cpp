@@ -45,8 +45,25 @@ namespace kiwix {
   Book::~Book() {
   }
 
+  /* Sort functions */
   bool Book::sortByLastOpen(const kiwix::Book &a, const kiwix::Book &b) {
     return atoi(a.last.c_str()) > atoi(b.last.c_str());
+  }
+
+  bool Book::sortByTitle(const kiwix::Book &a, const kiwix::Book &b) {
+    return strcmp(a.title.c_str(), b.title.c_str()) < 0;
+  }
+
+  bool Book::sortByDate(const kiwix::Book &a, const kiwix::Book &b) {
+    return atoi(a.date.c_str()) < atoi(b.date.c_str());
+  }
+
+  bool Book::sortBySize(const kiwix::Book &a, const kiwix::Book &b) {
+    return atoi(a.size.c_str()) < atoi(b.size.c_str());
+  }
+
+  bool Book::sortByPublisher(const kiwix::Book &a, const kiwix::Book &b) {
+    return strcmp(a.creator.c_str(), b.creator.c_str()) < 0;
   }
 
   /* Constructor */
