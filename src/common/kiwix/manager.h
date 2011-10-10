@@ -62,7 +62,7 @@ namespace kiwix {
     unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
     bool updateBookLastOpenDateById(const string id);
     void removeBookPaths();
-    bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy);
+    bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize);
 
     string writableLibraryPath;
 

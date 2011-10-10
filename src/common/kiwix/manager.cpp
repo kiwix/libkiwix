@@ -403,7 +403,7 @@ namespace kiwix {
     return result;
   }
 
-  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy) {
+  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize) {
     this->bookIdList.clear();
     std::vector<kiwix::Book>::iterator itr;
 
@@ -417,27 +417,31 @@ namespace kiwix {
     } else if (sortBy == PUBLISHER) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
     }
-
-    if (mode == LASTOPEN) {
+    
+    /* Special sort for LASTOPEN */
+    if (mode == LASTOPEN)
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLastOpen);
-      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-	if (!itr->last.empty())
-	this->bookIdList.push_back(itr->id);
-      }
-    } else if (mode == REMOTE) {
-      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-	if (itr->path.empty() && !itr->url.empty()) {
-	  this->bookIdList.push_back(itr->id);
-	}
-      }
-    } else {
-      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-	if (!itr->path.empty()) {
-	  this->bookIdList.push_back(itr->id);
-	}
-      }
-    }
+    
+    /* Generate the list of book id */
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      bool ok = true;
+      
+      if (mode == LOCAL && itr->path.empty())
+	ok = false;
 
+      if (mode == REMOTE && (!itr->path.empty() || itr->url.empty()))
+	ok = false;
+      
+      if (mode == LASTOPEN && itr->last.empty())
+	ok = false;
+
+      if (atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
+	ok = false;
+
+      if (ok == true)
+	this->bookIdList.push_back(itr->id);
+    }    
+    
     return true;
   }
 
