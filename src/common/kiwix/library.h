@@ -45,6 +45,7 @@ namespace kiwix {
     static bool sortBySize(const Book &a, const Book &b);
     static bool sortByDate(const Book &a, const Book &b);
     static bool sortByPublisher(const Book &a, const Book &b);
+    static bool sortByLanguage(const Book &a, const Book &b);
 
     string id;
     string path;

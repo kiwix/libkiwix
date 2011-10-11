@@ -66,6 +66,10 @@ namespace kiwix {
     return strcmp(a.creator.c_str(), b.creator.c_str()) < 0;
   }
 
+  bool Book::sortByLanguage(const kiwix::Book &a, const kiwix::Book &b) {
+    return strcmp(a.language.c_str(), b.language.c_str()) < 0;
+  }
+
   /* Constructor */
   Library::Library():
     current(""),

@@ -20,6 +20,7 @@
 #ifndef KIWIX_MANAGER_H
 #define KIWIX_MANAGER_H
 
+#include <map>
 #include <string>
 #include <sstream>
 #include <time.h>
@@ -63,10 +64,11 @@ namespace kiwix {
     bool updateBookLastOpenDateById(const string id);
     void removeBookPaths();
     bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize);
+    vector<string> getBooksLanguages();
 
     string writableLibraryPath;
 
-    vector <std::string> bookIdList;
+    vector<std::string> bookIdList;
     
   protected:
     kiwix::Library library;

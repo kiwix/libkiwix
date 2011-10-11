@@ -329,6 +329,22 @@ namespace kiwix {
     return false;
   }
 
+  vector<string> Manager::getBooksLanguages() {
+    std::vector<string> booksLanguages;
+    std::vector<kiwix::Book>::iterator itr;
+    std::map<string, bool> booksLanguagesMap;
+
+    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLanguage);      
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      if (booksLanguagesMap.find(itr->language) == booksLanguagesMap.end()) {
+	booksLanguagesMap[itr->language] = true;
+	booksLanguages.push_back(itr->language);
+      }
+    }
+    
+    return booksLanguages;
+  }
+
   kiwix::Library Manager::cloneLibrary() {
     return this->library;
   }
