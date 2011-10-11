@@ -63,7 +63,8 @@ namespace kiwix {
     unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
     bool updateBookLastOpenDateById(const string id);
     void removeBookPaths();
-    bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize);
+    bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize, 
+		   const string language, const string publisher);
     vector<string> getBooksLanguages();
     vector<string> getBooksPublishers();
 

@@ -435,7 +435,8 @@ namespace kiwix {
     return result;
   }
 
-  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize) {
+  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize,
+			  const string language, const string publisher) {
     this->bookIdList.clear();
     std::vector<kiwix::Book>::iterator itr;
 
@@ -468,6 +469,12 @@ namespace kiwix {
 	ok = false;
 
       if (atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
+	ok = false;
+
+      if (!language.empty() && itr->language != language)
+	ok = false;
+
+      if (!publisher.empty() && itr->creator != publisher)
 	ok = false;
 
       if (ok == true)
