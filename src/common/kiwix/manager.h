@@ -65,6 +65,7 @@ namespace kiwix {
     void removeBookPaths();
     bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize);
     vector<string> getBooksLanguages();
+    vector<string> getBooksPublishers();
 
     string writableLibraryPath;
 

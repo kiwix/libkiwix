@@ -345,6 +345,22 @@ namespace kiwix {
     return booksLanguages;
   }
 
+  vector<string> Manager::getBooksPublishers() {
+    std::vector<string> booksPublishers;
+    std::vector<kiwix::Book>::iterator itr;
+    std::map<string, bool> booksPublishersMap;
+
+    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);      
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      if (booksPublishersMap.find(itr->creator) == booksPublishersMap.end()) {
+	booksPublishersMap[itr->creator] = true;
+	booksPublishers.push_back(itr->creator);
+      }
+    }
+    
+    return booksPublishers;
+  }
+
   kiwix::Library Manager::cloneLibrary() {
     return this->library;
   }
