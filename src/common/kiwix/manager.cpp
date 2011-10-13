@@ -452,34 +452,37 @@ namespace kiwix {
     }
     
     /* Special sort for LASTOPEN */
-    if (mode == LASTOPEN)
+    if (mode == LASTOPEN) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLastOpen);
-    
-    /* Generate the list of book id */
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-      bool ok = true;
-      
-      if (mode == LOCAL && itr->path.empty())
-	ok = false;
-
-      if (mode == REMOTE && (!itr->path.empty() || itr->url.empty()))
-	ok = false;
-      
-      if (mode == LASTOPEN && itr->last.empty())
-	ok = false;
-
-      if (atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
-	ok = false;
-
-      if (!language.empty() && itr->language != language)
-	ok = false;
-
-      if (!publisher.empty() && itr->creator != publisher)
-	ok = false;
-
-      if (ok == true)
-	this->bookIdList.push_back(itr->id);
-    }    
+      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+	if (!itr->last.empty())
+	  this->bookIdList.push_back(itr->id);
+      }
+    } else {
+      /* Generate the list of book id */
+      for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+	bool ok = true;
+	
+	if (mode == LOCAL && itr->path.empty())
+	  ok = false;
+	
+	if (ok == true && mode == REMOTE && (!itr->path.empty() || itr->url.empty()))
+	  ok = false;
+	
+	if (ok == true && atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
+	  ok = false;
+	
+	if (ok == true && !language.empty() && itr->language != language)
+	  ok = false;
+	
+	if (ok == true && !publisher.empty() && itr->creator != publisher)
+	  ok = false;
+	
+	if (ok == true) {
+	  this->bookIdList.push_back(itr->id);
+	}
+      }
+    }
     
     return true;
   }
