@@ -17,12 +17,13 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_PATHTOOLS_H
-#define KIWIX_PATHTOOLS_H
+#ifndef KIWIX_REGEXTOOLS_H
+#define KIWIX_REGEXTOOLS_H
 
-#include "nsStringAPI.h"
+#include <regex.h>
+#include <string>
+#include <iostream>
 
-const char *nsStringToCString(const nsAString &str);
-const char *nsStringToUTF8(const nsAString &str);
+bool matchRegex(const std::string &content, const std::string regex);
 
 #endif

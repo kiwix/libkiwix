@@ -436,7 +436,7 @@ namespace kiwix {
   }
 
   bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize,
-			  const string language, const string publisher) {
+			  const string language, const string publisher, const string search) {
     this->bookIdList.clear();
     std::vector<kiwix::Book>::iterator itr;
 
@@ -478,6 +478,9 @@ namespace kiwix {
 	if (ok == true && !publisher.empty() && itr->creator != publisher)
 	  ok = false;
 	
+	if (ok == true && !search.empty() && !(matchRegex(itr->title, search) || matchRegex(itr->description, search)))
+	  ok = false;
+
 	if (ok == true) {
 	  this->bookIdList.push_back(itr->id);
 	}

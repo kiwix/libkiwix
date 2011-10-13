@@ -32,6 +32,7 @@
 #include <pugixml.hpp>
 
 #include "../base64.h"
+#include "../regexTools.h"
 #include <kiwix/library.h>
 #include <kiwix/reader.h>
 
@@ -64,7 +65,7 @@ namespace kiwix {
     bool updateBookLastOpenDateById(const string id);
     void removeBookPaths();
     bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize, 
-		   const string language, const string publisher);
+		   const string language, const string publisher, const string search);
     vector<string> getBooksLanguages();
     vector<string> getBooksPublishers();
 
