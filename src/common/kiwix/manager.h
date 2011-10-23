@@ -20,7 +20,6 @@
 #ifndef KIWIX_MANAGER_H
 #define KIWIX_MANAGER_H
 
-#include <map>
 #include <string>
 #include <sstream>
 #include <time.h>

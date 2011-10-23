@@ -19,12 +19,33 @@
 
 #include "regexTools.h"
 
-bool matchRegex(const std::string &content, const std::string regex) {
-  regex_t regexp;
-  bool result = false;
+std::map<std::string, regex_t> regexCache;
+
+regex_t buildRegex(const std::string &regex) {
+  regex_t regexStruct;
+  std::map<std::string, regex_t>::iterator itr = regexCache.find(regex);
   
-  regcomp(&regexp, regex.data(), REG_ICASE);
-  result = !regexec(&regexp, content.data(), 0, 0, 0);
-  regfree(&regexp);
+  /* Regex is in cache */
+  if (itr != regexCache.end()) {
+    regexStruct = itr->second;
+  }
+
+  /* Regex needs to be parsed (and cached) */
+  else {
+    regcomp(&regexStruct, regex.data(), REG_ICASE);
+    regexCache[regex] = regexStruct;
+  }
+
+  return regexStruct;
+}
+
+/* todo */
+void freeRegexCache() {
+  //regfree(&regexStructure);
+}
+
+bool matchRegex(const std::string &content, const std::string &regex) {
+  regex_t regexStructure = buildRegex(regex);
+  bool result = !regexec(&regexStructure, content.data(), 0, 0, 0);
   return result;
 }

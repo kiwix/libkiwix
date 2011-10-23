@@ -23,7 +23,8 @@
 #include <regex.h>
 #include <string>
 #include <iostream>
+#include <map>
 
-bool matchRegex(const std::string &content, const std::string regex);
+bool matchRegex(const std::string &content, const std::string &regex);
 
 #endif
