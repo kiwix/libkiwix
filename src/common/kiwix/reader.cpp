@@ -124,6 +124,10 @@ namespace kiwix {
     if (this->zimFileHandler->getFileheader().hasMainPage()) {
       zim::Article article = zimFileHandler->getArticle(this->zimFileHandler->getFileheader().getMainPage());
       url = article.getLongUrl();
+
+      if (url.empty()) {
+	url = getFirstPageUrl(); 
+      }
     }
     
     return url;
