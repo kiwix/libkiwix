@@ -142,18 +142,19 @@ namespace kiwix {
     if (content.empty()) {
       this->getContentByUrl( "/I/favicon.png", content, 
 			     contentLength, mimeType);
-    }
 
-    if (content.empty()) {
-      this->getContentByUrl( "/I/favicon", content, 
-			     contentLength, mimeType);
-    }
 
-    if (content.empty()) {
-      this->getContentByUrl( "/-/favicon", content, 
-			     contentLength, mimeType);
+      if (content.empty()) {
+	this->getContentByUrl( "/I/favicon", content, 
+			       contentLength, mimeType);
+	
+	if (content.empty()) {
+	  this->getContentByUrl( "/-/favicon", content, 
+				 contentLength, mimeType);
+	}
+      }
     }
-
+    
     return content.empty() ? false : true;
   }
 
