@@ -58,9 +58,9 @@ namespace kiwix {
   
   /* Destructor */
   Reader::~Reader() {
-      if (this->zimFileHandler != NULL) {
-	delete this->zimFileHandler;
-      }
+    if (this->zimFileHandler != NULL) {
+      delete this->zimFileHandler;
+    }
   }
   
   /* Reset the cursor for GetNextArticle() */
@@ -100,7 +100,7 @@ namespace kiwix {
       while (article.isRedirect() && loopCounter++<42) {
 	article = article.getRedirectArticle();
       }
-
+      
       url = article.getLongUrl();
       return true;
     }
@@ -168,38 +168,38 @@ namespace kiwix {
   }
   
   string Reader::getTitle() {
-    string value="";
+    string value;
     this->getMetatag("Title", value);
     return value;
   }
 
   string Reader::getDescription() {
-    string value="";
+    string value;
     this->getMetatag("Description", value);
     return value;
   }
 
   string Reader::getLanguage() {
-    string value="";
+    string value;
     this->getMetatag("Language", value);
     return value;
   }
 
   string Reader::getDate() {
-    string value="";
+    string value;
     this->getMetatag("Date", value);
     return value;
   }
 
   string Reader::getCreator() {
-    string value="";
+    string value;
     this->getMetatag("Creator", value);
     return value;
   }
 
   /* Return the first page URL */
   string Reader::getFirstPageUrl() {
-    string url = "";
+    string url;
     
     zim::size_type firstPageOffset = zimFileHandler->getNamespaceBeginOffset('A');
     zim::Article article = zimFileHandler->getArticle(firstPageOffset);
@@ -300,7 +300,6 @@ namespace kiwix {
   
   /* Search titles by prefix*/
   bool Reader::searchSuggestions(const string &prefix, unsigned int suggestionsCount) {
-    
     bool retVal = true;
     
     /* Reset the suggestions */
@@ -325,8 +324,6 @@ namespace kiwix {
   
   /* Get next suggestion */
   bool Reader::getNextSuggestion(string &title) {
-    bool retVal = false;
-    
     if (this->suggestionsOffset != this->suggestions.end()) {
       /* title */
       title = *(this->suggestionsOffset);
@@ -334,10 +331,10 @@ namespace kiwix {
       /* increment the cursor for the next call */
       this->suggestionsOffset++;
       
-      retVal = true;
+      return true;
     }
 
-    return retVal;
+    return false;
   }
 
   /* Check if the file has as checksum */
