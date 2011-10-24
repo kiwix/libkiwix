@@ -32,7 +32,7 @@ namespace kiwix {
 
   bool Manager::parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath) {
     pugi::xml_node libraryNode = doc.child("library");
-
+    
     if (strlen(libraryNode.attribute("current").value()))
       library.current = libraryNode.attribute("current").value();
 
@@ -62,15 +62,10 @@ namespace kiwix {
       book.faviconMimeType = bookNode.attribute("faviconMimeType").value();
       
       /* Compute absolute paths if relative one are used */
-      if (isRelativePath(book.path))
-	book.pathAbsolute = computeAbsolutePath(libraryPath, book.path);
-      else
-	book.pathAbsolute = book.path;
-      
-      if (isRelativePath(book.indexPath))
-	book.indexPathAbsolute = computeAbsolutePath(libraryPath, book.indexPath);
-      else
-	book.indexPathAbsolute = book.indexPath;
+      book.pathAbsolute = isRelativePath(book.path) ?
+	computeAbsolutePath(libraryPath, book.path) : book.path;
+      book.indexPathAbsolute = isRelativePath(book.indexPath) ?
+	computeAbsolutePath(libraryPath, book.indexPath) : book.indexPath;
 
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
@@ -156,10 +151,10 @@ namespace kiwix {
 
     if (result) {
       this->parseXmlDom(doc, readOnly, path);
-    }
-
-    if (!readOnly) {
-      this->writableLibraryPath = path;
+      
+      if (!readOnly) {
+	this->writableLibraryPath = path;
+      }
     }
 
     return true;
@@ -171,11 +166,11 @@ namespace kiwix {
     /* Add the library node */
     pugi::xml_node libraryNode = doc.append_child("library");
 
-    if (library.current != "") {
+    if (!library.current.empty()) {
       libraryNode.append_attribute("current") = library.current.c_str();
     }
 
-    if (library.version != "")
+    if (!library.version.empty())
       libraryNode.append_attribute("version") = library.version.c_str();
     
     /* Add each book */
@@ -186,14 +181,14 @@ namespace kiwix {
 	pugi::xml_node bookNode = libraryNode.append_child("book");
 	bookNode.append_attribute("id") = itr->id.c_str();
 
-	if (itr->path != "")
+	if (!itr->path.empty())
 	  bookNode.append_attribute("path") = itr->path.c_str();
 	
-	if (itr->last != "" && itr->last != "undefined") {
+	if (!itr->last.empty() && itr->last != "undefined") {
 	  bookNode.append_attribute("last") = itr->last.c_str();
 	}
 	
-	if (itr->indexPath != "") {
+	if (!itr->indexPath.empty()) {
 	  bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
 	  if (itr->indexType == XAPIAN)
 	    bookNode.append_attribute("indexType") = "xapian";
@@ -201,7 +196,7 @@ namespace kiwix {
 	    bookNode.append_attribute("indexType") = "clucene";
 	}
 	
-	if (itr->title != "")
+	if (!itr->title.empty())
 	  bookNode.append_attribute("title") = itr->title.c_str();
 	
 	if (itr->description != "")
