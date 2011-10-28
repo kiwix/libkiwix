@@ -22,6 +22,10 @@
 
 #include <string.h>
 #include <string>
+#include <stdio.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -29,5 +33,7 @@ bool isRelativePath(const string &path);
 string computeAbsolutePath(const string libraryPath, const string relativePath);
 string removeLastPathElement(const string path, const bool removePreSeparator = false, 
 			     const bool removePostSeparator = false);
+unsigned int getFileSize(const string &path);
+string getFileSizeAsString(const string &path);
 
 #endif

@@ -71,3 +71,14 @@ string removeLastPathElement(const string path, const bool removePreSeparator, c
   return newPath;
 }
   
+unsigned int getFileSize(const string &path) {
+  struct stat filestatus;
+  stat(path.c_str(), &filestatus);
+  return filestatus.st_size / 1024;
+}
+
+string getFileSizeAsString(const string &path) {
+  char csize[42];
+  sprintf(csize, "%u", getFileSize(path));
+  return csize;
+}

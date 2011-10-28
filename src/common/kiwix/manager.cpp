@@ -236,12 +236,7 @@ namespace kiwix {
       mediaCountStream << reader.getMediaCount();
       book.mediaCount = mediaCountStream.str();
       
-      struct stat filestatus;
-      stat( path.c_str(), &filestatus );
-      unsigned int size = filestatus.st_size / 1024;
-      char csize[42];
-      sprintf (csize, "%u", size);
-      book.size = csize;
+      book.size = getFileSizeAsString(path);
 
       string favicon;
       string faviconMimeType;
