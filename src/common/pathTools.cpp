@@ -41,7 +41,7 @@ string computeAbsolutePath(const string libraryPath, const string relativePath) 
     if (string(token) == "..") {
       absolutePath = removeLastPathElement(absolutePath, true, false);
       token = strtok(NULL, "/");
-    } else if (token != "." && token != "") {
+    } else if (strcmp(token, ".") && strcmp(token, "")) {
       absolutePath += string(token);
       token = strtok(NULL, "/");
       if (token != NULL)
@@ -81,4 +81,15 @@ string getFileSizeAsString(const string &path) {
   char csize[42];
   sprintf(csize, "%u", getFileSize(path));
   return csize;
+}
+
+bool fileExists(const string &path) {
+  bool flag = false;
+  fstream fin;
+  fin.open(path.c_str(), ios::in);
+  if (fin.is_open()) {
+    flag = true;
+  }
+  fin.close();
+  return flag;
 }

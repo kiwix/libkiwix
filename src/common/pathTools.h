@@ -20,8 +20,10 @@
 #ifndef KIWIX_PATHTOOLS_H
 #define KIWIX_PATHTOOLS_H
 
-#include <string.h>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -35,5 +37,6 @@ string removeLastPathElement(const string path, const bool removePreSeparator = 
 			     const bool removePostSeparator = false);
 unsigned int getFileSize(const string &path);
 string getFileSizeAsString(const string &path);
+bool fileExists(const string &path);
 
 #endif
