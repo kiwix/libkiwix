@@ -205,7 +205,7 @@ namespace kiwix {
       }
 
       if (!checkMetaData || 
-	  checkMetaData && !book.title.empty() && !book.language.empty() && !book.date.empty()) {
+	  (checkMetaData && !book.title.empty() && !book.language.empty() && !book.date.empty())) {
 	book.url = url;
 	library.addBook(book);
 	return true;
@@ -367,7 +367,7 @@ namespace kiwix {
     unsigned int result = 0;
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-      if (!itr->path.empty() && localBooks || itr->path.empty() && remoteBooks)
+      if ((!itr->path.empty() && localBooks) || (itr->path.empty() && remoteBooks))
 	result++;
     }
     return result;
@@ -407,7 +407,7 @@ namespace kiwix {
 	if (ok == true && mode == REMOTE && (!itr->path.empty() || itr->url.empty()))
 	  ok = false;
 	
-	if (ok == true && atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
+	if (ok == true && (unsigned int)atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
 	  ok = false;
 	
 	if (ok == true && !language.empty() && itr->language != language)
@@ -416,7 +416,7 @@ namespace kiwix {
 	if (ok == true && !publisher.empty() && itr->creator != publisher)
 	  ok = false;
 	
-	if (ok == true && !search.empty() && !(matchRegex(itr->title, search) || matchRegex(itr->description, search)))
+	if ((ok == true && !search.empty()) && !(matchRegex(itr->title, search) || matchRegex(itr->description, search)))
 	  ok = false;
 
 	if (ok == true) {
