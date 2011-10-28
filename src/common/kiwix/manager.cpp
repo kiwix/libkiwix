@@ -82,58 +82,6 @@ namespace kiwix {
     return true;
   }
 
-  bool Manager::isRelativePath(const string &path) {
-#ifdef _WIN32
-    return path.empty() || path.substr(1, 2) == ":\\" ? false : true;
-#else
-    return path.empty() || path.substr(0, 1) == "/" ? false : true;
-#endif
-  }
-
-  string Manager::computeAbsolutePath(const string libraryPath, const string relativePath) {
-#ifdef _WIN32
-    string separator = "\\";
-#else
-    string separator = "/";
-#endif
-    string absolutePath = removeLastPathElement(libraryPath, true, false);
-    char *cRelativePath = strdup(relativePath.c_str());
-    char *token = strtok(cRelativePath, "/");
-
-    while (token != NULL) {
-      if (string(token) == "..") {
-	absolutePath = removeLastPathElement(absolutePath, true, false);
-	token = strtok(NULL, "/");
-      } else if (token != "." && token != "") {
-	absolutePath += string(token);
-	token = strtok(NULL, "/");
-	if (token != NULL)
-	  absolutePath += separator;
-      } else {
-	token = strtok(NULL, "/");
-      }
-    }
-
-    return absolutePath;
-  }
-
-  string Manager::removeLastPathElement(const string path, const bool removePreSeparator, const bool removePostSeparator) {
-#ifdef _WIN32
-    string separator = "\\";
-#else
-    string separator = "/";
-#endif
-    
-    string newPath = path;
-    size_t offset = newPath.find_last_of(separator);
-    if (removePreSeparator && offset != newPath.find_first_of(separator) && offset == newPath.length()-1) {
-      newPath = newPath.substr(0, offset);
-      offset = newPath.find_last_of(separator);
-    }
-    newPath = removePostSeparator ? newPath.substr(0, offset) : newPath.substr(0, offset+1);
-    return newPath;
-  }
-  
   bool Manager::readXml(const string xml, const bool readOnly, const string libraryPath) {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_buffer_inplace((void*)xml.data(), xml.size());

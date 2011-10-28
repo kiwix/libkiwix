@@ -19,24 +19,55 @@
 
 #include "pathTools.h"
 
-const char *nsStringToCString(const nsAString &str) {
-  const char *cStr;
-  nsCString tmpStr;
-
+bool isRelativePath(const string &path) {
 #ifdef _WIN32
-  LossyCopyUTF16toASCII(str, tmpStr);
+  return path.empty() || path.substr(1, 2) == ":\\" ? false : true;
 #else
-  CopyUTF16toUTF8(str, tmpStr);
+  return path.empty() || path.substr(0, 1) == "/" ? false : true;
 #endif
-
-  NS_CStringGetData(tmpStr, &cStr);
-  return cStr;
 }
 
-const char *nsStringToUTF8(const nsAString &str) {
-  const char *cStr;
-  nsCString tmpStr;
-  CopyUTF16toUTF8(str, tmpStr);
-  NS_CStringGetData(tmpStr, &cStr);
-  return cStr;
+string computeAbsolutePath(const string libraryPath, const string relativePath) {
+#ifdef _WIN32
+  string separator = "\\";
+#else
+  string separator = "/";
+#endif
+  string absolutePath = removeLastPathElement(libraryPath, true, false);
+  char *cRelativePath = strdup(relativePath.c_str());
+  char *token = strtok(cRelativePath, "/");
+  
+  while (token != NULL) {
+    if (string(token) == "..") {
+      absolutePath = removeLastPathElement(absolutePath, true, false);
+      token = strtok(NULL, "/");
+    } else if (token != "." && token != "") {
+      absolutePath += string(token);
+      token = strtok(NULL, "/");
+      if (token != NULL)
+	absolutePath += separator;
+    } else {
+      token = strtok(NULL, "/");
+    }
+  }
+  
+  return absolutePath;
 }
+
+string removeLastPathElement(const string path, const bool removePreSeparator, const bool removePostSeparator) {
+#ifdef _WIN32
+  string separator = "\\";
+#else
+  string separator = "/";
+#endif
+  
+  string newPath = path;
+  size_t offset = newPath.find_last_of(separator);
+  if (removePreSeparator && offset != newPath.find_first_of(separator) && offset == newPath.length()-1) {
+    newPath = newPath.substr(0, offset);
+    offset = newPath.find_last_of(separator);
+  }
+  newPath = removePostSeparator ? newPath.substr(0, offset) : newPath.substr(0, offset+1);
+  return newPath;
+}
+  

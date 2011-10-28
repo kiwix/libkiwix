@@ -17,17 +17,26 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_PATHTOOLS_H
-#define KIWIX_PATHTOOLS_H
+#include "componentTools.h"
 
-#include <string.h>
-#include <string>
+const char *nsStringToCString(const nsAString &str) {
+  const char *cStr;
+  nsCString tmpStr;
 
-using namespace std;
-
-bool isRelativePath(const string &path);
-string computeAbsolutePath(const string libraryPath, const string relativePath);
-string removeLastPathElement(const string path, const bool removePreSeparator = false, 
-			     const bool removePostSeparator = false);
-
+#ifdef _WIN32
+  LossyCopyUTF16toASCII(str, tmpStr);
+#else
+  CopyUTF16toUTF8(str, tmpStr);
 #endif
+
+  NS_CStringGetData(tmpStr, &cStr);
+  return cStr;
+}
+
+const char *nsStringToUTF8(const nsAString &str) {
+  const char *cStr;
+  nsCString tmpStr;
+  CopyUTF16toUTF8(str, tmpStr);
+  NS_CStringGetData(tmpStr, &cStr);
+  return cStr;
+}

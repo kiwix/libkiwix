@@ -17,17 +17,12 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_PATHTOOLS_H
-#define KIWIX_PATHTOOLS_H
+#ifndef KIWIX_COMPONENTTOOLS_H
+#define KIWIX_COMPONENTTOOLS_H
 
-#include <string.h>
-#include <string>
+#include "nsStringAPI.h"
 
-using namespace std;
-
-bool isRelativePath(const string &path);
-string computeAbsolutePath(const string libraryPath, const string relativePath);
-string removeLastPathElement(const string path, const bool removePreSeparator = false, 
-			     const bool removePostSeparator = false);
+const char *nsStringToCString(const nsAString &str);
+const char *nsStringToUTF8(const nsAString &str);
 
 #endif

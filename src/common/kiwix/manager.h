@@ -23,15 +23,16 @@
 #include <string>
 #include <sstream>
 #include <time.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <sys/stat.h>
 
 #include <pugixml.hpp>
 
 #include "../base64.h"
 #include "../regexTools.h"
+#include "../pathTools.h"
 #include <kiwix/library.h>
 #include <kiwix/reader.h>
 
@@ -77,10 +78,6 @@ namespace kiwix {
     
     bool readBookFromPath(const string path, Book &book);
     bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath);
-    bool isRelativePath(const string &path);
-    string computeAbsolutePath(const string libraryPath, const string relativePath);
-    string removeLastPathElement(const string path, const bool removePreSeparator = false, 
-				 const bool removePostSeparator = false);
   };
 
 }
