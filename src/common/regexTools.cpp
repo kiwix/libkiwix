@@ -19,33 +19,36 @@
 
 #include "regexTools.h"
 
-std::map<std::string, regex_t> regexCache;
+std::map<std::string, RegexMatcher*> regexCache;
 
-regex_t buildRegex(const std::string &regex) {
-  regex_t regexStruct;
-  std::map<std::string, regex_t>::iterator itr = regexCache.find(regex);
+RegexMatcher *buildRegex(const std::string &regex) {
+  RegexMatcher *matcher;
+  std::map<std::string, RegexMatcher*>::iterator itr = regexCache.find(regex);
   
   /* Regex is in cache */
   if (itr != regexCache.end()) {
-    regexStruct = itr->second;
+    matcher = itr->second;
   }
 
   /* Regex needs to be parsed (and cached) */
   else {
-    regcomp(&regexStruct, regex.data(), REG_ICASE);
-    regexCache[regex] = regexStruct;
+    UErrorCode status = U_ZERO_ERROR;
+    UnicodeString uregex = UnicodeString(regex.c_str());
+    matcher = new RegexMatcher(uregex, UREGEX_CASE_INSENSITIVE, status);
+    regexCache[regex] = matcher;
   }
 
-  return regexStruct;
+  return matcher;
 }
 
 /* todo */
 void freeRegexCache() {
-  //regfree(&regexStructure);
 }
 
 bool matchRegex(const std::string &content, const std::string &regex) {
-  regex_t regexStructure = buildRegex(regex);
-  bool result = !regexec(&regexStructure, content.data(), 0, 0, 0);
-  return result;
+  ucnv_setDefaultName("UTF-8");
+  UnicodeString ucontent = UnicodeString(content.c_str());
+  RegexMatcher *matcher = buildRegex(regex);
+  matcher->reset(ucontent);
+  return matcher->find();
 }
