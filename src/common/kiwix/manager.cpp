@@ -99,10 +99,13 @@ namespace kiwix {
 
     if (result) {
       this->parseXmlDom(doc, readOnly, path);
-      
-      if (!readOnly) {
-	this->writableLibraryPath = path;
-      }
+    }
+
+    /* This has to be set (although if the file does not exists) to be
+     * able to know where to save the library if new content are
+     * available */
+    if (!readOnly) {
+      this->writableLibraryPath = path;
     }
 
     return true;
