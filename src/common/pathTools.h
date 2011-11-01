@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <ios>
 
 using namespace std;
 
@@ -39,5 +40,7 @@ unsigned int getFileSize(const string &path);
 string getFileSizeAsString(const string &path);
 bool fileExists(const string &path);
 bool makeDirectory(const string &path);
+bool copyFile(const string &sourcePath, const string &destPath);
+string getLastPathElement(const string &path);
 
 #endif

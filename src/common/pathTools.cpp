@@ -33,7 +33,7 @@ string computeAbsolutePath(const string path, const string relativePath) {
 #else
   string separator = "/";
 #endif
-  string absolutePath = path;
+  string absolutePath = path + "/";
   char *cRelativePath = strdup(relativePath.c_str());
   char *token = strtok(cRelativePath, "/");
   
@@ -70,6 +70,16 @@ string removeLastPathElement(const string path, const bool removePreSeparator, c
   newPath = removePostSeparator ? newPath.substr(0, offset) : newPath.substr(0, offset+1);
   return newPath;
 }
+
+string getLastPathElement(const string &path) {
+#ifdef _WIN32
+  string separator = "\\";
+#else
+  string separator = "/";
+#endif
+
+  return path.substr(path.find_last_of(separator));
+}
   
 unsigned int getFileSize(const string &path) {
   struct stat filestatus;
@@ -97,4 +107,17 @@ bool fileExists(const string &path) {
 bool makeDirectory(const string &path) {
   int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   return status == 0;
+}
+
+bool copyFile(const string &sourcePath, const string &destPath) {
+  try {
+    std::ifstream infile(sourcePath.c_str(), std::ios_base::binary);
+    std::ofstream outfile(destPath.c_str(), std::ios_base::binary);
+    outfile << infile.rdbuf();
+  } catch (exception &e) {
+    cerr << e.what() << endl;
+    return false;
+  }
+  
+  return true;
 }
