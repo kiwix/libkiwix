@@ -38,5 +38,6 @@ string removeLastPathElement(const string path, const bool removePreSeparator = 
 unsigned int getFileSize(const string &path);
 string getFileSizeAsString(const string &path);
 bool fileExists(const string &path);
+bool makeDirectory(const string &path);
 
 #endif

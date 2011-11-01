@@ -93,3 +93,8 @@ bool fileExists(const string &path) {
   fin.close();
   return flag;
 }
+
+bool makeDirectory(const string &path) {
+  int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  return status == 0;
+}
