@@ -197,7 +197,8 @@ namespace kiwix {
     return library.current;
   }
 
-  bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData) {
+  /* Add a book to the library. Return empty string if failed, book id otherwise */
+  string Manager::addBookFromPathAndGetId(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData) {
     kiwix::Book book;
 
     if (this->readBookFromPath(pathToOpen, book)) {
@@ -212,13 +213,18 @@ namespace kiwix {
 	  (checkMetaData && !book.title.empty() && !book.language.empty() && !book.date.empty())) {
 	book.url = url;
 	library.addBook(book);
-	return true;
+	return book.id;
       }
     }
 
-    return false;
+    return "";
   }
   
+  /* Wrapper over Manager::addBookFromPath which return a bool instead of a string */
+  bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData) {
+    return !(this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData).empty());
+  }
+
   bool Manager::readBookFromPath(const string path, kiwix::Book &book) {
 
     try {
@@ -337,7 +343,8 @@ namespace kiwix {
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
       if ( itr->id == id) {
 	itr->indexPath = path;
-	itr->indexPathAbsolute = path;
+	itr->indexPathAbsolute = isRelativePath(path) ?
+	  computeAbsolutePath(removeLastPathElement(writableLibraryPath, true, false), path) : path;
 	itr->indexType = type;
 	return true;
       }
@@ -351,7 +358,8 @@ namespace kiwix {
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
       if ( itr->id == id) {
 	itr->path = path;
-	itr->pathAbsolute = path;
+	itr->pathAbsolute = isRelativePath(path) ?
+	  computeAbsolutePath(removeLastPathElement(writableLibraryPath, true, false), path) : path;
 	return true;
       }
     }
