@@ -33,7 +33,7 @@ string computeAbsolutePath(const string path, const string relativePath) {
 #else
   string separator = "/";
 #endif
-  string absolutePath = path + "/";
+  string absolutePath = path[path.length() - 1] == '/' ? path : path + "/";
   char *cRelativePath = strdup(relativePath.c_str());
   char *token = strtok(cRelativePath, "/");
   
@@ -78,7 +78,7 @@ string getLastPathElement(const string &path) {
   string separator = "/";
 #endif
 
-  return path.substr(path.find_last_of(separator));
+  return path.substr(path.find_last_of(separator) + 1);
 }
   
 unsigned int getFileSize(const string &path) {
