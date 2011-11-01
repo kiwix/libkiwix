@@ -63,9 +63,9 @@ namespace kiwix {
       
       /* Compute absolute paths if relative one are used */
       book.pathAbsolute = isRelativePath(book.path) ?
-	computeAbsolutePath(libraryPath, book.path) : book.path;
+	computeAbsolutePath(removeLastPathElement(libraryPath, true, false), book.path) : book.path;
       book.indexPathAbsolute = isRelativePath(book.indexPath) ?
-	computeAbsolutePath(libraryPath, book.indexPath) : book.indexPath;
+	computeAbsolutePath(removeLastPathElement(libraryPath, true, false), book.indexPath) : book.indexPath;
 
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {

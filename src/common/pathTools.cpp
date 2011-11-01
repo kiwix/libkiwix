@@ -27,13 +27,13 @@ bool isRelativePath(const string &path) {
 #endif
 }
 
-string computeAbsolutePath(const string libraryPath, const string relativePath) {
+string computeAbsolutePath(const string path, const string relativePath) {
 #ifdef _WIN32
   string separator = "\\";
 #else
   string separator = "/";
 #endif
-  string absolutePath = removeLastPathElement(libraryPath, true, false);
+  string absolutePath = path;
   char *cRelativePath = strdup(relativePath.c_str());
   char *token = strtok(cRelativePath, "/");
   
