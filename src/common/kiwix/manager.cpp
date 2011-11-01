@@ -204,7 +204,8 @@ namespace kiwix {
 
       if (!pathToSave.empty() && pathToSave != pathToOpen) {
 	book.path = pathToSave;
-	book.pathAbsolute = pathToSave;
+	book.pathAbsolute = isRelativePath(pathToSave) ?
+	  computeAbsolutePath(removeLastPathElement(writableLibraryPath, true, false), pathToSave) : pathToSave;
       }
 
       if (!checkMetaData || 
