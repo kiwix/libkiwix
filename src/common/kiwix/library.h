@@ -44,6 +44,7 @@ namespace kiwix {
     static bool sortByTitle(const Book &a, const Book &b);
     static bool sortBySize(const Book &a, const Book &b);
     static bool sortByDate(const Book &a, const Book &b);
+    static bool sortByCreator(const Book &a, const Book &b);
     static bool sortByPublisher(const Book &a, const Book &b);
     static bool sortByLanguage(const Book &a, const Book &b);
 
@@ -58,6 +59,7 @@ namespace kiwix {
     string description;
     string language;
     string creator;
+    string publisher;
     string date;
     string url;
     string articleCount;

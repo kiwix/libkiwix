@@ -54,6 +54,7 @@ namespace kiwix {
       book.language = bookNode.attribute("language").value();
       book.date = bookNode.attribute("date").value();
       book.creator = bookNode.attribute("creator").value();
+      book.publisher = bookNode.attribute("publisher").value();
       book.url = bookNode.attribute("url").value();
       book.articleCount = bookNode.attribute("articleCount").value();
       book.mediaCount = bookNode.attribute("mediaCount").value();
@@ -161,6 +162,9 @@ namespace kiwix {
 	
 	if (itr->creator != "")
 	  bookNode.append_attribute("creator") = itr->creator.c_str();
+
+	if (itr->publisher != "")
+	  bookNode.append_attribute("publisher") = itr->publisher.c_str();
 	
 	if (itr->url != "")
 	  bookNode.append_attribute("url") = itr->url.c_str();
@@ -237,6 +241,7 @@ namespace kiwix {
       book.language = reader.getLanguage();
       book.date = reader.getDate();
       book.creator = reader.getCreator();
+      book.publisher = reader.getPublisher();
       
       std::ostringstream articleCountStream;
       articleCountStream << reader.getArticleCount();
@@ -293,6 +298,22 @@ namespace kiwix {
     return booksLanguages;
   }
 
+  vector<string> Manager::getBooksCreators() {
+    std::vector<string> booksCreators;
+    std::vector<kiwix::Book>::iterator itr;
+    std::map<string, bool> booksCreatorsMap;
+
+    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);      
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      if (booksCreatorsMap.find(itr->creator) == booksCreatorsMap.end()) {
+	booksCreatorsMap[itr->creator] = true;
+	booksCreators.push_back(itr->creator);
+      }
+    }
+    
+    return booksCreators;
+  }
+
   vector<string> Manager::getBooksPublishers() {
     std::vector<string> booksPublishers;
     std::vector<kiwix::Book>::iterator itr;
@@ -300,9 +321,9 @@ namespace kiwix {
 
     std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);      
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-      if (booksPublishersMap.find(itr->creator) == booksPublishersMap.end()) {
-	booksPublishersMap[itr->creator] = true;
-	booksPublishers.push_back(itr->creator);
+      if (booksPublishersMap.find(itr->publisher) == booksPublishersMap.end()) {
+	booksPublishersMap[itr->publisher] = true;
+	booksPublishers.push_back(itr->publisher);
       }
     }
     
@@ -385,8 +406,9 @@ namespace kiwix {
     return result;
   }
 
-  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize,
-			  const string language, const string publisher, const string search) {
+  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy, 
+			  const unsigned int maxSize, const string language, const string creator,
+			  const string publisher, const string search) {
     this->bookIdList.clear();
     std::vector<kiwix::Book>::iterator itr;
 
@@ -397,6 +419,8 @@ namespace kiwix {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortBySize);
     } else if (sortBy == DATE) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByDate);
+    } else if (sortBy == CREATOR) {
+      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);
     } else if (sortBy == PUBLISHER) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
     }
@@ -424,8 +448,11 @@ namespace kiwix {
 	
 	if (ok == true && !language.empty() && itr->language != language)
 	  ok = false;
-	
-	if (ok == true && !publisher.empty() && itr->creator != publisher)
+
+	if (ok == true && !creator.empty() && itr->creator != creator)
+	  ok = false;
+
+	if (ok == true && !publisher.empty() && itr->publisher != publisher)
 	  ok = false;
 	
 	if ((ok == true && !search.empty()) && !(matchRegex(itr->title, search) || matchRegex(itr->description, search)))

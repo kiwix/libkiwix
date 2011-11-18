@@ -33,6 +33,7 @@ namespace kiwix {
     language(""),
     date(""),
     creator(""),
+    publisher(""),
     url(""),
     articleCount(""),
     mediaCount(""),
@@ -63,6 +64,10 @@ namespace kiwix {
   }
 
   bool Book::sortByPublisher(const kiwix::Book &a, const kiwix::Book &b) {
+    return strcmp(a.publisher.c_str(), b.publisher.c_str()) < 0;
+  }
+
+  bool Book::sortByCreator(const kiwix::Book &a, const kiwix::Book &b) {
     return strcmp(a.creator.c_str(), b.creator.c_str()) < 0;
   }
 

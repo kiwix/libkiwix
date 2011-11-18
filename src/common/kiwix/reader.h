@@ -51,6 +51,7 @@ namespace kiwix {
     string getLanguage();
     string getDate();
     string getCreator();
+    string getPublisher();
     bool getFavicon(string &content, string &mimeType);
     bool getPageUrlFromTitle(const string &title, string &url);
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);

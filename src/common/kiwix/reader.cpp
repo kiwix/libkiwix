@@ -197,6 +197,12 @@ namespace kiwix {
     return value;
   }
 
+  string Reader::getPublisher() {
+    string value;
+    this->getMetatag("Publisher", value);
+    return value;
+  }
+
   /* Return the first page URL */
   string Reader::getFirstPageUrl() {
     string url;

@@ -37,7 +37,7 @@ using namespace std;
 namespace kiwix {
 
   enum supportedListMode { LASTOPEN, REMOTE, LOCAL };
-  enum supportedListSortBy { TITLE, SIZE, DATE, PUBLISHER };
+  enum supportedListSortBy { TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 
   class Manager {
     
@@ -64,8 +64,9 @@ namespace kiwix {
     bool updateBookLastOpenDateById(const string id);
     void removeBookPaths();
     bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize, 
-		   const string language, const string publisher, const string search);
+		   const string language, const string creator, const string publisher, const string search);
     vector<string> getBooksLanguages();
+    vector<string> getBooksCreators();
     vector<string> getBooksPublishers();
 
     string writableLibraryPath;
