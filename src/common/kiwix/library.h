@@ -25,6 +25,7 @@
 #include <string>
 #include <string.h>
 #include <vector>
+#include <stack>
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
@@ -76,12 +77,22 @@ namespace kiwix {
     Library();
     ~Library();
 
-    string current;
     string version;
     bool addBook(const Book &book);
     bool removeBookByIndex(const unsigned int bookIndex);
     vector <kiwix::Book> books;
 
+    /*
+     * 'current' is the variable storing the current content/book id
+     * in the library. This is used to be able to load per default a
+     * content. As Kiwix may work with many library XML files, you may
+     * have "current" defined many time with different values. The
+     * last XML file read has the priority, Although we do not have an
+     * library object for each file, we want to be able to fallback to
+     * an 'old' current book if the one which should be load
+     * failed. That is the reason why we need a stack here
+     */
+    stack<string> current;
   };
 
 }

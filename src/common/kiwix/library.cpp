@@ -23,23 +23,7 @@ namespace kiwix {
 
   /* Constructor */
   Book::Book():
-    id(""),
-    path(""),
-    last(""),
-    indexPath(""),
-    indexType(UNKNOWN),
-    title(""),
-    description(""),
-    language(""),
-    date(""),
-    creator(""),
-    publisher(""),
-    url(""),
-    articleCount(""),
-    mediaCount(""),
-    readOnly(false),
-    size(""),
-    faviconMimeType("") {
+    readOnly(false) {
   }
   
   /* Destructor */
@@ -77,7 +61,6 @@ namespace kiwix {
 
   /* Constructor */
   Library::Library():
-    current(""),
     version(KIWIX_LIBRARY_VERSION) {
   }
   

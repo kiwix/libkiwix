@@ -34,7 +34,7 @@ namespace kiwix {
     pugi::xml_node libraryNode = doc.child("library");
     
     if (strlen(libraryNode.attribute("current").value()))
-      library.current = libraryNode.attribute("current").value();
+      this->setCurrentBookId(libraryNode.attribute("current").value());
 
     string libraryVersion = libraryNode.attribute("version").value();
     
@@ -118,8 +118,8 @@ namespace kiwix {
     /* Add the library node */
     pugi::xml_node libraryNode = doc.append_child("library");
 
-    if (!library.current.empty()) {
-      libraryNode.append_attribute("current") = library.current.c_str();
+    if (!getCurrentBookId().empty()) {
+      libraryNode.append_attribute("current") = getCurrentBookId().c_str();
     }
 
     if (!library.version.empty())
@@ -193,12 +193,18 @@ namespace kiwix {
   }
 
   bool Manager::setCurrentBookId(const string id) {
-    library.current = id;
+    if (library.current.empty() || library.current.top() != id) {
+      if (id.empty() && !library.current.empty())
+	library.current.pop();
+      else
+	library.current.push(id);
+    }
     return true;
   }
 
   string Manager::getCurrentBookId() {
-    return library.current;
+    return library.current.empty() ? 
+      "" : library.current.top();
   }
 
   /* Add a book to the library. Return empty string if failed, book id otherwise */
