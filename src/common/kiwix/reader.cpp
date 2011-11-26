@@ -128,6 +128,8 @@ namespace kiwix {
       if (url.empty()) {
 	url = getFirstPageUrl(); 
       }
+    } else {
+	url = getFirstPageUrl(); 
     }
     
     return url;
