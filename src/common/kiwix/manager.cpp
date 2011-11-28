@@ -213,7 +213,7 @@ namespace kiwix {
 
     if (this->readBookFromPath(pathToOpen, book)) {
 
-      if (!pathToSave.empty() && pathToSave != pathToOpen) {
+      if (pathToSave != pathToOpen) {
 	book.path = pathToSave;
 	book.pathAbsolute = isRelativePath(pathToSave) ?
 	  computeAbsolutePath(removeLastPathElement(writableLibraryPath, true, false), pathToSave) : pathToSave;
