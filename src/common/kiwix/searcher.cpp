@@ -43,6 +43,7 @@ namespace kiwix {
     estimatedResultCount(0),
     resultStart(0),
     resultEnd(0),
+    resultRange(20),
     protocolPrefix("zim://"),
     searchProtocolPrefix("search://?") {
   }
@@ -213,6 +214,8 @@ namespace kiwix {
     oData["searchPattern"] = this->searchPattern;
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
+    oData["resultRange"] = this->resultRange;
+    oData["resultLastPageStart"] = this->estimatedResultCount - this->resultRange;
     oData["protocolPrefix"] = this->protocolPrefix;
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
 

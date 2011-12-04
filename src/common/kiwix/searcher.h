@@ -91,6 +91,7 @@ namespace kiwix {
     unsigned int resultEnd;
     std::string protocolPrefix;
     std::string searchProtocolPrefix;
+    unsigned int resultRange;
   };
 
 }
