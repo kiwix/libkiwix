@@ -215,7 +215,7 @@ namespace kiwix {
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
     oData["resultRange"] = this->resultRange;
-    oData["resultLastPageStart"] = this->estimatedResultCount - this->resultRange;
+    oData["resultLastPageStart"] = this->estimatedResultCount > this->resultRange ? this->estimatedResultCount - this->resultRange : 0;
     oData["protocolPrefix"] = this->protocolPrefix;
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
 
