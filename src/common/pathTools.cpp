@@ -105,7 +105,11 @@ bool fileExists(const string &path) {
 }
 
 bool makeDirectory(const string &path) {
+#ifdef _WIN32
+  int status = _mkdir(path.c_str());
+#else
   int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#endif
   return status == 0;
 }
 

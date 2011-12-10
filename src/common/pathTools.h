@@ -30,6 +30,10 @@
 #include <sys/stat.h>
 #include <ios>
 
+#ifdef _WIN32
+#include <direct.h>
+#endif
+
 using namespace std;
 
 bool isRelativePath(const string &path);
