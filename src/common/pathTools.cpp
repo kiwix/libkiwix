@@ -125,3 +125,14 @@ bool copyFile(const string &sourcePath, const string &destPath) {
   
   return true;
 }
+
+string getExecutablePath() {
+  char binRootPath[PATH_MAX];
+
+#ifdef _WIN32
+#else
+  readlink("/proc/self/exe", binRootPath, PATH_MAX);
+#endif
+
+  return std::string(binRootPath);
+}

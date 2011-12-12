@@ -29,6 +29,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <ios>
+#include <limits.h>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -46,5 +47,6 @@ bool fileExists(const string &path);
 bool makeDirectory(const string &path);
 bool copyFile(const string &sourcePath, const string &destPath);
 string getLastPathElement(const string &path);
+string getExecutablePath();
 
 #endif
