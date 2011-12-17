@@ -19,6 +19,10 @@
 
 #include "pathTools.h"
 
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif
+
 bool isRelativePath(const string &path) {
 #ifdef _WIN32
   return path.empty() || path.substr(1, 2) == ":\\" ? false : true;
