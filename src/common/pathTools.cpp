@@ -31,13 +31,14 @@ bool isRelativePath(const string &path) {
 #endif
 }
 
+/* Warning: the relative path must be with slashes */
 string computeAbsolutePath(const string path, const string relativePath) {
 #ifdef _WIN32
   string separator = "\\";
 #else
   string separator = "/";
 #endif
-  string absolutePath = path[path.length() - 1] == '/' ? path : path + "/";
+  string absolutePath = path[path.length() - 1] == separator[0] ? path : path + separator;
   char *cRelativePath = strdup(relativePath.c_str());
   char *token = strtok(cRelativePath, "/");
   
