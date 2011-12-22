@@ -59,6 +59,7 @@ namespace kiwix {
     bool getNextSuggestion(string &title);
     bool canCheckIntegrity();
     bool isCorrupted();
+    bool parseUrl(const string &urlStr, char *ns, string &titleStr);
     
   protected:
     zim::File* zimFileHandler;

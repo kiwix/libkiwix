@@ -216,6 +216,42 @@ namespace kiwix {
     return url;
   }
   
+  bool Reader::parseUrl(const string &urlStr, char *ns, string &titleStr) {
+    const char *url = urlStr.c_str();
+    
+    /* Offset to visit the url */
+    unsigned int urlLength = strlen(url);
+    unsigned int offset = 0;
+    
+    /* Ignore the '/' */
+    while ((offset < urlLength) && (url[offset] == '/')) offset++;
+    
+    /* Get namespace */
+    while ((offset < urlLength) && (url[offset] != '/')) {
+      *ns= url[offset];
+      offset++;
+    }
+    
+    /* Ignore the '/' */
+    while ((offset < urlLength) && (url[offset] == '/')) offset++;  
+      
+    /* Get content title */
+    char title[1024];
+    unsigned int titleOffset = 0;
+    while (offset < urlLength) {
+      title[titleOffset] = url[offset];
+      offset++;
+      titleOffset++;
+    }
+    title[titleOffset] = 0;
+    
+    /* unescape url */
+    titleStr = string(title);
+    unescapeUrl(titleStr);
+
+    return true;
+  }
+
   /* Get a content from a zim file */
   bool Reader::getContentByUrl(const string &urlStr, string &content, unsigned int &contentLength, string &contentType) {
     bool retVal = false;
@@ -224,53 +260,19 @@ namespace kiwix {
     contentLength = 0;
 
     if (this->zimFileHandler != NULL) {
-      const char *url = urlStr.c_str();
       
-      /* Offset to visit the url */
-      unsigned int urlLength = strlen(url);
-      unsigned int offset = 0;
-      
-      /* Ignore the '/' */
-      while ((offset < urlLength) && (url[offset] == '/')) offset++;
-      
-      /* Get namespace */
-      char ns[1024];
-      unsigned int nsOffset = 0;
-      while ((offset < urlLength) && (url[offset] != '/')) {
-	ns[nsOffset] = url[offset];
-	offset++;
-	nsOffset++;
-      }
-      ns[nsOffset] = 0;
-      
-      /* Ignore the '/' */
-      while ((offset < urlLength) && (url[offset] == '/')) offset++;  
-      
-      /* Get content title */
-      char title[1024];
-      unsigned int titleOffset = 0;
-      while (offset < urlLength) {
-	title[titleOffset] = url[offset];
-	offset++;
-	titleOffset++;
-      }
-      title[titleOffset] = 0;
-      
-      /* unescape url */
-      string titleStr = string(title);
-      unescapeUrl(titleStr);
-      
+      /* Parse the url */
+      char ns = 0;
+      string titleStr;
+      this->parseUrl(urlStr, &ns, titleStr);
+
       /* Main page */
-      if (titleStr == "" && strcmp(ns, "") == 0) {
-	if (zimFileHandler->getFileheader().hasMainPage()) {
-	  zim::Article article = zimFileHandler->getArticle(zimFileHandler->getFileheader().getMainPage());
-	  ns[0] = article.getNamespace();
-	  titleStr = article.getUrl();
-	}
+      if (titleStr.empty() && ns == 0) {
+	this->parseUrl(this->getMainPageUrl(), &ns, titleStr);
       }
       
       /* Extract the content from the zim file */
-      std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns[0], titleStr);
+      std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns, titleStr);
       
       /* Test if the article was found */
       if (resultPair.first == true) {
