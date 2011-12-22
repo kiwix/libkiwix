@@ -164,7 +164,8 @@ namespace kiwix {
     if (this->currentArticleOffset <= this->lastArticleOffset) {
       return true;
     } else {
-      this->stopIndexing();
+        // commented as it never returns on OSX.
+      //this->stopIndexing();
       return false;
     }
   }
