@@ -52,3 +52,29 @@ bool matchRegex(const std::string &content, const std::string &regex) {
   matcher->reset(ucontent);
   return matcher->find();
 }
+
+void appendToFirstOccurence(std::string &content, const  std::string regex, const std::string &replacement) {
+  ucnv_setDefaultName("UTF-8");
+  UnicodeString ucontent = UnicodeString(content.c_str());
+  RegexMatcher *matcher = buildRegex(regex);
+  matcher->reset(ucontent);
+
+  if (matcher->find()) {
+    UErrorCode status = U_ZERO_ERROR;
+    content.insert(matcher->start(status), replacement);   
+  }
+
+  /*
+  regmatch_t matchs[1];
+  regex_t regexp;
+
+  regcomp(&regexp, regex.data(), REG_ICASE);
+  if (!regexec(&regexp, content.data(), 1, matchs, 0)) {
+    if (matchs[0].rm_so > 0)
+      content.insert(matchs[0].rm_eo, replacement);
+  }
+
+  regfree(&regexp);
+  */
+}
+

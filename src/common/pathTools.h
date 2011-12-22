@@ -41,6 +41,7 @@ bool isRelativePath(const string &path);
 string computeAbsolutePath(const string libraryPath, const string relativePath);
 string removeLastPathElement(const string path, const bool removePreSeparator = false, 
 			     const bool removePostSeparator = false);
+
 unsigned int getFileSize(const string &path);
 string getFileSizeAsString(const string &path);
 bool fileExists(const string &path);
