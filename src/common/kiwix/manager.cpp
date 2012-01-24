@@ -340,6 +340,16 @@ namespace kiwix {
     return this->library;
   }
 
+  bool Manager::getCurrentBook(Book &book) {
+    string currentBookId = getCurrentBookId();
+    if (currentBookId.empty()) {
+      return false;
+    } else {
+      getBookById(currentBookId, book);
+      return true;
+    }
+  }
+
   bool Manager::getBookById(const string id, Book &book) {
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    

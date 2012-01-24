@@ -60,6 +60,7 @@ namespace kiwix {
 			 const bool checkMetaData = false);
     Library cloneLibrary();
     bool getBookById(const string id, Book &book);
+    bool getCurrentBook(Book &book);
     unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
     bool updateBookLastOpenDateById(const string id);
     void removeBookPaths();
