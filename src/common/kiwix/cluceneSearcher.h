@@ -21,6 +21,7 @@
 #define KIWIX_CLUCENE_SEARCHER_H
 
 #include <CLucene.h>
+#include <assert.h>
 #include <CLucene/queryParser/MultiFieldQueryParser.h>
 #include "searcher.h"
 

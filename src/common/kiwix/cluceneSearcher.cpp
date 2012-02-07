@@ -53,12 +53,15 @@ void CluceneSearcher::terminate()
 }
   
 std::string toString(const TCHAR* s){
+  /* Comment out for CLucene 2.3
   int32_t len = _tcslen(s);
   char* buf = new char[len+1];
   STRCPY_WtoA(buf,s,len+1);
   string ret = buf;
   delete[] buf;
-  return ret;
+  */
+  return "";
+    //  return ret;
 }
   
   /* Search strings in the database */
@@ -66,6 +69,7 @@ std::string toString(const TCHAR* s){
 				      const unsigned int resultEnd, const bool verbose) {
     
     // Parse query
+    /* Comment out for Clucene 2.3
     lucene::analysis::standard::StandardAnalyzer* analyzer = new lucene::analysis::standard::StandardAnalyzer();
     QueryParser* parser = new QueryParser(_T("content"), analyzer);
     STRCPY_AtoT(buffer, search.c_str(), MAX_BUFFER_SIZE);
@@ -96,6 +100,7 @@ std::string toString(const TCHAR* s){
 	       i + 1, d->get(_T("title")), d->get(_T("url")),
 	       hits->score(i));
     }
+    */
 /*
       Result result;
       result.url = doc.get_data();
@@ -105,8 +110,8 @@ std::string toString(const TCHAR* s){
       this->results.push_back(result);
 */
   
-    delete hits;
-    delete query;
+//    delete hits;
+    //   delete query;
 
     return;
   }

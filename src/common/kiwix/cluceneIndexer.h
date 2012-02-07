@@ -21,6 +21,7 @@
 #define KIWIX_CLUCENE_INDEXER_H
 
 #include <CLucene.h>
+#include <assert.h>
 #include "indexer.h"
 
 #define MAX_BUFFER_SIZE 4200000
