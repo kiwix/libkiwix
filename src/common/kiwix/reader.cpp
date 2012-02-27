@@ -67,14 +67,68 @@ namespace kiwix {
   void Reader::reset() {
     this->currentArticleOffset = this->firstArticleOffset;
   }
+
+  std::map<std::string, unsigned int> Reader::parseCounterMetadata() {
+    std::map<std::string, unsigned int> counters;
+    string content, mimeType, item, counterString;
+    unsigned int contentLength, counter;
+    string counterUrl = "/M/Counter";
+
+    this->getContentByUrl(counterUrl, content, contentLength, mimeType);
+    stringstream ssContent(content);
+
+    while(getline(ssContent, item,  ';')) {
+      stringstream ssItem(item);
+      getline(ssItem, mimeType, '=');
+      getline(ssItem, counterString, '=');
+      if (!counterString.empty() && !mimeType.empty()) {
+	sscanf(counterString.c_str(), "%u", &counter);
+	counters.insert(pair<string, int>(mimeType, counter));
+      }
+    }
+
+    return counters;
+  }
   
   /* Get the count of articles which can be indexed/displayed */
   unsigned int Reader::getArticleCount() {
-    return this->articleCount;
+    std::map<std::string, unsigned int> counterMap = this->parseCounterMetadata();
+    unsigned int counter = 0;
+    
+    if (counterMap.empty())
+      counter = this->articleCount;
+    else {
+      std::map<std::string, unsigned int>::const_iterator it = counterMap.find("text/html");
+      if (it != counterMap.end())
+	counter = it->second;
+    }
+    
+    return counter;
   }
 
   unsigned int Reader::getMediaCount() {
-    return this->mediaCount;
+    std::map<std::string, unsigned int> counterMap = this->parseCounterMetadata();
+    unsigned int counter = 0;
+
+    if (counterMap.empty())
+      counter = this->mediaCount;
+    else {
+      std::map<std::string, unsigned int>::const_iterator it;
+
+      it = counterMap.find("image/jpeg");
+      if (it != counterMap.end())
+	counter += it->second;
+
+      it = counterMap.find("image/gif");
+      if (it != counterMap.end())
+	counter += it->second;
+
+      it = counterMap.find("image/png");
+      if (it != counterMap.end())
+	counter += it->second;
+    }
+    
+    return counter;
   }
   
   /* Return the UID of the ZIM file */

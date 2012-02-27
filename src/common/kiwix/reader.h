@@ -24,8 +24,10 @@
 #include <zim/file.h>
 #include <zim/article.h>
 #include <zim/fileiterator.h>
+#include <stdio.h>
 #include <string>
 #include <sstream>
+#include <map>
 #include "time.h"
 
 using namespace std;
@@ -71,6 +73,10 @@ namespace kiwix {
     
     std::vector<std::string> suggestions;
     std::vector<std::string>::iterator suggestionsOffset;
+
+  private:
+    std::map<std::string, unsigned int> parseCounterMetadata();
+
   };
 
 }
