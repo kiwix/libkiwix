@@ -18,7 +18,6 @@
  */
 
 #include "regexTools.h"
-#include <iostream>
 
 std::map<std::string, RegexMatcher*> regexCache;
 
@@ -57,12 +56,16 @@ bool matchRegex(const std::string &content, const std::string &regex) {
 void appendToFirstOccurence(std::string &content, const  std::string regex, const std::string &replacement) {
   ucnv_setDefaultName("UTF-8");
   UnicodeString ucontent = UnicodeString(content.c_str());
+  UnicodeString ureplacement = UnicodeString(replacement.c_str());
   RegexMatcher *matcher = buildRegex(regex);
   matcher->reset(ucontent);
 
   if (matcher->find()) {
     UErrorCode status = U_ZERO_ERROR;
-    content.insert(matcher->end(status), replacement);   
+    ucontent.insert(matcher->end(status), ureplacement);   
+    std::string tmp;
+    ucontent.toUTF8String(tmp);
+    content=tmp;
   }
 }
 
