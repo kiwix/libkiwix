@@ -18,6 +18,7 @@
  */
 
 #include "regexTools.h"
+#include <iostream>
 
 std::map<std::string, RegexMatcher*> regexCache;
 
@@ -61,7 +62,7 @@ void appendToFirstOccurence(std::string &content, const  std::string regex, cons
 
   if (matcher->find()) {
     UErrorCode status = U_ZERO_ERROR;
-    content.insert(matcher->start(status), replacement);   
+    content.insert(matcher->end(status), replacement);   
   }
 }
 
