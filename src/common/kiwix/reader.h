@@ -26,6 +26,7 @@
 #include <zim/fileiterator.h>
 #include <stdio.h>
 #include <string>
+#include <exception>
 #include <sstream>
 #include <map>
 #include "time.h"
