@@ -462,7 +462,7 @@ namespace kiwix {
 	if (ok == true && (unsigned int)atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
 	  ok = false;
 	
-	if (ok == true && !language.empty() && itr->language != language)
+	if (ok == true && !language.empty() && !matchRegex(itr->language, language))
 	  ok = false;
 
 	if (ok == true && !creator.empty() && itr->creator != creator)
