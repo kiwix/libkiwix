@@ -40,7 +40,14 @@ namespace kiwix {
       articleCount(0), 
       stepSize(0),
       keywordsBoostFactor(3) {
-    
+   
+    this->setZimFilePath(zimFilePath);
+
+    /* Read the stopwords file */
+    //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
+  }
+
+  bool Indexer::setZimFilePath(const string &zimfilePath) {
     /* Open the ZIM file */
     this->zimFileHandler = new zim::File(zimFilePath);
 
@@ -52,11 +59,28 @@ namespace kiwix {
     /* Compute few things */
     this->articleCount = this->zimFileHandler->getNamespaceCount('A');
     this->stepSize = (float)this->articleCount / (float)100;
-
-    /* Read the stopwords file */
-    //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
   }
   
+  bool Indexer::start() {
+  }
+
+  bool Indexer::stop() {
+  }
+
+  unsigned Indexer::isRunning() {
+  }
+
+  void Indexer::setCurrentArticleOffset(unsigned int offset) {
+    this->currentArticleOffset = offset;
+  }
+
+  unsigned int Indexer::getCurrentArticleOffset() {
+    return this->currentArticleOffset;
+  }
+
+  unsigned int Indexer::getProgression() {
+  }
+
   /* Read the file containing the stopwords */
   bool Indexer::readStopWordsFile(const string path) {
     std::string stopWord;
