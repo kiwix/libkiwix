@@ -47,7 +47,7 @@ namespace kiwix {
     //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
   }
 
-  bool Indexer::setZimFilePath(const string &zimfilePath) {
+  bool Indexer::setZimFilePath(const string &zimFilePath) {
     /* Open the ZIM file */
     this->zimFileHandler = new zim::File(zimFilePath);
 
@@ -62,12 +62,15 @@ namespace kiwix {
   }
   
   bool Indexer::start() {
+    return true;
   }
 
   bool Indexer::stop() {
+    return true;
   }
 
-  unsigned Indexer::isRunning() {
+  bool Indexer::isRunning() {
+    return true;
   }
 
   void Indexer::setCurrentArticleOffset(unsigned int offset) {

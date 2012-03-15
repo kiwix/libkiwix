@@ -56,6 +56,15 @@ namespace kiwix {
     virtual void indexNextPercentPost() = 0;
     virtual void stopIndexing() = 0;
 
+    /* General */
+    bool setZimFilePath(const string &zimFilePath);
+    bool start();
+    bool stop();
+    bool isRunning();
+    void setCurrentArticleOffset(unsigned int offset);
+    unsigned int getCurrentArticleOffset();
+    unsigned int getProgression();
+
     /* ZIM file handling */
     zim::File* zimFileHandler;
     zim::size_type firstArticleOffset;
