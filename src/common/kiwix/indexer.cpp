@@ -59,18 +59,76 @@ namespace kiwix {
     /* Compute few things */
     this->articleCount = this->zimFileHandler->getNamespaceCount('A');
     this->stepSize = (float)this->articleCount / (float)100;
+
+    /* Thread mgmt */
+    this->runningStatus = 0;
   }
-  
+
+  void *Indexer::extractArticles(void *ptr) {
+    kiwix::Indexer *self = (kiwix::Indexer *)ptr;
+    self->incrementRunningStatus();
+    unsigned int startOffset = self->zimFileHandler->getNamespaceBeginOffset('A');
+    unsigned int endOffset = self->zimFileHandler->getNamespaceEndOffset('A');
+
+    /* Goes trough all articles */
+    unsigned int currentOffset = startOffset;
+    zim::Article currentArticle;
+
+    while (currentOffset <= endOffset) {
+      /* Test if the thread should be cancelled */
+      pthread_testcancel();
+
+      /* Redirects are not indexed */
+      do {
+	currentArticle = self->zimFileHandler->getArticle(currentOffset++);
+      } while (currentArticle.isRedirect() && currentOffset++ != endOffset);
+
+      cout << currentArticle.getTitle() << endl;
+
+    }
+
+    self->decrementRunningStatus();
+    pthread_exit(NULL);
+    return NULL;
+  }
+
+  void *Indexer::parseArticles(void *ptr) {
+    pthread_exit(NULL);
+    return NULL;
+  }
+
+  void *Indexer::writeIndex(void *ptr) {
+    pthread_exit(NULL);
+    return NULL;
+  }
+
   bool Indexer::start() {
+    pthread_create(&(this->articleExtracter), NULL, Indexer::extractArticles, ( void *)this);
+    pthread_detach(this->articleExtracter);
+    cout << "end" << endl;
+
     return true;
   }
 
   bool Indexer::stop() {
-    return true;
+      
+      return true;
+  }
+
+  void Indexer::incrementRunningStatus() {
+    this->runningStatus++;
+  }
+
+  void Indexer::decrementRunningStatus() {
+    this->runningStatus--;
+  }
+
+  unsigned int Indexer::getRunningStatus() {
+    return this->runningStatus;
   }
 
   bool Indexer::isRunning() {
-    return true;
+    return this->runningStatus > 0;
   }
 
   void Indexer::setCurrentArticleOffset(unsigned int offset) {
@@ -82,6 +140,8 @@ namespace kiwix {
   }
 
   unsigned int Indexer::getProgression() {
+    unsigned int progression = 0;
+    return progression;
   }
 
   /* Read the file containing the stopwords */

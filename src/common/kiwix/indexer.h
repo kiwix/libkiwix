@@ -27,6 +27,7 @@
 #include <sstream>
 
 #include <xapian.h>
+#include <pthread.h>
 #include <unaccent.h>
 #include <zim/file.h>
 #include <zim/article.h>
@@ -42,7 +43,23 @@ namespace kiwix {
   public:
     Indexer(const string &zimFilePath);
     bool indexNextPercent(const bool &verbose = false);
+    bool setZimFilePath(const string &zimFilePath);
+    bool start();
+    bool stop();
+    bool isRunning();
+    unsigned int getProgression();
+
+  private:
+    pthread_t articleExtracter, articleParser, indexWriter;
+    static void *extractArticles(void *ptr);
+    static void *parseArticles(void *ptr);
+    static void *writeIndex(void *ptr);
     
+    unsigned int runningStatus;
+    void incrementRunningStatus();
+    void decrementRunningStatus();
+    unsigned int getRunningStatus();
+
   protected:
     virtual void indexNextPercentPre() = 0;
     virtual void indexNextArticle(const string &url, 
@@ -56,14 +73,9 @@ namespace kiwix {
     virtual void indexNextPercentPost() = 0;
     virtual void stopIndexing() = 0;
 
-    /* General */
-    bool setZimFilePath(const string &zimFilePath);
-    bool start();
-    bool stop();
-    bool isRunning();
+    /* Article offset */
     void setCurrentArticleOffset(unsigned int offset);
     unsigned int getCurrentArticleOffset();
-    unsigned int getProgression();
 
     /* ZIM file handling */
     zim::File* zimFileHandler;
