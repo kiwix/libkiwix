@@ -22,11 +22,12 @@
 
 #include <string>
 #include <vector>
+#include <stack>
+#include <queue>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-#include <xapian.h>
 #include <pthread.h>
 #include <unaccent.h>
 #include <zim/file.h>
@@ -37,6 +38,11 @@
 using namespace std;
 
 namespace kiwix {
+
+  struct indexerArticleToken {
+    string title;
+    string content;
+  };
   
   class Indexer {
     
@@ -50,15 +56,24 @@ namespace kiwix {
     unsigned int getProgression();
 
   private:
-    pthread_t articleExtracter, articleParser, indexWriter;
+    pthread_t articleExtractor, articleParser, indexWriter;
+    pthread_mutex_t articleQueueMutex;
+    pthread_mutex_t threadIdsMutex;
+    pthread_mutex_t articleExtractorRunningMutex;
+
     static void *extractArticles(void *ptr);
     static void *parseArticles(void *ptr);
     static void *writeIndex(void *ptr);
-    
-    unsigned int runningStatus;
-    void incrementRunningStatus();
-    void decrementRunningStatus();
-    unsigned int getRunningStatus();
+
+    void pushArticleToQueue(indexerArticleToken &token);
+    bool popArticleFromQueue(indexerArticleToken &token);
+    bool isArticleQueueEmpty();
+
+    bool articleExtractorRunningFlag;
+    bool isArticleExtractorRunning();
+    void articleExtractorRunning(bool value);
+
+    std::queue<indexerArticleToken> articleQueue;
 
   protected:
     virtual void indexNextPercentPre() = 0;

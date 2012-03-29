@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Emmanuel Engelhart <kelson@kiwix.org>
+ * Copyright 2011-2012 Emmanuel Engelhart <kelson@kiwix.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -41,6 +41,10 @@ namespace kiwix {
       stepSize(0),
       keywordsBoostFactor(3) {
    
+    /* Initialize mutex */
+    pthread_mutex_init(&articleQueueMutex, NULL);
+    pthread_mutex_init(&articleExtractorRunningMutex, NULL);
+
     this->setZimFilePath(zimFilePath);
 
     /* Read the stopwords file */
@@ -59,14 +63,11 @@ namespace kiwix {
     /* Compute few things */
     this->articleCount = this->zimFileHandler->getNamespaceCount('A');
     this->stepSize = (float)this->articleCount / (float)100;
-
-    /* Thread mgmt */
-    this->runningStatus = 0;
   }
 
   void *Indexer::extractArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
-    self->incrementRunningStatus();
+    self->articleExtractorRunning(true);
     unsigned int startOffset = self->zimFileHandler->getNamespaceBeginOffset('A');
     unsigned int endOffset = self->zimFileHandler->getNamespaceEndOffset('A');
 
@@ -75,24 +76,63 @@ namespace kiwix {
     zim::Article currentArticle;
 
     while (currentOffset <= endOffset) {
-      /* Test if the thread should be cancelled */
-      pthread_testcancel();
-
       /* Redirects are not indexed */
       do {
 	currentArticle = self->zimFileHandler->getArticle(currentOffset++);
       } while (currentArticle.isRedirect() && currentOffset++ != endOffset);
 
-      cout << currentArticle.getTitle() << endl;
+      /* Add articles to the queue */
+      indexerArticleToken token;
+      token.title = currentArticle.getTitle();
+      self->pushArticleToQueue(token);
 
+      /* Test if the thread should be cancelled */
+      pthread_testcancel();
     }
 
-    self->decrementRunningStatus();
+    self->articleExtractorRunning(false);
     pthread_exit(NULL);
     return NULL;
   }
 
+  bool Indexer::isArticleQueueEmpty() {
+    pthread_mutex_lock(&articleQueueMutex);
+    bool retVal = this->articleQueue.empty();
+    pthread_mutex_unlock(&articleQueueMutex);
+    return retVal;
+  }
+
+  void Indexer::pushArticleToQueue(indexerArticleToken &token) {
+    pthread_mutex_lock(&articleQueueMutex); 
+    this->articleQueue.push(token);
+    pthread_mutex_unlock(&articleQueueMutex); 
+  }
+
+  bool Indexer::popArticleFromQueue(indexerArticleToken &token) {
+    while (this->isArticleQueueEmpty() && this->isArticleExtractorRunning()) {
+      sleep(1);
+    }
+
+    if (!this->isArticleQueueEmpty()) {
+      pthread_mutex_lock(&articleQueueMutex); 
+      token = this->articleQueue.front();
+      this->articleQueue.pop();
+      pthread_mutex_unlock(&articleQueueMutex); 
+    } else {
+      return false;
+    }
+
+    return true;
+  }
+
   void *Indexer::parseArticles(void *ptr) {
+    kiwix::Indexer *self = (kiwix::Indexer *)ptr;
+    indexerArticleToken token;
+
+    while (self->popArticleFromQueue(token)) {
+      cout << token.title << endl;
+    }
+
     pthread_exit(NULL);
     return NULL;
   }
@@ -103,32 +143,35 @@ namespace kiwix {
   }
 
   bool Indexer::start() {
-    pthread_create(&(this->articleExtracter), NULL, Indexer::extractArticles, ( void *)this);
-    pthread_detach(this->articleExtracter);
-    cout << "end" << endl;
-
+    pthread_mutex_lock(&threadIdsMutex); 
+    pthread_create(&(this->articleExtractor), NULL, Indexer::extractArticles, (void*)this);
+    pthread_detach(this->articleExtractor);
+    pthread_create(&(this->articleParser), NULL, Indexer::parseArticles, (void*)this);
+    pthread_detach(this->articleParser);
+    pthread_mutex_unlock(&threadIdsMutex);
     return true;
   }
 
   bool Indexer::stop() {
-      
-      return true;
+    pthread_cancel(this->articleExtractor);
+    return true;
   }
 
-  void Indexer::incrementRunningStatus() {
-    this->runningStatus++;
+  void Indexer::articleExtractorRunning(bool value) {
+    pthread_mutex_lock(&articleExtractorRunningMutex);
+    this->articleExtractorRunningFlag = value;
+    pthread_mutex_unlock(&articleExtractorRunningMutex); 
   }
 
-  void Indexer::decrementRunningStatus() {
-    this->runningStatus--;
-  }
-
-  unsigned int Indexer::getRunningStatus() {
-    return this->runningStatus;
+  bool Indexer::isArticleExtractorRunning() {
+    pthread_mutex_lock(&articleExtractorRunningMutex);
+    bool retVal = this->articleExtractorRunningFlag;
+    pthread_mutex_unlock(&articleExtractorRunningMutex); 
+    return retVal;
   }
 
   bool Indexer::isRunning() {
-    return this->runningStatus > 0;
+    return this->isArticleExtractorRunning();
   }
 
   void Indexer::setCurrentArticleOffset(unsigned int offset) {
