@@ -41,6 +41,7 @@ namespace kiwix {
 
   struct indexerArticleToken {
     string title;
+    string url;
     string content;
   };
   

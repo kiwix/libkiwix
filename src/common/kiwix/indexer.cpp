@@ -84,6 +84,8 @@ namespace kiwix {
       /* Add articles to the queue */
       indexerArticleToken token;
       token.title = currentArticle.getTitle();
+      token.url = currentArticle.getLongUrl();
+      token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
       self->pushArticleToQueue(token);
 
       /* Test if the thread should be cancelled */
@@ -106,11 +108,12 @@ namespace kiwix {
     pthread_mutex_lock(&articleQueueMutex); 
     this->articleQueue.push(token);
     pthread_mutex_unlock(&articleQueueMutex); 
+    sleep(int(this->articleQueue.size() / 200) / 10);
   }
 
   bool Indexer::popArticleFromQueue(indexerArticleToken &token) {
     while (this->isArticleQueueEmpty() && this->isArticleExtractorRunning()) {
-      sleep(1);
+      sleep(0.5);
     }
 
     if (!this->isArticleQueueEmpty()) {
@@ -127,12 +130,50 @@ namespace kiwix {
 
   void *Indexer::parseArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
+    size_t found;
     indexerArticleToken token;
+    MyHtmlParser htmlParser;
 
     while (self->popArticleFromQueue(token)) {
       cout << token.title << endl;
-    }
 
+      /* The parser generate a lot of exceptions which should be avoided */
+      try {
+	htmlParser.parse_html(token.content, "UTF-8", true);
+      } catch (...) {
+      }
+
+      /* Get the title */
+      string accentedTitle = htmlParser.title;
+      if (accentedTitle.empty()) {
+	accentedTitle = token.title;
+      }
+      
+      /* If content does not have the noindex meta tag */
+      /* Seems that the parser generates an exception in such case */
+      found = htmlParser.dump.find("NOINDEX");
+      
+      if (found == string::npos) {
+	/* count words */
+	stringstream countWordStringStream;
+	countWordStringStream << self->countWords(htmlParser.dump);
+	const std::string wordCountString = countWordStringStream.str();
+	
+	/* snippet */
+	std::string snippet = std::string(htmlParser.dump, 0, 300);
+	std::string::size_type last = snippet.find_last_of('.');
+	if (last == snippet.npos)
+	  last = snippet.find_last_of(' ');
+	  if (last != snippet.npos)
+	    snippet = snippet.substr(0, last);
+
+	  /* size */
+	  stringstream sizeStringStream;
+	  sizeStringStream << token.content.size() / 1024;
+	  const std::string size = sizeStringStream.str();
+      }
+    }
+    
     pthread_exit(NULL);
     return NULL;
   }
