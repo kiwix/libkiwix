@@ -242,12 +242,19 @@ namespace kiwix {
       book.path = path;
       book.pathAbsolute = path;
       book.id = reader.getId();
-      book.title = reader.getTitle();
       book.description = reader.getDescription();
       book.language = reader.getLanguage();
       book.date = reader.getDate();
       book.creator = reader.getCreator();
       book.publisher = reader.getPublisher();
+
+      book.title = reader.getTitle();
+      if (book.title.empty()) {
+	book.title = getLastPathElement(path);
+	std::replace(book.title.begin(), book.title.end(), '_', ' ');
+	size_t pos = book.title.find(".zim");
+	book.title = book.title.substr(0, pos);
+      }
       
       std::ostringstream articleCountStream;
       articleCountStream << reader.getArticleCount();
