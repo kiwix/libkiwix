@@ -84,7 +84,7 @@ namespace kiwix {
       /* Redirects are not indexed */
       do {
 	currentArticle = self->zimFileHandler->getArticle(currentOffset++);
-      } while (currentArticle.isRedirect() && currentOffset++ != endOffset);
+      } while (currentArticle.isRedirect() && currentOffset != endOffset);
 
       /* Add articles to the queue */
       indexerToken token;
