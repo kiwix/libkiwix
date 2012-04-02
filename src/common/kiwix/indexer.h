@@ -39,10 +39,15 @@ using namespace std;
 
 namespace kiwix {
 
-  struct indexerArticleToken {
-    string title;
+  struct indexerToken {
     string url;
+    string accentedTitle;
+    string title;
+    string keywords;
     string content;
+    string snippet;
+    string size;
+    string wordCount;
   };
   
   class Indexer {
@@ -57,24 +62,45 @@ namespace kiwix {
     unsigned int getProgression();
 
   private:
-    pthread_t articleExtractor, articleParser, indexWriter;
-    pthread_mutex_t articleQueueMutex;
     pthread_mutex_t threadIdsMutex;
+
+    /* Article extraction */
+    pthread_t articleExtractor;
     pthread_mutex_t articleExtractorRunningMutex;
-
     static void *extractArticles(void *ptr);
-    static void *parseArticles(void *ptr);
-    static void *writeIndex(void *ptr);
-
-    void pushArticleToQueue(indexerArticleToken &token);
-    bool popArticleFromQueue(indexerArticleToken &token);
-    bool isArticleQueueEmpty();
-
     bool articleExtractorRunningFlag;
     bool isArticleExtractorRunning();
     void articleExtractorRunning(bool value);
 
-    std::queue<indexerArticleToken> articleQueue;
+    /* Article parsing */
+    pthread_t articleParser;
+    pthread_mutex_t articleParserRunningMutex;
+    static void *parseArticles(void *ptr);
+    bool articleParserRunningFlag;
+    bool isArticleParserRunning();
+    void articleParserRunning(bool value);
+
+    /* Index writting */
+    pthread_t articleIndexer;
+    pthread_mutex_t articleIndexerRunningMutex;
+    static void *indexArticles(void *ptr);
+    bool articleIndexerRunningFlag;
+    bool isArticleIndexerRunning();
+    void articleIndexerRunning(bool value);
+
+    /* To parse queue */
+    std::queue<indexerToken> toParseQueue;
+    pthread_mutex_t toParseQueueMutex;
+    void pushToParseQueue(indexerToken &token);
+    bool popFromToParseQueue(indexerToken &token);
+    bool isToParseQueueEmpty();
+
+    /* To index queue */
+    std::queue<indexerToken> toIndexQueue;
+    pthread_mutex_t toIndexQueueMutex;
+    void pushToIndexQueue(indexerToken &token);
+    bool popFromToIndexQueue(indexerToken &token);
+    bool isToIndexQueueEmpty();
 
   protected:
     virtual void indexNextPercentPre() = 0;

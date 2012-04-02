@@ -42,8 +42,12 @@ namespace kiwix {
       keywordsBoostFactor(3) {
    
     /* Initialize mutex */
-    pthread_mutex_init(&articleQueueMutex, NULL);
+    pthread_mutex_init(&threadIdsMutex, NULL);
+    pthread_mutex_init(&toParseQueueMutex, NULL);
+    pthread_mutex_init(&toIndexQueueMutex, NULL);
     pthread_mutex_init(&articleExtractorRunningMutex, NULL);
+    pthread_mutex_init(&articleParserRunningMutex, NULL);
+    pthread_mutex_init(&articleIndexerRunningMutex, NULL);
 
     this->setZimFilePath(zimFilePath);
 
@@ -65,6 +69,7 @@ namespace kiwix {
     this->stepSize = (float)this->articleCount / (float)100;
   }
 
+  /* Article extractor methods */
   void *Indexer::extractArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
     self->articleExtractorRunning(true);
@@ -82,11 +87,11 @@ namespace kiwix {
       } while (currentArticle.isRedirect() && currentOffset++ != endOffset);
 
       /* Add articles to the queue */
-      indexerArticleToken token;
+      indexerToken token;
       token.title = currentArticle.getTitle();
       token.url = currentArticle.getLongUrl();
       token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
-      self->pushArticleToQueue(token);
+      self->pushToParseQueue(token);
 
       /* Test if the thread should be cancelled */
       pthread_testcancel();
@@ -96,46 +101,28 @@ namespace kiwix {
     pthread_exit(NULL);
     return NULL;
   }
-
-  bool Indexer::isArticleQueueEmpty() {
-    pthread_mutex_lock(&articleQueueMutex);
-    bool retVal = this->articleQueue.empty();
-    pthread_mutex_unlock(&articleQueueMutex);
+  
+  void Indexer::articleExtractorRunning(bool value) {
+    pthread_mutex_lock(&articleExtractorRunningMutex);
+    this->articleExtractorRunningFlag = value;
+    pthread_mutex_unlock(&articleExtractorRunningMutex); 
+  }
+  
+  bool Indexer::isArticleExtractorRunning() {
+    pthread_mutex_lock(&articleExtractorRunningMutex);
+    bool retVal = this->articleExtractorRunningFlag;
+    pthread_mutex_unlock(&articleExtractorRunningMutex); 
     return retVal;
   }
-
-  void Indexer::pushArticleToQueue(indexerArticleToken &token) {
-    pthread_mutex_lock(&articleQueueMutex); 
-    this->articleQueue.push(token);
-    pthread_mutex_unlock(&articleQueueMutex); 
-    sleep(int(this->articleQueue.size() / 200) / 10);
-  }
-
-  bool Indexer::popArticleFromQueue(indexerArticleToken &token) {
-    while (this->isArticleQueueEmpty() && this->isArticleExtractorRunning()) {
-      sleep(0.5);
-    }
-
-    if (!this->isArticleQueueEmpty()) {
-      pthread_mutex_lock(&articleQueueMutex); 
-      token = this->articleQueue.front();
-      this->articleQueue.pop();
-      pthread_mutex_unlock(&articleQueueMutex); 
-    } else {
-      return false;
-    }
-
-    return true;
-  }
-
+  
+  /* Article parser methods */
   void *Indexer::parseArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
     size_t found;
-    indexerArticleToken token;
-    MyHtmlParser htmlParser;
+    indexerToken token;
 
-    while (self->popArticleFromQueue(token)) {
-      cout << token.title << endl;
+    while (self->popFromToParseQueue(token)) {
+      MyHtmlParser htmlParser;
 
       /* The parser generate a lot of exceptions which should be avoided */
       try {
@@ -143,52 +130,172 @@ namespace kiwix {
       } catch (...) {
       }
 
-      /* Get the title */
-      string accentedTitle = htmlParser.title;
-      if (accentedTitle.empty()) {
-	accentedTitle = token.title;
-      }
-      
       /* If content does not have the noindex meta tag */
       /* Seems that the parser generates an exception in such case */
       found = htmlParser.dump.find("NOINDEX");
       
       if (found == string::npos) {
+
+	/* Get the accented title */
+	token.accentedTitle = (htmlParser.title.empty() ? token.title : htmlParser.title);
+
 	/* count words */
 	stringstream countWordStringStream;
 	countWordStringStream << self->countWords(htmlParser.dump);
-	const std::string wordCountString = countWordStringStream.str();
+	token.wordCount = countWordStringStream.str();
 	
 	/* snippet */
 	std::string snippet = std::string(htmlParser.dump, 0, 300);
 	std::string::size_type last = snippet.find_last_of('.');
 	if (last == snippet.npos)
 	  last = snippet.find_last_of(' ');
-	  if (last != snippet.npos)
-	    snippet = snippet.substr(0, last);
+	if (last != snippet.npos)
+	  snippet = snippet.substr(0, last);
+	token.snippet = snippet;
 
-	  /* size */
-	  stringstream sizeStringStream;
-	  sizeStringStream << token.content.size() / 1024;
-	  const std::string size = sizeStringStream.str();
-      }
+	/* size */
+	stringstream sizeStringStream;
+	sizeStringStream << token.content.size() / 1024;
+	token.size = sizeStringStream.str();
+
+	/* Remove accent */
+	token.title = removeAccents(token.accentedTitle);
+	token.keywords = removeAccents(htmlParser.keywords);
+	token.content = removeAccents(htmlParser.dump);
+	self->pushToIndexQueue(token);
+
+	/* Test if the thread should be cancelled */
+	pthread_testcancel();      }
     }
     
+    self->articleParserRunning(false);
     pthread_exit(NULL);
     return NULL;
   }
 
-  void *Indexer::writeIndex(void *ptr) {
+  void Indexer::articleParserRunning(bool value) {
+    pthread_mutex_lock(&articleParserRunningMutex);
+    this->articleParserRunningFlag = value;
+    pthread_mutex_unlock(&articleParserRunningMutex); 
+  }
+  
+  bool Indexer::isArticleParserRunning() {
+    pthread_mutex_lock(&articleParserRunningMutex);
+    bool retVal = this->articleParserRunningFlag;
+    pthread_mutex_unlock(&articleParserRunningMutex); 
+    return retVal;
+  }
+
+  /* Article indexer methods */
+  void *Indexer::indexArticles(void *ptr) {
+    kiwix::Indexer *self = (kiwix::Indexer *)ptr;
+    indexerToken token;
+
+    while (self->popFromToIndexQueue(token)) {
+      self->indexNextArticle(token.url, 
+			     token.accentedTitle,
+			     token.title, 
+			     token.keywords,
+			     token.content,
+			     token.snippet,
+			     token.size,
+			     token.wordCount
+			     );
+    }
+
+    self->indexNextPercentPost();
+
+    self->articleIndexerRunning(false);
     pthread_exit(NULL);
     return NULL;
+  }
+
+  void Indexer::articleIndexerRunning(bool value) {
+    pthread_mutex_lock(&articleIndexerRunningMutex);
+    this->articleIndexerRunningFlag = value;
+    pthread_mutex_unlock(&articleIndexerRunningMutex); 
+  }
+  
+  bool Indexer::isArticleIndexerRunning() {
+    pthread_mutex_lock(&articleIndexerRunningMutex);
+    bool retVal = this->articleIndexerRunningFlag;
+    pthread_mutex_unlock(&articleIndexerRunningMutex); 
+    return retVal;
+  }
+
+  /* ToParseQueue methods */
+  bool Indexer::isToParseQueueEmpty() {
+    pthread_mutex_lock(&toParseQueueMutex);
+    bool retVal = this->toParseQueue.empty();
+    pthread_mutex_unlock(&toParseQueueMutex);
+    return retVal;
+  }
+
+  void Indexer::pushToParseQueue(indexerToken &token) {
+    pthread_mutex_lock(&toParseQueueMutex); 
+    this->toParseQueue.push(token);
+    pthread_mutex_unlock(&toParseQueueMutex); 
+    sleep(int(this->toParseQueue.size() / 200) / 10);
+  }
+
+  bool Indexer::popFromToParseQueue(indexerToken &token) {
+    while (this->isToParseQueueEmpty() && this->isArticleExtractorRunning()) {
+      sleep(0.5);
+    }
+
+    if (!this->isToParseQueueEmpty()) {
+      pthread_mutex_lock(&toParseQueueMutex); 
+      token = this->toParseQueue.front();
+      this->toParseQueue.pop();
+      pthread_mutex_unlock(&toParseQueueMutex); 
+    } else {
+      return false;
+    }
+
+    return true;
+  }
+
+  /* ToIndexQueue methods */
+  bool Indexer::isToIndexQueueEmpty() {
+    pthread_mutex_lock(&toIndexQueueMutex);
+    bool retVal = this->toIndexQueue.empty();
+    pthread_mutex_unlock(&toIndexQueueMutex);
+    return retVal;
+  }
+
+  void Indexer::pushToIndexQueue(indexerToken &token) {
+    pthread_mutex_lock(&toIndexQueueMutex); 
+    this->toIndexQueue.push(token);
+    pthread_mutex_unlock(&toIndexQueueMutex); 
+    sleep(int(this->toIndexQueue.size() / 200) / 10);
+  }
+
+  bool Indexer::popFromToIndexQueue(indexerToken &token) {
+    while (this->isToIndexQueueEmpty() && this->isArticleParserRunning()) {
+      sleep(0.5);
+    }
+
+    if (!this->isToIndexQueueEmpty()) {
+      pthread_mutex_lock(&toIndexQueueMutex); 
+      token = this->toIndexQueue.front();
+      this->toIndexQueue.pop();
+      pthread_mutex_unlock(&toIndexQueueMutex); 
+    } else {
+      return false;
+    }
+
+    return true;
   }
 
   bool Indexer::start() {
+    this->indexNextPercentPre();
     pthread_mutex_lock(&threadIdsMutex); 
     pthread_create(&(this->articleExtractor), NULL, Indexer::extractArticles, (void*)this);
     pthread_detach(this->articleExtractor);
     pthread_create(&(this->articleParser), NULL, Indexer::parseArticles, (void*)this);
     pthread_detach(this->articleParser);
+    pthread_create(&(this->articleIndexer), NULL, Indexer::indexArticles, (void*)this);
+    pthread_detach(this->articleIndexer);
     pthread_mutex_unlock(&threadIdsMutex);
     return true;
   }
@@ -198,21 +305,8 @@ namespace kiwix {
     return true;
   }
 
-  void Indexer::articleExtractorRunning(bool value) {
-    pthread_mutex_lock(&articleExtractorRunningMutex);
-    this->articleExtractorRunningFlag = value;
-    pthread_mutex_unlock(&articleExtractorRunningMutex); 
-  }
-
-  bool Indexer::isArticleExtractorRunning() {
-    pthread_mutex_lock(&articleExtractorRunningMutex);
-    bool retVal = this->articleExtractorRunningFlag;
-    pthread_mutex_unlock(&articleExtractorRunningMutex); 
-    return retVal;
-  }
-
   bool Indexer::isRunning() {
-    return this->isArticleExtractorRunning();
+    return this->isArticleExtractorRunning() || this->isArticleIndexerRunning() || this->isArticleParserRunning();
   }
 
   void Indexer::setCurrentArticleOffset(unsigned int offset) {
