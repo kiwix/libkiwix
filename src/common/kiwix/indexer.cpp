@@ -41,6 +41,14 @@ namespace kiwix {
       stepSize(0),
       keywordsBoostFactor(3) {
    
+    this->initialize();
+    this->setZimFilePath(zimFilePath);
+
+    /* Read the stopwords file */
+    //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
+  }
+
+  void Indexer::initialize() {
     /* Initialize mutex */
     pthread_mutex_init(&threadIdsMutex, NULL);
     pthread_mutex_init(&toParseQueueMutex, NULL);
@@ -48,11 +56,11 @@ namespace kiwix {
     pthread_mutex_init(&articleExtractorRunningMutex, NULL);
     pthread_mutex_init(&articleParserRunningMutex, NULL);
     pthread_mutex_init(&articleIndexerRunningMutex, NULL);
-
-    this->setZimFilePath(zimFilePath);
-
-    /* Read the stopwords file */
-    //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
+    pthread_mutex_init(&articleCountMutex, NULL);
+    pthread_mutex_init(&progressionMutex, NULL);
+    
+    /* Article count & Progression */
+    this->setProgression(0);
   }
 
   bool Indexer::setZimFilePath(const string &zimFilePath) {
@@ -65,7 +73,9 @@ namespace kiwix {
     this->currentArticleOffset = this->firstArticleOffset;
     
     /* Compute few things */
-    this->articleCount = this->zimFileHandler->getNamespaceCount('A');
+    kiwix::Reader reader(zimFilePath);
+    this->setArticleCount(reader.getArticleCount());
+    //this->articleCount = this->zimFileHandler->getNamespaceCount('A');
     this->stepSize = (float)this->articleCount / (float)100;
   }
 
@@ -118,6 +128,7 @@ namespace kiwix {
   /* Article parser methods */
   void *Indexer::parseArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
+    self->articleParserRunning(true);
     size_t found;
     indexerToken token;
 
@@ -189,7 +200,10 @@ namespace kiwix {
   /* Article indexer methods */
   void *Indexer::indexArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
+    self->articleIndexerRunning(true);
     indexerToken token;
+    unsigned int stepSize = ((self->getArticleCount() / 100) < 1 ? 1 : (self->getArticleCount() / 100));
+    unsigned indexedArticleCount = 0;
 
     while (self->popFromToIndexQueue(token)) {
       self->indexNextArticle(token.url, 
@@ -201,8 +215,13 @@ namespace kiwix {
 			     token.size,
 			     token.wordCount
 			     );
+
+      if (++indexedArticleCount % stepSize == 0) {
+	self->setProgression(self->getProgression() + 1);
+      }
     }
 
+    self->setProgression(100);
     self->indexNextPercentPost();
 
     self->articleIndexerRunning(false);
@@ -287,6 +306,33 @@ namespace kiwix {
     return true;
   }
 
+  /* Article Count & Progression */
+  void Indexer::setArticleCount(unsigned int articleCount) {
+    pthread_mutex_lock(&articleCountMutex); 
+    this->articleCount = articleCount;
+    pthread_mutex_unlock(&articleCountMutex); 
+  }
+
+  unsigned int Indexer::getArticleCount() {
+    pthread_mutex_lock(&articleCountMutex); 
+    unsigned int retVal = this->articleCount;
+    pthread_mutex_unlock(&articleCountMutex);
+    return retVal;
+  }
+
+  void Indexer::setProgression(unsigned int progression) {
+    pthread_mutex_lock(&progressionMutex); 
+    this->progression = progression;
+    pthread_mutex_unlock(&progressionMutex); 
+  }
+
+  unsigned int Indexer::getProgression() {
+    pthread_mutex_lock(&progressionMutex); 
+    unsigned int retVal = this->progression;
+    pthread_mutex_unlock(&progressionMutex); 
+    return retVal;
+  }
+
   bool Indexer::start() {
     this->indexNextPercentPre();
     pthread_mutex_lock(&threadIdsMutex); 
@@ -301,7 +347,11 @@ namespace kiwix {
   }
 
   bool Indexer::stop() {
+    pthread_mutex_lock(&threadIdsMutex); 
     pthread_cancel(this->articleExtractor);
+    pthread_cancel(this->articleParser);
+    pthread_cancel(this->articleIndexer);
+    pthread_mutex_unlock(&threadIdsMutex); 
     return true;
   }
 
@@ -315,11 +365,6 @@ namespace kiwix {
 
   unsigned int Indexer::getCurrentArticleOffset() {
     return this->currentArticleOffset;
-  }
-
-  unsigned int Indexer::getProgression() {
-    unsigned int progression = 0;
-    return progression;
   }
 
   /* Read the file containing the stopwords */

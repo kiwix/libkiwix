@@ -33,6 +33,7 @@
 #include <zim/file.h>
 #include <zim/article.h>
 #include <zim/fileiterator.h>
+#include "reader.h"
 #include "xapian/myhtmlparse.h"
 
 using namespace std;
@@ -63,6 +64,7 @@ namespace kiwix {
 
   private:
     pthread_mutex_t threadIdsMutex;
+    void initialize();
 
     /* Article extraction */
     pthread_t articleExtractor;
@@ -102,6 +104,15 @@ namespace kiwix {
     bool popFromToIndexQueue(indexerToken &token);
     bool isToIndexQueueEmpty();
 
+    /* Article Count & Progression */
+    unsigned int articleCount;
+    pthread_mutex_t articleCountMutex;
+    void setArticleCount(unsigned int articleCount);
+    unsigned int getArticleCount();
+    unsigned int progression;
+    pthread_mutex_t progressionMutex;
+    void setProgression(unsigned int progression);
+
   protected:
     virtual void indexNextPercentPre() = 0;
     virtual void indexNextArticle(const string &url, 
@@ -134,7 +145,6 @@ namespace kiwix {
     std::vector<std::string> stopWords;
 
     /* Others */
-    unsigned int articleCount;
     float stepSize;
 
     /* Boost factor */
