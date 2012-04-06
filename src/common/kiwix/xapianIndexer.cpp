@@ -22,20 +22,15 @@
 namespace kiwix {
 
   /* Constructor */
-  XapianIndexer::XapianIndexer(const string &zimFilePath, const string &xapianDirectoryPath) :
-    Indexer(zimFilePath) {
-    
-    /* Open the Xapian directory */
-    this->writableDatabase = new Xapian::WritableDatabase(xapianDirectoryPath, 
-							  Xapian::DB_CREATE_OR_OVERWRITE);
-
+  XapianIndexer::XapianIndexer() {
     /* Stemming */
     /*
     stemmer = Xapian::Stem("french");
     indexer.set_stemmer(stemmer);
     */
 
-    /* Stop words
+    /* Stop words */
+    /*
     std::vector<std::string>::const_iterator stopWordsIterator = this->stopWords.begin();
     this->stopper.add("ceci");
     while (stopWordsIterator != this->stopWords.end()) {
@@ -46,19 +41,20 @@ namespace kiwix {
     */
   }
   
-  void XapianIndexer::indexNextPercentPre() {
-    this->writableDatabase->begin_transaction(true);
+  void XapianIndexer::indexingPrelude(const string &indexPath) {
+    this->writableDatabase = Xapian::WritableDatabase(indexPath, Xapian::DB_CREATE_OR_OVERWRITE);
+    this->writableDatabase.begin_transaction(true);
   }
   
-  void XapianIndexer::indexNextArticle(const string &url, 
-				       const string &title, 
-				       const string &unaccentedTitle,
-				       const string &keywords, 
-				       const string &content,
-				       const string &snippet,
-				       const string &size,
-				       const string &wordCount) {
-
+  void XapianIndexer::index(const string &url, 
+			    const string &title, 
+			    const string &unaccentedTitle,
+			    const string &keywords, 
+			    const string &content,
+			    const string &snippet,
+			    const string &size,
+			    const string &wordCount) {
+    
     /* Put the data in the document */
     Xapian::Document currentDocument; 
     currentDocument.clear_values();
@@ -85,26 +81,17 @@ namespace kiwix {
     }
     
     /* add to the database */
-    this->writableDatabase->add_document(currentDocument);
-  }
-
-  void XapianIndexer::indexNextPercentPost() {
-    /* Flush and close Xapian transaction*/
-    this->writableDatabase->commit_transaction();
+    this->writableDatabase.add_document(currentDocument);
   }
   
-  /* Stop indexing. TODO: using it crashs the soft under windows. Have to do it in indexNextPercent() */
-  void XapianIndexer::stopIndexing() {
-    /* Delete the zimFileHandler */
-    if (this->zimFileHandler != NULL) {
-      delete this->zimFileHandler;
-      this->zimFileHandler = NULL;
-    }
-    
-    /* Delete the Xapian writableDatabase */
-    if (this->writableDatabase != NULL) {
-      delete this->writableDatabase;
-      this->writableDatabase = NULL;
-    }
+  void XapianIndexer::flush() {
+    this->writableDatabase.commit_transaction();
+    this->writableDatabase.begin_transaction(true);
+  }
+
+  void XapianIndexer::indexingPostlude() {
+    this->flush();
+    this->writableDatabase.commit_transaction();
+    this->writableDatabase.commit();
   }
 }

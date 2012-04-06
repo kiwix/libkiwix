@@ -62,6 +62,10 @@ namespace kiwix {
       delete this->zimFileHandler;
     }
   }
+
+  zim::File* Reader::getZimFileHandler() {
+    return this->zimFileHandler;
+  }
   
   /* Reset the cursor for GetNextArticle() */
   void Reader::reset() {

@@ -35,20 +35,9 @@ namespace kiwix {
   }
 
   /* Constructor */
-  Indexer::Indexer(const string &zimFilePath) 
-    : zimFileHandler(NULL), 
-      articleCount(0), 
-      stepSize(0),
-      keywordsBoostFactor(3) {
-   
-    this->initialize();
-    this->setZimFilePath(zimFilePath);
+  Indexer::Indexer() :
+    keywordsBoostFactor(3) {
 
-    /* Read the stopwords file */
-    //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
-  }
-
-  void Indexer::initialize() {
     /* Initialize mutex */
     pthread_mutex_init(&threadIdsMutex, NULL);
     pthread_mutex_init(&toParseQueueMutex, NULL);
@@ -57,44 +46,34 @@ namespace kiwix {
     pthread_mutex_init(&articleParserRunningMutex, NULL);
     pthread_mutex_init(&articleIndexerRunningMutex, NULL);
     pthread_mutex_init(&articleCountMutex, NULL);
+    pthread_mutex_init(&zimPathMutex, NULL);
+    pthread_mutex_init(&indexPathMutex, NULL);
     pthread_mutex_init(&progressionMutex, NULL);
     
-    /* Article count & Progression */
-    this->setProgression(0);
-  }
-
-  bool Indexer::setZimFilePath(const string &zimFilePath) {
-    /* Open the ZIM file */
-    this->zimFileHandler = new zim::File(zimFilePath);
-
-    /* Define a few values */
-    this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
-    this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
-    this->currentArticleOffset = this->firstArticleOffset;
-    
-    /* Compute few things */
-    kiwix::Reader reader(zimFilePath);
-    this->setArticleCount(reader.getArticleCount());
-    //this->articleCount = this->zimFileHandler->getNamespaceCount('A');
-    this->stepSize = (float)this->articleCount / (float)100;
+    /* Read the stopwords file */
+    //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
   }
 
   /* Article extractor methods */
   void *Indexer::extractArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
     self->articleExtractorRunning(true);
-    unsigned int startOffset = self->zimFileHandler->getNamespaceBeginOffset('A');
-    unsigned int endOffset = self->zimFileHandler->getNamespaceEndOffset('A');
+
+    /* Get the number of article to index */
+    kiwix::Reader reader(self->getZimPath());
+    self->setArticleCount(reader.getArticleCount());
 
     /* Goes trough all articles */
-    unsigned int currentOffset = startOffset;
+    zim::File *zimHandler = reader.getZimFileHandler();
+    unsigned int currentOffset = zimHandler->getNamespaceBeginOffset('A');;
+    unsigned int lastOffset = zimHandler->getNamespaceEndOffset('A');;
     zim::Article currentArticle;
 
-    while (currentOffset <= endOffset) {
+    while (currentOffset <= lastOffset) {
       /* Redirects are not indexed */
       do {
-	currentArticle = self->zimFileHandler->getArticle(currentOffset++);
-      } while (currentArticle.isRedirect() && currentOffset != endOffset);
+	currentArticle = zimHandler->getArticle(currentOffset++);
+      } while (currentArticle.isRedirect() && currentOffset != lastOffset);
 
       /* Add articles to the queue */
       indexerToken token;
@@ -176,7 +155,8 @@ namespace kiwix {
 	self->pushToIndexQueue(token);
 
 	/* Test if the thread should be cancelled */
-	pthread_testcancel();      }
+	pthread_testcancel();     
+      }
     }
     
     self->articleParserRunning(false);
@@ -201,29 +181,36 @@ namespace kiwix {
   void *Indexer::indexArticles(void *ptr) {
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
     self->articleIndexerRunning(true);
+
     indexerToken token;
-    unsigned int stepSize = ((self->getArticleCount() / 100) < 1 ? 1 : (self->getArticleCount() / 100));
     unsigned indexedArticleCount = 0;
+    unsigned int stepSize = ((self->getArticleCount() / 100) < 1 ? 1 : (self->getArticleCount() / 100));
+    self->indexingPrelude(self->getIndexPath()); 
 
     while (self->popFromToIndexQueue(token)) {
-      self->indexNextArticle(token.url, 
-			     token.accentedTitle,
-			     token.title, 
-			     token.keywords,
-			     token.content,
-			     token.snippet,
-			     token.size,
-			     token.wordCount
-			     );
-
+      self->index(token.url, 
+		  token.accentedTitle,
+		  token.title, 
+		  token.keywords,
+		  token.content,
+		  token.snippet,
+		  token.size,
+		  token.wordCount
+		  );
+      
       if (++indexedArticleCount % stepSize == 0) {
 	self->setProgression(self->getProgression() + 1);
       }
+
+      if (indexedArticleCount % 10000 == 0) {
+	self->flush();
+      }
+
+      /* Test if the thread should be cancelled */
+      pthread_testcancel();
     }
-
     self->setProgression(100);
-    self->indexNextPercentPost();
-
+    self->indexingPostlude();
     self->articleIndexerRunning(false);
     pthread_exit(NULL);
     return NULL;
@@ -306,8 +293,34 @@ namespace kiwix {
     return true;
   }
 
-  /* Article Count & Progression */
-  void Indexer::setArticleCount(unsigned int articleCount) {
+  /* ZIM & Index methods */
+  void Indexer::setZimPath(const string path) {
+    pthread_mutex_lock(&zimPathMutex); 
+    this->zimPath = path;
+    pthread_mutex_unlock(&zimPathMutex); 
+  }
+
+  string Indexer::getZimPath() {
+    pthread_mutex_lock(&zimPathMutex); 
+    string retVal = this->zimPath;
+    pthread_mutex_unlock(&zimPathMutex);
+    return retVal;
+  }
+
+  void Indexer::setIndexPath(const string path) {
+    pthread_mutex_lock(&indexPathMutex); 
+    this->indexPath = path;
+    pthread_mutex_unlock(&indexPathMutex); 
+  }
+
+  string Indexer::getIndexPath() {
+    pthread_mutex_lock(&indexPathMutex); 
+    string retVal = this->indexPath;
+    pthread_mutex_unlock(&indexPathMutex);
+    return retVal;
+  }
+
+  void Indexer::setArticleCount(const unsigned int articleCount) {
     pthread_mutex_lock(&articleCountMutex); 
     this->articleCount = articleCount;
     pthread_mutex_unlock(&articleCountMutex); 
@@ -320,7 +333,7 @@ namespace kiwix {
     return retVal;
   }
 
-  void Indexer::setProgression(unsigned int progression) {
+  void Indexer::setProgression(const unsigned int progression) {
     pthread_mutex_lock(&progressionMutex); 
     this->progression = progression;
     pthread_mutex_unlock(&progressionMutex); 
@@ -333,8 +346,12 @@ namespace kiwix {
     return retVal;
   }
 
-  bool Indexer::start() {
-    this->indexNextPercentPre();
+  /* Manage */
+  bool Indexer::start(const string &zimPath, const string &indexPath) {
+    this->setProgression(0);
+    this->setZimPath(zimPath);
+    this->setIndexPath(indexPath);
+    
     pthread_mutex_lock(&threadIdsMutex); 
     pthread_create(&(this->articleExtractor), NULL, Indexer::extractArticles, (void*)this);
     pthread_detach(this->articleExtractor);
@@ -343,15 +360,7 @@ namespace kiwix {
     pthread_create(&(this->articleIndexer), NULL, Indexer::indexArticles, (void*)this);
     pthread_detach(this->articleIndexer);
     pthread_mutex_unlock(&threadIdsMutex);
-    return true;
-  }
 
-  bool Indexer::stop() {
-    pthread_mutex_lock(&threadIdsMutex); 
-    pthread_cancel(this->articleExtractor);
-    pthread_cancel(this->articleParser);
-    pthread_cancel(this->articleIndexer);
-    pthread_mutex_unlock(&threadIdsMutex); 
     return true;
   }
 
@@ -359,12 +368,27 @@ namespace kiwix {
     return this->isArticleExtractorRunning() || this->isArticleIndexerRunning() || this->isArticleParserRunning();
   }
 
-  void Indexer::setCurrentArticleOffset(unsigned int offset) {
-    this->currentArticleOffset = offset;
-  }
+  bool Indexer::stop() {
+    if (this->isRunning()) {
+      bool isArticleExtractorRunning = this->isArticleExtractorRunning();
+      bool isArticleIndexerRunning = this->isArticleIndexerRunning();
+      bool isArticleParserRunning = this->isArticleParserRunning();
+      
+      pthread_mutex_lock(&threadIdsMutex); 
+      
+      if (isArticleExtractorRunning)
+	pthread_cancel(this->articleExtractor);
+      if (isArticleIndexerRunning)
+	pthread_cancel(this->articleParser);
+      if (isArticleParserRunning)
+	pthread_cancel(this->articleIndexer);
+      
+      pthread_mutex_unlock(&threadIdsMutex); 
+      
+      this->articleIndexerRunning(false);
+    }
 
-  unsigned int Indexer::getCurrentArticleOffset() {
-    return this->currentArticleOffset;
+    return true;
   }
 
   /* Read the file containing the stopwords */
@@ -380,104 +404,6 @@ namespace kiwix {
 
     std::cout << "Read " << this->stopWords.size() << " lines.\n";
     return true;
-  }
-
-  /* Index next percent */
-  bool Indexer::indexNextPercent(const bool &verbose) {
-    float thresholdOffset = this->currentArticleOffset + this->stepSize;
-    size_t found;
-
-    /* Check if we can start */
-    if (this->zimFileHandler == NULL) {
-      return false;
-    }
-
-    this->indexNextPercentPre();
-
-    while(this->currentArticleOffset < thresholdOffset && 
-	  this->currentArticleOffset <= this->lastArticleOffset) {
-
-      zim::Article currentArticle;
-      
-      /* Get next non redirect article */
-      do {
-	currentArticle = this->zimFileHandler->getArticle(this->currentArticleOffset);
-      } while (this->currentArticleOffset++ &&
-	       currentArticle.isRedirect() && 
-	       this->currentArticleOffset != this->lastArticleOffset);
-
-      if (!currentArticle.isRedirect()) {
-	
-	/* Index the content */
-	this->htmlParser.reset();
-	string content (currentArticle.getData().data(), currentArticle.getData().size());
-
-	/* The parser generate a lot of exceptions which should be avoided */
-	try {
-	  this->htmlParser.parse_html(content, "UTF-8", true);
-	} catch (...) {
-	}
-	
-	/* If content does not have the noindex meta tag */
-	/* Seems that the parser generates an exception in such case */
-	found = this->htmlParser.dump.find("NOINDEX");
-	
-	if (found == string::npos) {
-	  string url = currentArticle.getLongUrl();
-	  
-	  /* Debug output */
-	  if (verbose) {
-	    std::cout << "Indexing " << url << "..." << std::endl;
-	  }
-
-	  /* Get the title */
-	  string accentedTitle = this->htmlParser.title;
-	  if (accentedTitle.empty()) {
-	    accentedTitle = currentArticle.getTitle();
-	  }
-
-	  /* count words */
-	  stringstream countWordStringStream;
-	  countWordStringStream << countWords(this->htmlParser.dump);
-	  const std::string wordCountString = countWordStringStream.str();
-
-	  /* snippet */
-	  std::string snippet = std::string(this->htmlParser.dump, 0, 300);
-	  std::string::size_type last = snippet.find_last_of('.');
-	  if (last == snippet.npos)
-	    last = snippet.find_last_of(' ');
-	  if (last != snippet.npos)
-	    snippet = snippet.substr(0, last);
-
-	  /* size */
-	  stringstream sizeStringStream;
-	  sizeStringStream << content.size() / 1024;
-	  const std::string size = sizeStringStream.str();
-
-	  this->indexNextArticle(url, 
-				 accentedTitle,
-				 removeAccents(this->htmlParser.title), 
-				 removeAccents(this->htmlParser.keywords),
-				 removeAccents(this->htmlParser.dump),
-				 snippet,
-				 size,
-				 wordCountString
-				 );
-
-	}
-      }
-    }
-
-    this->indexNextPercentPost();
-    
-    /* increment the offset and set returned value */
-    if (this->currentArticleOffset <= this->lastArticleOffset) {
-      return true;
-    } else {
-        // commented as it never returns on OSX.
-      //this->stopIndexing();
-      return false;
-    }
   }
 
 }

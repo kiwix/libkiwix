@@ -54,17 +54,14 @@ namespace kiwix {
   class Indexer {
     
   public:
-    Indexer(const string &zimFilePath);
-    bool indexNextPercent(const bool &verbose = false);
-    bool setZimFilePath(const string &zimFilePath);
-    bool start();
+    Indexer();
+    bool start(const string &zimPath, const string &indexPath);
     bool stop();
     bool isRunning();
     unsigned int getProgression();
 
   private:
     pthread_mutex_t threadIdsMutex;
-    void initialize();
 
     /* Article extraction */
     pthread_t articleExtractor;
@@ -107,45 +104,46 @@ namespace kiwix {
     /* Article Count & Progression */
     unsigned int articleCount;
     pthread_mutex_t articleCountMutex;
-    void setArticleCount(unsigned int articleCount);
+    void setArticleCount(const unsigned int articleCount);
     unsigned int getArticleCount();
+
+    /* Progression */
     unsigned int progression;
     pthread_mutex_t progressionMutex;
-    void setProgression(unsigned int progression);
+    void setProgression(const unsigned int progression);
+    /* getProgression() is public */
+
+    /* ZIM path */
+    pthread_mutex_t zimPathMutex;
+    string zimPath;
+    void setZimPath(const string path);
+    string getZimPath();
+
+    /* Index path */
+    pthread_mutex_t indexPathMutex;
+    string indexPath;
+    void setIndexPath(const string path);
+    string getIndexPath();
 
   protected:
-    virtual void indexNextPercentPre() = 0;
-    virtual void indexNextArticle(const string &url, 
-				  const string &title, 
-				  const string &unaccentedTitle,
-				  const string &keywords, 
-				  const string &content,
-				  const string &snippet,
-				  const string &size,
-				  const string &wordCount) = 0;
-    virtual void indexNextPercentPost() = 0;
-    virtual void stopIndexing() = 0;
-
-    /* Article offset */
-    void setCurrentArticleOffset(unsigned int offset);
-    unsigned int getCurrentArticleOffset();
-
-    /* ZIM file handling */
-    zim::File* zimFileHandler;
-    zim::size_type firstArticleOffset;
-    zim::size_type lastArticleOffset;
-    zim::size_type currentArticleOffset;
+    virtual void indexingPrelude(const string &indexPath) = 0;
+    virtual void index(const string &url, 
+		       const string &title, 
+		       const string &unaccentedTitle,
+		       const string &keywords, 
+		       const string &content,
+		       const string &snippet,
+		       const string &size,
+		       const string &wordCount) = 0;
+    virtual void flush() = 0;
+    virtual void indexingPostlude() = 0;
     
-    /* HTML parsing */
-    MyHtmlParser htmlParser;
+    /* Others */
     unsigned int countWords(const string &text);
 
     /* Stopwords */
     bool readStopWordsFile(const string path);
     std::vector<std::string> stopWords;
-
-    /* Others */
-    float stepSize;
 
     /* Boost factor */
     unsigned int keywordsBoostFactor;
