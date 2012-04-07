@@ -40,20 +40,20 @@ namespace kiwix {
   class CluceneIndexer : public Indexer {
     
   public:
-    CluceneIndexer(const string &zimFilePath, const string &cluceneDirectoryPath);
+    CluceneIndexer();
     
   protected:
-    void indexNextPercentPre();
-    void indexNextArticle(const string &url, 
-			  const string &title, 
-			  const string &unaccentedTitle,
-			  const string &keywords, 
-			  const string &content,
-			  const string &snippet,
-			  const string &size,
-			  const string &wordCount);
-    void indexNextPercentPost();
-    void stopIndexing();
+    void indexingPrelude(const string &indexPath);
+    void index(const string &url, 
+	       const string &title, 
+	       const string &unaccentedTitle,
+	       const string &keywords, 
+	       const string &content,
+	       const string &snippet,
+	       const string &size,
+	       const string &wordCount);
+    void flush();
+    void indexingPostlude();
 
     FSDirectory* dir;
     IndexWriter* writer;

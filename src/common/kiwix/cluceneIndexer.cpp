@@ -23,25 +23,23 @@ namespace kiwix {
 
   TCHAR buffer[MAX_BUFFER_SIZE];
 
-  CluceneIndexer::CluceneIndexer(const string &zimFilePath, const string &cluceneDirectoryPath) :
-    Indexer(zimFilePath) {
+  CluceneIndexer::CluceneIndexer() {
+  }
 
-    this->dir = FSDirectory::getDirectory(cluceneDirectoryPath.c_str(), true);
-    this->writer = new IndexWriter(dir, &analyzer, true);
-    writer->setUseCompoundFile(false);
+  void CluceneIndexer::indexingPrelude(const string &indexPath) {
+    this->dir = FSDirectory::getDirectory(indexPath.c_str(), true);
+    this->writer = new IndexWriter(this->dir, &analyzer, true);
+    this->writer->setUseCompoundFile(false);
   }
   
-  void CluceneIndexer::indexNextPercentPre() {
-  }
-  
-  void CluceneIndexer::indexNextArticle(const string &url,
-					const string &title,
-					const string &unaccentedTitle,
-					const string &keywords,
-					const string &content,
-					const string &snippet,
-					const string &size,
-					const string &wordCount) {
+  void CluceneIndexer::index(const string &url,
+			     const string &title,
+			     const string &unaccentedTitle,
+			     const string &keywords,
+			     const string &content,
+			     const string &snippet,
+			     const string &size,
+			     const string &wordCount) {
     
     Document doc;
     
@@ -75,11 +73,11 @@ namespace kiwix {
     this->writer->addDocument(&doc);
   }
 
-  void CluceneIndexer::indexNextPercentPost() {
+  void CluceneIndexer::flush() {
   }
-  
-  void CluceneIndexer::stopIndexing() {
-    writer->setUseCompoundFile(true);
+
+  void CluceneIndexer::indexingPostlude() {
+    this->writer->setUseCompoundFile(true);
     this->writer->optimize();
     this->writer->close();
     delete this->writer;
