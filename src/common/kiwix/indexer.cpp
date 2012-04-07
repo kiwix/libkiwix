@@ -128,7 +128,6 @@ namespace kiwix {
       found = htmlParser.dump.find("NOINDEX");
       
       if (found == string::npos) {
-
 	/* Get the accented title */
 	token.accentedTitle = (htmlParser.title.empty() ? token.title : htmlParser.title);
 
@@ -157,9 +156,10 @@ namespace kiwix {
 	token.content = removeAccents(htmlParser.dump);
 	self->pushToIndexQueue(token);
 
-	/* Test if the thread should be cancelled */
-	pthread_testcancel();     
       }
+
+      /* Test if the thread should be cancelled */
+      pthread_testcancel();     
     }
     
     self->articleParserRunning(false);
@@ -394,17 +394,17 @@ namespace kiwix {
       
       pthread_mutex_lock(&threadIdsMutex); 
       
-      if (isArticleExtractorRunning) {
-	pthread_cancel(this->articleExtractor);
-	this->articleExtractorRunning(false);
+      if (isArticleIndexerRunning) {
+	pthread_cancel(this->articleIndexer);
+	this->articleIndexerRunning(false);
       }
       if (isArticleParserRunning) {
 	pthread_cancel(this->articleParser);
 	this->articleParserRunning(false);
       }
-      if (isArticleIndexerRunning) {
-	pthread_cancel(this->articleIndexer);
-	this->articleIndexerRunning(false);
+      if (isArticleExtractorRunning) {
+	pthread_cancel(this->articleExtractor);
+	this->articleExtractorRunning(false);
       }
 
       pthread_mutex_unlock(&threadIdsMutex); 
