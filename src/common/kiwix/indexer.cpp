@@ -159,7 +159,7 @@ namespace kiwix {
       }
 
       /* Test if the thread should be cancelled */
-      pthread_testcancel();     
+      pthread_testcancel(); 
     }
     
     self->articleParserRunning(false);
@@ -265,6 +265,7 @@ namespace kiwix {
   bool Indexer::popFromToParseQueue(indexerToken &token) {
     while (this->isToParseQueueEmpty() && this->isArticleExtractorRunning()) {
       sleep(0.5);
+      pthread_testcancel();
     }
 
     if (!this->isToParseQueueEmpty()) {
@@ -297,6 +298,7 @@ namespace kiwix {
   bool Indexer::popFromToIndexQueue(indexerToken &token) {
     while (this->isToIndexQueueEmpty() && this->isArticleParserRunning()) {
       sleep(0.5);
+      pthread_testcancel();
     }
 
     if (!this->isToIndexQueueEmpty()) {
