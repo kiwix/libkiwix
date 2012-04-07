@@ -31,7 +31,6 @@ namespace kiwix {
     
   public:
     XapianIndexer();
-    ~XapianIndexer();
     
   protected:
     void indexingPrelude(const string &indexPath);

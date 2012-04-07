@@ -61,7 +61,9 @@ namespace kiwix {
 
     /* Get the number of article to index */
     kiwix::Reader reader(self->getZimPath());
-    self->setArticleCount(reader.getArticleCount());
+    unsigned int articleCount = reader.getArticleCount();
+    self->setArticleCount(articleCount);
+    cout << "Article Count from reader: " << articleCount << endl;
 
     /* Goes trough all articles */
     zim::File *zimHandler = reader.getZimFileHandler();
@@ -184,7 +186,14 @@ namespace kiwix {
 
     indexerToken token;
     unsigned indexedArticleCount = 0;
-    unsigned int stepSize = ((self->getArticleCount() / 100) < 1 ? 1 : (self->getArticleCount() / 100));
+    unsigned int articleCount = self->getArticleCount();
+    unsigned int currentProgression = self->getProgression();
+    float stepSize = articleCount / 100;
+
+    cout << "Article count: " << articleCount << endl;
+    cout << "Progression step size: " << stepSize << endl;
+    cout << "Curent progression: " << currentProgression << endl;
+
     self->indexingPrelude(self->getIndexPath()); 
 
     while (self->popFromToIndexQueue(token)) {
@@ -198,10 +207,16 @@ namespace kiwix {
 		  token.wordCount
 		  );
       
-      if (++indexedArticleCount % stepSize == 0) {
-	self->setProgression(self->getProgression() + 1);
+      indexedArticleCount += 1;
+
+      /* Update the progression counter (in percent) */
+      if ((unsigned int)((float)indexedArticleCount/(float)articleCount*100) > currentProgression) {
+	self->setProgression((unsigned int)((float)indexedArticleCount/(float)articleCount*100));
+	currentProgression = self->getProgression();
+	cout << indexedArticleCount << " articles indexed, that means a progression of " << currentProgression << endl;
       }
 
+      /* Make a hard-disk flush every 10.000 articles */
       if (indexedArticleCount % 10000 == 0) {
 	self->flush();
       }
@@ -211,6 +226,7 @@ namespace kiwix {
     }
     self->setProgression(100);
     self->indexingPostlude();
+    sleep(1);
     self->articleIndexerRunning(false);
     pthread_exit(NULL);
     return NULL;
