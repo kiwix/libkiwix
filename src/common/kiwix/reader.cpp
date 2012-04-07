@@ -79,7 +79,6 @@ namespace kiwix {
     string counterUrl = "/M/Counter";
 
     this->getContentByUrl(counterUrl, content, contentLength, mimeType);
-    cout << "Counter URL: " << content << endl;
     stringstream ssContent(content);
 
     while(getline(ssContent, item,  ';')) {
@@ -102,12 +101,10 @@ namespace kiwix {
     
     if (counterMap.empty()) {
       counter = this->articleCount;
-      cout << "Article count from offsets: " << counter << endl;
     } else {
       std::map<std::string, unsigned int>::const_iterator it = counterMap.find("text/html");
       if (it != counterMap.end())
 	counter = it->second;
-      cout << "Article count from metadata: " << counter << endl;
     }
     
     return counter;

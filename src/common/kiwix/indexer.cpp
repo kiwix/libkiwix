@@ -56,6 +56,7 @@ namespace kiwix {
 
   /* Article extractor methods */
   void *Indexer::extractArticles(void *ptr) {
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
     self->articleExtractorRunning(true);
 
@@ -63,7 +64,6 @@ namespace kiwix {
     kiwix::Reader reader(self->getZimPath());
     unsigned int articleCount = reader.getArticleCount();
     self->setArticleCount(articleCount);
-    cout << "Article Count from reader: " << articleCount << endl;
 
     /* Goes trough all articles */
     zim::File *zimHandler = reader.getZimFileHandler();
@@ -108,6 +108,7 @@ namespace kiwix {
   
   /* Article parser methods */
   void *Indexer::parseArticles(void *ptr) {
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
     self->articleParserRunning(true);
     size_t found;
@@ -181,18 +182,20 @@ namespace kiwix {
 
   /* Article indexer methods */
   void *Indexer::indexArticles(void *ptr) {
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
     self->articleIndexerRunning(true);
+
+    /* Wait that the extraction has started, and so on a few
+       initialisations, to really start */
+    while(self->isToIndexQueueEmpty() && self->isArticleExtractorRunning()) {
+      sleep(0.1);
+    }
 
     indexerToken token;
     unsigned indexedArticleCount = 0;
     unsigned int articleCount = self->getArticleCount();
     unsigned int currentProgression = self->getProgression();
-    float stepSize = articleCount / 100;
-
-    cout << "Article count: " << articleCount << endl;
-    cout << "Progression step size: " << stepSize << endl;
-    cout << "Curent progression: " << currentProgression << endl;
 
     self->indexingPrelude(self->getIndexPath()); 
 
@@ -213,7 +216,6 @@ namespace kiwix {
       if ((unsigned int)((float)indexedArticleCount/(float)articleCount*100) > currentProgression) {
 	self->setProgression((unsigned int)((float)indexedArticleCount/(float)articleCount*100));
 	currentProgression = self->getProgression();
-	cout << indexedArticleCount << " articles indexed, that means a progression of " << currentProgression << endl;
       }
 
       /* Make a hard-disk flush every 10.000 articles */
@@ -392,16 +394,20 @@ namespace kiwix {
       
       pthread_mutex_lock(&threadIdsMutex); 
       
-      if (isArticleExtractorRunning)
+      if (isArticleExtractorRunning) {
 	pthread_cancel(this->articleExtractor);
-      if (isArticleIndexerRunning)
+	this->articleExtractorRunning(false);
+      }
+      if (isArticleParserRunning) {
 	pthread_cancel(this->articleParser);
-      if (isArticleParserRunning)
+	this->articleParserRunning(false);
+      }
+      if (isArticleIndexerRunning) {
 	pthread_cancel(this->articleIndexer);
-      
+	this->articleIndexerRunning(false);
+      }
+
       pthread_mutex_unlock(&threadIdsMutex); 
-      
-      this->articleIndexerRunning(false);
     }
 
     return true;
