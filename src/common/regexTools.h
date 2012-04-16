@@ -26,6 +26,7 @@
 #include <map>
 
 bool matchRegex(const std::string &content, const std::string &regex);
+void replaceRegex(std::string &content, const std::string &replacement, const std::string &regex);
 void appendToFirstOccurence(std::string &content, const std::string regex, const std::string &replacement);
 
 #endif

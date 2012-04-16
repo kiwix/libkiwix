@@ -59,6 +59,14 @@ namespace kiwix {
     return strcmp(a.language.c_str(), b.language.c_str()) < 0;
   }
 
+  std::string Book::getHumanReadableIdFromPath() {
+    std::string id = removeAccents(path);
+    replaceRegex(id, "", "^.*/");
+    replaceRegex(id, "", "\\.zim[a-z]*$");
+    replaceRegex(id, "_", " ");
+    return id;
+  }
+
   /* Constructor */
   Library::Library():
     version(KIWIX_LIBRARY_VERSION) {

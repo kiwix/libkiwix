@@ -53,6 +53,19 @@ bool matchRegex(const std::string &content, const std::string &regex) {
   return matcher->find();
 }
 
+void replaceRegex(std::string &content, const std::string &replacement, const std::string &regex) {
+  ucnv_setDefaultName("UTF-8");
+  UnicodeString ucontent = UnicodeString(content.c_str());
+  UnicodeString ureplacement = UnicodeString(replacement.c_str());
+  RegexMatcher *matcher = buildRegex(regex);
+  matcher->reset(ucontent);
+  UErrorCode status = U_ZERO_ERROR;
+  UnicodeString uresult = matcher->replaceAll(ureplacement, status);
+  std::string tmp;
+  uresult.toUTF8String(tmp);
+  content=tmp;
+}
+
 void appendToFirstOccurence(std::string &content, const  std::string regex, const std::string &replacement) {
   ucnv_setDefaultName("UTF-8");
   UnicodeString ucontent = UnicodeString(content.c_str());

@@ -27,6 +27,9 @@
 #include <vector>
 #include <stack>
 
+#include <unaccent.h>
+#include <regexTools.h>
+
 #define KIWIX_LIBRARY_VERSION "20110515"
 
 using namespace std;
@@ -48,6 +51,7 @@ namespace kiwix {
     static bool sortByCreator(const Book &a, const Book &b);
     static bool sortByPublisher(const Book &a, const Book &b);
     static bool sortByLanguage(const Book &a, const Book &b);
+    string getHumanReadableIdFromPath();
 
     string id;
     string path;

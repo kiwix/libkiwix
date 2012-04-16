@@ -69,6 +69,7 @@ namespace kiwix {
     vector<string> getBooksLanguages();
     vector<string> getBooksCreators();
     vector<string> getBooksPublishers();
+    vector<string> getBooksIds();
 
     string writableLibraryPath;
 
