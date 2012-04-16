@@ -60,7 +60,8 @@ namespace kiwix {
   }
 
   std::string Book::getHumanReadableIdFromPath() {
-    std::string id = removeAccents(path);
+    std::string id = path;
+    removeAccents(id);
     replaceRegex(id, "", "^.*/");
     replaceRegex(id, "", "\\.zim[a-z]*$");
     replaceRegex(id, "_", " ");

@@ -311,6 +311,23 @@ namespace kiwix {
     return booksLanguages;
   }
 
+  vector<string> Manager::getBooksCreators() {
+    std::vector<string> booksCreators;
+    std::vector<kiwix::Book>::iterator itr;
+    std::map<string, bool> booksCreatorsMap;
+
+    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);      
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      if (booksCreatorsMap.find(itr->creator) == booksCreatorsMap.end()) {
+	booksCreatorsMap[itr->creator] = true;
+	booksCreators.push_back(itr->creator);
+      }
+    }
+    
+    return booksCreators;
+  }
+
+
   vector<string> Manager::getBooksIds() {
     std::vector<string> booksIds;
     std::vector<kiwix::Book>::iterator itr;
