@@ -92,6 +92,8 @@ namespace kiwix {
   void XapianIndexer::indexingPostlude() {
     this->flush();
     this->writableDatabase.commit_transaction();
-    this->writableDatabase.commit();
+    
+    // commit is not available is old version of xapian and seems not mandatory there
+    // this->writableDatabase.commit();
   }
 }
