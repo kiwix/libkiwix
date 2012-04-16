@@ -40,7 +40,7 @@ namespace kiwix {
   }
 
   bool Book::sortByDate(const kiwix::Book &a, const kiwix::Book &b) {
-    return strcmp(a.date.c_str(), b.date.c_str()) < 0;
+    return strcmp(a.date.c_str(), b.date.c_str()) > 0;
   }
 
   bool Book::sortBySize(const kiwix::Book &a, const kiwix::Book &b) {
