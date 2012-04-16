@@ -121,6 +121,10 @@ namespace kiwix {
     return true;
   }
 
+  void Searcher::setContentHumanReadableId(const string &contentHumanReadableId) {
+    this->contentHumanReadableId = contentHumanReadableId;
+  }
+
   string Searcher::getHtml() {
     
     const STLW::string & sSourceFile = this->resultTemplatePath;
@@ -171,7 +175,7 @@ namespace kiwix {
     while (this->resultOffset != this->results.end()) {
       CDT result;
       result["title"] = this->resultOffset->title;
-      result["url"] = this->resultOffset->url;
+      result["url"] = this->contentHumanReadableId + "/" + this->resultOffset->url;
       result["snippet"] = this->resultOffset->snippet;
 
       if (this->resultOffset->size >= 0)

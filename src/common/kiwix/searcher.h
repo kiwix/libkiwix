@@ -74,6 +74,7 @@ namespace kiwix {
     bool setSearchProtocolPrefix(const std::string prefix);
     string getHtml();
     void reset();
+    void setContentHumanReadableId(const string &contentHumanReadableId);
 
   protected:
     std::string beautifyInteger(const unsigned int number);
@@ -91,6 +92,7 @@ namespace kiwix {
     unsigned int resultEnd;
     std::string protocolPrefix;
     std::string searchProtocolPrefix;
+    std::string contentHumanReadableId;
     unsigned int resultRange;
   };
 
