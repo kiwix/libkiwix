@@ -28,6 +28,10 @@
 #include <iostream>
 #include <sstream>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #include <pthread.h>
 #include <unaccent.h>
 #include <zim/file.h>

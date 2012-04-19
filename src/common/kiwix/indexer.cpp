@@ -189,7 +189,11 @@ namespace kiwix {
     /* Wait that the extraction has started, and so on a few
        initialisations, to really start */
     while(self->isToIndexQueueEmpty() && self->isArticleExtractorRunning()) {
+#ifdef _WIN32
+      Sleep(100);
+#else
       sleep(0.1);
+#endif
     }
 
     indexerToken token;
@@ -228,7 +232,11 @@ namespace kiwix {
     }
     self->setProgression(100);
     self->indexingPostlude();
+#ifdef _WIN32
+    Sleep(100);
+#else
     sleep(1);
+#endif
     self->articleIndexerRunning(false);
     pthread_exit(NULL);
     return NULL;
@@ -259,12 +267,20 @@ namespace kiwix {
     pthread_mutex_lock(&toParseQueueMutex); 
     this->toParseQueue.push(token);
     pthread_mutex_unlock(&toParseQueueMutex); 
+#ifdef _WIN32
+    Sleep(int(this->toParseQueue.size() / 200) / 10 * 1000);
+#else
     sleep(int(this->toParseQueue.size() / 200) / 10);
+#endif
   }
 
   bool Indexer::popFromToParseQueue(indexerToken &token) {
     while (this->isToParseQueueEmpty() && this->isArticleExtractorRunning()) {
+#ifdef _WIN32
+      Sleep(500);
+#else
       sleep(0.5);
+#endif
       pthread_testcancel();
     }
 
@@ -291,13 +307,21 @@ namespace kiwix {
   void Indexer::pushToIndexQueue(indexerToken &token) {
     pthread_mutex_lock(&toIndexQueueMutex); 
     this->toIndexQueue.push(token);
-    pthread_mutex_unlock(&toIndexQueueMutex); 
+    pthread_mutex_unlock(&toIndexQueueMutex);
+#ifdef _WIN32
+    Sleep(int(this->toIndexQueue.size() / 200) / 10 * 1000);
+#else
     sleep(int(this->toIndexQueue.size() / 200) / 10);
+#endif
   }
 
   bool Indexer::popFromToIndexQueue(indexerToken &token) {
     while (this->isToIndexQueueEmpty() && this->isArticleParserRunning()) {
+#ifdef _WIN32
+      Sleep(500);
+#else
       sleep(0.5);
+#endif
       pthread_testcancel();
     }
 
