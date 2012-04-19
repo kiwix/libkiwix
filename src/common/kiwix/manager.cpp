@@ -95,11 +95,14 @@ namespace kiwix {
   }
 
   bool Manager::readFile(const string path, const bool readOnly) {
+    bool retVal = true;
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.c_str());
 
     if (result) {
       this->parseXmlDom(doc, readOnly, path);
+    } else {
+      retVal = false;
     }
 
     /* This has to be set (although if the file does not exists) to be
@@ -109,7 +112,7 @@ namespace kiwix {
       this->writableLibraryPath = path;
     }
 
-    return true;
+    return retVal;
   }
 
   bool Manager::writeFile(const string path) {
