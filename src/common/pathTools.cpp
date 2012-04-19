@@ -19,6 +19,11 @@
 
 #include "pathTools.h"
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#include <limits.h>
+#endif
+
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
@@ -135,6 +140,9 @@ string getExecutablePath() {
   char binRootPath[PATH_MAX];
 
 #ifdef _WIN32
+#elif __APPLE__
+  uint32_t max = (uint32_t)PATH_MAX;
+  _NSGetExecutablePath(binRootPath, &max);
 #else
   readlink("/proc/self/exe", binRootPath, PATH_MAX);
 #endif
