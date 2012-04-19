@@ -22,6 +22,8 @@
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #include <limits.h>
+#elif _WIN32
+#include <windows.h>
 #endif
 
 #ifndef PATH_MAX
@@ -140,6 +142,7 @@ string getExecutablePath() {
   char binRootPath[PATH_MAX];
 
 #ifdef _WIN32
+  GetModuleFileName( NULL, binRootPath, PATH_MAX);
 #elif __APPLE__
   uint32_t max = (uint32_t)PATH_MAX;
   _NSGetExecutablePath(binRootPath, &max);
