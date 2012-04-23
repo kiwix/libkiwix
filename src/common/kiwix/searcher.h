@@ -32,9 +32,11 @@
 #include <cctype>
 #include <vector>
 #include <unaccent.h>
+#include <resourceTools.h>
 
 #include <CTPP2Parser.hpp>
 #include <CTPP2FileSourceLoader.hpp>
+#include <CTPP2TextLoader.hpp>
 #include <CTPP2ParserException.hpp>
 #include <CTPP2HashTable.hpp>
 #include <CTPP2VMDumper.hpp>
@@ -69,7 +71,6 @@ namespace kiwix {
 		const unsigned int resultEnd, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
     unsigned int getEstimatedResultCount();
-    bool setResultTemplatePath(const std::string path);
     bool setProtocolPrefix(const std::string prefix);
     bool setSearchProtocolPrefix(const std::string prefix);
     string getHtml();
@@ -84,7 +85,6 @@ namespace kiwix {
 
     std::vector<Result> results;
     std::vector<Result>::iterator resultOffset;
-    std::string resultTemplatePath;
     std::string searchPattern;
     unsigned int resultCountPerPage;
     unsigned int estimatedResultCount;

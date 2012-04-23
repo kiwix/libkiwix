@@ -37,7 +37,6 @@ namespace kiwix {
 
   /* Constructor */
   Searcher::Searcher() :
-    resultTemplatePath(""),
     searchPattern(""),
     resultCountPerPage(0),
     estimatedResultCount(0),
@@ -106,11 +105,6 @@ namespace kiwix {
     return retVal;
   }
 
-  bool Searcher::setResultTemplatePath(const std::string path) {
-    this->resultTemplatePath = path;
-    return true;
-  }
-
   bool Searcher::setProtocolPrefix(const std::string prefix) {
     this->protocolPrefix = prefix;
     return true;
@@ -127,7 +121,6 @@ namespace kiwix {
 
   string Searcher::getHtml() {
     
-    const STLW::string & sSourceFile = this->resultTemplatePath;
     VMOpcodeCollector  oVMOpcodeCollector;
     StaticText         oSyscalls;
     StaticData         oStaticData;
@@ -135,14 +128,15 @@ namespace kiwix {
     HashTable          oHashTable;
     CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
     
-    // Load template
-    CTPP2FileSourceLoader oSourceLoader;
+    // Load template & create template parser
+    //cout << getResourceAsString("results.tmpl") << endl;
+
+
+    /* Parse template */
+    const STLW::string & sSourceFile = getResourceAsString("results.tmpl");
+    CTPP2TextLoader oSourceLoader;                                                                  
     oSourceLoader.LoadTemplate(sSourceFile.c_str());
-    
-    // Create template parser
-    CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, sSourceFile);
-    
-    // Compile template
+    CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, "template");
     oCTPP2Parser.Compile();
 
     // Get program core
