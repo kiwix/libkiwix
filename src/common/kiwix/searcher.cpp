@@ -38,13 +38,13 @@ namespace kiwix {
   /* Constructor */
   Searcher::Searcher() :
     searchPattern(""),
+    protocolPrefix("zim://"),
+    searchProtocolPrefix("search://?"),
     resultCountPerPage(0),
     estimatedResultCount(0),
     resultStart(0),
     resultEnd(0),
-    resultRange(20),
-    protocolPrefix("zim://"),
-    searchProtocolPrefix("search://?") {
+    resultRange(20) {
   }
   
   /* Search strings in the database */

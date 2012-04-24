@@ -86,12 +86,12 @@ namespace kiwix {
     std::vector<Result> results;
     std::vector<Result>::iterator resultOffset;
     std::string searchPattern;
+    std::string protocolPrefix;
+    std::string searchProtocolPrefix;
     unsigned int resultCountPerPage;
     unsigned int estimatedResultCount;
     unsigned int resultStart;
     unsigned int resultEnd;
-    std::string protocolPrefix;
-    std::string searchProtocolPrefix;
     std::string contentHumanReadableId;
     unsigned int resultRange;
   };
