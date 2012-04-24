@@ -169,7 +169,7 @@ namespace kiwix {
     while (this->resultOffset != this->results.end()) {
       CDT result;
       result["title"] = this->resultOffset->title;
-      result["url"] = this->contentHumanReadableId + "/" + this->resultOffset->url;
+      result["url"] = this->resultOffset->url;
       result["snippet"] = this->resultOffset->snippet;
 
       if (this->resultOffset->size >= 0)
@@ -216,6 +216,7 @@ namespace kiwix {
     oData["resultLastPageStart"] = this->estimatedResultCount > this->resultRange ? this->estimatedResultCount - this->resultRange : 0;
     oData["protocolPrefix"] = this->protocolPrefix;
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
+    oData["contentId"] = this->contentHumanReadableId;
 
     STLW::string sResult;
     StringOutputCollector oDataCollector(sResult);
