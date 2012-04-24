@@ -92,7 +92,10 @@ namespace kiwix {
   void XapianIndexer::indexingPostlude() {
     this->flush();
     this->writableDatabase.commit_transaction();
-    this->writableDatabase.close();
+    #ifdef __APPLE__
+    #else
+      this->writableDatabase.close();
+    #endif
 
     // commit is not available is old version of xapian and seems not mandatory there
     // this->writableDatabase.commit();

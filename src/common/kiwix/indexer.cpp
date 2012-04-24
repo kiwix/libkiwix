@@ -230,7 +230,6 @@ namespace kiwix {
       /* Test if the thread should be cancelled */
       pthread_testcancel();
     }
-    self->setProgression(100);
     self->indexingPostlude();
 #ifdef _WIN32
     Sleep(100);
@@ -238,6 +237,7 @@ namespace kiwix {
     sleep(1);
 #endif
     self->articleIndexerRunning(false);
+    self->setProgression(100);
     pthread_exit(NULL);
     return NULL;
   }
