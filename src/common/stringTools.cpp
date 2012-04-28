@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "splitString.h"
+#include "stringTools.h"
 
 std::vector<std::string> split(const std::string & str,
                                       const std::string & delims=" *-")
