@@ -21,20 +21,6 @@
 
 namespace kiwix {
 
-  /* Count word */
-  std::string Searcher::beautifyInteger(const unsigned int number) {
-    stringstream numberStream;
-    numberStream << number;
-    std::string numberString = numberStream.str();
-
-    signed int offset = numberString.size() - 3;
-    while (offset > 0) {
-      numberString.insert(offset, ",");
-      offset -= 3;
-    }
-    return numberString;
-  }
-
   /* Constructor */
   Searcher::Searcher() :
     searchPattern(""),
@@ -173,10 +159,10 @@ namespace kiwix {
       result["snippet"] = this->resultOffset->snippet;
 
       if (this->resultOffset->size >= 0)
-	result["size"] = this->beautifyInteger(this->resultOffset->size);
+	result["size"] = ::beautifyInteger(this->resultOffset->size);
 
       if (this->resultOffset->wordCount >= 0)
-	result["wordCount"] = this->beautifyInteger(this->resultOffset->wordCount);
+	result["wordCount"] = ::beautifyInteger(this->resultOffset->wordCount);
 
       resultsCDT.PushBack(result);
       this->resultOffset++;
@@ -208,7 +194,7 @@ namespace kiwix {
     }
     oData["pages"] = pagesCDT;
 
-    oData["count"] = this->beautifyInteger(this->estimatedResultCount);
+    oData["count"] = ::beautifyInteger(this->estimatedResultCount);
     oData["searchPattern"] = this->searchPattern;
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);

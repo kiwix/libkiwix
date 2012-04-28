@@ -24,15 +24,13 @@
 #include <stdlib.h>
 #include <string>
 #include <algorithm>
-#include <iostream>
 #include <vector>
-#include <fstream>
-#include <sstream>
 #include <locale>
 #include <cctype>
 #include <vector>
 #include <unaccent.h>
 #include <resourceTools.h>
+#include <stringTools.h>
 
 #include <CTPP2Parser.hpp>
 #include <CTPP2FileSourceLoader.hpp>

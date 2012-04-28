@@ -19,6 +19,22 @@
 
 #include "stringTools.h"
 
+/* Prepare integer for display */
+std::string beautifyInteger(const unsigned int number) {
+  stringstream numberStream;
+  numberStream << number;
+  std::string numberString = numberStream.str();
+  
+  signed int offset = numberString.size() - 3;
+  while (offset > 0) {
+    numberString.insert(offset, ",");
+    offset -= 3;
+  }
+  
+  return numberString;
+}
+
+/* Split string in a token array */
 std::vector<std::string> split(const std::string & str,
                                       const std::string & delims=" *-")
 {
