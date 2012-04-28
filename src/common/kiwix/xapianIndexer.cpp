@@ -92,8 +92,7 @@ namespace kiwix {
   void XapianIndexer::indexingPostlude() {
     this->flush();
     this->writableDatabase.commit_transaction();
-    #ifdef __APPLE__
-    #else
+    #ifdef _WIN32
       this->writableDatabase.close();
     #endif
 
