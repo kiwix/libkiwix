@@ -21206,20 +21206,20 @@ const unsigned char server_taskbar_html_part[]={
   0x3a,0x20,0x34,0x30,0x70,0x78,0x3b,0x22,0x3e,0x3c,0x2f,0x64,0x69,0x76,0x3e,0x0a
   };
 
-static std::map<std::string, const char*> createResourceMap() { 
-	std::map<std::string, const char*> m; 
-	m["results.tmpl"] = (const char*)results_tmpl; 
-	m["jqueryui/include.html.part"] = (const char*)jqueryui_include_html_part; 
-	m["jqueryui/css/smoothness/jquery-ui.custom.css"] = (const char*)jqueryui_css_smoothness_jquery_ui_custom_css; 
-	m["jqueryui/js/jquery-ui.custom.min.js"] = (const char*)jqueryui_js_jquery_ui_custom_min_js; 
-	m["jqueryui/js/jquery.min.js"] = (const char*)jqueryui_js_jquery_min_js; 
-	m["server/taskbar.css"] = (const char*)server_taskbar_css; 
-	m["server/home.html.tmpl"] = (const char*)server_home_html_tmpl; 
-	m["server/taskbar.html.part"] = (const char*)server_taskbar_html_part; 
+static std::map<std::string, std::pair<const unsigned char*, unsigned int> > createResourceMap() { 
+	std::map<std::string, std::pair<const unsigned char*, unsigned int> > m; 
+	m["results.tmpl"] = std::pair <const unsigned char*, unsigned int>(results_tmpl, sizeof results_tmpl); 
+	m["jqueryui/include.html.part"] = std::pair <const unsigned char*, unsigned int>(jqueryui_include_html_part, sizeof jqueryui_include_html_part); 
+	m["jqueryui/css/smoothness/jquery-ui.custom.css"] = std::pair <const unsigned char*, unsigned int>(jqueryui_css_smoothness_jquery_ui_custom_css, sizeof jqueryui_css_smoothness_jquery_ui_custom_css); 
+	m["jqueryui/js/jquery-ui.custom.min.js"] = std::pair <const unsigned char*, unsigned int>(jqueryui_js_jquery_ui_custom_min_js, sizeof jqueryui_js_jquery_ui_custom_min_js); 
+	m["jqueryui/js/jquery.min.js"] = std::pair <const unsigned char*, unsigned int>(jqueryui_js_jquery_min_js, sizeof jqueryui_js_jquery_min_js); 
+	m["server/taskbar.css"] = std::pair <const unsigned char*, unsigned int>(server_taskbar_css, sizeof server_taskbar_css); 
+	m["server/home.html.tmpl"] = std::pair <const unsigned char*, unsigned int>(server_home_html_tmpl, sizeof server_home_html_tmpl); 
+	m["server/taskbar.html.part"] = std::pair <const unsigned char*, unsigned int>(server_taskbar_html_part, sizeof server_taskbar_html_part); 
 	return m; 
 } 
 
-static std::map<std::string, const char*> resourceMap = createResourceMap(); 
+static std::map<std::string, std::pair<const unsigned char*, unsigned int> > resourceMap = createResourceMap(); 
 
 
 #endif
