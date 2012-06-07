@@ -26,6 +26,11 @@
 #include <windows.h>
 #endif
 
+#ifdef _WIN32
+#else
+#include <unistd.h>
+#endif
+
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
