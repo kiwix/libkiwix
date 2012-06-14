@@ -46,6 +46,7 @@ namespace kiwix {
     ~Manager();
 
     bool readFile(const string path, const bool readOnly = true);
+    bool readFile(const string nativePath, const string UTF8Path, const bool readOnly = true);
     bool readXml(const string xml, const bool readOnly = true, const string libraryPath = "");
     bool writeFile(const string path);
     bool removeBookByIndex(const unsigned int bookIndex);

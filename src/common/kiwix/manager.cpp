@@ -95,12 +95,16 @@ namespace kiwix {
   }
 
   bool Manager::readFile(const string path, const bool readOnly) {
+    return this->readFile(path, path, readOnly);
+  }
+
+  bool Manager::readFile(const string nativePath, const string UTF8Path, const bool readOnly) {
     bool retVal = true;
     pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file(path.c_str());
+    pugi::xml_parse_result result = doc.load_file(nativePath.c_str());
 
     if (result) {
-      this->parseXmlDom(doc, readOnly, path);
+      this->parseXmlDom(doc, readOnly, UTF8Path);
     } else {
       retVal = false;
     }
@@ -109,7 +113,7 @@ namespace kiwix {
      * able to know where to save the library if new content are
      * available */
     if (!readOnly) {
-      this->writableLibraryPath = path;
+      this->writableLibraryPath = UTF8Path;
     }
 
     return retVal;
