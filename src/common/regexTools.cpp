@@ -53,7 +53,7 @@ bool matchRegex(const std::string &content, const std::string &regex) {
   return matcher->find();
 }
 
-void replaceRegex(std::string &content, const std::string &replacement, const std::string &regex) {
+std::string replaceRegex(const std::string &content, const std::string &replacement, const std::string &regex) {
   ucnv_setDefaultName("UTF-8");
   UnicodeString ucontent = UnicodeString(content.c_str());
   UnicodeString ureplacement = UnicodeString(replacement.c_str());
@@ -63,10 +63,10 @@ void replaceRegex(std::string &content, const std::string &replacement, const st
   UnicodeString uresult = matcher->replaceAll(ureplacement, status);
   std::string tmp;
   uresult.toUTF8String(tmp);
-  content=tmp;
+  return tmp;
 }
 
-void appendToFirstOccurence(std::string &content, const  std::string regex, const std::string &replacement) {
+std::string appendToFirstOccurence(const std::string &content, const  std::string regex, const std::string &replacement) {
   ucnv_setDefaultName("UTF-8");
   UnicodeString ucontent = UnicodeString(content.c_str());
   UnicodeString ureplacement = UnicodeString(replacement.c_str());
@@ -78,7 +78,9 @@ void appendToFirstOccurence(std::string &content, const  std::string regex, cons
     ucontent.insert(matcher->end(status), ureplacement);   
     std::string tmp;
     ucontent.toUTF8String(tmp);
-    content=tmp;
+    return tmp;
   }
+
+  return content;
 }
 

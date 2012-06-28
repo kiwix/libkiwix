@@ -63,10 +63,10 @@ namespace kiwix {
     std::string id = path;
     if (!id.empty()) {
       removeAccents(id);
-      replaceRegex(id, "", "^.*/");
-      replaceRegex(id, "", "\\.zim[a-z]*$");
-      replaceRegex(id, "_", " ");
-      replaceRegex(id, "plus", "\\+");
+      id = replaceRegex(id, "", "^.*/");
+      id = replaceRegex(id, "", "\\.zim[a-z]*$");
+      id = replaceRegex(id, "_", " ");
+      id = replaceRegex(id, "plus", "\\+");
     }
     return id;
   }
