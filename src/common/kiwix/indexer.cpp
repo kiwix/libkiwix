@@ -67,26 +67,27 @@ namespace kiwix {
 
     /* Goes trough all articles */
     zim::File *zimHandler = reader.getZimFileHandler();
-    unsigned int currentOffset = zimHandler->getNamespaceBeginOffset('A');;
-    unsigned int lastOffset = zimHandler->getNamespaceEndOffset('A');;
+    unsigned int currentOffset = zimHandler->getNamespaceBeginOffset('A');
+    unsigned int lastOffset = zimHandler->getNamespaceEndOffset('A');
     zim::Article currentArticle;
 
-    while (currentOffset <= lastOffset) {
-      /* Redirects are not indexed */
-      do {
-	currentArticle = zimHandler->getArticle(currentOffset++);
-      } while (currentArticle.isRedirect() && currentOffset != lastOffset);
-
-      /* Add articles to the queue */
-      indexerToken token;
-      token.title = currentArticle.getTitle();
-      token.url = currentArticle.getLongUrl();
-      token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
-      self->pushToParseQueue(token);
+    while (currentOffset < lastOffset) {
+      currentArticle = zimHandler->getArticle(currentOffset);
+      
+      if (!currentArticle.isRedirect()) {
+	/* Add articles to the queue */
+	indexerToken token;
+	token.title = currentArticle.getTitle();
+	token.url = currentArticle.getLongUrl();
+	token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
+	self->pushToParseQueue(token);
+      }
+      
+      currentOffset++;
 
       /* Test if the thread should be cancelled */
       pthread_testcancel();
-    }
+    } 
 
     self->articleExtractorRunning(false);
     pthread_exit(NULL);
@@ -200,6 +201,7 @@ namespace kiwix {
     unsigned indexedArticleCount = 0;
     unsigned int articleCount = self->getArticleCount();
     unsigned int currentProgression = self->getProgression();
+    unsigned int tmpProgression;
 
     self->indexingPrelude(self->getIndexPath()); 
 
@@ -217,9 +219,10 @@ namespace kiwix {
       indexedArticleCount += 1;
 
       /* Update the progression counter (in percent) */
-      if ((unsigned int)((float)indexedArticleCount/(float)articleCount*100) > currentProgression) {
-	self->setProgression((unsigned int)((float)indexedArticleCount/(float)articleCount*100));
-	currentProgression = self->getProgression();
+      tmpProgression = (unsigned int)((float)indexedArticleCount/(float)articleCount*100);
+      if (tmpProgression > currentProgression) {
+	currentProgression = tmpProgression;
+	self->setProgression(currentProgression);
       }
 
       /* Make a hard-disk flush every 10.000 articles */
@@ -231,13 +234,13 @@ namespace kiwix {
       pthread_testcancel();
     }
     self->indexingPostlude();
+    self->setProgression(100);
 #ifdef _WIN32
     Sleep(100);
 #else
     sleep(1);
 #endif
     self->articleIndexerRunning(false);
-    self->setProgression(100);
     pthread_exit(NULL);
     return NULL;
   }
