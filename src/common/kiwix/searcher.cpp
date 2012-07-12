@@ -47,7 +47,8 @@ namespace kiwix {
     this->resultCountPerPage = resultEnd - resultStart;
     this->resultStart = resultStart;
     this->resultEnd = resultEnd;
-    searchInIndex(removeAccents(search), resultStart, resultEnd, verbose);
+    string unaccentedSearch = removeAccents(search);
+    searchInIndex(unaccentedSearch, resultStart, resultEnd, verbose);
     this->resultOffset = this->results.begin();
 
     return;

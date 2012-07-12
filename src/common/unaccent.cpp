@@ -22,13 +22,13 @@
 UErrorCode status = U_ZERO_ERROR;
 Transliterator *trans = Transliterator::createInstance("Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
 
-std::string &removeAccents(std::string &text) {
+std::string removeAccents(const std::string &text) {
   ucnv_setDefaultName("UTF-8");
   UnicodeString ustring = UnicodeString(text.c_str());
   trans->transliterate(ustring);
-  text.clear();
-  ustring.toUTF8String(text);
-  return text;
+  std::string unaccentedText;
+  ustring.toUTF8String(unaccentedText);
+  return unaccentedText;
 }
 
 void printStringInHexadecimal(UnicodeString s) {

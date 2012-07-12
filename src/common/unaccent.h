@@ -32,7 +32,7 @@
 #include <iostream>
 #include <string>
 
-std::string &removeAccents(std::string &text);
+std::string removeAccents(const std::string &text);
 void printStringInHexadecimal(const char *s);
 void printStringInHexadecimal(UnicodeString s);
 
