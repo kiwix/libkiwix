@@ -38,7 +38,7 @@ namespace kiwix {
   class Reader {
     
   public:
-    Reader(const string &zimFilePath);
+    Reader(const string zimFilePath);
     ~Reader();
 
     void reset();

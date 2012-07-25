@@ -39,9 +39,9 @@ void unescapeUrl(string &url) {
 namespace kiwix {
 
   /* Constructor */
-  Reader::Reader(const string &zimFilePath) 
+  Reader::Reader(const string zimFilePath) 
     : zimFileHandler(NULL) {
-    
+
     this->zimFileHandler = new zim::File(zimFilePath);
     
     if (this->zimFileHandler != NULL) {

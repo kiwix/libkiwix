@@ -61,7 +61,7 @@ namespace kiwix {
     
   public:
     Indexer();
-    bool start(const string &zimPath, const string &indexPath);
+    bool start(const string zimPath, const string indexPath);
     bool stop();
     bool isRunning();
     unsigned int getProgression();
@@ -132,7 +132,7 @@ namespace kiwix {
     string getIndexPath();
 
   protected:
-    virtual void indexingPrelude(const string &indexPath) = 0;
+    virtual void indexingPrelude(const string indexPath) = 0;
     virtual void index(const string &url, 
 		       const string &title, 
 		       const string &unaccentedTitle,

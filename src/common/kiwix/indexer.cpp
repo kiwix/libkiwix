@@ -342,7 +342,7 @@ namespace kiwix {
 
   /* ZIM & Index methods */
   void Indexer::setZimPath(const string path) {
-    pthread_mutex_lock(&zimPathMutex); 
+    pthread_mutex_lock(&zimPathMutex);
     this->zimPath = path;
     pthread_mutex_unlock(&zimPathMutex); 
   }
@@ -394,7 +394,7 @@ namespace kiwix {
   }
 
   /* Manage */
-  bool Indexer::start(const string &zimPath, const string &indexPath) {
+  bool Indexer::start(const string zimPath, const string indexPath) {
     this->setProgression(0);
     this->setZimPath(zimPath);
     this->setIndexPath(indexPath);

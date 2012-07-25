@@ -41,7 +41,7 @@ namespace kiwix {
     */
   }
   
-  void XapianIndexer::indexingPrelude(const string &indexPath) {
+  void XapianIndexer::indexingPrelude(const string indexPath) {
     this->writableDatabase = Xapian::WritableDatabase(indexPath, Xapian::DB_CREATE_OR_OVERWRITE);
     this->writableDatabase.begin_transaction(true);
   }

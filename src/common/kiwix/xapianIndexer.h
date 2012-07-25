@@ -33,7 +33,7 @@ namespace kiwix {
     XapianIndexer();
     
   protected:
-    void indexingPrelude(const string &indexPath);
+    void indexingPrelude(const string indexPath);
     void index(const string &url, 
 	       const string &title, 
 	       const string &unaccentedTitle,

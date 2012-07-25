@@ -26,7 +26,7 @@ namespace kiwix {
   CluceneIndexer::CluceneIndexer() {
   }
 
-  void CluceneIndexer::indexingPrelude(const string &indexPath) {
+  void CluceneIndexer::indexingPrelude(const string indexPath) {
     this->dir = FSDirectory::getDirectory(indexPath.c_str(), true);
     this->writer = new IndexWriter(this->dir, &analyzer, true);
     this->writer->setUseCompoundFile(false);
