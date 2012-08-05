@@ -105,9 +105,8 @@ unsigned int getFileSize(const string &path) {
 }
 
 string getFileSizeAsString(const string &path) {
-  char csize[42];
-  sprintf(csize, "%u", getFileSize(path));
-  return csize;
+  ostringstream convert; convert << getFileSize(path);
+  return convert.str();
 }
 
 bool fileExists(const string &path) {
@@ -152,7 +151,8 @@ string getExecutablePath() {
   uint32_t max = (uint32_t)PATH_MAX;
   _NSGetExecutablePath(binRootPath, &max);
 #else
-  readlink("/proc/self/exe", binRootPath, PATH_MAX);
+  if (readlink("/proc/self/exe", binRootPath, PATH_MAX) == -1) {
+  };
 #endif
 
   return std::string(binRootPath);

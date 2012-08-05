@@ -21,6 +21,7 @@
 #define KIWIX_PATHTOOLS_H
 
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <string.h>
