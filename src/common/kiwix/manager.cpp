@@ -270,8 +270,9 @@ namespace kiwix {
       std::ostringstream mediaCountStream;
       mediaCountStream << reader.getMediaCount();
       book.mediaCount = mediaCountStream.str();
-      
-      book.size = getFileSizeAsString(path);
+
+      ostringstream convert; convert << reader.getFileSize();
+      book.size = convert.str();
 
       string favicon;
       string faviconMimeType;
