@@ -422,4 +422,16 @@ namespace kiwix {
 
     return true;
   }
+
+  /* Return the file size, works also for splitted files */
+  unsigned int Reader::getFileSize() {
+    zim::File *file = this->getZimFileHandler();
+    zim::offset_type size = 0;
+    
+    if (file != NULL) {
+      size = file->getFilesize();
+    }
+
+    return size;
+  }
 }

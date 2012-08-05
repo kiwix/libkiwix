@@ -30,6 +30,7 @@
 #include <sstream>
 #include <map>
 #include "time.h"
+#include "../pathTools.h"
 
 using namespace std;
 
@@ -63,6 +64,7 @@ namespace kiwix {
     bool canCheckIntegrity();
     bool isCorrupted();
     bool parseUrl(const string &urlStr, char *ns, string &titleStr);
+    unsigned int getFileSize();
     zim::File* getZimFileHandler();
     
   protected:
