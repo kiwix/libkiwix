@@ -65,6 +65,38 @@ namespace kiwix {
     bool stop();
     bool isRunning();
     unsigned int getProgression();
+    void setVerboseFlag(const bool value);
+
+  protected:
+    virtual void indexingPrelude(const string indexPath) = 0;
+    virtual void index(const string &url, 
+		       const string &title, 
+		       const string &unaccentedTitle,
+		       const string &keywords, 
+		       const string &content,
+		       const string &snippet,
+		       const string &size,
+		       const string &wordCount) = 0;
+    virtual void flush() = 0;
+    virtual void indexingPostlude() = 0;
+    
+    /* Others */
+    unsigned int countWords(const string &text);
+
+    /* Stopwords */
+    bool readStopWordsFile(const string path);
+    std::vector<std::string> stopWords;
+
+    /* Boost factor */
+    unsigned int keywordsBoostFactor;
+    inline unsigned int getTitleBoostFactor(const unsigned int contentLength) {
+      return contentLength / 500 + 1;
+    }
+
+    /* Verbose */
+    pthread_mutex_t verboseMutex;
+    bool getVerboseFlag();
+    bool verboseFlag;
 
   private:
     pthread_mutex_t threadIdsMutex;
@@ -130,32 +162,6 @@ namespace kiwix {
     string indexPath;
     void setIndexPath(const string path);
     string getIndexPath();
-
-  protected:
-    virtual void indexingPrelude(const string indexPath) = 0;
-    virtual void index(const string &url, 
-		       const string &title, 
-		       const string &unaccentedTitle,
-		       const string &keywords, 
-		       const string &content,
-		       const string &snippet,
-		       const string &size,
-		       const string &wordCount) = 0;
-    virtual void flush() = 0;
-    virtual void indexingPostlude() = 0;
-    
-    /* Others */
-    unsigned int countWords(const string &text);
-
-    /* Stopwords */
-    bool readStopWordsFile(const string path);
-    std::vector<std::string> stopWords;
-
-    /* Boost factor */
-    unsigned int keywordsBoostFactor;
-    inline unsigned int getTitleBoostFactor(const unsigned int contentLength) {
-      return contentLength / 500 + 1;
-    }
   };
 }
 

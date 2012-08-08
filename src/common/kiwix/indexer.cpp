@@ -36,7 +36,8 @@ namespace kiwix {
 
   /* Constructor */
   Indexer::Indexer() :
-    keywordsBoostFactor(3) {
+    keywordsBoostFactor(3),
+    verboseFlag(false) {
 
     /* Initialize mutex */
     pthread_mutex_init(&threadIdsMutex, NULL);
@@ -49,6 +50,7 @@ namespace kiwix {
     pthread_mutex_init(&zimPathMutex, NULL);
     pthread_mutex_init(&indexPathMutex, NULL);
     pthread_mutex_init(&progressionMutex, NULL);
+    pthread_mutex_init(&verboseMutex, NULL);
     
     /* Read the stopwords file */
     //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
@@ -284,6 +286,10 @@ namespace kiwix {
 #else
       sleep(0.5);
 #endif
+      if (this->getVerboseFlag()) {
+	std::cout << "Waiting... ToParseQueue is empty for now..." << std::endl;
+      }
+
       pthread_testcancel();
     }
 
@@ -325,6 +331,10 @@ namespace kiwix {
 #else
       sleep(0.5);
 #endif
+      if (this->getVerboseFlag()) {
+	std::cout << "Waiting... ToIndexQueue is empty for now..." << std::endl;
+      }
+
       pthread_testcancel();
     }
 
@@ -395,6 +405,11 @@ namespace kiwix {
 
   /* Manage */
   bool Indexer::start(const string zimPath, const string indexPath) {
+
+    if (this->getVerboseFlag()) {
+      std::cout << "Indexing of '" << zimPath << "' starting..." <<std::endl;
+    }
+
     this->setProgression(0);
     this->setZimPath(zimPath);
     this->setIndexPath(indexPath);
@@ -412,6 +427,12 @@ namespace kiwix {
   }
 
   bool Indexer::isRunning() {
+      if (this->getVerboseFlag()) {
+	std::cout << "isArticleExtractor running: " << (this->isArticleExtractorRunning() ? "yes" : "no") << std::endl;
+	std::cout << "isArticleIndexer running: " << (this->isArticleIndexerRunning() ? "yes" : "no") << std::endl;
+	std::cout << "isArticleParser running: " << (this->isArticleParserRunning() ? "yes" : "no") << std::endl;
+      }
+
     return this->isArticleExtractorRunning() || this->isArticleIndexerRunning() || this->isArticleParserRunning();
   }
 
@@ -455,6 +476,21 @@ namespace kiwix {
 
     std::cout << "Read " << this->stopWords.size() << " lines.\n";
     return true;
+  }
+
+  /* Manage the verboseFlag */
+  void Indexer::setVerboseFlag(const bool value) {
+    pthread_mutex_lock(&verboseMutex);
+    this->verboseFlag = value;
+    pthread_mutex_unlock(&verboseMutex);
+  }
+
+  bool Indexer::getVerboseFlag() {
+    bool value;
+    pthread_mutex_lock(&verboseMutex);
+    value = this->verboseFlag;
+    pthread_mutex_unlock(&verboseMutex);
+    return value;
   }
 
 }
