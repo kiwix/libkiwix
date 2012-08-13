@@ -50,7 +50,16 @@ string computeAbsolutePath(const string path, const string relativePath) {
 #else
   string separator = "/";
 #endif
-  string absolutePath = path[path.length() - 1] == separator[0] ? path : path + separator;
+
+  string absolutePath;
+  if (path.empty()) {
+    char *path=NULL;
+    size_t size;
+    path = getcwd(path,size);
+    absolutePath = string(path) + separator;
+  } else {
+    absolutePath = path[path.length() - 1] == separator[0] ? path : path + separator;
+  }
   char *cRelativePath = strdup(relativePath.c_str());
   char *token = strtok(cRelativePath, "/");
   
