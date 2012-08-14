@@ -20,8 +20,8 @@
 #include "stringTools.h"
 
 /* Prepare integer for display */
-std::string beautifyInteger(const unsigned int number) {
-  stringstream numberStream;
+std::string kiwix::beautifyInteger(const unsigned int number) {
+  std::stringstream numberStream;
   numberStream << number;
   std::string numberString = numberStream.str();
   
@@ -35,14 +35,14 @@ std::string beautifyInteger(const unsigned int number) {
 }
 
 /* Split string in a token array */
-std::vector<std::string> split(const std::string & str,
+std::vector<std::string> kiwix::split(const std::string & str,
                                       const std::string & delims=" *-")
 {
-  string::size_type lastPos = str.find_first_not_of(delims, 0);
-  string::size_type pos = str.find_first_of(delims, lastPos);
-  vector<string> tokens;
+  std::string::size_type lastPos = str.find_first_not_of(delims, 0);
+  std::string::size_type pos = str.find_first_of(delims, lastPos);
+  std::vector<std::string> tokens;
  
-  while (string::npos != pos || string::npos != lastPos)
+  while (std::string::npos != pos || std::string::npos != lastPos)
     {
       tokens.push_back(str.substr(lastPos, pos - lastPos));
       lastPos = str.find_first_not_of(delims, pos);
@@ -52,15 +52,52 @@ std::vector<std::string> split(const std::string & str,
   return tokens;
 }
 
-std::vector<std::string> split(const char* lhs, const char* rhs){
+std::vector<std::string> kiwix::split(const char* lhs, const char* rhs){
   const std::string m1 (lhs), m2 (rhs);
   return split(m1, m2);
 }
 
-std::vector<std::string> split(const char* lhs, const std::string& rhs){
+std::vector<std::string> kiwix::split(const char* lhs, const std::string& rhs){
   return split(lhs, rhs.c_str());
 }
 
-std::vector<std::string> split(const std::string& lhs, const char* rhs){
+std::vector<std::string> kiwix::split(const std::string& lhs, const char* rhs){
   return split(lhs.c_str(), rhs);
 }
+
+std::string kiwix::removeAccents(const std::string &text) {
+  ucnv_setDefaultName("UTF-8");
+  UErrorCode status = U_ZERO_ERROR;
+  Transliterator *removeAccentsTrans = Transliterator::createInstance("Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
+  UnicodeString ustring = UnicodeString(text.c_str());
+  removeAccentsTrans->transliterate(ustring);
+  std::string unaccentedText;
+  ustring.toUTF8String(unaccentedText);
+  return unaccentedText;
+}
+
+void kiwix::printStringInHexadecimal(UnicodeString s) {
+  std::cout << std::showbase << std::hex;
+  for (int i=0; i<s.length(); i++) {
+    char c = (char)((s.getTerminatedBuffer())[i]);
+    if (c & 0x80)
+      std::cout << (c & 0xffff) << " ";
+    else
+      std::cout << c << " ";
+  }
+  std::cout << std::endl;
+}
+
+void kiwix::printStringInHexadecimal(const char *s) {
+  std::cout << std::showbase << std::hex;
+  for (char const* pc = s; *pc; ++pc) {
+    if (*pc & 0x80)
+      std::cout << (*pc & 0xffff);
+    else
+      std::cout << *pc;
+    std::cout << ' ';
+  }
+  std::cout << std::endl;
+}
+
+

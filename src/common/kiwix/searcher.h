@@ -28,7 +28,6 @@
 #include <locale>
 #include <cctype>
 #include <vector>
-#include <unaccent.h>
 #include <resourceTools.h>
 #include <stringTools.h>
 

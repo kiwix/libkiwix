@@ -154,11 +154,10 @@ namespace kiwix {
 	token.size = sizeStringStream.str();
 
 	/* Remove accent */
-	token.title = removeAccents(token.accentedTitle);
-	token.keywords = removeAccents(htmlParser.keywords);
-	token.content = removeAccents(htmlParser.dump);
+	token.title = kiwix::removeAccents(token.accentedTitle);
+	token.keywords = kiwix::removeAccents(htmlParser.keywords);
+	token.content = kiwix::removeAccents(htmlParser.dump);
 	self->pushToIndexQueue(token);
-
       }
 
       /* Test if the thread should be cancelled */

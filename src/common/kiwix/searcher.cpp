@@ -160,10 +160,10 @@ namespace kiwix {
       result["snippet"] = this->resultOffset->snippet;
 
       if (this->resultOffset->size >= 0)
-	result["size"] = ::beautifyInteger(this->resultOffset->size);
+	result["size"] = kiwix::beautifyInteger(this->resultOffset->size);
 
       if (this->resultOffset->wordCount >= 0)
-	result["wordCount"] = ::beautifyInteger(this->resultOffset->wordCount);
+	result["wordCount"] = kiwix::beautifyInteger(this->resultOffset->wordCount);
 
       resultsCDT.PushBack(result);
       this->resultOffset++;
@@ -195,7 +195,7 @@ namespace kiwix {
     }
     oData["pages"] = pagesCDT;
 
-    oData["count"] = ::beautifyInteger(this->estimatedResultCount);
+    oData["count"] = kiwix::beautifyInteger(this->estimatedResultCount);
     oData["searchPattern"] = this->searchPattern;
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);

@@ -27,7 +27,7 @@
 #include <vector>
 #include <stack>
 
-#include <unaccent.h>
+#include <stringTools.h>
 #include <regexTools.h>
 
 #define KIWIX_LIBRARY_VERSION "20110515"

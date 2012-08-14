@@ -35,7 +35,7 @@
 #endif
 
 #include <pthread.h>
-#include <unaccent.h>
+#include <stringTools.h>
 #include <zim/file.h>
 #include <zim/article.h>
 #include <zim/fileiterator.h>
