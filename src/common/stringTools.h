@@ -45,6 +45,9 @@ namespace kiwix {
 
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);
+
+  std::string ucFirst (const std::string &word);
+  std::string lcFirst (const std::string &word);
 }
 
 #endif

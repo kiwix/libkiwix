@@ -76,6 +76,30 @@ std::string kiwix::removeAccents(const std::string &text) {
   return unaccentedText;
 }
 
+std::string kiwix::ucFirst (const std::string &word) {
+  if (word.empty())
+    return "";
+
+  std::string ucFirstWord;
+  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
+  UnicodeString ucFirstLetter = firstLetter.toUpper();
+  ucFirstLetter.toUTF8String(ucFirstWord);
+  ucFirstWord += word.substr(1);
+  return ucFirstWord;
+}
+
+std::string kiwix::lcFirst (const std::string &word) {
+  if (word.empty())
+    return "";
+
+  std::string ucFirstWord;
+  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
+  UnicodeString ucFirstLetter = firstLetter.toLower();
+  ucFirstLetter.toUTF8String(ucFirstWord);
+  ucFirstWord += word.substr(1);
+  return ucFirstWord;
+}
+
 void kiwix::printStringInHexadecimal(UnicodeString s) {
   std::cout << std::showbase << std::hex;
   for (int i=0; i<s.length(); i++) {
