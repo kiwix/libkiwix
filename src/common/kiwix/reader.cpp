@@ -432,6 +432,6 @@ namespace kiwix {
       size = file->getFilesize();
     }
 
-    return size;
+    return (size / 1024);
   }
 }
