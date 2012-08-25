@@ -366,22 +366,27 @@ namespace kiwix {
     return retVal;
   }
   
-  /* Search titles by prefix*/
-  bool Reader::searchSuggestions(const string &prefix, unsigned int suggestionsCount) {
-    bool retVal = true;
+  /* Search titles by prefix */
+  bool Reader::searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset) {
+    bool retVal = false;
     
     /* Reset the suggestions */
-    this->suggestions.clear();
-    
+    if (reset) {
+      this->suggestions.clear();
+    }
+
     if (prefix.size()) {
       for (zim::File::const_iterator it = zimFileHandler->findByTitle('A', prefix); 
-	   it != zimFileHandler->end() && it->getTitle().compare(0, prefix.size(), prefix) == 0 
-	     && this->suggestions.size() < suggestionsCount ; ++it) {
+	   it != zimFileHandler->end() && 
+	     it->getTitle().compare(0, prefix.size(), prefix) == 0 && 
+	     this->suggestions.size() < suggestionsCount ; 
+	   ++it) {
 	
 	this->suggestions.push_back(it->getTitle());
+	
+	/* Suggestions where found */
+	retVal = true;
       }
-    } else {
-      retVal = false;
     }
     
     /* Set the cursor to the begining */
@@ -390,6 +395,23 @@ namespace kiwix {
     return retVal;
   }
   
+  /* Try also a few variations of the prefix to have better results */
+  bool Reader::searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount) {
+    std::string myPrefix = prefix;
+    /* Normal suggestion request */
+    bool retVal = this->searchSuggestions(prefix, suggestionsCount, true);
+    
+    /* Trye with first letter uppercase */
+    myPrefix = kiwix::ucFirst(myPrefix);
+    this->searchSuggestions(myPrefix, suggestionsCount, false);
+
+    /* Trye with first letter lowercase */
+    myPrefix = kiwix::lcFirst(myPrefix);
+    this->searchSuggestions(myPrefix, suggestionsCount, false);
+
+    return retVal;
+  }
+
   /* Get next suggestion */
   bool Reader::getNextSuggestion(string &title) {
     if (this->suggestionsOffset != this->suggestions.end()) {

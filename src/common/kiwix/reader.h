@@ -30,7 +30,8 @@
 #include <sstream>
 #include <map>
 #include "time.h"
-#include "../pathTools.h"
+#include <pathTools.h>
+#include <stringTools.h>
 
 using namespace std;
 
@@ -59,7 +60,8 @@ namespace kiwix {
     bool getFavicon(string &content, string &mimeType);
     bool getPageUrlFromTitle(const string &title, string &url);
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
-    bool searchSuggestions(const string &prefix, unsigned int suggestionsCount);
+    bool searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset = true);
+    bool searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount);
     bool getNextSuggestion(string &title);
     bool canCheckIntegrity();
     bool isCorrupted();
