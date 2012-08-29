@@ -60,7 +60,6 @@ namespace kiwix {
   void *Indexer::extractArticles(void *ptr) {
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
-    self->articleExtractorRunning(true);
 
     /* Get the number of article to index */
     kiwix::Reader reader(self->getZimPath());
@@ -113,7 +112,6 @@ namespace kiwix {
   void *Indexer::parseArticles(void *ptr) {
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
-    self->articleParserRunning(true);
     size_t found;
     indexerToken token;
 
@@ -186,18 +184,6 @@ namespace kiwix {
   void *Indexer::indexArticles(void *ptr) {
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
-    self->articleIndexerRunning(true);
-
-    /* Wait that the extraction has started, and so on a few
-       initialisations, to really start */
-    while(self->isToIndexQueueEmpty() && self->isArticleExtractorRunning()) {
-#ifdef _WIN32
-      Sleep(100);
-#else
-      sleep(0.1);
-#endif
-    }
-
     indexerToken token;
     unsigned indexedArticleCount = 0;
     unsigned int articleCount = self->getArticleCount();
@@ -239,7 +225,7 @@ namespace kiwix {
 #ifdef _WIN32
     Sleep(100);
 #else
-    sleep(1);
+    usleep(100000);
 #endif
     self->articleIndexerRunning(false);
     pthread_exit(NULL);
@@ -274,7 +260,7 @@ namespace kiwix {
 #ifdef _WIN32
     Sleep(int(this->toParseQueue.size() / 200) / 10 * 1000);
 #else
-    sleep(int(this->toParseQueue.size() / 200) / 10);
+    usleep(int(this->toParseQueue.size() / 200) / 10 * 1000000);
 #endif
   }
 
@@ -283,7 +269,7 @@ namespace kiwix {
 #ifdef _WIN32
       Sleep(500);
 #else
-      sleep(0.5);
+      usleep(500000);
 #endif
       if (this->getVerboseFlag()) {
 	std::cout << "Waiting... ToParseQueue is empty for now..." << std::endl;
@@ -319,7 +305,7 @@ namespace kiwix {
 #ifdef _WIN32
     Sleep(int(this->toIndexQueue.size() / 200) / 10 * 1000);
 #else
-    sleep(int(this->toIndexQueue.size() / 200) / 10);
+    usleep(int(this->toIndexQueue.size() / 200) / 10 * 1000000);
 #endif
   }
 
@@ -328,7 +314,7 @@ namespace kiwix {
 #ifdef _WIN32
       Sleep(500);
 #else
-      sleep(0.5);
+      usleep(500000);
 #endif
       if (this->getVerboseFlag()) {
 	std::cout << "Waiting... ToIndexQueue is empty for now..." << std::endl;
@@ -414,10 +400,13 @@ namespace kiwix {
     this->setIndexPath(indexPath);
     
     pthread_mutex_lock(&threadIdsMutex); 
+    this->articleExtractorRunning(true);
     pthread_create(&(this->articleExtractor), NULL, Indexer::extractArticles, (void*)this);
     pthread_detach(this->articleExtractor);
+    this->articleParserRunning(true);
     pthread_create(&(this->articleParser), NULL, Indexer::parseArticles, (void*)this);
     pthread_detach(this->articleParser);
+    this->articleIndexerRunning(true);
     pthread_create(&(this->articleIndexer), NULL, Indexer::indexArticles, (void*)this);
     pthread_detach(this->articleIndexer);
     pthread_mutex_unlock(&threadIdsMutex);
