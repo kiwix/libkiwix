@@ -417,8 +417,8 @@ namespace kiwix {
   bool Indexer::isRunning() {
       if (this->getVerboseFlag()) {
 	std::cout << "isArticleExtractor running: " << (this->isArticleExtractorRunning() ? "yes" : "no") << std::endl;
-	std::cout << "isArticleIndexer running: " << (this->isArticleIndexerRunning() ? "yes" : "no") << std::endl;
 	std::cout << "isArticleParser running: " << (this->isArticleParserRunning() ? "yes" : "no") << std::endl;
+	std::cout << "isArticleIndexer running: " << (this->isArticleIndexerRunning() ? "yes" : "no") << std::endl;
       }
 
     return this->isArticleExtractorRunning() || this->isArticleIndexerRunning() || this->isArticleParserRunning();
