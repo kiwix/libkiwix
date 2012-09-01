@@ -36,6 +36,7 @@
 
 #include <pthread.h>
 #include <stringTools.h>
+#include <resourceTools.h>
 #include <zim/file.h>
 #include <zim/article.h>
 #include <zim/fileiterator.h>
@@ -79,13 +80,13 @@ namespace kiwix {
 		       const string &wordCount) = 0;
     virtual void flush() = 0;
     virtual void indexingPostlude() = 0;
-    
+
+    /* Stop words */
+    std::vector<std::string> stopWords;
+    void readStopWords(const string languageCode);
+
     /* Others */
     unsigned int countWords(const string &text);
-
-    /* Stopwords */
-    bool readStopWordsFile(const string path);
-    std::vector<std::string> stopWords;
 
     /* Boost factor */
     unsigned int keywordsBoostFactor;

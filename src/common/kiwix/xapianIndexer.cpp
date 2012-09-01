@@ -44,6 +44,16 @@ namespace kiwix {
   void XapianIndexer::indexingPrelude(const string indexPath) {
     this->writableDatabase = Xapian::WritableDatabase(indexPath, Xapian::DB_CREATE_OR_OVERWRITE);
     this->writableDatabase.begin_transaction(true);
+
+    /* Insert the stopwords */
+    if (!this->stopWords.empty()) {
+      typename std::vector<std::string>::iterator it = this->stopWords.begin();
+      for( ; it != this->stopWords.end(); ++it) {
+	this->stopper.add(*it);
+      }
+
+      this->indexer.set_stopper(&(this->stopper));
+    }
   }
   
   void XapianIndexer::index(const string &url, 

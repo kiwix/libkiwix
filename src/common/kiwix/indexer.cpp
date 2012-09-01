@@ -51,9 +51,18 @@ namespace kiwix {
     pthread_mutex_init(&indexPathMutex, NULL);
     pthread_mutex_init(&progressionMutex, NULL);
     pthread_mutex_init(&verboseMutex, NULL);
-    
-    /* Read the stopwords file */
-    //this->readStopWordsFile("/home/kelson/kiwix/moulinkiwix/stopwords/fr");
+  }
+
+  /* Read the stopwords */
+  void Indexer::readStopWords(const string languageCode) {
+    std::string stopWord;
+    std::istringstream file(getResourceAsString("stopwords/" + languageCode));
+
+    this->stopWords.clear();
+
+    while (getline(file, stopWord, '\n')) {
+      this->stopWords.push_back(stopWord);
+    }
   }
 
   /* Article extractor methods */
@@ -65,6 +74,9 @@ namespace kiwix {
     kiwix::Reader reader(self->getZimPath());
     unsigned int articleCount = reader.getArticleCount();
     self->setArticleCount(articleCount);
+
+    /* StopWords */
+    self->readStopWords(reader.getLanguage());
 
     /* Goes trough all articles */
     zim::File *zimHandler = reader.getZimFileHandler();
@@ -390,7 +402,6 @@ namespace kiwix {
 
   /* Manage */
   bool Indexer::start(const string zimPath, const string indexPath) {
-
     if (this->getVerboseFlag()) {
       std::cout << "Indexing of '" << zimPath << "' starting..." <<std::endl;
     }
@@ -448,21 +459,6 @@ namespace kiwix {
       pthread_mutex_unlock(&threadIdsMutex); 
     }
 
-    return true;
-  }
-
-  /* Read the file containing the stopwords */
-  bool Indexer::readStopWordsFile(const string path) {
-    std::string stopWord;
-    std::ifstream file(path.c_str(), std::ios_base::in);
-
-    this->stopWords.clear();
-
-    while (getline(file, stopWord, '\n')) {
-      this->stopWords.push_back(stopWord);
-    }
-
-    std::cout << "Read " << this->stopWords.size() << " lines.\n";
     return true;
   }
 
