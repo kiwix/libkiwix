@@ -22,23 +22,11 @@
 namespace kiwix {
 
   /* Constructor */
-  XapianIndexer::XapianIndexer() {
-    /* Stemming */
+  XapianIndexer::XapianIndexer() :
     /*
-    stemmer = Xapian::Stem("french");
-    indexer.set_stemmer(stemmer);
-    */
-
-    /* Stop words */
-    /*
-    std::vector<std::string>::const_iterator stopWordsIterator = this->stopWords.begin();
-    this->stopper.add("ceci");
-    while (stopWordsIterator != this->stopWords.end()) {
-      this->stopper.add(*stopWordsIterator);
-      stopWordsIterator++;
-    }
-    indexer.set_stopper(&(this->stopper));
-    */
+    stemmer(Xapian::Stem("french")) {
+    this->indexer.set_stemmer(this->stemmer);
+    */ 
   }
   
   void XapianIndexer::indexingPrelude(const string indexPath) {
