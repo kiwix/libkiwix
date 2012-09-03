@@ -22,7 +22,7 @@
 namespace kiwix {
 
   /* Constructor */
-  XapianIndexer::XapianIndexer() :
+  XapianIndexer::XapianIndexer() {
     /*
     stemmer(Xapian::Stem("french")) {
     this->indexer.set_stemmer(this->stemmer);
