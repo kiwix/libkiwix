@@ -35,7 +35,7 @@ namespace kiwix {
 
     /* Insert the stopwords */
     if (!this->stopWords.empty()) {
-      typename std::vector<std::string>::iterator it = this->stopWords.begin();
+      std::vector<std::string>::iterator it = this->stopWords.begin();
       for( ; it != this->stopWords.end(); ++it) {
 	this->stopper.add(*it);
       }
