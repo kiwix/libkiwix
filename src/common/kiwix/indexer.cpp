@@ -85,7 +85,7 @@ namespace kiwix {
     zim::Article currentArticle;
 
     while (currentOffset < lastOffset) {
-      if (this->getVerboseFlag()) {
+      if (self->getVerboseFlag()) {
 	std::cout << "Extracting article with offset: " << currentOffset << std::endl;
       }
 
