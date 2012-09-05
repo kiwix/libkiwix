@@ -48,8 +48,8 @@ namespace kiwix {
       this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
       this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
       this->currentArticleOffset = this->firstArticleOffset;
-      this->articleCount = this->zimFileHandler->getNamespaceCount('A');
-      this->mediaCount = this->zimFileHandler->getNamespaceCount('I');
+      this->nsACount = this->zimFileHandler->getNamespaceCount('A');
+      this->nsICount = this->zimFileHandler->getNamespaceCount('I');
     }
 
     /* initialize random seed: */
@@ -100,7 +100,7 @@ namespace kiwix {
     unsigned int counter = 0;
     
     if (counterMap.empty()) {
-      counter = this->articleCount;
+      counter = this->nsACount;
     } else {
       std::map<std::string, unsigned int>::const_iterator it = counterMap.find("text/html");
       if (it != counterMap.end())
@@ -115,7 +115,7 @@ namespace kiwix {
     unsigned int counter = 0;
 
     if (counterMap.empty())
-      counter = this->mediaCount;
+      counter = this->nsICount;
     else {
       std::map<std::string, unsigned int>::const_iterator it;
 
@@ -169,7 +169,7 @@ namespace kiwix {
   /* Return an URL from a title*/
   string Reader::getRandomPageUrl() {
     zim::size_type idx = this->firstArticleOffset + 
-      (zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->articleCount); 
+      (zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->nsACount); 
     zim::Article article = zimFileHandler->getArticle(idx);
 
     return article.getLongUrl().c_str();

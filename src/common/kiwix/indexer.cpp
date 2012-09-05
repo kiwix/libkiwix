@@ -85,10 +85,6 @@ namespace kiwix {
     zim::Article currentArticle;
 
     while (currentOffset < lastOffset) {
-      if (self->getVerboseFlag()) {
-	std::cout << "Extracting article with offset: " << currentOffset << std::endl;
-      }
-
       currentArticle = zimHandler->getArticle(currentOffset);
       
       if (!currentArticle.isRedirect()) {
@@ -379,13 +375,13 @@ namespace kiwix {
   }
 
   void Indexer::setArticleCount(const unsigned int articleCount) {
-    pthread_mutex_lock(&articleCountMutex); 
+    pthread_mutex_lock(&articleCountMutex);
     this->articleCount = articleCount;
     pthread_mutex_unlock(&articleCountMutex); 
   }
 
   unsigned int Indexer::getArticleCount() {
-    pthread_mutex_lock(&articleCountMutex); 
+    pthread_mutex_lock(&articleCountMutex);
     unsigned int retVal = this->articleCount;
     pthread_mutex_unlock(&articleCountMutex);
     return retVal;
@@ -410,17 +406,28 @@ namespace kiwix {
       std::cout << "Indexing of '" << zimPath << "' starting..." <<std::endl;
     }
 
+    this->setArticleCount(0);
     this->setProgression(0);
     this->setZimPath(zimPath);
     this->setIndexPath(indexPath);
-    
+
     pthread_mutex_lock(&threadIdsMutex); 
     this->articleExtractorRunning(true);
     pthread_create(&(this->articleExtractor), NULL, Indexer::extractArticles, (void*)this);
     pthread_detach(this->articleExtractor);
+
+    while(this->isArticleExtractorRunning() && this->getArticleCount() == 0) {
+#ifdef _WIN32
+    Sleep(100);
+#else
+    usleep(100000);
+#endif
+    }
+    
     this->articleParserRunning(true);
     pthread_create(&(this->articleParser), NULL, Indexer::parseArticles, (void*)this);
     pthread_detach(this->articleParser);
+
     this->articleIndexerRunning(true);
     pthread_create(&(this->articleIndexer), NULL, Indexer::indexArticles, (void*)this);
     pthread_detach(this->articleIndexer);

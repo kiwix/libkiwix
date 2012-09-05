@@ -74,8 +74,8 @@ namespace kiwix {
     zim::size_type firstArticleOffset;
     zim::size_type lastArticleOffset;
     zim::size_type currentArticleOffset;
-    zim::size_type articleCount;
-    zim::size_type mediaCount;
+    zim::size_type nsACount;
+    zim::size_type nsICount;
     
     std::vector<std::string> suggestions;
     std::vector<std::string>::iterator suggestionsOffset;
