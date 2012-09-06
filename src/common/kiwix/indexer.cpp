@@ -225,7 +225,7 @@ namespace kiwix {
       }
 
       /* Make a hard-disk flush every 10.000 articles */
-      if (indexedArticleCount % 500 == 0) {
+      if (indexedArticleCount % 5000 == 0) {
 	self->flush();
       }
 
