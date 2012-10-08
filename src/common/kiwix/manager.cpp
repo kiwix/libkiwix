@@ -243,43 +243,43 @@ namespace kiwix {
   }
 
   bool Manager::readBookFromPath(const string path, kiwix::Book &book) {
-
     try {
-      kiwix::Reader reader = kiwix::Reader(path);
+      kiwix::Reader *reader = new kiwix::Reader(path);
       book.path = path;
       book.pathAbsolute = path;
-      book.id = reader.getId();
-      book.description = reader.getDescription();
-      book.language = reader.getLanguage();
-      book.date = reader.getDate();
-      book.creator = reader.getCreator();
-      book.publisher = reader.getPublisher();
-
-      book.title = reader.getTitle();
+      book.id = reader->getId();
+      book.description = reader->getDescription();
+      book.language = reader->getLanguage();
+      book.date = reader->getDate();
+      book.creator = reader->getCreator();
+      book.publisher = reader->getPublisher();
+      book.title = reader->getTitle();
       if (book.title.empty()) {
 	book.title = getLastPathElement(path);
 	std::replace(book.title.begin(), book.title.end(), '_', ' ');
 	size_t pos = book.title.find(".zim");
 	book.title = book.title.substr(0, pos);
       }
-      
+
       std::ostringstream articleCountStream;
-      articleCountStream << reader.getArticleCount();
+      articleCountStream << reader->getArticleCount();
       book.articleCount = articleCountStream.str();
       
       std::ostringstream mediaCountStream;
-      mediaCountStream << reader.getMediaCount();
+      mediaCountStream << reader->getMediaCount();
       book.mediaCount = mediaCountStream.str();
 
-      ostringstream convert; convert << reader.getFileSize();
+      ostringstream convert; convert << reader->getFileSize();
       book.size = convert.str();
 
       string favicon;
       string faviconMimeType;
-      if (reader.getFavicon(favicon, faviconMimeType)) {
+      if (reader->getFavicon(favicon, faviconMimeType)) {
 	book.favicon = base64_encode(reinterpret_cast<const unsigned char*>(favicon.c_str()), favicon.length());
 	book.faviconMimeType = faviconMimeType;
       }
+      
+      delete reader;
     } catch (...) {
       return false;
     }
