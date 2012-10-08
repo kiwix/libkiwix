@@ -236,6 +236,12 @@ namespace kiwix {
   string Reader::getDescription() {
     string value;
     this->getMetatag("Description", value);
+    
+    /* Mediawiki Collection tends to use the "Subtitle" name */
+    if (value.empty()) {
+      this->getMetatag("Subtitle", value);
+    }
+
     return value;
   }
 
