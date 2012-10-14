@@ -280,7 +280,8 @@ namespace kiwix {
       }
       
       delete reader;
-    } catch (...) {
+    } catch (const std::exception& e) {
+      std::cerr << e.what() << std::endl;
       return false;
     }
 
