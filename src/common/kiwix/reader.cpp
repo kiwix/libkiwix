@@ -41,9 +41,18 @@ namespace kiwix {
   /* Constructor */
   Reader::Reader(const string zimFilePath) 
     : zimFileHandler(NULL) {
+    string tmpZimFilePath = zimFilePath;
 
-    this->zimFileHandler = new zim::File(zimFilePath);
-    
+    /* Remove potential trailing zimaa */
+    size_t found = tmpZimFilePath.rfind("zimaa");
+    if (found != string::npos && 
+	tmpZimFilePath.size() > 5 && 
+	found == tmpZimFilePath.size() - 5) {
+      tmpZimFilePath.resize(tmpZimFilePath.size() - 2);
+    }
+
+    this->zimFileHandler = new zim::File(tmpZimFilePath);
+
     if (this->zimFileHandler != NULL) {
       this->firstArticleOffset = this->zimFileHandler->getNamespaceBeginOffset('A');
       this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
