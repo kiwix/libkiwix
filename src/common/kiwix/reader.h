@@ -46,6 +46,7 @@ namespace kiwix {
     void reset();
     unsigned int getArticleCount();
     unsigned int getMediaCount();
+    unsigned int getGlobalCount();
     string getId();
     string getRandomPageUrl();
     string getFirstPageUrl();

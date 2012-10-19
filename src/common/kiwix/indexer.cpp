@@ -72,8 +72,14 @@ namespace kiwix {
 
     /* Get the number of article to index */
     kiwix::Reader reader(self->getZimPath());
-    unsigned int articleCount = reader.getArticleCount();
+    unsigned int articleCount = reader.getGlobalCount();
     self->setArticleCount(articleCount);
+
+    /* Progression */
+    unsigned int readArticleCount = 0;
+    unsigned int currentProgression = 0;
+    self->setProgression(currentProgression);
+    unsigned int tmpProgression;
 
     /* StopWords */
     self->readStopWords(reader.getLanguage());
@@ -95,8 +101,16 @@ namespace kiwix {
 	token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
 	self->pushToParseQueue(token);
       }
-      
-      currentOffset++;
+
+      readArticleCount += 1;
+      currentOffset += 1;
+
+      /* Update the progression counter (in percent) */
+      tmpProgression = (unsigned int)((float)readArticleCount/(float)articleCount*100 - 1);
+      if (tmpProgression > currentProgression) {
+	currentProgression = tmpProgression;
+	self->setProgression(currentProgression);
+      }
 
       /* Test if the thread should be cancelled */
       pthread_testcancel();
@@ -196,11 +210,8 @@ namespace kiwix {
   void *Indexer::indexArticles(void *ptr) {
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
+    unsigned int indexedArticleCount = 0;
     indexerToken token;
-    unsigned indexedArticleCount = 0;
-    unsigned int articleCount = self->getArticleCount();
-    unsigned int currentProgression = self->getProgression();
-    unsigned int tmpProgression;
 
     self->indexingPrelude(self->getIndexPath()); 
 
@@ -214,15 +225,8 @@ namespace kiwix {
 		  token.size,
 		  token.wordCount
 		  );
-      
-      indexedArticleCount += 1;
 
-      /* Update the progression counter (in percent) */
-      tmpProgression = (unsigned int)((float)indexedArticleCount/(float)articleCount*100);
-      if (tmpProgression > currentProgression) {
-	currentProgression = tmpProgression;
-	self->setProgression(currentProgression);
-      }
+      indexedArticleCount += 1;
 
       /* Make a hard-disk flush every 10.000 articles */
       if (indexedArticleCount % 5000 == 0) {
@@ -283,6 +287,7 @@ namespace kiwix {
 #else
       usleep(500000);
 #endif
+
       if (this->getVerboseFlag()) {
 	std::cout << "Waiting... ToParseQueue is empty for now..." << std::endl;
       }

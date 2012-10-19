@@ -119,6 +119,7 @@ namespace kiwix {
     return counter;
   }
 
+  /* Get the count of medias content in the ZIM file */
   unsigned int Reader::getMediaCount() {
     std::map<std::string, unsigned int> counterMap = this->parseCounterMetadata();
     unsigned int counter = 0;
@@ -144,6 +145,11 @@ namespace kiwix {
     return counter;
   }
   
+  /* Get the total of all items of a ZIM file, redirects included */
+  unsigned int Reader::getGlobalCount() {
+    return this->zimFileHandler->getCountArticles();
+  }
+
   /* Return the UID of the ZIM file */
   string Reader::getId() {
     std::ostringstream s;
