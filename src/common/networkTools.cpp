@@ -22,6 +22,37 @@
 std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
   std::map<std::string, std::string> interfaces;
 
+#ifdef _WIN32
+  SOCKET sd = WSASocket(AF_INET, SOCK_DGRAM, 0, 0, 0, 0);
+  if (sd == SOCKET_ERROR) {
+    std::cerr << "Failed to get a socket. Error " << WSAGetLastError() <<
+      std::endl;
+    return interfaces;
+  }
+
+  INTERFACE_INFO InterfaceList[20];
+  unsigned long nBytesReturned;
+  if (WSAIoctl(sd, SIO_GET_INTERFACE_LIST, 0, 0, &InterfaceList,
+	       sizeof(InterfaceList), &nBytesReturned, 0, 0) == SOCKET_ERROR) {
+    std::cerr << "Failed calling WSAIoctl: error " << WSAGetLastError() <<
+      std::endl;
+    return interfaces;
+  }
+  
+  int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
+  std::cout << "There are " << nNumInterfaces << " interfaces:" << std::endl;
+  for (int i = 0; i < nNumInterfaces; ++i) {
+    std::cout << std::endl;
+    
+    sockaddr_in *pAddress;
+    pAddress = (sockaddr_in *) & (InterfaceList[i].iiAddress);
+
+    /* Add to the map */
+    std::string interfaceName = std::string(inet_ntoa(pAddress->sin_addr));
+    std::string interfaceIp = std::string(inet_ntoa(pAddress->sin_addr));
+    interfaces.insert(std::pair<std::string, std::string>(interfaceName, interfaceIp)); 
+  }
+#else
   /* Get Network interfaces information */
   char buf[16384];
   struct ifconf ifconf;
@@ -60,13 +91,14 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
     ifreq=(struct ifreq*)((char*)ifreq+len);
     i+=len;
   }
-
+#endif
   return interfaces;
 }
 
 std::string kiwix::getBestPublicIp() {
   std::map<std::string, std::string> interfaces = kiwix::getNetworkInterfaces();
 
+#ifndef _WIN32
   if (interfaces.find("eth0") != interfaces.end()) {
     return interfaces.find("eth0")->second;
   } else if (interfaces.find("eth1") != interfaces.end()) {
@@ -76,4 +108,21 @@ std::string kiwix::getBestPublicIp() {
   } else if (interfaces.find("wlan1") != interfaces.end()) {
     return interfaces.find("wlan1")->second;
   }
+#endif
+
+  for(std::map<std::string, std::string>::iterator iter = interfaces.begin(); 
+      iter != interfaces.end(); ++iter) {
+    std::string interfaceIp = iter->second;
+    if (interfaceIp.length() >= 7 && interfaceIp.substr(0, 7) == "192.168")
+      return interfaceIp;
+  }
+
+  for(std::map<std::string, std::string>::iterator iter = interfaces.begin(); 
+      iter != interfaces.end(); ++iter) {
+    std::string interfaceIp = iter->second;
+    if (interfaceIp.length() >= 3 && interfaceIp.substr(0, 3) == "172")
+      return interfaceIp;
+  }
+
+  return "127.0.0.1";
 }

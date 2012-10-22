@@ -20,12 +20,11 @@
 #ifndef KIWIX_NETWORKTOOLS_H
 #define KIWIX_NETWORKTOOLS_H
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <stdio.h>
-
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -34,6 +33,12 @@
 #include <sys/types.h>
 #include <net/if.h>
 #include <netdb.h>
+#endif
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
 
 namespace kiwix {
   std::map<std::string, std::string> getNetworkInterfaces();
