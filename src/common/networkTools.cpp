@@ -40,10 +40,7 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
   }
   
   int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
-  std::cout << "There are " << nNumInterfaces << " interfaces:" << std::endl;
   for (int i = 0; i < nNumInterfaces; ++i) {
-    std::cout << std::endl;
-    
     sockaddr_in *pAddress;
     pAddress = (sockaddr_in *) & (InterfaceList[i].iiAddress);
 
