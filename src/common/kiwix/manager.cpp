@@ -486,10 +486,10 @@ namespace kiwix {
 	
 	if (ok == true && mode == REMOTE && (!itr->path.empty() || itr->url.empty()))
 	  ok = false;
-	
-	if (ok == true && (unsigned int)atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
+
+	if (ok == true && maxSize != 0 && (unsigned int)atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
 	  ok = false;
-	
+
 	if (ok == true && !language.empty() && !matchRegex(itr->language, language))
 	  ok = false;
 
