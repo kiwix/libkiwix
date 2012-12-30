@@ -50,6 +50,9 @@ namespace kiwix {
   std::string lcFirst(const std::string &word);
   
   void stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr);
+
+  std::string urlEncode(const std::string &c);
+  std::string urlDecode(const std::string &c);
 }
 
 #endif

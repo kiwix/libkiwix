@@ -197,6 +197,8 @@ namespace kiwix {
 
     oData["count"] = kiwix::beautifyInteger(this->estimatedResultCount);
     oData["searchPattern"] = this->searchPattern;
+    std::cout << urlEncode(this->searchPattern) << std::endl;
+    oData["searchPatternEncoded"] = urlEncode(this->searchPattern);
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
     oData["resultRange"] = this->resultRange;
