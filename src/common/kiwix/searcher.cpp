@@ -115,9 +115,8 @@ namespace kiwix {
     HashTable          oHashTable;
     CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
     
-    // Load template & create template parser
-    //cout << getResourceAsString("results.tmpl") << endl;
-
+    /* Load template & create template parser */
+    // cout << getResourceAsString("results.tmpl") << endl;
 
     /* Parse template */
     const STLW::string & sSourceFile = getResourceAsString("results.tmpl");
@@ -197,7 +196,6 @@ namespace kiwix {
 
     oData["count"] = kiwix::beautifyInteger(this->estimatedResultCount);
     oData["searchPattern"] = this->searchPattern;
-    std::cout << urlEncode(this->searchPattern) << std::endl;
     oData["searchPatternEncoded"] = urlEncode(this->searchPattern);
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
