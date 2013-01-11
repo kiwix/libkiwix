@@ -60,7 +60,7 @@ namespace kiwix {
   }
 
   std::string Book::getHumanReadableIdFromPath() {
-    std::string id = path;
+    std::string id = pathAbsolute;
     if (!id.empty()) {
       kiwix::removeAccents(id);
 
