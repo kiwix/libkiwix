@@ -295,11 +295,9 @@ namespace kiwix {
     return url;
   }
   
-  bool Reader::parseUrl(const string &urlStr, char *ns, string &titleStr) {
-    const char *url = urlStr.c_str();
-    
+  bool Reader::parseUrl(const string &url, char *ns, string &title) {
     /* Offset to visit the url */
-    unsigned int urlLength = strlen(url);
+    unsigned int urlLength = url.size();
     unsigned int offset = 0;
     
     /* Ignore the '/' */
@@ -315,18 +313,14 @@ namespace kiwix {
     while ((offset < urlLength) && (url[offset] == '/')) offset++;  
       
     /* Get content title */
-    char title[1024];
-    unsigned int titleOffset = 0;
+    unsigned int titleOffset = offset;
     while (offset < urlLength) {
-      title[titleOffset] = url[offset];
       offset++;
-      titleOffset++;
     }
-    title[titleOffset] = 0;
-    
-    /* unescape url */
-    titleStr = string(title);
-    unescapeUrl(titleStr);
+
+    /* unescape title */
+    title = url.substr(titleOffset, offset - titleOffset);
+    unescapeUrl(title);
 
     return true;
   }
