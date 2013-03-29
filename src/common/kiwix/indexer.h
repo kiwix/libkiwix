@@ -163,6 +163,12 @@ namespace kiwix {
     string indexPath;
     void setIndexPath(const string path);
     string getIndexPath();
+
+    /* ZIM id */
+    pthread_mutex_t zimIdMutex;
+    string zimId;
+    void setZimId(const string id);
+    string getZimId();
   };
 }
 

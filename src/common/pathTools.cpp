@@ -97,6 +97,17 @@ string removeLastPathElement(const string path, const bool removePreSeparator, c
   return newPath;
 }
 
+string appendToDirectory(const string &directoryPath, const string &filename) {
+#ifdef _WIN32
+  string separator = "\\";
+#else
+  string separator = "/";
+#endif
+
+  string newPath = directoryPath + separator + filename;
+  return newPath;
+}
+
 string getLastPathElement(const string &path) {
 #ifdef _WIN32
   string separator = "\\";
@@ -165,4 +176,12 @@ string getExecutablePath() {
 #endif
 
   return std::string(binRootPath);
+}
+
+bool writeTextFile(const string &path, const string &content) {
+  std::ofstream file;
+  file.open(path);
+  file << content;
+  file.close();
+  return true;
 }

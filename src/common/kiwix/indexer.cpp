@@ -48,6 +48,7 @@ namespace kiwix {
     pthread_mutex_init(&articleIndexerRunningMutex, NULL);
     pthread_mutex_init(&articleCountMutex, NULL);
     pthread_mutex_init(&zimPathMutex, NULL);
+    pthread_mutex_init(&zimIdMutex, NULL);
     pthread_mutex_init(&indexPathMutex, NULL);
     pthread_mutex_init(&progressionMutex, NULL);
     pthread_mutex_init(&verboseMutex, NULL);
@@ -70,10 +71,12 @@ namespace kiwix {
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     kiwix::Indexer *self = (kiwix::Indexer *)ptr;
 
-    /* Get the number of article to index */
+    /* Get the number of article to index and the ZIM id */
     kiwix::Reader reader(self->getZimPath());
     unsigned int articleCount = reader.getGlobalCount();
     self->setArticleCount(articleCount);
+    string zimId = reader.getId();
+    self->setZimId(zimId);
 
     /* Progression */
     unsigned int readArticleCount = 0;
@@ -237,6 +240,11 @@ namespace kiwix {
       pthread_testcancel();
     }
     self->indexingPostlude();
+
+    /* Write content id file */
+    string path = appendToDirectory(self->getIndexPath(), "content.id");
+    writeTextFile(path, self->getZimId());
+
     self->setProgression(100);
 #ifdef _WIN32
     Sleep(100);
@@ -402,6 +410,19 @@ namespace kiwix {
     pthread_mutex_lock(&progressionMutex); 
     unsigned int retVal = this->progression;
     pthread_mutex_unlock(&progressionMutex); 
+    return retVal;
+  }
+
+  void Indexer::setZimId(const string id) {
+    pthread_mutex_lock(&zimIdMutex);
+    this->zimId = id;
+    pthread_mutex_unlock(&zimIdMutex); 
+  }
+
+  string Indexer::getZimId() {
+    pthread_mutex_lock(&zimIdMutex); 
+    string retVal = this->zimId;
+    pthread_mutex_unlock(&zimIdMutex);
     return retVal;
   }
 

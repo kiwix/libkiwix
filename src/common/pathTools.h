@@ -42,6 +42,7 @@ bool isRelativePath(const string &path);
 string computeAbsolutePath(const string libraryPath, const string relativePath);
 string removeLastPathElement(const string path, const bool removePreSeparator = false, 
 			     const bool removePostSeparator = false);
+string appendToDirectory(const string &directoryPath, const string &filename);
 
 unsigned int getFileSize(const string &path);
 string getFileSizeAsString(const string &path);
@@ -51,4 +52,5 @@ bool copyFile(const string &sourcePath, const string &destPath);
 string getLastPathElement(const string &path);
 string getExecutablePath();
 
+bool writeTextFile(const string &path, const string &content);
 #endif
