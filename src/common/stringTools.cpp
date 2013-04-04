@@ -19,18 +19,20 @@
 
 #include "stringTools.h"
 
+#ifndef __ANDROID__
+
 /* Prepare integer for display */
 std::string kiwix::beautifyInteger(const unsigned int number) {
   std::stringstream numberStream;
   numberStream << number;
   std::string numberString = numberStream.str();
-  
+
   signed int offset = numberString.size() - 3;
   while (offset > 0) {
     numberString.insert(offset, ",");
     offset -= 3;
   }
-  
+
   return numberString;
 }
 
@@ -41,14 +43,14 @@ std::vector<std::string> kiwix::split(const std::string & str,
   std::string::size_type lastPos = str.find_first_not_of(delims, 0);
   std::string::size_type pos = str.find_first_of(delims, lastPos);
   std::vector<std::string> tokens;
- 
+
   while (std::string::npos != pos || std::string::npos != lastPos)
     {
       tokens.push_back(str.substr(lastPos, pos - lastPos));
       lastPos = str.find_first_not_of(delims, pos);
       pos     = str.find_first_of(delims, lastPos);
     }
- 
+
   return tokens;
 }
 
@@ -190,3 +192,26 @@ std::string kiwix::urlDecode(const std::string &SRC) {
   return (ret);
 }
 
+#else
+
+std::string kiwix::ucFirst (const std::string &word) {
+  if (word.empty())
+    return "";
+
+	std::string new_string = word;
+	new_string[0] = toupper(new_string[0]);
+
+  return new_string;
+}
+
+std::string kiwix::lcFirst (const std::string &word) {
+  if (word.empty())
+    return "";
+
+	std::string new_string = word;
+	new_string[0] = tolower(new_string[0]);
+
+  return new_string;
+}
+
+#endif

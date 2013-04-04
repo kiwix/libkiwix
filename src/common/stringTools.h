@@ -20,6 +20,7 @@
 #ifndef KIWIX_STRINGTOOLS_H
 #define KIWIX_STRINGTOOLS_H
 
+#ifndef __ANDROID__
 #include <unicode/translit.h>
 #include <unicode/normlzr.h>
 #include <unicode/unistr.h>
@@ -28,6 +29,7 @@
 #include <unicode/uniset.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
+ #endif
 
 #include <iostream>
 #include <vector>
@@ -36,6 +38,7 @@
 #include <sstream>
 
 namespace kiwix {
+#ifndef __ANDROID__
   std::string removeAccents(const std::string &text);
   std::string beautifyInteger(const unsigned int number);
   std::vector<std::string> split(const std::string&, const std::string&);
@@ -45,14 +48,17 @@ namespace kiwix {
 
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);
+#endif
 
   std::string ucFirst(const std::string &word);
   std::string lcFirst(const std::string &word);
-  
+
+#ifndef __ANDROID__
   void stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr);
 
   std::string urlEncode(const std::string &c);
   std::string urlDecode(const std::string &c);
+#endif
 }
 
 #endif
