@@ -62,7 +62,7 @@ string computeAbsolutePath(const string path, const string relativePath) {
   }
   char *cRelativePath = strdup(relativePath.c_str());
   char *token = strtok(cRelativePath, "/");
-  
+
   while (token != NULL) {
     if (string(token) == "..") {
       absolutePath = removeLastPathElement(absolutePath, true, false);
@@ -76,7 +76,7 @@ string computeAbsolutePath(const string path, const string relativePath) {
       token = strtok(NULL, "/");
     }
   }
-  
+
   return absolutePath;
 }
 
@@ -86,7 +86,7 @@ string removeLastPathElement(const string path, const bool removePreSeparator, c
 #else
   string separator = "/";
 #endif
-  
+
   string newPath = path;
   size_t offset = newPath.find_last_of(separator);
   if (removePreSeparator && offset != newPath.find_first_of(separator) && offset == newPath.length()-1) {
@@ -117,7 +117,7 @@ string getLastPathElement(const string &path) {
 
   return path.substr(path.find_last_of(separator) + 1);
 }
-  
+
 unsigned int getFileSize(const string &path) {
   struct stat filestatus;
   stat(path.c_str(), &filestatus);
@@ -158,7 +158,7 @@ bool copyFile(const string &sourcePath, const string &destPath) {
     cerr << e.what() << endl;
     return false;
   }
-  
+
   return true;
 }
 
@@ -180,7 +180,7 @@ string getExecutablePath() {
 
 bool writeTextFile(const string &path, const string &content) {
   std::ofstream file;
-  file.open(path);
+  file.open(path.c_str());
   file << content;
   file.close();
   return true;
