@@ -55,12 +55,23 @@ string computeAbsolutePath(const string path, const string relativePath) {
   if (path.empty()) {
     char *path=NULL;
     size_t size = 0;
+
+#ifdef _WIN32
+    path = _getcwd(path,size);
+#else
     path = getcwd(path,size);
+#endif
+
     absolutePath = string(path) + separator;
   } else {
     absolutePath = path[path.length() - 1] == separator[0] ? path : path + separator;
   }
+
+#if _WIN32
+  char *cRelativePath = _strdup(relativePath.c_str());
+#else
   char *cRelativePath = strdup(relativePath.c_str());
+#endif
   char *token = strtok(cRelativePath, "/");
 
   while (token != NULL) {
@@ -119,8 +130,14 @@ string getLastPathElement(const string &path) {
 }
 
 unsigned int getFileSize(const string &path) {
+#ifdef _WIN32
+  struct _stat filestatus;
+  _stat(path.c_str(), &filestatus);
+#else
   struct stat filestatus;
   stat(path.c_str(), &filestatus);
+#endif
+
   return filestatus.st_size / 1024;
 }
 
