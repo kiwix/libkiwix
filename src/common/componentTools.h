@@ -21,6 +21,7 @@
 #define KIWIX_COMPONENTTOOLS_H
 
 #ifdef __APPLE__
+  #include <stdint.h>
   typedef uint16_t char16_t;
 #endif
 
