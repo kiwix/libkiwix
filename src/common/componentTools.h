@@ -20,6 +20,10 @@
 #ifndef KIWIX_COMPONENTTOOLS_H
 #define KIWIX_COMPONENTTOOLS_H
 
+#ifdef __APPLE__
+  typedef uint16_t char16_t;
+#endif
+
 #include "nsStringAPI.h"
 
 const char *nsStringToCString(const nsAString &str);
