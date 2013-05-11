@@ -384,23 +384,45 @@ namespace kiwix {
   /* Search titles by prefix */
   bool Reader::searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset) {
     bool retVal = false;
-    
+    zim::File::const_iterator articleItr; 
+    std::vector<std::string>::iterator suggestionItr;
+    int result;
+
     /* Reset the suggestions */
     if (reset) {
       this->suggestions.clear();
     }
 
     if (prefix.size()) {
-      for (zim::File::const_iterator it = zimFileHandler->findByTitle('A', prefix); 
-	   it != zimFileHandler->end() && 
-	     it->getTitle().compare(0, prefix.size(), prefix) == 0 && 
+      for (articleItr = zimFileHandler->findByTitle('A', prefix);
+	   articleItr != zimFileHandler->end() && 
+	     articleItr->getTitle().compare(0, prefix.size(), prefix) == 0 && 
 	     this->suggestions.size() < suggestionsCount ; 
-	   ++it) {
-	
-	this->suggestions.push_back(it->getTitle());
-	
-	/* Suggestions where found */
-	retVal = true;
+	   ++articleItr) {
+
+	  if (this->suggestions.size() == 0) {
+	    this->suggestions.push_back(articleItr->getTitle());
+	  } else {
+	    for (suggestionItr = this->suggestions.begin() ; 
+		 suggestionItr != this->suggestions.end(); 
+		 ++suggestionItr) {
+
+	      result = articleItr->getTitle().compare(*suggestionItr);
+	      if (result < 0) {
+		this->suggestions.insert(suggestionItr, articleItr->getTitle());
+		break;
+	      } else if (result == 0) {
+		break;
+	      }
+	    }
+
+	    if (suggestionItr == this->suggestions.end()) {
+	      this->suggestions.push_back(articleItr->getTitle());
+	    }
+	  }
+	  
+	  /* Suggestions where found */
+	  retVal = true;
       }
     }
     
@@ -413,14 +435,15 @@ namespace kiwix {
   /* Try also a few variations of the prefix to have better results */
   bool Reader::searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount) {
     std::string myPrefix = prefix;
+
     /* Normal suggestion request */
     bool retVal = this->searchSuggestions(prefix, suggestionsCount, true);
     
-    /* Trye with first letter uppercase */
+    /* Try with first letter uppercase */
     myPrefix = kiwix::ucFirst(myPrefix);
     this->searchSuggestions(myPrefix, suggestionsCount, false);
 
-    /* Trye with first letter lowercase */
+    /* Try with first letter lowercase */
     myPrefix = kiwix::lcFirst(myPrefix);
     this->searchSuggestions(myPrefix, suggestionsCount, false);
 
