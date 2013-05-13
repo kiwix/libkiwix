@@ -30,7 +30,7 @@ const char *nsStringToCString(const nsAString &str) {
 #endif
 
   NS_CStringGetData(tmpStr, &cStr);
-  return cStr;
+  return strdup(cStr);
 }
 
 const char *nsStringToUTF8(const nsAString &str) {
@@ -38,5 +38,5 @@ const char *nsStringToUTF8(const nsAString &str) {
   nsCString tmpStr;
   CopyUTF16toUTF8(str, tmpStr);
   NS_CStringGetData(tmpStr, &cStr);
-  return cStr;
+  return strdup(cStr);
 }
