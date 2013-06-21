@@ -254,12 +254,6 @@ namespace kiwix {
       book.creator = reader->getCreator();
       book.publisher = reader->getPublisher();
       book.title = reader->getTitle();
-      if (book.title.empty()) {
-	book.title = getLastPathElement(path);
-	std::replace(book.title.begin(), book.title.end(), '_', ' ');
-	size_t pos = book.title.find(".zim");
-	book.title = book.title.substr(0, pos);
-      }
 
       std::ostringstream articleCountStream;
       articleCountStream << reader->getArticleCount();
