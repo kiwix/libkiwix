@@ -245,6 +245,12 @@ namespace kiwix {
   string Reader::getTitle() {
     string value;
     this->getMetatag("Title", value);
+    if (value.empty()) {
+      value = getLastPathElement(zimFileHandler->getFilename());
+      std::replace(value.begin(), value.end(), '_', ' ');
+      size_t pos = value.find(".zim");
+      value = value.substr(0, pos);
+    }
     return value;
   }
 
