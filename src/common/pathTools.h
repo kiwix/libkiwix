@@ -21,6 +21,7 @@
 #define KIWIX_PATHTOOLS_H
 
 #include <string>
+#include <vector>
 #include <sstream>
 #include <iostream>
 #include <fstream>
@@ -36,10 +37,13 @@
 #include <direct.h>
 #endif
 
+#include <stringTools.h>
+
 using namespace std;
 
 bool isRelativePath(const string &path);
-string computeAbsolutePath(const string libraryPath, const string relativePath);
+string computeAbsolutePath(const string path, const string relativePath);
+string computeRelativePath(const string path, const string absolutePath);
 string removeLastPathElement(const string path, const bool removePreSeparator = false, 
 			     const bool removePostSeparator = false);
 string appendToDirectory(const string &directoryPath, const string &filename);

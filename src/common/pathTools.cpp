@@ -31,6 +31,12 @@
 #include <unistd.h>
 #endif
 
+#ifdef _WIN32
+#define SEPARATOR "\\"
+#else
+#define SEPARATOR "/"
+#endif
+
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
@@ -43,15 +49,35 @@ bool isRelativePath(const string &path) {
 #endif
 }
 
+string computeRelativePath(const string path, const string absolutePath) {
+  std::vector<std::string> pathParts = kiwix::split(path, SEPARATOR);
+  std::vector<std::string> absolutePathParts = kiwix::split(absolutePath, SEPARATOR);
+
+  unsigned int commonCount = 0;
+  while (commonCount < pathParts.size() && 
+	 commonCount < absolutePathParts.size() && 
+	 pathParts[commonCount] == absolutePathParts[commonCount]) {
+    if (!pathParts[commonCount].empty()) {
+      commonCount++;
+    }
+  }
+  
+  string relativePath;
+  for (unsigned int i = commonCount ; i < pathParts.size() ; i++) {
+    relativePath += "../";
+  }
+  for (unsigned int i = commonCount ; i < absolutePathParts.size() ; i++) {
+    relativePath += absolutePathParts[i];
+    relativePath += i + 1 < absolutePathParts.size() ? "/" : "";
+  }
+
+  return relativePath;
+}
+
 /* Warning: the relative path must be with slashes */
 string computeAbsolutePath(const string path, const string relativePath) {
-#ifdef _WIN32
-  string separator = "\\";
-#else
-  string separator = "/";
-#endif
-
   string absolutePath;
+
   if (path.empty()) {
     char *path=NULL;
     size_t size = 0;
@@ -62,9 +88,9 @@ string computeAbsolutePath(const string path, const string relativePath) {
     path = getcwd(path,size);
 #endif
 
-    absolutePath = string(path) + separator;
+    absolutePath = string(path) + SEPARATOR;
   } else {
-    absolutePath = path[path.length() - 1] == separator[0] ? path : path + separator;
+    absolutePath = path.substr(path.length() - 1, 1) == SEPARATOR ? path : path + SEPARATOR;
   }
 
 #if _WIN32
@@ -82,7 +108,7 @@ string computeAbsolutePath(const string path, const string relativePath) {
       absolutePath += string(token);
       token = strtok(NULL, "/");
       if (token != NULL)
-	absolutePath += separator;
+	absolutePath += SEPARATOR;
     } else {
       token = strtok(NULL, "/");
     }
@@ -92,41 +118,25 @@ string computeAbsolutePath(const string path, const string relativePath) {
 }
 
 string removeLastPathElement(const string path, const bool removePreSeparator, const bool removePostSeparator) {
-#ifdef _WIN32
-  string separator = "\\";
-#else
-  string separator = "/";
-#endif
-
   string newPath = path;
-  size_t offset = newPath.find_last_of(separator);
-  if (removePreSeparator && offset != newPath.find_first_of(separator) && offset == newPath.length()-1) {
+  size_t offset = newPath.find_last_of(SEPARATOR);
+  if (removePreSeparator && 
+      offset != newPath.find_first_of(SEPARATOR) && 
+      offset == newPath.length()-1) {
     newPath = newPath.substr(0, offset);
-    offset = newPath.find_last_of(separator);
+    offset = newPath.find_last_of(SEPARATOR);
   }
   newPath = removePostSeparator ? newPath.substr(0, offset) : newPath.substr(0, offset+1);
   return newPath;
 }
 
 string appendToDirectory(const string &directoryPath, const string &filename) {
-#ifdef _WIN32
-  string separator = "\\";
-#else
-  string separator = "/";
-#endif
-
-  string newPath = directoryPath + separator + filename;
+  string newPath = directoryPath + SEPARATOR + filename;
   return newPath;
 }
 
 string getLastPathElement(const string &path) {
-#ifdef _WIN32
-  string separator = "\\";
-#else
-  string separator = "/";
-#endif
-
-  return path.substr(path.find_last_of(separator) + 1);
+  return path.substr(path.find_last_of(SEPARATOR) + 1);
 }
 
 unsigned int getFileSize(const string &path) {
