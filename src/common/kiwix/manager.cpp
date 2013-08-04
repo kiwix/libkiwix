@@ -62,11 +62,8 @@ namespace kiwix {
       book.favicon = bookNode.attribute("favicon").value();
       book.faviconMimeType = bookNode.attribute("faviconMimeType").value();
       
-      /* Compute absolute paths if relative one are used */
-      book.pathAbsolute = isRelativePath(book.path) ?
-	computeAbsolutePath(removeLastPathElement(libraryPath, true, false), book.path) : book.path;
-      book.indexPathAbsolute = isRelativePath(book.indexPath) ?
-	computeAbsolutePath(removeLastPathElement(libraryPath, true, false), book.indexPath) : book.indexPath;
+      /* Check absolute and relative paths */
+      this->checkAndCleanBookPaths(book, libraryPath);      
 
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
@@ -137,18 +134,28 @@ namespace kiwix {
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
 
       if (!itr->readOnly) {
+	this->checkAndCleanBookPaths(*itr, path);
+
 	pugi::xml_node bookNode = libraryNode.append_child("book");
 	bookNode.append_attribute("id") = itr->id.c_str();
 
 	if (!itr->path.empty())
 	  bookNode.append_attribute("path") = itr->path.c_str();
 	
+	if (!itr->pathAbsolute.empty())
+	  bookNode.append_attribute("pathAbsolute") = itr->pathAbsolute.c_str();	
+
 	if (!itr->last.empty() && itr->last != "undefined") {
 	  bookNode.append_attribute("last") = itr->last.c_str();
 	}
 	
-	if (!itr->indexPath.empty()) {
+	if (!itr->indexPath.empty())
 	  bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
+
+	if (!itr->indexPathAbsolute.empty())
+	  bookNode.append_attribute("indexPathAbsolute") = itr->indexPathAbsolute.c_str();
+
+	if (!itr->indexPath.empty() || !itr->indexPathAbsolute.empty()) {
 	  if (itr->indexType == XAPIAN)
 	    bookNode.append_attribute("indexType") = "xapian";
 	  else if (itr->indexType == CLUCENE)
@@ -215,7 +222,8 @@ namespace kiwix {
   }
 
   /* Add a book to the library. Return empty string if failed, book id otherwise */
-  string Manager::addBookFromPathAndGetId(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData) {
+  string Manager::addBookFromPathAndGetId(const string pathToOpen, const string pathToSave, 
+					  const string url, const bool checkMetaData) {
     kiwix::Book book;
 
     if (this->readBookFromPath(pathToOpen, book)) {
@@ -503,6 +511,28 @@ namespace kiwix {
     }
     
     return true;
+  }
+
+  void Manager::checkAndCleanBookPaths(Book &book, const string &libraryPath) {
+    if (!book.path.empty()) {
+      if (isRelativePath(book.path)) {
+	book.pathAbsolute = computeAbsolutePath(removeLastPathElement(libraryPath, true, false), book.path);
+      } else {
+	book.pathAbsolute = book.path;
+	book.path = computeRelativePath(removeLastPathElement(libraryPath, true, false), book.pathAbsolute);
+      }
+    }
+    
+    if (!book.indexPath.empty()) {
+      if (isRelativePath(book.indexPath)) {
+	book.indexPathAbsolute = 
+	  computeAbsolutePath(removeLastPathElement(libraryPath, true, false), book.indexPath);
+      } else {
+	book.indexPathAbsolute = book.indexPath;
+	book.indexPath = 
+	  computeRelativePath(removeLastPathElement(libraryPath, true, false), book.indexPathAbsolute);
+      }
+    }
   }
 
 }

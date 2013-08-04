@@ -81,6 +81,9 @@ namespace kiwix {
     
     bool readBookFromPath(const string path, Book &book);
     bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath);
+
+  private:
+    void checkAndCleanBookPaths(Book &book, const string &libraryPath);
   };
 
 }
