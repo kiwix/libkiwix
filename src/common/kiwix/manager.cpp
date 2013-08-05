@@ -66,9 +66,9 @@ namespace kiwix {
       this->checkAndCleanBookPaths(book, libraryPath);      
 
       /* Update the book properties with the new importer */
-      if (libraryVersion.empty() || atoi(libraryVersion.c_str()) < atoi(KIWIX_LIBRARY_VERSION)) {
+      if (libraryVersion.empty() || atoi(libraryVersion.c_str()) <= atoi(KIWIX_LIBRARY_VERSION)) {
 	if (!book.path.empty()) {
-	  ok = this->readBookFromPath(book.pathAbsolute, book);
+	  ok = this->readBookFromPath(book.pathAbsolute);
 	}
       }
 
@@ -226,7 +226,7 @@ namespace kiwix {
 					  const string url, const bool checkMetaData) {
     kiwix::Book book;
 
-    if (this->readBookFromPath(pathToOpen, book)) {
+    if (this->readBookFromPath(pathToOpen, &book)) {
 
       if (pathToSave != pathToOpen) {
 	book.path = pathToSave;
@@ -250,35 +250,38 @@ namespace kiwix {
     return !(this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData).empty());
   }
 
-  bool Manager::readBookFromPath(const string path, kiwix::Book &book) {
+  bool Manager::readBookFromPath(const string path, kiwix::Book *book) {
     try {
       kiwix::Reader *reader = new kiwix::Reader(path);
-      book.path = path;
-      book.pathAbsolute = path;
-      book.id = reader->getId();
-      book.description = reader->getDescription();
-      book.language = reader->getLanguage();
-      book.date = reader->getDate();
-      book.creator = reader->getCreator();
-      book.publisher = reader->getPublisher();
-      book.title = reader->getTitle();
-
-      std::ostringstream articleCountStream;
-      articleCountStream << reader->getArticleCount();
-      book.articleCount = articleCountStream.str();
       
-      std::ostringstream mediaCountStream;
-      mediaCountStream << reader->getMediaCount();
-      book.mediaCount = mediaCountStream.str();
-
-      ostringstream convert; convert << reader->getFileSize();
-      book.size = convert.str();
-
-      string favicon;
-      string faviconMimeType;
-      if (reader->getFavicon(favicon, faviconMimeType)) {
-	book.favicon = base64_encode(reinterpret_cast<const unsigned char*>(favicon.c_str()), favicon.length());
-	book.faviconMimeType = faviconMimeType;
+      if (book != NULL) {
+	book->path = path;
+	book->pathAbsolute = path;
+	book->id = reader->getId();
+	book->description = reader->getDescription();
+	book->language = reader->getLanguage();
+	book->date = reader->getDate();
+	book->creator = reader->getCreator();
+	book->publisher = reader->getPublisher();
+	book->title = reader->getTitle();
+	
+	std::ostringstream articleCountStream;
+	articleCountStream << reader->getArticleCount();
+	book->articleCount = articleCountStream.str();
+	
+	std::ostringstream mediaCountStream;
+	mediaCountStream << reader->getMediaCount();
+	book->mediaCount = mediaCountStream.str();
+	
+	ostringstream convert; convert << reader->getFileSize();
+	book->size = convert.str();
+	
+	string favicon;
+	string faviconMimeType;
+	if (reader->getFavicon(favicon, faviconMimeType)) {
+	  book->favicon = base64_encode(reinterpret_cast<const unsigned char*>(favicon.c_str()), favicon.length());
+	  book->faviconMimeType = faviconMimeType;
+	}
       }
       
       delete reader;
@@ -482,7 +485,7 @@ namespace kiwix {
       /* Generate the list of book id */
       for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
 	bool ok = true;
-	
+
 	if (mode == LOCAL && itr->path.empty())
 	  ok = false;
 	

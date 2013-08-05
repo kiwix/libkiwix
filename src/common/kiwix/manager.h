@@ -79,7 +79,7 @@ namespace kiwix {
   protected:
     kiwix::Library library;
     
-    bool readBookFromPath(const string path, Book &book);
+    bool readBookFromPath(const string path, Book *book = NULL);
     bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath);
 
   private:
