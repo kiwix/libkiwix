@@ -27,11 +27,10 @@ static char charFromHex(std::string a) {
 }
 
 void unescapeUrl(string &url) {
-  std::string::size_type pos;
-  std::string hex;
-  while (std::string::npos != (pos = url.find('%'))) {
-      hex = url.substr(pos + 1, 2);
-      url.replace(pos, 3, 1, charFromHex(hex));
+  std::string::size_type pos = 0;
+  while ((pos = url.find('%', pos + 1)) != std::string::npos && 
+	 pos + 3 <= url.length()) {
+    url.replace(pos, 3, 1, charFromHex(url.substr(pos + 1, 2)));
   }
   return;
 }
