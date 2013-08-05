@@ -36,37 +36,6 @@ std::string kiwix::beautifyInteger(const unsigned int number) {
   return numberString;
 }
 
-/* Split string in a token array */
-std::vector<std::string> kiwix::split(const std::string & str,
-                                      const std::string & delims=" *-")
-{
-  std::string::size_type lastPos = str.find_first_not_of(delims, 0);
-  std::string::size_type pos = str.find_first_of(delims, lastPos);
-  std::vector<std::string> tokens;
-
-  while (std::string::npos != pos || std::string::npos != lastPos)
-    {
-      tokens.push_back(str.substr(lastPos, pos - lastPos));
-      lastPos = str.find_first_not_of(delims, pos);
-      pos     = str.find_first_of(delims, lastPos);
-    }
-
-  return tokens;
-}
-
-std::vector<std::string> kiwix::split(const char* lhs, const char* rhs){
-  const std::string m1 (lhs), m2 (rhs);
-  return split(m1, m2);
-}
-
-std::vector<std::string> kiwix::split(const char* lhs, const std::string& rhs){
-  return split(lhs, rhs.c_str());
-}
-
-std::vector<std::string> kiwix::split(const std::string& lhs, const char* rhs){
-  return split(lhs.c_str(), rhs);
-}
-
 std::string kiwix::removeAccents(const std::string &text) {
   ucnv_setDefaultName("UTF-8");
   UErrorCode status = U_ZERO_ERROR;
@@ -193,6 +162,37 @@ std::string kiwix::urlDecode(const std::string &SRC) {
 }
 
 #else
+
+/* Split string in a token array */
+std::vector<std::string> kiwix::split(const std::string & str,
+                                      const std::string & delims=" *-")
+{
+  std::string::size_type lastPos = str.find_first_not_of(delims, 0);
+  std::string::size_type pos = str.find_first_of(delims, lastPos);
+  std::vector<std::string> tokens;
+
+  while (std::string::npos != pos || std::string::npos != lastPos)
+    {
+      tokens.push_back(str.substr(lastPos, pos - lastPos));
+      lastPos = str.find_first_not_of(delims, pos);
+      pos     = str.find_first_of(delims, lastPos);
+    }
+
+  return tokens;
+}
+
+std::vector<std::string> kiwix::split(const char* lhs, const char* rhs){
+  const std::string m1 (lhs), m2 (rhs);
+  return split(m1, m2);
+}
+
+std::vector<std::string> kiwix::split(const char* lhs, const std::string& rhs){
+  return split(lhs, rhs.c_str());
+}
+
+std::vector<std::string> kiwix::split(const std::string& lhs, const char* rhs){
+  return split(lhs.c_str(), rhs);
+}
 
 std::string kiwix::ucFirst (const std::string &word) {
   if (word.empty())

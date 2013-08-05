@@ -41,14 +41,15 @@ namespace kiwix {
 #ifndef __ANDROID__
   std::string removeAccents(const std::string &text);
   std::string beautifyInteger(const unsigned int number);
-  std::vector<std::string> split(const std::string&, const std::string&);
-  std::vector<std::string> split(const char*, const char*);
-  std::vector<std::string> split(const std::string&, const char*);
-  std::vector<std::string> split(const char*, const std::string&);
 
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);
 #endif
+
+  std::vector<std::string> split(const std::string&, const std::string&);
+  std::vector<std::string> split(const char*, const char*);
+  std::vector<std::string> split(const std::string&, const char*);
+  std::vector<std::string> split(const char*, const std::string&);
 
   std::string ucFirst(const std::string &word);
   std::string lcFirst(const std::string &word);
