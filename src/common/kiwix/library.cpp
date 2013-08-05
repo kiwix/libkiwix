@@ -96,11 +96,19 @@ namespace kiwix {
 	if (itr->path.empty()) 
 	  itr->path = book.path;
 
+	if (itr->pathAbsolute.empty()) 
+	  itr->pathAbsolute = book.pathAbsolute;
+
 	if (itr->url.empty())
 	  itr->url = book.url;
 
 	if (itr->indexPath.empty()) {
 	  itr->indexPath = book.indexPath;
+	  itr->indexType = book.indexType;
+	}
+
+	if (itr->indexPathAbsolute.empty()) {
+	  itr->indexPathAbsolute = book.indexPathAbsolute;
 	  itr->indexType = book.indexType;
 	}
 
