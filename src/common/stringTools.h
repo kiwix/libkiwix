@@ -29,7 +29,7 @@
 #include <unicode/uniset.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
- #endif
+#endif
 
 #include <iostream>
 #include <vector>
@@ -38,12 +38,17 @@
 #include <sstream>
 
 namespace kiwix {
+
 #ifndef __ANDROID__
+
   std::string removeAccents(const std::string &text);
   std::string beautifyInteger(const unsigned int number);
-
+  std::string urlEncode(const std::string &c);
+  std::string urlDecode(const std::string &c);
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);
+  void stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr);
+
 #endif
 
   std::vector<std::string> split(const std::string&, const std::string&);
@@ -53,13 +58,6 @@ namespace kiwix {
 
   std::string ucFirst(const std::string &word);
   std::string lcFirst(const std::string &word);
-
-#ifndef __ANDROID__
-  void stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr);
-
-  std::string urlEncode(const std::string &c);
-  std::string urlDecode(const std::string &c);
-#endif
 }
 
 #endif

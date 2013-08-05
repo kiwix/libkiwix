@@ -48,30 +48,6 @@ std::string kiwix::removeAccents(const std::string &text) {
   return unaccentedText;
 }
 
-std::string kiwix::ucFirst (const std::string &word) {
-  if (word.empty())
-    return "";
-
-  std::string ucFirstWord;
-  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
-  UnicodeString ucFirstLetter = firstLetter.toUpper();
-  ucFirstLetter.toUTF8String(ucFirstWord);
-  ucFirstWord += word.substr(1);
-  return ucFirstWord;
-}
-
-std::string kiwix::lcFirst (const std::string &word) {
-  if (word.empty())
-    return "";
-
-  std::string ucFirstWord;
-  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
-  UnicodeString ucFirstLetter = firstLetter.toLower();
-  ucFirstLetter.toUTF8String(ucFirstWord);
-  ucFirstWord += word.substr(1);
-  return ucFirstWord;
-}
-
 void kiwix::printStringInHexadecimal(UnicodeString s) {
   std::cout << std::showbase << std::hex;
   for (int i=0; i<s.length(); i++) {
@@ -147,7 +123,7 @@ std::string kiwix::urlEncode(const std::string &c) {
 std::string kiwix::urlDecode(const std::string &SRC) {
   std::string ret;
   char ch;
-  int i, ii;
+  unsigned int i, ii;
   for (i=0; i<SRC.length(); i++) {
     if (int(SRC[i])==37) {
       sscanf(SRC.substr(i+1,2).c_str(), "%x", &ii);
@@ -161,7 +137,7 @@ std::string kiwix::urlDecode(const std::string &SRC) {
   return (ret);
 }
 
-#else
+#endif
 
 /* Split string in a token array */
 std::vector<std::string> kiwix::split(const std::string & str,
@@ -198,20 +174,36 @@ std::string kiwix::ucFirst (const std::string &word) {
   if (word.empty())
     return "";
 
-	std::string new_string = word;
-	new_string[0] = toupper(new_string[0]);
+  std::string ucFirstWord;
 
-  return new_string;
+#ifdef __ANDROID__
+  ucFirstWord = word;
+  ucFirstWord[0] = toupper(ucFirstWord[0]);
+#else
+  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
+  UnicodeString ucFirstLetter = firstLetter.toUpper();
+  ucFirstLetter.toUTF8String(ucFirstWord);
+  ucFirstWord += word.substr(1);
+#endif
+
+  return ucFirstWord;
 }
 
 std::string kiwix::lcFirst (const std::string &word) {
   if (word.empty())
     return "";
 
-	std::string new_string = word;
-	new_string[0] = tolower(new_string[0]);
+  std::string ucFirstWord;
 
-  return new_string;
-}
-
+#ifdef __ANDROID__
+  ucFirstWord = word;
+  ucFirstWord[0] = tolower(ucFirstWord[0]);
+#else
+  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
+  UnicodeString ucFirstLetter = firstLetter.toLower();
+  ucFirstLetter.toUTF8String(ucFirstWord);
+  ucFirstWord += word.substr(1);
 #endif
+
+  return ucFirstWord;
+}
