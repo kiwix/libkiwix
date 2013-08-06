@@ -91,7 +91,9 @@ namespace kiwix {
     /* Try to find it */
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = this->books.begin(); itr != this->books.end(); ++itr ) {
-      if (itr->id == book.id) {
+      if (itr->id == book.id && (itr->readOnly == book.readOnly || book.readOnly)) {
+
+	itr->readOnly = book.readOnly;
 
 	if (itr->path.empty()) 
 	  itr->path = book.path;
