@@ -92,10 +92,10 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = this->books.begin(); itr != this->books.end(); ++itr ) {
       if (itr->id == book.id) {
-	if (itr->readOnly == book.readOnly || book.readOnly) {
+	if (!itr->readOnly) {
 	  itr->readOnly = book.readOnly;
 	  
-	  if (itr->path.empty()) 
+	  if (itr->path.empty())
 	    itr->path = book.path;
 	  
 	  if (itr->pathAbsolute.empty()) 
@@ -118,9 +118,9 @@ namespace kiwix {
 	    itr->favicon = book.favicon;
 	    itr->faviconMimeType = book.faviconMimeType;
 	  }
-
-	  return false;
 	}
+
+	return false;
       }
     }
 
