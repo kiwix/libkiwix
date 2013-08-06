@@ -142,18 +142,12 @@ namespace kiwix {
 	if (!itr->path.empty())
 	  bookNode.append_attribute("path") = itr->path.c_str();
 	
-	if (!itr->pathAbsolute.empty())
-	  bookNode.append_attribute("pathAbsolute") = itr->pathAbsolute.c_str();	
-
 	if (!itr->last.empty() && itr->last != "undefined") {
 	  bookNode.append_attribute("last") = itr->last.c_str();
 	}
 	
 	if (!itr->indexPath.empty())
 	  bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
-
-	if (!itr->indexPathAbsolute.empty())
-	  bookNode.append_attribute("indexPathAbsolute") = itr->indexPathAbsolute.c_str();
 
 	if (!itr->indexPath.empty() || !itr->indexPathAbsolute.empty()) {
 	  if (itr->indexType == XAPIAN)
@@ -490,7 +484,7 @@ namespace kiwix {
 	  ok = false;
 	
 	if (ok == true && mode == REMOTE && (!itr->path.empty() || itr->url.empty()))
-	  ok = false;
+	  ok = false; 
 
 	if (ok == true && maxSize != 0 && (unsigned int)atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
 	  ok = false;

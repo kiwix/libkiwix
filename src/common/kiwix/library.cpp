@@ -91,32 +91,33 @@ namespace kiwix {
     /* Try to find it */
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = this->books.begin(); itr != this->books.end(); ++itr ) {
-      if (itr->id == book.id && (itr->readOnly == book.readOnly || book.readOnly)) {
-
-	itr->readOnly = book.readOnly;
-
-	if (itr->path.empty()) 
-	  itr->path = book.path;
-
-	if (itr->pathAbsolute.empty()) 
-	  itr->pathAbsolute = book.pathAbsolute;
-
-	if (itr->url.empty())
-	  itr->url = book.url;
-
-	if (itr->indexPath.empty()) {
-	  itr->indexPath = book.indexPath;
-	  itr->indexType = book.indexType;
-	}
-
-	if (itr->indexPathAbsolute.empty()) {
-	  itr->indexPathAbsolute = book.indexPathAbsolute;
-	  itr->indexType = book.indexType;
-	}
-
-	if (itr->faviconMimeType.empty()) {
-	  itr->favicon = book.favicon;
-	  itr->faviconMimeType = book.faviconMimeType;
+      if (itr->id == book.id) {
+	if (!itr->readOnly) {
+	  itr->readOnly = book.readOnly;
+	  
+	  if (itr->path.empty())
+	    itr->path = book.path;
+	  
+	  if (itr->pathAbsolute.empty()) 
+	    itr->pathAbsolute = book.pathAbsolute;
+	  
+	  if (itr->url.empty())
+	    itr->url = book.url;
+	  
+	  if (itr->indexPath.empty()) {
+	    itr->indexPath = book.indexPath;
+	    itr->indexType = book.indexType;
+	  }
+	  
+	  if (itr->indexPathAbsolute.empty()) {
+	    itr->indexPathAbsolute = book.indexPathAbsolute;
+	    itr->indexType = book.indexType;
+	  }
+	  
+	  if (itr->faviconMimeType.empty()) {
+	    itr->favicon = book.favicon;
+	    itr->faviconMimeType = book.faviconMimeType;
+	  }
 	}
 
 	return false;
