@@ -33,7 +33,6 @@
 
 #include <CTPP2Parser.hpp>
 #include <CTPP2FileSourceLoader.hpp>
-#include <CTPP2TextLoader.hpp>
 #include <CTPP2ParserException.hpp>
 #include <CTPP2HashTable.hpp>
 #include <CTPP2VMDumper.hpp>
@@ -43,6 +42,8 @@
 #include <CTPP2StringOutputCollector.hpp>
 #include <CTPP2SyscallFactory.hpp>
 #include <CTPP2FileLogger.hpp>
+
+#include "ctpp2/CTPP2TextLoader.hpp"
 
 using namespace std;
 using namespace CTPP;
