@@ -32,13 +32,13 @@ namespace kiwix {
     resultEnd(0),
     resultRange(20) {
   }
-  
+
   /* Search strings in the database */
-  void Searcher::search(std::string &search, const unsigned int resultStart, 
+  void Searcher::search(std::string &search, const unsigned int resultStart,
 			const unsigned int resultEnd, const bool verbose) {
-    
+
     this->reset();
-    
+
     if (verbose == true) {
       cout << "Performing query `" << search << "'" << endl;
     }
@@ -53,7 +53,7 @@ namespace kiwix {
 
     return;
   }
-  
+
   /* Reset the results */
   void Searcher::reset() {
     this->results.clear();
@@ -67,25 +67,25 @@ namespace kiwix {
   unsigned int Searcher::getEstimatedResultCount() {
     return this->estimatedResultCount;
   }
-  
+
   /* Get next result */
   bool Searcher::getNextResult(string &url, string &title, unsigned int &score) {
     bool retVal = false;
-    
+
     if (this->resultOffset != this->results.end()) {
-      
+
       /* url */
       url = this->resultOffset->url;
-      
+
       /* title */
       title = this->resultOffset->title;
-      
+
       /* score */
       score =  this->resultOffset->score;
-      
+
       /* increment the cursor for the next call */
       this->resultOffset++;
-      
+
       retVal = true;
     }
 
@@ -107,20 +107,20 @@ namespace kiwix {
   }
 
   string Searcher::getHtml() {
-    
+
     VMOpcodeCollector  oVMOpcodeCollector;
     StaticText         oSyscalls;
     StaticData         oStaticData;
     StaticText         oStaticText;
     HashTable          oHashTable;
     CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
-    
+
     /* Load template & create template parser */
     // cout << getResourceAsString("results.tmpl") << endl;
 
     /* Parse template */
     const STLW::string & sSourceFile = getResourceAsString("results.tmpl");
-    CTPP2TextLoader oSourceLoader;                                                                  
+    CTPP2TextLoader oSourceLoader;
     oSourceLoader.LoadTemplate(sSourceFile.c_str());
     CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, "template");
     oCTPP2Parser.Compile();
@@ -180,7 +180,7 @@ namespace kiwix {
       pageCount = 10;
     else if (pageCount == 1)
       pageCount = 0;
-    
+
     for (unsigned int i=pageStart; i<pageStart+pageCount; i++) {
       CDT page;
       page["label"] = i + 1;
@@ -215,5 +215,5 @@ namespace kiwix {
 
     return sResult;
   }
-  
+
 }
