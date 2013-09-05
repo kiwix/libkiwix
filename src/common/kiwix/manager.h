@@ -40,7 +40,7 @@ namespace kiwix {
   enum supportedListSortBy { TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 
   class Manager {
-    
+
   public:
     Manager();
     ~Manager();
@@ -55,9 +55,9 @@ namespace kiwix {
     string getCurrentBookId();
     bool setBookIndex(const string id, const string path, const supportedIndexType type);
     bool setBookPath(const string id, const string path);
-    string addBookFromPathAndGetId(const string pathToOpen, const string pathToSave = "", const string url = "", 
+    string addBookFromPathAndGetId(const string pathToOpen, const string pathToSave = "", const string url = "", const string origID="",
 				   const bool checkMetaData = false);
-    bool addBookFromPath(const string pathToOpen, const string pathToSave = "", const string url = "", 
+    bool addBookFromPath(const string pathToOpen, const string pathToSave = "", const string url = "", const string origID="",
 			 const bool checkMetaData = false);
     Library cloneLibrary();
     bool getBookById(const string id, Book &book);
@@ -65,7 +65,7 @@ namespace kiwix {
     unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
     bool updateBookLastOpenDateById(const string id);
     void removeBookPaths();
-    bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize, 
+    bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize,
 		   const string language, const string creator, const string publisher, const string search);
     vector<string> getBooksLanguages();
     vector<string> getBooksCreators();
@@ -75,10 +75,10 @@ namespace kiwix {
     string writableLibraryPath;
 
     vector<std::string> bookIdList;
-    
+
   protected:
     kiwix::Library library;
-    
+
     bool readBookFromPath(const string path, Book *book = NULL);
     bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath);
 
