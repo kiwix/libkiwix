@@ -316,8 +316,10 @@ namespace kiwix {
     std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLanguage);
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if (booksLanguagesMap.find(itr->language) == booksLanguagesMap.end()) {
+        if(itr->origID=="") {
 	booksLanguagesMap[itr->language] = true;
 	booksLanguages.push_back(itr->language);
+        }
       }
     }
 
@@ -332,8 +334,10 @@ namespace kiwix {
     std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if (booksCreatorsMap.find(itr->creator) == booksCreatorsMap.end()) {
+        if(itr->origID=="") {
 	booksCreatorsMap[itr->creator] = true;
 	booksCreators.push_back(itr->creator);
+        }
       }
     }
 
@@ -346,7 +350,9 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
 
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+      if(itr->origID=="") {
       booksIds.push_back(itr->id);
+      }
     }
 
     return booksIds;
@@ -360,8 +366,10 @@ namespace kiwix {
     std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if (booksPublishersMap.find(itr->publisher) == booksPublishersMap.end()) {
+        if(itr->origID=="") {
 	booksPublishersMap[itr->publisher] = true;
 	booksPublishers.push_back(itr->publisher);
+        }
       }
     }
 
@@ -386,8 +394,10 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if ( itr->id == id) {
+      if(itr->origID=="") {
 	book = *itr;
 	return true;
+        }
       }
     }
     return false;
