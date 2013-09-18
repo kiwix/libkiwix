@@ -157,7 +157,9 @@ namespace kiwix {
 	    bookNode.append_attribute("indexType") = "clucene";
 	}
 
-	if (!itr->title.empty())
+	if (itr->origID == "")
+	{
+        if (!itr->title.empty())
 	  bookNode.append_attribute("title") = itr->title.c_str();
 
 	if (itr->description != "")
@@ -175,6 +177,14 @@ namespace kiwix {
 	if (itr->publisher != "")
 	  bookNode.append_attribute("publisher") = itr->publisher.c_str();
 
+	if (itr->favicon != "")
+	  bookNode.append_attribute("favicon") = itr->favicon.c_str();
+
+	if (itr->faviconMimeType != "")
+	  bookNode.append_attribute("faviconMimeType") = itr->faviconMimeType.c_str();
+
+	}
+
 	if (itr->url != "")
 	  bookNode.append_attribute("url") = itr->url.c_str();
 
@@ -189,12 +199,6 @@ namespace kiwix {
 
 	if (itr->size != "")
 	  bookNode.append_attribute("size") = itr->size.c_str();
-
-	if (itr->favicon != "")
-	  bookNode.append_attribute("favicon") = itr->favicon.c_str();
-
-	if (itr->faviconMimeType != "")
-	  bookNode.append_attribute("faviconMimeType") = itr->faviconMimeType.c_str();
       }
     }
 
