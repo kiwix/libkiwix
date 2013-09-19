@@ -225,7 +225,7 @@ namespace kiwix {
 
   /* Add a book to the library. Return empty string if failed, book id otherwise */
   string Manager::addBookFromPathAndGetId(const string pathToOpen, const string pathToSave,
-					  const string url, const string origId, const bool checkMetaData) {
+					  const string url, const bool checkMetaData, const string origId) {
     kiwix::Book book;
 
     if (this->readBookFromPath(pathToOpen, &book)) {
@@ -249,8 +249,8 @@ namespace kiwix {
   }
 
   /* Wrapper over Manager::addBookFromPath which return a bool instead of a string */
-  bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const string origId, const bool checkMetaData) {
-    return !(this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, origId, checkMetaData).empty());
+  bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData, const string origId) {
+    return !(this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData, origId).empty());
   }
 
   bool Manager::readBookFromPath(const string path, kiwix::Book *book) {
