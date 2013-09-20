@@ -19,6 +19,38 @@
 
 #include "reader.h"
 
+inline char hi(char v) {
+    char hex[] = "0123456789abcdef";
+    return hex[(v >> 4) & 0xf];
+}
+
+inline char lo(char v) {
+    char hex[] = "0123456789abcdef";
+    return hex[v & 0xf];
+}
+
+std::string hexUUID (std::string in) {
+    std::ostringstream out;
+    for (unsigned n = 0; n < 4; ++n)
+      out << hi(in[n]) << lo(in[n]);
+    out << '-';
+    for (unsigned n = 4; n < 6; ++n)
+      out << hi(in[n]) << lo(in[n]);
+    out << '-';
+    for (unsigned n = 6; n < 8; ++n)
+      out << hi(in[n]) << lo(in[n]);
+    out << '-';
+    for (unsigned n = 8; n < 10; ++n)
+      out << hi(in[n]) << lo(in[n]);
+    out << '-';
+    for (unsigned n = 10; n < 16; ++n)
+      out << hi(in[n]) << lo(in[n]);
+    std::string op=out.str();
+    return op;
+}
+
+
+
 static char charFromHex(std::string a) {
   std::istringstream Blat (a);
   int Z;
@@ -28,7 +60,7 @@ static char charFromHex(std::string a) {
 
 void unescapeUrl(string &url) {
   std::string::size_type pos = 0;
-  while ((pos = url.find('%', pos + 1)) != std::string::npos && 
+  while ((pos = url.find('%', pos + 1)) != std::string::npos &&
 	 pos + 3 <= url.length()) {
     url.replace(pos, 3, 1, charFromHex(url.substr(pos + 1, 2)));
   }
@@ -38,14 +70,14 @@ void unescapeUrl(string &url) {
 namespace kiwix {
 
   /* Constructor */
-  Reader::Reader(const string zimFilePath) 
+  Reader::Reader(const string zimFilePath)
     : zimFileHandler(NULL) {
     string tmpZimFilePath = zimFilePath;
 
     /* Remove potential trailing zimaa */
     size_t found = tmpZimFilePath.rfind("zimaa");
-    if (found != string::npos && 
-	tmpZimFilePath.size() > 5 && 
+    if (found != string::npos &&
+	tmpZimFilePath.size() > 5 &&
 	found == tmpZimFilePath.size() - 5) {
       tmpZimFilePath.resize(tmpZimFilePath.size() - 2);
     }
@@ -63,7 +95,7 @@ namespace kiwix {
     /* initialize random seed: */
     srand ( time(NULL) );
   }
-  
+
   /* Destructor */
   Reader::~Reader() {
     if (this->zimFileHandler != NULL) {
@@ -74,7 +106,7 @@ namespace kiwix {
   zim::File* Reader::getZimFileHandler() {
     return this->zimFileHandler;
   }
-  
+
   /* Reset the cursor for GetNextArticle() */
   void Reader::reset() {
     this->currentArticleOffset = this->firstArticleOffset;
@@ -101,12 +133,12 @@ namespace kiwix {
 
     return counters;
   }
-  
+
   /* Get the count of articles which can be indexed/displayed */
   unsigned int Reader::getArticleCount() {
     std::map<std::string, unsigned int> counterMap = this->parseCounterMetadata();
     unsigned int counter = 0;
-    
+
     if (counterMap.empty()) {
       counter = this->nsACount;
     } else {
@@ -114,7 +146,7 @@ namespace kiwix {
       if (it != counterMap.end())
 	counter = it->second;
     }
-    
+
     return counter;
   }
 
@@ -140,10 +172,10 @@ namespace kiwix {
       if (it != counterMap.end())
 	counter += it->second;
     }
-    
+
     return counter;
   }
-  
+
   /* Get the total of all items of a ZIM file, redirects included */
   unsigned int Reader::getGlobalCount() {
     return this->zimFileHandler->getCountArticles();
@@ -155,7 +187,7 @@ namespace kiwix {
     s << this->zimFileHandler->getFileheader().getUuid();
     return  s.str();
   }
-  
+
   /* Return a page url from a title */
   bool Reader::getPageUrlFromTitle(const string &title, string &url) {
     /* Extract the content from the zim file */
@@ -163,7 +195,7 @@ namespace kiwix {
 
     /* Test if the article was found */
     if (resultPair.first == true) {
-      
+
       /* Get the article */
       zim::Article article = *resultPair.second;
 
@@ -172,7 +204,7 @@ namespace kiwix {
       while (article.isRedirect() && loopCounter++<42) {
 	article = article.getRedirectArticle();
       }
-      
+
       url = article.getLongUrl();
       return true;
     }
@@ -182,53 +214,53 @@ namespace kiwix {
 
   /* Return an URL from a title*/
   string Reader::getRandomPageUrl() {
-    zim::size_type idx = this->firstArticleOffset + 
-      (zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->nsACount); 
+    zim::size_type idx = this->firstArticleOffset +
+      (zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->nsACount);
     zim::Article article = zimFileHandler->getArticle(idx);
 
     return article.getLongUrl().c_str();
   }
-  
+
   /* Return the welcome page URL */
   string Reader::getMainPageUrl() {
     string url = "";
-    
+
     if (this->zimFileHandler->getFileheader().hasMainPage()) {
       zim::Article article = zimFileHandler->getArticle(this->zimFileHandler->getFileheader().getMainPage());
       url = article.getLongUrl();
 
       if (url.empty()) {
-	url = getFirstPageUrl(); 
+	url = getFirstPageUrl();
       }
     } else {
-	url = getFirstPageUrl(); 
+	url = getFirstPageUrl();
     }
-    
+
     return url;
   }
-  
+
   bool Reader::getFavicon(string &content, string &mimeType) {
     unsigned int contentLength = 0;
-    
-    this->getContentByUrl( "/-/favicon.png", content, 
+
+    this->getContentByUrl( "/-/favicon.png", content,
 			   contentLength, mimeType);
-    
+
     if (content.empty()) {
-      this->getContentByUrl( "/I/favicon.png", content, 
+      this->getContentByUrl( "/I/favicon.png", content,
 			     contentLength, mimeType);
 
 
       if (content.empty()) {
-	this->getContentByUrl( "/I/favicon", content, 
+	this->getContentByUrl( "/I/favicon", content,
 			       contentLength, mimeType);
-	
+
 	if (content.empty()) {
-	  this->getContentByUrl( "/-/favicon", content, 
+	  this->getContentByUrl( "/-/favicon", content,
 				 contentLength, mimeType);
 	}
       }
     }
-    
+
     return content.empty() ? false : true;
   }
 
@@ -236,11 +268,11 @@ namespace kiwix {
   bool Reader::getMetatag(const string &name, string &value) {
     unsigned int contentLength = 0;
     string contentType = "";
-    
-    return this->getContentByUrl( "/M/" + name, value, 
+
+    return this->getContentByUrl( "/M/" + name, value,
 				  contentLength, contentType);
   }
-  
+
   string Reader::getTitle() {
     string value;
     this->getMetatag("Title", value);
@@ -256,7 +288,7 @@ namespace kiwix {
   string Reader::getDescription() {
     string value;
     this->getMetatag("Description", value);
-    
+
     /* Mediawiki Collection tends to use the "Subtitle" name */
     if (value.empty()) {
       this->getMetatag("Subtitle", value);
@@ -289,34 +321,61 @@ namespace kiwix {
     return value;
   }
 
+  string Reader::getOrigID() {
+    string value;
+    this->getMetatag("startfileuid", value);
+    if(value.empty())
+        return "";
+    std::string id=value;
+    std::string origID;
+    std::string temp="";
+    unsigned int k=0;
+    char tempArray[16]="";
+    for(unsigned int i=0; i<id.size(); i++)
+    {
+        if(id[i]=='\n')
+        {
+            tempArray[k]= atoi(temp.c_str());
+            temp="";
+            k++;
+        }
+        else
+        {
+            temp+=id[i];
+        }
+    }
+    origID=hexUUID(tempArray);
+    return origID;
+  }
+
   /* Return the first page URL */
   string Reader::getFirstPageUrl() {
     string url;
-    
+
     zim::size_type firstPageOffset = zimFileHandler->getNamespaceBeginOffset('A');
     zim::Article article = zimFileHandler->getArticle(firstPageOffset);
     url = article.getLongUrl();
-    
+
     return url;
   }
-  
+
   bool Reader::parseUrl(const string &url, char *ns, string &title) {
     /* Offset to visit the url */
     unsigned int urlLength = url.size();
     unsigned int offset = 0;
-    
+
     /* Ignore the '/' */
     while ((offset < urlLength) && (url[offset] == '/')) offset++;
-    
+
     /* Get namespace */
     while ((offset < urlLength) && (url[offset] != '/')) {
       *ns= url[offset];
       offset++;
     }
-    
+
     /* Ignore the '/' */
-    while ((offset < urlLength) && (url[offset] == '/')) offset++;  
-      
+    while ((offset < urlLength) && (url[offset] == '/')) offset++;
+
     /* Get content title */
     unsigned int titleOffset = offset;
     while (offset < urlLength) {
@@ -338,7 +397,7 @@ namespace kiwix {
     contentLength = 0;
 
     if (this->zimFileHandler != NULL) {
-      
+
       /* Parse the url */
       char ns = 0;
       string titleStr;
@@ -348,48 +407,48 @@ namespace kiwix {
       if (titleStr.empty() && ns == 0) {
 	this->parseUrl(this->getMainPageUrl(), &ns, titleStr);
       }
-      
+
       /* Extract the content from the zim file */
       std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns, titleStr);
-      
+
       /* Test if the article was found */
       if (resultPair.first == true) {
-	
+
 	/* Get the article */
 	zim::Article article = zimFileHandler->getArticle(resultPair.second.getIndex());
-	
+
 	/* If redirect */
 	unsigned int loopCounter = 0;
 	while (article.isRedirect() && loopCounter++<42) {
 	  article = article.getRedirectArticle();
 	}
-	
+
 	/* Get the content mime-type */
-	contentType = string(article.getMimeType().data(), article.getMimeType().size()); 
-	
+	contentType = string(article.getMimeType().data(), article.getMimeType().size());
+
 	/* Get the data */
 	content = string(article.getData().data(), article.getArticleSize());
-	
+
 	/* Try to set a stub HTML header/footer if necesssary */
 	if (contentType == "text/html" && std::string::npos == content.find("<body>")) {
 	  content = "<html><head><title>" + article.getTitle() + "</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>" + content + "</body></html>";
 	}
-	
+
 	/* Get the data length */
 	contentLength = article.getArticleSize();
-	
+
 	/* Set return value */
 	retVal = true;
       }
     }
-    
+
     return retVal;
   }
-  
+
   /* Search titles by prefix */
   bool Reader::searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset) {
     bool retVal = false;
-    zim::File::const_iterator articleItr; 
+    zim::File::const_iterator articleItr;
     std::vector<std::string>::iterator suggestionItr;
     int result;
 
@@ -400,16 +459,16 @@ namespace kiwix {
 
     if (prefix.size()) {
       for (articleItr = zimFileHandler->findByTitle('A', prefix);
-	   articleItr != zimFileHandler->end() && 
-	     articleItr->getTitle().compare(0, prefix.size(), prefix) == 0 && 
-	     this->suggestions.size() < suggestionsCount ; 
+	   articleItr != zimFileHandler->end() &&
+	     articleItr->getTitle().compare(0, prefix.size(), prefix) == 0 &&
+	     this->suggestions.size() < suggestionsCount ;
 	   ++articleItr) {
 
 	  if (this->suggestions.size() == 0) {
 	    this->suggestions.push_back(articleItr->getTitle());
 	  } else {
-	    for (suggestionItr = this->suggestions.begin() ; 
-		 suggestionItr != this->suggestions.end(); 
+	    for (suggestionItr = this->suggestions.begin() ;
+		 suggestionItr != this->suggestions.end();
 		 ++suggestionItr) {
 
 	      result = articleItr->getTitle().compare(*suggestionItr);
@@ -425,25 +484,25 @@ namespace kiwix {
 	      this->suggestions.push_back(articleItr->getTitle());
 	    }
 	  }
-	  
+
 	  /* Suggestions where found */
 	  retVal = true;
       }
     }
-    
+
     /* Set the cursor to the begining */
     this->suggestionsOffset = this->suggestions.begin();
-    
+
     return retVal;
   }
-  
+
   /* Try also a few variations of the prefix to have better results */
   bool Reader::searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount) {
     std::string myPrefix = prefix;
 
     /* Normal suggestion request */
     bool retVal = this->searchSuggestions(prefix, suggestionsCount, true);
-    
+
     /* Try with first letter uppercase */
     myPrefix = kiwix::ucFirst(myPrefix);
     this->searchSuggestions(myPrefix, suggestionsCount, false);
@@ -460,10 +519,10 @@ namespace kiwix {
     if (this->suggestionsOffset != this->suggestions.end()) {
       /* title */
       title = *(this->suggestionsOffset);
-      
+
       /* increment the cursor for the next call */
       this->suggestionsOffset++;
-      
+
       return true;
     }
 
@@ -492,7 +551,7 @@ namespace kiwix {
   unsigned int Reader::getFileSize() {
     zim::File *file = this->getZimFileHandler();
     zim::offset_type size = 0;
-    
+
     if (file != NULL) {
       size = file->getFilesize();
     }

@@ -38,7 +38,7 @@ using namespace std;
 namespace kiwix {
 
   class Reader {
-    
+
   public:
     Reader(const string zimFilePath);
     ~Reader();
@@ -58,6 +58,7 @@ namespace kiwix {
     string getDate();
     string getCreator();
     string getPublisher();
+    string getOrigID();
     bool getFavicon(string &content, string &mimeType);
     bool getPageUrlFromTitle(const string &title, string &url);
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
@@ -69,7 +70,7 @@ namespace kiwix {
     bool parseUrl(const string &url, char *ns, string &title);
     unsigned int getFileSize();
     zim::File* getZimFileHandler();
-    
+
   protected:
     zim::File* zimFileHandler;
     zim::size_type firstArticleOffset;
@@ -77,7 +78,7 @@ namespace kiwix {
     zim::size_type currentArticleOffset;
     zim::size_type nsACount;
     zim::size_type nsICount;
-    
+
     std::vector<std::string> suggestions;
     std::vector<std::string>::iterator suggestionsOffset;
 

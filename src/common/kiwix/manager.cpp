@@ -225,7 +225,7 @@ namespace kiwix {
 
   /* Add a book to the library. Return empty string if failed, book id otherwise */
   string Manager::addBookFromPathAndGetId(const string pathToOpen, const string pathToSave,
-					  const string url, const bool checkMetaData, const string origId) {
+					  const string url, const bool checkMetaData) {
     kiwix::Book book;
 
     if (this->readBookFromPath(pathToOpen, &book)) {
@@ -239,7 +239,6 @@ namespace kiwix {
       if (!checkMetaData ||
 	  (checkMetaData && !book.title.empty() && !book.language.empty() && !book.date.empty())) {
 	book.url = url;
-	book.origID=origId;
 	library.addBook(book);
 	return book.id;
       }
@@ -249,8 +248,8 @@ namespace kiwix {
   }
 
   /* Wrapper over Manager::addBookFromPath which return a bool instead of a string */
-  bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData, const string origId) {
-    return !(this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData, origId).empty());
+  bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData) {
+    return !(this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData).empty());
   }
 
   bool Manager::readBookFromPath(const string path, kiwix::Book *book) {
@@ -267,7 +266,7 @@ namespace kiwix {
 	book->creator = reader->getCreator();
 	book->publisher = reader->getPublisher();
 	book->title = reader->getTitle();
-
+    book->origID=reader->getOrigID();
 	std::ostringstream articleCountStream;
 	articleCountStream << reader->getArticleCount();
 	book->articleCount = articleCountStream.str();
