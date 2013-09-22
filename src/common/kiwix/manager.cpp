@@ -353,9 +353,7 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
 
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
-      if(itr->origID=="") {
       booksIds.push_back(itr->id);
-      }
     }
 
     return booksIds;
@@ -397,10 +395,8 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if ( itr->id == id) {
-      if(itr->origID=="") {
 	book = *itr;
 	return true;
-        }
       }
     }
     return false;
