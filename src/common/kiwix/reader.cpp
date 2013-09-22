@@ -322,10 +322,10 @@ namespace kiwix {
   }
 
   string Reader::getOrigId() {
-    string origId;
-    this->getMetatag("startfileuid", origId);
-
-    if (!origId.empty()) {
+    string value;
+    this->getMetatag("startfileuid", value);
+    if(value.empty())
+        return "";
     std::string id=value;
     std::string origID;
     std::string temp="";
