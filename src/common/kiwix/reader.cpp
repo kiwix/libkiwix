@@ -321,11 +321,11 @@ namespace kiwix {
     return value;
   }
 
-  string Reader::getOrigID() {
-    string value;
-    this->getMetatag("startfileuid", value);
-    if(value.empty())
-        return "";
+  string Reader::getOrigId() {
+    string origId;
+    this->getMetatag("startfileuid", origId);
+
+    if (!origId.empty()) {
     std::string id=value;
     std::string origID;
     std::string temp="";
