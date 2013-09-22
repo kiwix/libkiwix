@@ -176,7 +176,7 @@ namespace kiwix {
 	  if (!itr->favicon.empty())
 	    bookNode.append_attribute("favicon") = itr->favicon.c_str();
 	  
-	  if (itr->faviconMimeType != "")
+	  if (!itr->faviconMimeType.empty())
 	    bookNode.append_attribute("faviconMimeType") = itr->faviconMimeType.c_str();
 	}
 
