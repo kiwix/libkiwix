@@ -60,9 +60,10 @@ static char charFromHex(std::string a) {
 
 void unescapeUrl(string &url) {
   std::string::size_type pos = 0;
-  while ((pos = url.find('%', pos ? pos + 1 : pos)) != std::string::npos &&
-	 pos + 3 <= url.length()) {
+  while ((pos = url.find('%', pos)) != std::string::npos &&
+	 pos + 2 < url.length()) {
     url.replace(pos, 3, 1, charFromHex(url.substr(pos + 1, 2)));
+    ++pos;
   }
   return;
 }
