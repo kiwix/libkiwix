@@ -174,36 +174,36 @@ std::string kiwix::ucFirst (const std::string &word) {
   if (word.empty())
     return "";
 
-  std::string ucFirstWord;
+  std::string result;
 
 #ifdef __ANDROID__
-  ucFirstWord = word;
-  ucFirstWord[0] = toupper(ucFirstWord[0]);
+  result = word;
+  result[0] = toupper(result[0]);
 #else
-  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
-  UnicodeString ucFirstLetter = firstLetter.toUpper();
-  ucFirstLetter.toUTF8String(ucFirstWord);
-  ucFirstWord += word.substr(1);
+  UnicodeString unicodeWord(word.c_str());
+  UnicodeString unicodeFirstLetter = unicodeWord.tempSubString(0, 1).toUpper();
+  unicodeWord.replace(0, 1, unicodeFirstLetter);
+  unicodeWord.toUTF8String(result); 
 #endif
 
-  return ucFirstWord;
+  return result;
 }
 
 std::string kiwix::lcFirst (const std::string &word) {
   if (word.empty())
     return "";
 
-  std::string ucFirstWord;
+  std::string result;
 
 #ifdef __ANDROID__
-  ucFirstWord = word;
-  ucFirstWord[0] = tolower(ucFirstWord[0]);
+  result = word;
+  result[0] = tolower(result[0]);
 #else
-  UnicodeString firstLetter = UnicodeString(word.substr(0, 1).c_str());
-  UnicodeString ucFirstLetter = firstLetter.toLower();
-  ucFirstLetter.toUTF8String(ucFirstWord);
-  ucFirstWord += word.substr(1);
+  UnicodeString unicodeWord(word.c_str());
+  UnicodeString unicodeFirstLetter = unicodeWord.tempSubString(0, 1).toLower();
+  unicodeWord.replace(0, 1, unicodeFirstLetter);
+  unicodeWord.toUTF8String(result);
 #endif
 
-  return ucFirstWord;
+  return result;
 }
