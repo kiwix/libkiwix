@@ -453,9 +453,13 @@ namespace kiwix {
     std::vector<std::string>::iterator suggestionItr;
     int result;
 
-    /* Reset the suggestions */
+    /* Reset the suggestions otherwise check if the suggestions number is less than the suggestionsCount */
     if (reset) {
       this->suggestions.clear();
+    } else {
+      if (this->suggestions.size() > suggestionsCount) {
+	return false;
+      }
     }
 
     if (prefix.size()) {
@@ -467,7 +471,7 @@ namespace kiwix {
 
 	  if (this->suggestions.size() == 0) {
 	    this->suggestions.push_back(articleItr->getTitle());
-	  } else {
+	  } else if (this->suggestions.size() < suggestionsCount) {
 	    for (suggestionItr = this->suggestions.begin() ;
 		 suggestionItr != this->suggestions.end();
 		 ++suggestionItr) {
