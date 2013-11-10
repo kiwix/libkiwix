@@ -58,6 +58,7 @@ namespace kiwix {
 
   std::string ucFirst(const std::string &word);
   std::string lcFirst(const std::string &word);
+  std::string toTitle(const std::string &word);
 }
 
 #endif

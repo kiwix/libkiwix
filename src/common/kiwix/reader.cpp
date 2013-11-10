@@ -516,6 +516,10 @@ namespace kiwix {
     myPrefix = kiwix::lcFirst(myPrefix);
     this->searchSuggestions(myPrefix, suggestionsCount, false);
 
+    /* Try with title words */
+    myPrefix = kiwix::toTitle(myPrefix);
+    this->searchSuggestions(myPrefix, suggestionsCount, false);
+
     return retVal;
   }
 

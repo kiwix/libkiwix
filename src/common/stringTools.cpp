@@ -207,3 +207,21 @@ std::string kiwix::lcFirst (const std::string &word) {
 
   return result;
 }
+
+
+std::string kiwix::toTitle (const std::string &word) {
+  if (word.empty())
+    return "";
+
+  std::string result;
+
+#ifdef __ANDROID__
+  result = word;
+#else
+  UnicodeString unicodeWord(word.c_str());
+  unicodeWord = unicodeWord.toTitle(0);
+  unicodeWord.toUTF8String(result);
+#endif
+
+  return result;
+}
