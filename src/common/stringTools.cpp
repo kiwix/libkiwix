@@ -176,15 +176,10 @@ std::string kiwix::ucFirst (const std::string &word) {
 
   std::string result;
 
-#ifdef __ANDROID__
-  result = word;
-  result[0] = toupper(result[0]);
-#else
   UnicodeString unicodeWord(word.c_str());
   UnicodeString unicodeFirstLetter = unicodeWord.tempSubString(0, 1).toUpper();
   unicodeWord.replace(0, 1, unicodeFirstLetter);
   unicodeWord.toUTF8String(result); 
-#endif
 
   return result;
 }
@@ -195,15 +190,10 @@ std::string kiwix::lcFirst (const std::string &word) {
 
   std::string result;
 
-#ifdef __ANDROID__
-  result = word;
-  result[0] = tolower(result[0]);
-#else
   UnicodeString unicodeWord(word.c_str());
   UnicodeString unicodeFirstLetter = unicodeWord.tempSubString(0, 1).toLower();
   unicodeWord.replace(0, 1, unicodeFirstLetter);
   unicodeWord.toUTF8String(result);
-#endif
 
   return result;
 }
@@ -215,13 +205,9 @@ std::string kiwix::toTitle (const std::string &word) {
 
   std::string result;
 
-#ifdef __ANDROID__
-  result = word;
-#else
   UnicodeString unicodeWord(word.c_str());
   unicodeWord = unicodeWord.toTitle(0);
   unicodeWord.toUTF8String(result);
-#endif
 
   return result;
 }
