@@ -19,6 +19,7 @@
 
 #include "searcher.h"
 
+
 namespace kiwix {
 
   /* Constructor */
@@ -30,13 +31,17 @@ namespace kiwix {
     estimatedResultCount(0),
     resultStart(0),
     resultEnd(0),
-    resultRange(20) {
+    resultRange(20),
+    template_ct2("_ctpp2results.ct2")
+     {
+        if (!fileExists(template_ct2)) {
+            writeTextFile(template_ct2.c_str(), getResourceAsString("results.ct2"));
+        }
   }
 
   /* Search strings in the database */
   void Searcher::search(std::string &search, const unsigned int resultStart,
 			const unsigned int resultEnd, const bool verbose) {
-
     this->reset();
 
     if (verbose == true) {
@@ -108,44 +113,7 @@ namespace kiwix {
 
   string Searcher::getHtml() {
 
-    VMOpcodeCollector  oVMOpcodeCollector;
-    StaticText         oSyscalls;
-    StaticData         oStaticData;
-    StaticText         oStaticText;
-    HashTable          oHashTable;
-    CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
-
-    /* Load template & create template parser */
-    // cout << getResourceAsString("results.tmpl") << endl;
-
-    /* Parse template */
-    const STLW::string & sSourceFile = getResourceAsString("results.tmpl");
-    CTPP2TextLoader oSourceLoader;
-    oSourceLoader.LoadTemplate(sSourceFile.c_str());
-    CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, "template");
-    oCTPP2Parser.Compile();
-
-    // Get program core
-    UINT_32 iCodeSize = 0;
-    const VMInstruction * oVMInstruction = oVMOpcodeCollector.GetCode(iCodeSize);
-
-    // Dump program
-    VMDumper oDumper(iCodeSize, oVMInstruction, oSyscalls, oStaticData, oStaticText, oHashTable);
-    UINT_32 iSize = 0;
-    const VMExecutable * aProgramCore = oDumper.GetExecutable(iSize);
-
-    // Memory core
-    const VMMemoryCore vm_core(aProgramCore);
-
-    // Initiate the VM
-    SyscallFactory oSyscallFactory(100);
-    // Load standard library
-    STDLibInitializer::InitLibrary(oSyscallFactory);
-
-    VM * pVM = new VM(&oSyscallFactory);
-
-    // Initiate the logger
-    FileLogger oLogger(stderr);
+    SimpleVM oSimpleVM;
 
     // Fill data
     CDT oData;
@@ -159,10 +127,10 @@ namespace kiwix {
       result["snippet"] = this->resultOffset->snippet;
 
       if (this->resultOffset->size >= 0)
-	result["size"] = kiwix::beautifyInteger(this->resultOffset->size);
+    result["size"] = kiwix::beautifyInteger(this->resultOffset->size);
 
       if (this->resultOffset->wordCount >= 0)
-	result["wordCount"] = kiwix::beautifyInteger(this->resultOffset->wordCount);
+    result["wordCount"] = kiwix::beautifyInteger(this->resultOffset->wordCount);
 
       resultsCDT.PushBack(result);
       this->resultOffset++;
@@ -188,7 +156,7 @@ namespace kiwix {
       page["end"] = (i+1) * this->resultCountPerPage;
 
       if (i * this->resultCountPerPage == this->resultStart)
-	page["selected"] = true;
+    page["selected"] = true;
 
       pagesCDT.PushBack(page);
     }
@@ -205,15 +173,28 @@ namespace kiwix {
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
     oData["contentId"] = this->contentHumanReadableId;
 
-    STLW::string sResult;
-    StringOutputCollector oDataCollector(sResult);
+    // Load template file
+    VMFileLoader oLoader(this->template_ct2.c_str());
 
-    // Run VM
-    pVM->Init(&vm_core, &oDataCollector, &oLogger);
-    UINT_32 iIP = 0;
-    pVM -> Run(&vm_core, &oDataCollector, iIP, oData, &oLogger);
+    // Create logger object
+    FileLogger oLogger(stderr);
+
+    // Execute template and write data to standard output
+    oSimpleVM.Run(oData, oLoader, stdout, oLogger);
+
+    // Execute template and write data to string
+    std::string sResult;
+    oSimpleVM.Run(oData, oLoader, sResult, oLogger);
 
     return sResult;
+
+  }
+
+  /* Destructor */
+  Searcher::~Searcher() {
+    if (fileExists(this->template_ct2)) {
+      remove(template_ct2.c_str());
+    }
   }
 
 }
