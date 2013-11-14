@@ -31,12 +31,9 @@ namespace kiwix {
     estimatedResultCount(0),
     resultStart(0),
     resultEnd(0),
-    resultRange(20),
-    template_ct2("_ctpp2results.ct2")
+    resultRange(20)
      {
-        if (!fileExists(template_ct2)) {
-            writeTextFile(template_ct2.c_str(), getResourceAsString("results.ct2"));
-        }
+        template_ct2 = getResourceAsString("results.ct2");
   }
 
   /* Search strings in the database */
@@ -173,16 +170,13 @@ namespace kiwix {
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
     oData["contentId"] = this->contentHumanReadableId;
 
-    // Load template file
-    VMFileLoader oLoader(this->template_ct2.c_str());
+    VMStringLoader oLoader(template_ct2.c_str(), template_ct2.size());
 
-    // Create logger object
     FileLogger oLogger(stderr);
 
-    // Execute template and write data to standard output
-    oSimpleVM.Run(oData, oLoader, stdout, oLogger);
+    // DEBUG only (write output to stdout)
+    // oSimpleVM.Run(oData, oLoader, stdout, oLogger);
 
-    // Execute template and write data to string
     std::string sResult;
     oSimpleVM.Run(oData, oLoader, sResult, oLogger);
 
@@ -192,9 +186,7 @@ namespace kiwix {
 
   /* Destructor */
   Searcher::~Searcher() {
-    if (fileExists(this->template_ct2)) {
-      remove(template_ct2.c_str());
-    }
+
   }
 
 }

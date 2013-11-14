@@ -35,7 +35,8 @@
 #include <CDT.hpp>
 #include <CTPP2FileLogger.hpp>
 #include <CTPP2SimpleVM.hpp>
-#include <CTPP2VMFileLoader.hpp>
+
+#include "kiwix/ctpp2/CTPP2VMStringLoader.hpp"
 
 using namespace std;
 using namespace CTPP;
@@ -79,7 +80,7 @@ namespace kiwix {
     std::string searchPattern;
     std::string protocolPrefix;
     std::string searchProtocolPrefix;
-    const std::string template_ct2;
+    std::string template_ct2;
     unsigned int resultCountPerPage;
     unsigned int estimatedResultCount;
     unsigned int resultStart;
