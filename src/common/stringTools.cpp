@@ -177,7 +177,7 @@ std::string kiwix::ucFirst (const std::string &word) {
   std::string result;
 
   UnicodeString unicodeWord(word.c_str());
-  UnicodeString unicodeFirstLetter = unicodeWord.tempSubString(0, 1).toUpper();
+  UnicodeString unicodeFirstLetter = UnicodeString(unicodeWord, 0, 1).toUpper();
   unicodeWord.replace(0, 1, unicodeFirstLetter);
   unicodeWord.toUTF8String(result); 
 
@@ -191,7 +191,7 @@ std::string kiwix::lcFirst (const std::string &word) {
   std::string result;
 
   UnicodeString unicodeWord(word.c_str());
-  UnicodeString unicodeFirstLetter = unicodeWord.tempSubString(0, 1).toLower();
+  UnicodeString unicodeFirstLetter = UnicodeString(unicodeWord, 0, 1).toLower();
   unicodeWord.replace(0, 1, unicodeFirstLetter);
   unicodeWord.toUTF8String(result);
 
