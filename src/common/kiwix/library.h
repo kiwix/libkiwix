@@ -36,7 +36,7 @@ using namespace std;
 
 namespace kiwix {
 
-  enum supportedIndexType { UNKNOWN, XAPIAN, CLUCENE };
+  enum supportedIndexType { UNKNOWN, XAPIAN };
 
   class Book {
 
@@ -76,7 +76,7 @@ namespace kiwix {
   };
 
   class Library {
-    
+
   public:
     Library();
     ~Library();

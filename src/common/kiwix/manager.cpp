@@ -25,19 +25,19 @@ namespace kiwix {
   Manager::Manager() :
     writableLibraryPath("") {
   }
-  
+
   /* Destructor */
   Manager::~Manager() {
   }
 
   bool Manager::parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath) {
     pugi::xml_node libraryNode = doc.child("library");
-    
+
     if (strlen(libraryNode.attribute("current").value()))
       this->setCurrentBookId(libraryNode.attribute("current").value());
 
     string libraryVersion = libraryNode.attribute("version").value();
-    
+
     for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode; bookNode = bookNode.next_sibling("book")) {
       bool ok = true;
       kiwix::Book book;
@@ -45,10 +45,10 @@ namespace kiwix {
       book.readOnly = readOnly;
       book.id = bookNode.attribute("id").value();
       book.path = bookNode.attribute("path").value();
-      book.last = (std::string(bookNode.attribute("last").value()) != "undefined" ? 
+      book.last = (std::string(bookNode.attribute("last").value()) != "undefined" ?
 		   bookNode.attribute("last").value() : "");
       book.indexPath = bookNode.attribute("indexPath").value();
-      book.indexType = (std::string(bookNode.attribute("indexType").value()) == "xapian" ? XAPIAN : CLUCENE);
+      book.indexType = XAPIAN;
       book.title = bookNode.attribute("title").value();
       book.description = bookNode.attribute("description").value();
       book.language = bookNode.attribute("language").value();
@@ -61,9 +61,9 @@ namespace kiwix {
       book.size = bookNode.attribute("size").value();
       book.favicon = bookNode.attribute("favicon").value();
       book.faviconMimeType = bookNode.attribute("faviconMimeType").value();
-      
+
       /* Check absolute and relative paths */
-      this->checkAndCleanBookPaths(book, libraryPath);      
+      this->checkAndCleanBookPaths(book, libraryPath);
 
       /* Update the book properties with the new importer */
       if (libraryVersion.empty() || atoi(libraryVersion.c_str()) <= atoi(KIWIX_LIBRARY_VERSION)) {
@@ -76,7 +76,7 @@ namespace kiwix {
 	library.addBook(book);
       }
     }
-    
+
     return true;
   }
 
@@ -128,7 +128,7 @@ namespace kiwix {
 
     if (!library.version.empty())
       libraryNode.append_attribute("version") = library.version.c_str();
-    
+
     /* Add each book */
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
@@ -141,45 +141,43 @@ namespace kiwix {
 
 	if (!itr->path.empty())
 	  bookNode.append_attribute("path") = itr->path.c_str();
-	
+
 	if (!itr->last.empty() && itr->last != "undefined") {
 	  bookNode.append_attribute("last") = itr->last.c_str();
 	}
-	
+
 	if (!itr->indexPath.empty())
 	  bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
 
 	if (!itr->indexPath.empty() || !itr->indexPathAbsolute.empty()) {
 	  if (itr->indexType == XAPIAN)
 	    bookNode.append_attribute("indexType") = "xapian";
-	  else if (itr->indexType == CLUCENE)
-	    bookNode.append_attribute("indexType") = "clucene";
 	}
-	
+
 	if (!itr->title.empty())
 	  bookNode.append_attribute("title") = itr->title.c_str();
-	
+
 	if (itr->description != "")
 	  bookNode.append_attribute("description") = itr->description.c_str();
-	
+
 	if (itr->language != "")
 	  bookNode.append_attribute("language") = itr->language.c_str();
-	
+
 	if (itr->date != "")
 	  bookNode.append_attribute("date") = itr->date.c_str();
-	
+
 	if (itr->creator != "")
 	  bookNode.append_attribute("creator") = itr->creator.c_str();
 
 	if (itr->publisher != "")
 	  bookNode.append_attribute("publisher") = itr->publisher.c_str();
-	
+
 	if (itr->url != "")
 	  bookNode.append_attribute("url") = itr->url.c_str();
-	
+
 	if (itr->articleCount != "")
 	  bookNode.append_attribute("articleCount") = itr->articleCount.c_str();
-	
+
 	if (itr->mediaCount != "")
 	  bookNode.append_attribute("mediaCount") = itr->mediaCount.c_str();
 
@@ -211,12 +209,12 @@ namespace kiwix {
   }
 
   string Manager::getCurrentBookId() {
-    return library.current.empty() ? 
+    return library.current.empty() ?
       "" : library.current.top();
   }
 
   /* Add a book to the library. Return empty string if failed, book id otherwise */
-  string Manager::addBookFromPathAndGetId(const string pathToOpen, const string pathToSave, 
+  string Manager::addBookFromPathAndGetId(const string pathToOpen, const string pathToSave,
 					  const string url, const bool checkMetaData) {
     kiwix::Book book;
 
@@ -228,7 +226,7 @@ namespace kiwix {
 	  computeAbsolutePath(removeLastPathElement(writableLibraryPath, true, false), pathToSave) : pathToSave;
       }
 
-      if (!checkMetaData || 
+      if (!checkMetaData ||
 	  (checkMetaData && !book.title.empty() && !book.language.empty() && !book.date.empty())) {
 	book.url = url;
 	library.addBook(book);
@@ -238,7 +236,7 @@ namespace kiwix {
 
     return "";
   }
-  
+
   /* Wrapper over Manager::addBookFromPath which return a bool instead of a string */
   bool Manager::addBookFromPath(const string pathToOpen, const string pathToSave, const string url, const bool checkMetaData) {
     return !(this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData).empty());
@@ -247,7 +245,7 @@ namespace kiwix {
   bool Manager::readBookFromPath(const string path, kiwix::Book *book) {
     try {
       kiwix::Reader *reader = new kiwix::Reader(path);
-      
+
       if (book != NULL) {
 	book->path = path;
 	book->pathAbsolute = path;
@@ -258,18 +256,18 @@ namespace kiwix {
 	book->creator = reader->getCreator();
 	book->publisher = reader->getPublisher();
 	book->title = reader->getTitle();
-	
+
 	std::ostringstream articleCountStream;
 	articleCountStream << reader->getArticleCount();
 	book->articleCount = articleCountStream.str();
-	
+
 	std::ostringstream mediaCountStream;
 	mediaCountStream << reader->getMediaCount();
 	book->mediaCount = mediaCountStream.str();
-	
+
 	ostringstream convert; convert << reader->getFileSize();
 	book->size = convert.str();
-	
+
 	string favicon;
 	string faviconMimeType;
 	if (reader->getFavicon(favicon, faviconMimeType)) {
@@ -277,7 +275,7 @@ namespace kiwix {
 	  book->faviconMimeType = faviconMimeType;
 	}
       }
-      
+
       delete reader;
     } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;
@@ -294,7 +292,7 @@ namespace kiwix {
   bool Manager::removeBookById(const string id) {
     unsigned int bookIndex = 0;
     std::vector<kiwix::Book>::iterator itr;
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if ( itr->id == id) {
 	return this->library.removeBookByIndex(bookIndex);
       }
@@ -308,14 +306,14 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
     std::map<string, bool> booksLanguagesMap;
 
-    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLanguage);      
+    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLanguage);
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if (booksLanguagesMap.find(itr->language) == booksLanguagesMap.end()) {
 	booksLanguagesMap[itr->language] = true;
 	booksLanguages.push_back(itr->language);
       }
     }
-    
+
     return booksLanguages;
   }
 
@@ -324,14 +322,14 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
     std::map<string, bool> booksCreatorsMap;
 
-    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);      
+    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if (booksCreatorsMap.find(itr->creator) == booksCreatorsMap.end()) {
 	booksCreatorsMap[itr->creator] = true;
 	booksCreators.push_back(itr->creator);
       }
     }
-    
+
     return booksCreators;
   }
 
@@ -343,7 +341,7 @@ namespace kiwix {
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       booksIds.push_back(itr->id);
     }
-    
+
     return booksIds;
   }
 
@@ -352,14 +350,14 @@ namespace kiwix {
     std::vector<kiwix::Book>::iterator itr;
     std::map<string, bool> booksPublishersMap;
 
-    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);      
+    std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if (booksPublishersMap.find(itr->publisher) == booksPublishersMap.end()) {
 	booksPublishersMap[itr->publisher] = true;
 	booksPublishers.push_back(itr->publisher);
       }
     }
-    
+
     return booksPublishers;
   }
 
@@ -379,7 +377,7 @@ namespace kiwix {
 
   bool Manager::getBookById(const string id, Book &book) {
     std::vector<kiwix::Book>::iterator itr;
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if ( itr->id == id) {
 	book = *itr;
 	return true;
@@ -390,7 +388,7 @@ namespace kiwix {
 
   bool Manager::updateBookLastOpenDateById(const string id) {
     std::vector<kiwix::Book>::iterator itr;
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if ( itr->id == id) {
 	char unixdate[12];
 	sprintf (unixdate, "%d", (int)time(NULL));
@@ -404,7 +402,7 @@ namespace kiwix {
 
   bool Manager::setBookIndex(const string id, const string path, const supportedIndexType type) {
     std::vector<kiwix::Book>::iterator itr;
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if ( itr->id == id) {
 	itr->indexPath = path;
 	itr->indexPathAbsolute = isRelativePath(path) ?
@@ -419,7 +417,7 @@ namespace kiwix {
 
   bool Manager::setBookPath(const string id, const string path) {
     std::vector<kiwix::Book>::iterator itr;
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if ( itr->id == id) {
 	itr->path = path;
 	itr->pathAbsolute = isRelativePath(path) ?
@@ -433,7 +431,7 @@ namespace kiwix {
 
   void Manager::removeBookPaths() {
     std::vector<kiwix::Book>::iterator itr;
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {    
+    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       itr->path = "";
       itr->pathAbsolute = "";
     }
@@ -449,7 +447,7 @@ namespace kiwix {
     return result;
   }
 
-  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy, 
+  bool Manager::listBooks(const supportedListMode mode, const supportedListSortBy sortBy,
 			  const unsigned int maxSize, const string language, const string creator,
 			  const string publisher, const string search) {
     this->bookIdList.clear();
@@ -457,7 +455,7 @@ namespace kiwix {
 
     /* Sort */
     if (sortBy == TITLE) {
-      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByTitle);      
+      std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByTitle);
     } else if (sortBy == SIZE) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortBySize);
     } else if (sortBy == DATE) {
@@ -467,7 +465,7 @@ namespace kiwix {
     } else if (sortBy == PUBLISHER) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
     }
-    
+
     /* Special sort for LASTOPEN */
     if (mode == LASTOPEN) {
       std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLastOpen);
@@ -482,9 +480,9 @@ namespace kiwix {
 
 	if (mode == LOCAL && itr->path.empty())
 	  ok = false;
-	
+
 	if (ok == true && mode == REMOTE && (!itr->path.empty() || itr->url.empty()))
-	  ok = false; 
+	  ok = false;
 
 	if (ok == true && maxSize != 0 && (unsigned int)atoi(itr->size.c_str()) > maxSize * 1024 * 1024)
 	  ok = false;
@@ -497,7 +495,7 @@ namespace kiwix {
 
 	if (ok == true && !publisher.empty() && itr->publisher != publisher)
 	  ok = false;
-	
+
 	if ((ok == true && !search.empty()) && !(matchRegex(itr->title, search) || matchRegex(itr->description, search)))
 	  ok = false;
 
@@ -506,7 +504,7 @@ namespace kiwix {
 	}
       }
     }
-    
+
     return true;
   }
 
@@ -519,14 +517,14 @@ namespace kiwix {
 	book.path = computeRelativePath(removeLastPathElement(libraryPath, true, false), book.pathAbsolute);
       }
     }
-    
+
     if (!book.indexPath.empty()) {
       if (isRelativePath(book.indexPath)) {
-	book.indexPathAbsolute = 
+	book.indexPathAbsolute =
 	  computeAbsolutePath(removeLastPathElement(libraryPath, true, false), book.indexPath);
       } else {
 	book.indexPathAbsolute = book.indexPath;
-	book.indexPath = 
+	book.indexPath =
 	  computeRelativePath(removeLastPathElement(libraryPath, true, false), book.indexPathAbsolute);
       }
     }
