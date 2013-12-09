@@ -56,6 +56,7 @@ namespace kiwix {
       book.creator = bookNode.attribute("creator").value();
       book.publisher = bookNode.attribute("publisher").value();
       book.url = bookNode.attribute("url").value();
+      book.origId = bookNode.attribute("origId").value();
       book.articleCount = bookNode.attribute("articleCount").value();
       book.mediaCount = bookNode.attribute("mediaCount").value();
       book.size = bookNode.attribute("size").value();
@@ -154,41 +155,46 @@ namespace kiwix {
 	    bookNode.append_attribute("indexType") = "xapian";
 	}
 
-	if (!itr->title.empty())
-	  bookNode.append_attribute("title") = itr->title.c_str();
+	if (itr->origId.empty()) {
+	  if (!itr->title.empty())
+	    bookNode.append_attribute("title") = itr->title.c_str();
+	  
+	  if (!itr->description.empty())
+	    bookNode.append_attribute("description") = itr->description.c_str();
+	  
+	  if (!itr->language.empty())
+	    bookNode.append_attribute("language") = itr->language.c_str();
+	  
+	  if (!itr->creator.empty())
+	    bookNode.append_attribute("creator") = itr->creator.c_str();
+	  
+	  if (!itr->publisher.empty())
+	    bookNode.append_attribute("publisher") = itr->publisher.c_str();
+	  
+	  if (!itr->favicon.empty())
+	    bookNode.append_attribute("favicon") = itr->favicon.c_str();
+	  
+	  if (!itr->faviconMimeType.empty())
+	    bookNode.append_attribute("faviconMimeType") = itr->faviconMimeType.c_str();
+	}
 
-	if (itr->description != "")
-	  bookNode.append_attribute("description") = itr->description.c_str();
-
-	if (itr->language != "")
-	  bookNode.append_attribute("language") = itr->language.c_str();
-
-	if (itr->date != "")
+	if (!itr->date.empty())
 	  bookNode.append_attribute("date") = itr->date.c_str();
 
-	if (itr->creator != "")
-	  bookNode.append_attribute("creator") = itr->creator.c_str();
-
-	if (itr->publisher != "")
-	  bookNode.append_attribute("publisher") = itr->publisher.c_str();
-
-	if (itr->url != "")
+	if (!itr->url.empty())
 	  bookNode.append_attribute("url") = itr->url.c_str();
-
-	if (itr->articleCount != "")
+	
+	if (!itr->origId.empty())
+	  bookNode.append_attribute("origId") = itr->origId.c_str();
+	
+	if (!itr->articleCount.empty())
 	  bookNode.append_attribute("articleCount") = itr->articleCount.c_str();
 
-	if (itr->mediaCount != "")
+	if (!itr->mediaCount.empty())
 	  bookNode.append_attribute("mediaCount") = itr->mediaCount.c_str();
 
-	if (itr->size != "")
+	if (!itr->size.empty())
 	  bookNode.append_attribute("size") = itr->size.c_str();
-
-	if (itr->favicon != "")
-	  bookNode.append_attribute("favicon") = itr->favicon.c_str();
-
-	if (itr->faviconMimeType != "")
-	  bookNode.append_attribute("faviconMimeType") = itr->faviconMimeType.c_str();
       }
     }
 
@@ -256,7 +262,7 @@ namespace kiwix {
 	book->creator = reader->getCreator();
 	book->publisher = reader->getPublisher();
 	book->title = reader->getTitle();
-
+	book->origId = reader->getOrigId();
 	std::ostringstream articleCountStream;
 	articleCountStream << reader->getArticleCount();
 	book->articleCount = articleCountStream.str();
@@ -307,10 +313,12 @@ namespace kiwix {
     std::map<string, bool> booksLanguagesMap;
 
     std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByLanguage);
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+    for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
       if (booksLanguagesMap.find(itr->language) == booksLanguagesMap.end()) {
-	booksLanguagesMap[itr->language] = true;
-	booksLanguages.push_back(itr->language);
+        if (itr->origId.empty()) {
+	  booksLanguagesMap[itr->language] = true;
+	  booksLanguages.push_back(itr->language);
+        }
       }
     }
 
@@ -323,10 +331,12 @@ namespace kiwix {
     std::map<string, bool> booksCreatorsMap;
 
     std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);
-    for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
+    for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
       if (booksCreatorsMap.find(itr->creator) == booksCreatorsMap.end()) {
-	booksCreatorsMap[itr->creator] = true;
-	booksCreators.push_back(itr->creator);
+        if (itr->origId.empty()) {
+	  booksCreatorsMap[itr->creator] = true;
+	  booksCreators.push_back(itr->creator);
+        }
       }
     }
 
@@ -353,8 +363,10 @@ namespace kiwix {
     std::sort(library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
       if (booksPublishersMap.find(itr->publisher) == booksPublishersMap.end()) {
-	booksPublishersMap[itr->publisher] = true;
-	booksPublishers.push_back(itr->publisher);
+        if (itr->origId.empty()) {
+	  booksPublishersMap[itr->publisher] = true;
+	  booksPublishers.push_back(itr->publisher);
+        }
       }
     }
 

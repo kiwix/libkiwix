@@ -20,7 +20,6 @@
 #ifndef KIWIX_STRINGTOOLS_H
 #define KIWIX_STRINGTOOLS_H
 
-#ifndef __ANDROID__
 #include <unicode/translit.h>
 #include <unicode/normlzr.h>
 #include <unicode/unistr.h>
@@ -29,7 +28,6 @@
 #include <unicode/uniset.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
-#endif
 
 #include <iostream>
 #include <vector>
@@ -58,6 +56,7 @@ namespace kiwix {
 
   std::string ucFirst(const std::string &word);
   std::string lcFirst(const std::string &word);
+  std::string toTitle(const std::string &word);
 }
 
 #endif
