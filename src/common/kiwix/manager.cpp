@@ -48,7 +48,7 @@ namespace kiwix {
       book.last = (std::string(bookNode.attribute("last").value()) != "undefined" ?
 		   bookNode.attribute("last").value() : "");
       book.indexPath = bookNode.attribute("indexPath").value();
-      book.indexType = (std::string(bookNode.attribute("indexType").value()) == "xapian" ? XAPIAN : CLUCENE);
+      book.indexType = XAPIAN;
       book.title = bookNode.attribute("title").value();
       book.description = bookNode.attribute("description").value();
       book.language = bookNode.attribute("language").value();
@@ -153,8 +153,6 @@ namespace kiwix {
 	if (!itr->indexPath.empty() || !itr->indexPathAbsolute.empty()) {
 	  if (itr->indexType == XAPIAN)
 	    bookNode.append_attribute("indexType") = "xapian";
-	  else if (itr->indexType == CLUCENE)
-	    bookNode.append_attribute("indexType") = "clucene";
 	}
 
 	if (itr->origId.empty()) {

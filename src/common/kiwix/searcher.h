@@ -29,21 +29,14 @@
 #include <cctype>
 #include <vector>
 #include <resourceTools.h>
+#include <pathTools.h>
 #include <stringTools.h>
 
-#include <CTPP2Parser.hpp>
-#include <CTPP2FileSourceLoader.hpp>
-#include <CTPP2ParserException.hpp>
-#include <CTPP2HashTable.hpp>
-#include <CTPP2VMDumper.hpp>
-#include <CTPP2VMOpcodes.h>
-#include <CTPP2VM.hpp>
-#include <CTPP2VMSTDLib.hpp>
-#include <CTPP2StringOutputCollector.hpp>
-#include <CTPP2SyscallFactory.hpp>
+#include <CDT.hpp>
 #include <CTPP2FileLogger.hpp>
+#include <CTPP2SimpleVM.hpp>
 
-#include "ctpp2/CTPP2TextLoader.hpp"
+#include "kiwix/ctpp2/CTPP2VMStringLoader.hpp"
 
 using namespace std;
 using namespace CTPP;
@@ -56,16 +49,16 @@ struct Result
   string snippet;
   int wordCount;
   int size;
-}; 
+};
 
 namespace kiwix {
 
   class Searcher {
-    
+
   public:
     Searcher();
 
-    void search(std::string &search, const unsigned int resultStart, 
+    void search(std::string &search, const unsigned int resultStart,
 		const unsigned int resultEnd, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
     unsigned int getEstimatedResultCount();
@@ -74,11 +67,12 @@ namespace kiwix {
     string getHtml();
     void reset();
     void setContentHumanReadableId(const string &contentHumanReadableId);
+    ~Searcher();
 
   protected:
     std::string beautifyInteger(const unsigned int number);
     virtual void closeIndex() = 0;
-    virtual void searchInIndex(string &search, const unsigned int resultStart, 
+    virtual void searchInIndex(string &search, const unsigned int resultStart,
 			       const unsigned int resultEnd, const bool verbose=false) = 0;
 
     std::vector<Result> results;
@@ -86,6 +80,7 @@ namespace kiwix {
     std::string searchPattern;
     std::string protocolPrefix;
     std::string searchProtocolPrefix;
+    std::string template_ct2;
     unsigned int resultCountPerPage;
     unsigned int estimatedResultCount;
     unsigned int resultStart;

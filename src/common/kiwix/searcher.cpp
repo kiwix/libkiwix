@@ -19,6 +19,7 @@
 
 #include "searcher.h"
 
+
 namespace kiwix {
 
   /* Constructor */
@@ -30,15 +31,16 @@ namespace kiwix {
     estimatedResultCount(0),
     resultStart(0),
     resultEnd(0),
-    resultRange(20) {
+    resultRange(20)
+     {
+        template_ct2 = getResourceAsString("results.ct2");
   }
-  
+
   /* Search strings in the database */
-  void Searcher::search(std::string &search, const unsigned int resultStart, 
+  void Searcher::search(std::string &search, const unsigned int resultStart,
 			const unsigned int resultEnd, const bool verbose) {
-    
     this->reset();
-    
+
     if (verbose == true) {
       cout << "Performing query `" << search << "'" << endl;
     }
@@ -53,7 +55,7 @@ namespace kiwix {
 
     return;
   }
-  
+
   /* Reset the results */
   void Searcher::reset() {
     this->results.clear();
@@ -67,25 +69,25 @@ namespace kiwix {
   unsigned int Searcher::getEstimatedResultCount() {
     return this->estimatedResultCount;
   }
-  
+
   /* Get next result */
   bool Searcher::getNextResult(string &url, string &title, unsigned int &score) {
     bool retVal = false;
-    
+
     if (this->resultOffset != this->results.end()) {
-      
+
       /* url */
       url = this->resultOffset->url;
-      
+
       /* title */
       title = this->resultOffset->title;
-      
+
       /* score */
       score =  this->resultOffset->score;
-      
+
       /* increment the cursor for the next call */
       this->resultOffset++;
-      
+
       retVal = true;
     }
 
@@ -107,45 +109,8 @@ namespace kiwix {
   }
 
   string Searcher::getHtml() {
-    
-    VMOpcodeCollector  oVMOpcodeCollector;
-    StaticText         oSyscalls;
-    StaticData         oStaticData;
-    StaticText         oStaticText;
-    HashTable          oHashTable;
-    CTPP2Compiler oCompiler(oVMOpcodeCollector, oSyscalls, oStaticData, oStaticText, oHashTable);
-    
-    /* Load template & create template parser */
-    // cout << getResourceAsString("results.tmpl") << endl;
 
-    /* Parse template */
-    const STLW::string & sSourceFile = getResourceAsString("results.tmpl");
-    CTPP2TextLoader oSourceLoader;                                                                  
-    oSourceLoader.LoadTemplate(sSourceFile.c_str());
-    CTPP2Parser oCTPP2Parser(&oSourceLoader, &oCompiler, "template");
-    oCTPP2Parser.Compile();
-
-    // Get program core
-    UINT_32 iCodeSize = 0;
-    const VMInstruction * oVMInstruction = oVMOpcodeCollector.GetCode(iCodeSize);
-
-    // Dump program
-    VMDumper oDumper(iCodeSize, oVMInstruction, oSyscalls, oStaticData, oStaticText, oHashTable);
-    UINT_32 iSize = 0;
-    const VMExecutable * aProgramCore = oDumper.GetExecutable(iSize);
-
-    // Memory core
-    const VMMemoryCore vm_core(aProgramCore);
-
-    // Initiate the VM
-    SyscallFactory oSyscallFactory(100);
-    // Load standard library
-    STDLibInitializer::InitLibrary(oSyscallFactory);
-
-    VM * pVM = new VM(&oSyscallFactory);
-
-    // Initiate the logger
-    FileLogger oLogger(stderr);
+    SimpleVM oSimpleVM;
 
     // Fill data
     CDT oData;
@@ -159,10 +124,10 @@ namespace kiwix {
       result["snippet"] = this->resultOffset->snippet;
 
       if (this->resultOffset->size >= 0)
-	result["size"] = kiwix::beautifyInteger(this->resultOffset->size);
+    result["size"] = kiwix::beautifyInteger(this->resultOffset->size);
 
       if (this->resultOffset->wordCount >= 0)
-	result["wordCount"] = kiwix::beautifyInteger(this->resultOffset->wordCount);
+    result["wordCount"] = kiwix::beautifyInteger(this->resultOffset->wordCount);
 
       resultsCDT.PushBack(result);
       this->resultOffset++;
@@ -180,7 +145,7 @@ namespace kiwix {
       pageCount = 10;
     else if (pageCount == 1)
       pageCount = 0;
-    
+
     for (unsigned int i=pageStart; i<pageStart+pageCount; i++) {
       CDT page;
       page["label"] = i + 1;
@@ -188,7 +153,7 @@ namespace kiwix {
       page["end"] = (i+1) * this->resultCountPerPage;
 
       if (i * this->resultCountPerPage == this->resultStart)
-	page["selected"] = true;
+    page["selected"] = true;
 
       pagesCDT.PushBack(page);
     }
@@ -205,15 +170,23 @@ namespace kiwix {
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
     oData["contentId"] = this->contentHumanReadableId;
 
-    STLW::string sResult;
-    StringOutputCollector oDataCollector(sResult);
+    VMStringLoader oLoader(template_ct2.c_str(), template_ct2.size());
 
-    // Run VM
-    pVM->Init(&vm_core, &oDataCollector, &oLogger);
-    UINT_32 iIP = 0;
-    pVM -> Run(&vm_core, &oDataCollector, iIP, oData, &oLogger);
+    FileLogger oLogger(stderr);
+
+    // DEBUG only (write output to stdout)
+    // oSimpleVM.Run(oData, oLoader, stdout, oLogger);
+
+    std::string sResult;
+    oSimpleVM.Run(oData, oLoader, sResult, oLogger);
 
     return sResult;
+
   }
-  
+
+  /* Destructor */
+  Searcher::~Searcher() {
+
+  }
+
 }

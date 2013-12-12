@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2004 - 2010 CTPP Team
+ * Copyright (c) 2004 - 2011 CTPP Team
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,66 +25,52 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *      CTPP2FileSourceLoader.cpp
+ *      CTPP2VMStringLoader.hpp
  *
  * $CTPP$
  */
+#ifndef _CTPP2_VM_STRING_LOADER_HPP__
+#define _CTPP2_VM_STRING_LOADER_HPP__ 1
 
-#include "CTPP2TextLoader.hpp"
-
-#include "CTPP2Exception.hpp"
-
-#include <sys/stat.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "CTPP2VMLoader.hpp"
 
 /**
-  @file FileOutputCollector.hpp
-  @brief Virtual machine file output data collector
+  @file VMStringLoader.hpp
+  @brief Load program core from file
 */
 
 namespace CTPP // C++ Template Engine
 {
+// FWD
+struct VMExecutable;
 
-//
-// Clone loader
-//
-CTPP2SourceLoader * CTPP2TextLoader::Clone()
+/**
+  @class VMStringLoader CTPP2VMStringLoader.hpp <CTPP2VMStringLoader.hpp>
+  @brief Load program core from file
+*/
+class CTPP2DECL VMStringLoader:
+  public VMLoader
 {
-  return new CTPP2TextLoader;
-}
+public:
+	/**
+	*/
+	VMStringLoader(CCHAR_P rawContent, size_t rawContentSize);
+	/**
+	  @brief Get ready-to-run program
+	*/
+	const VMMemoryCore * GetCore() const;
 
-//
-// Constructor
-//
-CTPP2TextLoader::CTPP2TextLoader() {
-}
-
-//
-// Load template with specified name
-//
-INT_32 CTPP2TextLoader::LoadTemplate(CCHAR_P szTemplateName)
-{
-  this->templateText = std::string(szTemplateName);
-  return 0;
-}
-
-//
-// Get template
-//
-CCHAR_P CTPP2TextLoader::GetTemplate(UINT_32 & iITemplateSize)
-{
-  iITemplateSize = this->templateText.size();
-  return this->templateText.data();
-}
-
-//
-// A destructor
-//
-CTPP2TextLoader::~CTPP2TextLoader() throw()
-{
-}
+	/**
+	  @brief A destructor
+	*/
+	~VMStringLoader() throw();
+private:
+	/** Program core             */
+	VMExecutable  * oCore;
+	/** Ready-to-run program     */
+	VMMemoryCore  * pVMMemoryCore;
+};
 
 } // namespace CTPP
+#endif // _CTPP2_VM_STRING_LOADER_HPP__
 // End.
