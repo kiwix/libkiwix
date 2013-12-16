@@ -213,11 +213,7 @@ VMStringLoader::VMStringLoader(CCHAR_P rawContent, size_t rawContentSize)
 			}
 		}
 
-        std::cout << "Last ?" << std::endl;
-
 		pVMMemoryCore = new VMMemoryCore(oCore);
-
-        std::cout << "last2" << std::endl;
 	}
 	else
 	{
