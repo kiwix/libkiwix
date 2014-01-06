@@ -33,6 +33,38 @@ const char *nsStringToCString(const nsAString &str) {
   return strdup(cStr);
 }
 
+std::string nsStringToString(const nsEmbedString &str) {
+#ifdef _WIN32
+  PRUnichar *start = (PRUnichar *)str.get();
+  PRUnichar *end = start +  str.Length();
+  wchar_t wca[4096];
+  wchar_t *wstart = wca;
+  wchar_t *wpr = wstart;
+        
+  for(; start < end; ++start)
+    {
+      *wstart = (wchar_t) *start;
+      ++wstart;
+    }
+  *wstart = 0;
+
+  std::string ptr;
+  ptr.resize(4096);
+  size_t size = wcstombs((char*)ptr.data(), wpr, 4096);
+  ptr.resize(size);
+
+  return ptr;
+#else
+  const char *cStr;
+  nsCString tmpStr;
+
+  CopyUTF16toUTF8(str, tmpStr);
+  NS_CStringGetData(tmpStr, &cStr);
+  return std::string(cStr);
+#endif
+
+}
+
 const char *nsStringToUTF8(const nsAString &str) {
   const char *cStr;
   nsCString tmpStr;

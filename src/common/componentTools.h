@@ -20,14 +20,22 @@
 #ifndef KIWIX_COMPONENTTOOLS_H
 #define KIWIX_COMPONENTTOOLS_H
 
+#include<string>
+
 #ifdef __APPLE__
   #include <stdint.h>
   typedef uint16_t char16_t;
 #endif
 
+#ifdef _WIN32  
+  #include <stdlib.h>
+#endif
+
 #include "nsStringAPI.h"
+#include "nsEmbedString.h"
 
 const char *nsStringToCString(const nsAString &str);
+std::string nsStringToString(const nsEmbedString &str);
 const char *nsStringToUTF8(const nsAString &str);
 
 #endif
