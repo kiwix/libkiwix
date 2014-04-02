@@ -22,6 +22,8 @@
 
 namespace kiwix {
 
+  void sleep(unsigned int milliseconds);
+
 }
 
 #endif
