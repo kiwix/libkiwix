@@ -62,6 +62,8 @@ namespace kiwix {
     
   public:
     Indexer();
+    virtual ~Indexer();
+
     bool start(const string zimPath, const string indexPath);
     bool stop();
     bool isRunning();

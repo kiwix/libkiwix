@@ -54,6 +54,10 @@ namespace kiwix {
     pthread_mutex_init(&verboseMutex, NULL);
   }
 
+  /* Destructor */
+  Indexer::~Indexer() {
+  }
+
   /* Read the stopwords */
   void Indexer::readStopWords(const string languageCode) {
     std::string stopWord;
