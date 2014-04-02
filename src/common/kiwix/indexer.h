@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Emmanuel Engelhart <kelson@kiwix.org>
+ * Copyright 2014 Emmanuel Engelhart <kelson@kiwix.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -28,14 +28,9 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
-
 #include <pthread.h>
 #include <stringTools.h>
+#include <otherTools.h>
 #include <resourceTools.h>
 #include <zim/file.h>
 #include <zim/article.h>

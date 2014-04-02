@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Emmanuel Engelhart <kelson@kiwix.org>
+ * Copyright 2011-2014 Emmanuel Engelhart <kelson@kiwix.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -250,11 +250,8 @@ namespace kiwix {
     writeTextFile(path, self->getZimId());
 
     self->setProgression(100);
-#ifdef _WIN32
-    Sleep(100);
-#else
-    usleep(100000);
-#endif
+    kiwix::sleep(100);
+
     self->articleIndexerRunning(false);
     pthread_exit(NULL);
     return NULL;
@@ -285,21 +282,12 @@ namespace kiwix {
     pthread_mutex_lock(&toParseQueueMutex); 
     this->toParseQueue.push(token);
     pthread_mutex_unlock(&toParseQueueMutex); 
-#ifdef _WIN32
-    Sleep(int(this->toParseQueue.size() / 200) / 10 * 1000);
-#else
-    usleep(int(this->toParseQueue.size() / 200) / 10 * 1000000);
-#endif
+    kiwix::sleep(int(this->toParseQueue.size() / 200) / 10 * 1000);
   }
 
   bool Indexer::popFromToParseQueue(indexerToken &token) {
     while (this->isToParseQueueEmpty() && this->isArticleExtractorRunning()) {
-#ifdef _WIN32
-      Sleep(500);
-#else
-      usleep(500000);
-#endif
-
+      kiwix::sleep(500);
       if (this->getVerboseFlag()) {
 	std::cout << "Waiting... ToParseQueue is empty for now..." << std::endl;
       }
@@ -331,20 +319,12 @@ namespace kiwix {
     pthread_mutex_lock(&toIndexQueueMutex); 
     this->toIndexQueue.push(token);
     pthread_mutex_unlock(&toIndexQueueMutex);
-#ifdef _WIN32
-    Sleep(int(this->toIndexQueue.size() / 200) / 10 * 1000);
-#else
-    usleep(int(this->toIndexQueue.size() / 200) / 10 * 1000000);
-#endif
+    kiwix::sleep(int(this->toIndexQueue.size() / 200) / 10 * 1000);
   }
 
   bool Indexer::popFromToIndexQueue(indexerToken &token) {
     while (this->isToIndexQueueEmpty() && this->isArticleParserRunning()) {
-#ifdef _WIN32
-      Sleep(500);
-#else
-      usleep(500000);
-#endif
+      kiwix::sleep(500);
       if (this->getVerboseFlag()) {
 	std::cout << "Waiting... ToIndexQueue is empty for now..." << std::endl;
       }
@@ -447,11 +427,7 @@ namespace kiwix {
     pthread_detach(this->articleExtractor);
 
     while(this->isArticleExtractorRunning() && this->getArticleCount() == 0) {
-#ifdef _WIN32
-    Sleep(100);
-#else
-    usleep(100000);
-#endif
+      kiwix::sleep(100);
     }
     
     this->articleParserRunning(true);
