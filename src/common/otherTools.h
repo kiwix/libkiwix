@@ -20,10 +20,14 @@
 #ifndef KIWIX_OTHERTOOLS_H
 #define KIWIX_OTHERTOOLS_H
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 namespace kiwix {
-
   void sleep(unsigned int milliseconds);
-
 }
 
 #endif

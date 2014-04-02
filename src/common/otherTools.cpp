@@ -23,6 +23,6 @@ void kiwix::sleep(unsigned int milliseconds) {
 #ifdef _WIN32
       Sleep(milliseconds);
 #else
-      sleep(1000 * milliseconds);
+      usleep(1000 * milliseconds);
 #endif
 }
