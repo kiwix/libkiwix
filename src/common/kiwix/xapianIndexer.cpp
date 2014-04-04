@@ -28,7 +28,7 @@ namespace kiwix {
     this->indexer.set_stemmer(this->stemmer);
     */ 
   }
-  
+
   void XapianIndexer::indexingPrelude(const string indexPath) {
     this->writableDatabase = Xapian::WritableDatabase(indexPath, Xapian::DB_CREATE_OR_OVERWRITE);
     this->writableDatabase.begin_transaction(true);
