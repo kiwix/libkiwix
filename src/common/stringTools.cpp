@@ -83,8 +83,7 @@ void kiwix::stringReplacement(std::string& str, const std::string& oldStr, const
 // Urlencode
 //based on javascript encodeURIComponent()
 
-std::string char2hex( char dec )
-{
+std::string char2hex(char dec) {
   char dig1 = (dec&0xF0)>>4;
   char dig2 = (dec&0x0F);
   if ( 0<= dig1 && dig1<= 9) dig1+=48;    //0,48inascii
@@ -120,21 +119,22 @@ std::string kiwix::urlEncode(const std::string &c) {
   return escaped;
 }
 
-std::string kiwix::urlDecode(const std::string &SRC) {
-  std::string ret;
-  char ch;
-  unsigned int i, ii;
-  for (i=0; i<SRC.length(); i++) {
-    if (int(SRC[i])==37) {
-      sscanf(SRC.substr(i+1,2).c_str(), "%x", &ii);
-      ch=static_cast<char>(ii);
-      ret+=ch;
-      i=i+2;
-    } else {
-      ret+=SRC[i];
-    }
+static char charFromHex(std::string a) {
+  std::istringstream Blat(a);
+  int Z;
+  Blat >> std::hex >> Z;
+  return char (Z);
+}
+
+std::string kiwix::urlDecode(const std::string &originalUrl) {
+  std::string url = originalUrl;
+  std::string::size_type pos = 0;
+  while ((pos = url.find('%', pos)) != std::string::npos &&
+	 pos + 2 < url.length()) {
+    url.replace(pos, 3, 1, charFromHex(url.substr(pos + 1, 2)));
+    ++pos;
   }
-  return (ret);
+  return url;
 }
 
 #endif
