@@ -49,25 +49,6 @@ std::string hexUUID (std::string in) {
     return op;
 }
 
-
-
-static char charFromHex(std::string a) {
-  std::istringstream Blat (a);
-  int Z;
-  Blat >> std::hex >> Z;
-  return char (Z);
-}
-
-void unescapeUrl(string &url) {
-  std::string::size_type pos = 0;
-  while ((pos = url.find('%', pos)) != std::string::npos &&
-	 pos + 2 < url.length()) {
-    url.replace(pos, 3, 1, charFromHex(url.substr(pos + 1, 2)));
-    ++pos;
-  }
-  return;
-}
-
 namespace kiwix {
 
   /* Constructor */
@@ -385,24 +366,30 @@ namespace kiwix {
 
     /* unescape title */
     title = url.substr(titleOffset, offset - titleOffset);
-    unescapeUrl(title);
 
     return true;
   }
 
   /* Get a content from a zim file */
-  bool Reader::getContentByUrl(const string &urlStr, string &content, unsigned int &contentLength, string &contentType) {
+  bool Reader::getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
+    return this->getContentByEncodedUrl(url, content, contentLength, contentType);
+  }
+
+  bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
+    return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType);
+  }
+
+  bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
     bool retVal = false;
     content="";
     contentType="";
     contentLength = 0;
-
     if (this->zimFileHandler != NULL) {
 
       /* Parse the url */
       char ns = 0;
       string titleStr;
-      this->parseUrl(urlStr, &ns, titleStr);
+      this->parseUrl(url, &ns, titleStr);
 
       /* Main page */
       if (titleStr.empty() && ns == 0) {
