@@ -19,11 +19,11 @@
 
 #include "CTPP2VMStringLoader.hpp"
 
-#include "CTPP2Util.hpp"
-#include "CTPP2Exception.hpp"
-#include "CTPP2VMExecutable.hpp"
-#include "CTPP2VMInstruction.hpp"
-#include "CTPP2VMMemoryCore.hpp"
+#include "ctpp2/CTPP2Util.hpp"
+#include "ctpp2/CTPP2Exception.hpp"
+#include "ctpp2/CTPP2VMExecutable.hpp"
+#include "ctpp2/CTPP2VMInstruction.hpp"
+#include "ctpp2/CTPP2VMMemoryCore.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>

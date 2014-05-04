@@ -20,7 +20,7 @@
 #ifndef _CTPP2_VM_STRING_LOADER_HPP__
 #define _CTPP2_VM_STRING_LOADER_HPP__ 1
 
-#include "CTPP2VMLoader.hpp"
+#include "ctpp2/CTPP2VMLoader.hpp"
 
 /**
   @file VMStringLoader.hpp

@@ -32,9 +32,9 @@
 #include <pathTools.h>
 #include <stringTools.h>
 
-#include <CDT.hpp>
-#include <CTPP2FileLogger.hpp>
-#include <CTPP2SimpleVM.hpp>
+#include <ctpp2/CDT.hpp>
+#include <ctpp2/CTPP2FileLogger.hpp>
+#include <ctpp2/CTPP2SimpleVM.hpp>
 
 #include "kiwix/ctpp2/CTPP2VMStringLoader.hpp"
 
