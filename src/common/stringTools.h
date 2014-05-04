@@ -42,12 +42,13 @@ namespace kiwix {
   std::string removeAccents(const std::string &text);
   std::string beautifyInteger(const unsigned int number);
   std::string urlEncode(const std::string &c);
-  std::string urlDecode(const std::string &c);
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);
   void stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr);
 
 #endif
+
+  std::string urlDecode(const std::string &c);
 
   std::vector<std::string> split(const std::string&, const std::string&);
   std::vector<std::string> split(const char*, const char*);
