@@ -119,6 +119,8 @@ std::string kiwix::urlEncode(const std::string &c) {
   return escaped;
 }
 
+#endif
+
 static char charFromHex(std::string a) {
   std::istringstream Blat(a);
   int Z;
@@ -136,8 +138,6 @@ std::string kiwix::urlDecode(const std::string &originalUrl) {
   }
   return url;
 }
-
-#endif
 
 /* Split string in a token array */
 std::vector<std::string> kiwix::split(const std::string & str,
