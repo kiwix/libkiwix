@@ -19,23 +19,6 @@
 
 #include "CTPP2VMStringLoader.hpp"
 
-#include "CTPP2Util.hpp"
-#include "CTPP2Exception.hpp"
-#include "CTPP2VMExecutable.hpp"
-#include "CTPP2VMInstruction.hpp"
-#include "CTPP2VMMemoryCore.hpp"
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <resourceTools.h>
-#include <iostream>
-#include <string>
-
 namespace CTPP // C++ Template Engine
 {
 
