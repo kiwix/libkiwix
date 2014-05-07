@@ -380,6 +380,11 @@ namespace kiwix {
   }
 
   bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
+    std::string stubRedirectUrl;
+    return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, stubRedirectUrl);
+  }
+
+  bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) {
     bool retVal = false;
     content="";
     contentType="";
@@ -411,6 +416,9 @@ namespace kiwix {
 	  article = article.getRedirectArticle();
 	}
 
+	/* Compute base url (might be different from the url if redirects */
+	baseUrl = "/" + std::string(1, article.getNamespace()) + "/" + article.getUrl();
+	
 	/* Get the content mime-type */
 	contentType = string(article.getMimeType().data(), article.getMimeType().size());
 
