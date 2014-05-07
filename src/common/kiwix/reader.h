@@ -62,6 +62,7 @@ namespace kiwix {
     bool getFavicon(string &content, string &mimeType);
     bool getPageUrlFromTitle(const string &title, string &url);
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
+    bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl);
     bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
     bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl);
     bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);

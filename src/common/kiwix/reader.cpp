@@ -375,8 +375,13 @@ namespace kiwix {
     return this->getContentByEncodedUrl(url, content, contentLength, contentType);
   }
 
+  bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) {
+    return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, baseUrl);
+  }
+
   bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
-    return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType);
+    std::string stubRedirectUrl;
+    return this->getContentByEncodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, stubRedirectUrl); 
   }
 
   bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
