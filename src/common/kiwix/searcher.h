@@ -31,6 +31,7 @@
 #include <resourceTools.h>
 #include <pathTools.h>
 #include <stringTools.h>
+#include "unicode/putil.h"
 
 #include <ctpp2/CDT.hpp>
 #include <ctpp2/CTPP2FileLogger.hpp>
