@@ -20,7 +20,23 @@
 #ifndef _CTPP2_VM_STRING_LOADER_HPP__
 #define _CTPP2_VM_STRING_LOADER_HPP__ 1
 
-#include "CTPP2VMLoader.hpp"
+#include "ctpp2/CTPP2VMLoader.hpp"
+#include "ctpp2/CTPP2Util.hpp"
+#include "ctpp2/CTPP2Exception.hpp"
+#include "ctpp2/CTPP2VMExecutable.hpp"
+#include "ctpp2/CTPP2VMInstruction.hpp"
+#include "ctpp2/CTPP2VMMemoryCore.hpp"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <resourceTools.h>
+#include <iostream>
+#include <string>
 
 /**
   @file VMStringLoader.hpp

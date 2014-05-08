@@ -24,10 +24,9 @@
 
 #ifdef __APPLE__
   #include <stdint.h>
-  typedef uint16_t char16_t;
 #endif
 
-#ifdef _WIN32  
+#ifdef _WIN32
   #include <stdlib.h>
 #endif
 

@@ -375,11 +375,21 @@ namespace kiwix {
     return this->getContentByEncodedUrl(url, content, contentLength, contentType);
   }
 
+  bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) {
+    return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, baseUrl);
+  }
+
   bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
-    return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType);
+    std::string stubRedirectUrl;
+    return this->getContentByEncodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, stubRedirectUrl); 
   }
 
   bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
+    std::string stubRedirectUrl;
+    return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, stubRedirectUrl);
+  }
+
+  bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) {
     bool retVal = false;
     content="";
     contentType="";
@@ -411,6 +421,9 @@ namespace kiwix {
 	  article = article.getRedirectArticle();
 	}
 
+	/* Compute base url (might be different from the url if redirects */
+	baseUrl = "/" + std::string(1, article.getNamespace()) + "/" + article.getUrl();
+	
 	/* Get the content mime-type */
 	contentType = string(article.getMimeType().data(), article.getMimeType().size());
 
