@@ -67,7 +67,7 @@ string computeRelativePath(const string path, const string absolutePath) {
   /* On Windows you have a token more because the root is represented
      by a letter */
   if (commonCount == 0) {
-    relativePath = "../"
+    relativePath = "../";
   }
 #endif
 
