@@ -63,6 +63,14 @@ string computeRelativePath(const string path, const string absolutePath) {
   }
   
   string relativePath;
+#ifdef _WIN32
+  /* On Windows you have a token more because the root is represented
+     by a letter */
+  if (commonCount == 0) {
+    relativePath = "../";
+  }
+#endif
+
   for (unsigned int i = commonCount ; i < pathParts.size() ; i++) {
     relativePath += "../";
   }
@@ -83,9 +91,9 @@ string computeAbsolutePath(const string path, const string relativePath) {
     size_t size = 0;
 
 #ifdef _WIN32
-    path = _getcwd(path,size);
+    path = _getcwd(path, size);
 #else
-    path = getcwd(path,size);
+    path = getcwd(path, size);
 #endif
 
     absolutePath = string(path) + SEPARATOR;
@@ -121,7 +129,9 @@ string removeLastPathElement(const string path, const bool removePreSeparator, c
   string newPath = path;
   size_t offset = newPath.find_last_of(SEPARATOR);
   if (removePreSeparator && 
+#ifndef _WIN32
       offset != newPath.find_first_of(SEPARATOR) && 
+#endif
       offset == newPath.length()-1) {
     newPath = newPath.substr(0, offset);
     offset = newPath.find_last_of(SEPARATOR);
