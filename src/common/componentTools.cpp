@@ -30,7 +30,12 @@ const char *nsStringToCString(const nsAString &str) {
 #endif
 
   NS_CStringGetData(tmpStr, &cStr);
+
+#ifdef _WIN32
+  return _strdup(cStr);
+#else
   return strdup(cStr);
+#endif
 }
 
 std::string nsStringToString(const nsEmbedString &str) {
@@ -70,5 +75,10 @@ const char *nsStringToUTF8(const nsAString &str) {
   nsCString tmpStr;
   CopyUTF16toUTF8(str, tmpStr);
   NS_CStringGetData(tmpStr, &cStr);
+
+#ifdef _WIN32
+  return _strdup(cStr);
+#else
   return strdup(cStr);
+#endif
 }
