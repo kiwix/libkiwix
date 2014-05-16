@@ -20,6 +20,10 @@
 #ifndef KIWIX_COMPONENTTOOLS_H
 #define KIWIX_COMPONENTTOOLS_H
 
+#ifdef _WIN32
+  #include <mozilla/Char16.h>
+#endif
+
 #include<string>
 
 #ifdef __APPLE__
