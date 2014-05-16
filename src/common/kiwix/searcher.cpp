@@ -34,16 +34,7 @@ namespace kiwix {
     resultRange(20)
      {
         template_ct2 = getResourceAsString("results.ct2");
-#ifdef __APPLE__
-        string executablePath = getExecutablePath();
-        string executableDirectory = removeLastPathElement(executablePath);
-        string datPath = computeAbsolutePath(executableDirectory, "icudt49l.dat");
-        try {
-            u_setDataDirectory(datPath.c_str());
-        } catch (exception &e) {
-            std::cerr << e.what() << std::endl;
-        }
-#endif
+        loadICUExternalTables();
 
   }
 
