@@ -19,6 +19,20 @@
 
 #include "stringTools.h"
 
+/* tell ICU where to find its dat file (tables) */
+void kiwix::loadICUExternalTables() {
+#ifdef __APPLE__
+    std::string executablePath = getExecutablePath();
+    std::string executableDirectory = removeLastPathElement(executablePath);
+    std::string datPath = computeAbsolutePath(executableDirectory, "icudt49l.dat");
+    try {
+        u_setDataDirectory(datPath.c_str());
+    } catch (exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+#endif
+}
+
 #ifndef __ANDROID__
 
 /* Prepare integer for display */
@@ -37,6 +51,7 @@ std::string kiwix::beautifyInteger(const unsigned int number) {
 }
 
 std::string kiwix::removeAccents(const std::string &text) {
+  loadICUExternalTables();
   ucnv_setDefaultName("UTF-8");
   UErrorCode status = U_ZERO_ERROR;
   Transliterator *removeAccentsTrans = Transliterator::createInstance("Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
@@ -179,7 +194,7 @@ std::string kiwix::ucFirst (const std::string &word) {
   UnicodeString unicodeWord(word.c_str());
   UnicodeString unicodeFirstLetter = UnicodeString(unicodeWord, 0, 1).toUpper();
   unicodeWord.replace(0, 1, unicodeFirstLetter);
-  unicodeWord.toUTF8String(result); 
+  unicodeWord.toUTF8String(result);
 
   return result;
 }

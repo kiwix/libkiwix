@@ -35,6 +35,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <pathTools.h>
+
 namespace kiwix {
 
 #ifndef __ANDROID__
@@ -48,6 +50,7 @@ namespace kiwix {
 
 #endif
 
+  void loadICUExternalTables();
   std::string urlDecode(const std::string &c);
 
   std::vector<std::string> split(const std::string&, const std::string&);
