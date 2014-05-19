@@ -24,6 +24,7 @@
 #include <limits.h>
 #elif _WIN32
 #include <windows.h>
+#include "Shlwapi.h"
 #endif
 
 #ifdef _WIN32
@@ -167,6 +168,9 @@ string getFileSizeAsString(const string &path) {
 }
 
 bool fileExists(const string &path) {
+#ifdef _WIN32
+  return PathFileExists(path.c_str());
+#else
   bool flag = false;
   fstream fin;
   fin.open(path.c_str(), ios::in);
@@ -175,6 +179,7 @@ bool fileExists(const string &path) {
   }
   fin.close();
   return flag;
+#endif
 }
 
 bool makeDirectory(const string &path) {
