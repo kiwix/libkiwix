@@ -206,18 +206,22 @@ bool copyFile(const string &sourcePath, const string &destPath) {
 
 string getExecutablePath() {
   char binRootPath[PATH_MAX];
-
+  
 #ifdef _WIN32
   GetModuleFileName( NULL, binRootPath, PATH_MAX);
+  return std::string(binRootPath);
 #elif __APPLE__
   uint32_t max = (uint32_t)PATH_MAX;
   _NSGetExecutablePath(binRootPath, &max);
+  return std::string(binRootPath);
 #else
-  if (readlink("/proc/self/exe", binRootPath, PATH_MAX) == -1) {
-  };
+  ssize_t size =  readlink("/proc/self/exe", binRootPath, PATH_MAX);
+  if (size != -1) {
+    return std::string(binRootPath, size);
+  }
 #endif
 
-  return std::string(binRootPath);
+  return "";
 }
 
 bool writeTextFile(const string &path, const string &content) {
