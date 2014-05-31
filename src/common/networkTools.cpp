@@ -38,7 +38,7 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
       std::endl;
     return interfaces;
   }
-  
+
   int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
   for (int i = 0; i < nNumInterfaces; ++i) {
     sockaddr_in *pAddress;
@@ -47,7 +47,7 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
     /* Add to the map */
     std::string interfaceName = std::string(inet_ntoa(pAddress->sin_addr));
     std::string interfaceIp = std::string(inet_ntoa(pAddress->sin_addr));
-    interfaces.insert(std::pair<std::string, std::string>(interfaceName, interfaceIp)); 
+    interfaces.insert(std::pair<std::string, std::string>(interfaceName, interfaceIp));
   }
 #else
   /* Get Network interfaces information */
@@ -76,9 +76,9 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
     std::string interfaceIp = std::string(host);
 
     /* Add to the map */
-    interfaces.insert(std::pair<std::string, std::string>(interfaceName, interfaceIp)); 
+    interfaces.insert(std::pair<std::string, std::string>(interfaceName, interfaceIp));
 
-    /* some systems have ifr_addr.sa_len and adjust the length that                                                      
+    /* some systems have ifr_addr.sa_len and adjust the length that
      * way, but not mine. weird */
 #ifndef linux
     len=IFNAMSIZ + ifreq->ifr_addr.sa_len;
@@ -107,17 +107,24 @@ std::string kiwix::getBestPublicIp() {
   }
 #endif
 
-  for(std::map<std::string, std::string>::iterator iter = interfaces.begin(); 
+  for(std::map<std::string, std::string>::iterator iter = interfaces.begin();
       iter != interfaces.end(); ++iter) {
     std::string interfaceIp = iter->second;
     if (interfaceIp.length() >= 7 && interfaceIp.substr(0, 7) == "192.168")
       return interfaceIp;
   }
 
-  for(std::map<std::string, std::string>::iterator iter = interfaces.begin(); 
+  for(std::map<std::string, std::string>::iterator iter = interfaces.begin();
       iter != interfaces.end(); ++iter) {
     std::string interfaceIp = iter->second;
-    if (interfaceIp.length() >= 3 && interfaceIp.substr(0, 3) == "172")
+    if (interfaceIp.length() >= 7 && interfaceIp.substr(0, 7) == "172.16.")
+      return interfaceIp;
+  }
+
+  for(std::map<std::string, std::string>::iterator iter = interfaces.begin();
+      iter != interfaces.end(); ++iter) {
+    std::string interfaceIp = iter->second;
+    if (interfaceIp.length() >= 3 && interfaceIp.substr(0, 3) == "10.")
       return interfaceIp;
   }
 
