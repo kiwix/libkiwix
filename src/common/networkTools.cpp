@@ -65,18 +65,23 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
   int i;
   size_t len;
   struct ifreq *ifreq;
-  ifreq=ifconf.ifc_req;
-  for(i=0;i<ifconf.ifc_len;) {
-    /* Get the network interface name */
-    std::string interfaceName = std::string(ifreq->ifr_name);
-
-    /* Get the network interface ip */
-    char host[128];
-    getnameinfo(&(ifreq->ifr_addr), sizeof ifreq->ifr_addr, host, sizeof host, 0, 0, NI_NUMERICHOST);
-    std::string interfaceIp = std::string(host);
-
-    /* Add to the map */
-    interfaces.insert(std::pair<std::string, std::string>(interfaceName, interfaceIp));
+  ifreq = ifconf.ifc_req;
+  for (i = 0; i < ifconf.ifc_len; ) {
+    if (ifreq->ifr_addr.sa_family == AF_INET) {
+      /* Get the network interface ip */
+      char host[128] = { 0 };
+      const int error = getnameinfo(&(ifreq->ifr_addr), sizeof ifreq->ifr_addr,
+                                    host, sizeof host,
+                                    0, 0, NI_NUMERICHOST);
+      if (!error) {
+        std::string interfaceName = std::string(ifreq->ifr_name);
+        std::string interfaceIp = std::string(host);
+        /* Add to the map */
+        interfaces.insert(std::pair<std::string, std::string>(interfaceName, interfaceIp));
+      } else {
+        perror("getnameinfo()");
+      }
+    }
 
     /* some systems have ifr_addr.sa_len and adjust the length that
      * way, but not mine. weird */
@@ -96,32 +101,32 @@ std::string kiwix::getBestPublicIp() {
   std::map<std::string, std::string> interfaces = kiwix::getNetworkInterfaces();
 
 #ifndef _WIN32
-  if (interfaces.find("eth0") != interfaces.end()) {
-    return interfaces.find("eth0")->second;
-  } else if (interfaces.find("eth1") != interfaces.end()) {
-    return interfaces.find("eth1")->second;
-  } else if (interfaces.find("wlan0") != interfaces.end()) {
-    return interfaces.find("wlan0")->second;
-  } else if (interfaces.find("wlan1") != interfaces.end()) {
-    return interfaces.find("wlan1")->second;
+  const char* const prioritizedNames[] =
+      { "eth0", "eth1", "wlan0", "wlan1", "en0", "en1" };
+  const int count = (sizeof prioritizedNames) / (sizeof prioritizedNames[0]);
+  for (int i = 0; i < count; ++i) {
+    std::map<std::string, std::string>::const_iterator it =
+        interfaces.find(prioritizedNames[i]);
+    if (it != interfaces.end())
+      return it->second;
   }
 #endif
 
-  for(std::map<std::string, std::string>::iterator iter = interfaces.begin();
+  for (std::map<std::string, std::string>::iterator iter = interfaces.begin();
       iter != interfaces.end(); ++iter) {
     std::string interfaceIp = iter->second;
     if (interfaceIp.length() >= 7 && interfaceIp.substr(0, 7) == "192.168")
       return interfaceIp;
   }
 
-  for(std::map<std::string, std::string>::iterator iter = interfaces.begin();
+  for (std::map<std::string, std::string>::iterator iter = interfaces.begin();
       iter != interfaces.end(); ++iter) {
     std::string interfaceIp = iter->second;
     if (interfaceIp.length() >= 7 && interfaceIp.substr(0, 7) == "172.16.")
       return interfaceIp;
   }
 
-  for(std::map<std::string, std::string>::iterator iter = interfaces.begin();
+  for (std::map<std::string, std::string>::iterator iter = interfaces.begin();
       iter != interfaces.end(); ++iter) {
     std::string interfaceIp = iter->second;
     if (interfaceIp.length() >= 3 && interfaceIp.substr(0, 3) == "10.")
