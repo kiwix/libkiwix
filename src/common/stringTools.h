@@ -43,6 +43,7 @@ namespace kiwix {
 
   std::string removeAccents(const std::string &text);
   std::string beautifyInteger(const unsigned int number);
+  std::string beautifyFileSize(const unsigned int number);
   std::string urlEncode(const std::string &c);
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);

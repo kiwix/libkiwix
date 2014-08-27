@@ -50,6 +50,15 @@ std::string kiwix::beautifyInteger(const unsigned int number) {
   return numberString;
 }
 
+std::string kiwix::beautifyFileSize(const unsigned int number) {
+  if (number > 1024*1024) {
+    return kiwix::beautifyInteger(number/(1024*1024)) + " GB";
+  } else {
+    return kiwix::beautifyInteger(number/1024 !=
+				  0 ? number/1024 : 1) + " MB";
+  }
+}
+
 std::string kiwix::removeAccents(const std::string &text) {
   loadICUExternalTables();
   ucnv_setDefaultName("UTF-8");
