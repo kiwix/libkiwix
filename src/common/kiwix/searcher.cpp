@@ -39,21 +39,39 @@ namespace kiwix {
   }
 
   /* Search strings in the database */
-  void Searcher::search(std::string &search, const unsigned int resultStart,
-			const unsigned int resultEnd, const bool verbose) {
+  void Searcher::search(std::string &search, unsigned int resultStart,
+			unsigned int resultEnd, const bool verbose) {
     this->reset();
 
     if (verbose == true) {
       cout << "Performing query `" << search << "'" << endl;
     }
 
-    this->searchPattern = search;
-    this->resultCountPerPage = resultEnd - resultStart;
-    this->resultStart = resultStart;
-    this->resultEnd = resultEnd;
-    string unaccentedSearch = removeAccents(search);
-    searchInIndex(unaccentedSearch, resultStart, resultEnd, verbose);
-    this->resultOffset = this->results.begin();
+    /* If resultEnd & resultStart inverted */
+    if (resultStart > resultEnd) {
+      resultEnd += resultStart;
+      resultStart = resultEnd - resultStart;
+      resultEnd -= resultStart; 
+    }
+
+    /* Try to find results */
+    if (resultStart != resultEnd) {
+
+      /* Avoid big researches */
+      this->resultCountPerPage = resultEnd - resultStart;
+      if (this->resultCountPerPage > 70) {
+	resultEnd = resultStart + 70;
+	this->resultCountPerPage = 70;
+      }
+
+      /* Perform the search */
+      this->searchPattern = search;
+      this->resultStart = resultStart;
+      this->resultEnd = resultEnd;
+      string unaccentedSearch = removeAccents(search);
+      searchInIndex(unaccentedSearch, resultStart, resultEnd, verbose);
+      this->resultOffset = this->results.begin();
+    }
 
     return;
   }
