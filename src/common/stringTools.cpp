@@ -208,6 +208,18 @@ std::string kiwix::ucFirst (const std::string &word) {
   return result;
 }
 
+std::string kiwix::ucAll (const std::string &word) {
+  if (word.empty())
+    return "";
+
+  std::string result;
+
+  UnicodeString unicodeWord(word.c_str());
+  unicodeWord.toUpper().toUTF8String(result);
+
+  return result;
+}
+
 std::string kiwix::lcFirst (const std::string &word) {
   if (word.empty())
     return "";
@@ -222,6 +234,17 @@ std::string kiwix::lcFirst (const std::string &word) {
   return result;
 }
 
+std::string kiwix::lcAll (const std::string &word) {
+  if (word.empty())
+    return "";
+
+  std::string result;
+
+  UnicodeString unicodeWord(word.c_str());
+  unicodeWord.toLower().toUTF8String(result);
+
+  return result;
+}
 
 std::string kiwix::toTitle (const std::string &word) {
   if (word.empty())

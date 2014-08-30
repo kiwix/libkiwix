@@ -59,6 +59,8 @@ namespace kiwix {
   std::vector<std::string> split(const std::string&, const char*);
   std::vector<std::string> split(const char*, const std::string&);
 
+  std::string ucAll(const std::string &word);
+  std::string lcAll(const std::string &word);
   std::string ucFirst(const std::string &word);
   std::string lcFirst(const std::string &word);
   std::string toTitle(const std::string &word);
