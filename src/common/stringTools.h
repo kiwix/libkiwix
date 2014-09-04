@@ -43,6 +43,7 @@ namespace kiwix {
 
   std::string removeAccents(const std::string &text);
   std::string beautifyInteger(const unsigned int number);
+  std::string beautifyFileSize(const unsigned int number);
   std::string urlEncode(const std::string &c);
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);
@@ -58,6 +59,8 @@ namespace kiwix {
   std::vector<std::string> split(const std::string&, const char*);
   std::vector<std::string> split(const char*, const std::string&);
 
+  std::string ucAll(const std::string &word);
+  std::string lcAll(const std::string &word);
   std::string ucFirst(const std::string &word);
   std::string lcFirst(const std::string &word);
   std::string toTitle(const std::string &word);

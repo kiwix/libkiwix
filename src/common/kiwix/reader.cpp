@@ -503,24 +503,26 @@ namespace kiwix {
     return retVal;
   }
 
+  std::vector<std::string> Reader::getTitleVariants(const std::string &title) {
+    std::vector<std::string> variants;
+    variants.push_back(title);
+    variants.push_back(kiwix::ucFirst(title));
+    variants.push_back(kiwix::lcFirst(title));
+    variants.push_back(kiwix::toTitle(title));
+    return variants;
+  }
+
   /* Try also a few variations of the prefix to have better results */
   bool Reader::searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount) {
-    std::string myPrefix = prefix;
-
-    /* Normal suggestion request */
-    bool retVal = this->searchSuggestions(prefix, suggestionsCount, true);
-
-    /* Try with first letter uppercase */
-    myPrefix = kiwix::ucFirst(myPrefix);
-    this->searchSuggestions(myPrefix, suggestionsCount, false);
-
-    /* Try with first letter lowercase */
-    myPrefix = kiwix::lcFirst(myPrefix);
-    this->searchSuggestions(myPrefix, suggestionsCount, false);
-
-    /* Try with title words */
-    myPrefix = kiwix::toTitle(myPrefix);
-    this->searchSuggestions(myPrefix, suggestionsCount, false);
+    std::vector<std::string> variants = this->getTitleVariants(prefix);
+    bool retVal;
+    
+    this->suggestions.clear();
+    for (std::vector<std::string>::iterator variantsItr = variants.begin();
+	 variantsItr != variants.end();
+	 variantsItr++) {
+      retVal = this->searchSuggestions(*variantsItr, suggestionsCount, false) || retVal;
+    }
 
     return retVal;
   }

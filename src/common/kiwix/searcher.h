@@ -59,8 +59,8 @@ namespace kiwix {
   public:
     Searcher();
 
-    void search(std::string &search, const unsigned int resultStart,
-		const unsigned int resultEnd, const bool verbose=false);
+    void search(std::string &search, unsigned int resultStart,
+		unsigned int resultEnd, const bool verbose=false);
     bool getNextResult(string &url, string &title, unsigned int &score);
     unsigned int getEstimatedResultCount();
     bool setProtocolPrefix(const std::string prefix);

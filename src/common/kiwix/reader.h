@@ -68,6 +68,7 @@ namespace kiwix {
     bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
     bool searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset = true);
     bool searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount);
+    std::vector<std::string> getTitleVariants(const std::string &title);
     bool getNextSuggestion(string &title);
     bool canCheckIntegrity();
     bool isCorrupted();
