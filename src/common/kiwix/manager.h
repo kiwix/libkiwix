@@ -54,6 +54,7 @@ namespace kiwix {
     bool setCurrentBookId(const string id);
     string getCurrentBookId();
     bool setBookIndex(const string id, const string path, const supportedIndexType type);
+    bool setBookIndex(const string id, const string path);
     bool setBookPath(const string id, const string path);
     string addBookFromPathAndGetId(const string pathToOpen, const string pathToSave = "", const string url = "",
 				   const bool checkMetaData = false);

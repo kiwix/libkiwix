@@ -427,6 +427,10 @@ namespace kiwix {
     return false;
   }
 
+  bool Manager::setBookIndex(const string id, const string path) {
+    return this->setBookIndex(id, path, XAPIAN);
+  }
+
   bool Manager::setBookPath(const string id, const string path) {
     std::vector<kiwix::Book>::iterator itr;
     for ( itr = library.books.begin(); itr != library.books.end(); ++itr ) {
