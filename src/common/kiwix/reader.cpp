@@ -421,14 +421,21 @@ namespace kiwix {
 	  article = article.getRedirectArticle();
 	}
 
-	/* Compute base url (might be different from the url if redirects */
-	baseUrl = "/" + std::string(1, article.getNamespace()) + "/" + article.getUrl();
-	
-	/* Get the content mime-type */
-	contentType = string(article.getMimeType().data(), article.getMimeType().size());
+	if (loopCounter < 42) {
+	  /* Compute base url (might be different from the url if redirects */
+	  baseUrl = "/" + std::string(1, article.getNamespace()) + "/" + article.getUrl();
+	  
+	  /* Get the content mime-type */
+	  try {
+	    contentType = string(article.getMimeType().data(), article.getMimeType().size());
+	  } catch (exception &e) {
+	    cerr << "Unable to get the mimetype for "<< baseUrl<< ":" << e.what() << endl;
+	    contentType = "application/octet-stream";
+	  }
 
-	/* Get the data */
-	content = string(article.getData().data(), article.getArticleSize());
+	  /* Get the data */
+	  content = string(article.getData().data(), article.getArticleSize());
+	}
 
 	/* Try to set a stub HTML header/footer if necesssary */
 	if (contentType.find("text/html") != string::npos && 
