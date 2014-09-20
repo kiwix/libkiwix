@@ -512,7 +512,8 @@ namespace kiwix {
 	if (ok == true && !publisher.empty() && itr->publisher != publisher)
 	  ok = false;
 
-	if ((ok == true && !search.empty()) && !(matchRegex(itr->title, search) || matchRegex(itr->description, search)))
+	if ((ok == true && !search.empty()) && !(matchRegex(itr->title, "\\Q" + search + "\\E") || 
+						 matchRegex(itr->description,  "\\Q" + search + "\\E")))
 	  ok = false;
 
 	if (ok == true) {
