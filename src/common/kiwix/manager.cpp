@@ -513,7 +513,9 @@ namespace kiwix {
 	  ok = false;
 
 	if ((ok == true && !search.empty()) && !(matchRegex(itr->title, "\\Q" + search + "\\E") || 
-						 matchRegex(itr->description,  "\\Q" + search + "\\E")))
+						 matchRegex(itr->description,  "\\Q" + search + "\\E") ||
+						 matchRegex(itr->language,  "\\Q" + search + "\\E")
+						 ))
 	  ok = false;
 
 	if (ok == true) {
