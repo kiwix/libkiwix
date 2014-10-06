@@ -33,8 +33,6 @@ void kiwix::loadICUExternalTables() {
 #endif
 }
 
-#ifndef __ANDROID__
-
 /* Prepare integer for display */
 std::string kiwix::beautifyInteger(const unsigned int number) {
   std::stringstream numberStream;
@@ -142,8 +140,6 @@ std::string kiwix::urlEncode(const std::string &c) {
     }
   return escaped;
 }
-
-#endif
 
 static char charFromHex(std::string a) {
   std::istringstream Blat(a);
