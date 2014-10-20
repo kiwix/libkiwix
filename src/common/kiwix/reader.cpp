@@ -196,9 +196,15 @@ namespace kiwix {
 
   /* Return an URL from a title*/
   string Reader::getRandomPageUrl() {
-    zim::size_type idx = this->firstArticleOffset +
-      (zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->nsACount);
-    zim::Article article = zimFileHandler->getArticle(idx);
+    zim::Article article;
+    zim::size_type idx;
+    std::string mainPageUrl = this->getMainPageUrl();
+    
+    do {
+      idx = this->firstArticleOffset +
+	(zim::size_type)((double)rand() / ((double)RAND_MAX + 1) * this->nsACount);
+      article = zimFileHandler->getArticle(idx);
+    } while (article.getLongUrl() == mainPageUrl);
 
     return article.getLongUrl().c_str();
   }
