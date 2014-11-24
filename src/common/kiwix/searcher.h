@@ -87,7 +87,6 @@ namespace kiwix {
     unsigned int resultStart;
     unsigned int resultEnd;
     std::string contentHumanReadableId;
-    unsigned int resultRange;
   };
 
 }

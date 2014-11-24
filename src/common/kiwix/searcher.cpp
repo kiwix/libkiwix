@@ -30,12 +30,11 @@ namespace kiwix {
     resultCountPerPage(0),
     estimatedResultCount(0),
     resultStart(0),
-    resultEnd(0),
-    resultRange(20)
-     {
-        template_ct2 = getResourceAsString("results.ct2");
-        loadICUExternalTables();
-
+    resultEnd(0)
+  {
+    template_ct2 = getResourceAsString("results.ct2");
+    loadICUExternalTables();
+    
   }
 
   /* Search strings in the database */
@@ -159,8 +158,8 @@ namespace kiwix {
     CDT pagesCDT(CDT::ARRAY_VAL);
 
     unsigned int pageStart = this->resultStart / this->resultCountPerPage >= 5 ? this->resultStart / this->resultCountPerPage - 4 : 0;
-
     unsigned int pageCount = this->estimatedResultCount / this->resultCountPerPage + 1 - pageStart;
+
     if (pageCount > 10)
       pageCount = 10;
     else if (pageCount == 1)
@@ -184,8 +183,8 @@ namespace kiwix {
     oData["searchPatternEncoded"] = urlEncode(this->searchPattern);
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);
-    oData["resultRange"] = this->resultRange;
-    oData["resultLastPageStart"] = this->estimatedResultCount > this->resultRange ? this->estimatedResultCount - this->resultRange : 0;
+    oData["resultRange"] = this->resultCountPerPage;
+    oData["resultLastPageStart"] = this->estimatedResultCount > this->resultCountPerPage ? this->estimatedResultCount - this->resultCountPerPage : 0;
     oData["protocolPrefix"] = this->protocolPrefix;
     oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
     oData["contentId"] = this->contentHumanReadableId;
