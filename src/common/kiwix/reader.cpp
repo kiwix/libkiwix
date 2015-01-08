@@ -376,6 +376,60 @@ namespace kiwix {
     return true;
   }
 
+  /* Return article by url */
+  bool Reader::getArticleObjectByDecodedUrl(const string &url, zim::Article &article) {
+    bool retVal = false;
+    
+    if (this->zimFileHandler != NULL) {
+      
+      /* Parse the url */
+      char ns = 0;
+      string titleStr;
+      this->parseUrl(url, &ns, titleStr);
+      
+      /* Main page */
+      if (titleStr.empty() && ns == 0) {
+	this->parseUrl(this->getMainPageUrl(), &ns, titleStr);
+      }
+      
+      /* Extract the content from the zim file */
+      std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns, titleStr);
+      
+      /* Test if the article was found */
+      if (resultPair.first == true) {
+	article = zimFileHandler->getArticle(resultPair.second.getIndex());
+	retVal = true;
+      }
+
+    }
+    
+    return retVal;
+  }
+
+  /* Return the mimeType without the content */
+  bool Reader::getMimeTypeByUrl(const string &url, string &mimeType) {
+    bool retVal = false;
+
+    if (this->zimFileHandler != NULL) {
+
+      zim::Article article;
+      if (this->getArticleObjectByDecodedUrl(url, article)) {
+	  try {
+	    mimeType = string(article.getMimeType().data(), article.getMimeType().size());
+	  } catch (exception &e) {
+	    cerr << "Unable to get the mimetype for "<< url << ":" << e.what() << endl;
+	    mimeType = "application/octet-stream";
+	  }	
+	  retVal = true;
+      } else {
+	mimeType = "";
+      }
+     
+    }
+
+    return retVal;
+  }
+
   /* Get a content from a zim file */
   bool Reader::getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
     return this->getContentByEncodedUrl(url, content, contentLength, contentType);
@@ -402,25 +456,9 @@ namespace kiwix {
     contentLength = 0;
     if (this->zimFileHandler != NULL) {
 
-      /* Parse the url */
-      char ns = 0;
-      string titleStr;
-      this->parseUrl(url, &ns, titleStr);
-
-      /* Main page */
-      if (titleStr.empty() && ns == 0) {
-	this->parseUrl(this->getMainPageUrl(), &ns, titleStr);
-      }
-
-      /* Extract the content from the zim file */
-      std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns, titleStr);
-
-      /* Test if the article was found */
-      if (resultPair.first == true) {
-
-	/* Get the article */
-	zim::Article article = zimFileHandler->getArticle(resultPair.second.getIndex());
-
+      zim::Article article;
+      if (this->getArticleObjectByDecodedUrl(url, article)) {
+	
 	/* If redirect */
 	unsigned int loopCounter = 0;
 	while (article.isRedirect() && loopCounter++<42) {

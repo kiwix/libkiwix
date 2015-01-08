@@ -104,6 +104,14 @@ void kiwix::stringReplacement(std::string& str, const std::string& oldStr, const
   }
 }
 
+/* Encode string to avoid XSS attacks */
+std::string kiwix::encodeDiples(const std::string& str) {
+  std::string result = str;
+  kiwix::stringReplacement(result, "<", "&lt;");
+  kiwix::stringReplacement(result, ">", "&gt;");
+  return result;
+}
+
 // Urlencode
 //based on javascript encodeURIComponent()
 

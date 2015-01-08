@@ -61,6 +61,7 @@ namespace kiwix {
     string getOrigId();
     bool getFavicon(string &content, string &mimeType);
     bool getPageUrlFromTitle(const string &title, string &url);
+    bool getMimeTypeByUrl(const string &url, string &mimeType);
     bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
     bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl);
     bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
@@ -89,7 +90,7 @@ namespace kiwix {
 
   private:
     std::map<std::string, unsigned int> parseCounterMetadata();
-
+    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article);
   };
 
 }
