@@ -180,7 +180,7 @@ namespace kiwix {
     oData["pages"] = pagesCDT;
 
     oData["count"] = kiwix::beautifyInteger(this->estimatedResultCount);
-    oData["searchPattern"] = this->searchPattern;
+    oData["searchPattern"] = kiwix::encodeDiples(this->searchPattern);
     oData["searchPatternEncoded"] = urlEncode(this->searchPattern);
     oData["resultStart"] = this->resultStart + 1;
     oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount ? this->estimatedResultCount : this->resultEnd);

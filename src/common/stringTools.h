@@ -48,6 +48,7 @@ namespace kiwix {
   void printStringInHexadecimal(const char *s);
   void printStringInHexadecimal(UnicodeString s);
   void stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr);
+  std::string encodeDiples(const std::string& str);
 
 #endif
 
