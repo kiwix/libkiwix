@@ -191,11 +191,18 @@ bool makeDirectory(const string &path) {
   return status == 0;
 }
 
+/* Try to create a link and if does not work then make a copy */
 bool copyFile(const string &sourcePath, const string &destPath) {
   try {
-    std::ifstream infile(sourcePath.c_str(), std::ios_base::binary);
-    std::ofstream outfile(destPath.c_str(), std::ios_base::binary);
-    outfile << infile.rdbuf();
+#ifndef _WIN32
+    if (link(sourcePath.c_str(), destPath.c_str())) {
+#endif
+	std::ifstream infile(sourcePath.c_str(), std::ios_base::binary);
+	std::ofstream outfile(destPath.c_str(), std::ios_base::binary);
+	outfile << infile.rdbuf();
+#ifndef _WIN32
+    }
+#endif
   } catch (exception &e) {
     cerr << e.what() << endl;
     return false;
