@@ -195,7 +195,7 @@ bool makeDirectory(const string &path) {
 bool copyFile(const string &sourcePath, const string &destPath) {
   try {
 #ifndef _WIN32
-    if (link(sourcePath.c_str(), destPath.c_str())) {
+    if (link(sourcePath.c_str(), destPath.c_str()) != 0) {
 #endif
 	std::ifstream infile(sourcePath.c_str(), std::ios_base::binary);
 	std::ofstream outfile(destPath.c_str(), std::ios_base::binary);
