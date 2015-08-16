@@ -268,5 +268,5 @@ std::string kiwix::toTitle (const std::string &word) {
 }
 
 std::string kiwix::normalize (const std::string &word) {
-  return kiwix::removeAccents(kiwix::lcAll(word));
+  return kiwix::lcAll(word);
 }

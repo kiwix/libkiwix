@@ -540,7 +540,7 @@ namespace kiwix {
 	 article is already in the suggestions list (with an other
 	 title) */
       bool insert = true;
-      std::vector<std::vector<std::string>>::iterator suggestionItr;
+      std::vector< std::vector<std::string> >::iterator suggestionItr;
       for (suggestionItr = this->suggestions.begin(); suggestionItr != this->suggestions.end(); suggestionItr++) {
 	int result = normalizedArticleTitle.compare((*suggestionItr)[2]);
 	if (result == 0 && articleFinalUrl.compare((*suggestionItr)[1]) == 0) {

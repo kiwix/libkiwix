@@ -86,8 +86,8 @@ namespace kiwix {
     zim::size_type nsACount;
     zim::size_type nsICount;
 
-    std::vector<std::vector<std::string>> suggestions;
-    std::vector<std::vector<std::string>>::iterator suggestionsOffset;
+    std::vector< std::vector<std::string> > suggestions;
+    std::vector< std::vector<std::string> >::iterator suggestionsOffset;
 
   private:
     std::map<std::string, unsigned int> parseCounterMetadata();
