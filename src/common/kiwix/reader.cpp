@@ -507,6 +507,7 @@ namespace kiwix {
     /* Reset the suggestions otherwise check if the suggestions number is less than the suggestionsCount */
     if (reset) {
       this->suggestions.clear();
+      this->suggestionsOffset = this->suggestions.begin();
     } else {
       if (this->suggestions.size() > suggestionsCount) {
 	return false;
@@ -581,6 +582,7 @@ namespace kiwix {
     bool retVal;
     
     this->suggestions.clear();
+    this->suggestionsOffset = this->suggestions.begin();
     for (std::vector<std::string>::iterator variantsItr = variants.begin();
 	 variantsItr != variants.end();
 	 variantsItr++) {
