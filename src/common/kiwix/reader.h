@@ -71,6 +71,7 @@ namespace kiwix {
     bool searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount);
     std::vector<std::string> getTitleVariants(const std::string &title);
     bool getNextSuggestion(string &title);
+    bool getNextSuggestion(string &title, string &url);
     bool canCheckIntegrity();
     bool isCorrupted();
     bool parseUrl(const string &url, char *ns, string &title);
@@ -85,8 +86,8 @@ namespace kiwix {
     zim::size_type nsACount;
     zim::size_type nsICount;
 
-    std::vector<std::string> suggestions;
-    std::vector<std::string>::iterator suggestionsOffset;
+    std::vector<std::vector<std::string>> suggestions;
+    std::vector<std::vector<std::string>>::iterator suggestionsOffset;
 
   private:
     std::map<std::string, unsigned int> parseCounterMetadata();

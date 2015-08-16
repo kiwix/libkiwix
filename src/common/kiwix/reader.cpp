@@ -503,8 +503,6 @@ namespace kiwix {
   bool Reader::searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset) {
     bool retVal = false;
     zim::File::const_iterator articleItr;
-    std::vector<std::string>::iterator suggestionItr;
-    int result;
 
     /* Reset the suggestions otherwise check if the suggestions number is less than the suggestionsCount */
     if (reset) {
@@ -515,37 +513,51 @@ namespace kiwix {
       }
     }
 
-    if (prefix.size()) {
-      for (articleItr = zimFileHandler->findByTitle('A', prefix);
-	   articleItr != zimFileHandler->end() &&
-	     articleItr->getTitle().compare(0, prefix.size(), prefix) == 0 &&
-	     this->suggestions.size() < suggestionsCount ;
-	   ++articleItr) {
+    /* Return if no prefix */
+    if (prefix.size() == 0) {
+      return false;
+    }
 
-	  if (this->suggestions.size() == 0) {
-	    this->suggestions.push_back(articleItr->getTitle());
-	  } else if (this->suggestions.size() < suggestionsCount) {
-	    for (suggestionItr = this->suggestions.begin() ;
-		 suggestionItr != this->suggestions.end();
-		 ++suggestionItr) {
+    for (articleItr = zimFileHandler->findByTitle('A', prefix);
+	 articleItr != zimFileHandler->end() &&
+	   articleItr->getTitle().compare(0, prefix.size(), prefix) == 0 &&
+	   this->suggestions.size() < suggestionsCount ;
+	 ++articleItr) {
 
-	      result = articleItr->getTitle().compare(*suggestionItr);
-	      if (result < 0) {
-		this->suggestions.insert(suggestionItr, articleItr->getTitle());
-		break;
-	      } else if (result == 0) {
-		break;
-	      }
-	    }
-
-	    if (suggestionItr == this->suggestions.end()) {
-	      this->suggestions.push_back(articleItr->getTitle());
-	    }
-	  }
-
-	  /* Suggestions where found */
-	  retVal = true;
+      /* Extract the interesting part of article title & url */
+      std::string normalizedArticleTitle = kiwix::normalize(articleItr->getTitle());
+      std::string articleFinalUrl = "/A/"+articleItr->getUrl();
+      if (articleItr->isRedirect()) {
+	zim::Article article = *articleItr;
+	unsigned int loopCounter = 0;
+	while (article.isRedirect() && loopCounter++<42) {
+	  article = article.getRedirectArticle();
+	}
+	articleFinalUrl = "/A/"+article.getUrl();
       }
+
+      /* Go through all already found suggestions and skip if this
+	 article is already in the suggestions list (with an other
+	 title) */
+      bool insert = true;
+      std::vector<std::vector<std::string>>::iterator suggestionItr;
+      for (suggestionItr = this->suggestions.begin(); suggestionItr != this->suggestions.end(); suggestionItr++) {
+	int result = normalizedArticleTitle.compare((*suggestionItr)[2]);
+	if (result == 0 && articleFinalUrl.compare((*suggestionItr)[1]) == 0) {
+	  insert = false;
+	  break;
+	} else if (result < 0) {
+	  break;
+	}
+      }
+
+      /* Insert if possible */
+      if (insert) {
+	this->suggestions.insert(suggestionItr, std::vector<std::string>{articleItr->getTitle(), articleFinalUrl, normalizedArticleTitle});
+      }
+
+      /* Suggestions where found */
+      retVal = true;
     }
 
     /* Set the cursor to the begining */
@@ -582,7 +594,22 @@ namespace kiwix {
   bool Reader::getNextSuggestion(string &title) {
     if (this->suggestionsOffset != this->suggestions.end()) {
       /* title */
-      title = *(this->suggestionsOffset);
+      title = (*(this->suggestionsOffset))[0];
+
+      /* increment the cursor for the next call */
+      this->suggestionsOffset++;
+
+      return true;
+    }
+
+    return false;
+  }
+
+  bool Reader::getNextSuggestion(string &title, string &url) {
+    if (this->suggestionsOffset != this->suggestions.end()) {
+      /* title */
+      title = (*(this->suggestionsOffset))[0];
+      url = (*(this->suggestionsOffset))[1];
 
       /* increment the cursor for the next call */
       this->suggestionsOffset++;
