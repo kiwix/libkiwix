@@ -554,7 +554,11 @@ namespace kiwix {
 
       /* Insert if possible */
       if (insert) {
-	this->suggestions.insert(suggestionItr, std::vector<std::string>{articleItr->getTitle(), articleFinalUrl, normalizedArticleTitle});
+	std::vector<std::string> suggestion;
+	suggestion.push_back(articleItr->getTitle());
+	suggestion.push_back(articleFinalUrl);
+	suggestion.push_back(normalizedArticleTitle);
+	this->suggestions.insert(suggestionItr, suggestion);
       }
 
       /* Suggestions where found */
