@@ -24,7 +24,6 @@
 #include <unicode/normlzr.h>
 #include <unicode/unistr.h>
 #include <unicode/rep.h>
-#include <unicode/translit.h>
 #include <unicode/uniset.h>
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
