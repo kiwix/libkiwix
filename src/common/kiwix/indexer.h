@@ -54,12 +54,14 @@ namespace kiwix {
   };
   
   class Indexer {
-    
+      
+  typedef void (* ProgressCallback)(const unsigned int processedArticleCount, const unsigned int totalArticleCount);
+      
   public:
     Indexer();
     virtual ~Indexer();
 
-    bool start(const string zimPath, const string indexPath);
+    bool start(const string zimPath, const string indexPath, ProgressCallback callback = NULL);
     bool stop();
     bool isRunning();
     unsigned int getProgression();
@@ -97,6 +99,7 @@ namespace kiwix {
     bool verboseFlag;
 
   private:
+    ProgressCallback progressCallback;
     pthread_mutex_t threadIdsMutex;
 
     /* Article extraction */

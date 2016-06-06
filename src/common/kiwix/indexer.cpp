@@ -80,7 +80,7 @@ namespace kiwix {
 
     /* Get the number of article to index and the ZIM id */
     kiwix::Reader reader(self->getZimPath());
-    unsigned int articleCount = reader.getGlobalCount();
+    unsigned int articleCount = reader.getArticleCount();
     self->setArticleCount(articleCount);
     string zimId = reader.getId();
     self->setZimId(zimId);
@@ -101,25 +101,33 @@ namespace kiwix {
     zim::Article currentArticle;
 
     while (currentOffset < lastOffset) {
+      if (self->getVerboseFlag()) {
+        std::cout << "currentOffset:" << currentOffset << " lastOffset:" << lastOffset
+          << " readArticleCount:" << readArticleCount << " totalArticleCount:" << articleCount <<std::endl;
+      }
+        
       currentArticle = zimHandler->getArticle(currentOffset);
       
       if (!currentArticle.isRedirect()) {
-	/* Add articles to the queue */
-	indexerToken token;
-	token.title = currentArticle.getTitle();
-	token.url = currentArticle.getLongUrl();
-	token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
-	self->pushToParseQueue(token);
+	    /* Add articles to the queue */
+	    indexerToken token;
+        token.title = currentArticle.getTitle();
+        token.url = currentArticle.getLongUrl();
+        token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
+        self->pushToParseQueue(token);
+        readArticleCount += 1;
+        if (self->progressCallback) {
+            self->progressCallback(readArticleCount, articleCount);
+        }
       }
-
-      readArticleCount += 1;
+        
       currentOffset += 1;
 
       /* Update the progression counter (in percent) */
       tmpProgression = (unsigned int)((float)readArticleCount/(float)articleCount*100 - 1);
       if (tmpProgression > currentProgression) {
-	currentProgression = tmpProgression;
-	self->setProgression(currentProgression);
+        currentProgression = tmpProgression;
+        self->setProgression(currentProgression);
       }
 
       /* Test if the thread should be cancelled */
@@ -414,9 +422,13 @@ namespace kiwix {
   }
 
   /* Manage */
-  bool Indexer::start(const string zimPath, const string indexPath) {
+  bool Indexer::start(const string zimPath, const string indexPath, ProgressCallback callback) {
     if (this->getVerboseFlag()) {
       std::cout << "Indexing of '" << zimPath << "' starting..." <<std::endl;
+    }
+    
+    if (callback) {
+        this->progressCallback = callback;
     }
 
     this->setArticleCount(0);
