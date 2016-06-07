@@ -71,8 +71,14 @@ namespace kiwix {
     while (getline(file, stopWord, '\n')) {
       this->stopWords.push_back(stopWord);
     }
+    
+    if (this->verboseFlag) {
+      std::cout << "Read stop words, lang code:" << languageCode << ", count:" << this->stopWords.size() << std::endl;
+    }
   }
-
+  
+#pragma mark - Extractor
+  
   /* Article extractor methods */
   void *Indexer::extractArticles(void *ptr) {
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
@@ -89,7 +95,7 @@ namespace kiwix {
     unsigned int readArticleCount = 0;
     unsigned int currentProgression = 0;
     self->setProgression(currentProgression);
-    unsigned int tmpProgression;
+    unsigned int newProgress;
 
     /* StopWords */
     self->readStopWords(reader.getLanguage());
@@ -101,34 +107,33 @@ namespace kiwix {
     zim::Article currentArticle;
 
     while (currentOffset < lastOffset) {
-      if (self->getVerboseFlag()) {
-        std::cout << "currentOffset:" << currentOffset << " lastOffset:" << lastOffset
-          << " readArticleCount:" << readArticleCount << " totalArticleCount:" << articleCount <<std::endl;
-      }
-        
+//      if (self->getVerboseFlag()) {
+//        std::cout << "currentOffset:" << currentOffset << " lastOffset:" << lastOffset
+//          << " readArticleCount:" << readArticleCount << " totalArticleCount:" << articleCount <<std::endl;
+//      }
+      
       currentArticle = zimHandler->getArticle(currentOffset);
       
       if (!currentArticle.isRedirect()) {
-	    /* Add articles to the queue */
-	    indexerToken token;
+        /* Add articles to the queue */
+        indexerToken token;
         token.title = currentArticle.getTitle();
         token.url = currentArticle.getLongUrl();
         token.content = string(currentArticle.getData().data(), currentArticle.getData().size());
         self->pushToParseQueue(token);
         readArticleCount += 1;
+        
+        /* Update progress */
         if (self->progressCallback) {
             self->progressCallback(readArticleCount, articleCount);
+        }
+        newProgress = (unsigned int)((float)readArticleCount / (float)articleCount * 100);
+        if (newProgress != currentProgression) {
+          self->setProgression(newProgress);
         }
       }
         
       currentOffset += 1;
-
-      /* Update the progression counter (in percent) */
-      tmpProgression = (unsigned int)((float)readArticleCount/(float)articleCount*100 - 1);
-      if (tmpProgression > currentProgression) {
-        currentProgression = tmpProgression;
-        self->setProgression(currentProgression);
-      }
 
       /* Test if the thread should be cancelled */
       pthread_testcancel();
@@ -151,6 +156,8 @@ namespace kiwix {
     pthread_mutex_unlock(&articleExtractorRunningMutex); 
     return retVal;
   }
+  
+#pragma mark - Parser
   
   /* Article parser methods */
   void *Indexer::parseArticles(void *ptr) {
@@ -223,6 +230,8 @@ namespace kiwix {
     pthread_mutex_unlock(&articleParserRunningMutex); 
     return retVal;
   }
+  
+#pragma mark - Indexer
 
   /* Article indexer methods */
   void *Indexer::indexArticles(void *ptr) {
@@ -280,6 +289,8 @@ namespace kiwix {
     pthread_mutex_unlock(&articleIndexerRunningMutex); 
     return retVal;
   }
+  
+#pragma mark - Parse Queue
 
   /* ToParseQueue methods */
   bool Indexer::isToParseQueueEmpty() {
@@ -317,6 +328,8 @@ namespace kiwix {
 
     return true;
   }
+  
+#pragma mark - Index Queue
 
   /* ToIndexQueue methods */
   bool Indexer::isToIndexQueueEmpty() {
@@ -354,6 +367,8 @@ namespace kiwix {
 
     return true;
   }
+  
+#pragma mark - Properties Getter & Setter
 
   /* ZIM & Index methods */
   void Indexer::setZimPath(const string path) {
@@ -420,6 +435,8 @@ namespace kiwix {
     pthread_mutex_unlock(&zimIdMutex);
     return retVal;
   }
+  
+#pragma mark - Status Management
 
   /* Manage */
   bool Indexer::start(const string zimPath, const string indexPath, ProgressCallback callback) {
@@ -493,6 +510,8 @@ namespace kiwix {
 
     return true;
   }
+  
+#pragma mark - verbose
 
   /* Manage the verboseFlag */
   void Indexer::setVerboseFlag(const bool value) {

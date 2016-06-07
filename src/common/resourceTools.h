@@ -39180,7 +39180,8 @@ const unsigned char server_include_html_part[]={
 
 static std::map<std::string, std::pair<const unsigned char*, unsigned int> > createResourceMap() { 
 	std::map<std::string, std::pair<const unsigned char*, unsigned int> > m; 
-	m["stopwords/en"] = std::pair <const unsigned char*, unsigned int>(stopwords_en, sizeof stopwords_en); 
+	m["stopwords/en"] = std::pair <const unsigned char*, unsigned int>(stopwords_en, sizeof stopwords_en);
+    m["stopwords/eng"] = std::pair <const unsigned char*, unsigned int>(stopwords_en, sizeof stopwords_en);
 	m["stopwords/fra"] = std::pair <const unsigned char*, unsigned int>(stopwords_fra, sizeof stopwords_fra); 
 	m["stopwords/he"] = std::pair <const unsigned char*, unsigned int>(stopwords_he, sizeof stopwords_he); 
 	m["results.tmpl"] = std::pair <const unsigned char*, unsigned int>(results_tmpl, sizeof results_tmpl); 
