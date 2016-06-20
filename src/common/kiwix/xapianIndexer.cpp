@@ -30,7 +30,7 @@ namespace kiwix {
   }
 
   void XapianIndexer::indexingPrelude(const string indexPath) {
-    this->writableDatabase = Xapian::WritableDatabase(indexPath, Xapian::DB_CREATE_OR_OVERWRITE);
+    this->writableDatabase = Xapian::WritableDatabase(indexPath+".tmp", Xapian::DB_CREATE_OR_OVERWRITE | Xapian::DB_BACKEND_GLASS);
     this->writableDatabase.begin_transaction(true);
 
     /* Insert the stopwords */
@@ -87,14 +87,25 @@ namespace kiwix {
     this->writableDatabase.begin_transaction(true);
   }
 
-  void XapianIndexer::indexingPostlude() {
+  void XapianIndexer::indexingPostlude(const string indexPath) {
     this->flush();
     this->writableDatabase.commit_transaction();
-    #ifdef _WIN32
-      this->writableDatabase.close();
-    #endif
-
-    // commit is not available is old version of xapian and seems not mandatory there
-    // this->writableDatabase.commit();
+#ifdef _WIN32
+    this->writableDatabase.close();
+#endif
+    
+    /* Compacting the index */
+    Xapian::Compactor compactor;
+    try {
+      Xapian::Database src;
+      src.add_database(Xapian::Database(indexPath+".tmp"));
+      src.compact(indexPath, Xapian::Compactor::FULL | Xapian::DBCOMPACT_SINGLE_FILE, 0, compactor);
+    } catch (const Xapian::Error &error) {
+      cerr << indexPath << ": " << error.get_description() << endl;
+      exit(1);
+    } catch (const char * msg) {
+      cerr << indexPath << ": " << msg << endl;
+      exit(1);
+    }
   }
 }

@@ -43,7 +43,7 @@ namespace kiwix {
 	       const string &size,
 	       const string &wordCount);
     void flush();
-    void indexingPostlude();
+    void indexingPostlude(const string indexPath);
     
     Xapian::WritableDatabase writableDatabase;
     Xapian::Stem stemmer;
