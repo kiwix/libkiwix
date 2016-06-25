@@ -76,7 +76,7 @@ namespace kiwix {
 		       const string &size,
 		       const string &wordCount) = 0;
     virtual void flush() = 0;
-    virtual void indexingPostlude() = 0;
+    virtual void indexingPostlude(const string indexPath) = 0;
 
     /* Stop words */
     std::vector<std::string> stopWords;

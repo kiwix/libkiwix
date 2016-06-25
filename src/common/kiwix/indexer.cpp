@@ -246,7 +246,7 @@ namespace kiwix {
       /* Test if the thread should be cancelled */
       pthread_testcancel();
     }
-    self->indexingPostlude();
+    self->indexingPostlude(self->getIndexPath());
 
     /* Write content id file */
     string path = appendToDirectory(self->getIndexPath(), "content.id");
