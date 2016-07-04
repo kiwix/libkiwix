@@ -107,11 +107,6 @@ namespace kiwix {
     zim::Article currentArticle;
 
     while (currentOffset < lastOffset) {
-//      if (self->getVerboseFlag()) {
-//        std::cout << "currentOffset:" << currentOffset << " lastOffset:" << lastOffset
-//          << " readArticleCount:" << readArticleCount << " totalArticleCount:" << articleCount <<std::endl;
-//      }
-      
       currentArticle = zimHandler->getArticle(currentOffset);
       
       if (!currentArticle.isRedirect()) {
