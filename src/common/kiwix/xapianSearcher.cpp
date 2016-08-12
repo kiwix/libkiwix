@@ -18,6 +18,12 @@
  */
 
 #include "xapianSearcher.h"
+#include <zim/zim.h>
+#include <zim/file.h>
+#include <zim/article.h>
+#include <zim/error.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace kiwix {
 
@@ -30,7 +36,22 @@ namespace kiwix {
 
   /* Open Xapian readable database */
   void XapianSearcher::openIndex(const string &directoryPath) {
-    this->readableDatabase = Xapian::Database(directoryPath);
+    bool indexInZim = false;
+    try
+    {
+      zim::File zimFile = zim::File(directoryPath);
+      zim::Article xapianArticle = zimFile.getArticle('Z', "/Z/fulltextIndex/xapian");
+      if (xapianArticle.good())
+      {
+        zim::offset_type dbOffset = xapianArticle.getOffset();
+        int databasefd = open(directoryPath.c_str(), O_RDONLY);
+        lseek(databasefd, dbOffset, SEEK_SET);
+        this->readableDatabase = Xapian::Database(databasefd);
+      }
+    } catch (zim::ZimFileFormatError)
+    {
+      this->readableDatabase = Xapian::Database(directoryPath);
+    }
   }
   
   /* Close Xapian writable database */
