@@ -67,6 +67,8 @@ namespace kiwix {
     string publisher;
     string date;
     string url;
+    string name;
+    string tags;
     string origId;
     string articleCount;
     string mediaCount;

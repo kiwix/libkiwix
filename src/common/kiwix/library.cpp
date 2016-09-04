@@ -103,6 +103,12 @@ namespace kiwix {
 	  
 	  if (itr->url.empty())
 	    itr->url = book.url;
+
+	  if (itr->tags.empty())
+	    itr->tags = book.tags;
+
+	  if (itr->name.empty())
+	    itr->name = book.name;
 	  
 	  if (itr->indexPath.empty()) {
 	    itr->indexPath = book.indexPath;

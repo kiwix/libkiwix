@@ -50,6 +50,8 @@ namespace kiwix {
       book.indexPath = bookNode.attribute("indexPath").value();
       book.indexType = XAPIAN;
       book.title = bookNode.attribute("title").value();
+      book.name = bookNode.attribute("name").value();
+      book.tags = bookNode.attribute("tags").value();
       book.description = bookNode.attribute("description").value();
       book.language = bookNode.attribute("language").value();
       book.date = bookNode.attribute("date").value();
@@ -158,6 +160,12 @@ namespace kiwix {
 	if (itr->origId.empty()) {
 	  if (!itr->title.empty())
 	    bookNode.append_attribute("title") = itr->title.c_str();
+
+	  if (!itr->name.empty())
+	    bookNode.append_attribute("name") = itr->title.c_str();
+
+	  if (!itr->tags.empty())
+	    bookNode.append_attribute("tags") = itr->tags.c_str();
 	  
 	  if (!itr->description.empty())
 	    bookNode.append_attribute("description") = itr->description.c_str();
@@ -262,6 +270,8 @@ namespace kiwix {
 	book->creator = reader->getCreator();
 	book->publisher = reader->getPublisher();
 	book->title = reader->getTitle();
+	book->name = reader->getName();
+	book->tags = reader->getTags();
 	book->origId = reader->getOrigId();
 	std::ostringstream articleCountStream;
 	articleCountStream << reader->getArticleCount();
