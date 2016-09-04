@@ -273,6 +273,18 @@ namespace kiwix {
     return value;
   }
 
+  string Reader::getName() {
+    string value;
+    this->getMetatag("Name", value);
+    return value;
+  }
+
+  string Reader::getTags() {
+    string value;
+    this->getMetatag("Tags", value);
+    return value;
+  }
+
   string Reader::getDescription() {
     string value;
     this->getMetatag("Description", value);

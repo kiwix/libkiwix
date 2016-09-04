@@ -55,6 +55,8 @@ namespace kiwix {
     string getTitle();
     string getDescription();
     string getLanguage();
+    string getName();
+    string getTags();
     string getDate();
     string getCreator();
     string getPublisher();
