@@ -25,6 +25,8 @@
 #elif _WIN32
 #include <windows.h>
 #include "Shlwapi.h"
+#include <direct.h>
+#define getcwd _getcwd // stupid MSFT "deprecation" warning
 #endif
 
 #ifdef _WIN32
@@ -36,6 +38,7 @@
 #define SEPARATOR "\\"
 #else
 #define SEPARATOR "/"
+#include <unistd.h>
 #endif
 
 #ifndef PATH_MAX
@@ -237,4 +240,11 @@ bool writeTextFile(const string &path, const string &content) {
   file << content;
   file.close();
   return true;
+}
+
+string getCurrentDirectory() {
+  char* a_cwd = getcwd(NULL,0);
+  string s_cwd(a_cwd);
+  free(a_cwd);
+  return s_cwd;
 }
