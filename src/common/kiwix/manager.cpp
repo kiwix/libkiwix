@@ -162,7 +162,7 @@ namespace kiwix {
 	    bookNode.append_attribute("title") = itr->title.c_str();
 
 	  if (!itr->name.empty())
-	    bookNode.append_attribute("name") = itr->title.c_str();
+	    bookNode.append_attribute("name") = itr->name.c_str();
 
 	  if (!itr->tags.empty())
 	    bookNode.append_attribute("tags") = itr->tags.c_str();
