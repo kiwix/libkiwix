@@ -27,6 +27,14 @@ using namespace std;
 
 namespace kiwix {
 
+  class NoXapianIndexInZim: public exception
+  {
+   virtual const char* what() const throw()
+    {
+      return "There is no fulltext index in the zim file";
+    }
+  };
+
   class XapianSearcher : public Searcher {
     
   public:
