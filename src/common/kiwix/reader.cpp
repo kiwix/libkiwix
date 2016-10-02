@@ -511,6 +511,15 @@ namespace kiwix {
     return retVal;
   }
 
+  /* Check if an article exists */
+  bool Reader::urlExists(const string &url) {
+    char ns = 0;
+    string titleStr;
+    this->parseUrl(url, &ns, titleStr);
+    zim::File::const_iterator findItr = zimFileHandler->find(ns, titleStr);
+    return findItr->getUrl() == titleStr;
+  }
+
   /* Search titles by prefix */
   bool Reader::searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset) {
     bool retVal = false;
