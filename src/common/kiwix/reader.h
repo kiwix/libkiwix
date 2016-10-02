@@ -72,6 +72,7 @@ namespace kiwix {
     bool searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset = true);
     bool searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount);
     bool urlExists(const string &url);
+    bool hasFulltextIndex();
     std::vector<std::string> getTitleVariants(const std::string &title);
     bool getNextSuggestion(string &title);
     bool getNextSuggestion(string &title, string &url);

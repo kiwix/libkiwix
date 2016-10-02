@@ -516,8 +516,14 @@ namespace kiwix {
     char ns = 0;
     string titleStr;
     this->parseUrl(url, &ns, titleStr);
+    titleStr = "/" + titleStr;
     zim::File::const_iterator findItr = zimFileHandler->find(ns, titleStr);
-    return findItr->getUrl() == titleStr;
+    return findItr != zimFileHandler->end() && findItr->getUrl() == titleStr;
+  }
+
+  /* Does the ZIM file has a fulltext index */
+  bool Reader::hasFulltextIndex() {
+    return this->urlExists("/Z/fulltextIndex/xapian");
   }
 
   /* Search titles by prefix */
