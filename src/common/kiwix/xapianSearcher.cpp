@@ -39,7 +39,7 @@ namespace kiwix {
     try
     {
       zim::File zimFile = zim::File(directoryPath);
-      zim::Article xapianArticle = zimFile.getArticle('Z', "/Z/fulltextIndex/xapian");
+      zim::Article xapianArticle = zimFile.getArticle('Z', "/fulltextIndex/xapian");
       if ( ! xapianArticle.good())
           throw NoXapianIndexInZim();
       zim::offset_type dbOffset = xapianArticle.getOffset();
