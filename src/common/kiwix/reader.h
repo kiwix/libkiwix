@@ -81,6 +81,7 @@ namespace kiwix {
     bool parseUrl(const string &url, char *ns, string &title);
     unsigned int getFileSize();
     zim::File* getZimFileHandler();
+    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article);
 
   protected:
     zim::File* zimFileHandler;
@@ -95,7 +96,6 @@ namespace kiwix {
 
   private:
     std::map<std::string, unsigned int> parseCounterMetadata();
-    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article);
   };
 
 }
