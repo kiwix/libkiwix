@@ -33,6 +33,19 @@ void kiwix::loadICUExternalTables() {
 #endif
 }
 
+std::string kiwix::removeAccents(const std::string &text) {
+  loadICUExternalTables();
+  ucnv_setDefaultName("UTF-8");
+  UErrorCode status = U_ZERO_ERROR;
+  Transliterator *removeAccentsTrans = Transliterator::createInstance("Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
+  UnicodeString ustring = UnicodeString(text.c_str());
+  removeAccentsTrans->transliterate(ustring);
+  delete removeAccentsTrans;
+  std::string unaccentedText;
+  ustring.toUTF8String(unaccentedText);
+  return unaccentedText;
+}
+
 #ifndef __ANDROID__
 
 /* Prepare integer for display */
@@ -57,19 +70,6 @@ std::string kiwix::beautifyFileSize(const unsigned int number) {
     return kiwix::beautifyInteger(number/1024 !=
 				  0 ? number/1024 : 1) + " MB";
   }
-}
-
-std::string kiwix::removeAccents(const std::string &text) {
-  loadICUExternalTables();
-  ucnv_setDefaultName("UTF-8");
-  UErrorCode status = U_ZERO_ERROR;
-  Transliterator *removeAccentsTrans = Transliterator::createInstance("Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
-  UnicodeString ustring = UnicodeString(text.c_str());
-  removeAccentsTrans->transliterate(ustring);
-  delete removeAccentsTrans;
-  std::string unaccentedText;
-  ustring.toUTF8String(unaccentedText);
-  return unaccentedText;
 }
 
 void kiwix::printStringInHexadecimal(UnicodeString s) {
