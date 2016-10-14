@@ -33,14 +33,16 @@
 #include <stringTools.h>
 #include "unicode/putil.h"
 
+#ifndef __ANDROID__
 #include <ctpp2/CDT.hpp>
 #include <ctpp2/CTPP2FileLogger.hpp>
 #include <ctpp2/CTPP2SimpleVM.hpp>
-
 #include "kiwix/ctpp2/CTPP2VMStringLoader.hpp"
 
-using namespace std;
 using namespace CTPP;
+#endif
+
+using namespace std;
 
 struct Result
 {
@@ -58,6 +60,7 @@ namespace kiwix {
 
   public:
     Searcher();
+    ~Searcher();
 
     void search(std::string &search, unsigned int resultStart,
 		unsigned int resultEnd, const bool verbose=false);
@@ -65,11 +68,13 @@ namespace kiwix {
     unsigned int getEstimatedResultCount();
     bool setProtocolPrefix(const std::string prefix);
     bool setSearchProtocolPrefix(const std::string prefix);
-    string getHtml();
     void reset();
     void setContentHumanReadableId(const string &contentHumanReadableId);
-    ~Searcher();
 
+#ifndef __ANDROID__
+    string getHtml();
+#endif
+    
   protected:
     std::string beautifyInteger(const unsigned int number);
     virtual void closeIndex() = 0;
