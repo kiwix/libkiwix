@@ -27,10 +27,8 @@ using namespace std;
 
 namespace kiwix {
 
-  class NoXapianIndexInZim: public exception
-  {
-   virtual const char* what() const throw()
-    {
+  class NoXapianIndexInZim: public exception {
+    virtual const char* what() const throw() {
       return "There is no fulltext index in the zim file";
     }
   };
@@ -39,7 +37,6 @@ namespace kiwix {
     
   public:
     XapianSearcher(const string &xapianDirectoryPath);
-
     void searchInIndex(string &search, const unsigned int resultStart, const unsigned int resultEnd, 
 		       const bool verbose=false);
 

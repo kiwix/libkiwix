@@ -47,6 +47,7 @@ namespace kiwix {
     unsigned int getArticleCount();
     unsigned int getMediaCount();
     unsigned int getGlobalCount();
+    string getZimFilePath();
     string getId();
     string getRandomPageUrl();
     string getFirstPageUrl();
@@ -81,6 +82,7 @@ namespace kiwix {
     bool parseUrl(const string &url, char *ns, string &title);
     unsigned int getFileSize();
     zim::File* getZimFileHandler();
+    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article);
 
   protected:
     zim::File* zimFileHandler;
@@ -89,13 +91,13 @@ namespace kiwix {
     zim::size_type currentArticleOffset;
     zim::size_type nsACount;
     zim::size_type nsICount;
-
+    std::string zimFilePath;
+    
     std::vector< std::vector<std::string> > suggestions;
     std::vector< std::vector<std::string> >::iterator suggestionsOffset;
 
   private:
     std::map<std::string, unsigned int> parseCounterMetadata();
-    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article);
   };
 
 }

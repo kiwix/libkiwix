@@ -72,6 +72,7 @@ namespace kiwix {
       this->currentArticleOffset = this->firstArticleOffset;
       this->nsACount = this->zimFileHandler->getNamespaceCount('A');
       this->nsICount = this->zimFileHandler->getNamespaceCount('I');
+      this->zimFilePath = zimFilePath;
     }
 
     /* initialize random seed: */
@@ -250,6 +251,10 @@ namespace kiwix {
     }
 
     return content.empty() ? false : true;
+  }
+
+  string Reader::getZimFilePath() {
+    return this->zimFilePath;
   }
 
   /* Return a metatag value */

@@ -34,9 +34,11 @@ namespace kiwix {
   {
     template_ct2 = getResourceAsString("results.ct2");
     loadICUExternalTables();
-    
   }
-
+  
+  /* Destructor */
+  Searcher::~Searcher() {}
+  
   /* Search strings in the database */
   void Searcher::search(std::string &search, unsigned int resultStart,
 			unsigned int resultEnd, const bool verbose) {
@@ -127,6 +129,8 @@ namespace kiwix {
     this->contentHumanReadableId = contentHumanReadableId;
   }
 
+#ifndef __ANDROID__
+  
   string Searcher::getHtml() {
 
     SimpleVM oSimpleVM;
@@ -203,9 +207,6 @@ namespace kiwix {
 
   }
 
-  /* Destructor */
-  Searcher::~Searcher() {
-
-  }
+#endif
 
 }
