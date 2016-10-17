@@ -40,14 +40,13 @@ namespace kiwix {
     {
       zim::File zimFile = zim::File(directoryPath);
       zim::Article xapianArticle = zimFile.getArticle('Z', "/fulltextIndex/xapian");
-      if ( ! xapianArticle.good())
-          throw NoXapianIndexInZim();
+      if (!xapianArticle.good())
+	throw NoXapianIndexInZim();
       zim::offset_type dbOffset = xapianArticle.getOffset();
       int databasefd = open(directoryPath.c_str(), O_RDONLY);
       lseek(databasefd, dbOffset, SEEK_SET);
       this->readableDatabase = Xapian::Database(databasefd);
-    } catch (zim::ZimFileFormatError)
-    {
+    } catch (...) {
       this->readableDatabase = Xapian::Database(directoryPath);
     }
   }
