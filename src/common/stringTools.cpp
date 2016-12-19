@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "stringTools.h"
+#include <common/stringTools.h>
 
 /* tell ICU where to find its dat file (tables) */
 void kiwix::loadICUExternalTables() {

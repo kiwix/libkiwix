@@ -27,8 +27,8 @@
 #include <vector>
 #include <stack>
 
-#include <stringTools.h>
-#include <regexTools.h>
+#include "common/stringTools.h"
+#include "common/regexTools.h"
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 

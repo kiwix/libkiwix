@@ -29,9 +29,8 @@
 #include <exception>
 #include <sstream>
 #include <map>
-#include "time.h"
-#include <pathTools.h>
-#include <stringTools.h>
+#include "common/pathTools.h"
+#include "common/stringTools.h"
 
 using namespace std;
 

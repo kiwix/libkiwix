@@ -1,4 +1,4 @@
-#include <resourceTools.h>
+#include <common/resourceTools.h>
 #include <iostream>
 
 std::string getResourceAsString(const std::string &name) {

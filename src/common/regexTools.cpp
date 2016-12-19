@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "regexTools.h"
+#include <common/regexTools.h>
 
 std::map<std::string, RegexMatcher*> regexCache;
 

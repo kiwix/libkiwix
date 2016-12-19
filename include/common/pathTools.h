@@ -37,7 +37,7 @@
 #include <direct.h>
 #endif
 
-#include <stringTools.h>
+#include "stringTools.h"
 
 using namespace std;
 

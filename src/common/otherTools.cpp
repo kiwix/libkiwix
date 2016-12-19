@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "otherTools.h"
+#include <common/otherTools.h>
 
 void kiwix::sleep(unsigned int milliseconds) {
 #ifdef _WIN32

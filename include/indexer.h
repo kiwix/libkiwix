@@ -29,9 +29,9 @@
 #include <sstream>
 
 #include <pthread.h>
-#include <stringTools.h>
-#include <otherTools.h>
-#include <resourceTools.h>
+#include "common/stringTools.h"
+#include "common/otherTools.h"
+#include "common/resourceTools.h"
 #include <zim/file.h>
 #include <zim/article.h>
 #include <zim/fileiterator.h>

@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "CTPP2VMStringLoader.hpp"
+#include <ctpp2/CTPP2VMStringLoader.hpp>
 
 namespace CTPP // C++ Template Engine
 {

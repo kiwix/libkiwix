@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "pathTools.h"
+#include <common/pathTools.h>
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
@@ -40,6 +40,8 @@
 #define SEPARATOR "/"
 #include <unistd.h>
 #endif
+
+#include <stdlib.h>
 
 #ifndef PATH_MAX
 #define PATH_MAX 1024

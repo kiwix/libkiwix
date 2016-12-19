@@ -26,11 +26,11 @@
 
 #include <pugixml.hpp>
 
-#include "../base64.h"
-#include "../regexTools.h"
-#include "../pathTools.h"
-#include <kiwix/library.h>
-#include <kiwix/reader.h>
+#include "common/base64.h"
+#include "common/regexTools.h"
+#include "common/pathTools.h"
+#include "library.h"
+#include "reader.h"
 
 using namespace std;
 

@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "networkTools.h"
+#include <common/networkTools.h>
 
 std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
   std::map<std::string, std::string> interfaces;

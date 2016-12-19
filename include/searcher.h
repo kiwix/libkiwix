@@ -28,16 +28,16 @@
 #include <locale>
 #include <cctype>
 #include <vector>
-#include <resourceTools.h>
-#include <pathTools.h>
-#include <stringTools.h>
-#include "unicode/putil.h"
+#include "common/resourceTools.h"
+#include "common/pathTools.h"
+#include "common/stringTools.h"
+#include <unicode/putil.h>
 
 #ifndef __ANDROID__
 #include <ctpp2/CDT.hpp>
 #include <ctpp2/CTPP2FileLogger.hpp>
 #include <ctpp2/CTPP2SimpleVM.hpp>
-#include "kiwix/ctpp2/CTPP2VMStringLoader.hpp"
+#include "ctpp2/CTPP2VMStringLoader.hpp"
 
 using namespace CTPP;
 #endif

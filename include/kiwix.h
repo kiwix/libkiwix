@@ -17,28 +17,10 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_COMPONENTTOOLS_H
-#define KIWIX_COMPONENTTOOLS_H
+#ifndef KIWIX_H
+#define KIWIX_H
 
-#ifdef _WIN32
-  #include <mozilla/Char16.h>
-#endif
+#include "library.h"
 
-#include<string>
-
-#ifdef __APPLE__
-  #include <stdint.h>
-#endif
-
-#ifdef _WIN32
-  #include <stdlib.h>
-#endif
-
-#include "nsStringAPI.h"
-#include "nsEmbedString.h"
-
-const char *nsStringToCString(const nsAString &str);
-std::string nsStringToString(const nsEmbedString &str);
-const char *nsStringToUTF8(const nsAString &str);
 
 #endif

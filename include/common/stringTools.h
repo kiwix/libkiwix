@@ -34,7 +34,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <pathTools.h>
+#include "pathTools.h"
 
 namespace kiwix {
 
