@@ -5,13 +5,11 @@ project('kiwixlib', 'cpp',
 compiler = meson.get_compiler('cpp')
 
 thread_dep = dependency('threads')
-zlib_dep = dependency('zlib')
-bzip_dep = dependency('bzip2')
 libicu_dep = dependency('icu-i18n')
-lzma_dep = dependency('liblzma')
 libzim_dep = dependency('zimlib')
 pugixml_dep = dependency('pugixml')
 aria2_dep = find_program('aria2c')
+
 
 ctpp2_prefix_install = get_option('ctpp2-install-prefix')
 if get_option('default_library') == 'static'
@@ -37,14 +35,16 @@ else
   ctpp2_dep = declare_dependency(include_directories:ctpp2_include_path, dependencies:[ctpp2_lib])
 endif
 
+pkg_requires = ['zimlib', 'icu-i18n', 'pugixml']
 xapian_dep = dependency('xapian-core', required:false)
 if xapian_dep.found()
+    pkg_requires += ['xapian-core']
     message('xapian_dep found')
 else
     message('xapian_dep not found')
 endif
 
-all_deps = [thread_dep, zlib_dep, libicu_dep, lzma_dep, libzim_dep, ctpp2_dep, xapian_dep, pugixml_dep, bzip_dep]
+all_deps = [thread_dep, libicu_dep, libzim_dep, ctpp2_dep, xapian_dep, pugixml_dep]
 
 inc = include_directories('include')
 
@@ -57,5 +57,5 @@ pkg_mod.generate(libraries : kiwixlib,
                  name : 'libkiwix',
                  filebase : 'kiwix',
                  description : 'A library that contains a lot of things used by used by other kiwix programs',
-                 requires: ['zimlib', 'zlib', 'xapian-core', 'icu-i18n', 'liblzma', 'bzip2', 'pugixml'])
+                 requires: pkg_requires)
 
