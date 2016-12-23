@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// #include <common/resourceTools.h>
 #include <iostream>
 #include <string>
 

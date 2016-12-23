@@ -18,6 +18,7 @@
  */
 
 #include "searcher.h"
+#include "kiwixlib-resources.h"
 
 
 namespace kiwix {
@@ -32,7 +33,7 @@ namespace kiwix {
     resultStart(0),
     resultEnd(0)
   {
-    template_ct2 = getResourceAsString("results.ct2");
+    template_ct2 = RESOURCE::results_ct2;
     loadICUExternalTables();
   }
   

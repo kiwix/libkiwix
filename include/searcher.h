@@ -28,7 +28,6 @@
 #include <locale>
 #include <cctype>
 #include <vector>
-#include "common/resourceTools.h"
 #include "common/pathTools.h"
 #include "common/stringTools.h"
 #include <unicode/putil.h>

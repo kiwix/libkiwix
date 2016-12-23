@@ -18,6 +18,7 @@
  */
 
 #include "indexer.h"
+#include "kiwixlib-resources.h"
 
 namespace kiwix {
 
@@ -64,7 +65,7 @@ namespace kiwix {
   /* Read the stopwords */
   void Indexer::readStopWords(const string languageCode) {
     std::string stopWord;
-    std::istringstream file(getResourceAsString("stopwords/" + languageCode));
+    std::istringstream file(getResource("stopwords/" + languageCode));
 
     this->stopWords.clear();
 

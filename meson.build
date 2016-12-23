@@ -49,6 +49,8 @@ all_deps = [thread_dep, libicu_dep, libzim_dep, ctpp2_dep, xapian_dep, pugixml_d
 inc = include_directories('include')
 
 subdir('include')
+subdir('scripts')
+subdir('static')
 subdir('src')
 
 pkg_mod = import('pkgconfig')
