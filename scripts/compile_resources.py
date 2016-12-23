@@ -79,7 +79,7 @@ master_c_template = """//This file is automaically generated. Do not modify it.
 #include <stdlib.h>
 #include <fstream>
 #include <exception>
-#include "{basename}"
+#include "{include_file}"
 
 class ResourceNotFound : public std::runtime_error {{
   public:
@@ -101,7 +101,7 @@ static std::string init_resource(const char* name, const unsigned char* content,
                         (std::istreambuf_iterator<char>()   ));
 }}
 
-const std::string& getResource(const std::string& name) {{
+const std::string& getResource_{basename}(const std::string& name) {{
 {RESOURCES_GETTER}
     throw ResourceNotFound("Resource not found.");
 }}
@@ -114,7 +114,8 @@ def gen_c_file(resources, basename):
     return master_c_template.format(
        RESOURCES="\n\n".join(r.dump_impl() for r in resources),
        RESOURCES_GETTER="\n\n".join(r.dump_getter() for r in resources),
-       basename=basename
+       include_file=basename,
+       basename=to_identifier(basename)
     )
  
 
@@ -129,7 +130,9 @@ namespace RESOURCE {{
     {RESOURCES}
 }};
 
-const std::string& getResource(const std::string& name);
+const std::string& getResource_{basename}(const std::string& name);
+
+#define getResource(a) (getResource_{basename}(a))
 
 #endif // KIWIX_{BASENAME}
 
@@ -138,7 +141,8 @@ const std::string& getResource(const std::string& name);
 def gen_h_file(resources, basename):
     return master_h_template.format(
        RESOURCES="\n    ".join(r.dump_decl() for r in resources),
-       BASENAME=basename.upper()
+       BASENAME=basename.upper(),
+       basename=basename,
     )
 
 if __name__ == "__main__":
