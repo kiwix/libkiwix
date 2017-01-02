@@ -6,7 +6,7 @@ compiler = meson.get_compiler('cpp')
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n')
-libzim_dep = dependency('zimlib')
+libzim_dep = dependency('libzim')
 pugixml_dep = dependency('pugixml')
 aria2_dep = find_program('aria2c')
 
@@ -35,7 +35,7 @@ else
   ctpp2_dep = declare_dependency(include_directories:ctpp2_include_path, dependencies:[ctpp2_lib])
 endif
 
-pkg_requires = ['zimlib', 'icu-i18n', 'pugixml']
+pkg_requires = ['libzim', 'icu-i18n', 'pugixml']
 xapian_dep = dependency('xapian-core', required:false)
 if xapian_dep.found()
     pkg_requires += ['xapian-core']
