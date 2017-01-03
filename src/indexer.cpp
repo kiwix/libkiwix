@@ -18,6 +18,7 @@
  */
 
 #include "indexer.h"
+#include "xapian/myhtmlparse.h"
 #include "kiwixlib-resources.h"
 
 namespace kiwix {

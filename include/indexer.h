@@ -35,7 +35,6 @@
 #include <zim/article.h>
 #include <zim/fileiterator.h>
 #include "reader.h"
-#include "xapian/myhtmlparse.h"
 
 using namespace std;
 
