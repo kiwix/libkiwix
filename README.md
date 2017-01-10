@@ -12,6 +12,7 @@ You'll need the following dependencies to build libkiwix:
 * [meson](http://mesonbuild.com/)
 * pkg-config
 * libxapian-dev
+* libctpp2-dev
 
 To build:
 
