@@ -24,7 +24,7 @@
 #include <limits.h>
 #elif _WIN32
 #include <windows.h>
-#include "Shlwapi.h"
+#include "shlwapi.h"
 #include <direct.h>
 #define getcwd _getcwd // stupid MSFT "deprecation" warning
 #endif
