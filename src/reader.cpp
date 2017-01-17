@@ -18,6 +18,7 @@
  */
 
 #include "reader.h"
+#include <time.h>
 
 inline char hi(char v) {
     char hex[] = "0123456789abcdef";
