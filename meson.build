@@ -21,17 +21,29 @@ if ctpp2_prefix_install == ''
     error('ctpp2/CTPP2Logger.hppnot found')
   endif
   ctpp2_lib = compiler.find_library(libname)
-  ctpp2_dep = declare_dependency(dependencies:[ctpp2_lib])
+  link_args = ['-l'+libname]
+  if meson.is_cross_build()
+    if host_machine.system() == 'windows'
+      link_args += ['-liconv']
+    endif
+  endif
+  ctpp2_dep = declare_dependency(link_args:link_args)
 else
   ctpp2_include_path = ctpp2_prefix_install + '/include'
   ctpp2_include_args = ['-I'+ctpp2_include_path]
   if not compiler.has_header('ctpp2/CTPP2Logger.hpp', args:ctpp2_include_args)
-    error('ctpp2/CTPP2Logger.hppnot found')
+    error('ctpp2/CTPP2Logger.hpp not found')
   endif
   ctpp2_include_path = include_directories(ctpp2_include_path, is_system:true)
   ctpp2_lib_path = ctpp2_prefix_install+'/lib'
   ctpp2_lib = compiler.find_library(libname, dirs:ctpp2_lib_path)
-  ctpp2_dep = declare_dependency(include_directories:ctpp2_include_path, dependencies:[ctpp2_lib])
+  link_args = ['-L'+ctpp2_lib_path, '-l'+libname]
+  if meson.is_cross_build()
+    if host_machine.system() == 'windows'
+      link_args += ['-liconv']
+    endif
+  endif
+  ctpp2_dep = declare_dependency(include_directories:ctpp2_include_path, link_args:link_args)
 endif
 
 pkg_requires = ['libzim', 'icu-i18n', 'pugixml']
