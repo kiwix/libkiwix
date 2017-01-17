@@ -8,7 +8,6 @@ thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n')
 libzim_dep = dependency('libzim')
 pugixml_dep = dependency('pugixml')
-aria2_dep = find_program('aria2c')
 
 
 ctpp2_prefix_install = get_option('ctpp2-install-prefix')
