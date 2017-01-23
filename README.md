@@ -55,6 +55,7 @@ Install first the few common compilation tools:
 * Automake
 * Libtool
 * Virtualenv
+* Pkg-config
 
 Then install Meson itself:
 ```
