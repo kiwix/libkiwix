@@ -44,6 +44,9 @@ compilation script will tell you if one of them is missing or too old.
 In the worse case, you will have to download and compile bleeding edge
 version by hand.
 
+If you want to install these dependencies locally, then use the
+kiwix-lib directory as install prefix.
+
 Environnement
 -------------
 
