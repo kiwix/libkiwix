@@ -28,19 +28,15 @@ are prerequisites to the Kiwix library compilation. Following
 libraries need to be available:
 
 * ICU ................................... http://site.icu-project.org/
-** Package libicu-dev on Ubuntu
-
+(package libicu-dev on Ubuntu)
 * ZIM ........................................ http://www.openzim.org/
-** Packge libzim-dev on Ubuntu
-
+(packge libzim-dev on Ubuntu)
 * Pugixml ........................................ http://pugixml.org/
-** Package libpugixml-dev on Ubuntu
-
+(package libpugixml-dev on Ubuntu)
 * ctpp2 ........................................ http://ctpp.havoc.ru/
-** Package libctpp2-dev on Ubuntu
-
+(package libctpp2-dev on Ubuntu)
 * Xapian ......................................... https://xapian.org/
-** Package libxapian-dev on Ubuntu
+(package libxapian-dev on Ubuntu)
 
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
