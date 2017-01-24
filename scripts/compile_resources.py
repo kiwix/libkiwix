@@ -78,7 +78,7 @@ master_c_template = """//This file is automaically generated. Do not modify it.
 
 #include <stdlib.h>
 #include <fstream>
-#include <exception>
+#include <stdexcept>
 #include "{include_file}"
 
 class ResourceNotFound : public std::runtime_error {{
