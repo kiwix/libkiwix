@@ -9,24 +9,28 @@ libicu_dep = dependency('icu-i18n')
 libzim_dep = dependency('libzim')
 pugixml_dep = dependency('pugixml')
 
+find_library_in_compiler = meson.version().version_compare('>=0.31.0')
+
+libname = ''
+libnames = ['ctpp2', 'ctpp2-st']
+foreach tmplibname : libnames
+  required = tmplibname == libnames[-1]
+  if find_library_in_compiler
+    found = libname == '' and compiler.find_library(tmplibname, required: required).found()
+  else
+    found = libname == '' and find_library(tmplibname, required: required).found()
+  endif
+  if found
+    libname = tmplibname
+  endif
+endforeach
 
 ctpp2_prefix_install = get_option('ctpp2-install-prefix')
-if get_option('default_library') == 'static'
-    libname = 'ctpp2-st'
-else
-    libname = 'ctpp2'
-endif
-
-find_library_in_compiler = meson.version().version_compare('>=0.31.0')
 if ctpp2_prefix_install == ''
   if not compiler.has_header('ctpp2/CTPP2Logger.hpp')
     error('ctpp2/CTPP2Logger.hppnot found')
   endif
-  if find_library_in_compiler
-    ctpp2_lib = compiler.find_library(libname)
-  else
-    ctpp2_lib = find_library(libname)
-  endif
+
   link_args = ['-l'+libname]
   if meson.is_cross_build()
     if host_machine.system() == 'windows'
