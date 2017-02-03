@@ -47,6 +47,10 @@ version by hand.
 If you want to install these dependencies locally, then use the
 kiwix-lib directory as install prefix.
 
+If you compile ctpp2 from source and want to compile the Kiwix library
+statically then you will probably need to rename ctpp2 static library
+from ctpp2-st.a to ctpp2.a.
+
 Environnement
 -------------
 
