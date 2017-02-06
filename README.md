@@ -30,7 +30,7 @@ libraries need to be available:
 * ICU ................................... http://site.icu-project.org/
 (package libicu-dev on Ubuntu)
 * ZIM ........................................ http://www.openzim.org/
-(packge libzim-dev on Ubuntu)
+(package libzim-dev on Ubuntu)
 * Pugixml ........................................ http://pugixml.org/
 (package libpugixml-dev on Ubuntu)
 * ctpp2 ........................................ http://ctpp.havoc.ru/
