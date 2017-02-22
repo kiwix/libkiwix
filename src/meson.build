@@ -3,7 +3,6 @@ kiwix_sources = [
   'manager.cpp',
   'reader.cpp',
   'searcher.cpp',
-  'indexer.cpp',
   'common/base64.cpp',
   'common/pathTools.cpp',
   'common/regexTools.cpp',
@@ -16,7 +15,14 @@ kiwix_sources = [
 kiwix_sources += lib_resources
 
 if xapian_dep.found()
-  kiwix_sources += ['xapianIndexer.cpp', 'xapianSearcher.cpp']
+  kiwix_sources += ['xapianSearcher.cpp']
+  if not get_option('android')
+    kiwix_sources += ['xapianIndexer.cpp']
+  endif
+endif
+
+if not get_option('android')
+  kiwix_sources += ['indexer.cpp']
 endif
 
 if has_ctpp2_dep

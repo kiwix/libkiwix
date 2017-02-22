@@ -1,10 +1,13 @@
 headers = [
-  'indexer.h',
   'library.h',
   'manager.h',
   'reader.h',
   'searcher.h'
 ]
+
+if not get_option('android')
+  headers += ['indexer.h']
+endif
 
 if xapian_dep.found()
   headers += ['xapianIndexer.h', 'xapianSearcher.h']
