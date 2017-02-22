@@ -21,12 +21,17 @@ if ctpp2_prefix_install == ''
     else
       ctpp2_lib = find_library('ctpp2')
     endif
-#    if meson.is_cross_build()
-#      if host_machine.system() == 'windows'
-#        link_args += ['-liconv']
-#      endif
-#    endif
     ctpp2_link_args = ['-lctpp2']
+    if meson.is_cross_build() and host_machine.system() == 'windows'
+      if find_library_in_compiler
+        iconv_lib = compiler.find_library('iconv', required:false)
+      else
+        iconv_lib = find_library('iconv', required:false)
+      endif
+      if iconv_lib.found()
+        ctpp2_link_args += ['-liconv']
+      endif
+    endif
     has_ctpp2_dep = true
     ctpp2_dep = declare_dependency(link_args:ctpp2_link_args)
   else
@@ -42,12 +47,13 @@ else
     ctpp2_include_dir = include_directories(ctpp2_include_path, is_system:true)
     ctpp2_lib_path = ctpp2_prefix_install+'/lib'
     ctpp2_lib = compiler.find_library('ctpp2', dirs:ctpp2_lib_path)
-#    if meson.is_cross_build()
-#      if host_machine.system() == 'windows'
-#        link_args += ['-liconv']
-#      endif
-#    endif
     ctpp2_link_args = ['-L'+ctpp2_lib_path, '-lctpp2']
+    if meson.is_cross_build() and host_machine.system() == 'windows'
+      iconv_lib = compiler.find_library('iconv', required:false)
+      if iconv_lib.found()
+        ctpp2_link_args += ['-liconv']
+      endif
+    endif
     has_ctpp2_dep = true
     ctpp2_dep = declare_dependency(include_directories:ctpp2_include_dir, link_args:ctpp2_link_args)
   else
