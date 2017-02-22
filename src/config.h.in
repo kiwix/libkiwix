@@ -1,0 +1,4 @@
+
+#mesondefine VERSION
+
+#mesondefine ENABLE_CTPP2

@@ -23,8 +23,10 @@ install_headers(
   subdir:'kiwix/common'
 )
 
+if has_ctpp2_dep
+  install_headers(
+    'ctpp2/CTPP2VMStringLoader.hpp',
+    subdir:'kiwix/ctpp2'
+  )
+endif
 
-install_headers(
-  'ctpp2/CTPP2VMStringLoader.hpp',
-  subdir:'kiwix/ctpp2'
-)

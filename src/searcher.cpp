@@ -20,6 +20,15 @@
 #include "searcher.h"
 #include "kiwixlib-resources.h"
 
+#ifdef ENABLE_CTPP2
+#include <ctpp2/CDT.hpp>
+#include <ctpp2/CTPP2FileLogger.hpp>
+#include <ctpp2/CTPP2SimpleVM.hpp>
+#include "ctpp2/CTPP2VMStringLoader.hpp"
+
+using namespace CTPP;
+#endif
+
 
 namespace kiwix {
 
@@ -130,7 +139,7 @@ namespace kiwix {
     this->contentHumanReadableId = contentHumanReadableId;
   }
 
-#ifndef __ANDROID__
+#ifdef ENABLE_CTPP2
   
   string Searcher::getHtml() {
 

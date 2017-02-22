@@ -10,7 +10,6 @@ kiwix_sources = [
   'common/stringTools.cpp',
   'common/networkTools.cpp',
   'common/otherTools.cpp',
-  'ctpp2/CTPP2VMStringLoader.cpp',
   'xapian/htmlparse.cc',
   'xapian/myhtmlparse.cc'
 ]
@@ -19,6 +18,15 @@ kiwix_sources += lib_resources
 if xapian_dep.found()
   kiwix_sources += ['xapianIndexer.cpp', 'xapianSearcher.cpp']
 endif
+
+if has_ctpp2_dep
+  kiwix_sources += ['ctpp2/CTPP2VMStringLoader.cpp']
+endif
+
+config_h = configure_file(output : 'kiwix_config.h',
+               configuration : conf,
+               input : 'config.h.in')
+install_headers(config_h, subdir:'kiwix')
 
 kiwixlib = library('kiwix',
                    kiwix_sources,

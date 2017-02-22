@@ -31,15 +31,7 @@
 #include "common/pathTools.h"
 #include "common/stringTools.h"
 #include <unicode/putil.h>
-
-#ifndef __ANDROID__
-#include <ctpp2/CDT.hpp>
-#include <ctpp2/CTPP2FileLogger.hpp>
-#include <ctpp2/CTPP2SimpleVM.hpp>
-#include "ctpp2/CTPP2VMStringLoader.hpp"
-
-using namespace CTPP;
-#endif
+#include "kiwix_config.h"
 
 using namespace std;
 
@@ -70,7 +62,7 @@ namespace kiwix {
     void reset();
     void setContentHumanReadableId(const string &contentHumanReadableId);
 
-#ifndef __ANDROID__
+#ifdef ENABLE_CTPP2
     string getHtml();
 #endif
     
