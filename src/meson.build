@@ -23,6 +23,8 @@ endif
 
 if not get_option('android')
   kiwix_sources += ['indexer.cpp']
+else
+  subdir('android')
 endif
 
 if has_ctpp2_dep
