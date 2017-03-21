@@ -25,7 +25,20 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <vector>
+
 namespace kiwix {
+
+std::map<std::string, int> read_valuesmap(const std::string &s) {
+    std::map<std::string, int> result;
+    std::vector<std::string> elems = split(s, ";");
+    for( auto elem: elems)
+    {
+        std::vector<std::string> tmp_elems = split(elem, ":");
+        result.insert( std::pair<std::string, int>(tmp_elems[0], atoi(tmp_elems[1].c_str())) );
+    }
+    return result;
+}
 
   /* Constructor */
   XapianSearcher::XapianSearcher(const string &xapianDirectoryPath) 
@@ -49,6 +62,7 @@ namespace kiwix {
     } catch (...) {
       this->readableDatabase = Xapian::Database(directoryPath);
     }
+    this->valuesmap = read_valuesmap(this->readableDatabase.get_metadata("valuesmap"));
   }
   
   /* Close Xapian writable database */
@@ -78,7 +92,7 @@ namespace kiwix {
   /* Get next result */
   Result* XapianSearcher::getNextResult() {
     if (this->current_result != this->results.end()) {
-      XapianResult* result = new XapianResult(this->current_result);
+      XapianResult* result = new XapianResult(this, this->current_result);
       this->current_result++;
       return result;
     }
@@ -89,7 +103,8 @@ namespace kiwix {
     this->current_result = this->results.begin();
   }
 
-  XapianResult::XapianResult(Xapian::MSetIterator& iterator):
+  XapianResult::XapianResult(XapianSearcher* searcher, Xapian::MSetIterator& iterator):
+    searcher(searcher),
     iterator(iterator),
     document(iterator.get_document())
   {
@@ -100,7 +115,16 @@ namespace kiwix {
   }
 
   std::string XapianResult::get_title() {
-      return document.get_value(0);
+      if ( searcher->valuesmap.empty() )
+      {
+          /* This is the old legacy version. Guess and try */
+          return document.get_value(0);
+      }
+      else if ( searcher->valuesmap.find("title") != searcher->valuesmap.end() )
+      {
+          return document.get_value(searcher->valuesmap["title"]);
+      }
+      return "";
   }
 
   int XapianResult::get_score() {
@@ -108,15 +132,44 @@ namespace kiwix {
   }
 
   std::string XapianResult::get_snippet() {
-      return document.get_value(1);
+      if ( searcher->valuesmap.empty() )
+      {
+         /* This is the old legacy version. Guess and try */
+         return document.get_value(1);
+      }
+      else if ( searcher->valuesmap.find("snippet") != searcher->valuesmap.end() )
+      {
+         return document.get_value(searcher->valuesmap["snippet"]);
+      }
+      return "";
   }
 
   int XapianResult::get_size() {
-      return document.get_value(2).empty() == true ? -1 : atoi(document.get_value(2).c_str());
+      if ( searcher->valuesmap.empty() )
+      {
+          /* This is the old legacy version. Guess and try */
+          return document.get_value(2).empty() == true ? -1 : atoi(document.get_value(2).c_str());
+      }
+      else if ( searcher->valuesmap.find("size") != searcher->valuesmap.end() )
+      {
+          return atoi(document.get_value(searcher->valuesmap["size"]).c_str());
+      }
+      /* The size is never used. Do we really want to get the content and
+         calculate the size ? */
+      return -1;
   }
 
   int XapianResult::get_wordCount() {
-        return document.get_value(3).empty() == true ? -1 : atoi(document.get_value(3).c_str());
+      if ( searcher->valuesmap.empty() )
+      {
+          /* This is the old legacy version. Guess and try */
+          return document.get_value(3).empty() == true ? -1 : atoi(document.get_value(3).c_str());
+      }
+      else if ( searcher->valuesmap.find("wordcount") != searcher->valuesmap.end() )
+      {
+          return atoi(document.get_value(searcher->valuesmap["wordcount"]).c_str());
+      }
+      return -1;
   }
 
 } // Kiwix namespace

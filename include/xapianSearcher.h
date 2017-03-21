@@ -22,14 +22,18 @@
 
 #include <xapian.h>
 #include "searcher.h"
+#include <map>
+#include <string>
 
 using namespace std;
 
 namespace kiwix {
 
+  class XapianSearcher;
+
   class XapianResult : public Result {
     public:
-      XapianResult(Xapian::MSetIterator& iterator);
+      XapianResult(XapianSearcher* searcher, Xapian::MSetIterator& iterator);
       virtual ~XapianResult() {};
 
       virtual std::string get_url();
@@ -40,6 +44,7 @@ namespace kiwix {
       virtual int get_size();
 
     private:
+      XapianSearcher* searcher;
       Xapian::MSetIterator iterator;
       Xapian::Document document;
   };
@@ -51,7 +56,7 @@ namespace kiwix {
   };
 
   class XapianSearcher : public Searcher {
-    
+    friend class XapianResult;
   public:
     XapianSearcher(const string &xapianDirectoryPath);
     virtual ~XapianSearcher() {};
@@ -68,6 +73,7 @@ namespace kiwix {
     Xapian::Stem stemmer;
     Xapian::MSet results;
     Xapian::MSetIterator current_result;
+    std::map<std::string, int> valuesmap;
   };
 
 }
