@@ -35,14 +35,16 @@
 
 using namespace std;
 
-struct Result
+class Result
 {
-  string url;
-  string title;
-  int score;
-  string snippet;
-  int wordCount;
-  int size;
+  public:
+    virtual ~Result() {};
+    virtual std::string get_url() = 0;
+    virtual std::string get_title() = 0;
+    virtual int get_score() = 0;
+    virtual std::string get_snippet() = 0;
+    virtual int get_wordCount() = 0;
+    virtual int get_size() = 0;
 };
 
 namespace kiwix {
@@ -55,7 +57,8 @@ namespace kiwix {
 
     void search(std::string &search, unsigned int resultStart,
 		unsigned int resultEnd, const bool verbose=false);
-    bool getNextResult(string &url, string &title, unsigned int &score);
+    virtual Result* getNextResult() = 0;
+    virtual void restart_search() = 0;
     unsigned int getEstimatedResultCount();
     bool setProtocolPrefix(const std::string prefix);
     bool setSearchProtocolPrefix(const std::string prefix);
@@ -72,8 +75,6 @@ namespace kiwix {
     virtual void searchInIndex(string &search, const unsigned int resultStart,
 			       const unsigned int resultEnd, const bool verbose=false) = 0;
 
-    std::vector<Result> results;
-    std::vector<Result>::iterator resultOffset;
     std::string searchPattern;
     std::string protocolPrefix;
     std::string searchProtocolPrefix;

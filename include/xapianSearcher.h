@@ -27,6 +27,23 @@ using namespace std;
 
 namespace kiwix {
 
+  class XapianResult : public Result {
+    public:
+      XapianResult(Xapian::MSetIterator& iterator);
+      virtual ~XapianResult() {};
+
+      virtual std::string get_url();
+      virtual std::string get_title();
+      virtual int get_score();
+      virtual std::string get_snippet();
+      virtual int get_wordCount();
+      virtual int get_size();
+
+    private:
+      Xapian::MSetIterator iterator;
+      Xapian::Document document;
+  };
+
   class NoXapianIndexInZim: public exception {
     virtual const char* what() const throw() {
       return "There is no fulltext index in the zim file";
@@ -40,6 +57,8 @@ namespace kiwix {
     virtual ~XapianSearcher() {};
     void searchInIndex(string &search, const unsigned int resultStart, const unsigned int resultEnd, 
 		       const bool verbose=false);
+    virtual Result* getNextResult();
+    void restart_search();
 
   protected:
     void closeIndex();
@@ -47,6 +66,8 @@ namespace kiwix {
 
     Xapian::Database readableDatabase;
     Xapian::Stem stemmer;
+    Xapian::MSet results;
+    Xapian::MSetIterator current_result;
   };
 
 }

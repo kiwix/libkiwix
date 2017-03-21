@@ -68,32 +68,55 @@ namespace kiwix {
     enquire.set_query(query);
 
     /* Get the results */
-    Xapian::MSet matches = enquire.get_mset(resultStart, resultEnd - resultStart);
-    
-    Xapian::MSetIterator i;
-    for (i = matches.begin(); i != matches.end(); ++i) {
-      Xapian::Document doc = i.get_document();
-      
-      Result result;
-      result.url = doc.get_data();
-      result.title = doc.get_value(0);
-      result.snippet = doc.get_value(1);
-      result.size = (doc.get_value(2).empty() == true ? -1 : atoi(doc.get_value(2).c_str()));
-      result.wordCount = (doc.get_value(3).empty() == true ? -1 : atoi(doc.get_value(3).c_str()));
-      result.score = i.get_percent();
-      
-      this->results.push_back(result);
-
-      if (verbose) {
-	std::cout << "Document ID " << *i << "   \t";
-	std::cout << i.get_percent() << "% ";
-	std::cout << "\t[" << doc.get_data() << "] - " << doc.get_value(0) << std::endl;
-      }
-    }
+    this->results = enquire.get_mset(resultStart, resultEnd - resultStart);
+    this->current_result = this->results.begin();
 
     /* Update the global resultCount value*/
-    this->estimatedResultCount = matches.get_matches_estimated();
-
-    return;
+    this->estimatedResultCount = this->results.get_matches_estimated();
   }
-}
+
+  /* Get next result */
+  Result* XapianSearcher::getNextResult() {
+    if (this->current_result != this->results.end()) {
+      XapianResult* result = new XapianResult(this->current_result);
+      this->current_result++;
+      return result;
+    }
+    return NULL;
+  }
+
+  void XapianSearcher::restart_search() {
+    this->current_result = this->results.begin();
+  }
+
+  XapianResult::XapianResult(Xapian::MSetIterator& iterator):
+    iterator(iterator),
+    document(iterator.get_document())
+  {
+  }
+
+  std::string XapianResult::get_url() {
+    return document.get_data();
+  }
+
+  std::string XapianResult::get_title() {
+      return document.get_value(0);
+  }
+
+  int XapianResult::get_score() {
+    return iterator.get_percent();
+  }
+
+  std::string XapianResult::get_snippet() {
+      return document.get_value(1);
+  }
+
+  int XapianResult::get_size() {
+      return document.get_value(2).empty() == true ? -1 : atoi(document.get_value(2).c_str());
+  }
+
+  int XapianResult::get_wordCount() {
+        return document.get_value(3).empty() == true ? -1 : atoi(document.get_value(3).c_str());
+  }
+
+} // Kiwix namespace

@@ -460,19 +460,18 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_indexedQuery
   (JNIEnv *env, jclass obj, jstring query, jint count) {
   std::string cQuery = jni2c(query, env);
   unsigned int cCount = jni2c(count);
-  std::string url;
-  std::string title;
+  kiwix::Result *p_result;
   std::string result;
-  unsigned int score;
       
   pthread_mutex_lock(&searcherLock);
   try {
     if (searcher != NULL) {
       searcher->search(cQuery, 0, count);
-      while (searcher->getNextResult(url, title, score) &&
-	     !title.empty() &&
-	     !url.empty()) {
-	result += title + "\n";
+      while ( (p_result = searcher->getNextResult()) &&
+	     !(p_result->get_title().empty()) &&
+	     !(p_result->get_url().empty())) {
+	result += p_result->get_title() + "\n";
+	delete p_result;
       }
     }
   } catch (...) {

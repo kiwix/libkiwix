@@ -81,7 +81,6 @@ namespace kiwix {
       this->resultEnd = resultEnd;
       string unaccentedSearch = removeAccents(search);
       searchInIndex(unaccentedSearch, resultStart, resultEnd, verbose);
-      this->resultOffset = this->results.begin();
     }
 
     return;
@@ -89,8 +88,6 @@ namespace kiwix {
 
   /* Reset the results */
   void Searcher::reset() {
-    this->results.clear();
-    this->resultOffset = this->results.begin();
     this->estimatedResultCount = 0;
     this->searchPattern = "";
     return;
@@ -99,30 +96,6 @@ namespace kiwix {
   /* Return the result count estimation */
   unsigned int Searcher::getEstimatedResultCount() {
     return this->estimatedResultCount;
-  }
-
-  /* Get next result */
-  bool Searcher::getNextResult(string &url, string &title, unsigned int &score) {
-    bool retVal = false;
-
-    if (this->resultOffset != this->results.end()) {
-
-      /* url */
-      url = this->resultOffset->url;
-
-      /* title */
-      title = this->resultOffset->title;
-
-      /* score */
-      score =  this->resultOffset->score;
-
-      /* increment the cursor for the next call */
-      this->resultOffset++;
-
-      retVal = true;
-    }
-
-    return retVal;
   }
 
   bool Searcher::setProtocolPrefix(const std::string prefix) {
@@ -149,23 +122,24 @@ namespace kiwix {
     CDT oData;
     CDT resultsCDT(CDT::ARRAY_VAL);
 
-    this->resultOffset = this->results.begin();
-    while (this->resultOffset != this->results.end()) {
+    this->restart_search();
+    Result * p_result = NULL;
+    while ( (p_result = this->getNextResult()) ) {
       CDT result;
-      result["title"] = this->resultOffset->title;
-      result["url"] = this->resultOffset->url;
-      result["snippet"] = this->resultOffset->snippet;
+      result["title"] = p_result->get_title();
+      result["url"] = p_result->get_url();
+      result["snippet"] = p_result->get_snippet();
 
-      if (this->resultOffset->size >= 0)
-    result["size"] = kiwix::beautifyInteger(this->resultOffset->size);
+      if (p_result->get_size() >= 0)
+        result["size"] = kiwix::beautifyInteger(p_result->get_size());
 
-      if (this->resultOffset->wordCount >= 0)
-    result["wordCount"] = kiwix::beautifyInteger(this->resultOffset->wordCount);
+      if (p_result->get_wordCount() >= 0)
+        result["wordCount"] = kiwix::beautifyInteger(p_result->get_wordCount());
 
       resultsCDT.PushBack(result);
-      this->resultOffset++;
+      delete p_result;
     }
-    this->resultOffset = this->results.begin();
+    this->restart_search();
     oData["results"] = resultsCDT;
 
     // pages
