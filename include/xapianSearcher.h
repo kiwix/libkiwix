@@ -22,6 +22,8 @@
 
 #include <xapian.h>
 #include "searcher.h"
+#include "reader.h"
+
 #include <map>
 #include <string>
 
@@ -58,7 +60,7 @@ namespace kiwix {
   class XapianSearcher : public Searcher {
     friend class XapianResult;
   public:
-    XapianSearcher(const string &xapianDirectoryPath);
+    XapianSearcher(const string &xapianDirectoryPath, Reader* reader);
     virtual ~XapianSearcher() {};
     void searchInIndex(string &search, const unsigned int resultStart, const unsigned int resultEnd, 
 		       const bool verbose=false);
@@ -69,6 +71,7 @@ namespace kiwix {
     void closeIndex();
     void openIndex(const string &xapianDirectoryPath);
 
+    Reader* reader;
     Xapian::Database readableDatabase;
     Xapian::Stem stemmer;
     Xapian::MSet results;

@@ -18,6 +18,7 @@
  */
 
 #include "xapianSearcher.h"
+#include "xapian/myhtmlparse.h"
 #include <zim/zim.h>
 #include <zim/file.h>
 #include <zim/article.h>
@@ -41,8 +42,9 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
 }
 
   /* Constructor */
-  XapianSearcher::XapianSearcher(const string &xapianDirectoryPath) 
+  XapianSearcher::XapianSearcher(const string &xapianDirectoryPath, Reader* reader)
     : Searcher(),
+      reader(reader),
       stemmer(Xapian::Stem("english")) {
     this->openIndex(xapianDirectoryPath);
   }
@@ -134,14 +136,31 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
   std::string XapianResult::get_snippet() {
       if ( searcher->valuesmap.empty() )
       {
-         /* This is the old legacy version. Guess and try */
-         return document.get_value(1);
+          /* This is the old legacy version. Guess and try */
+          std::string stored_snippet = document.get_value(1);
+          if ( ! stored_snippet.empty() )
+              return stored_snippet;
+          /* Let's continue here, and see if we can genenate one */
       }
       else if ( searcher->valuesmap.find("snippet") != searcher->valuesmap.end() )
       {
-         return document.get_value(searcher->valuesmap["snippet"]);
+          return document.get_value(searcher->valuesmap["snippet"]);
       }
-      return "";
+      /* No reader, no snippet */
+      if ( ! searcher->reader )
+          return "";
+      /* Get the content of the article to generate a snippet.
+         We parse it and use the html dump to avoid remove html tags in the
+         content and be able to nicely cut the text at random place. */
+      MyHtmlParser htmlParser;
+      std::string content;
+      unsigned int contentLength;
+      std::string contentType;
+      searcher->reader->getContentByUrl(get_url(), content, contentLength, contentType);
+      try {
+          htmlParser.parse_html(content, "UTF-8", true);
+      } catch (...) {}
+      return searcher->results.snippet(htmlParser.dump, 500);
   }
 
   int XapianResult::get_size() {
