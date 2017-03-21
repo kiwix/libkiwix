@@ -37,6 +37,7 @@ namespace kiwix {
     
   public:
     XapianSearcher(const string &xapianDirectoryPath);
+    virtual ~XapianSearcher() {};
     void searchInIndex(string &search, const unsigned int resultStart, const unsigned int resultEnd, 
 		       const bool verbose=false);
 

@@ -51,7 +51,7 @@ namespace kiwix {
 
   public:
     Searcher();
-    ~Searcher();
+    virtual ~Searcher();
 
     void search(std::string &search, unsigned int resultStart,
 		unsigned int resultEnd, const bool verbose=false);
