@@ -1,5 +1,5 @@
 project('kiwixlib', 'cpp',
-  version : '1.0.0',
+  version : '0.1.0',
   license : 'GPL')
 
 compiler = meson.get_compiler('cpp')

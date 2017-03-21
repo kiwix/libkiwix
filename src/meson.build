@@ -40,4 +40,5 @@ kiwixlib = library('kiwix',
                    kiwix_sources,
                    include_directories : inc,
                    dependencies : all_deps,
+                   version: '1.0.0',
                    install : true)
