@@ -70,9 +70,12 @@ namespace kiwix {
   protected:
     void closeIndex();
     void openIndex(const string &xapianDirectoryPath);
+    void setup_queryParser();
 
     Reader* reader;
     Xapian::Database readableDatabase;
+    std::string language;
+    Xapian::QueryParser queryParser;
     Xapian::Stem stemmer;
     Xapian::MSet results;
     Xapian::MSetIterator current_result;

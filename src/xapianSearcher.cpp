@@ -25,6 +25,7 @@
 #include <zim/error.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <unicode/locid.h>
 
 #include <vector>
 
@@ -46,8 +47,8 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
   /* Constructor */
   XapianSearcher::XapianSearcher(const string &xapianDirectoryPath, Reader* reader)
     : Searcher(),
-      reader(reader),
-      stemmer(Xapian::Stem("english")) {
+      reader(reader)
+  {
     this->openIndex(xapianDirectoryPath);
   }
 
@@ -67,18 +68,39 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
       this->readableDatabase = Xapian::Database(directoryPath);
     }
     this->valuesmap = read_valuesmap(this->readableDatabase.get_metadata("valuesmap"));
+    this->language = this->readableDatabase.get_metadata("language");
+    setup_queryParser();
   }
   
   /* Close Xapian writable database */
   void XapianSearcher::closeIndex() {
     return;
   }
+
+  void XapianSearcher::setup_queryParser()
+  {
+    queryParser.set_database(readableDatabase);
+    if ( ! language.empty() )
+    {
+        /* Build ICU Local object to retrieve ISO-639 language code (from
+           ISO-639-3) */
+        icu::Locale languageLocale(language.c_str());
+
+        /* Configuring language base steemming */
+        try {
+          stemmer = Xapian::Stem(languageLocale.getLanguage());
+          queryParser.set_stemmer(stemmer);
+          queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_ALL);
+        } catch (...) {
+          std::cout << "No steemming for language '" << languageLocale.getLanguage() << "'" << std::endl;
+        }
+    }
+  }
   
   /* Search strings in the database */
   void XapianSearcher::searchInIndex(string &search, const unsigned int resultStart, 
 				     const unsigned int resultEnd, const bool verbose) {
     /* Create the query */
-    Xapian::QueryParser queryParser;
     Xapian::Query query = queryParser.parse_query(search);    
 
     /* Create the enquire object */
