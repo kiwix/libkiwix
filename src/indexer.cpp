@@ -62,22 +62,7 @@ namespace kiwix {
   /* Destructor */
   Indexer::~Indexer() {
   }
-
-  /* Read the stopwords */
-  void Indexer::readStopWords(const string languageCode) {
-    std::string stopWord;
-    std::istringstream file(getResource("stopwords/" + languageCode));
-
-    this->stopWords.clear();
-
-    while (getline(file, stopWord, '\n')) {
-      this->stopWords.push_back(stopWord);
-    }
     
-    if (this->verboseFlag) {
-      std::cout << "Read stop words, lang code:" << languageCode << ", count:" << this->stopWords.size() << std::endl;
-    }
-  }
   
 #pragma mark - Extractor
   

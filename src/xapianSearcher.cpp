@@ -69,6 +69,7 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
     }
     this->valuesmap = read_valuesmap(this->readableDatabase.get_metadata("valuesmap"));
     this->language = this->readableDatabase.get_metadata("language");
+    this->stopwords = this->readableDatabase.get_metadata("stopwords");
     setup_queryParser();
   }
   
@@ -94,6 +95,16 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
         } catch (...) {
           std::cout << "No steemming for language '" << languageLocale.getLanguage() << "'" << std::endl;
         }
+    }
+
+    if ( ! stopwords.empty() )
+    {
+        std::string stopWord;
+        std::istringstream file(this->stopwords);
+        while (std::getline(file, stopWord, '\n')) {
+          this->stopper.add(stopWord);
+        }
+        queryParser.set_stopper(&(this->stopper));
     }
   }
   

@@ -75,8 +75,10 @@ namespace kiwix {
     Reader* reader;
     Xapian::Database readableDatabase;
     std::string language;
+    std::string stopwords;
     Xapian::QueryParser queryParser;
     Xapian::Stem stemmer;
+    Xapian::SimpleStopper stopper;
     Xapian::MSet results;
     Xapian::MSetIterator current_result;
     std::map<std::string, int> valuesmap;

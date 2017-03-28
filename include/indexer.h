@@ -78,10 +78,6 @@ namespace kiwix {
     virtual void flush() = 0;
     virtual void indexingPostlude(const string indexPath) = 0;
 
-    /* Stop words */
-    std::vector<std::string> stopWords;
-    void readStopWords(const string languageCode);
-
     /* Others */
     unsigned int countWords(const string &text);
 
