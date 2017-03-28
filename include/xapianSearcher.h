@@ -22,10 +22,34 @@
 
 #include <xapian.h>
 #include "searcher.h"
+#include "reader.h"
+
+#include <map>
+#include <string>
 
 using namespace std;
 
 namespace kiwix {
+
+  class XapianSearcher;
+
+  class XapianResult : public Result {
+    public:
+      XapianResult(XapianSearcher* searcher, Xapian::MSetIterator& iterator);
+      virtual ~XapianResult() {};
+
+      virtual std::string get_url();
+      virtual std::string get_title();
+      virtual int get_score();
+      virtual std::string get_snippet();
+      virtual int get_wordCount();
+      virtual int get_size();
+
+    private:
+      XapianSearcher* searcher;
+      Xapian::MSetIterator iterator;
+      Xapian::Document document;
+  };
 
   class NoXapianIndexInZim: public exception {
     virtual const char* what() const throw() {
@@ -34,19 +58,25 @@ namespace kiwix {
   };
 
   class XapianSearcher : public Searcher {
-    
+    friend class XapianResult;
   public:
-    XapianSearcher(const string &xapianDirectoryPath);
+    XapianSearcher(const string &xapianDirectoryPath, Reader* reader);
     virtual ~XapianSearcher() {};
     void searchInIndex(string &search, const unsigned int resultStart, const unsigned int resultEnd, 
 		       const bool verbose=false);
+    virtual Result* getNextResult();
+    void restart_search();
 
   protected:
     void closeIndex();
     void openIndex(const string &xapianDirectoryPath);
 
+    Reader* reader;
     Xapian::Database readableDatabase;
     Xapian::Stem stemmer;
+    Xapian::MSet results;
+    Xapian::MSetIterator current_result;
+    std::map<std::string, int> valuesmap;
   };
 
 }

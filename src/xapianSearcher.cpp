@@ -18,6 +18,7 @@
  */
 
 #include "xapianSearcher.h"
+#include "xapian/myhtmlparse.h"
 #include <zim/zim.h>
 #include <zim/file.h>
 #include <zim/article.h>
@@ -25,11 +26,25 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <vector>
+
 namespace kiwix {
 
+std::map<std::string, int> read_valuesmap(const std::string &s) {
+    std::map<std::string, int> result;
+    std::vector<std::string> elems = split(s, ";");
+    for( auto elem: elems)
+    {
+        std::vector<std::string> tmp_elems = split(elem, ":");
+        result.insert( std::pair<std::string, int>(tmp_elems[0], atoi(tmp_elems[1].c_str())) );
+    }
+    return result;
+}
+
   /* Constructor */
-  XapianSearcher::XapianSearcher(const string &xapianDirectoryPath) 
+  XapianSearcher::XapianSearcher(const string &xapianDirectoryPath, Reader* reader)
     : Searcher(),
+      reader(reader),
       stemmer(Xapian::Stem("english")) {
     this->openIndex(xapianDirectoryPath);
   }
@@ -49,6 +64,7 @@ namespace kiwix {
     } catch (...) {
       this->readableDatabase = Xapian::Database(directoryPath);
     }
+    this->valuesmap = read_valuesmap(this->readableDatabase.get_metadata("valuesmap"));
   }
   
   /* Close Xapian writable database */
@@ -68,32 +84,111 @@ namespace kiwix {
     enquire.set_query(query);
 
     /* Get the results */
-    Xapian::MSet matches = enquire.get_mset(resultStart, resultEnd - resultStart);
-    
-    Xapian::MSetIterator i;
-    for (i = matches.begin(); i != matches.end(); ++i) {
-      Xapian::Document doc = i.get_document();
-      
-      Result result;
-      result.url = doc.get_data();
-      result.title = doc.get_value(0);
-      result.snippet = doc.get_value(1);
-      result.size = (doc.get_value(2).empty() == true ? -1 : atoi(doc.get_value(2).c_str()));
-      result.wordCount = (doc.get_value(3).empty() == true ? -1 : atoi(doc.get_value(3).c_str()));
-      result.score = i.get_percent();
-      
-      this->results.push_back(result);
-
-      if (verbose) {
-	std::cout << "Document ID " << *i << "   \t";
-	std::cout << i.get_percent() << "% ";
-	std::cout << "\t[" << doc.get_data() << "] - " << doc.get_value(0) << std::endl;
-      }
-    }
+    this->results = enquire.get_mset(resultStart, resultEnd - resultStart);
+    this->current_result = this->results.begin();
 
     /* Update the global resultCount value*/
-    this->estimatedResultCount = matches.get_matches_estimated();
-
-    return;
+    this->estimatedResultCount = this->results.get_matches_estimated();
   }
-}
+
+  /* Get next result */
+  Result* XapianSearcher::getNextResult() {
+    if (this->current_result != this->results.end()) {
+      XapianResult* result = new XapianResult(this, this->current_result);
+      this->current_result++;
+      return result;
+    }
+    return NULL;
+  }
+
+  void XapianSearcher::restart_search() {
+    this->current_result = this->results.begin();
+  }
+
+  XapianResult::XapianResult(XapianSearcher* searcher, Xapian::MSetIterator& iterator):
+    searcher(searcher),
+    iterator(iterator),
+    document(iterator.get_document())
+  {
+  }
+
+  std::string XapianResult::get_url() {
+    return document.get_data();
+  }
+
+  std::string XapianResult::get_title() {
+      if ( searcher->valuesmap.empty() )
+      {
+          /* This is the old legacy version. Guess and try */
+          return document.get_value(0);
+      }
+      else if ( searcher->valuesmap.find("title") != searcher->valuesmap.end() )
+      {
+          return document.get_value(searcher->valuesmap["title"]);
+      }
+      return "";
+  }
+
+  int XapianResult::get_score() {
+    return iterator.get_percent();
+  }
+
+  std::string XapianResult::get_snippet() {
+      if ( searcher->valuesmap.empty() )
+      {
+          /* This is the old legacy version. Guess and try */
+          std::string stored_snippet = document.get_value(1);
+          if ( ! stored_snippet.empty() )
+              return stored_snippet;
+          /* Let's continue here, and see if we can genenate one */
+      }
+      else if ( searcher->valuesmap.find("snippet") != searcher->valuesmap.end() )
+      {
+          return document.get_value(searcher->valuesmap["snippet"]);
+      }
+      /* No reader, no snippet */
+      if ( ! searcher->reader )
+          return "";
+      /* Get the content of the article to generate a snippet.
+         We parse it and use the html dump to avoid remove html tags in the
+         content and be able to nicely cut the text at random place. */
+      MyHtmlParser htmlParser;
+      std::string content;
+      unsigned int contentLength;
+      std::string contentType;
+      searcher->reader->getContentByUrl(get_url(), content, contentLength, contentType);
+      try {
+          htmlParser.parse_html(content, "UTF-8", true);
+      } catch (...) {}
+      return searcher->results.snippet(htmlParser.dump, 500);
+  }
+
+  int XapianResult::get_size() {
+      if ( searcher->valuesmap.empty() )
+      {
+          /* This is the old legacy version. Guess and try */
+          return document.get_value(2).empty() == true ? -1 : atoi(document.get_value(2).c_str());
+      }
+      else if ( searcher->valuesmap.find("size") != searcher->valuesmap.end() )
+      {
+          return atoi(document.get_value(searcher->valuesmap["size"]).c_str());
+      }
+      /* The size is never used. Do we really want to get the content and
+         calculate the size ? */
+      return -1;
+  }
+
+  int XapianResult::get_wordCount() {
+      if ( searcher->valuesmap.empty() )
+      {
+          /* This is the old legacy version. Guess and try */
+          return document.get_value(3).empty() == true ? -1 : atoi(document.get_value(3).c_str());
+      }
+      else if ( searcher->valuesmap.find("wordcount") != searcher->valuesmap.end() )
+      {
+          return atoi(document.get_value(searcher->valuesmap["wordcount"]).c_str());
+      }
+      return -1;
+  }
+
+} // Kiwix namespace
