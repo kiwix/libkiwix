@@ -33,9 +33,11 @@ namespace kiwix {
 std::map<std::string, int> read_valuesmap(const std::string &s) {
     std::map<std::string, int> result;
     std::vector<std::string> elems = split(s, ";");
-    for( auto elem: elems)
+    for(std::vector<std::string>::iterator elem = elems.begin();
+        elem != elems.end();
+        elem++)
     {
-        std::vector<std::string> tmp_elems = split(elem, ":");
+        std::vector<std::string> tmp_elems = split(*elem, ":");
         result.insert( std::pair<std::string, int>(tmp_elems[0], atoi(tmp_elems[1].c_str())) );
     }
     return result;
