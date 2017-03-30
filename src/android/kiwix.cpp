@@ -460,7 +460,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_indexedQuery
   (JNIEnv *env, jclass obj, jstring query, jint count) {
   std::string cQuery = jni2c(query, env);
   unsigned int cCount = jni2c(count);
-  kiwix::Result *p_result;
+  Result *p_result;
   std::string result;
       
   pthread_mutex_lock(&searcherLock);
