@@ -85,7 +85,7 @@ namespace kiwix {
     unsigned int newProgress;
 
     /* StopWords */
-    self->readStopWords(reader.getLanguage());
+//    self->readStopWords(reader.getLanguage());
 
     /* Goes trough all articles */
     zim::File *zimHandler = reader.getZimFileHandler();
