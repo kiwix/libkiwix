@@ -61,9 +61,7 @@ else
   endif
 endif
 
-xapian_dep = dependency('xapian-core', required:false)
-
-all_deps = [thread_dep, libicu_dep, libzim_dep, xapian_dep, pugixml_dep]
+all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep]
 if has_ctpp2_dep
   all_deps += [ctpp2_dep]
 endif
@@ -80,9 +78,6 @@ subdir('static')
 subdir('src')
 
 pkg_requires = ['libzim', 'icu-i18n', 'pugixml']
-if xapian_dep.found()
-    pkg_requires += ['xapian-core']
-endif
 
 extra_libs = []
 extra_cflags = ''

@@ -35,30 +35,31 @@
 
 using namespace std;
 
-class Result
-{
-  public:
-    virtual ~Result() {};
-    virtual std::string get_url() = 0;
-    virtual std::string get_title() = 0;
-    virtual int get_score() = 0;
-    virtual std::string get_snippet() = 0;
-    virtual int get_wordCount() = 0;
-    virtual int get_size() = 0;
-};
-
 namespace kiwix {
+  class Reader;
+  class Result {
+    public:
+      virtual ~Result() {};
+      virtual std::string get_url() = 0;
+      virtual std::string get_title() = 0;
+      virtual int get_score() = 0;
+      virtual std::string get_snippet() = 0;
+      virtual int get_wordCount() = 0;
+      virtual int get_size() = 0;
+  };
 
+
+  struct SearcherInternal;
   class Searcher {
 
   public:
-    Searcher();
-    virtual ~Searcher();
+    Searcher(Reader* reader);
+    ~Searcher();
 
     void search(std::string &search, unsigned int resultStart,
 		unsigned int resultEnd, const bool verbose=false);
-    virtual Result* getNextResult() = 0;
-    virtual void restart_search() = 0;
+    Result* getNextResult();
+    void restart_search();
     unsigned int getEstimatedResultCount();
     bool setProtocolPrefix(const std::string prefix);
     bool setSearchProtocolPrefix(const std::string prefix);
@@ -71,10 +72,12 @@ namespace kiwix {
     
   protected:
     std::string beautifyInteger(const unsigned int number);
-    virtual void closeIndex() = 0;
-    virtual void searchInIndex(string &search, const unsigned int resultStart,
-			       const unsigned int resultEnd, const bool verbose=false) = 0;
+    void closeIndex() ;
+    void searchInIndex(string &search, const unsigned int resultStart,
+	               const unsigned int resultEnd, const bool verbose=false);
 
+    Reader* reader;
+    SearcherInternal* internal;
     std::string searchPattern;
     std::string protocolPrefix;
     std::string searchProtocolPrefix;

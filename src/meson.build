@@ -8,15 +8,9 @@ kiwix_sources = [
   'common/regexTools.cpp',
   'common/stringTools.cpp',
   'common/networkTools.cpp',
-  'common/otherTools.cpp',
-  'xapian/htmlparse.cc',
-  'xapian/myhtmlparse.cc'
+  'common/otherTools.cpp'
 ]
 kiwix_sources += lib_resources
-
-if xapian_dep.found()
-  kiwix_sources += ['xapianSearcher.cpp']
-endif
 
 if get_option('android')
   subdir('android')

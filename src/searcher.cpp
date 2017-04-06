@@ -18,7 +18,10 @@
  */
 
 #include "searcher.h"
+#include "reader.h"
 #include "kiwixlib-resources.h"
+
+#include <zim/search.h>
 
 #ifdef ENABLE_CTPP2
 #include <ctpp2/CDT.hpp>
@@ -32,8 +35,39 @@ using namespace CTPP;
 
 namespace kiwix {
 
+  class _Result : public Result {
+    public:
+      _Result(Searcher* searcher, zim::Search::iterator& iterator);
+      virtual ~_Result() {};
+
+      virtual std::string get_url();
+      virtual std::string get_title();
+      virtual int get_score();
+      virtual std::string get_snippet();
+      virtual int get_wordCount();
+      virtual int get_size();
+
+    private:
+      Searcher* searcher;
+      zim::Search::iterator iterator;
+  };
+
+  struct SearcherInternal {
+    const zim::Search *_search;
+    zim::Search::iterator current_iterator;
+
+    SearcherInternal() :  _search(NULL) {}
+    ~SearcherInternal() {
+        if ( _search != NULL )
+            delete _search;
+    }
+
+  };
+
   /* Constructor */
-  Searcher::Searcher() :
+  Searcher::Searcher(Reader* reader) :
+    reader(reader),
+    internal(new SearcherInternal()),
     searchPattern(""),
     protocolPrefix("zim://"),
     searchProtocolPrefix("search://?"),
@@ -47,7 +81,9 @@ namespace kiwix {
   }
   
   /* Destructor */
-  Searcher::~Searcher() {}
+  Searcher::~Searcher() {
+      delete internal;
+  }
   
   /* Search strings in the database */
   void Searcher::search(std::string &search, unsigned int resultStart,
@@ -80,11 +116,27 @@ namespace kiwix {
       this->resultStart = resultStart;
       this->resultEnd = resultEnd;
       string unaccentedSearch = removeAccents(search);
-      searchInIndex(unaccentedSearch, resultStart, resultEnd, verbose);
+      internal->_search = this->reader->getZimFileHandler()->search(unaccentedSearch, resultStart, resultEnd);
+      internal->current_iterator = internal->_search->begin();
+      this->estimatedResultCount = internal->_search->get_matches_estimated();
     }
 
     return;
   }
+
+  void Searcher::restart_search() {
+    internal->current_iterator = internal->_search->begin();
+  }
+
+  Result* Searcher::getNextResult() {
+    if (internal->current_iterator != internal->_search->end()) {
+      Result* result = new _Result(this, internal->current_iterator);
+      internal->current_iterator++;
+      return result;
+    }
+    return NULL;
+  }
+
 
   /* Reset the results */
   void Searcher::reset() {
@@ -110,6 +162,36 @@ namespace kiwix {
 
   void Searcher::setContentHumanReadableId(const string &contentHumanReadableId) {
     this->contentHumanReadableId = contentHumanReadableId;
+  }
+
+  _Result::_Result(Searcher* searcher, zim::Search::iterator& iterator):
+    searcher(searcher),
+    iterator(iterator)
+  {
+  }
+
+  std::string _Result::get_url() {
+    return iterator.get_url();
+  }
+
+  std::string _Result::get_title() {
+    return iterator.get_title();
+  }
+
+  int _Result::get_score() {
+    return iterator.get_score();
+  }
+
+  std::string _Result::get_snippet() {
+    return iterator.get_snippet();
+  }
+
+  int _Result::get_size() {
+      return iterator.get_size();
+  }
+
+  int _Result::get_wordCount() {
+      return iterator.get_wordCount();
   }
 
 #ifdef ENABLE_CTPP2
