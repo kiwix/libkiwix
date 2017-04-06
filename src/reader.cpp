@@ -98,12 +98,12 @@ namespace kiwix {
 
   std::map<const std::string, unsigned int> Reader::parseCounterMetadata() const {
     std::map<const std::string, unsigned int> counters;
-    string content, mimeType, item, counterString;
-    unsigned int contentLength, counter;
-    string counterUrl = "/M/Counter";
+    string mimeType, item, counterString;
+    unsigned int counter;
 
-    this->getContentByUrl(counterUrl, content, contentLength, mimeType);
-    stringstream ssContent(content);
+    zim::Article article = this->zimFileHandler->getArticle('M',"Counter");
+
+    stringstream ssContent(article.getData());
 
     while(getline(ssContent, item,  ';')) {
       stringstream ssItem(item);
@@ -175,25 +175,20 @@ namespace kiwix {
   /* Return a page url from a title */
   bool Reader::getPageUrlFromTitle(const string &title, string &url) const {
     /* Extract the content from the zim file */
-    std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findxByTitle('A', title);
+    zim::Article article = this->zimFileHandler->getArticleByTitle('A', title);
 
-    /* Test if the article was found */
-    if (resultPair.first == true) {
-
-      /* Get the article */
-      zim::Article article = *resultPair.second;
-
-      /* If redirect */
-      unsigned int loopCounter = 0;
-      while (article.isRedirect() && loopCounter++<42) {
-	article = article.getRedirectArticle();
-      }
-
-      url = article.getLongUrl();
-      return true;
+    if ( ! article.good() )
+    {
+        return false;
     }
 
-    return false;
+    unsigned int loopCounter = 0;
+    while (article.isRedirect() && loopCounter++<42) {
+	article = article.getRedirectArticle();
+    }
+
+    url = article.getLongUrl();
+    return true;
   }
 
   /* Return an URL from a title*/
@@ -208,7 +203,7 @@ namespace kiwix {
       article = zimFileHandler->getArticle(idx);
     } while (article.getLongUrl() == mainPageUrl);
 
-    return article.getLongUrl().c_str();
+    return article.getLongUrl();
   }
 
   /* Return the welcome page URL */
@@ -358,9 +353,7 @@ namespace kiwix {
   string Reader::getFirstPageUrl() const {
     zim::size_type firstPageOffset = zimFileHandler->getNamespaceBeginOffset('A');
     zim::Article article = zimFileHandler->getArticle(firstPageOffset);
-    url = article.getLongUrl();
-
-    return url;
+    return article.getLongUrl();
   }
 
   bool Reader::parseUrl(const string &url, char *ns, string &title) const {
@@ -394,56 +387,44 @@ namespace kiwix {
 
   /* Return article by url */
   bool Reader::getArticleObjectByDecodedUrl(const string &url, zim::Article &article) const {
-    bool retVal = false;
-    
-    if (this->zimFileHandler != NULL) {
-      
-      /* Parse the url */
-      char ns = 0;
-      string titleStr;
-      this->parseUrl(url, &ns, titleStr);
-      
-      /* Main page */
-      if (titleStr.empty() && ns == 0) {
-	this->parseUrl(this->getMainPageUrl(), &ns, titleStr);
-      }
-      
-      /* Extract the content from the zim file */
-      std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findx(ns, titleStr);
-      
-      /* Test if the article was found */
-      if (resultPair.first == true) {
-	article = zimFileHandler->getArticle(resultPair.second.getIndex());
-	retVal = true;
-      }
-
+    if (this->zimFileHandler == NULL) {
+        return false;
     }
-    
-    return retVal;
+
+    /* Parse the url */
+    char ns = 0;
+    string urlStr;
+    this->parseUrl(url, &ns, urlStr);
+      
+    /* Main page */
+    if (urlStr.empty() && ns == 0) {
+        this->parseUrl(this->getMainPageUrl(), &ns, urlStr);
+    }
+
+    /* Extract the content from the zim file */
+    article = zimFileHandler->getArticle(ns, urlStr);
+    return article.good();
   }
 
   /* Return the mimeType without the content */
   bool Reader::getMimeTypeByUrl(const string &url, string &mimeType) const {
-    bool retVal = false;
-
-    if (this->zimFileHandler != NULL) {
-
-      zim::Article article;
-      if (this->getArticleObjectByDecodedUrl(url, article)) {
-	  try {
-	    mimeType = string(article.getMimeType().data(), article.getMimeType().size());
-	  } catch (exception &e) {
-	    cerr << "Unable to get the mimetype for "<< url << ":" << e.what() << endl;
-	    mimeType = "application/octet-stream";
-	  }	
-	  retVal = true;
-      } else {
-	mimeType = "";
-      }
-     
+    if (this->zimFileHandler == NULL) {
+        return false;
     }
 
-    return retVal;
+    zim::Article article;
+    if (this->getArticleObjectByDecodedUrl(url, article)) {
+        try {
+            mimeType = article.getMimeType();
+        } catch (exception &e) {
+            cerr << "Unable to get the mimetype for " << url << ":" << e.what() << endl;
+            mimeType = "application/octet-stream";
+        }
+        return true;
+    } else {
+        mimeType = "";
+        return false;
+    }
   }
 
   /* Get a content from a zim file */
@@ -466,53 +447,48 @@ namespace kiwix {
   }
 
   bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) const {
-    bool retVal = false;
     content="";
     contentType="";
     contentLength = 0;
-    if (this->zimFileHandler != NULL) {
 
-      zim::Article article;
-      if (this->getArticleObjectByDecodedUrl(url, article)) {
-	
-	/* If redirect */
-	unsigned int loopCounter = 0;
-	while (article.isRedirect() && loopCounter++<42) {
-	  article = article.getRedirectArticle();
-	}
-
-	if (loopCounter < 42) {
-	  /* Compute base url (might be different from the url if redirects */
-	  baseUrl = "/" + std::string(1, article.getNamespace()) + "/" + article.getUrl();
-	  
-	  /* Get the content mime-type */
-	  try {
-	    contentType = string(article.getMimeType().data(), article.getMimeType().size());
-	  } catch (exception &e) {
-	    cerr << "Unable to get the mimetype for "<< baseUrl<< ":" << e.what() << endl;
-	    contentType = "application/octet-stream";
-	  }
-
-	  /* Get the data */
-	  content = string(article.getData().data(), article.getArticleSize());
-	}
-
-	/* Try to set a stub HTML header/footer if necesssary */
-	if (contentType.find("text/html") != string::npos && 
-	    content.find("<body") == std::string::npos &&
-	    content.find("<BODY") == std::string::npos) {
-	  content = "<html><head><title>" + article.getTitle() + "</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>" + content + "</body></html>";
-	}
-
-	/* Get the data length */
-	contentLength = article.getArticleSize();
-
-	/* Set return value */
-	retVal = true;
-      }
+    zim::Article article;
+    if ( ! this->getArticleObjectByDecodedUrl(url, article)) {
+        return false;
     }
 
-    return retVal;
+    /* If redirect */
+    unsigned int loopCounter = 0;
+    while (article.isRedirect() && loopCounter++<42) {
+        article = article.getRedirectArticle();
+    }
+
+    if (loopCounter < 42) {
+        /* Compute base url (might be different from the url if redirects */
+        baseUrl = "/" + std::string(1, article.getNamespace()) + "/" + article.getUrl();
+
+        /* Get the content mime-type */
+        try {
+            contentType = string(article.getMimeType().data(), article.getMimeType().size());
+        } catch (exception &e) {
+            cerr << "Unable to get the mimetype for "<< baseUrl<< ":" << e.what() << endl;
+            contentType = "application/octet-stream";
+        }
+
+        /* Get the data */
+        content = string(article.getData().data(), article.getArticleSize());
+    }
+
+    /* Try to set a stub HTML header/footer if necesssary */
+    if (contentType.find("text/html") != string::npos &&
+        content.find("<body") == std::string::npos &&
+        content.find("<BODY") == std::string::npos) {
+        content = "<html><head><title>" + article.getTitle() + "</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>" + content + "</body></html>";
+    }
+
+    /* Get the data length */
+    contentLength = article.getArticleSize();
+
+    return true;
   }
 
   /* Check if an article exists */
