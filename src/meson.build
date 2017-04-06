@@ -16,14 +16,9 @@ kiwix_sources += lib_resources
 
 if xapian_dep.found()
   kiwix_sources += ['xapianSearcher.cpp']
-  if not get_option('android')
-    kiwix_sources += ['xapianIndexer.cpp']
-  endif
 endif
 
-if not get_option('android')
-  kiwix_sources += ['indexer.cpp']
-else
+if get_option('android')
   subdir('android')
 endif
 
