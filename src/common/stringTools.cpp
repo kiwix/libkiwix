@@ -19,6 +19,13 @@
 
 #include <common/stringTools.h>
 
+#include <unicode/translit.h>
+#include <unicode/normlzr.h>
+#include <unicode/ustring.h>
+#include <unicode/rep.h>
+#include <unicode/uniset.h>
+#include <unicode/ucnv.h>
+
 /* tell ICU where to find its dat file (tables) */
 void kiwix::loadICUExternalTables() {
 #ifdef __APPLE__
