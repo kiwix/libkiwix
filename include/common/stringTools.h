@@ -20,13 +20,7 @@
 #ifndef KIWIX_STRINGTOOLS_H
 #define KIWIX_STRINGTOOLS_H
 
-#include <unicode/translit.h>
-#include <unicode/normlzr.h>
 #include <unicode/unistr.h>
-#include <unicode/rep.h>
-#include <unicode/uniset.h>
-#include <unicode/ustring.h>
-#include <unicode/ucnv.h>
 
 #include <iostream>
 #include <vector>
