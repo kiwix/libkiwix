@@ -87,7 +87,7 @@ namespace kiwix {
     }
   }
 
-  zim::File* Reader::getZimFileHandler() {
+  zim::File* Reader::getZimFileHandler() const {
     return this->zimFileHandler;
   }
 
@@ -96,8 +96,8 @@ namespace kiwix {
     this->currentArticleOffset = this->firstArticleOffset;
   }
 
-  std::map<std::string, unsigned int> Reader::parseCounterMetadata() {
-    std::map<std::string, unsigned int> counters;
+  std::map<const std::string, unsigned int> Reader::parseCounterMetadata() const {
+    std::map<const std::string, unsigned int> counters;
     string content, mimeType, item, counterString;
     unsigned int contentLength, counter;
     string counterUrl = "/M/Counter";
@@ -119,8 +119,8 @@ namespace kiwix {
   }
 
   /* Get the count of articles which can be indexed/displayed */
-  unsigned int Reader::getArticleCount() {
-    std::map<std::string, unsigned int> counterMap = this->parseCounterMetadata();
+  unsigned int Reader::getArticleCount() const {
+    std::map<const std::string, unsigned int> counterMap = this->parseCounterMetadata();
     unsigned int counter = 0;
 
     if (counterMap.empty()) {
@@ -135,8 +135,8 @@ namespace kiwix {
   }
 
   /* Get the count of medias content in the ZIM file */
-  unsigned int Reader::getMediaCount() {
-    std::map<std::string, unsigned int> counterMap = this->parseCounterMetadata();
+  unsigned int Reader::getMediaCount() const {
+    std::map<const std::string, unsigned int> counterMap = this->parseCounterMetadata();
     unsigned int counter = 0;
 
     if (counterMap.empty())
@@ -161,19 +161,19 @@ namespace kiwix {
   }
 
   /* Get the total of all items of a ZIM file, redirects included */
-  unsigned int Reader::getGlobalCount() {
+  unsigned int Reader::getGlobalCount() const {
     return this->zimFileHandler->getCountArticles();
   }
 
   /* Return the UID of the ZIM file */
-  string Reader::getId() {
+  string Reader::getId() const {
     std::ostringstream s;
     s << this->zimFileHandler->getFileheader().getUuid();
     return  s.str();
   }
 
   /* Return a page url from a title */
-  bool Reader::getPageUrlFromTitle(const string &title, string &url) {
+  bool Reader::getPageUrlFromTitle(const string &title, string &url) const {
     /* Extract the content from the zim file */
     std::pair<bool, zim::File::const_iterator> resultPair = zimFileHandler->findxByTitle('A', title);
 
@@ -197,7 +197,7 @@ namespace kiwix {
   }
 
   /* Return an URL from a title*/
-  string Reader::getRandomPageUrl() {
+  string Reader::getRandomPageUrl() const {
     zim::Article article;
     zim::size_type idx;
     std::string mainPageUrl = this->getMainPageUrl();
@@ -212,7 +212,7 @@ namespace kiwix {
   }
 
   /* Return the welcome page URL */
-  string Reader::getMainPageUrl() {
+  string Reader::getMainPageUrl() const {
     string url = "";
 
     if (this->zimFileHandler->getFileheader().hasMainPage()) {
@@ -229,7 +229,7 @@ namespace kiwix {
     return url;
   }
 
-  bool Reader::getFavicon(string &content, string &mimeType) {
+  bool Reader::getFavicon(string &content, string &mimeType) const {
     unsigned int contentLength = 0;
 
     this->getContentByUrl( "/-/favicon.png", content,
@@ -254,12 +254,12 @@ namespace kiwix {
     return content.empty() ? false : true;
   }
 
-  string Reader::getZimFilePath() {
+  string Reader::getZimFilePath() const {
     return this->zimFilePath;
   }
 
   /* Return a metatag value */
-  bool Reader::getMetatag(const string &name, string &value) {
+  bool Reader::getMetatag(const string &name, string &value) const {
     unsigned int contentLength = 0;
     string contentType = "";
 
@@ -267,7 +267,7 @@ namespace kiwix {
 				  contentLength, contentType);
   }
 
-  string Reader::getTitle() {
+  string Reader::getTitle() const {
     string value;
     this->getMetatag("Title", value);
     if (value.empty()) {
@@ -279,19 +279,19 @@ namespace kiwix {
     return value;
   }
 
-  string Reader::getName() {
+  string Reader::getName() const {
     string value;
     this->getMetatag("Name", value);
     return value;
   }
 
-  string Reader::getTags() {
+  string Reader::getTags() const {
     string value;
     this->getMetatag("Tags", value);
     return value;
   }
 
-  string Reader::getDescription() {
+  string Reader::getDescription() const{
     string value;
     this->getMetatag("Description", value);
 
@@ -303,31 +303,31 @@ namespace kiwix {
     return value;
   }
 
-  string Reader::getLanguage() {
+  string Reader::getLanguage() const {
     string value;
     this->getMetatag("Language", value);
     return value;
   }
 
-  string Reader::getDate() {
+  string Reader::getDate() const {
     string value;
     this->getMetatag("Date", value);
     return value;
   }
 
-  string Reader::getCreator() {
+  string Reader::getCreator() const {
     string value;
     this->getMetatag("Creator", value);
     return value;
   }
 
-  string Reader::getPublisher() {
+  string Reader::getPublisher() const {
     string value;
     this->getMetatag("Publisher", value);
     return value;
   }
 
-  string Reader::getOrigId() {
+  string Reader::getOrigId() const {
     string value;
     this->getMetatag("startfileuid", value);
     if(value.empty())
@@ -355,9 +355,7 @@ namespace kiwix {
   }
 
   /* Return the first page URL */
-  string Reader::getFirstPageUrl() {
-    string url;
-
+  string Reader::getFirstPageUrl() const {
     zim::size_type firstPageOffset = zimFileHandler->getNamespaceBeginOffset('A');
     zim::Article article = zimFileHandler->getArticle(firstPageOffset);
     url = article.getLongUrl();
@@ -365,7 +363,7 @@ namespace kiwix {
     return url;
   }
 
-  bool Reader::parseUrl(const string &url, char *ns, string &title) {
+  bool Reader::parseUrl(const string &url, char *ns, string &title) const {
     /* Offset to visit the url */
     unsigned int urlLength = url.size();
     unsigned int offset = 0;
@@ -395,7 +393,7 @@ namespace kiwix {
   }
 
   /* Return article by url */
-  bool Reader::getArticleObjectByDecodedUrl(const string &url, zim::Article &article) {
+  bool Reader::getArticleObjectByDecodedUrl(const string &url, zim::Article &article) const {
     bool retVal = false;
     
     if (this->zimFileHandler != NULL) {
@@ -425,7 +423,7 @@ namespace kiwix {
   }
 
   /* Return the mimeType without the content */
-  bool Reader::getMimeTypeByUrl(const string &url, string &mimeType) {
+  bool Reader::getMimeTypeByUrl(const string &url, string &mimeType) const {
     bool retVal = false;
 
     if (this->zimFileHandler != NULL) {
@@ -449,25 +447,25 @@ namespace kiwix {
   }
 
   /* Get a content from a zim file */
-  bool Reader::getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
+  bool Reader::getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const {
     return this->getContentByEncodedUrl(url, content, contentLength, contentType);
   }
 
-  bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) {
+  bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) const {
     return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, baseUrl);
   }
 
-  bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
+  bool Reader::getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const {
     std::string stubRedirectUrl;
     return this->getContentByEncodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, stubRedirectUrl); 
   }
 
-  bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) {
+  bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const {
     std::string stubRedirectUrl;
     return this->getContentByDecodedUrl(kiwix::urlDecode(url), content, contentLength, contentType, stubRedirectUrl);
   }
 
-  bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) {
+  bool Reader::getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) const {
     bool retVal = false;
     content="";
     contentType="";
@@ -518,7 +516,7 @@ namespace kiwix {
   }
 
   /* Check if an article exists */
-  bool Reader::urlExists(const string &url) {
+  bool Reader::urlExists(const string &url) const {
     char ns = 0;
     string titleStr;
     this->parseUrl(url, &ns, titleStr);
@@ -528,7 +526,7 @@ namespace kiwix {
   }
 
   /* Does the ZIM file has a fulltext index */
-  bool Reader::hasFulltextIndex() {
+  bool Reader::hasFulltextIndex() const {
     return this->urlExists("/Z/fulltextIndex/xapian");
   }
 
@@ -604,7 +602,7 @@ namespace kiwix {
     return retVal;
   }
 
-  std::vector<std::string> Reader::getTitleVariants(const std::string &title) {
+  std::vector<std::string> Reader::getTitleVariants(const std::string &title) const {
     std::vector<std::string> variants;
     variants.push_back(title);
     variants.push_back(kiwix::ucFirst(title));
@@ -660,12 +658,12 @@ namespace kiwix {
   }
 
   /* Check if the file has as checksum */
-  bool Reader::canCheckIntegrity() {
+  bool Reader::canCheckIntegrity() const {
     return this->zimFileHandler->getChecksum() != "";
   }
 
   /* Return true if corrupted, false otherwise */
-  bool Reader::isCorrupted() {
+  bool Reader::isCorrupted() const {
     try {
       if (this->zimFileHandler->verify() == true)
 	return false;
@@ -678,7 +676,7 @@ namespace kiwix {
   }
 
   /* Return the file size, works also for splitted files */
-  unsigned int Reader::getFileSize() {
+  unsigned int Reader::getFileSize() const {
     zim::File *file = this->getZimFileHandler();
     zim::offset_type size = 0;
 
