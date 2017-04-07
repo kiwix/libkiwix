@@ -1,6 +1,7 @@
 project('kiwixlib', 'cpp',
   version : '0.1.0',
-  license : 'GPL')
+  license : 'GPL',
+  default_options : ['c_std=c11', 'cpp_std=c++11'])
 
 compiler = meson.get_compiler('cpp')
 find_library_in_compiler = meson.version().version_compare('>=0.31.0')
