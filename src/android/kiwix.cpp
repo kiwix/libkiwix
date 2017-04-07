@@ -9,7 +9,7 @@
 
 #include "unicode/putil.h"
 #include "reader.h"
-#include "xapianSearcher.h"
+#include "searcher.h"
 #include "common/base64.h"
 
 #include <android/log.h>
@@ -23,7 +23,7 @@
 
 /* global variables */
 kiwix::Reader *reader = NULL;
-kiwix::XapianSearcher *searcher = NULL;
+kiwix::Searcher *searcher = NULL;
 
 static pthread_mutex_t readerLock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t searcherLock = PTHREAD_MUTEX_INITIALIZER;
@@ -445,7 +445,7 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(JN
   searcher = NULL;
   try {
     if (searcher != NULL) delete searcher;
-    searcher = new kiwix::XapianSearcher(cPath, NULL);
+    searcher = new kiwix::Searcher(reader);
   } catch (...) {
     searcher = NULL;
     retVal = JNI_FALSE;
@@ -460,7 +460,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_indexedQuery
   (JNIEnv *env, jclass obj, jstring query, jint count) {
   std::string cQuery = jni2c(query, env);
   unsigned int cCount = jni2c(count);
-  Result *p_result;
+  kiwix::Result *p_result;
   std::string result;
       
   pthread_mutex_lock(&searcherLock);
