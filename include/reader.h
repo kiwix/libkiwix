@@ -43,45 +43,45 @@ namespace kiwix {
     ~Reader();
 
     void reset();
-    unsigned int getArticleCount();
-    unsigned int getMediaCount();
-    unsigned int getGlobalCount();
-    string getZimFilePath();
-    string getId();
-    string getRandomPageUrl();
-    string getFirstPageUrl();
-    string getMainPageUrl();
-    bool getMetatag(const string &url, string &content);
-    string getTitle();
-    string getDescription();
-    string getLanguage();
-    string getName();
-    string getTags();
-    string getDate();
-    string getCreator();
-    string getPublisher();
-    string getOrigId();
-    bool getFavicon(string &content, string &mimeType);
-    bool getPageUrlFromTitle(const string &title, string &url);
-    bool getMimeTypeByUrl(const string &url, string &mimeType);
-    bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
-    bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl);
-    bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
-    bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl);
-    bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType);
+    unsigned int getArticleCount() const;
+    unsigned int getMediaCount() const;
+    unsigned int getGlobalCount() const;
+    string getZimFilePath() const;
+    string getId() const;
+    string getRandomPageUrl() const;
+    string getFirstPageUrl() const;
+    string getMainPageUrl() const;
+    bool getMetatag(const string &url, string &content) const;
+    string getTitle() const;
+    string getDescription() const;
+    string getLanguage() const;
+    string getName() const;
+    string getTags() const;
+    string getDate() const;
+    string getCreator() const;
+    string getPublisher() const;
+    string getOrigId() const;
+    bool getFavicon(string &content, string &mimeType) const;
+    bool getPageUrlFromTitle(const string &title, string &url) const;
+    bool getMimeTypeByUrl(const string &url, string &mimeType) const;
+    bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const;
+    bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) const;
+    bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const;
+    bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) const;
+    bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const;
     bool searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset = true);
     bool searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount);
-    bool urlExists(const string &url);
-    bool hasFulltextIndex();
-    std::vector<std::string> getTitleVariants(const std::string &title);
+    bool urlExists(const string &url) const;
+    bool hasFulltextIndex() const;
+    std::vector<std::string> getTitleVariants(const std::string &title) const;
     bool getNextSuggestion(string &title);
     bool getNextSuggestion(string &title, string &url);
-    bool canCheckIntegrity();
-    bool isCorrupted();
-    bool parseUrl(const string &url, char *ns, string &title);
-    unsigned int getFileSize();
-    zim::File* getZimFileHandler();
-    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article);
+    bool canCheckIntegrity() const;
+    bool isCorrupted() const;
+    bool parseUrl(const string &url, char *ns, string &title) const;
+    unsigned int getFileSize() const;
+    zim::File* getZimFileHandler() const;
+    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article) const;
 
   protected:
     zim::File* zimFileHandler;
@@ -96,7 +96,7 @@ namespace kiwix {
     std::vector< std::vector<std::string> >::iterator suggestionsOffset;
 
   private:
-    std::map<std::string, unsigned int> parseCounterMetadata();
+    std::map<const std::string, unsigned int> parseCounterMetadata() const;
   };
 
 }

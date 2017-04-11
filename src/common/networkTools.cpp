@@ -85,7 +85,7 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
 
     /* some systems have ifr_addr.sa_len and adjust the length that
      * way, but not mine. weird */
-#ifndef linux
+#ifndef __linux__
     len=IFNAMSIZ + ifreq->ifr_addr.sa_len;
 #else
     len=sizeof *ifreq;

@@ -1,6 +1,7 @@
 project('kiwixlib', 'cpp',
   version : '0.1.0',
-  license : 'GPL')
+  license : 'GPL',
+  default_options : ['c_std=c11', 'cpp_std=c++11'])
 
 compiler = meson.get_compiler('cpp')
 find_library_in_compiler = meson.version().version_compare('>=0.31.0')
@@ -61,9 +62,7 @@ else
   endif
 endif
 
-xapian_dep = dependency('xapian-core', required:false)
-
-all_deps = [thread_dep, libicu_dep, libzim_dep, xapian_dep, pugixml_dep]
+all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep]
 if has_ctpp2_dep
   all_deps += [ctpp2_dep]
 endif
@@ -80,9 +79,6 @@ subdir('static')
 subdir('src')
 
 pkg_requires = ['libzim', 'icu-i18n', 'pugixml']
-if xapian_dep.found()
-    pkg_requires += ['xapian-core']
-endif
 
 extra_libs = []
 extra_cflags = ''
