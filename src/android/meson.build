@@ -11,3 +11,7 @@ kiwix_jni = custom_target('jni',
 )
 
 kiwix_sources += ['android/kiwix.cpp', kiwix_jni]
+
+install_subdir('org', install_dir: 'kiwix-lib/java')
+install_subdir('res', install_dir: 'kiwix-lib')
+install_data('AndroidManifest.xml', install_dir: 'kiwix-lib')

@@ -14,7 +14,11 @@ kiwix_sources += lib_resources
 
 if get_option('android')
   subdir('android')
+  install_dir = 'kiwix-lib/jniLibs/' + host_machine.cpu_family()
+else
+  install_dir = get_option('libdir')
 endif
+
 
 if has_ctpp2_dep
   kiwix_sources += ['ctpp2/CTPP2VMStringLoader.cpp']
@@ -30,4 +34,5 @@ kiwixlib = library('kiwix',
                    include_directories : inc,
                    dependencies : all_deps,
                    version: '1.0.0',
-                   install : true)
+                   install: true,
+                   install_dir: install_dir)
