@@ -11,7 +11,7 @@ libicu_dep = dependency('icu-i18n')
 libzim_dep = dependency('libzim')
 pugixml_dep = dependency('pugixml')
 
-
+ctpp2_include_path = ''
 has_ctpp2_dep = false
 ctpp2_prefix_install = get_option('ctpp2-install-prefix')
 ctpp2_link_args = []
