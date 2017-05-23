@@ -103,15 +103,17 @@ namespace kiwix {
 
     zim::Article article = this->zimFileHandler->getArticle('M',"Counter");
 
-    stringstream ssContent(article.getData());
+    if ( article.good() ) {
+      stringstream ssContent(article.getData());
 
-    while(getline(ssContent, item,  ';')) {
-      stringstream ssItem(item);
-      getline(ssItem, mimeType, '=');
-      getline(ssItem, counterString, '=');
-      if (!counterString.empty() && !mimeType.empty()) {
-	sscanf(counterString.c_str(), "%u", &counter);
-	counters.insert(pair<string, int>(mimeType, counter));
+      while(getline(ssContent, item,  ';')) {
+        stringstream ssItem(item);
+        getline(ssItem, mimeType, '=');
+        getline(ssItem, counterString, '=');
+        if (!counterString.empty() && !mimeType.empty()) {
+	  sscanf(counterString.c_str(), "%u", &counter);
+	  counters.insert(pair<string, int>(mimeType, counter));
+        }
       }
     }
 
