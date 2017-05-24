@@ -5,6 +5,10 @@ headers = [
   'searcher.h'
 ]
 
+if xapian_dep.found()
+  headers += ['xapianSearcher.h']
+endif
+
 install_headers(headers, subdir:'kiwix')
 
 install_headers(

@@ -46,27 +46,14 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
 
   /* Constructor */
   XapianSearcher::XapianSearcher(const string &xapianDirectoryPath, Reader* reader)
-    : Searcher(),
-      reader(reader)
+    : reader(reader)
   {
     this->openIndex(xapianDirectoryPath);
   }
 
   /* Open Xapian readable database */
   void XapianSearcher::openIndex(const string &directoryPath) {
-    try
-    {
-      zim::File zimFile = zim::File(directoryPath);
-      zim::Article xapianArticle = zimFile.getArticle('Z', "/fulltextIndex/xapian");
-      if (!xapianArticle.good())
-	throw NoXapianIndexInZim();
-      zim::offset_type dbOffset = xapianArticle.getOffset();
-      int databasefd = open(directoryPath.c_str(), O_RDONLY);
-      lseek(databasefd, dbOffset, SEEK_SET);
-      this->readableDatabase = Xapian::Database(databasefd);
-    } catch (...) {
-      this->readableDatabase = Xapian::Database(directoryPath);
-    }
+    this->readableDatabase = Xapian::Database(directoryPath);
     this->valuesmap = read_valuesmap(this->readableDatabase.get_metadata("valuesmap"));
     this->language = this->readableDatabase.get_metadata("language");
     this->stopwords = this->readableDatabase.get_metadata("stopwords");
@@ -121,9 +108,6 @@ std::map<std::string, int> read_valuesmap(const std::string &s) {
     /* Get the results */
     this->results = enquire.get_mset(resultStart, resultEnd - resultStart);
     this->current_result = this->results.begin();
-
-    /* Update the global resultCount value*/
-    this->estimatedResultCount = this->results.get_matches_estimated();
   }
 
   /* Get next result */

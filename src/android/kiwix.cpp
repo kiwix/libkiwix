@@ -445,7 +445,7 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(JN
   searcher = NULL;
   try {
     if (searcher != NULL) delete searcher;
-    searcher = new kiwix::Searcher(reader);
+    searcher = new kiwix::Searcher(cPath, reader);
   } catch (...) {
     searcher = NULL;
     retVal = JNI_FALSE;

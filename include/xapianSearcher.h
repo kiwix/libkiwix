@@ -57,7 +57,7 @@ namespace kiwix {
     }
   };
 
-  class XapianSearcher : public Searcher {
+  class XapianSearcher {
     friend class XapianResult;
   public:
     XapianSearcher(const string &xapianDirectoryPath, Reader* reader);
@@ -66,6 +66,8 @@ namespace kiwix {
 		       const bool verbose=false);
     virtual Result* getNextResult();
     void restart_search();
+
+    Xapian::MSet results;
 
   protected:
     void closeIndex();
@@ -79,7 +81,6 @@ namespace kiwix {
     Xapian::QueryParser queryParser;
     Xapian::Stem stemmer;
     Xapian::SimpleStopper stopper;
-    Xapian::MSet results;
     Xapian::MSetIterator current_result;
     std::map<std::string, int> valuesmap;
   };

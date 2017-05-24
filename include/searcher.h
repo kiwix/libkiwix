@@ -53,7 +53,7 @@ namespace kiwix {
   class Searcher {
 
   public:
-    Searcher(Reader* reader);
+    Searcher(const string &xapianDirectoryPath, Reader* reader);
     ~Searcher();
 
     void search(std::string &search, unsigned int resultStart,
