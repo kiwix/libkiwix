@@ -18,6 +18,7 @@
  */
 
 #include "searcher.h"
+#include "xapianSearcher.h"
 #include "reader.h"
 #include "kiwixlib-resources.h"
 
@@ -54,18 +55,25 @@ namespace kiwix {
 
   struct SearcherInternal {
     const zim::Search *_search;
+    XapianSearcher *_xapianSearcher;
     zim::Search::iterator current_iterator;
 
-    SearcherInternal() :  _search(NULL) {}
+
+    SearcherInternal() :
+      _search(NULL),
+      _xapianSearcher(NULL)
+    {}
     ~SearcherInternal() {
         if ( _search != NULL )
             delete _search;
+        if ( _xapianSearcher != NULL )
+            delete _xapianSearcher;
     }
 
   };
 
   /* Constructor */
-  Searcher::Searcher(Reader* reader) :
+  Searcher::Searcher(const string &xapianDirectoryPath, Reader* reader) :
     reader(reader),
     internal(new SearcherInternal()),
     searchPattern(""),
@@ -78,6 +86,9 @@ namespace kiwix {
   {
     template_ct2 = RESOURCE::results_ct2;
     loadICUExternalTables();
+    if ( !reader || !reader->hasFulltextIndex() ) {
+        internal->_xapianSearcher = new XapianSearcher(xapianDirectoryPath, reader);
+    }
   }
   
   /* Destructor */
@@ -116,20 +127,31 @@ namespace kiwix {
       this->resultStart = resultStart;
       this->resultEnd = resultEnd;
       string unaccentedSearch = removeAccents(search);
-      internal->_search = this->reader->getZimFileHandler()->search(unaccentedSearch, resultStart, resultEnd);
-      internal->current_iterator = internal->_search->begin();
-      this->estimatedResultCount = internal->_search->get_matches_estimated();
+      if ( internal->_xapianSearcher ) {
+        internal->_xapianSearcher->searchInIndex(unaccentedSearch, resultStart, resultEnd, verbose);
+        this->estimatedResultCount = internal->_xapianSearcher->results.get_matches_estimated();
+      } else {
+        internal->_search = this->reader->getZimFileHandler()->search(unaccentedSearch, resultStart, resultEnd);
+        internal->current_iterator = internal->_search->begin();
+        this->estimatedResultCount = internal->_search->get_matches_estimated();
+      }
     }
 
     return;
   }
 
   void Searcher::restart_search() {
-    internal->current_iterator = internal->_search->begin();
+    if ( internal->_xapianSearcher ) {
+      internal->_xapianSearcher->restart_search();
+    } else {
+      internal->current_iterator = internal->_search->begin();
+    }
   }
 
   Result* Searcher::getNextResult() {
-    if (internal->current_iterator != internal->_search->end()) {
+    if ( internal->_xapianSearcher ) {
+      return internal->_xapianSearcher->getNextResult();
+    } else if (internal->current_iterator != internal->_search->end()) {
       Result* result = new _Result(this, internal->current_iterator);
       internal->current_iterator++;
       return result;
