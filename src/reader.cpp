@@ -128,7 +128,7 @@ namespace kiwix {
     if (counterMap.empty()) {
       counter = this->nsACount;
     } else {
-      std::map<std::string, unsigned int>::const_iterator it = counterMap.find("text/html");
+      std::map<const std::string, unsigned int>::const_iterator it = counterMap.find("text/html");
       if (it != counterMap.end())
 	counter = it->second;
     }
@@ -144,7 +144,7 @@ namespace kiwix {
     if (counterMap.empty())
       counter = this->nsICount;
     else {
-      std::map<std::string, unsigned int>::const_iterator it;
+      std::map<const std::string, unsigned int>::const_iterator it;
 
       it = counterMap.find("image/jpeg");
       if (it != counterMap.end())
