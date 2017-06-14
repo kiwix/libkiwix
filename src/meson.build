@@ -20,7 +20,7 @@ endif
 
 if get_option('android')
   subdir('android')
-  install_dir = 'kiwix-lib/jniLibs/' + host_machine.cpu_family()
+  install_dir = 'kiwix-lib/jniLibs/' + meson.get_cross_property('android_abi')
 else
   install_dir = get_option('libdir')
 endif
