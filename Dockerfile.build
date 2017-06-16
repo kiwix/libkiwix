@@ -1,0 +1,21 @@
+#~~~~ To build:
+# docker build -t kiwix/kiwix-lib-build -f Dockerfile.build .
+# docker create --name kiwix-lib-build kiwix/kiwix-lib-build
+# docker cp kiwix-lib-build:/usr/kiwix/build/src/libkiwix.a .
+
+FROM ubuntu:16.04
+
+RUN apt-get update
+RUN apt-get -y install sudo build-essential apache2 curl git wget pkg-config
+
+COPY . /usr/kiwix/
+WORKDIR /usr/kiwix/
+
+RUN apt-get install -y
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+ENV PLATFORM "native_static"
+ENV TRAVIS_REPO_SLUG kiwix-lib
+ENV TRAVIS_BUILD_DIR /usr/kiwix/
+RUN travis/install_deps.sh
+RUN travis/compile.sh
