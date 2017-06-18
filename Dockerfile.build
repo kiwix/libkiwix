@@ -11,7 +11,6 @@ RUN apt-get -y install sudo build-essential apache2 curl git wget pkg-config
 COPY . /usr/kiwix/
 WORKDIR /usr/kiwix/
 
-RUN apt-get install -y
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 ENV PLATFORM "native_static"
@@ -19,3 +18,5 @@ ENV TRAVIS_REPO_SLUG kiwix-lib
 ENV TRAVIS_BUILD_DIR /usr/kiwix/
 RUN travis/install_deps.sh
 RUN travis/compile.sh
+
+RUN cp /usr/kiwix/build/src/libkiwix.a /root/BUILD_native_static/INSTALL/lib/x86_64-linux-gnu/.
