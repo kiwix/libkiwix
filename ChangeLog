@@ -1,0 +1,16 @@
+kiwix-lib 0.2.0
+===============
+
+ * Generate the snippet from the article content if the snippet is not
+ directly in the database.
+   This provide better snippets as they now depending of the query.
+ * Use the stopwords and the language stored in the fulltext index database to
+ parse the user query.
+ * Remove the indexer functionnality.
+ * Move to C++11 standard.
+ * Use the fulltext search of the zimlib.
+   We still have the fulltext search code in kiwix-lib to be able to search in
+   fulltext index by side of a zim file. (To be remove in the future)
+ * Few API hanges
+   * Change a lot of `Reader` methods to const methods.
+ * Fix some crashes.
