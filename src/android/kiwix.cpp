@@ -486,7 +486,6 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(
   std::string cPath = jni2c(path, env);
 
   pthread_mutex_lock(&searcherLock);
-  searcher = NULL;
   try {
     if (searcher != NULL) {
       delete searcher;
