@@ -74,8 +74,7 @@ struct SearcherInternal {
 
 /* Constructor */
 Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
-    : reader(reader),
-      internal(new SearcherInternal()),
+    : internal(new SearcherInternal()),
       searchPattern(""),
       protocolPrefix("zim://"),
       searchProtocolPrefix("search://?"),
@@ -91,11 +90,32 @@ Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
   }
 }
 
+Searcher::Searcher()
+    : internal(new SearcherInternal()),
+      searchPattern(""),
+      protocolPrefix("zim://"),
+      searchProtocolPrefix("search://?"),
+      resultCountPerPage(0),
+      estimatedResultCount(0),
+      resultStart(0),
+      resultEnd(0)
+{
+  template_ct2 = RESOURCE::results_ct2;
+  loadICUExternalTables();
+}
+
 /* Destructor */
 Searcher::~Searcher()
 {
   delete internal;
 }
+
+void Searcher::add_reader(Reader* reader, const std::string& humanReadableName)
+{
+  this->readers.push_back(reader);
+  this->humanReaderNames.push_back(humanReadableName);
+}
+
 /* Search strings in the database */
 void Searcher::search(std::string& search,
                       unsigned int resultStart,
@@ -135,8 +155,15 @@ void Searcher::search(std::string& search,
       this->estimatedResultCount
           = internal->_xapianSearcher->results.get_matches_estimated();
     } else {
-      internal->_search = this->reader->getZimFileHandler()->search(
-          unaccentedSearch, resultStart, resultEnd);
+      std::vector<const zim::File*> zims;
+      for (auto current = this->readers.begin(); current != this->readers.end();
+           current++) {
+        zims.push_back((*current)->getZimFileHandler());
+      }
+      zim::Search* search = new zim::Search(zims);
+      search->set_query(unaccentedSearch);
+      search->set_range(resultStart, resultEnd);
+      internal->_search = search;
       internal->current_iterator = internal->_search->begin();
       this->estimatedResultCount = internal->_search->get_matches_estimated();
     }
@@ -192,8 +219,16 @@ void Searcher::suggestions(std::string& search, const bool verbose)
      * We do not support that. */
     this->estimatedResultCount = 0;
   } else {
-    internal->_search = this->reader->getZimFileHandler()->suggestions(
-          unaccentedSearch, resultStart, resultEnd);
+    std::vector<const zim::File*> zims;
+    for (auto current = this->readers.begin(); current != this->readers.end();
+         current++) {
+      zims.push_back((*current)->getZimFileHandler());
+    }
+    zim::Search* search = new zim::Search(zims);
+    search->set_query(unaccentedSearch);
+    search->set_range(resultStart, resultEnd);
+    search->set_suggestion_mode(true);
+    internal->_search = search;
     internal->current_iterator = internal->_search->begin();
     this->estimatedResultCount = internal->_search->get_matches_estimated();
   }

@@ -56,9 +56,11 @@ struct SearcherInternal;
 class Searcher
 {
  public:
+  Searcher();
   Searcher(const string& xapianDirectoryPath, Reader* reader);
   ~Searcher();
 
+  void add_reader(Reader* reader, const std::string& humanReaderName);
   void search(std::string& search,
               unsigned int resultStart,
               unsigned int resultEnd,
@@ -84,7 +86,8 @@ class Searcher
                      const unsigned int resultEnd,
                      const bool verbose = false);
 
-  Reader* reader;
+  std::vector<Reader*> readers;
+  std::vector<std::string> humanReaderNames;
   SearcherInternal* internal;
   std::string searchPattern;
   std::string protocolPrefix;
