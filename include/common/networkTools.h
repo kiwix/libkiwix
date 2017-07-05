@@ -24,25 +24,26 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #else
+#include <net/if.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <net/if.h>
-#include <netdb.h>
+#include <unistd.h>
 #endif
 
 #include <iostream>
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
-namespace kiwix {
-  std::map<std::string, std::string> getNetworkInterfaces();
-  std::string getBestPublicIp();
+namespace kiwix
+{
+std::map<std::string, std::string> getNetworkInterfaces();
+std::string getBestPublicIp();
 }
 
 #endif

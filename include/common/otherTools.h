@@ -26,8 +26,9 @@
 #include <unistd.h>
 #endif
 
-namespace kiwix {
-  void sleep(unsigned int milliseconds);
+namespace kiwix
+{
+void sleep(unsigned int milliseconds);
 }
 
 #endif

@@ -19,7 +19,7 @@
 
 package org.kiwix.kiwixlib;
 
-public class JNIKiwixString {
-
+public class JNIKiwixString
+{
   public String value;
 }

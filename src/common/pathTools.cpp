@@ -20,13 +20,13 @@
 #include <common/pathTools.h>
 
 #ifdef __APPLE__
-#include <mach-o/dyld.h>
 #include <limits.h>
+#include <mach-o/dyld.h>
 #elif _WIN32
+#include <direct.h>
 #include <windows.h>
 #include "shlwapi.h"
-#include <direct.h>
-#define getcwd _getcwd // stupid MSFT "deprecation" warning
+#define getcwd _getcwd  // stupid MSFT "deprecation" warning
 #endif
 
 #ifdef _WIN32
@@ -47,7 +47,8 @@
 #define PATH_MAX 1024
 #endif
 
-bool isRelativePath(const string &path) {
+bool isRelativePath(const string& path)
+{
 #ifdef _WIN32
   return path.empty() || path.substr(1, 2) == ":\\" ? false : true;
 #else
@@ -55,19 +56,21 @@ bool isRelativePath(const string &path) {
 #endif
 }
 
-string computeRelativePath(const string path, const string absolutePath) {
+string computeRelativePath(const string path, const string absolutePath)
+{
   std::vector<std::string> pathParts = kiwix::split(path, SEPARATOR);
-  std::vector<std::string> absolutePathParts = kiwix::split(absolutePath, SEPARATOR);
+  std::vector<std::string> absolutePathParts
+      = kiwix::split(absolutePath, SEPARATOR);
 
   unsigned int commonCount = 0;
-  while (commonCount < pathParts.size() && 
-	 commonCount < absolutePathParts.size() && 
-	 pathParts[commonCount] == absolutePathParts[commonCount]) {
+  while (commonCount < pathParts.size()
+         && commonCount < absolutePathParts.size()
+         && pathParts[commonCount] == absolutePathParts[commonCount]) {
     if (!pathParts[commonCount].empty()) {
       commonCount++;
     }
   }
-  
+
   string relativePath;
 #ifdef _WIN32
   /* On Windows you have a token more because the root is represented
@@ -77,10 +80,10 @@ string computeRelativePath(const string path, const string absolutePath) {
   }
 #endif
 
-  for (unsigned int i = commonCount ; i < pathParts.size() ; i++) {
+  for (unsigned int i = commonCount; i < pathParts.size(); i++) {
     relativePath += "../";
   }
-  for (unsigned int i = commonCount ; i < absolutePathParts.size() ; i++) {
+  for (unsigned int i = commonCount; i < absolutePathParts.size(); i++) {
     relativePath += absolutePathParts[i];
     relativePath += i + 1 < absolutePathParts.size() ? "/" : "";
   }
@@ -89,11 +92,12 @@ string computeRelativePath(const string path, const string absolutePath) {
 }
 
 /* Warning: the relative path must be with slashes */
-string computeAbsolutePath(const string path, const string relativePath) {
+string computeAbsolutePath(const string path, const string relativePath)
+{
   string absolutePath;
 
   if (path.empty()) {
-    char *path=NULL;
+    char* path = NULL;
     size_t size = 0;
 
 #ifdef _WIN32
@@ -104,15 +108,17 @@ string computeAbsolutePath(const string path, const string relativePath) {
 
     absolutePath = string(path) + SEPARATOR;
   } else {
-    absolutePath = path.substr(path.length() - 1, 1) == SEPARATOR ? path : path + SEPARATOR;
+    absolutePath = path.substr(path.length() - 1, 1) == SEPARATOR
+                       ? path
+                       : path + SEPARATOR;
   }
 
 #if _WIN32
-  char *cRelativePath = _strdup(relativePath.c_str());
+  char* cRelativePath = _strdup(relativePath.c_str());
 #else
-  char *cRelativePath = strdup(relativePath.c_str());
+  char* cRelativePath = strdup(relativePath.c_str());
 #endif
-  char *token = strtok(cRelativePath, "/");
+  char* token = strtok(cRelativePath, "/");
 
   while (token != NULL) {
     if (string(token) == "..") {
@@ -121,8 +127,9 @@ string computeAbsolutePath(const string path, const string relativePath) {
     } else if (strcmp(token, ".") && strcmp(token, "")) {
       absolutePath += string(token);
       token = strtok(NULL, "/");
-      if (token != NULL)
-	absolutePath += SEPARATOR;
+      if (token != NULL) {
+        absolutePath += SEPARATOR;
+      }
     } else {
       token = strtok(NULL, "/");
     }
@@ -131,31 +138,38 @@ string computeAbsolutePath(const string path, const string relativePath) {
   return absolutePath;
 }
 
-string removeLastPathElement(const string path, const bool removePreSeparator, const bool removePostSeparator) {
+string removeLastPathElement(const string path,
+                             const bool removePreSeparator,
+                             const bool removePostSeparator)
+{
   string newPath = path;
   size_t offset = newPath.find_last_of(SEPARATOR);
-  if (removePreSeparator && 
+  if (removePreSeparator &&
 #ifndef _WIN32
-      offset != newPath.find_first_of(SEPARATOR) && 
+      offset != newPath.find_first_of(SEPARATOR) &&
 #endif
-      offset == newPath.length()-1) {
+      offset == newPath.length() - 1) {
     newPath = newPath.substr(0, offset);
     offset = newPath.find_last_of(SEPARATOR);
   }
-  newPath = removePostSeparator ? newPath.substr(0, offset) : newPath.substr(0, offset+1);
+  newPath = removePostSeparator ? newPath.substr(0, offset)
+                                : newPath.substr(0, offset + 1);
   return newPath;
 }
 
-string appendToDirectory(const string &directoryPath, const string &filename) {
+string appendToDirectory(const string& directoryPath, const string& filename)
+{
   string newPath = directoryPath + SEPARATOR + filename;
   return newPath;
 }
 
-string getLastPathElement(const string &path) {
+string getLastPathElement(const string& path)
+{
   return path.substr(path.find_last_of(SEPARATOR) + 1);
 }
 
-unsigned int getFileSize(const string &path) {
+unsigned int getFileSize(const string& path)
+{
 #ifdef _WIN32
   struct _stat filestatus;
   _stat(path.c_str(), &filestatus);
@@ -167,12 +181,15 @@ unsigned int getFileSize(const string &path) {
   return filestatus.st_size / 1024;
 }
 
-string getFileSizeAsString(const string &path) {
-  ostringstream convert; convert << getFileSize(path);
+string getFileSizeAsString(const string& path)
+{
+  ostringstream convert;
+  convert << getFileSize(path);
   return convert.str();
 }
 
-bool fileExists(const string &path) {
+bool fileExists(const string& path)
+{
 #ifdef _WIN32
   return PathFileExists(path.c_str());
 #else
@@ -187,7 +204,8 @@ bool fileExists(const string &path) {
 #endif
 }
 
-bool makeDirectory(const string &path) {
+bool makeDirectory(const string& path)
+{
 #ifdef _WIN32
   int status = _mkdir(path.c_str());
 #else
@@ -197,18 +215,19 @@ bool makeDirectory(const string &path) {
 }
 
 /* Try to create a link and if does not work then make a copy */
-bool copyFile(const string &sourcePath, const string &destPath) {
+bool copyFile(const string& sourcePath, const string& destPath)
+{
   try {
 #ifndef _WIN32
     if (link(sourcePath.c_str(), destPath.c_str()) != 0) {
 #endif
-	std::ifstream infile(sourcePath.c_str(), std::ios_base::binary);
-	std::ofstream outfile(destPath.c_str(), std::ios_base::binary);
-	outfile << infile.rdbuf();
+      std::ifstream infile(sourcePath.c_str(), std::ios_base::binary);
+      std::ofstream outfile(destPath.c_str(), std::ios_base::binary);
+      outfile << infile.rdbuf();
 #ifndef _WIN32
     }
 #endif
-  } catch (exception &e) {
+  } catch (exception& e) {
     cerr << e.what() << endl;
     return false;
   }
@@ -216,18 +235,19 @@ bool copyFile(const string &sourcePath, const string &destPath) {
   return true;
 }
 
-string getExecutablePath() {
+string getExecutablePath()
+{
   char binRootPath[PATH_MAX];
-  
+
 #ifdef _WIN32
-  GetModuleFileName( NULL, binRootPath, PATH_MAX);
+  GetModuleFileName(NULL, binRootPath, PATH_MAX);
   return std::string(binRootPath);
 #elif __APPLE__
   uint32_t max = (uint32_t)PATH_MAX;
   _NSGetExecutablePath(binRootPath, &max);
   return std::string(binRootPath);
 #else
-  ssize_t size =  readlink("/proc/self/exe", binRootPath, PATH_MAX);
+  ssize_t size = readlink("/proc/self/exe", binRootPath, PATH_MAX);
   if (size != -1) {
     return std::string(binRootPath, size);
   }
@@ -236,7 +256,8 @@ string getExecutablePath() {
   return "";
 }
 
-bool writeTextFile(const string &path, const string &content) {
+bool writeTextFile(const string& path, const string& content)
+{
   std::ofstream file;
   file.open(path.c_str());
   file << content;
@@ -244,8 +265,9 @@ bool writeTextFile(const string &path, const string &content) {
   return true;
 }
 
-string getCurrentDirectory() {
-  char* a_cwd = getcwd(NULL,0);
+string getCurrentDirectory()
+{
+  char* a_cwd = getcwd(NULL, 0);
   string s_cwd(a_cwd);
   free(a_cwd);
   return s_cwd;

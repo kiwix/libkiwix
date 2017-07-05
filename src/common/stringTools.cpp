@@ -19,32 +19,36 @@
 
 #include <common/stringTools.h>
 
-#include <unicode/translit.h>
 #include <unicode/normlzr.h>
-#include <unicode/ustring.h>
 #include <unicode/rep.h>
-#include <unicode/uniset.h>
+#include <unicode/translit.h>
 #include <unicode/ucnv.h>
+#include <unicode/uniset.h>
+#include <unicode/ustring.h>
 
 /* tell ICU where to find its dat file (tables) */
-void kiwix::loadICUExternalTables() {
+void kiwix::loadICUExternalTables()
+{
 #ifdef __APPLE__
-    std::string executablePath = getExecutablePath();
-    std::string executableDirectory = removeLastPathElement(executablePath);
-    std::string datPath = computeAbsolutePath(executableDirectory, "icudt49l.dat");
-    try {
-        u_setDataDirectory(datPath.c_str());
-    } catch (exception &e) {
-        std::cerr << e.what() << std::endl;
-    }
+  std::string executablePath = getExecutablePath();
+  std::string executableDirectory = removeLastPathElement(executablePath);
+  std::string datPath
+      = computeAbsolutePath(executableDirectory, "icudt49l.dat");
+  try {
+    u_setDataDirectory(datPath.c_str());
+  } catch (exception& e) {
+    std::cerr << e.what() << std::endl;
+  }
 #endif
 }
 
-std::string kiwix::removeAccents(const std::string &text) {
+std::string kiwix::removeAccents(const std::string& text)
+{
   loadICUExternalTables();
   ucnv_setDefaultName("UTF-8");
   UErrorCode status = U_ZERO_ERROR;
-  Transliterator *removeAccentsTrans = Transliterator::createInstance("Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
+  Transliterator* removeAccentsTrans = Transliterator::createInstance(
+      "Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
   UnicodeString ustring = UnicodeString(text.c_str());
   removeAccentsTrans->transliterate(ustring);
   delete removeAccentsTrans;
@@ -56,7 +60,8 @@ std::string kiwix::removeAccents(const std::string &text) {
 #ifndef __ANDROID__
 
 /* Prepare integer for display */
-std::string kiwix::beautifyInteger(const unsigned int number) {
+std::string kiwix::beautifyInteger(const unsigned int number)
+{
   std::stringstream numberStream;
   numberStream << number;
   std::string numberString = numberStream.str();
@@ -70,49 +75,58 @@ std::string kiwix::beautifyInteger(const unsigned int number) {
   return numberString;
 }
 
-std::string kiwix::beautifyFileSize(const unsigned int number) {
-  if (number > 1024*1024) {
-    return kiwix::beautifyInteger(number/(1024*1024)) + " GB";
+std::string kiwix::beautifyFileSize(const unsigned int number)
+{
+  if (number > 1024 * 1024) {
+    return kiwix::beautifyInteger(number / (1024 * 1024)) + " GB";
   } else {
-    return kiwix::beautifyInteger(number/1024 !=
-				  0 ? number/1024 : 1) + " MB";
+    return kiwix::beautifyInteger(number / 1024 != 0 ? number / 1024 : 1)
+           + " MB";
   }
 }
 
-void kiwix::printStringInHexadecimal(UnicodeString s) {
+void kiwix::printStringInHexadecimal(UnicodeString s)
+{
   std::cout << std::showbase << std::hex;
-  for (int i=0; i<s.length(); i++) {
+  for (int i = 0; i < s.length(); i++) {
     char c = (char)((s.getTerminatedBuffer())[i]);
-    if (c & 0x80)
+    if (c & 0x80) {
       std::cout << (c & 0xffff) << " ";
-    else
+    } else {
       std::cout << c << " ";
+    }
   }
   std::cout << std::endl;
 }
 
-void kiwix::printStringInHexadecimal(const char *s) {
+void kiwix::printStringInHexadecimal(const char* s)
+{
   std::cout << std::showbase << std::hex;
   for (char const* pc = s; *pc; ++pc) {
-    if (*pc & 0x80)
+    if (*pc & 0x80) {
       std::cout << (*pc & 0xffff);
-    else
+    } else {
       std::cout << *pc;
+    }
     std::cout << ' ';
   }
   std::cout << std::endl;
 }
 
-void kiwix::stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr) {
+void kiwix::stringReplacement(std::string& str,
+                              const std::string& oldStr,
+                              const std::string& newStr)
+{
   size_t pos = 0;
-  while((pos = str.find(oldStr, pos)) != std::string::npos) {
+  while ((pos = str.find(oldStr, pos)) != std::string::npos) {
     str.replace(pos, oldStr.length(), newStr);
     pos += newStr.length();
   }
 }
 
 /* Encode string to avoid XSS attacks */
-std::string kiwix::encodeDiples(const std::string& str) {
+std::string kiwix::encodeDiples(const std::string& str)
+{
   std::string result = str;
   kiwix::stringReplacement(result, "<", "&lt;");
   kiwix::stringReplacement(result, ">", "&gt;");
@@ -120,58 +134,68 @@ std::string kiwix::encodeDiples(const std::string& str) {
 }
 
 // Urlencode
-//based on javascript encodeURIComponent()
+// based on javascript encodeURIComponent()
 
-std::string char2hex(char dec) {
-  char dig1 = (dec&0xF0)>>4;
-  char dig2 = (dec&0x0F);
-  if ( 0<= dig1 && dig1<= 9) dig1+=48;    //0,48inascii
-  if (10<= dig1 && dig1<=15) dig1+=97-10; //a,97inascii
-  if ( 0<= dig2 && dig2<= 9) dig2+=48;
-  if (10<= dig2 && dig2<=15) dig2+=97-10;
+std::string char2hex(char dec)
+{
+  char dig1 = (dec & 0xF0) >> 4;
+  char dig2 = (dec & 0x0F);
+  if (0 <= dig1 && dig1 <= 9) {
+    dig1 += 48;  // 0,48inascii
+  }
+  if (10 <= dig1 && dig1 <= 15) {
+    dig1 += 97 - 10;  // a,97inascii
+  }
+  if (0 <= dig2 && dig2 <= 9) {
+    dig2 += 48;
+  }
+  if (10 <= dig2 && dig2 <= 15) {
+    dig2 += 97 - 10;
+  }
 
   std::string r;
-  r.append( &dig1, 1);
-  r.append( &dig2, 1);
+  r.append(&dig1, 1);
+  r.append(&dig2, 1);
   return r;
 }
 
-std::string kiwix::urlEncode(const std::string &c) {
-  std::string escaped="";
+std::string kiwix::urlEncode(const std::string& c)
+{
+  std::string escaped = "";
   int max = c.length();
-  for(int i=0; i<max; i++)
-    {
-      if ( (48 <= c[i] && c[i] <= 57) ||//0-9
-	   (65 <= c[i] && c[i] <= 90) ||//abc...xyz
-	   (97 <= c[i] && c[i] <= 122) || //ABC...XYZ
-	   (c[i]=='~' || c[i]=='!' || c[i]=='*' || c[i]=='(' || c[i]==')' || c[i]=='\'')
-	   )
-        {
-	  escaped.append( &c[i], 1);
-        }
-      else
-        {
-	  escaped.append("%");
-	  escaped.append( char2hex(c[i]) );//converts char 255 to string "ff"
-        }
+  for (int i = 0; i < max; i++) {
+    if ((48 <= c[i] && c[i] <= 57) ||  // 0-9
+        (65 <= c[i] && c[i] <= 90)
+        ||  // abc...xyz
+        (97 <= c[i] && c[i] <= 122)
+        ||  // ABC...XYZ
+        (c[i] == '~' || c[i] == '!' || c[i] == '*' || c[i] == '(' || c[i] == ')'
+         || c[i] == '\'')) {
+      escaped.append(&c[i], 1);
+    } else {
+      escaped.append("%");
+      escaped.append(char2hex(c[i]));  // converts char 255 to string "ff"
     }
+  }
   return escaped;
 }
 
 #endif
 
-static char charFromHex(std::string a) {
+static char charFromHex(std::string a)
+{
   std::istringstream Blat(a);
   int Z;
   Blat >> std::hex >> Z;
-  return char (Z);
+  return char(Z);
 }
 
-std::string kiwix::urlDecode(const std::string &originalUrl) {
+std::string kiwix::urlDecode(const std::string& originalUrl)
+{
   std::string url = originalUrl;
   std::string::size_type pos = 0;
-  while ((pos = url.find('%', pos)) != std::string::npos &&
-	 pos + 2 < url.length()) {
+  while ((pos = url.find('%', pos)) != std::string::npos
+         && pos + 2 < url.length()) {
     url.replace(pos, 3, 1, charFromHex(url.substr(pos + 1, 2)));
     ++pos;
   }
@@ -179,39 +203,43 @@ std::string kiwix::urlDecode(const std::string &originalUrl) {
 }
 
 /* Split string in a token array */
-std::vector<std::string> kiwix::split(const std::string & str,
-                                      const std::string & delims=" *-")
+std::vector<std::string> kiwix::split(const std::string& str,
+                                      const std::string& delims = " *-")
 {
   std::string::size_type lastPos = str.find_first_not_of(delims, 0);
   std::string::size_type pos = str.find_first_of(delims, lastPos);
   std::vector<std::string> tokens;
 
-  while (std::string::npos != pos || std::string::npos != lastPos)
-    {
-      tokens.push_back(str.substr(lastPos, pos - lastPos));
-      lastPos = str.find_first_not_of(delims, pos);
-      pos     = str.find_first_of(delims, lastPos);
-    }
+  while (std::string::npos != pos || std::string::npos != lastPos) {
+    tokens.push_back(str.substr(lastPos, pos - lastPos));
+    lastPos = str.find_first_not_of(delims, pos);
+    pos = str.find_first_of(delims, lastPos);
+  }
 
   return tokens;
 }
 
-std::vector<std::string> kiwix::split(const char* lhs, const char* rhs){
-  const std::string m1 (lhs), m2 (rhs);
+std::vector<std::string> kiwix::split(const char* lhs, const char* rhs)
+{
+  const std::string m1(lhs), m2(rhs);
   return split(m1, m2);
 }
 
-std::vector<std::string> kiwix::split(const char* lhs, const std::string& rhs){
+std::vector<std::string> kiwix::split(const char* lhs, const std::string& rhs)
+{
   return split(lhs, rhs.c_str());
 }
 
-std::vector<std::string> kiwix::split(const std::string& lhs, const char* rhs){
+std::vector<std::string> kiwix::split(const std::string& lhs, const char* rhs)
+{
   return split(lhs.c_str(), rhs);
 }
 
-std::string kiwix::ucFirst (const std::string &word) {
-  if (word.empty())
+std::string kiwix::ucFirst(const std::string& word)
+{
+  if (word.empty()) {
     return "";
+  }
 
   std::string result;
 
@@ -223,9 +251,11 @@ std::string kiwix::ucFirst (const std::string &word) {
   return result;
 }
 
-std::string kiwix::ucAll (const std::string &word) {
-  if (word.empty())
+std::string kiwix::ucAll(const std::string& word)
+{
+  if (word.empty()) {
     return "";
+  }
 
   std::string result;
 
@@ -235,9 +265,11 @@ std::string kiwix::ucAll (const std::string &word) {
   return result;
 }
 
-std::string kiwix::lcFirst (const std::string &word) {
-  if (word.empty())
+std::string kiwix::lcFirst(const std::string& word)
+{
+  if (word.empty()) {
     return "";
+  }
 
   std::string result;
 
@@ -249,9 +281,11 @@ std::string kiwix::lcFirst (const std::string &word) {
   return result;
 }
 
-std::string kiwix::lcAll (const std::string &word) {
-  if (word.empty())
+std::string kiwix::lcAll(const std::string& word)
+{
+  if (word.empty()) {
     return "";
+  }
 
   std::string result;
 
@@ -261,9 +295,11 @@ std::string kiwix::lcAll (const std::string &word) {
   return result;
 }
 
-std::string kiwix::toTitle (const std::string &word) {
-  if (word.empty())
+std::string kiwix::toTitle(const std::string& word)
+{
+  if (word.empty()) {
     return "";
+  }
 
   std::string result;
 
@@ -274,6 +310,7 @@ std::string kiwix::toTitle (const std::string &word) {
   return result;
 }
 
-std::string kiwix::normalize (const std::string &word) {
+std::string kiwix::normalize(const std::string& word)
+{
   return kiwix::lcAll(word);
 }

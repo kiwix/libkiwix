@@ -22,73 +22,77 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
+#include <unicode/putil.h>
 #include <algorithm>
-#include <vector>
-#include <locale>
 #include <cctype>
+#include <locale>
+#include <string>
+#include <vector>
 #include <vector>
 #include "common/pathTools.h"
 #include "common/stringTools.h"
-#include <unicode/putil.h>
 #include "kiwix_config.h"
 
 using namespace std;
 
-namespace kiwix {
-  class Reader;
-  class Result {
-    public:
-      virtual ~Result() {};
-      virtual std::string get_url() = 0;
-      virtual std::string get_title() = 0;
-      virtual int get_score() = 0;
-      virtual std::string get_snippet() = 0;
-      virtual int get_wordCount() = 0;
-      virtual int get_size() = 0;
-  };
+namespace kiwix
+{
+class Reader;
+class Result
+{
+ public:
+  virtual ~Result(){};
+  virtual std::string get_url() = 0;
+  virtual std::string get_title() = 0;
+  virtual int get_score() = 0;
+  virtual std::string get_snippet() = 0;
+  virtual int get_wordCount() = 0;
+  virtual int get_size() = 0;
+};
 
+struct SearcherInternal;
+class Searcher
+{
+ public:
+  Searcher(const string& xapianDirectoryPath, Reader* reader);
+  ~Searcher();
 
-  struct SearcherInternal;
-  class Searcher {
-
-  public:
-    Searcher(const string &xapianDirectoryPath, Reader* reader);
-    ~Searcher();
-
-    void search(std::string &search, unsigned int resultStart,
-		unsigned int resultEnd, const bool verbose=false);
-    Result* getNextResult();
-    void restart_search();
-    unsigned int getEstimatedResultCount();
-    bool setProtocolPrefix(const std::string prefix);
-    bool setSearchProtocolPrefix(const std::string prefix);
-    void reset();
-    void setContentHumanReadableId(const string &contentHumanReadableId);
+  void search(std::string& search,
+              unsigned int resultStart,
+              unsigned int resultEnd,
+              const bool verbose = false);
+  Result* getNextResult();
+  void restart_search();
+  unsigned int getEstimatedResultCount();
+  bool setProtocolPrefix(const std::string prefix);
+  bool setSearchProtocolPrefix(const std::string prefix);
+  void reset();
+  void setContentHumanReadableId(const string& contentHumanReadableId);
 
 #ifdef ENABLE_CTPP2
-    string getHtml();
+  string getHtml();
 #endif
-    
-  protected:
-    std::string beautifyInteger(const unsigned int number);
-    void closeIndex() ;
-    void searchInIndex(string &search, const unsigned int resultStart,
-	               const unsigned int resultEnd, const bool verbose=false);
 
-    Reader* reader;
-    SearcherInternal* internal;
-    std::string searchPattern;
-    std::string protocolPrefix;
-    std::string searchProtocolPrefix;
-    std::string template_ct2;
-    unsigned int resultCountPerPage;
-    unsigned int estimatedResultCount;
-    unsigned int resultStart;
-    unsigned int resultEnd;
-    std::string contentHumanReadableId;
-  };
+ protected:
+  std::string beautifyInteger(const unsigned int number);
+  void closeIndex();
+  void searchInIndex(string& search,
+                     const unsigned int resultStart,
+                     const unsigned int resultEnd,
+                     const bool verbose = false);
 
+  Reader* reader;
+  SearcherInternal* internal;
+  std::string searchPattern;
+  std::string protocolPrefix;
+  std::string searchProtocolPrefix;
+  std::string template_ct2;
+  unsigned int resultCountPerPage;
+  unsigned int estimatedResultCount;
+  unsigned int resultStart;
+  unsigned int resultEnd;
+  std::string contentHumanReadableId;
+};
 }
 
 #endif

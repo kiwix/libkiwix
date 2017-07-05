@@ -22,5 +22,4 @@
 
 #include "library.h"
 
-
 #endif

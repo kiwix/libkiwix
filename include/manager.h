@@ -20,73 +20,89 @@
 #ifndef KIWIX_MANAGER_H
 #define KIWIX_MANAGER_H
 
-#include <string>
-#include <sstream>
 #include <time.h>
+#include <sstream>
+#include <string>
 
 #include <pugixml.hpp>
 
 #include "common/base64.h"
-#include "common/regexTools.h"
 #include "common/pathTools.h"
+#include "common/regexTools.h"
 #include "library.h"
 #include "reader.h"
 
 using namespace std;
 
-namespace kiwix {
+namespace kiwix
+{
+enum supportedListMode { LASTOPEN, REMOTE, LOCAL };
+enum supportedListSortBy { TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 
-  enum supportedListMode { LASTOPEN, REMOTE, LOCAL };
-  enum supportedListSortBy { TITLE, SIZE, DATE, CREATOR, PUBLISHER };
+class Manager
+{
+ public:
+  Manager();
+  ~Manager();
 
-  class Manager {
+  bool readFile(const string path, const bool readOnly = true);
+  bool readFile(const string nativePath,
+                const string UTF8Path,
+                const bool readOnly = true);
+  bool readXml(const string xml,
+               const bool readOnly = true,
+               const string libraryPath = "");
+  bool writeFile(const string path);
+  bool removeBookByIndex(const unsigned int bookIndex);
+  bool removeBookById(const string id);
+  bool setCurrentBookId(const string id);
+  string getCurrentBookId();
+  bool setBookIndex(const string id,
+                    const string path,
+                    const supportedIndexType type);
+  bool setBookIndex(const string id, const string path);
+  bool setBookPath(const string id, const string path);
+  string addBookFromPathAndGetId(const string pathToOpen,
+                                 const string pathToSave = "",
+                                 const string url = "",
+                                 const bool checkMetaData = false);
+  bool addBookFromPath(const string pathToOpen,
+                       const string pathToSave = "",
+                       const string url = "",
+                       const bool checkMetaData = false);
+  Library cloneLibrary();
+  bool getBookById(const string id, Book& book);
+  bool getCurrentBook(Book& book);
+  unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
+  bool updateBookLastOpenDateById(const string id);
+  void removeBookPaths();
+  bool listBooks(const supportedListMode mode,
+                 const supportedListSortBy sortBy,
+                 const unsigned int maxSize,
+                 const string language,
+                 const string creator,
+                 const string publisher,
+                 const string search);
+  vector<string> getBooksLanguages();
+  vector<string> getBooksCreators();
+  vector<string> getBooksPublishers();
+  vector<string> getBooksIds();
 
-  public:
-    Manager();
-    ~Manager();
+  string writableLibraryPath;
 
-    bool readFile(const string path, const bool readOnly = true);
-    bool readFile(const string nativePath, const string UTF8Path, const bool readOnly = true);
-    bool readXml(const string xml, const bool readOnly = true, const string libraryPath = "");
-    bool writeFile(const string path);
-    bool removeBookByIndex(const unsigned int bookIndex);
-    bool removeBookById(const string id);
-    bool setCurrentBookId(const string id);
-    string getCurrentBookId();
-    bool setBookIndex(const string id, const string path, const supportedIndexType type);
-    bool setBookIndex(const string id, const string path);
-    bool setBookPath(const string id, const string path);
-    string addBookFromPathAndGetId(const string pathToOpen, const string pathToSave = "", const string url = "",
-				   const bool checkMetaData = false);
-    bool addBookFromPath(const string pathToOpen, const string pathToSave = "", const string url = "",
-			 const bool checkMetaData = false);
-    Library cloneLibrary();
-    bool getBookById(const string id, Book &book);
-    bool getCurrentBook(Book &book);
-    unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
-    bool updateBookLastOpenDateById(const string id);
-    void removeBookPaths();
-    bool listBooks(const supportedListMode mode, const supportedListSortBy sortBy, const unsigned int maxSize,
-		   const string language, const string creator, const string publisher, const string search);
-    vector<string> getBooksLanguages();
-    vector<string> getBooksCreators();
-    vector<string> getBooksPublishers();
-    vector<string> getBooksIds();
+  vector<std::string> bookIdList;
 
-    string writableLibraryPath;
+ protected:
+  kiwix::Library library;
 
-    vector<std::string> bookIdList;
+  bool readBookFromPath(const string path, Book* book = NULL);
+  bool parseXmlDom(const pugi::xml_document& doc,
+                   const bool readOnly,
+                   const string libraryPath);
 
-  protected:
-    kiwix::Library library;
-
-    bool readBookFromPath(const string path, Book *book = NULL);
-    bool parseXmlDom(const pugi::xml_document &doc, const bool readOnly, const string libraryPath);
-
-  private:
-    void checkAndCleanBookPaths(Book &book, const string &libraryPath);
-  };
-
+ private:
+  void checkAndCleanBookPaths(Book& book, const string& libraryPath);
+};
 }
 
 #endif
