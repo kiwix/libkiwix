@@ -3,6 +3,8 @@ jni_generator = find_program('gen_kiwix.sh')
 
 kiwix_jni = custom_target('jni',
   input: ['org/kiwix/kiwixlib/JNIKiwix.java',
+          'org/kiwix/kiwixlib/JNIKiwixReader.java',
+          'org/kiwix/kiwixlib/JNIKiwixSearcher.java',
           'org/kiwix/kiwixlib/JNIKiwixInt.java',
           'org/kiwix/kiwixlib/JNIKiwixString.java',
           'org/kiwix/kiwixlib/JNIKiwixBool.java'],
@@ -10,7 +12,11 @@ kiwix_jni = custom_target('jni',
   command:[jni_generator, '@INPUT@']
 )
 
-kiwix_sources += ['android/kiwix.cpp', kiwix_jni]
+kiwix_sources += [
+    'android/kiwix.cpp',
+    'android/kiwixreader.cpp',
+    'android/kiwixsearcher.cpp',
+    kiwix_jni]
 
 install_subdir('org', install_dir: 'kiwix-lib/java')
 install_subdir('res', install_dir: 'kiwix-lib')
