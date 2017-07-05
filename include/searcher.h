@@ -46,6 +46,7 @@ class Result
   virtual std::string get_title() = 0;
   virtual int get_score() = 0;
   virtual std::string get_snippet() = 0;
+  virtual std::string get_content() = 0;
   virtual int get_wordCount() = 0;
   virtual int get_size() = 0;
 };

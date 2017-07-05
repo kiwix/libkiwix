@@ -45,6 +45,7 @@ class _Result : public Result
   virtual std::string get_title();
   virtual int get_score();
   virtual std::string get_snippet();
+  virtual std::string get_content();
   virtual int get_wordCount();
   virtual int get_size();
 
@@ -240,6 +241,13 @@ int _Result::get_score()
 std::string _Result::get_snippet()
 {
   return iterator.get_snippet();
+}
+std::string _Result::get_content()
+{
+  if (iterator->good()) {
+    return iterator->getData();
+  }
+  return "";
 }
 int _Result::get_size()
 {

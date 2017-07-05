@@ -43,6 +43,7 @@ class XapianResult : public Result
   virtual std::string get_title();
   virtual int get_score();
   virtual std::string get_snippet();
+  virtual std::string get_content();
   virtual int get_wordCount();
   virtual int get_size();
 
