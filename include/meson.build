@@ -18,7 +18,6 @@ install_headers(
   'common/pathTools.h',
   'common/regexTools.h',
   'common/stringTools.h',
-  'common/tree.h',
   subdir:'kiwix/common'
 )
 
