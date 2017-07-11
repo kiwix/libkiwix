@@ -20,6 +20,8 @@
 #include "reader.h"
 #include <time.h>
 
+#include <zim/search.h>
+
 inline char hi(char v)
 {
   char hex[] = "0123456789abcdef";
@@ -678,11 +680,29 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
 
   this->suggestions.clear();
   this->suggestionsOffset = this->suggestions.begin();
-  for (std::vector<std::string>::iterator variantsItr = variants.begin();
-       variantsItr != variants.end();
-       variantsItr++) {
-    retVal = this->searchSuggestions(*variantsItr, suggestionsCount, false)
-             || retVal;
+  /* Try to search in the title using fulltext search database */
+  const zim::Search* suggestionSearch
+      = this->getZimFileHandler()->suggestions(prefix, 0, suggestionsCount);
+
+  if (suggestionSearch->get_matches_estimated()) {
+    for (auto current = suggestionSearch->begin();
+         current != suggestionSearch->end();
+         current++) {
+      std::vector<std::string> suggestion;
+      suggestion.push_back(current->getTitle());
+      suggestion.push_back("/A/" + current->getUrl());
+      suggestion.push_back(kiwix::normalize(current->getTitle()));
+      this->suggestions.push_back(suggestion);
+    }
+    this->suggestionsOffset = this->suggestions.begin();
+    retVal = true;
+  } else {
+    for (std::vector<std::string>::iterator variantsItr = variants.begin();
+         variantsItr != variants.end();
+         variantsItr++) {
+      retVal = this->searchSuggestions(*variantsItr, suggestionsCount, false)
+               || retVal;
+    }
   }
 
   return retVal;
