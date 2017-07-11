@@ -19,10 +19,11 @@
 
 #include <common/otherTools.h>
 
-void kiwix::sleep(unsigned int milliseconds) {
+void kiwix::sleep(unsigned int milliseconds)
+{
 #ifdef _WIN32
-      Sleep(milliseconds);
+  Sleep(milliseconds);
 #else
-      usleep(1000 * milliseconds);
+  usleep(1000 * milliseconds);
 #endif
 }

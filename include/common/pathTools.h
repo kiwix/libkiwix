@@ -20,18 +20,18 @@
 #ifndef KIWIX_PATHTOOLS_H
 #define KIWIX_PATHTOOLS_H
 
+#include <fcntl.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fstream>
+#include <ios>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <string.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <ios>
-#include <limits.h>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -41,20 +41,21 @@
 
 using namespace std;
 
-bool isRelativePath(const string &path);
+bool isRelativePath(const string& path);
 string computeAbsolutePath(const string path, const string relativePath);
 string computeRelativePath(const string path, const string absolutePath);
-string removeLastPathElement(const string path, const bool removePreSeparator = false, 
-			     const bool removePostSeparator = false);
-string appendToDirectory(const string &directoryPath, const string &filename);
+string removeLastPathElement(const string path,
+                             const bool removePreSeparator = false,
+                             const bool removePostSeparator = false);
+string appendToDirectory(const string& directoryPath, const string& filename);
 
-unsigned int getFileSize(const string &path);
-string getFileSizeAsString(const string &path);
-bool fileExists(const string &path);
-bool makeDirectory(const string &path);
-bool copyFile(const string &sourcePath, const string &destPath);
-string getLastPathElement(const string &path);
+unsigned int getFileSize(const string& path);
+string getFileSizeAsString(const string& path);
+bool fileExists(const string& path);
+bool makeDirectory(const string& path);
+bool copyFile(const string& sourcePath, const string& destPath);
+string getLastPathElement(const string& path);
 string getExecutablePath();
 string getCurrentDirectory();
-bool writeTextFile(const string &path, const string &content);
+bool writeTextFile(const string& path, const string& content);
 #endif

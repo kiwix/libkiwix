@@ -20,85 +20,105 @@
 #ifndef KIWIX_READER_H
 #define KIWIX_READER_H
 
-#include <zim/zim.h>
-#include <zim/file.h>
-#include <zim/article.h>
-#include <zim/fileiterator.h>
 #include <stdio.h>
-#include <string>
+#include <zim/article.h>
+#include <zim/file.h>
+#include <zim/fileiterator.h>
+#include <zim/zim.h>
 #include <exception>
-#include <sstream>
 #include <map>
+#include <sstream>
+#include <string>
 #include "common/pathTools.h"
 #include "common/stringTools.h"
 
 using namespace std;
 
-namespace kiwix {
+namespace kiwix
+{
+class Reader
+{
+ public:
+  Reader(const string zimFilePath);
+  ~Reader();
 
-  class Reader {
+  void reset();
+  unsigned int getArticleCount() const;
+  unsigned int getMediaCount() const;
+  unsigned int getGlobalCount() const;
+  string getZimFilePath() const;
+  string getId() const;
+  string getRandomPageUrl() const;
+  string getFirstPageUrl() const;
+  string getMainPageUrl() const;
+  bool getMetatag(const string& url, string& content) const;
+  string getTitle() const;
+  string getDescription() const;
+  string getLanguage() const;
+  string getName() const;
+  string getTags() const;
+  string getDate() const;
+  string getCreator() const;
+  string getPublisher() const;
+  string getOrigId() const;
+  bool getFavicon(string& content, string& mimeType) const;
+  bool getPageUrlFromTitle(const string& title, string& url) const;
+  bool getMimeTypeByUrl(const string& url, string& mimeType) const;
+  bool getContentByUrl(const string& url,
+                       string& content,
+                       unsigned int& contentLength,
+                       string& contentType) const;
+  bool getContentByEncodedUrl(const string& url,
+                              string& content,
+                              unsigned int& contentLength,
+                              string& contentType,
+                              string& baseUrl) const;
+  bool getContentByEncodedUrl(const string& url,
+                              string& content,
+                              unsigned int& contentLength,
+                              string& contentType) const;
+  bool getContentByDecodedUrl(const string& url,
+                              string& content,
+                              unsigned int& contentLength,
+                              string& contentType,
+                              string& baseUrl) const;
+  bool getContentByDecodedUrl(const string& url,
+                              string& content,
+                              unsigned int& contentLength,
+                              string& contentType) const;
+  bool searchSuggestions(const string& prefix,
+                         unsigned int suggestionsCount,
+                         const bool reset = true);
+  bool searchSuggestionsSmart(const string& prefix,
+                              unsigned int suggestionsCount);
+  bool urlExists(const string& url) const;
+  bool hasFulltextIndex() const;
+  std::vector<std::string> getTitleVariants(const std::string& title) const;
+  bool getNextSuggestion(string& title);
+  bool getNextSuggestion(string& title, string& url);
+  bool canCheckIntegrity() const;
+  bool isCorrupted() const;
+  bool parseUrl(const string& url, char* ns, string& title) const;
+  unsigned int getFileSize() const;
+  zim::File* getZimFileHandler() const;
+  bool getArticleObjectByDecodedUrl(const string& url,
+                                    zim::Article& article) const;
 
-  public:
-    Reader(const string zimFilePath);
-    ~Reader();
+ protected:
+  zim::File* zimFileHandler;
+  zim::size_type firstArticleOffset;
+  zim::size_type lastArticleOffset;
+  zim::size_type currentArticleOffset;
+  zim::size_type nsACount;
+  zim::size_type nsICount;
+  std::string zimFilePath;
 
-    void reset();
-    unsigned int getArticleCount() const;
-    unsigned int getMediaCount() const;
-    unsigned int getGlobalCount() const;
-    string getZimFilePath() const;
-    string getId() const;
-    string getRandomPageUrl() const;
-    string getFirstPageUrl() const;
-    string getMainPageUrl() const;
-    bool getMetatag(const string &url, string &content) const;
-    string getTitle() const;
-    string getDescription() const;
-    string getLanguage() const;
-    string getName() const;
-    string getTags() const;
-    string getDate() const;
-    string getCreator() const;
-    string getPublisher() const;
-    string getOrigId() const;
-    bool getFavicon(string &content, string &mimeType) const;
-    bool getPageUrlFromTitle(const string &title, string &url) const;
-    bool getMimeTypeByUrl(const string &url, string &mimeType) const;
-    bool getContentByUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const;
-    bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) const;
-    bool getContentByEncodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const;
-    bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType, string &baseUrl) const;
-    bool getContentByDecodedUrl(const string &url, string &content, unsigned int &contentLength, string &contentType) const;
-    bool searchSuggestions(const string &prefix, unsigned int suggestionsCount, const bool reset = true);
-    bool searchSuggestionsSmart(const string &prefix, unsigned int suggestionsCount);
-    bool urlExists(const string &url) const;
-    bool hasFulltextIndex() const;
-    std::vector<std::string> getTitleVariants(const std::string &title) const;
-    bool getNextSuggestion(string &title);
-    bool getNextSuggestion(string &title, string &url);
-    bool canCheckIntegrity() const;
-    bool isCorrupted() const;
-    bool parseUrl(const string &url, char *ns, string &title) const;
-    unsigned int getFileSize() const;
-    zim::File* getZimFileHandler() const;
-    bool getArticleObjectByDecodedUrl(const string &url, zim::Article &article) const;
+  std::vector<std::vector<std::string>> suggestions;
+  std::vector<std::vector<std::string>>::iterator suggestionsOffset;
 
-  protected:
-    zim::File* zimFileHandler;
-    zim::size_type firstArticleOffset;
-    zim::size_type lastArticleOffset;
-    zim::size_type currentArticleOffset;
-    zim::size_type nsACount;
-    zim::size_type nsICount;
-    std::string zimFilePath;
-    
-    std::vector< std::vector<std::string> > suggestions;
-    std::vector< std::vector<std::string> >::iterator suggestionsOffset;
-
-  private:
-    std::map<const std::string, unsigned int> parseCounterMetadata() const;
-  };
-
+ private:
+  std::map<const std::string, unsigned int> parseCounterMetadata() const;
+};
 }
 
 #endif

@@ -22,86 +22,85 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <string.h>
-#include <vector>
 #include <stack>
+#include <string>
+#include <vector>
 
-#include "common/stringTools.h"
 #include "common/regexTools.h"
+#include "common/stringTools.h"
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
 using namespace std;
 
-namespace kiwix {
+namespace kiwix
+{
+enum supportedIndexType { UNKNOWN, XAPIAN };
 
-  enum supportedIndexType { UNKNOWN, XAPIAN };
+class Book
+{
+ public:
+  Book();
+  ~Book();
 
-  class Book {
+  static bool sortByLastOpen(const Book& a, const Book& b);
+  static bool sortByTitle(const Book& a, const Book& b);
+  static bool sortBySize(const Book& a, const Book& b);
+  static bool sortByDate(const Book& a, const Book& b);
+  static bool sortByCreator(const Book& a, const Book& b);
+  static bool sortByPublisher(const Book& a, const Book& b);
+  static bool sortByLanguage(const Book& a, const Book& b);
+  string getHumanReadableIdFromPath();
 
-  public:
-    Book();
-    ~Book();
+  string id;
+  string path;
+  string pathAbsolute;
+  string last;
+  string indexPath;
+  string indexPathAbsolute;
+  supportedIndexType indexType;
+  string title;
+  string description;
+  string language;
+  string creator;
+  string publisher;
+  string date;
+  string url;
+  string name;
+  string tags;
+  string origId;
+  string articleCount;
+  string mediaCount;
+  bool readOnly;
+  string size;
+  string favicon;
+  string faviconMimeType;
+};
 
-    static bool sortByLastOpen(const Book &a, const Book &b);
-    static bool sortByTitle(const Book &a, const Book &b);
-    static bool sortBySize(const Book &a, const Book &b);
-    static bool sortByDate(const Book &a, const Book &b);
-    static bool sortByCreator(const Book &a, const Book &b);
-    static bool sortByPublisher(const Book &a, const Book &b);
-    static bool sortByLanguage(const Book &a, const Book &b);
-    string getHumanReadableIdFromPath();
+class Library
+{
+ public:
+  Library();
+  ~Library();
 
-    string id;
-    string path;
-    string pathAbsolute;
-    string last;
-    string indexPath;
-    string indexPathAbsolute;
-    supportedIndexType indexType;
-    string title;
-    string description;
-    string language;
-    string creator;
-    string publisher;
-    string date;
-    string url;
-    string name;
-    string tags;
-    string origId;
-    string articleCount;
-    string mediaCount;
-    bool readOnly;
-    string size;
-    string favicon;
-    string faviconMimeType;
-  };
+  string version;
+  bool addBook(const Book& book);
+  bool removeBookByIndex(const unsigned int bookIndex);
+  vector<kiwix::Book> books;
 
-  class Library {
-
-  public:
-    Library();
-    ~Library();
-
-    string version;
-    bool addBook(const Book &book);
-    bool removeBookByIndex(const unsigned int bookIndex);
-    vector <kiwix::Book> books;
-
-    /*
-     * 'current' is the variable storing the current content/book id
-     * in the library. This is used to be able to load per default a
-     * content. As Kiwix may work with many library XML files, you may
-     * have "current" defined many time with different values. The
-     * last XML file read has the priority, Although we do not have an
-     * library object for each file, we want to be able to fallback to
-     * an 'old' current book if the one which should be load
-     * failed. That is the reason why we need a stack here
-     */
-    stack<string> current;
-  };
-
+  /*
+   * 'current' is the variable storing the current content/book id
+   * in the library. This is used to be able to load per default a
+   * content. As Kiwix may work with many library XML files, you may
+   * have "current" defined many time with different values. The
+   * last XML file read has the priority, Although we do not have an
+   * library object for each file, we want to be able to fallback to
+   * an 'old' current book if the one which should be load
+   * failed. That is the reason why we need a stack here
+   */
+  stack<string> current;
+};
 }
 
 #endif

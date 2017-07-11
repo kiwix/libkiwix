@@ -19,8 +19,7 @@
 
 package org.kiwix.kiwixlib;
 
-public class JNIKiwixInt {
-
+public class JNIKiwixInt
+{
   public int value;
 }
-

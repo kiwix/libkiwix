@@ -22,11 +22,15 @@
 
 #include <unicode/regex.h>
 #include <unicode/ucnv.h>
-#include <string>
 #include <map>
+#include <string>
 
-bool matchRegex(const std::string &content, const std::string &regex);
-std::string replaceRegex(const std::string &content, const std::string &replacement, const std::string &regex);
-std::string appendToFirstOccurence(const std::string &content, const std::string regex, const std::string &replacement);
+bool matchRegex(const std::string& content, const std::string& regex);
+std::string replaceRegex(const std::string& content,
+                         const std::string& replacement,
+                         const std::string& regex);
+std::string appendToFirstOccurence(const std::string& content,
+                                   const std::string regex,
+                                   const std::string& replacement);
 
 #endif

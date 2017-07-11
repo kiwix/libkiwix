@@ -19,7 +19,7 @@
 
 package org.kiwix.kiwixlib;
 
-public class JNIKiwixBool {
-
+public class JNIKiwixBool
+{
   public boolean value;
 }

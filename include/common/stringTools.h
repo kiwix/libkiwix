@@ -22,44 +22,46 @@
 
 #include <unicode/unistr.h>
 
-#include <iostream>
-#include <vector>
-#include <string>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include "pathTools.h"
 
-namespace kiwix {
-
+namespace kiwix
+{
 #ifndef __ANDROID__
 
-  std::string beautifyInteger(const unsigned int number);
-  std::string beautifyFileSize(const unsigned int number);
-  std::string urlEncode(const std::string &c);
-  void printStringInHexadecimal(const char *s);
-  void printStringInHexadecimal(UnicodeString s);
-  void stringReplacement(std::string& str, const std::string& oldStr, const std::string& newStr);
-  std::string encodeDiples(const std::string& str);
+std::string beautifyInteger(const unsigned int number);
+std::string beautifyFileSize(const unsigned int number);
+std::string urlEncode(const std::string& c);
+void printStringInHexadecimal(const char* s);
+void printStringInHexadecimal(UnicodeString s);
+void stringReplacement(std::string& str,
+                       const std::string& oldStr,
+                       const std::string& newStr);
+std::string encodeDiples(const std::string& str);
 
 #endif
 
-  std::string removeAccents(const std::string &text);
-  void loadICUExternalTables();
-  std::string urlDecode(const std::string &c);
+std::string removeAccents(const std::string& text);
+void loadICUExternalTables();
+std::string urlDecode(const std::string& c);
 
-  std::vector<std::string> split(const std::string&, const std::string&);
-  std::vector<std::string> split(const char*, const char*);
-  std::vector<std::string> split(const std::string&, const char*);
-  std::vector<std::string> split(const char*, const std::string&);
+std::vector<std::string> split(const std::string&, const std::string&);
+std::vector<std::string> split(const char*, const char*);
+std::vector<std::string> split(const std::string&, const char*);
+std::vector<std::string> split(const char*, const std::string&);
 
-  std::string ucAll(const std::string &word);
-  std::string lcAll(const std::string &word);
-  std::string ucFirst(const std::string &word);
-  std::string lcFirst(const std::string &word);
-  std::string toTitle(const std::string &word);
+std::string ucAll(const std::string& word);
+std::string lcAll(const std::string& word);
+std::string ucFirst(const std::string& word);
+std::string lcFirst(const std::string& word);
+std::string toTitle(const std::string& word);
 
-  std::string normalize(const std::string &word);
+std::string normalize(const std::string& word);
 }
 
 #endif

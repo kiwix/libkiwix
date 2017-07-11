@@ -7,80 +7,87 @@
 #include <iostream>
 #include <string>
 
-#include "unicode/putil.h"
+#include "common/base64.h"
 #include "reader.h"
 #include "searcher.h"
-#include "common/base64.h"
+#include "unicode/putil.h"
 
 #include <android/log.h>
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, "kiwix", __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "kiwix", __VA_ARGS__)
 
 #include <xapian.h>
-#include <zim/zim.h>
-#include <zim/file.h>
 #include <zim/article.h>
 #include <zim/error.h>
+#include <zim/file.h>
+#include <zim/zim.h>
 
 /* global variables */
-kiwix::Reader *reader = NULL;
-kiwix::Searcher *searcher = NULL;
+kiwix::Reader* reader = NULL;
+kiwix::Searcher* searcher = NULL;
 
 static pthread_mutex_t readerLock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t searcherLock = PTHREAD_MUTEX_INITIALIZER;
 
 /* c2jni type conversion functions */
-jboolean c2jni(const bool &val) {
+jboolean c2jni(const bool& val)
+{
   return val ? JNI_TRUE : JNI_FALSE;
 }
-
-jstring c2jni(const std::string &val, JNIEnv *env) {
+jstring c2jni(const std::string& val, JNIEnv* env)
+{
   return env->NewStringUTF(val.c_str());
 }
 
-jint c2jni(const int val) {
+jint c2jni(const int val)
+{
   return (jint)val;
 }
-
-jint c2jni(const unsigned val) {
+jint c2jni(const unsigned val)
+{
   return (unsigned)val;
 }
-
 /* jni2c type conversion functions */
-bool jni2c(const jboolean &val) {
+bool jni2c(const jboolean& val)
+{
   return val == JNI_TRUE;
 }
-
-std::string jni2c(const jstring &val, JNIEnv *env) {
+std::string jni2c(const jstring& val, JNIEnv* env)
+{
   return std::string(env->GetStringUTFChars(val, 0));
 }
 
-int jni2c(const jint val) {
+int jni2c(const jint val)
+{
   return (int)val;
 }
-
 /* Method to deal with variable passed by reference */
-void setStringObjValue(const std::string &value, const jobject obj, JNIEnv *env) {
+void setStringObjValue(const std::string& value, const jobject obj, JNIEnv* env)
+{
   jclass objClass = env->GetObjectClass(obj);
   jfieldID objFid = env->GetFieldID(objClass, "value", "Ljava/lang/String;");
   env->SetObjectField(obj, objFid, c2jni(value, env));
 }
 
-void setIntObjValue(const int value, const jobject obj, JNIEnv *env) {
+void setIntObjValue(const int value, const jobject obj, JNIEnv* env)
+{
   jclass objClass = env->GetObjectClass(obj);
   jfieldID objFid = env->GetFieldID(objClass, "value", "I");
   env->SetIntField(obj, objFid, value);
 }
 
-void setBoolObjValue(const bool value, const jobject obj, JNIEnv *env) {
+void setBoolObjValue(const bool value, const jobject obj, JNIEnv* env)
+{
   jclass objClass = env->GetObjectClass(obj);
   jfieldID objFid = env->GetFieldID(objClass, "value", "Z");
   env->SetIntField(obj, objFid, c2jni(value));
 }
 
 /* Kiwix library functions */
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getMainPage(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwix_getMainPage(JNIEnv* env, jobject obj)
+{
   jstring url;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -91,13 +98,15 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getMainPage(JNIEnv *e
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return url;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getId(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getId(JNIEnv* env,
+                                                                 jobject obj)
+{
   jstring id;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -108,13 +117,15 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getId(JNIEnv *env, jo
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return id;
 }
 
-JNIEXPORT jint JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getFileSize(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getFileSize(JNIEnv* env,
+                                                                    jobject obj)
+{
   jint size;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -125,13 +136,15 @@ JNIEXPORT jint JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getFileSize(JNIEnv *env,
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return size;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getCreator(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwix_getCreator(JNIEnv* env, jobject obj)
+{
   jstring creator;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -142,13 +155,15 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getCreator(JNIEnv *en
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return creator;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getPublisher(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwix_getPublisher(JNIEnv* env, jobject obj)
+{
   jstring publisher;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -159,13 +174,15 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getPublisher(JNIEnv *
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return publisher;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getName(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getName(JNIEnv* env,
+                                                                   jobject obj)
+{
   jstring name;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -176,33 +193,40 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getName(JNIEnv *env, 
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return name;
 }
 
-
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getFavicon(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwix_getFavicon(JNIEnv* env, jobject obj)
+{
   jstring favicon;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
       std::string cContent;
       std::string cMime;
       reader->getFavicon(cContent, cMime);
-      favicon = c2jni(base64_encode(reinterpret_cast<const unsigned char*>(cContent.c_str()), cContent.length()), env);
+      favicon
+          = c2jni(base64_encode(
+                      reinterpret_cast<const unsigned char*>(cContent.c_str()),
+                      cContent.length()),
+                  env);
     } catch (...) {
       std::cerr << "Unable to get ZIM favicon" << std::endl;
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return favicon;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getDate(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getDate(JNIEnv* env,
+                                                                   jobject obj)
+{
   jstring date;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -213,13 +237,15 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getDate(JNIEnv *env, 
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return date;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getLanguage(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwix_getLanguage(JNIEnv* env, jobject obj)
+{
   jstring language;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -230,13 +256,15 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getLanguage(JNIEnv *e
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return language;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getMimeType(JNIEnv *env, jobject obj, jstring url) {
+JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getMimeType(
+    JNIEnv* env, jobject obj, jstring url)
+{
   jstring mimeType;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     std::string cUrl = jni2c(url, env);
@@ -249,17 +277,21 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getMimeType(JNIEnv *e
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return mimeType;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadZIM(JNIEnv *env, jobject obj, jstring path) {
+JNIEXPORT jboolean JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwix_loadZIM(JNIEnv* env, jobject obj, jstring path)
+{
   jboolean retVal = JNI_TRUE;
   std::string cPath = jni2c(path, env);
 
   pthread_mutex_lock(&readerLock);
   try {
-    if (reader != NULL) delete reader;
+    if (reader != NULL) {
+      delete reader;
+    }
     reader = new kiwix::Reader(cPath);
   } catch (...) {
     std::cerr << "Unable to load ZIM " << cPath << std::endl;
@@ -271,8 +303,9 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadZIM(JNIEnv *env,
   return retVal;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getContent(JNIEnv *env, jobject obj, jstring url, jobject mimeTypeObj, jobject sizeObj) {
-
+JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getContent(
+    JNIEnv* env, jobject obj, jstring url, jobject mimeTypeObj, jobject sizeObj)
+{
   /* Default values */
   setStringObjValue("", mimeTypeObj, env);
   setIntObjValue(0, sizeObj, env);
@@ -289,7 +322,8 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getContent(JNIEnv 
     try {
       if (reader->getContentByUrl(cUrl, cData, cSize, cMimeType)) {
         data = env->NewByteArray(cSize);
-        env->SetByteArrayRegion(data, 0, cSize, reinterpret_cast<const jbyte*>(cData.c_str()));
+        env->SetByteArrayRegion(
+            data, 0, cSize, reinterpret_cast<const jbyte*>(cData.c_str()));
         setStringObjValue(cMimeType, mimeTypeObj, env);
         setIntObjValue(cSize, sizeObj, env);
       }
@@ -298,12 +332,13 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getContent(JNIEnv 
     }
     pthread_mutex_unlock(&readerLock);
   }
-  
+
   return data;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_searchSuggestions
-(JNIEnv *env, jobject obj, jstring prefix, jint count) {
+JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_searchSuggestions(
+    JNIEnv* env, jobject obj, jstring prefix, jint count)
+{
   jboolean retVal = JNI_FALSE;
   std::string cPrefix = jni2c(prefix, env);
   unsigned int cCount = jni2c(count);
@@ -316,15 +351,17 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_searchSuggestions
       }
     }
   } catch (...) {
-    std::cerr << "Unable to search suggestions for pattern " << cPrefix << std::endl;
+    std::cerr << "Unable to search suggestions for pattern " << cPrefix
+              << std::endl;
   }
   pthread_mutex_unlock(&readerLock);
 
   return retVal;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getNextSuggestion
-(JNIEnv *env, jobject obj, jobject titleObj) {
+JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getNextSuggestion(
+    JNIEnv* env, jobject obj, jobject titleObj)
+{
   jboolean retVal = JNI_FALSE;
   std::string cTitle;
 
@@ -344,8 +381,9 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getNextSuggestion
   return retVal;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getPageUrlFromTitle
-(JNIEnv *env, jobject obj, jstring title, jobject urlObj) {
+JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getPageUrlFromTitle(
+    JNIEnv* env, jobject obj, jstring title, jobject urlObj)
+{
   jboolean retVal = JNI_FALSE;
   std::string cTitle = jni2c(title, env);
   std::string cUrl;
@@ -362,12 +400,13 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getPageUrlFromTitle
     std::cerr << "Unable to get URL for title " << cTitle << std::endl;
   }
   pthread_mutex_unlock(&readerLock);
-    
+
   return retVal;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getTitle
-(JNIEnv *env , jobject obj, jobject titleObj) {
+JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getTitle(
+    JNIEnv* env, jobject obj, jobject titleObj)
+{
   jboolean retVal = JNI_FALSE;
   std::string cTitle;
 
@@ -384,12 +423,13 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getTitle
   pthread_mutex_unlock(&readerLock);
 
   return retVal;
-
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getDescription(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwix_getDescription(JNIEnv* env, jobject obj)
+{
   jstring description;
-  
+
   pthread_mutex_lock(&readerLock);
   if (reader != NULL) {
     try {
@@ -400,12 +440,13 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getDescription(JNIEnv
     }
   }
   pthread_mutex_unlock(&readerLock);
-  
+
   return description;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getRandomPage
-(JNIEnv *env, jobject obj, jobject urlObj) {
+JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getRandomPage(
+    JNIEnv* env, jobject obj, jobject urlObj)
+{
   jboolean retVal = JNI_FALSE;
   std::string cUrl;
 
@@ -424,11 +465,12 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getRandomPage
   return retVal;
 }
 
-JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_setDataDirectory
-  (JNIEnv *env, jobject obj, jstring dirStr) {
+JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_setDataDirectory(
+    JNIEnv* env, jobject obj, jstring dirStr)
+{
   std::string cPath = jni2c(dirStr, env);
 
-  pthread_mutex_lock(&readerLock); 
+  pthread_mutex_lock(&readerLock);
   try {
     u_setDataDirectory(cPath.c_str());
   } catch (...) {
@@ -437,14 +479,18 @@ JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_setDataDirectory
   pthread_mutex_unlock(&readerLock);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(JNIEnv *env, jobject obj, jstring path) {
+JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(
+    JNIEnv* env, jobject obj, jstring path)
+{
   jboolean retVal = JNI_TRUE;
   std::string cPath = jni2c(path, env);
 
   pthread_mutex_lock(&searcherLock);
   searcher = NULL;
   try {
-    if (searcher != NULL) delete searcher;
+    if (searcher != NULL) {
+      delete searcher;
+    }
     searcher = new kiwix::Searcher(cPath, reader);
   } catch (...) {
     searcher = NULL;
@@ -456,22 +502,23 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(JN
   return retVal;
 }
 
-JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_indexedQuery
-  (JNIEnv *env, jclass obj, jstring query, jint count) {
+JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_indexedQuery(
+    JNIEnv* env, jclass obj, jstring query, jint count)
+{
   std::string cQuery = jni2c(query, env);
   unsigned int cCount = jni2c(count);
-  kiwix::Result *p_result;
+  kiwix::Result* p_result;
   std::string result;
-      
+
   pthread_mutex_lock(&searcherLock);
   try {
     if (searcher != NULL) {
       searcher->search(cQuery, 0, count);
-      while ( (p_result = searcher->getNextResult()) &&
-	     !(p_result->get_title().empty()) &&
-	     !(p_result->get_url().empty())) {
-	result += p_result->get_title() + "\n";
-	delete p_result;
+      while ((p_result = searcher->getNextResult())
+             && !(p_result->get_title().empty())
+             && !(p_result->get_url().empty())) {
+        result += p_result->get_title() + "\n";
+        delete p_result;
       }
     }
   } catch (...) {
@@ -481,5 +528,3 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_indexedQuery
 
   return env->NewStringUTF(result.c_str());
 }
-
-

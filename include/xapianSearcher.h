@@ -21,70 +21,76 @@
 #define KIWIX_XAPIAN_SEARCHER_H
 
 #include <xapian.h>
-#include "searcher.h"
 #include "reader.h"
+#include "searcher.h"
 
 #include <map>
 #include <string>
 
 using namespace std;
 
-namespace kiwix {
+namespace kiwix
+{
+class XapianSearcher;
 
-  class XapianSearcher;
+class XapianResult : public Result
+{
+ public:
+  XapianResult(XapianSearcher* searcher, Xapian::MSetIterator& iterator);
+  virtual ~XapianResult(){};
 
-  class XapianResult : public Result {
-    public:
-      XapianResult(XapianSearcher* searcher, Xapian::MSetIterator& iterator);
-      virtual ~XapianResult() {};
+  virtual std::string get_url();
+  virtual std::string get_title();
+  virtual int get_score();
+  virtual std::string get_snippet();
+  virtual int get_wordCount();
+  virtual int get_size();
 
-      virtual std::string get_url();
-      virtual std::string get_title();
-      virtual int get_score();
-      virtual std::string get_snippet();
-      virtual int get_wordCount();
-      virtual int get_size();
+ private:
+  XapianSearcher* searcher;
+  Xapian::MSetIterator iterator;
+  Xapian::Document document;
+};
 
-    private:
-      XapianSearcher* searcher;
-      Xapian::MSetIterator iterator;
-      Xapian::Document document;
-  };
+class NoXapianIndexInZim : public exception
+{
+  virtual const char* what() const throw()
+  {
+    return "There is no fulltext index in the zim file";
+  }
+};
 
-  class NoXapianIndexInZim: public exception {
-    virtual const char* what() const throw() {
-      return "There is no fulltext index in the zim file";
-    }
-  };
+class XapianSearcher
+{
+  friend class XapianResult;
 
-  class XapianSearcher {
-    friend class XapianResult;
-  public:
-    XapianSearcher(const string &xapianDirectoryPath, Reader* reader);
-    virtual ~XapianSearcher() {};
-    void searchInIndex(string &search, const unsigned int resultStart, const unsigned int resultEnd, 
-		       const bool verbose=false);
-    virtual Result* getNextResult();
-    void restart_search();
+ public:
+  XapianSearcher(const string& xapianDirectoryPath, Reader* reader);
+  virtual ~XapianSearcher(){};
+  void searchInIndex(string& search,
+                     const unsigned int resultStart,
+                     const unsigned int resultEnd,
+                     const bool verbose = false);
+  virtual Result* getNextResult();
+  void restart_search();
 
-    Xapian::MSet results;
+  Xapian::MSet results;
 
-  protected:
-    void closeIndex();
-    void openIndex(const string &xapianDirectoryPath);
-    void setup_queryParser();
+ protected:
+  void closeIndex();
+  void openIndex(const string& xapianDirectoryPath);
+  void setup_queryParser();
 
-    Reader* reader;
-    Xapian::Database readableDatabase;
-    std::string language;
-    std::string stopwords;
-    Xapian::QueryParser queryParser;
-    Xapian::Stem stemmer;
-    Xapian::SimpleStopper stopper;
-    Xapian::MSetIterator current_result;
-    std::map<std::string, int> valuesmap;
-  };
-
+  Reader* reader;
+  Xapian::Database readableDatabase;
+  std::string language;
+  std::string stopwords;
+  Xapian::QueryParser queryParser;
+  Xapian::Stem stemmer;
+  Xapian::SimpleStopper stopper;
+  Xapian::MSetIterator current_result;
+  std::map<std::string, int> valuesmap;
+};
 }
 
 #endif
