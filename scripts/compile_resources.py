@@ -168,8 +168,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     base_dir = os.path.dirname(os.path.realpath(args.resource_file))
+    source_dir = args.source_dir or []
     with open(args.resource_file, 'r') as f:
-        resources = [Resource([base_dir]+args.source_dir, filename)
+        resources = [Resource([base_dir]+source_dir, filename)
                         for filename in f.readlines()]
 
     h_identifier = to_identifier(os.path.basename(args.hfile))
