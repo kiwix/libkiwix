@@ -8,22 +8,22 @@ ARCHIVE_NAME=deps_${PLATFORM}_${REPO_NAME}.tar.gz
 # Packages.
 case ${PLATFORM} in
      "native_static")
-         PACKAGES="gcc cmake libbz2-dev ccache zlib1g-dev uuid-dev libctpp2-dev"
+         PACKAGES="gcc cmake libbz2-dev ccache zlib1g-dev uuid-dev libctpp2-dev ctpp2-utils"
          ;;
      "native_dyn")
-         PACKAGES="gcc cmake libbz2-dev ccache zlib1g-dev uuid-dev libctpp2-dev libmicrohttpd-dev"
+         PACKAGES="gcc cmake libbz2-dev ccache zlib1g-dev uuid-dev libctpp2-dev ctpp2-utils libmicrohttpd-dev"
          ;;
      "win32_static")
-         PACKAGES="g++-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw-w64-base mingw-w64-tools ccache"
+         PACKAGES="g++-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw-w64-base mingw-w64-tools ccache ctpp2-utils"
          ;;
      "win32_dyn")
-         PACKAGES="g++-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw-w64-base mingw-w64-tools ccache"
+         PACKAGES="g++-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw-w64-base mingw-w64-tools ccache ctpp2-utils"
          ;;
      "android_arm")
-         PACKAGES="gcc cmake ccache"
+         PACKAGES="gcc cmake ccache ctpp2-utils"
          ;;
      "android_arm64")
-         PACKAGES="gcc cmake ccache"
+         PACKAGES="gcc cmake ccache ctpp2-utils"
          ;;
 esac
 

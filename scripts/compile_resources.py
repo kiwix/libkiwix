@@ -38,12 +38,21 @@ extern const std::string {identifier};
 {namespaces_close}"""
 
 class Resource:
-    def __init__(self, base_dir, filename):
+    def __init__(self, base_dirs, filename):
         filename = filename.strip()
         self.filename = filename
         self.identifier = full_identifier(filename)
-        with open(os.path.join(base_dir, filename), 'rb') as f:
-            self.data = f.read()
+        found = False
+        for base_dir in base_dirs:
+            try:
+                with open(os.path.join(base_dir, filename), 'rb') as f:
+                    self.data = f.read()
+                found = True
+                break
+            except FileNotFoundError:
+                continue
+        if not found:
+            raise Exception("Impossible to found {}".format(filename))
 
     def dump_impl(self):
         nb_row = len(self.data)//16 + (1 if len(self.data) % 16 else 0)
@@ -151,13 +160,17 @@ if __name__ == "__main__":
                         help='The Cpp file name to generate')
     parser.add_argument('--hfile',
                         help='The h file name to generate')
+    parser.add_argument('--source_dir',
+                        help="Additional directory where to look for resources.",
+                        action='append')
     parser.add_argument('resource_file',
                         help='The list of resources to compile.')
     args = parser.parse_args()
 
     base_dir = os.path.dirname(os.path.realpath(args.resource_file))
     with open(args.resource_file, 'r') as f:
-        resources = [Resource(base_dir, filename) for filename in f.readlines()]
+        resources = [Resource([base_dir]+args.source_dir, filename)
+                        for filename in f.readlines()]
 
     h_identifier = to_identifier(os.path.basename(args.hfile))
     with open(args.hfile, 'w') as f:
