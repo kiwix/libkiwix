@@ -92,36 +92,68 @@
 
     </style>
     <title>Search: <TMPL_var searchPattern></title>
-</head>
-<body bgcolor="white">
+  </head>
+  <body bgcolor="white">
     <div class="header">
-        <TMPL_if results>Results <b><TMPL_var resultStart>-<TMPL_var resultEnd></b> of <b><TMPL_var count></b> for <b><TMPL_var searchPattern></b><TMPL_else>No result were found for <b><TMPL_var searchPattern></b></TMPL_if>
+      <TMPL_if results>
+        Results
+        <b>
+          <TMPL_var resultStart>-<TMPL_var resultEnd>
+        </b> of <b>
+          <TMPL_var count>
+        </b> for <b>
+          <TMPL_var searchPattern>
+        </b>
+      <TMPL_else>
+        No result were found for <b><TMPL_var searchPattern></b>
+      </TMPL_if>
     </div>
 
     <div class="results">
-        <ul>
+      <ul>
         <TMPL_foreach results as result>
-            <li><a href="<TMPL_var protocolPrefix><TMPL_var contentId>/<TMPL_var result.url>"><TMPL_var result.title></a>
-            <cite><TMPL_if result.snippet><TMPL_var result.snippet>...</TMPL_if></cite>
-            <TMPL_if wordCount><div class="informations"><TMPL_var wordCount> words</div></TMPL_if>
-            </li>
+          <li>
+            <a href="<TMPL_var protocolPrefix><TMPL_var result.contentId>/<TMPL_var result.url>">
+              <TMPL_var result.title>
+            </a>
+            <cite>
+              <TMPL_if result.snippet>
+                <TMPL_var result.snippet>...
+              </TMPL_if>
+            </cite>
+            <TMPL_if wordCount>
+              <div class="informations"><TMPL_var wordCount> words</div>
+            </TMPL_if>
+          </li>
         </TMPL_foreach>
-        </ul>
+      </ul>
     </div>
 
     <div class="footer">
-        <ul>
-            <TMPL_if (resultLastPageStart>0)>
-            <li><a href="<TMPL_var searchProtocolPrefix>content=<TMPL_var contentId>&pattern=<TMPL_var searchPatternEncoded>&start=0&end=<TMPL_var resultRange>">◀</a></li>
-            </TMPL_if>
-            <TMPL_foreach pages as page>
-            <li><a <TMPL_if page.selected>class="selected"</TMPL_if> href="<TMPL_var searchProtocolPrefix>content=<TMPL_var contentId>&pattern=<TMPL_var searchPatternEncoded>&start=<TMPL_var page.start>&end=<TMPL_var page.end>"><TMPL_var page.label></a></li>
-            </TMPL_foreach>
-            <TMPL_if (resultLastPageStart>0)>
-            <li><a href="<TMPL_var searchProtocolPrefix>content=<TMPL_var contentId>&pattern=<TMPL_var searchPatternEncoded>&start=<TMPL_var resultLastPageStart>&end=<TMPL_var (resultLastPageStart+resultRange)>">▶</a></li>
-            </TMPL_if>
-        </ul>
-     </div>
-
-</body>
+      <ul>
+        <TMPL_if (resultLastPageStart>0)>
+          <li>
+            <a href="<TMPL_var searchProtocolPrefix>pattern=<TMPL_var searchPatternEncoded><TMPL_if contentId>&content=<TMPL_var contentId></TMPL_if>&start=0&end=<TMPL_var resultRange>">
+              ◀
+            </a>
+          </li>
+        </TMPL_if>
+        <TMPL_foreach pages as page>
+          <li>
+            <a <TMPL_if page.selected>class="selected"</TMPL_if>
+               href="<TMPL_var searchProtocolPrefix>pattern=<TMPL_var searchPatternEncoded><TMPL_if contentId>&content=<TMPL_var contentId></TMPL_if>&start=<TMPL_var page.start>&end=<TMPL_var page.end>">
+              <TMPL_var page.label>
+            </a>
+          </li>
+        </TMPL_foreach>
+        <TMPL_if (resultLastPageStart>0)>
+          <li>
+            <a href="<TMPL_var searchProtocolPrefix>pattern=<TMPL_var searchPatternEncoded><TMPL_if contentId>&content=<TMPL_var contentId></TMPL_if>&start=<TMPL_var resultLastPageStart>&end=<TMPL_var (resultLastPageStart+resultRange)>">
+              ▶
+            </a>
+          </li>
+        </TMPL_if>
+      </ul>
+    </div>
+  </body>
 </html>

@@ -314,6 +314,7 @@ string Searcher::getHtml()
     result["title"] = p_result->get_title();
     result["url"] = p_result->get_url();
     result["snippet"] = p_result->get_snippet();
+    result["contentId"] = humanReaderNames[p_result->get_readerIndex()];
 
     if (p_result->get_size() >= 0) {
       result["size"] = kiwix::beautifyInteger(p_result->get_size());
