@@ -48,6 +48,7 @@ class _Result : public Result
   virtual std::string get_content();
   virtual int get_wordCount();
   virtual int get_size();
+  virtual int get_readerIndex();
 
  private:
   Searcher* searcher;
@@ -256,6 +257,10 @@ int _Result::get_size()
 int _Result::get_wordCount()
 {
   return iterator.get_wordCount();
+}
+int _Result::get_readerIndex()
+{
+  return iterator.get_fileIndex();
 }
 #ifdef ENABLE_CTPP2
 
