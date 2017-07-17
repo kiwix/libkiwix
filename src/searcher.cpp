@@ -172,6 +172,31 @@ void Searcher::reset()
   return;
 }
 
+void Searcher::suggestions(std::string& search, const bool verbose)
+{
+  this->reset();
+
+  if (verbose == true) {
+    cout << "Performing suggestion query `" << search << "`" << endl;
+  }
+
+  this->searchPattern = search;
+  this->resultStart = 0;
+  this->resultEnd = 10;
+  string unaccentedSearch = removeAccents(search);
+
+  if (internal->_xapianSearcher) {
+    /* [TODO] Suggestion on a external database ?
+     * We do not support that. */
+    this->estimatedResultCount = 0;
+  } else {
+    internal->_search = this->reader->getZimFileHandler()->suggestions(
+          unaccentedSearch, resultStart, resultEnd);
+    internal->current_iterator = internal->_search->begin();
+    this->estimatedResultCount = internal->_search->get_matches_estimated();
+  }
+}
+
 /* Return the result count estimation */
 unsigned int Searcher::getEstimatedResultCount()
 {
