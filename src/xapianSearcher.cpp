@@ -177,16 +177,28 @@ std::string XapianResult::get_snippet()
      We parse it and use the html dump to avoid remove html tags in the
      content and be able to nicely cut the text at random place. */
   MyHtmlParser htmlParser;
-  std::string content;
-  unsigned int contentLength;
-  std::string contentType;
-  searcher->reader->getContentByUrl(
-      get_url(), content, contentLength, contentType);
+  std::string content = get_content();
+  if (content.empty()) {
+    return content;
+  }
   try {
     htmlParser.parse_html(content, "UTF-8", true);
   } catch (...) {
   }
   return searcher->results.snippet(htmlParser.dump, 500);
+}
+
+std::string XapianResult::get_content()
+{
+  if (!searcher->reader) {
+    return "";
+  }
+  std::string content;
+  unsigned int contentLength;
+  std::string contentType;
+  searcher->reader->getContentByUrl(
+      get_url(), content, contentLength, contentType);
+  return content;
 }
 
 int XapianResult::get_size()

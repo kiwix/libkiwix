@@ -486,12 +486,19 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(
   std::string cPath = jni2c(path, env);
 
   pthread_mutex_lock(&searcherLock);
-  searcher = NULL;
   try {
     if (searcher != NULL) {
       delete searcher;
     }
-    searcher = new kiwix::Searcher(cPath, reader);
+    if (!reader || !reader->hasFulltextIndex()) {
+      // Use old API (no embedded full text index).
+      searcher = new kiwix::Searcher(cPath, reader);
+    } else {
+      // Use the new API. We don't care about the human readable name as
+      // we don't use it (in android).
+      searcher = new kiwix::Searcher();
+      searcher->add_reader(reader, "");
+    }
   } catch (...) {
     searcher = NULL;
     retVal = JNI_FALSE;

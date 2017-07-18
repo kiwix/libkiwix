@@ -45,8 +45,10 @@ class _Result : public Result
   virtual std::string get_title();
   virtual int get_score();
   virtual std::string get_snippet();
+  virtual std::string get_content();
   virtual int get_wordCount();
   virtual int get_size();
+  virtual int get_readerIndex();
 
  private:
   Searcher* searcher;
@@ -72,8 +74,7 @@ struct SearcherInternal {
 
 /* Constructor */
 Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
-    : reader(reader),
-      internal(new SearcherInternal()),
+    : internal(new SearcherInternal()),
       searchPattern(""),
       protocolPrefix("zim://"),
       searchProtocolPrefix("search://?"),
@@ -89,11 +90,32 @@ Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
   }
 }
 
+Searcher::Searcher()
+    : internal(new SearcherInternal()),
+      searchPattern(""),
+      protocolPrefix("zim://"),
+      searchProtocolPrefix("search://?"),
+      resultCountPerPage(0),
+      estimatedResultCount(0),
+      resultStart(0),
+      resultEnd(0)
+{
+  template_ct2 = RESOURCE::results_ct2;
+  loadICUExternalTables();
+}
+
 /* Destructor */
 Searcher::~Searcher()
 {
   delete internal;
 }
+
+void Searcher::add_reader(Reader* reader, const std::string& humanReadableName)
+{
+  this->readers.push_back(reader);
+  this->humanReaderNames.push_back(humanReadableName);
+}
+
 /* Search strings in the database */
 void Searcher::search(std::string& search,
                       unsigned int resultStart,
@@ -133,8 +155,15 @@ void Searcher::search(std::string& search,
       this->estimatedResultCount
           = internal->_xapianSearcher->results.get_matches_estimated();
     } else {
-      internal->_search = this->reader->getZimFileHandler()->search(
-          unaccentedSearch, resultStart, resultEnd);
+      std::vector<const zim::File*> zims;
+      for (auto current = this->readers.begin(); current != this->readers.end();
+           current++) {
+        zims.push_back((*current)->getZimFileHandler());
+      }
+      zim::Search* search = new zim::Search(zims);
+      search->set_query(unaccentedSearch);
+      search->set_range(resultStart, resultEnd);
+      internal->_search = search;
       internal->current_iterator = internal->_search->begin();
       this->estimatedResultCount = internal->_search->get_matches_estimated();
     }
@@ -190,8 +219,16 @@ void Searcher::suggestions(std::string& search, const bool verbose)
      * We do not support that. */
     this->estimatedResultCount = 0;
   } else {
-    internal->_search = this->reader->getZimFileHandler()->suggestions(
-          unaccentedSearch, resultStart, resultEnd);
+    std::vector<const zim::File*> zims;
+    for (auto current = this->readers.begin(); current != this->readers.end();
+         current++) {
+      zims.push_back((*current)->getZimFileHandler());
+    }
+    zim::Search* search = new zim::Search(zims);
+    search->set_query(unaccentedSearch);
+    search->set_range(resultStart, resultEnd);
+    search->set_suggestion_mode(true);
+    internal->_search = search;
     internal->current_iterator = internal->_search->begin();
     this->estimatedResultCount = internal->_search->get_matches_estimated();
   }
@@ -241,6 +278,13 @@ std::string _Result::get_snippet()
 {
   return iterator.get_snippet();
 }
+std::string _Result::get_content()
+{
+  if (iterator->good()) {
+    return iterator->getData();
+  }
+  return "";
+}
 int _Result::get_size()
 {
   return iterator.get_size();
@@ -248,6 +292,10 @@ int _Result::get_size()
 int _Result::get_wordCount()
 {
   return iterator.get_wordCount();
+}
+int _Result::get_readerIndex()
+{
+  return iterator.get_fileIndex();
 }
 #ifdef ENABLE_CTPP2
 
@@ -266,6 +314,7 @@ string Searcher::getHtml()
     result["title"] = p_result->get_title();
     result["url"] = p_result->get_url();
     result["snippet"] = p_result->get_snippet();
+    result["contentId"] = humanReaderNames[p_result->get_readerIndex()];
 
     if (p_result->get_size() >= 0) {
       result["size"] = kiwix::beautifyInteger(p_result->get_size());

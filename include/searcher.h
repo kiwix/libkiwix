@@ -46,17 +46,21 @@ class Result
   virtual std::string get_title() = 0;
   virtual int get_score() = 0;
   virtual std::string get_snippet() = 0;
+  virtual std::string get_content() = 0;
   virtual int get_wordCount() = 0;
   virtual int get_size() = 0;
+  virtual int get_readerIndex() = 0;
 };
 
 struct SearcherInternal;
 class Searcher
 {
  public:
+  Searcher();
   Searcher(const string& xapianDirectoryPath, Reader* reader);
   ~Searcher();
 
+  void add_reader(Reader* reader, const std::string& humanReaderName);
   void search(std::string& search,
               unsigned int resultStart,
               unsigned int resultEnd,
@@ -82,7 +86,8 @@ class Searcher
                      const unsigned int resultEnd,
                      const bool verbose = false);
 
-  Reader* reader;
+  std::vector<Reader*> readers;
+  std::vector<std::string> humanReaderNames;
   SearcherInternal* internal;
   std::string searchPattern;
   std::string protocolPrefix;
