@@ -38,7 +38,7 @@ public class JNIKiwix
 
   public native boolean loadFulltextIndex(String path);
 
-  public native byte[] getContent(String url, JNIKiwixString mimeType, JNIKiwixInt size);
+  public native byte[] getContent(String url, JNIKiwixString title, JNIKiwixString mimeType, JNIKiwixInt size);
 
   public native boolean searchSuggestions(String prefix, int count);
 
