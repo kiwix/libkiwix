@@ -194,10 +194,11 @@ std::string XapianResult::get_content()
     return "";
   }
   std::string content;
+  std::string title;
   unsigned int contentLength;
   std::string contentType;
   searcher->reader->getContentByUrl(
-      get_url(), content, contentLength, contentType);
+      get_url(), content, title, contentLength, contentType);
   return content;
 }
 

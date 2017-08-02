@@ -323,9 +323,10 @@ Java_org_kiwix_kiwixlib_JNIKiwix_loadZIM(JNIEnv* env, jobject obj, jstring path)
 }
 
 JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getContent(
-    JNIEnv* env, jobject obj, jstring url, jobject mimeTypeObj, jobject sizeObj)
+    JNIEnv* env, jobject obj, jstring url, jobject titleObj, jobject mimeTypeObj, jobject sizeObj)
 {
   /* Default values */
+  setStringObjValue("", titleObj, env);
   setStringObjValue("", mimeTypeObj, env);
   setIntObjValue(0, sizeObj, env);
   jbyteArray data = env->NewByteArray(0);
@@ -334,16 +335,18 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_getContent(
   if (reader != NULL) {
     std::string cUrl = jni2c(url, env);
     std::string cData;
+    std::string cTitle;
     std::string cMimeType;
     unsigned int cSize = 0;
 
     pthread_mutex_lock(&readerLock);
     try {
-      if (reader->getContentByUrl(cUrl, cData, cSize, cMimeType)) {
+      if (reader->getContentByUrl(cUrl, cData, cTitle, cSize, cMimeType)) {
         data = env->NewByteArray(cSize);
         env->SetByteArrayRegion(
             data, 0, cSize, reinterpret_cast<const jbyte*>(cData.c_str()));
         setStringObjValue(cMimeType, mimeTypeObj, env);
+        setStringObjValue(cTitle, titleObj, env);
         setIntObjValue(cSize, sizeObj, env);
       }
     } catch (...) {

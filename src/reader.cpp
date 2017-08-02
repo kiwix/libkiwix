@@ -252,17 +252,18 @@ string Reader::getMainPageUrl() const
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
   unsigned int contentLength = 0;
+  string title;
 
-  this->getContentByUrl("/-/favicon.png", content, contentLength, mimeType);
+  this->getContentByUrl("/-/favicon.png", content, title, contentLength, mimeType);
 
   if (content.empty()) {
-    this->getContentByUrl("/I/favicon.png", content, contentLength, mimeType);
+    this->getContentByUrl("/I/favicon.png", content, title, contentLength, mimeType);
 
     if (content.empty()) {
-      this->getContentByUrl("/I/favicon", content, contentLength, mimeType);
+      this->getContentByUrl("/I/favicon", content, title, contentLength, mimeType);
 
       if (content.empty()) {
-        this->getContentByUrl("/-/favicon", content, contentLength, mimeType);
+        this->getContentByUrl("/-/favicon", content, title, contentLength, mimeType);
       }
     }
   }
@@ -279,8 +280,9 @@ bool Reader::getMetatag(const string& name, string& value) const
 {
   unsigned int contentLength = 0;
   string contentType = "";
+  string title;
 
-  return this->getContentByUrl("/M/" + name, value, contentLength, contentType);
+  return this->getContentByUrl("/M/" + name, value, title, contentLength, contentType);
 }
 
 string Reader::getTitle() const
@@ -467,30 +469,34 @@ bool Reader::getMimeTypeByUrl(const string& url, string& mimeType) const
 /* Get a content from a zim file */
 bool Reader::getContentByUrl(const string& url,
                              string& content,
+                             string& title,
                              unsigned int& contentLength,
                              string& contentType) const
 {
-  return this->getContentByEncodedUrl(url, content, contentLength, contentType);
+  return this->getContentByEncodedUrl(url, content, title, contentLength, contentType);
 }
 
 bool Reader::getContentByEncodedUrl(const string& url,
                                     string& content,
+                                    string& title,
                                     unsigned int& contentLength,
                                     string& contentType,
                                     string& baseUrl) const
 {
   return this->getContentByDecodedUrl(
-      kiwix::urlDecode(url), content, contentLength, contentType, baseUrl);
+      kiwix::urlDecode(url), content, title, contentLength, contentType, baseUrl);
 }
 
 bool Reader::getContentByEncodedUrl(const string& url,
                                     string& content,
+                                    string& title,
                                     unsigned int& contentLength,
                                     string& contentType) const
 {
   std::string stubRedirectUrl;
   return this->getContentByEncodedUrl(kiwix::urlDecode(url),
                                       content,
+                                      title,
                                       contentLength,
                                       contentType,
                                       stubRedirectUrl);
@@ -498,12 +504,14 @@ bool Reader::getContentByEncodedUrl(const string& url,
 
 bool Reader::getContentByDecodedUrl(const string& url,
                                     string& content,
+                                    string& title,
                                     unsigned int& contentLength,
                                     string& contentType) const
 {
   std::string stubRedirectUrl;
   return this->getContentByDecodedUrl(kiwix::urlDecode(url),
                                       content,
+                                      title,
                                       contentLength,
                                       contentType,
                                       stubRedirectUrl);
@@ -511,6 +519,7 @@ bool Reader::getContentByDecodedUrl(const string& url,
 
 bool Reader::getContentByDecodedUrl(const string& url,
                                     string& content,
+                                    string& title,
                                     unsigned int& contentLength,
                                     string& contentType,
                                     string& baseUrl) const
@@ -547,6 +556,7 @@ bool Reader::getContentByDecodedUrl(const string& url,
 
     /* Get the data */
     content = string(article.getData().data(), article.getArticleSize());
+    title = article.getTitle();
   }
 
   /* Try to set a stub HTML header/footer if necesssary */

@@ -66,24 +66,29 @@ class Reader
   bool getMimeTypeByUrl(const string& url, string& mimeType) const;
   bool getContentByUrl(const string& url,
                        string& content,
+                       string& title,
                        unsigned int& contentLength,
                        string& contentType) const;
   bool getContentByEncodedUrl(const string& url,
                               string& content,
+                              string& title,
                               unsigned int& contentLength,
                               string& contentType,
                               string& baseUrl) const;
   bool getContentByEncodedUrl(const string& url,
                               string& content,
+                              string& title,
                               unsigned int& contentLength,
                               string& contentType) const;
   bool getContentByDecodedUrl(const string& url,
                               string& content,
+                              string& title,
                               unsigned int& contentLength,
                               string& contentType,
                               string& baseUrl) const;
   bool getContentByDecodedUrl(const string& url,
                               string& content,
+                              string& title,
                               unsigned int& contentLength,
                               string& contentType) const;
   bool searchSuggestions(const string& prefix,
