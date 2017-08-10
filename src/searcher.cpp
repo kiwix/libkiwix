@@ -73,7 +73,9 @@ struct SearcherInternal {
 };
 
 /* Constructor */
-Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
+Searcher::Searcher(const string& xapianDirectoryPath,
+                   Reader* reader,
+                   const string& humanReadableName)
     : internal(new SearcherInternal()),
       searchPattern(""),
       protocolPrefix("zim://"),
@@ -88,6 +90,8 @@ Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
   if (!reader || !reader->hasFulltextIndex()) {
     internal->_xapianSearcher = new XapianSearcher(xapianDirectoryPath, reader);
   }
+  this->contentHumanReadableId = humanReadableName;
+  this->humanReaderNames.push_back(humanReadableName);
 }
 
 Searcher::Searcher()
@@ -250,11 +254,6 @@ bool Searcher::setSearchProtocolPrefix(const std::string prefix)
 {
   this->searchProtocolPrefix = prefix;
   return true;
-}
-
-void Searcher::setContentHumanReadableId(const string& contentHumanReadableId)
-{
-  this->contentHumanReadableId = contentHumanReadableId;
 }
 
 _Result::_Result(Searcher* searcher, zim::Search::iterator& iterator)

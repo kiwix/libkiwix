@@ -57,7 +57,9 @@ class Searcher
 {
  public:
   Searcher();
-  Searcher(const string& xapianDirectoryPath, Reader* reader);
+  Searcher(const string& xapianDirectoryPath,
+           Reader* reader,
+           const string& humanReadableName);
   ~Searcher();
 
   void add_reader(Reader* reader, const std::string& humanReaderName);
@@ -72,7 +74,6 @@ class Searcher
   bool setProtocolPrefix(const std::string prefix);
   bool setSearchProtocolPrefix(const std::string prefix);
   void reset();
-  void setContentHumanReadableId(const string& contentHumanReadableId);
 
 #ifdef ENABLE_CTPP2
   string getHtml();

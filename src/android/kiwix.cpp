@@ -514,7 +514,7 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_loadFulltextIndex(
     }
     if (!reader || !reader->hasFulltextIndex()) {
       // Use old API (no embedded full text index).
-      searcher = new kiwix::Searcher(cPath, reader);
+      searcher = new kiwix::Searcher(cPath, reader, "");
     } else {
       // Use the new API. We don't care about the human readable name as
       // we don't use it (in android).
