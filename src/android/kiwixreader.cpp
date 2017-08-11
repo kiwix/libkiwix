@@ -21,14 +21,14 @@
 
 #include <jni.h>
 #include <zim/file.h>
-#include "org_kiwix_kiwixlib_JNIKiwix.h"
+#include "org_kiwix_kiwixlib_JNIKiwixReader.h"
 
 #include "common/base64.h"
 #include "reader.h"
 #include "utils.h"
 
 /* Kiwix Reader JNI functions */
-JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_get_nativeReader(
+JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReader(
     JNIEnv* env, jobject obj, jstring filename)
 {
   std::string cPath = jni2c(filename, env);
@@ -301,21 +301,18 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getPageUrlFromTitle(JNIEnv* env,
   return retVal;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getTitle(
-    JNIEnv* env, jobject obj, jobject titleObj)
+JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getTitle(
+    JNIEnv* env, jobject obj)
 {
-  jboolean retVal = JNI_FALSE;
-  std::string cTitle;
+  jstring title;
 
   try {
     std::string cTitle = READER->getTitle();
-    setStringObjValue(cTitle, titleObj, env);
-    retVal = JNI_TRUE;
+    title = c2jni(cTitle, env);
   } catch (...) {
     std::cerr << "Unable to get ZIM title" << std::endl;
   }
-
-  return retVal;
+  return title;
 }
 
 JNIEXPORT jstring JNICALL

@@ -77,11 +77,13 @@ public class JNIKiwixReader
 
   public JNIKiwixReader(String filename)
   {
-    nativeHandle = get_nativeReader(filename);
+    nativeHandle = getNativeReader(filename);
   }
+  public JNIKiwixReader() {
 
+  }
   public native void dispose();
 
-  private native long get_nativeReader(String filename);
+  private native long getNativeReader(String filename);
   private long nativeHandle;
 }

@@ -8,7 +8,9 @@ kiwix_jni = custom_target('jni',
           'org/kiwix/kiwixlib/JNIKiwixInt.java',
           'org/kiwix/kiwixlib/JNIKiwixString.java',
           'org/kiwix/kiwixlib/JNIKiwixBool.java'],
-  output: ['org_kiwix_kiwixlib_JNIKiwix.h'],
+  output: ['org_kiwix_kiwixlib_JNIKiwix.h',
+           'org_kiwix_kiwixlib_JNIKiwixReader.h',
+           'org_kiwix_kiwixlib_JNIKiwixSearcher.h'],
   command:[jni_generator, '@INPUT@']
 )
 

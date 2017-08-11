@@ -59,7 +59,7 @@ public class JNIKiwixSearcher
     usedReaders.addElement(reader);
   };
 
-  public native Result search(String query, int count);
+  public native void search(String query, int count);
 
   public native Result get_next_result();
   public native boolean has_more_result();
