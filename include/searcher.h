@@ -93,7 +93,6 @@ class Searcher
   std::string searchPattern;
   std::string protocolPrefix;
   std::string searchProtocolPrefix;
-  std::string template_ct2;
   unsigned int resultCountPerPage;
   unsigned int estimatedResultCount;
   unsigned int resultStart;

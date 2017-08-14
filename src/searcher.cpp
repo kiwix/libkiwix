@@ -85,7 +85,6 @@ Searcher::Searcher(const string& xapianDirectoryPath,
       resultStart(0),
       resultEnd(0)
 {
-  template_ct2 = RESOURCE::results_ct2;
   loadICUExternalTables();
   if (!reader || !reader->hasFulltextIndex()) {
     internal->_xapianSearcher = new XapianSearcher(xapianDirectoryPath, reader);
@@ -104,7 +103,6 @@ Searcher::Searcher()
       resultStart(0),
       resultEnd(0)
 {
-  template_ct2 = RESOURCE::results_ct2;
   loadICUExternalTables();
 }
 
@@ -375,6 +373,7 @@ string Searcher::getHtml()
   oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
   oData["contentId"] = this->contentHumanReadableId;
 
+  std::string template_ct2 = RESOURCE::results_ct2;
   VMStringLoader oLoader(template_ct2.c_str(), template_ct2.size());
 
   FileLogger oLogger(stderr);
