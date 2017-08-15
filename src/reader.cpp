@@ -589,7 +589,8 @@ bool Reader::urlExists(const string& url) const
 /* Does the ZIM file has a fulltext index */
 bool Reader::hasFulltextIndex() const
 {
-  return this->urlExists("/Z/fulltextIndex/xapian");
+  return ( this->urlExists("/Z/fulltextIndex/xapian")
+        && !zimFileHandler->is_multiPart() );
 }
 
 /* Search titles by prefix */
