@@ -73,7 +73,9 @@ struct SearcherInternal {
 };
 
 /* Constructor */
-Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
+Searcher::Searcher(const string& xapianDirectoryPath,
+                   Reader* reader,
+                   const string& humanReadableName)
     : internal(new SearcherInternal()),
       searchPattern(""),
       protocolPrefix("zim://"),
@@ -83,11 +85,12 @@ Searcher::Searcher(const string& xapianDirectoryPath, Reader* reader)
       resultStart(0),
       resultEnd(0)
 {
-  template_ct2 = RESOURCE::results_ct2;
   loadICUExternalTables();
   if (!reader || !reader->hasFulltextIndex()) {
     internal->_xapianSearcher = new XapianSearcher(xapianDirectoryPath, reader);
   }
+  this->contentHumanReadableId = humanReadableName;
+  this->humanReaderNames.push_back(humanReadableName);
 }
 
 Searcher::Searcher()
@@ -100,7 +103,6 @@ Searcher::Searcher()
       resultStart(0),
       resultEnd(0)
 {
-  template_ct2 = RESOURCE::results_ct2;
   loadICUExternalTables();
 }
 
@@ -252,11 +254,6 @@ bool Searcher::setSearchProtocolPrefix(const std::string prefix)
   return true;
 }
 
-void Searcher::setContentHumanReadableId(const string& contentHumanReadableId)
-{
-  this->contentHumanReadableId = contentHumanReadableId;
-}
-
 _Result::_Result(Searcher* searcher, zim::Search::iterator& iterator)
     : searcher(searcher), iterator(iterator)
 {
@@ -376,6 +373,7 @@ string Searcher::getHtml()
   oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
   oData["contentId"] = this->contentHumanReadableId;
 
+  std::string template_ct2 = RESOURCE::results_ct2;
   VMStringLoader oLoader(template_ct2.c_str(), template_ct2.size());
 
   FileLogger oLogger(stderr);
