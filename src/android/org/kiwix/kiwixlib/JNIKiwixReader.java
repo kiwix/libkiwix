@@ -70,7 +70,7 @@ public class JNIKiwixReader
   public JNIKiwixSearcher search(String query, int count)
   {
     JNIKiwixSearcher searcher = new JNIKiwixSearcher();
-    searcher.add_reader(this);
+    searcher.addKiwixReader(this);
     searcher.search(query, count);
     return searcher;
   }

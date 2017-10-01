@@ -21,6 +21,7 @@
 
 #include <zim/file.h>
 #include "org_kiwix_kiwixlib_JNIKiwixSearcher.h"
+#include "org_kiwix_kiwixlib_JNIKiwixSearcher_Result.h"
 
 #include "reader.h"
 #include "searcher.h"
@@ -28,6 +29,7 @@
 
 #define SEARCHER (Handle<kiwix::Searcher>::getHandle(env, obj))
 #define RESULT (Handle<kiwix::Result>::getHandle(env, obj))
+
 
 JNIEXPORT void JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixSearcher_dispose(JNIEnv* env, jobject obj)
@@ -37,18 +39,19 @@ Java_org_kiwix_kiwixlib_JNIKiwixSearcher_dispose(JNIEnv* env, jobject obj)
 
 /* Kiwix Reader JNI functions */
 JNIEXPORT jlong JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixSearcher_get_nativeHandle(JNIEnv* env,
+Java_org_kiwix_kiwixlib_JNIKiwixSearcher_getNativeHandle(JNIEnv* env,
                                                           jobject obj)
 {
-  kiwix::Searcher* searcher = new kiwix::Searcher("", nullptr);
+  kiwix::Searcher* searcher = new kiwix::Searcher();
   return reinterpret_cast<jlong>(new Handle<kiwix::Searcher>(searcher));
 }
 
 /* Kiwix library functions */
-JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher__add_reader(
+JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher_addReader(
     JNIEnv* env, jobject obj, jobject reader)
 {
   auto searcher = SEARCHER;
+
   searcher->add_reader(*(Handle<kiwix::Reader>::getHandle(env, reader)), "");
 }
 
@@ -62,7 +65,7 @@ JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher_search(
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixSearcher_get_next_result(JNIEnv* env,
+Java_org_kiwix_kiwixlib_JNIKiwixSearcher_getNextResult(JNIEnv* env,
                                                          jobject obj)
 {
   jobject result = nullptr;
@@ -70,22 +73,22 @@ Java_org_kiwix_kiwixlib_JNIKiwixSearcher_get_next_result(JNIEnv* env,
   kiwix::Result* cresult = SEARCHER->getNextResult();
   if (cresult != nullptr) {
     jclass resultclass
-        = env->FindClass("org/kiwix/kiwixlib/JNIKiwixSearcher/Result");
+        = env->FindClass("org/kiwix/kiwixlib/JNIKiwixSearcher$Result");
     jmethodID ctor = env->GetMethodID(
-        resultclass, "<init>", "(JLorg/kiwix/kiwixlib/JNIKiwixSearcher;)V");
-    result = env->NewObject(resultclass, ctor, cresult, obj);
+        resultclass, "<init>", "(Lorg/kiwix/kiwixlib/JNIKiwixSearcher;JLorg/kiwix/kiwixlib/JNIKiwixSearcher;)V");
+    result = env->NewObject(resultclass, ctor, obj, reinterpret_cast<jlong>(new Handle<kiwix::Result>(cresult)), obj);
   }
   return result;
 }
 
-JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher_Result_dispose(
+JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher_00024Result_dispose(
     JNIEnv* env, jobject obj)
 {
   Handle<kiwix::Result>::dispose(env, obj);
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixSearcher_Result_get_url(JNIEnv* env,
+Java_org_kiwix_kiwixlib_JNIKiwixSearcher_00024Result_getUrl(JNIEnv* env,
                                                         jobject obj)
 {
   try {
@@ -96,7 +99,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixSearcher_Result_get_url(JNIEnv* env,
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixSearcher_Result_get_title(JNIEnv* env,
+Java_org_kiwix_kiwixlib_JNIKiwixSearcher_00024Result_getTitle(JNIEnv* env,
                                                           jobject obj)
 {
   try {
@@ -107,14 +110,14 @@ Java_org_kiwix_kiwixlib_JNIKiwixSearcher_Result_get_title(JNIEnv* env,
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixSearcher_Result_get_snippet(JNIEnv* env,
+Java_org_kiwix_kiwixlib_JNIKiwixSearcher_00024Result_getSnippet(JNIEnv* env,
                                                             jobject obj)
 {
   return c2jni(RESULT->get_snippet(), env);
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixSearcher_Result_get_content(JNIEnv* env,
+Java_org_kiwix_kiwixlib_JNIKiwixSearcher_00024Result_getContent(JNIEnv* env,
                                                             jobject obj)
 {
   return c2jni(RESULT->get_content(), env);

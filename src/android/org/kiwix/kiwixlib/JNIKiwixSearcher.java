@@ -35,32 +35,32 @@ public class JNIKiwixSearcher
       nativeHandle = handle;
       searcher = _searcher;
     }
-    public native String get_url();
-    public native String get_title();
-    public native String get_content();
+    public native String getUrl();
+    public native String getTitle();
+    public native String getContent();
     public native void dispose();
   }
 
   public JNIKiwixSearcher()
   {
-    nativeHandle = get_nativeHandle();
+    nativeHandle = getNativeHandle();
     usedReaders = new Vector();
   }
   public native void dispose();
 
-  private native long get_nativeHandle();
+  private native long getNativeHandle();
   private long nativeHandle;
   private Vector usedReaders;
 
-  public native void _add_reader(JNIKiwixReader reader);
-  public void add_reader(JNIKiwixReader reader)
+  public native void addReader(JNIKiwixReader reader);
+  public void addKiwixReader(JNIKiwixReader reader)
   {
-    _add_reader(reader);
+    addReader(reader);
     usedReaders.addElement(reader);
   };
 
   public native void search(String query, int count);
 
-  public native Result get_next_result();
-  public native boolean has_more_result();
+  public native Result getNextResult();
+  public native boolean hasMoreResult();
 }
