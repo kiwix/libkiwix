@@ -6,10 +6,12 @@ project('kiwixlib', 'cpp',
 compiler = meson.get_compiler('cpp')
 find_library_in_compiler = meson.version().version_compare('>=0.31.0')
 
+static_deps = get_option('android') or get_option('default_library') == 'static'
+
 thread_dep = dependency('threads')
-libicu_dep = dependency('icu-i18n')
-libzim_dep = dependency('libzim')
-pugixml_dep = dependency('pugixml')
+libicu_dep = dependency('icu-i18n', static:static_deps)
+libzim_dep = dependency('libzim', static:static_deps)
+pugixml_dep = dependency('pugixml', static:static_deps)
 
 ctpp2_include_path = ''
 has_ctpp2_dep = false
@@ -62,7 +64,7 @@ else
   endif
 endif
 
-xapian_dep = dependency('xapian-core', required:false)
+xapian_dep = dependency('xapian-core', required:false, static:static_deps)
 
 all_deps = [thread_dep, libicu_dep, libzim_dep, xapian_dep, pugixml_dep]
 if has_ctpp2_dep
