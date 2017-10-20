@@ -1,3 +1,18 @@
+kiwix-lib 1.0.0
+===============
+
+ * Correctly regenerate template resource using cttp2c at compilation time.
+ * Suggestion use xapian database when available
+ * Support multi-zim search in kiwix-lib (a search can now search on several
+   embedded database in zims in the same time)
+ * Fix some wording
+ * Fix license issues
+ * Add out argument to jni getContent* method to get the title of article in
+   the same time we get the content
+ * Rename `compile_resources.py` script to `kiwix-compile-resources`
+ * Use static lib when building for android or in "static mode"
+ * Make the ResourceNotFound exception public
+
 kiwix-lib 0.2.0
 ===============
 
