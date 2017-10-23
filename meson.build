@@ -1,5 +1,5 @@
 project('kiwixlib', 'cpp',
-  version : '1.0.0',
+  version : '1.0.1',
   license : 'GPL',
   default_options : ['c_std=c11', 'cpp_std=c++11'])
 
@@ -101,6 +101,7 @@ pkg_conf.set('prefix', get_option('prefix'))
 pkg_conf.set('requires', ' '.join(pkg_requires))
 pkg_conf.set('extra_libs', ' '.join(extra_libs))
 pkg_conf.set('extra_cflags', extra_cflags)
+pkg_conf.set('version', meson.project_version())
 configure_file(output : 'kiwix.pc',
                configuration : pkg_conf,
                input : 'kiwix.pc.in',
