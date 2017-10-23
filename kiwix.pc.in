@@ -4,7 +4,7 @@ includedir=${prefix}/include
 
 Name: libkiwix
 Description: A library that contains a lot of things used by used by other kiwix programs
-Version: 1.0
+Version: @version@
 Requires: @requires@
 Libs: -L${libdir} -lkiwix @extra_libs@
 Cflags: -I${includedir}/ @extra_cflags@
