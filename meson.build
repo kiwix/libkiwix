@@ -1,5 +1,5 @@
 project('kiwixlib', 'cpp',
-  version : '0.2.0',
+  version : '1.0.0',
   license : 'GPL',
   default_options : ['c_std=c11', 'cpp_std=c++11'])
 
@@ -10,7 +10,7 @@ static_deps = get_option('android') or get_option('default_library') == 'static'
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
-libzim_dep = dependency('libzim', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=3.0.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 
 ctpp2_include_path = ''
