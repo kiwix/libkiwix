@@ -298,7 +298,12 @@ int _Result::get_readerIndex()
 
 string Searcher::getHtml()
 {
-  SimpleVM oSimpleVM;
+  SimpleVM oSimpleVM(
+      1024, //iIMaxFunctions (default value)
+      4096, //iIMaxArgStackSize (default value)
+      4096, //iIMaxCodeStackSize (default value)
+      10240 * 2 //iIMaxSteps (default*2)
+  );
 
   // Fill data
   CDT oData;
