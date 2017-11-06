@@ -33,6 +33,8 @@
 using namespace CTPP;
 #endif
 
+#define MAX_SEARCH_LEN 140
+
 namespace kiwix
 {
 class _Result : public Result
@@ -141,9 +143,9 @@ void Searcher::search(std::string& search,
   if (resultStart != resultEnd) {
     /* Avoid big researches */
     this->resultCountPerPage = resultEnd - resultStart;
-    if (this->resultCountPerPage > 70) {
-      resultEnd = resultStart + 70;
-      this->resultCountPerPage = 70;
+    if (this->resultCountPerPage > MAX_SEARCH_LEN) {
+      resultEnd = resultStart + MAX_SEARCH_LEN;
+      this->resultCountPerPage = MAX_SEARCH_LEN;
     }
 
     /* Perform the search */
