@@ -33,6 +33,8 @@
 using namespace CTPP;
 #endif
 
+#define MAX_SEARCH_LEN 140
+
 namespace kiwix
 {
 class _Result : public Result
@@ -141,9 +143,9 @@ void Searcher::search(std::string& search,
   if (resultStart != resultEnd) {
     /* Avoid big researches */
     this->resultCountPerPage = resultEnd - resultStart;
-    if (this->resultCountPerPage > 70) {
-      resultEnd = resultStart + 70;
-      this->resultCountPerPage = 70;
+    if (this->resultCountPerPage > MAX_SEARCH_LEN) {
+      resultEnd = resultStart + MAX_SEARCH_LEN;
+      this->resultCountPerPage = MAX_SEARCH_LEN;
     }
 
     /* Perform the search */
@@ -298,7 +300,12 @@ int _Result::get_readerIndex()
 
 string Searcher::getHtml()
 {
-  SimpleVM oSimpleVM;
+  SimpleVM oSimpleVM(
+      1024, //iIMaxFunctions (default value)
+      4096, //iIMaxArgStackSize (default value)
+      4096, //iIMaxCodeStackSize (default value)
+      10240 * 2 //iIMaxSteps (default*2)
+  );
 
   // Fill data
   CDT oData;
