@@ -23,6 +23,7 @@
 #include <unicode/unistr.h>
 
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -36,7 +37,6 @@ namespace kiwix
 
 std::string beautifyInteger(const unsigned int number);
 std::string beautifyFileSize(const unsigned int number);
-std::string urlEncode(const std::string& c);
 void printStringInHexadecimal(const char* s);
 void printStringInHexadecimal(UnicodeString s);
 void stringReplacement(std::string& str,
@@ -48,7 +48,9 @@ std::string encodeDiples(const std::string& str);
 
 std::string removeAccents(const std::string& text);
 void loadICUExternalTables();
-std::string urlDecode(const std::string& c);
+
+std::string urlEncode(const std::string& value, bool encodeReserved = false);
+std::string urlDecode(const std::string& value, bool component = false);
 
 std::vector<std::string> split(const std::string&, const std::string&);
 std::vector<std::string> split(const char*, const char*);

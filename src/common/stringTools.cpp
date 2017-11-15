@@ -133,73 +133,130 @@ std::string kiwix::encodeDiples(const std::string& str)
   return result;
 }
 
-// Urlencode
-// based on javascript encodeURIComponent()
-
-std::string char2hex(char dec)
-{
-  char dig1 = (dec & 0xF0) >> 4;
-  char dig2 = (dec & 0x0F);
-  if (0 <= dig1 && dig1 <= 9) {
-    dig1 += 48;  // 0,48inascii
-  }
-  if (10 <= dig1 && dig1 <= 15) {
-    dig1 += 97 - 10;  // a,97inascii
-  }
-  if (0 <= dig2 && dig2 <= 9) {
-    dig2 += 48;
-  }
-  if (10 <= dig2 && dig2 <= 15) {
-    dig2 += 97 - 10;
-  }
-
-  std::string r;
-  r.append(&dig1, 1);
-  r.append(&dig2, 1);
-  return r;
-}
-
-std::string kiwix::urlEncode(const std::string& c)
-{
-  std::string escaped = "";
-  int max = c.length();
-  for (int i = 0; i < max; i++) {
-    if ((48 <= c[i] && c[i] <= 57) ||  // 0-9
-        (65 <= c[i] && c[i] <= 90)
-        ||  // abc...xyz
-        (97 <= c[i] && c[i] <= 122)
-        ||  // ABC...XYZ
-        (c[i] == '~' || c[i] == '!' || c[i] == '*' || c[i] == '(' || c[i] == ')'
-         || c[i] == '\'')) {
-      escaped.append(&c[i], 1);
-    } else {
-      escaped.append("%");
-      escaped.append(char2hex(c[i]));  // converts char 255 to string "ff"
-    }
-  }
-  return escaped;
-}
-
 #endif
 
-static char charFromHex(std::string a)
+/* urlEncode() based on javascript encodeURI() &
+   encodeURIComponent(). Mostly code from rstudio/httpuv (GPLv3) */
+
+bool isReservedUrlChar(char c)
 {
-  std::istringstream Blat(a);
-  int Z;
-  Blat >> std::hex >> Z;
-  return char(Z);
+  switch (c) {
+  case ';':
+  case ',':
+  case '/':
+  case '?':
+  case ':':
+  case '@':
+  case '&':
+  case '=':
+  case '+':
+  case '$':
+    return true;
+  default:
+    return false;
+  }
 }
 
-std::string kiwix::urlDecode(const std::string& originalUrl)
+bool needsEscape(char c, bool encodeReserved)
 {
-  std::string url = originalUrl;
-  std::string::size_type pos = 0;
-  while ((pos = url.find('%', pos)) != std::string::npos
-         && pos + 2 < url.length()) {
-    url.replace(pos, 3, 1, charFromHex(url.substr(pos + 1, 2)));
-    ++pos;
+  if (c >= 'a' && c <= 'z')
+    return false;
+  if (c >= 'A' && c <= 'Z')
+    return false;
+  if (c >= '0' && c <= '9')
+    return false;
+  if (isReservedUrlChar(c))
+    return encodeReserved;
+  switch (c) {
+  case '-':
+  case '_':
+  case '.':
+  case '!':
+  case '~':
+  case '*':
+  case '\'':
+  case '(':
+  case ')':
+    return false;
   }
-  return url;
+  return true;
+}
+
+int hexToInt(char c) {
+  switch (c) {
+  case '0': return 0;
+  case '1': return 1;
+  case '2': return 2;
+  case '3': return 3;
+  case '4': return 4;
+  case '5': return 5;
+  case '6': return 6;
+  case '7': return 7;
+  case '8': return 8;
+  case '9': return 9;
+  case 'A': case 'a': return 10;
+  case 'B': case 'b': return 11;
+  case 'C': case 'c': return 12;
+  case 'D': case 'd': return 13;
+  case 'E': case 'e': return 14;
+  case 'F': case 'f': return 15;
+  default: return -1;
+  }
+}
+
+std::string kiwix::urlEncode(const std::string& value, bool encodeReserved)
+{
+  std::ostringstream os;
+  os << std::hex << std::uppercase;
+  for (std::string::const_iterator it = value.begin();
+       it != value.end();
+       it++) {
+
+    if (!needsEscape(*it, encodeReserved)) {
+      os << *it;
+    } else {
+      os << '%' << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(*it));
+    }
+  }
+  return os.str();
+}
+
+std::string kiwix::urlDecode(const std::string& value, bool component)
+{
+  std::ostringstream os;
+  for (std::string::const_iterator it = value.begin();
+       it != value.end();
+       it++) {
+
+    // If there aren't enough characters left for this to be a
+    // valid escape code, just use the character and move on
+    if (it > value.end() - 3) {
+      os << *it;
+      continue;
+    }
+
+    if (*it == '%') {
+      char hi = *(++it);
+      char lo = *(++it);
+      int iHi = hexToInt(hi);
+      int iLo = hexToInt(lo);
+      if (iHi < 0 || iLo < 0) {
+	// Invalid escape sequence
+	os << '%' << hi << lo;
+	continue;
+      }
+      char c = (char)(iHi << 4 | iLo);
+      if (!component && isReservedUrlChar(c)) {
+	os << '%' << hi << lo;
+      } else {
+	os << c;
+      }
+    } else {
+      os << *it;
+    }
+  }
+
+  return os.str();
 }
 
 /* Split string in a token array */
