@@ -67,6 +67,10 @@ class Searcher
               unsigned int resultStart,
               unsigned int resultEnd,
               const bool verbose = false);
+  void geo_search(float latitude, float longitude, float distance,
+                  unsigned int resultStart,
+                  unsigned int resultEnd,
+                  const bool verbose = false);
   void suggestions(std::string& search, const bool verbose = false);
   Result* getNextResult();
   void restart_search();
