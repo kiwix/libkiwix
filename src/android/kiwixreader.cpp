@@ -237,6 +237,46 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContent(
   return data;
 }
 
+JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPart(
+    JNIEnv* env, jobject obj, jstring url, jint offset, jint len, jobject sizeObj)
+{
+  jbyteArray data = env->NewByteArray(0);
+  setIntObjValue(0, sizeObj, env);
+
+  /* Default values */
+  /* Retrieve the content */
+  std::string cUrl = jni2c(url, env);
+  int cOffset = jni2c(offset);
+  int cLen = jni2c(len);
+  try {
+    zim::Article article;
+    READER->getArticleObjectByDecodedUrl(kiwix::urlDecode(cUrl), article);
+    if (! article.good()) {
+      return data;
+    }
+    int loopCounter = 0;
+    while (article.isRedirect() && loopCounter++ < 42) {
+      article = article.getRedirectArticle();
+    }
+    if (loopCounter == 42) {
+      return data;
+    }
+    if (cLen == 0) {
+      setIntObjValue(article.getArticleSize(), sizeObj, env);
+    } else if (cOffset+cLen > article.getArticleSize()) {
+      auto blob = article.getData(cOffset, cLen);
+      data = env->NewByteArray(cLen);
+      env->SetByteArrayRegion(
+          data, 0, cLen, reinterpret_cast<const jbyte*>(blob.data()));
+      setIntObjValue(cLen, sizeObj, env);
+    }
+  } catch (...) {
+     std::cerr << "Unable to get partial content for url " << cUrl
+               << "(" << cOffset << ":" << cLen << ")" << std::endl;
+  }
+  return data;
+}
+
 JNIEXPORT jboolean JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_searchSuggestions(JNIEnv* env,
                                                          jobject obj,
