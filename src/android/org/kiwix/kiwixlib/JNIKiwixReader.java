@@ -41,6 +41,21 @@ public class JNIKiwixReader
                                   JNIKiwixString mimeType,
                                   JNIKiwixInt size);
 
+  /**
+   * getContentPart.
+   *
+   * Get only a part of the content of the article.
+   * Return a byte array of `len` size starting from offset `offset`.
+   * Set `size` to the number of bytes read
+   * (`len` if everything is ok, 0 in case of error).
+   * If `len` == 0, no bytes are read but `size` is set to the total size of the
+   * article.
+   */
+  public native byte[] getContentPart(String url,
+                                      int offest,
+                                      int len,
+                                      JNIKiwixInt size);
+
   public native boolean searchSuggestions(String prefix, int count);
 
   public native boolean getNextSuggestion(JNIKiwixString title);
