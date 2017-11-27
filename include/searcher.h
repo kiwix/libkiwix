@@ -56,7 +56,7 @@ struct SearcherInternal;
 class Searcher
 {
  public:
-  Searcher();
+  Searcher(const string& humanReadableName = "");
   Searcher(const string& xapianDirectoryPath,
            Reader* reader,
            const string& humanReadableName);
