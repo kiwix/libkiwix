@@ -85,17 +85,17 @@ Searcher::Searcher(const string& xapianDirectoryPath,
       resultCountPerPage(0),
       estimatedResultCount(0),
       resultStart(0),
-      resultEnd(0)
+      resultEnd(0),
+      contentHumanReadableId(humanReadableName)
 {
   loadICUExternalTables();
   if (!reader || !reader->hasFulltextIndex()) {
     internal->_xapianSearcher = new XapianSearcher(xapianDirectoryPath, reader);
   }
-  this->contentHumanReadableId = humanReadableName;
   this->humanReaderNames.push_back(humanReadableName);
 }
 
-Searcher::Searcher()
+Searcher::Searcher(const std::string& humanReadableName)
     : internal(new SearcherInternal()),
       searchPattern(""),
       protocolPrefix("zim://"),
@@ -103,7 +103,8 @@ Searcher::Searcher()
       resultCountPerPage(0),
       estimatedResultCount(0),
       resultStart(0),
-      resultEnd(0)
+      resultEnd(0),
+      contentHumanReadableId(humanReadableName)
 {
   loadICUExternalTables();
 }
