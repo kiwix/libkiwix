@@ -17,6 +17,9 @@
  * MA 02110-1301, USA.
  */
 
+
+#include <cmath>
+
 #include "searcher.h"
 #include "kiwixlib-resources.h"
 #include "reader.h"
@@ -432,7 +435,7 @@ string Searcher::getHtml()
   oData["resultRange"] = this->resultCountPerPage;
   oData["resultLastPageStart"]
       = this->estimatedResultCount > this->resultCountPerPage
-            ? this->estimatedResultCount - this->resultCountPerPage
+            ? std::round(this->estimatedResultCount / this->resultCountPerPage) * this->resultCountPerPage
             : 0;
   oData["protocolPrefix"] = this->protocolPrefix;
   oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
