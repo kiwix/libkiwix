@@ -246,8 +246,8 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
   /* Default values */
   /* Retrieve the content */
   std::string cUrl = jni2c(url, env);
-  int cOffset = jni2c(offset);
-  int cLen = jni2c(len);
+  unsigned int cOffset = jni2c(offset);
+  unsigned int cLen = jni2c(len);
   try {
     zim::Article article;
     READER->getArticleObjectByDecodedUrl(kiwix::urlDecode(cUrl), article);
