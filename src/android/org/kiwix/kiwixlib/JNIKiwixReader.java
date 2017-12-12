@@ -23,6 +23,7 @@ package org.kiwix.kiwixlib;
 import org.kiwix.kiwixlib.JNIKiwixString;
 import org.kiwix.kiwixlib.JNIKiwixInt;
 import org.kiwix.kiwixlib.JNIKiwixSearcher;
+import org.kiwix.kiwixlib.Pair;
 
 public class JNIKiwixReader
 {
@@ -55,6 +56,24 @@ public class JNIKiwixReader
                                       int offest,
                                       int len,
                                       JNIKiwixInt size);
+
+  /**
+   * getDirectAccessInformation.
+   *
+   * Return information giving where the content is located in the zim file.
+   *
+   * Some contents (binary content) are stored uncompressed in the zim file.
+   * Knowing this information, it could be interesting to directly open
+   * the zim file (or zim part) and directly read the content from it (and so
+   * bypassing the libzim).
+   *
+   * Return a `Pair` (filename, offset) where the content is located.
+   *
+   * If the content cannot be directly accessed (content is compressed or zim
+   * file is cut in the middle of the content), the filename is an empty string
+   * and offset is zero.
+   */
+  public native Pair getDirectAccessInformation(String url);
 
   public native boolean searchSuggestions(String prefix, int count);
 

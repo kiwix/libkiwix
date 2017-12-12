@@ -277,6 +277,40 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
   return data;
 }
 
+JNIEXPORT jobject JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwixReadear_getDirectAccessInformation(
+    JNIEnv* env, jobject obj, jstring url)
+{
+   jclass classPair = env->FindClass("org/kiwix/kiwixlib/Pair");
+   jmethodID midPairinit = env->GetMethodID(classPair, "<init>", "(D)");
+   jobject pair = env->NewObject(classPair, midPairinit);
+   setPairObjValue("", 0, pair, env);
+
+   std::string cUrl = jni2c(url, env);
+   try {
+    zim::Article article;
+    READER->getArticleObjectByDecodedUrl(kiwix::urlDecode(cUrl), article);
+    if (! article.good()) {
+      return pair;
+    }
+    int loopCounter = 0;
+    while (article.isRedirect() && loopCounter++ < 42) {
+      article = article.getRedirectArticle();
+    }
+    if (loopCounter == 42) {
+      return pair;
+    }
+
+    auto part_info = article.getDirectAccessInformation();
+    setPairObjValue(part_info.first, part_info.second, pair, env);
+  } catch (...) {
+    std::cerr << "Unable to locate direct access information for url " << cUrl
+              << std::endl;
+
+  }
+  return pair;
+}
+
 JNIEXPORT jboolean JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_searchSuggestions(JNIEnv* env,
                                                          jobject obj,
