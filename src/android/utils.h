@@ -137,4 +137,14 @@ inline void setBoolObjValue(const bool value, const jobject obj, JNIEnv* env)
   env->SetIntField(obj, objFid, c2jni(value));
 }
 
+inline void setPairObjValue(const std::string& filename, const int offset,
+                            const jobject obj, JNIEnv* env)
+{
+  jclass objClass = env->GetObjectClass(obj);
+  jfieldID filenameFid = env->GetFieldID(objClass, "filename", "Ljava/lang/String;");
+  env->SetObjectField(obj, filenameFid, c2jni(filename, env));
+  jfieldID offsetFid = env->GetFieldID(objClass, "offset", "I");
+  env->SetIntField(obj, offsetFid, offset);
+}
+
 #endif // _ANDROID_JNI_UTILS_H
