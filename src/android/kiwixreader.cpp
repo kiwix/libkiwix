@@ -278,11 +278,11 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixReadear_getDirectAccessInformation(
+Java_org_kiwix_kiwixlib_JNIKiwixReader_getDirectAccessInformation(
     JNIEnv* env, jobject obj, jstring url)
 {
    jclass classPair = env->FindClass("org/kiwix/kiwixlib/Pair");
-   jmethodID midPairinit = env->GetMethodID(classPair, "<init>", "(D)");
+   jmethodID midPairinit = env->GetMethodID(classPair, "<init>", "()V");
    jobject pair = env->NewObject(classPair, midPairinit);
    setPairObjValue("", 0, pair, env);
 
