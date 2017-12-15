@@ -38,6 +38,7 @@ public class JNIKiwixSearcher
     public native String getUrl();
     public native String getTitle();
     public native String getContent();
+    public native String getSnippet();
     public native void dispose();
   }
 
