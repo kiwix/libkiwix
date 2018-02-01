@@ -20,6 +20,7 @@
 
 package org.kiwix.kiwixlib;
 
+import org.kiwix.kiwixlib.JNIKiwixException;
 import org.kiwix.kiwixlib.JNIKiwixString;
 import org.kiwix.kiwixlib.JNIKiwixInt;
 import org.kiwix.kiwixlib.JNIKiwixSearcher;
@@ -109,9 +110,12 @@ public class JNIKiwixReader
     return searcher;
   }
 
-  public JNIKiwixReader(String filename)
+  public JNIKiwixReader(String filename) throws JNIKiwixException
   {
     nativeHandle = getNativeReader(filename);
+    if (nativeHandle == 0) {
+        throw new JNIKiwixException("Cannot open zimfile "+filename);
+    }
   }
   public JNIKiwixReader() {
 
