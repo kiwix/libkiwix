@@ -10,8 +10,12 @@ static_deps = get_option('android') or get_option('default_library') == 'static'
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
-libzim_dep = dependency('libzim', version : '>=3.0.0', static:static_deps)
-pugixml_dep = dependency('pugixml', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=3.0.0', static:static_deps, fallback:['libzim', 'libzim_dep'])
+pugixml_dep = dependency('pugixml', static:static_deps, required:false)
+if not pugixml_dep.found()
+  # FIXME: add static: kwarg when https://github.com/mesonbuild/meson/issues/328 is fixed
+  pugixml_dep = compiler.find_library('pugixml')
+endif
 
 ctpp2_include_path = ''
 has_ctpp2_dep = false

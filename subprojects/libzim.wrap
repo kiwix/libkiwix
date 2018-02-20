@@ -1,0 +1,5 @@
+[wrap-git]
+directory=libzim
+url=https://github.com/openzim/libzim
+push-url=git@github.com:openzim/libzim.git
+revision=origin/master
