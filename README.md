@@ -68,7 +68,7 @@ Then install Meson itself:
 ```
 virtualenv -p python3 ./ # Create virtualenv
 source bin/activate      # Activate the virtualenv
-pip install meson        # Install Meson
+pip3 install meson        # Install Meson
 hash -r                  # Refresh bash paths
 ```
 
