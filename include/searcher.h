@@ -189,7 +189,6 @@ class Searcher
    * Only used by getHtml.
    */
   bool setSearchProtocolPrefix(const std::string prefix);
-  void reset();
 
 #ifdef ENABLE_CTPP2
   /**
@@ -217,6 +216,10 @@ class Searcher
   unsigned int resultStart;
   unsigned int resultEnd;
   std::string contentHumanReadableId;
+
+ private:
+  void reset();
+
 };
 
 
