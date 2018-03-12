@@ -243,7 +243,7 @@ bool Manager::setCurrentBookId(const string id)
   return true;
 }
 
-string Manager::getCurrentBookId()
+string Manager::getCurrentBookId() const
 {
   return library.current.empty() ? "" : library.current.top();
 }
@@ -493,11 +493,6 @@ bool Manager::setBookIndex(const string id,
   }
 
   return false;
-}
-
-bool Manager::setBookIndex(const string id, const string path)
-{
-  return this->setBookIndex(id, path, XAPIAN);
 }
 
 bool Manager::setBookPath(const string id, const string path)

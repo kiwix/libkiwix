@@ -118,10 +118,14 @@ Searcher::~Searcher()
   delete internal;
 }
 
-void Searcher::add_reader(Reader* reader, const std::string& humanReadableName)
+bool Searcher::add_reader(Reader* reader, const std::string& humanReadableName)
 {
+  if (!reader->hasFulltextIndex()) {
+      return false;
+  }
   this->readers.push_back(reader);
   this->humanReaderNames.push_back(humanReadableName);
+  return true;
 }
 
 /* Search strings in the database */
@@ -166,7 +170,9 @@ void Searcher::search(std::string& search,
       std::vector<const zim::File*> zims;
       for (auto current = this->readers.begin(); current != this->readers.end();
            current++) {
-        zims.push_back((*current)->getZimFileHandler());
+        if ( (*current)->hasFulltextIndex() ) {
+            zims.push_back((*current)->getZimFileHandler());
+        }
       }
       zim::Search* search = new zim::Search(zims);
       search->set_query(unaccentedSearch);
