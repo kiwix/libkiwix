@@ -247,7 +247,7 @@ void Searcher::restart_search()
 {
   if (internal->_xapianSearcher) {
     internal->_xapianSearcher->restart_search();
-  } else {
+  } else if (internal->_search) {
     internal->current_iterator = internal->_search->begin();
   }
 }
@@ -256,7 +256,8 @@ Result* Searcher::getNextResult()
 {
   if (internal->_xapianSearcher) {
     return internal->_xapianSearcher->getNextResult();
-  } else if (internal->current_iterator != internal->_search->end()) {
+  } else if (internal->_search &&
+             internal->current_iterator != internal->_search->end()) {
     Result* result = new _Result(this, internal->current_iterator);
     internal->current_iterator++;
     return result;
