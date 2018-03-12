@@ -53,33 +53,148 @@ class Result
 };
 
 struct SearcherInternal;
+/**
+ * The Searcher class is reponsible to do different kind of search using the
+ * fulltext index.
+ *
+ * Historically, there are two kind of fulltext index :
+ *  - The legacy one, is the external fulltext index. A directory stored outside
+ *    of the zim file.
+ *  - The new one, a embedded fulltext index in the zim file.
+ *
+ * Legacy external fulltext index has to be considered as obsolet format with
+ * less functionnalities:
+ *  - No multi zim search ;
+ *  - No geo_search ;
+ *  - No suggestions search ;
+ *
+ * To reflect this, there is two Search creation "API":
+ *  - One for the external fulltext index, using the constructor taking a
+ *    xapianDirectoryPath) ;
+ *  - One for the embedded fulltext index, using a "empty" constructor and the
+ *  `add_reader` method".
+ *
+ *  On top of that, the Searcher may (if compiled with ctpp2) be used to
+ *  generate a html page for the search result. This use a template that need a
+ *  humanReaderName. This feature is only used by kiwix-serve and this should be
+ *  move outside of Searcher (and with a better API). If you don't use the html
+ *  rendering (getHtml method), you better should simply ignore the different
+ *  humanReadeableName attributes (or give an empty string).
+ */
 class Searcher
 {
  public:
+  /**
+   * The default constructor.
+   *
+   * @param humanReadableName The global zim's humanReadableName.
+   *                          Used to generate pagination links.
+   */
   Searcher(const string& humanReadableName = "");
+
+  /**
+   * The constructor for legacy external fulltext index.
+   *
+   * @param xapianDirectoryPath The path to the external index directory.
+   * @param reader The reader associated to the external index.
+   *               It will be used retrive the article content or generate
+   *               the snippet.
+   * @param humanReadableName The humanReadableName for the zim.
+   */
   Searcher(const string& xapianDirectoryPath,
            Reader* reader,
            const string& humanReadableName);
   ~Searcher();
 
+  /**
+   * Add a reader (containing embedded fulltext index) to the search.
+   *
+   * @param reader The Reader for the zim containing the fulltext index.
+   * @param humanReaderName The human readable name of the reader.
+   */
   void add_reader(Reader* reader, const std::string& humanReaderName);
+
+  /**
+   * Start a search on the zim associated to the Searcher.
+   *
+   * Search results should be retrived using the getNextResult method.
+   *
+   * @param search The search query.
+   * @param resultStart the start offset of the search results (used for pagination).
+   * @param resultEnd the end offset of the search results (used for pagination).
+   * @param verbose print some info on stdout if true.
+   */
   void search(std::string& search,
               unsigned int resultStart,
               unsigned int resultEnd,
               const bool verbose = false);
+
+  /**
+   * Start a geographique search.
+   * The search return result for entry in a disc of center latitude/longitude
+   * and radius distance.
+   *
+   * Search results should be retrived using the getNextResult method.
+   *
+   * @param latitude The latitude of the center point.
+   * @param longitude The longitude of the center point.
+   * @param distance The radius of the disc.
+   * @param resultStart the start offset of the search results (used for pagination).
+   * @param resultEnd the end offset of the search results (used for pagination).
+   * @param verbose print some info on stdout if true.
+   */
   void geo_search(float latitude, float longitude, float distance,
                   unsigned int resultStart,
                   unsigned int resultEnd,
                   const bool verbose = false);
+
+  /**
+   * Start a suggestion search.
+   * The search made depend of the "version" of the embedded index.
+   *  - If the index is newer enough and have a title namespace, the search is
+   *    made in the titles only.
+   *  - Else the search is made on the whole article content.
+   * In any case, the search is made "partial" (as adding '*' at the end of the query)
+   *
+   * @param search The search query.
+   * @param verbose print some info on stdout if true.
+   */
   void suggestions(std::string& search, const bool verbose = false);
+
+  /**
+   * Get the next result of a started search.
+   * This is the method to use to loop hover the search results.
+   */
   Result* getNextResult();
+
+  /**
+   * Restart the previous search.
+   * Next call to getNextResult will return the first result.
+   */
   void restart_search();
+
+  /**
+   * Get a estimation of the result count.
+   */
   unsigned int getEstimatedResultCount();
+
+  /**
+   * Set protocol prefix.
+   * Only used by getHtml.
+   */
   bool setProtocolPrefix(const std::string prefix);
+
+  /**
+   * Set search protocol prefix.
+   * Only used by getHtml.
+   */
   bool setSearchProtocolPrefix(const std::string prefix);
   void reset();
 
 #ifdef ENABLE_CTPP2
+  /**
+   * Generate the html page with the resutls of the search.
+   */
   string getHtml();
 #endif
 
@@ -103,6 +218,8 @@ class Searcher
   unsigned int resultEnd;
   std::string contentHumanReadableId;
 };
+
+
 }
 
 #endif

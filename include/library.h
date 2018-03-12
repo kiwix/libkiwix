@@ -38,6 +38,10 @@ namespace kiwix
 {
 enum supportedIndexType { UNKNOWN, XAPIAN };
 
+
+/**
+ * A class to store information about a book (a zim file)
+ */
 class Book
 {
  public:
@@ -78,6 +82,9 @@ class Book
   string faviconMimeType;
 };
 
+/**
+ * A Library store several books.
+ */
 class Library
 {
  public:
@@ -85,7 +92,24 @@ class Library
   ~Library();
 
   string version;
+  /**
+   * Add a book to the library.
+   *
+   * If a book already exist in the library with the same id, update
+   * the existing book instead of adding a new one.
+   *
+   * @param book The book to add.
+   * @return True if the book has been added.
+   *         False if a book has been updated.
+   */
   bool addBook(const Book& book);
+
+  /**
+   * Remove a book from the library.
+   *
+   * @param bookIndex the index of the book to remove.
+   * @return True
+   */
   bool removeBookByIndex(const unsigned int bookIndex);
   vector<kiwix::Book> books;
 
