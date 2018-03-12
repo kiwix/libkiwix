@@ -129,7 +129,7 @@ class Manager
    *
    * @return The id of the current book (or empty string if no current book).
    */
-  string getCurrentBookId();
+  string getCurrentBookId() const;
 
   /**
    * Set the path of the external fulltext index associated to a book.

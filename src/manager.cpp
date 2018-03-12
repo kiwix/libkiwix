@@ -243,7 +243,7 @@ bool Manager::setCurrentBookId(const string id)
   return true;
 }
 
-string Manager::getCurrentBookId()
+string Manager::getCurrentBookId() const
 {
   return library.current.empty() ? "" : library.current.top();
 }
