@@ -80,7 +80,6 @@ Reader::Reader(const string zimFilePath) : zimFileHandler(NULL)
     this->firstArticleOffset
         = this->zimFileHandler->getNamespaceBeginOffset('A');
     this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
-    this->currentArticleOffset = this->firstArticleOffset;
     this->nsACount = this->zimFileHandler->getNamespaceCount('A');
     this->nsICount = this->zimFileHandler->getNamespaceCount('I');
     this->zimFilePath = zimFilePath;
@@ -101,11 +100,6 @@ Reader::~Reader()
 zim::File* Reader::getZimFileHandler() const
 {
   return this->zimFileHandler;
-}
-/* Reset the cursor for GetNextArticle() */
-void Reader::reset()
-{
-  this->currentArticleOffset = this->firstArticleOffset;
 }
 std::map<const std::string, unsigned int> Reader::parseCounterMetadata() const
 {

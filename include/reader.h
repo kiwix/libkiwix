@@ -56,7 +56,6 @@ class Reader
   Reader(const string zimFilePath);
   ~Reader();
 
-  void reset();
   /**
    * Get the number of "displayable" articles in the zim file.
    *
@@ -421,7 +420,6 @@ class Reader
   zim::File* zimFileHandler;
   zim::size_type firstArticleOffset;
   zim::size_type lastArticleOffset;
-  zim::size_type currentArticleOffset;
   zim::size_type nsACount;
   zim::size_type nsICount;
   std::string zimFilePath;
