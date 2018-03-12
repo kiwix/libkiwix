@@ -495,11 +495,6 @@ bool Manager::setBookIndex(const string id,
   return false;
 }
 
-bool Manager::setBookIndex(const string id, const string path)
-{
-  return this->setBookIndex(id, path, XAPIAN);
-}
-
 bool Manager::setBookPath(const string id, const string path)
 {
   std::vector<kiwix::Book>::iterator itr;

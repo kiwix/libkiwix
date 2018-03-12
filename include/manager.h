@@ -141,8 +141,7 @@ class Manager
    */
   bool setBookIndex(const string id,
                     const string path,
-                    const supportedIndexType type);
-  bool setBookIndex(const string id, const string path);
+                    const supportedIndexType type = XAPIAN);
 
   /**
    * Set the path of the zim file associated to a book.
