@@ -111,8 +111,10 @@ class Searcher
    *
    * @param reader The Reader for the zim containing the fulltext index.
    * @param humanReaderName The human readable name of the reader.
+   * @return true if the reader has been added.
+   *         false if the reader cannot be added (no embedded fulltext index present)
    */
-  void add_reader(Reader* reader, const std::string& humanReaderName);
+  bool add_reader(Reader* reader, const std::string& humanReaderName);
 
   /**
    * Start a search on the zim associated to the Searcher.
