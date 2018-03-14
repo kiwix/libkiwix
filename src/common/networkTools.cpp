@@ -19,13 +19,15 @@
 
 #include <common/networkTools.h>
 
+
+
 std::map<std::string, std::string> kiwix::getNetworkInterfaces()
 {
   std::map<std::string, std::string> interfaces;
 
 #ifdef _WIN32
   SOCKET sd = WSASocket(AF_INET, SOCK_DGRAM, 0, 0, 0, 0);
-  if (sd == SOCKET_ERROR) {
+  if (sd == (SOCKET)SOCKET_ERROR) {
     std::cerr << "Failed to get a socket. Error " << WSAGetLastError()
               << std::endl;
     return interfaces;
