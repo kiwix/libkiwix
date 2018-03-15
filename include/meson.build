@@ -1,4 +1,5 @@
 headers = [
+  'common.h',
   'library.h',
   'manager.h',
   'opds_dumper.h',
