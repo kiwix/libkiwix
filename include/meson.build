@@ -5,6 +5,7 @@ headers = [
   'opds_dumper.h',
   'downloader.h',
   'reader.h',
+  'entry.h',
   'searcher.h'
 ]
 

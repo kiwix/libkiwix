@@ -193,13 +193,8 @@ std::string XapianResult::get_content()
   if (!searcher->reader) {
     return "";
   }
-  std::string content;
-  std::string title;
-  unsigned int contentLength;
-  std::string contentType;
-  searcher->reader->getContentByUrl(
-      get_url(), content, title, contentLength, contentType);
-  return content;
+  auto entry = searcher->reader->getEntryFromEncodedPath(get_url());
+  return entry.getContent();
 }
 
 int XapianResult::get_size()
