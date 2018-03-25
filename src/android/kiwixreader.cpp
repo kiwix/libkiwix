@@ -255,7 +255,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
       return data;
     }
     int loopCounter = 0;
-    while (article.isRedirect() && loopCounter++ < 42) {
+    while (article.isRedirect() && ++loopCounter < 42) {
       article = article.getRedirectArticle();
     }
     if (loopCounter == 42) {
@@ -294,7 +294,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDirectAccessInformation(
       return pair;
     }
     int loopCounter = 0;
-    while (article.isRedirect() && loopCounter++ < 42) {
+    while (article.isRedirect() && ++loopCounter < 42) {
       article = article.getRedirectArticle();
     }
     if (loopCounter == 42) {
