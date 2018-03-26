@@ -254,6 +254,16 @@ class Manager
                  const string creator,
                  const string publisher,
                  const string search);
+
+  /**
+   * Filter the library and generate a new one with the keep elements.
+   *
+   * @param search List only books with search in the title or description.
+   * @return A `Library`.
+   */
+  Library filter(const string& search);
+
+
   /**
    * Get all langagues of the books in the library.
    *

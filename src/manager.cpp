@@ -626,6 +626,24 @@ bool Manager::listBooks(const supportedListMode mode,
   return true;
 }
 
+
+Library Manager::filter(const std::string& search) {
+  Library library;
+
+  if (search.empty()) {
+    return library;
+  }
+
+  for(auto book:this->library.books) {
+     if (matchRegex(book.title, "\\Q" + search + "\\E")
+         || matchRegex(book.description, "\\Q" + search + "\\E")) {
+       library.addBook(book);
+     }
+  }
+
+  return library;
+}
+
 void Manager::checkAndCleanBookPaths(Book& book, const string& libraryPath)
 {
   if (!book.path.empty()) {
