@@ -117,6 +117,14 @@ string OPDSDumper::dumpOPDSFeed()
   self_link_node.append_attribute("href") = "";
   self_link_node.append_attribute("type") = "application/atom+xml";
 
+
+  if (!searchDescriptionUrl.empty() ) {
+    auto search_link = root_node.append_child("link");
+    search_link.append_attribute("rel") = "search";
+    search_link.append_attribute("type") = "application/opensearchdescription+xml";
+    search_link.append_attribute("href") = searchDescriptionUrl.c_str();
+  }
+
   for (auto book: library.books) {
     handleBook(book, root_node);
   }

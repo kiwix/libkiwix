@@ -78,6 +78,13 @@ class OPDSDumper
   void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
 
   /**
+   * Set the search url.
+   *
+   * @param searchUrl the search url to use.
+   */
+  void setSearchDescriptionUrl(const std::string& searchDescriptionUrl) { this->searchDescriptionUrl = searchDescriptionUrl; }
+
+  /**
    * Set the library to dump.
    *
    * @param library The library to dump.
@@ -90,6 +97,7 @@ class OPDSDumper
   std::string title;
   std::string date;
   std::string rootLocation;
+  std::string searchDescriptionUrl;
 
  private:
   pugi::xml_node handleBook(Book book, pugi::xml_node root_node);
