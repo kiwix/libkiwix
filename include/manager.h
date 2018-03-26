@@ -84,7 +84,7 @@ class Manager
    * @param libraryPath The library path (used to resolve relative path)
    * @return True if the content has been properly parsed.
    */
-  bool readXml(const string xml,
+  bool readXml(const string& xml,
                const bool readOnly = true,
                const string libraryPath = "");
 
@@ -96,8 +96,6 @@ class Manager
    */
   bool writeFile(const string path);
 
-
-  string write_OPDS_feed(const string& id, const string& title);
 
   /**
    * Remove a book from the library.

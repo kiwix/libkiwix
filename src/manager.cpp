@@ -88,7 +88,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
   return true;
 }
 
-bool Manager::readXml(const string xml,
+bool Manager::readXml(const string& xml,
                       const bool readOnly,
                       const string libraryPath)
 {
@@ -230,6 +230,7 @@ bool Manager::writeFile(const string path)
 
   return true;
 }
+
 
 bool Manager::setCurrentBookId(const string id)
 {
