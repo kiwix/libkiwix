@@ -44,6 +44,7 @@ namespace kiwix
 class OPDSDumper
 {
  public:
+  OPDSDumper() = default;
   OPDSDumper(Library library);
   ~OPDSDumper();
 
@@ -75,6 +76,13 @@ class OPDSDumper
    * @param rootLocation the root location to use.
    */
   void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
+
+  /**
+   * Set the library to dump.
+   *
+   * @param library The library to dump.
+   */
+  void setLibrary(Library library) { this->library = library; }
 
  protected:
   kiwix::Library library;
