@@ -12,6 +12,7 @@ thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
 libzim_dep = dependency('libzim', version : '>=3.2.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
+libaria2_dep = dependency('libaria2', static:static_deps)
 
 ctpp2_include_path = ''
 has_ctpp2_dep = false
@@ -72,7 +73,7 @@ endif
 
 xapian_dep = dependency('xapian-core', required:false, static:static_deps)
 
-all_deps = [thread_dep, libicu_dep, libzim_dep, xapian_dep, pugixml_dep]
+all_deps = [thread_dep, libicu_dep, libzim_dep, xapian_dep, pugixml_dep, libaria2_dep]
 if has_ctpp2_dep
   all_deps += [ctpp2_dep]
 endif
@@ -88,7 +89,7 @@ subdir('scripts')
 subdir('static')
 subdir('src')
 
-pkg_requires = ['libzim', 'icu-i18n', 'pugixml']
+pkg_requires = ['libzim', 'icu-i18n', 'pugixml', 'libaria2']
 if xapian_dep.found()
     pkg_requires += ['xapian-core']
 endif

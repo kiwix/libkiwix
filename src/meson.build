@@ -2,6 +2,7 @@ kiwix_sources = [
   'library.cpp',
   'manager.cpp',
   'opds_dumper.cpp',
+  'downloader.cpp',
   'reader.cpp',
   'searcher.cpp',
   'common/base64.cpp',
