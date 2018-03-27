@@ -188,6 +188,20 @@ string getFileSizeAsString(const string& path)
   return convert.str();
 }
 
+string getFileContent(const string& path)
+{
+  std::ifstream f(path, std::ios::in|std::ios::ate);
+  std::string content;
+  if (f.is_open()) {
+    auto size = f.tellg();
+    content.reserve(size);
+    f.seekg(0, std::ios::beg);
+    content.assign((std::istreambuf_iterator<char>(f)),
+                    std::istreambuf_iterator<char>());
+  }
+  return content;
+}
+
 bool fileExists(const string& path)
 {
 #ifdef _WIN32
