@@ -1,6 +1,13 @@
 kiwix-lib 1.1.0
 ===============
 
+ * Correct the name of kiwix-lib (from `kiwixlib`) in meson.build to generate
+   dist archive with the correct name.
+ * Libzim version need to be at least 3.2.0
+
+kiwix-lib 1.1.0
+===============
+
  * Allow for more than 70 search result per page in html results rendering
    (kiwix/kiwix-tools#92)
  * Add a small api to do geo queries.
