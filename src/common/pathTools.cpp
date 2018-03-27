@@ -228,6 +228,30 @@ bool makeDirectory(const string& path)
   return status == 0;
 }
 
+string makeTmpDirectory()
+{
+#ifdef _WIN32
+  char cbase[MAX_PATH+1];
+  int base_len = GetTempPath(MAX_PATH+1, cbase);
+  UUID uuid;
+  UuidCreate(&uuid);
+  char* dir_name;
+  UuidToString(&uuid, reinterpret_cast<unsigned char**>(&dir_name));
+  string dir(cbase, base_len);
+  dir += dir_name;
+  _mkdir(dir.c_str());
+  RpcStringFree(reinterpret_cast<unsigned char**>(&dir_name));
+#else
+  string base = "/tmp";
+  auto _template = base + "/kiwix-lib_XXXXXX";
+  char* _template_array = new char[_template.size()+1];
+  memcpy(_template_array, _template.c_str(), _template.size());
+  string dir = mkdtemp(_template_array);
+  delete[] _template_array;
+#endif
+  return dir;
+}
+
 /* Try to create a link and if does not work then make a copy */
 bool copyFile(const string& sourcePath, const string& destPath)
 {

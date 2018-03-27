@@ -54,6 +54,7 @@ string getFileSizeAsString(const string& path);
 string getFileContent(const string& path);
 bool fileExists(const string& path);
 bool makeDirectory(const string& path);
+string makeTmpDirectory();
 bool copyFile(const string& sourcePath, const string& destPath);
 string getLastPathElement(const string& path);
 string getExecutablePath();
