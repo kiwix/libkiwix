@@ -18,6 +18,7 @@
  */
 
 #include "manager.h"
+#include "downloader.h"
 
 namespace kiwix
 {
@@ -101,6 +102,67 @@ bool Manager::readXml(const string& xml,
   }
 
   return true;
+}
+
+
+
+bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& urlHost)
+{
+  pugi::xml_node libraryNode = doc.child("feed");
+
+  for (pugi::xml_node entryNode = libraryNode.child("entry"); entryNode;
+       entryNode = entryNode.next_sibling("entry")) {
+    kiwix::Book book;
+
+    book.readOnly = false;
+    book.id = entryNode.child("id").child_value();
+    book.title = entryNode.child("title").child_value();
+    book.description = entryNode.child("summary").child_value();
+    book.language = entryNode.child("language").child_value();
+    book.date = entryNode.child("updated").child_value();
+    book.creator = entryNode.child("author").child("name").child_value();
+    for(pugi::xml_node linkNode = entryNode.child("link"); linkNode;
+        linkNode = linkNode.next_sibling("link")) {
+       std::string rel = linkNode.attribute("rel").value();
+
+       if (rel == "http://opds-spec.org/image/thumbnail") {
+         auto faviconUrl = urlHost + linkNode.attribute("href").value();
+         auto downloader = Downloader();
+         auto fileHandle = downloader.download(faviconUrl);
+         if (fileHandle.success) {
+           auto content = getFileContent(fileHandle.path);
+           book.favicon = base64_encode((const unsigned char*)content.data(), content.size());
+           book.faviconMimeType = linkNode.attribute("type").value();
+         } else {
+           std::cerr << "Cannot get favicon content from " << faviconUrl << std::endl;
+         }
+
+       } else if (rel == "http://opds-spec.org/acquisition/open-access") {
+         book.url = linkNode.attribute("href").value();
+       }
+    }
+
+    /* Update the book properties with the new importer */
+    library.addBook(book);
+  }
+
+  return true;
+}
+
+
+
+bool Manager::readOpds(const string& content, const std::string& urlHost)
+{
+  pugi::xml_document doc;
+  pugi::xml_parse_result result
+      = doc.load_buffer_inplace((void*)content.data(), content.size());
+
+  if (result) {
+    this->parseOpdsDom(doc, urlHost);
+    return true;
+  }
+
+  return false;
 }
 
 bool Manager::readFile(const string path, const bool readOnly)

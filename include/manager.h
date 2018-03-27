@@ -89,6 +89,17 @@ class Manager
                const string libraryPath = "");
 
   /**
+   * Load a library content stored in a OPDS stream.
+   *
+   * @param content The content of the OPDS stream.
+   * @param readOnly Set if the library path could be overwritten later with
+   *                 updated content.
+   * @param libraryPath The library path (used to resolve relative path)
+   * @return True if the content has been properly parsed.
+   */
+  bool readOpds(const string& content, const std::string& urlHost);
+
+  /**
    * Write the library to a file.
    *
    * @param path the path of the file to write.
@@ -303,6 +314,8 @@ class Manager
   bool parseXmlDom(const pugi::xml_document& doc,
                    const bool readOnly,
                    const string libraryPath);
+  bool parseOpdsDom(const pugi::xml_document& doc,
+                    const std::string& urlHost);
 
  private:
   void checkAndCleanBookPaths(Book& book, const string& libraryPath);
