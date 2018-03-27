@@ -1,3 +1,21 @@
+kiwix-lib 1.1.0
+===============
+
+ * Allow for more than 70 search result per page in html results rendering
+   (kiwix/kiwix-tools#92)
+ * Add a small api to do geo queries.
+ * Add multi-search support in the JNI (#67)
+ * Add an API to get only one part of an article.
+ * Add an API to get direct location of an article content in the zim file.
+ * Improve urlencoding
+ * Fix pagination in html results rendering.
+ * Compile using gcc-5 on Travis.
+ * Allow JNI to access search snippets.
+ * JNI throw an exception instead of returning an invalid object if something
+   goes wrong.
+ * Add doctext documentation. (#116)
+ * Various bug fixes.
+
 kiwix-lib 1.0.0
 ===============
 
