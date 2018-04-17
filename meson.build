@@ -48,8 +48,14 @@ else
   ctpp2_include_args = ['-I'+ctpp2_include_path]
   if compiler.has_header('ctpp2/CTPP2Logger.hpp', args:ctpp2_include_args)
     ctpp2_include_dir = include_directories(ctpp2_include_path, is_system:true)
-    ctpp2_lib_path = ctpp2_prefix_install+'/lib'
-    ctpp2_lib = compiler.find_library('ctpp2', dirs:ctpp2_lib_path)
+    ctpp2_lib_path = join_paths(ctpp2_prefix_install, get_option('libdir'))
+    message(ctpp2_lib_path)
+    ctpp2_lib = compiler.find_library('ctpp2', dirs:ctpp2_lib_path, required:false)
+    if not ctpp2_lib.found()
+      ctpp2_lib_path = join_paths(ctpp2_prefix_install, 'lib')
+      message(ctpp2_lib_path)
+      ctpp2_lib = compiler.find_library('ctpp2', dirs:ctpp2_lib_path)
+    endif
     ctpp2_link_args = ['-L'+ctpp2_lib_path, '-lctpp2']
     if meson.is_cross_build() and host_machine.system() == 'windows'
       iconv_lib = compiler.find_library('iconv', required:false)
