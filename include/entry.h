@@ -50,7 +50,7 @@ class Entry
     /**
      * Construct an entry making reference to an zim article.
      *
-     * @param article
+     * @param article a zim::Article object
      */
     Entry(zim::Article article);
     virtual ~Entry() = default;

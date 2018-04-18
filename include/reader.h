@@ -280,7 +280,7 @@ class Reader
    * Get the mimetype of a entry specified by a url.
    *
    * @param[in] url the url of the entry.
-   * @param[out] mimetype the mimeType of the entry.
+   * @param[out] mimeType the mimeType of the entry.
    * @return True if the mimeType has been found.
    */
   DEPRECATED bool getMimeTypeByUrl(const string& url, string& mimeType) const;
@@ -356,7 +356,7 @@ class Reader
    * `getNextSuggestion` method.
    *
    * @param prefix The prefix to search.
-   * @param suggestionCount How many suggestions to search for.
+   * @param suggestionsCount How many suggestions to search for.
    * @param reset If true, remove previous suggestions in the internal vector.
    *              If false, add suggestions to the internal vector
    *              (until internal vector size is suggestionCount (or no more
@@ -380,7 +380,7 @@ class Reader
    * The internal vector will be reset.
    *
    * @param prefix The prefix to search for.
-   * @param suggestionCount How many suggestions to search for.
+   * @param suggestionsCount How many suggestions to search for.
    */
   bool searchSuggestionsSmart(const string& prefix,
                               unsigned int suggestionsCount);
