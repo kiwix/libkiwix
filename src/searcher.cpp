@@ -43,7 +43,7 @@ namespace kiwix
 class _Result : public Result
 {
  public:
-  _Result(Searcher* searcher, zim::Search::iterator& iterator);
+  _Result(zim::Search::iterator& iterator);
   virtual ~_Result(){};
 
   virtual std::string get_url();
@@ -56,7 +56,6 @@ class _Result : public Result
   virtual int get_readerIndex();
 
  private:
-  Searcher* searcher;
   zim::Search::iterator iterator;
 };
 
@@ -258,7 +257,7 @@ Result* Searcher::getNextResult()
     return internal->_xapianSearcher->getNextResult();
   } else if (internal->_search &&
              internal->current_iterator != internal->_search->end()) {
-    Result* result = new _Result(this, internal->current_iterator);
+    Result* result = new _Result(internal->current_iterator);
     internal->current_iterator++;
     return result;
   }
@@ -324,8 +323,8 @@ bool Searcher::setSearchProtocolPrefix(const std::string prefix)
   return true;
 }
 
-_Result::_Result(Searcher* searcher, zim::Search::iterator& iterator)
-    : searcher(searcher), iterator(iterator)
+_Result::_Result(zim::Search::iterator& iterator)
+    : iterator(iterator)
 {
 }
 
