@@ -1,9 +1,10 @@
 language: cpp
 dist: trusty
-sudo: required
+sudo: false
 cache: ccache
 before_install:
-- eval "${MATRIX_EVAL}"
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then eval "${MATRIX_EVAL}"; fi
+- PATH=$PATH:$HOME/bin
 - ${CXX} --version
 install: travis/install_deps.sh
 script: travis/compile.sh
@@ -23,3 +24,20 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-5
+      - cmake
+      - python3-pip
+      - libbz2-dev
+      - ccache
+      - zlib1g-dev
+      - uuid-dev
+      - libctpp2-dev
+      - ctpp2-utils
+      - libmicrohttpd-dev
+      - g++-mingw-w64-i686
+      - gcc-mingw-w64-i686
+      - gcc-mingw-w64-base
+      - mingw-w64-tools
+matrix:
+  include:
+    - env: PLATFORM="native_dyn"
+      os: osx
