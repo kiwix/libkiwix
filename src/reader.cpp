@@ -647,10 +647,14 @@ bool Reader::urlExists(const string& url) const
 
 bool Reader::pathExists(const string& path) const
 {
+  if (!zimFileHandler)
+  {
+    return false;
+  }
+
   char ns = 0;
   string titleStr;
   _parseUrl(path, &ns, titleStr);
-  titleStr = "/" + titleStr;
   zim::File::const_iterator findItr = zimFileHandler->find(ns, titleStr);
   return findItr != zimFileHandler->end() && findItr->getUrl() == titleStr;
 }
@@ -658,8 +662,13 @@ bool Reader::pathExists(const string& path) const
 /* Does the ZIM file has a fulltext index */
 bool Reader::hasFulltextIndex() const
 {
-  return ( this->pathExists("/Z/fulltextIndex/xapian")
-        && !zimFileHandler->is_multiPart() );
+  if (!zimFileHandler || zimFileHandler->is_multiPart() )
+  {
+    return false;
+  }
+
+  return ( pathExists("Z//fulltextIndex/xapian")
+        || pathExists("X/fulltext/xapian"));
 }
 
 /* Search titles by prefix */
