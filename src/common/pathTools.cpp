@@ -188,6 +188,20 @@ string getFileSizeAsString(const string& path)
   return convert.str();
 }
 
+string getFileContent(const string& path)
+{
+  std::ifstream f(path, std::ios::in|std::ios::ate);
+  std::string content;
+  if (f.is_open()) {
+    auto size = f.tellg();
+    content.reserve(size);
+    f.seekg(0, std::ios::beg);
+    content.assign((std::istreambuf_iterator<char>(f)),
+                    std::istreambuf_iterator<char>());
+  }
+  return content;
+}
+
 bool fileExists(const string& path)
 {
 #ifdef _WIN32
@@ -212,6 +226,30 @@ bool makeDirectory(const string& path)
   int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
   return status == 0;
+}
+
+string makeTmpDirectory()
+{
+#ifdef _WIN32
+  char cbase[MAX_PATH+1];
+  int base_len = GetTempPath(MAX_PATH+1, cbase);
+  UUID uuid;
+  UuidCreate(&uuid);
+  char* dir_name;
+  UuidToString(&uuid, reinterpret_cast<unsigned char**>(&dir_name));
+  string dir(cbase, base_len);
+  dir += dir_name;
+  _mkdir(dir.c_str());
+  RpcStringFree(reinterpret_cast<unsigned char**>(&dir_name));
+#else
+  string base = "/tmp";
+  auto _template = base + "/kiwix-lib_XXXXXX";
+  char* _template_array = new char[_template.size()+1];
+  memcpy(_template_array, _template.c_str(), _template.size());
+  string dir = mkdtemp(_template_array);
+  delete[] _template_array;
+#endif
+  return dir;
 }
 
 /* Try to create a link and if does not work then make a copy */

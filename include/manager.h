@@ -84,9 +84,20 @@ class Manager
    * @param libraryPath The library path (used to resolve relative path)
    * @return True if the content has been properly parsed.
    */
-  bool readXml(const string xml,
+  bool readXml(const string& xml,
                const bool readOnly = true,
                const string libraryPath = "");
+
+  /**
+   * Load a library content stored in a OPDS stream.
+   *
+   * @param content The content of the OPDS stream.
+   * @param readOnly Set if the library path could be overwritten later with
+   *                 updated content.
+   * @param libraryPath The library path (used to resolve relative path)
+   * @return True if the content has been properly parsed.
+   */
+  bool readOpds(const string& content, const std::string& urlHost);
 
   /**
    * Write the library to a file.
@@ -96,8 +107,6 @@ class Manager
    */
   bool writeFile(const string path);
 
-
-  string write_OPDS_feed(const string& id, const string& title);
 
   /**
    * Remove a book from the library.
@@ -256,6 +265,16 @@ class Manager
                  const string creator,
                  const string publisher,
                  const string search);
+
+  /**
+   * Filter the library and generate a new one with the keep elements.
+   *
+   * @param search List only books with search in the title or description.
+   * @return A `Library`.
+   */
+  Library filter(const string& search);
+
+
   /**
    * Get all langagues of the books in the library.
    *
@@ -295,6 +314,8 @@ class Manager
   bool parseXmlDom(const pugi::xml_document& doc,
                    const bool readOnly,
                    const string libraryPath);
+  bool parseOpdsDom(const pugi::xml_document& doc,
+                    const std::string& urlHost);
 
  private:
   void checkAndCleanBookPaths(Book& book, const string& libraryPath);

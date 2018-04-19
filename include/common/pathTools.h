@@ -51,8 +51,10 @@ string appendToDirectory(const string& directoryPath, const string& filename);
 
 unsigned int getFileSize(const string& path);
 string getFileSizeAsString(const string& path);
+string getFileContent(const string& path);
 bool fileExists(const string& path);
 bool makeDirectory(const string& path);
+string makeTmpDirectory();
 bool copyFile(const string& sourcePath, const string& destPath);
 string getLastPathElement(const string& path);
 string getExecutablePath();
