@@ -37,6 +37,7 @@ libraries need to be available:
 (package libctpp2-dev on Ubuntu)
 * Xapian ......................................... https://xapian.org/
 (package libxapian-dev on Ubuntu)
+* libaria2 .................................. https://aria2.github.io/
 
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
