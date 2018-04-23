@@ -1,4 +1,23 @@
-kiwix-lib 1.1.0
+kiwix-lib 2.0.0
+===============
+
+ * Introduce a new API to retrive content from a reader.
+   * Introduce the `Entry` class.
+   * Reader's methods return an `Entry`.
+   * Content and other information can be retrieved from the `Entry`.
+   * Older Reader's methods are depreciated.
+ * Add an `OPDSDumper` class to dump a whole `Library` as an OPDS feed.
+ * Add a tool function to get the content of a file.
+ * Add a tool function to create a tempory directory.
+ * Add a `Downloader` class to download a file.
+ * Allow the manager to populate a `Library` from an OPDS feed.
+ * Try to locate libctpp2 in default system libdir and then fallback in 'lib'
+   directory.
+ * Build kiwix-lib setting RPATH.
+ * Build kiwix-lib without warning (werror=true)
+ * Build kiwix-lib on macos.
+
+kiwix-lib 1.1.1
 ===============
 
  * Correct the name of kiwix-lib (from `kiwixlib`) in meson.build to generate
