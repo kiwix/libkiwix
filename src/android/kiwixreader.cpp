@@ -60,7 +60,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getMainPage(JNIEnv* env, jobject obj)
   jstring url;
 
   try {
-    std::string cUrl = READER->getMainPageUrl();
+    std::string cUrl = READER->getMainPage().getPath();
     url = c2jni(cUrl, env);
   } catch (...) {
     std::cerr << "Unable to get ZIM main page" << std::endl;
@@ -196,8 +196,8 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getMimeType(
 
   std::string cUrl = jni2c(url, env);
   try {
-    std::string cMimeType;
-    READER->getMimeTypeByUrl(cUrl, cMimeType);
+    auto entry = READER->getEntryFromEncodedPath(cUrl);
+    auto cMimeType = entry.getMimetype();
     mimeType = c2jni(cMimeType, env);
   } catch (...) {
     std::cerr << "Unable to get mime-type for url " << cUrl << std::endl;
@@ -216,20 +216,20 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContent(
 
   /* Retrieve the content */
   std::string cUrl = jni2c(url, env);
-  std::string cData;
-  std::string cTitle;
-  std::string cMimeType;
   unsigned int cSize = 0;
 
   try {
-    if (READER->getContentByUrl(cUrl, cData, cTitle, cSize, cMimeType)) {
-      data = env->NewByteArray(cSize);
-      env->SetByteArrayRegion(
-          data, 0, cSize, reinterpret_cast<const jbyte*>(cData.c_str()));
-      setStringObjValue(cMimeType, mimeTypeObj, env);
-      setStringObjValue(cTitle, titleObj, env);
-      setIntObjValue(cSize, sizeObj, env);
-    }
+    auto entry = READER->getEntryFromEncodedPath(cUrl);
+    entry = entry.getFinalEntry();
+    cSize = entry.getSize();
+    setIntObjValue(cSize, sizeObj, env);
+
+    data = env->NewByteArray(cSize);
+    env->SetByteArrayRegion(
+        data, 0, cSize, reinterpret_cast<const jbyte*>(entry.getBlob().data()));
+
+    setStringObjValue(entry.getMimetype(), mimeTypeObj, env);
+    setStringObjValue(entry.getTitle(), titleObj, env);
   } catch (...) {
     std::cerr << "Unable to get content for url " << cUrl << std::endl;
   }
@@ -249,22 +249,13 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
   unsigned int cOffset = jni2c(offset);
   unsigned int cLen = jni2c(len);
   try {
-    zim::Article article;
-    READER->getArticleObjectByDecodedUrl(kiwix::urlDecode(cUrl), article);
-    if (! article.good()) {
-      return data;
-    }
-    int loopCounter = 0;
-    while (article.isRedirect() && ++loopCounter < 42) {
-      article = article.getRedirectArticle();
-    }
-    if (loopCounter == 42) {
-      return data;
-    }
+    auto entry = READER->getEntryFromEncodedPath(cUrl);
+    entry = entry.getFinalEntry();
+
     if (cLen == 0) {
-      setIntObjValue(article.getArticleSize(), sizeObj, env);
-    } else if (cOffset+cLen > article.getArticleSize()) {
-      auto blob = article.getData(cOffset, cLen);
+      setIntObjValue(entry.getSize(), sizeObj, env);
+    } else if (cOffset+cLen < entry.getSize()) {
+      auto blob = entry.getBlob(cOffset, cLen);
       data = env->NewByteArray(cLen);
       env->SetByteArrayRegion(
           data, 0, cLen, reinterpret_cast<const jbyte*>(blob.data()));
@@ -288,20 +279,9 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDirectAccessInformation(
 
    std::string cUrl = jni2c(url, env);
    try {
-    zim::Article article;
-    READER->getArticleObjectByDecodedUrl(kiwix::urlDecode(cUrl), article);
-    if (! article.good()) {
-      return pair;
-    }
-    int loopCounter = 0;
-    while (article.isRedirect() && ++loopCounter < 42) {
-      article = article.getRedirectArticle();
-    }
-    if (loopCounter == 42) {
-      return pair;
-    }
-
-    auto part_info = article.getDirectAccessInformation();
+    auto entry = READER->getEntryFromEncodedPath(cUrl);
+    entry = entry.getFinalEntry();
+    auto part_info = entry.getDirectAccessInfo();
     setPairObjValue(part_info.first, part_info.second, pair, env);
   } catch (...) {
     std::cerr << "Unable to locate direct access information for url " << cUrl
@@ -359,20 +339,18 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getPageUrlFromTitle(JNIEnv* env,
                                                            jstring title,
                                                            jobject urlObj)
 {
-  jboolean retVal = JNI_FALSE;
   std::string cTitle = jni2c(title, env);
-  std::string cUrl;
 
   try {
-    if (READER->getPageUrlFromTitle(cTitle, cUrl)) {
-      setStringObjValue(cUrl, urlObj, env);
-      retVal = JNI_TRUE;
-    }
+    auto entry = READER->getEntryFromTitle(cTitle);
+    entry = entry.getFinalEntry();
+    setStringObjValue(entry.getPath(), urlObj, env);
+    return JNI_TRUE;
   } catch (...) {
     std::cerr << "Unable to get URL for title " << cTitle << std::endl;
   }
 
-  return retVal;
+  return JNI_FALSE;
 }
 
 JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getTitle(
@@ -410,7 +388,7 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getRandomPage(
   std::string cUrl;
 
   try {
-    std::string cUrl = READER->getRandomPageUrl();
+    std::string cUrl = READER->getRandomPage().getPath();
     setStringObjValue(cUrl, urlObj, env);
     retVal = JNI_TRUE;
   } catch (...) {

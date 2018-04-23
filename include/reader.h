@@ -29,6 +29,8 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include "common.h"
+#include "entry.h"
 #include "common/pathTools.h"
 #include "common/stringTools.h"
 
@@ -38,7 +40,7 @@ namespace kiwix
 {
 
 /**
- * The Reader class is the class who allow to get an article content from a zim
+ * The Reader class is the class who allow to get an entry content from a zim
  * file.
  */
 class Reader
@@ -57,11 +59,11 @@ class Reader
   ~Reader();
 
   /**
-   * Get the number of "displayable" articles in the zim file.
+   * Get the number of "displayable" entries in the zim file.
    *
    * @return If the zim file has a /M/Counter metadata, return the number of
-   *         articles with the 'text/html' MIMEtype specified in the metadata.
-   *         Else return the number of articles in the 'A' namespace.
+   *         entries with the 'text/html' MIMEtype specified in the metadata.
+   *         Else return the number of entries in the 'A' namespace.
    */
   unsigned int getArticleCount() const;
 
@@ -69,16 +71,16 @@ class Reader
    * Get the number of media in the zim file.
    *
    * @return If the zim file has a /M/Counter metadata, return the number of
-   *         articles with the 'image/jpeg', 'image/gif' and 'image/png' in
+   *         entries with the 'image/jpeg', 'image/gif' and 'image/png' in
    *         the metadata.
-   *         Else return the number of articles in the 'I' namespace.
+   *         Else return the number of entries in the 'I' namespace.
    */
   unsigned int getMediaCount() const;
 
   /**
-   * Get the number of all articles in the zim file.
+   * Get the number of all entries in the zim file.
    *
-   * @return Return the number of all the articles, whatever their MIMEtype or
+   * @return Return the number of all the entries, whatever their MIMEtype or
    *         their namespace.
    */
   unsigned int getGlobalCount() const;
@@ -100,25 +102,54 @@ class Reader
   /**
    * Get the url of a random page.
    *
-   * @return Url of a random page. The page is picked from all articles in
+   * Deprecated : Use `getRandomPage` instead.
+   *
+   * @return Url of a random page. The page is picked from all entries in
    *         the 'A' namespace.
    *         The main page is excluded from the potential results.
    */
-  string getRandomPageUrl() const;
+  DEPRECATED string getRandomPageUrl() const;
+
+  /**
+   * Get a random page.
+   *
+   * @return A random Entry. The entry is picked from all entries in
+   *         the 'A' namespace.
+   *         The main entry is excluded from the potential results.
+   */
+  Entry getRandomPage() const;
 
   /**
    * Get the url of the first page.
    *
-   * @return Url of the first article in the 'A' namespace.
+   * Deprecated : Use `getFirstPage` instead.
+   *
+   * @return Url of the first entry in the 'A' namespace.
    */
-  string getFirstPageUrl() const;
+  DEPRECATED string getFirstPageUrl() const;
+
+  /**
+   * Get the entry of the first page.
+   *
+   * @return The first entry in the 'A' namespace.
+   */
+  Entry getFirstPage() const;
 
   /**
    * Get the url of the main page.
    *
+   * Deprecated : Use `getMainPage` instead.
+   *
    * @return Url of the main page as specified in the zim file.
    */
-  string getMainPageUrl() const;
+  DEPRECATED string getMainPageUrl() const;
+
+  /**
+   * Get the entry of the main page.
+   *
+   * @return Entry of the main page as specified in the zim file.
+   */
+  Entry getMainPage() const;
 
   /**
    * Get the content of a metadata.
@@ -208,40 +239,69 @@ class Reader
   bool getFavicon(string& content, string& mimeType) const;
 
   /**
+   * Get an entry associated to an path.
+   *
+   * @param path The path of the entry.
+   * @return The entry.
+   * @throw NoEntry If no entry correspond to the path.
+   */
+  Entry getEntryFromPath(const std::string& path) const;
+
+  /**
+   * Get an entry associated to an url encoded path.
+   *
+   * Equivalent to `getEntryFromPath(urlDecode(path));`
+   *
+   * @param path The url encoded path.
+   * @return The entry.
+   * @throw NoEntry If no entry correspond to the path.
+   */
+  Entry getEntryFromEncodedPath(const std::string& path) const;
+
+  /**
+   * Get un entry associated to a title.
+   *
+   * @param title The title.
+   * @return The entry
+   * throw NoEntry If no entry correspond to the url.
+   */
+  Entry getEntryFromTitle(const std::string& title) const;
+
+  /**
    * Get the url of a page specified by a title.
    *
    * @param[in] title the title of the page.
    * @param[out] url the url of the page.
    * @return True if the page can be found.
    */
-  bool getPageUrlFromTitle(const string& title, string& url) const;
+  DEPRECATED bool getPageUrlFromTitle(const string& title, string& url) const;
 
   /**
-   * Get the mimetype of a article specified by a url.
+   * Get the mimetype of a entry specified by a url.
    *
-   * @param[in] url the url of the article.
-   * @param[out] mimetype the mimeType of the article.
+   * @param[in] url the url of the entry.
+   * @param[out] mimeType the mimeType of the entry.
    * @return True if the mimeType has been found.
    */
-  bool getMimeTypeByUrl(const string& url, string& mimeType) const;
+  DEPRECATED bool getMimeTypeByUrl(const string& url, string& mimeType) const;
 
   /**
-   * Get the content of an article specifed by a url.
+   * Get the content of an entry specifed by a url.
    *
    * Alias to `getContentByEncodedUrl`
    */
-  bool getContentByUrl(const string& url,
+  DEPRECATED bool getContentByUrl(const string& url,
                        string& content,
                        string& title,
                        unsigned int& contentLength,
                        string& contentType) const;
 
   /**
-   * Get the content of an article specified by a url encoded url.
+   * Get the content of an entry specified by a url encoded url.
    *
    * Equivalent to getContentByDecodedUrl(urlDecode(url), ...).
    */
-  bool getContentByEncodedUrl(const string& url,
+  DEPRECATED bool getContentByEncodedUrl(const string& url,
                               string& content,
                               string& title,
                               unsigned int& contentLength,
@@ -249,54 +309,54 @@ class Reader
                               string& baseUrl) const;
 
   /**
-   * Get the content of an article specified by an url encoded url.
+   * Get the content of an entry specified by an url encoded url.
    *
    * Equivalent to getContentByEncodedUrl but without baseUrl.
    */
-  bool getContentByEncodedUrl(const string& url,
+  DEPRECATED bool getContentByEncodedUrl(const string& url,
                               string& content,
                               string& title,
                               unsigned int& contentLength,
                               string& contentType) const;
 
   /**
-   * Get the content of an article specified by a url.
+   * Get the content of an entry specified by a url.
    *
-   * @param[in] url The url of the article.
-   * @param[out] content The content of the article.
-   * @param[out] title the title of the article.
-   * @param[out] contentLength The size of the article (size of content).
-   * @param[out] contentType The mimeType of the article.
-   * @param[out] baseUrl Return the true url of the article.
-   *                     If the specified article is a redirection, contains
-   *                     the url of the targeted article.
-   * @return True if the article has been found.
+   * @param[in] url The url of the entry.
+   * @param[out] content The content of the entry.
+   * @param[out] title the title of the entry.
+   * @param[out] contentLength The size of the entry (size of content).
+   * @param[out] contentType The mimeType of the entry.
+   * @param[out] baseUrl Return the true url of the entry.
+   *                     If the specified entry is a redirection, contains
+   *                     the url of the targeted entry.
+   * @return True if the entry has been found.
    */
-  bool getContentByDecodedUrl(const string& url,
+  DEPRECATED bool getContentByDecodedUrl(const string& url,
                               string& content,
                               string& title,
                               unsigned int& contentLength,
                               string& contentType,
                               string& baseUrl) const;
   /**
-   * Get the content of an article specified by a url.
+   * Get the content of an entry specified by a url.
    *
    * Equivalent to getContentByDecodedUrl but withou the baseUrl.
    */
-  bool getContentByDecodedUrl(const string& url,
+  DEPRECATED bool getContentByDecodedUrl(const string& url,
                               string& content,
                               string& title,
                               unsigned int& contentLength,
                               string& contentType) const;
 
   /**
-   * Search for articles with title starting with prefix (case sensitive).
+   * Search for entries with title starting with prefix (case sensitive).
    *
    * Suggestions are stored in an internal vector and can be retrieved using
    * `getNextSuggestion` method.
    *
    * @param prefix The prefix to search.
-   * @param suggestionCount How many suggestions to search for.
+   * @param suggestionsCount How many suggestions to search for.
    * @param reset If true, remove previous suggestions in the internal vector.
    *              If false, add suggestions to the internal vector
    *              (until internal vector size is suggestionCount (or no more
@@ -308,7 +368,7 @@ class Reader
                          const bool reset = true);
 
   /**
-   * Search for articles for the given prefix.
+   * Search for entries for the given prefix.
    *
    * If the zim file has a internal fulltext index, the suggestions will be
    * searched using it.
@@ -320,7 +380,7 @@ class Reader
    * The internal vector will be reset.
    *
    * @param prefix The prefix to search for.
-   * @param suggestionCount How many suggestions to search for.
+   * @param suggestionsCount How many suggestions to search for.
    */
   bool searchSuggestionsSmart(const string& prefix,
                               unsigned int suggestionsCount);
@@ -328,10 +388,20 @@ class Reader
   /**
    * Check if the url exists in the zim file.
    *
+   * Deprecated : Use `pathExists` instead.
+   *
    * @param url the url to check.
    * @return True if the url exits in the zim file.
    */
-  bool urlExists(const string& url) const;
+  DEPRECATED bool urlExists(const string& url) const;
+
+  /**
+   * Check if the path exists in the zim file.
+   *
+   * @param path the path to check.
+   * @return True if the path exists in the zim file.
+   */
+  bool pathExists(const string& path) const;
 
   /**
    * Check if the zim file has a embedded fulltext index.
@@ -388,7 +458,7 @@ class Reader
    * @param[out] title The url (url).
    * @return True
    */
-  bool parseUrl(const string& url, char* ns, string& title) const;
+  DEPRECATED bool parseUrl(const string& url, char* ns, string& title) const;
 
   /**
    * Return the total size of the zim file.
@@ -413,7 +483,7 @@ class Reader
    * @param[out] article The libzim article object.
    * @return True if the url is good (article.good()).
    */
-  bool getArticleObjectByDecodedUrl(const string& url,
+  DEPRECATED bool getArticleObjectByDecodedUrl(const string& url,
                                     zim::Article& article) const;
 
  protected:
