@@ -411,30 +411,26 @@ bool _parseUrl(const string& url, char* ns, string& title)
   unsigned int urlLength = url.size();
   unsigned int offset = 0;
 
-  /* Ignore the '/' */
-  while ((offset < urlLength) && (url[offset] == '/')) {
+  /* Ignore the first '/' */
+  if (url[offset] == '/')
     offset++;
-  }
+
+  if (url[offset] == '/' || offset >= urlLength)
+    return false;
 
   /* Get namespace */
-  while ((offset < urlLength) && (url[offset] != '/')) {
-    *ns = url[offset];
-    offset++;
-  }
+  *ns = url[offset++];
 
-  /* Ignore the '/' */
-  while ((offset < urlLength) && (url[offset] == '/')) {
-    offset++;
-  }
+  if (url[offset] != '/' || offset >= urlLength)
+    return false;
+
+  offset++;
+
+  if ( offset >= urlLength)
+    return false;
 
   /* Get content title */
-  unsigned int titleOffset = offset;
-  while (offset < urlLength) {
-    offset++;
-  }
-
-  /* unescape title */
-  title = url.substr(titleOffset, offset - titleOffset);
+  title = url.substr(offset, urlLength - offset);
 
   return true;
 }

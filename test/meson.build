@@ -1,6 +1,7 @@
 
 
 tests = [
+    'parseUrl'
 ]
 
 
