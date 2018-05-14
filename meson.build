@@ -88,6 +88,7 @@ subdir('include')
 subdir('scripts')
 subdir('static')
 subdir('src')
+subdir('test')
 
 pkg_requires = ['libzim', 'icu-i18n', 'pugixml', 'libaria2']
 if xapian_dep.found()
