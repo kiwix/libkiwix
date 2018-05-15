@@ -21,7 +21,6 @@
 #include <cmath>
 
 #include "searcher.h"
-#include "kiwixlib-resources.h"
 #include "reader.h"
 #include "xapianSearcher.h"
 
@@ -32,6 +31,7 @@
 #include <ctpp2/CTPP2FileLogger.hpp>
 #include <ctpp2/CTPP2SimpleVM.hpp>
 #include "ctpp2/CTPP2VMStringLoader.hpp"
+#include "kiwixlib-resources.h"
 
 using namespace CTPP;
 #endif

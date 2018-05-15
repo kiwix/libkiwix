@@ -1,3 +1,0 @@
-stopwords/en
-stopwords/he
-stopwords/fra
