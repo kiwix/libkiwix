@@ -1,4 +1,0 @@
-results.ct2
-stopwords/en
-stopwords/he
-stopwords/fra
