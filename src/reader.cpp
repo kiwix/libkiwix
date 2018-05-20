@@ -464,7 +464,7 @@ Entry Reader::getEntryFromPath(const std::string& path) const
 
 Entry Reader::getEntryFromEncodedPath(const std::string& path) const
 {
-  return getEntryFromPath(urlDecode(path));
+  return getEntryFromPath(urlDecode(path, true));
 }
 
 Entry Reader::getEntryFromTitle(const std::string& title) const
