@@ -33,7 +33,7 @@ void kiwix::loadICUExternalTables()
   std::string executablePath = getExecutablePath();
   std::string executableDirectory = removeLastPathElement(executablePath);
   std::string datPath
-      = computeAbsolutePath(executableDirectory, "icudt49l.dat");
+      = computeAbsolutePath(executableDirectory, "icudt58l.dat");
   try {
     u_setDataDirectory(datPath.c_str());
   } catch (exception& e) {
@@ -47,9 +47,9 @@ std::string kiwix::removeAccents(const std::string& text)
   loadICUExternalTables();
   ucnv_setDefaultName("UTF-8");
   UErrorCode status = U_ZERO_ERROR;
-  Transliterator* removeAccentsTrans = Transliterator::createInstance(
+  auto removeAccentsTrans = icu::Transliterator::createInstance(
       "Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
-  UnicodeString ustring = UnicodeString(text.c_str());
+  icu::UnicodeString ustring(text.c_str());
   removeAccentsTrans->transliterate(ustring);
   delete removeAccentsTrans;
   std::string unaccentedText;
@@ -85,7 +85,7 @@ std::string kiwix::beautifyFileSize(const unsigned int number)
   }
 }
 
-void kiwix::printStringInHexadecimal(UnicodeString s)
+void kiwix::printStringInHexadecimal(icu::UnicodeString s)
 {
   std::cout << std::showbase << std::hex;
   for (int i = 0; i < s.length(); i++) {
@@ -300,8 +300,8 @@ std::string kiwix::ucFirst(const std::string& word)
 
   std::string result;
 
-  UnicodeString unicodeWord(word.c_str());
-  UnicodeString unicodeFirstLetter = UnicodeString(unicodeWord, 0, 1).toUpper();
+  icu::UnicodeString unicodeWord(word.c_str());
+  auto unicodeFirstLetter = icu::UnicodeString(unicodeWord, 0, 1).toUpper();
   unicodeWord.replace(0, 1, unicodeFirstLetter);
   unicodeWord.toUTF8String(result);
 
@@ -316,7 +316,7 @@ std::string kiwix::ucAll(const std::string& word)
 
   std::string result;
 
-  UnicodeString unicodeWord(word.c_str());
+  icu::UnicodeString unicodeWord(word.c_str());
   unicodeWord.toUpper().toUTF8String(result);
 
   return result;
@@ -330,8 +330,8 @@ std::string kiwix::lcFirst(const std::string& word)
 
   std::string result;
 
-  UnicodeString unicodeWord(word.c_str());
-  UnicodeString unicodeFirstLetter = UnicodeString(unicodeWord, 0, 1).toLower();
+  icu::UnicodeString unicodeWord(word.c_str());
+  auto unicodeFirstLetter = icu::UnicodeString(unicodeWord, 0, 1).toLower();
   unicodeWord.replace(0, 1, unicodeFirstLetter);
   unicodeWord.toUTF8String(result);
 
@@ -346,7 +346,7 @@ std::string kiwix::lcAll(const std::string& word)
 
   std::string result;
 
-  UnicodeString unicodeWord(word.c_str());
+  icu::UnicodeString unicodeWord(word.c_str());
   unicodeWord.toLower().toUTF8String(result);
 
   return result;
@@ -360,7 +360,7 @@ std::string kiwix::toTitle(const std::string& word)
 
   std::string result;
 
-  UnicodeString unicodeWord(word.c_str());
+  icu::UnicodeString unicodeWord(word.c_str());
   unicodeWord = unicodeWord.toTitle(0);
   unicodeWord.toUTF8String(result);
 

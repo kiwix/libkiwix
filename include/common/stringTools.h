@@ -38,7 +38,7 @@ namespace kiwix
 std::string beautifyInteger(const unsigned int number);
 std::string beautifyFileSize(const unsigned int number);
 void printStringInHexadecimal(const char* s);
-void printStringInHexadecimal(UnicodeString s);
+void printStringInHexadecimal(icu::UnicodeString s);
 void stringReplacement(std::string& str,
                        const std::string& oldStr,
                        const std::string& newStr);
