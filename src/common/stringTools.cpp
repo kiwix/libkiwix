@@ -33,7 +33,7 @@ void kiwix::loadICUExternalTables()
   std::string executablePath = getExecutablePath();
   std::string executableDirectory = removeLastPathElement(executablePath);
   std::string datPath
-      = computeAbsolutePath(executableDirectory, "icudt49l.dat");
+      = computeAbsolutePath(executableDirectory, "icudt58l.dat");
   try {
     u_setDataDirectory(datPath.c_str());
   } catch (exception& e) {
