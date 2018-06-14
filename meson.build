@@ -1,5 +1,5 @@
 project('kiwix-lib', 'cpp',
-  version : '2.0.0',
+  version : '2.0.1',
   license : 'GPL',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
 
@@ -10,7 +10,7 @@ static_deps = get_option('android') or get_option('default_library') == 'static'
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
-libzim_dep = dependency('libzim', version : '>=3.3.0', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=4.0.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libaria2_dep = dependency('libaria2', static:static_deps)
 
