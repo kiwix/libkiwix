@@ -1,3 +1,11 @@
+kiwix-lib 2.0.1
+===============
+
+ * Fix parsing of url.
+ * Remove unused static resources.
+ * Correctly decode reserved characters in URLs.
+ * Explicitly use icu namespace to allow use of packaged icu lib.
+
 kiwix-lib 2.0.0
 ===============
 
