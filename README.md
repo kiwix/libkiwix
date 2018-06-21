@@ -38,6 +38,7 @@ libraries need to be available:
 * Xapian ......................................... https://xapian.org/
 (package libxapian-dev on Ubuntu)
 * libaria2 .................................. https://aria2.github.io/
+(no package on Ubuntu)
 
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
@@ -52,68 +53,91 @@ If you compile ctpp2 from source and want to compile the Kiwix library
 statically then you will probably need to rename ctpp2 static library
 from ctpp2-st.a to ctpp2.a.
 
-Environnement
+Environment
 -------------
 
 The Kiwix library builds using [Meson](http://mesonbuild.com/) version
-0.34 or higher. Meson relies itself on Ninja, pkg-config and few other
+0.39 or higher. Meson relies itself on Ninja, pkg-config and few other
 compilation tools.
 
 Install first the few common compilation tools:
-* Automake
-* Libtool
-* Virtualenv
+* Meson
+* Ninja
 * Pkg-config
 
-Then install Meson itself:
-```
-virtualenv -p python3 ./ # Create virtualenv
-source bin/activate      # Activate the virtualenv
-pip3 install meson        # Install Meson
-hash -r                  # Refresh bash paths
-```
-
-Finally download and build Ninja locally:
-```
-git clone git://github.com/ninja-build/ninja.git
-cd ninja
-git checkout release
-./configure.py --bootstrap
-mkdir ../bin                      
-cp ninja ../bin
-cd ..
-```
+These tools should be packaged if you use a cutting edge operating
+system. If not, have a look to the "Troubleshooting" section.
 
 Compilation
 -----------
 
-Once all dependencies are installed, you can compile kiwix-lib with:
+Once all dependencies are installed, you can compile the Kiwix library
+with:
 ```
-mkdir build
 meson . build
-cd build
-ninja
+ninja -C build
 ```
 
-By default, it will compile dynamic linked libraries. If you want
-statically linked libraries, you can add `--default-library=static`
-option to the Meson command.
+By default, it will compile dynamic linked libraries. All binary files
+will be created in the "build" directory created automatically by
+Meson. If you want statically linked libraries, you can add
+`--default-library=static` option to the Meson command.
 
 Depending of you system, `ninja` may be called `ninja-build`.
 
 Installation
 ------------
 
-If you want to install the libraries you just have compiled on your
-system, here we go:
+If you want to install the Kiwix library and the headers you just have
+compiled on your system, here we go:
 
 ```
-ninja install
+ninja -C build install
+```
+
+You might need to run the command as root (or using 'sudo'), depending
+where you want to install the libraries. After the installation
+succeeded, you may need to run ldconfig (as root).
+
+Uninstallation
+------------
+
+If you want to uninstall the Kiwix library:
+
+```
+ninja -C build uninstall
+```
+
+Like for the installation, you might need to run the command as root
+(or using 'sudo').
+
+Troubleshooting
+---------------
+
+If you need to install Meson "manually":
+```
+virtualenv -p python3 ./ # Create virtualenv
+source bin/activate      # Activate the virtualenv
+pip3 install meson       # Install Meson
+hash -r                  # Refresh bash paths
+```
+
+If you need to install Ninja "manually":
+```
+git clone git://github.com/ninja-build/ninja.git
+cd ninja
+git checkout release
+./configure.py --bootstrap
+mkdir ../bin
+cp ninja ../bin
 cd ..
 ```
 
-You might need to run the command as root, depending where you want to
-install the libraries.
+If the compilation still fails, you might need to get a more recent
+version of a dependency than the one packaged by your Linux
+distribution. Try then with a source tarball distributed by the
+problematic upstream project or even directly from the source code
+repository.
 
 License
 -------
