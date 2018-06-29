@@ -95,7 +95,7 @@ if xapian_dep.found()
     pkg_requires += ['xapian-core']
 endif
 
-extra_libs = []
+extra_libs = ['-llog']
 extra_cflags = ''
 if has_ctpp2_dep
   extra_libs += ctpp2_link_args
