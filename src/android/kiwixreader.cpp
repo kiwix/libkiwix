@@ -63,7 +63,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getMainPage(JNIEnv* env, jobject obj)
     std::string cUrl = READER->getMainPage().getPath();
     url = c2jni(cUrl, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM main page" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM main page");
   }
   return url;
 }
@@ -77,7 +77,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getId(JNIEnv* env, jobject obj)
     std::string cId = READER->getId();
     id = c2jni(cId, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM id" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM id");
   }
 
   return id;
@@ -92,7 +92,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getFileSize(JNIEnv* env, jobject obj)
     int cSize = READER->getFileSize();
     size = c2jni(cSize);
   } catch (...) {
-    std::cerr << "Unable to get ZIM file size" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM file size");
   }
 
   return size;
@@ -107,7 +107,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getCreator(JNIEnv* env, jobject obj)
     std::string cCreator = READER->getCreator();
     creator = c2jni(cCreator, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM creator" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM creator");
   }
 
   return creator;
@@ -122,7 +122,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getPublisher(JNIEnv* env, jobject obj)
     std::string cPublisher = READER->getPublisher();
     publisher = c2jni(cPublisher, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM creator" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM publish");
   }
   return publisher;
 }
@@ -136,7 +136,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getName(JNIEnv* env, jobject obj)
     std::string cName = READER->getName();
     name = c2jni(cName, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM name" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM name");
   }
   return name;
 }
@@ -155,7 +155,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getFavicon(JNIEnv* env, jobject obj)
                       cContent.length()),
         env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM favicon" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM favicon");
   }
   return favicon;
 }
@@ -169,7 +169,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDate(JNIEnv* env, jobject obj)
     std::string cDate = READER->getDate();
     date = c2jni(cDate, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM date" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM date");
   }
   return date;
 }
@@ -183,7 +183,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getLanguage(JNIEnv* env, jobject obj)
     std::string cLanguage = READER->getLanguage();
     language = c2jni(cLanguage, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM language" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM language");
   }
 
   return language;
@@ -200,7 +200,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getMimeType(
     auto cMimeType = entry.getMimetype();
     mimeType = c2jni(cMimeType, env);
   } catch (...) {
-    std::cerr << "Unable to get mime-type for url " << cUrl << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get mime-type for url: %s", cUrl.c_str());
   }
   return mimeType;
 }
@@ -231,7 +231,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContent(
     setStringObjValue(entry.getMimetype(), mimeTypeObj, env);
     setStringObjValue(entry.getTitle(), titleObj, env);
   } catch (...) {
-    std::cerr << "Unable to get content for url " << cUrl << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get content for url: %s", cUrl.c_str());
   }
 
   return data;
@@ -262,8 +262,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
       setIntObjValue(cLen, sizeObj, env);
     }
   } catch (...) {
-     std::cerr << "Unable to get partial content for url " << cUrl
-               << "(" << cOffset << ":" << cLen << ")" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get partial content for url: %s (%u : %u)", cUrl.c_str(), cOffset, cLen);
   }
   return data;
 }
@@ -284,9 +283,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDirectAccessInformation(
     auto part_info = entry.getDirectAccessInfo();
     setPairObjValue(part_info.first, part_info.second, pair, env);
   } catch (...) {
-    std::cerr << "Unable to locate direct access information for url " << cUrl
-              << std::endl;
-
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get direct access info for url: %s", cUrl.c_str());
   }
   return pair;
 }
@@ -306,8 +303,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_searchSuggestions(JNIEnv* env,
       retVal = JNI_TRUE;
     }
   } catch (...) {
-    std::cerr << "Unable to search suggestions for pattern " << cPrefix
-              << std::endl;
+    __android_log_print(ANDROID_LOG_WARN, "kiwix", "Unable to get search results for pattern: %s", cPrefix.c_str());
   }
 
   return retVal;
@@ -327,7 +323,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
       retVal = JNI_TRUE;
     }
   } catch (...) {
-    std::cerr << "Unable to get next suggestion" << std::endl;
+    __android_log_print(ANDROID_LOG_WARN, "kiwix", "Unable to get next suggestion");
   }
 
   return retVal;
@@ -347,7 +343,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getPageUrlFromTitle(JNIEnv* env,
     setStringObjValue(entry.getPath(), urlObj, env);
     return JNI_TRUE;
   } catch (...) {
-    std::cerr << "Unable to get URL for title " << cTitle << std::endl;
+    __android_log_print(ANDROID_LOG_WARN, "kiwix", "Unable to get url for title %s: ", cTitle.c_str());
   }
 
   return JNI_FALSE;
@@ -362,7 +358,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getTitle(
     std::string cTitle = READER->getTitle();
     title = c2jni(cTitle, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM title" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get zim title");
   }
   return title;
 }
@@ -376,7 +372,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDescription(JNIEnv* env, jobject obj)
     std::string cDescription = READER->getDescription();
     description = c2jni(cDescription, env);
   } catch (...) {
-    std::cerr << "Unable to get ZIM description" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get zim description");
   }
   return description;
 }
@@ -392,8 +388,7 @@ JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getRandomPage(
     setStringObjValue(cUrl, urlObj, env);
     retVal = JNI_TRUE;
   } catch (...) {
-    std::cerr << "Unable to get random page" << std::endl;
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get random page");
   }
-
   return retVal;
 }
