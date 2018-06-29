@@ -21,6 +21,7 @@
 
 #include <jni.h>
 #include <zim/file.h>
+#include <android/log.h>
 #include "org_kiwix_kiwixlib_JNIKiwixReader.h"
 
 #include "common/base64.h"
@@ -33,16 +34,15 @@ JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReader(
 {
   std::string cPath = jni2c(filename, env);
 
+  __android_log_print(ANDROID_LOG_INFO, "kiwix", "Attempting to create reader with: %s", cPath.c_str());
   Lock l;
-  kiwix::Reader* reader = nullptr;
   try {
-    reader = new kiwix::Reader(cPath);
+    kiwix::Reader* reader = new kiwix::Reader(cPath);
+    return reinterpret_cast<jlong>(new Handle<kiwix::Reader>(reader));
   } catch (...) {
-    std::cerr << "Unable to load ZIM " << cPath << std::endl;
-    reader = NULL;
+    __android_log_print(ANDROID_LOG_WARN, "kiwix", "Error opening ZIM file");
+    return 0;
   }
-
-  return reinterpret_cast<jlong>(new Handle<kiwix::Reader>(reader));
 }
 
 JNIEXPORT void JNICALL
