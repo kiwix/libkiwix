@@ -122,6 +122,11 @@ Entry Entry::getFinalEntry() const
   if (final_article.good()) {
     return final_article;
   }
+  // Prevent infinite loops.
+  if (article.isRedirect() &&
+      article.getIndex() == article.getRedirectIndex()) {
+    throw noEntry();
+  }
 
   int loopCounter = 42;
   final_article = article;
