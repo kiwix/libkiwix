@@ -15,9 +15,9 @@ to [kiwix-build](https://github.com/kiwix/kiwix-build).
 Preamble
 --------
 
-Although the Kiwix library can be compiled/cross-compiled on/for many
+Although the Kiwix library can be (cross-)compiled on/for many
 sytems, the following documentation explains how to do it on POSIX
-ones. It is primarly though for GNU/Linux systems and has been tested
+ones. It is primarly thought for GNU/Linux systems and has been tested
 on recent releases of Ubuntu and Fedora.
 
 Dependencies
