@@ -7,6 +7,11 @@ compiler = meson.get_compiler('cpp')
 find_library_in_compiler = meson.version().version_compare('>=0.31.0')
 
 static_deps = get_option('android') or get_option('default_library') == 'static'
+if get_option('android')
+  extra_libs = ['-llog']
+else
+  extra_libs = []
+endif
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
@@ -95,7 +100,6 @@ if xapian_dep.found()
     pkg_requires += ['xapian-core']
 endif
 
-extra_libs = ['-llog']
 extra_cflags = ''
 if has_ctpp2_dep
   extra_libs += ctpp2_link_args
