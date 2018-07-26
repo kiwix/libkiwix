@@ -64,6 +64,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getMainPage(JNIEnv* env, jobject obj)
     url = c2jni(cUrl, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM main page");
+    url = NULL;
   }
   return url;
 }
@@ -78,6 +79,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getId(JNIEnv* env, jobject obj)
     id = c2jni(cId, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM id");
+    id = NULL;
   }
 
   return id;
@@ -108,6 +110,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getCreator(JNIEnv* env, jobject obj)
     creator = c2jni(cCreator, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM creator");
+    creator = NULL;
   }
 
   return creator;
@@ -123,6 +126,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getPublisher(JNIEnv* env, jobject obj)
     publisher = c2jni(cPublisher, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM publish");
+    publisher = NULL;
   }
   return publisher;
 }
@@ -137,6 +141,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getName(JNIEnv* env, jobject obj)
     name = c2jni(cName, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM name");
+    name = NULL;
   }
   return name;
 }
@@ -156,6 +161,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getFavicon(JNIEnv* env, jobject obj)
         env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM favicon");
+    favicon = NULL;
   }
   return favicon;
 }
@@ -170,6 +176,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDate(JNIEnv* env, jobject obj)
     date = c2jni(cDate, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM date");
+    date = NULL;
   }
   return date;
 }
@@ -184,6 +191,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getLanguage(JNIEnv* env, jobject obj)
     language = c2jni(cLanguage, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM language");
+    language = NULL;
   }
 
   return language;
@@ -201,6 +209,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getMimeType(
     mimeType = c2jni(cMimeType, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get mime-type for url: %s", cUrl.c_str());
+    mimeType = NULL;
   }
   return mimeType;
 }
@@ -359,6 +368,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getTitle(
     title = c2jni(cTitle, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get zim title");
+    title = NULL;
   }
   return title;
 }
@@ -373,6 +383,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDescription(JNIEnv* env, jobject obj)
     description = c2jni(cDescription, env);
   } catch (...) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get zim description");
+    description = NULL;
   }
   return description;
 }
