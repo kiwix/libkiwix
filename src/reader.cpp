@@ -265,6 +265,7 @@ bool Reader::getFavicon(string& content, string& mimeType) const
   for (auto &path: paths) {
     try {
       auto entry = getEntryFromPath(path);
+      entry = entry.getFinalEntry();
       content = entry.getContent();
       mimeType = entry.getMimetype();
       return true;
