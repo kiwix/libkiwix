@@ -20,7 +20,9 @@
 #include "downloader.h"
 #include "common/pathTools.h"
 
-#include <unistd.h>
+#ifndef _WIN32
+# include <unistd.h>
+#endif
 #include <iostream>
 
 namespace kiwix
