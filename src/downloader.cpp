@@ -20,7 +20,9 @@
 #include "downloader.h"
 #include "common/pathTools.h"
 
-#include <unistd.h>
+#ifndef _WIN32
+# include <unistd.h>
+#endif
 #include <iostream>
 
 namespace kiwix
@@ -32,6 +34,7 @@ pthread_mutex_t Downloader::globalLock = PTHREAD_MUTEX_INITIALIZER;
 /* Constructor */
 Downloader::Downloader()
 {
+#ifdef ENABLE_LIBARIA2
   aria2::SessionConfig config;
   config.downloadEventCallback = Downloader::downloadEventCallback;
   config.userData = this;
@@ -39,17 +42,20 @@ Downloader::Downloader()
   aria2::KeyVals options;
   options.push_back(std::pair<std::string, std::string>("dir", tmpDir));
   session = aria2::sessionNew(options, config);
+#endif
 }
 
 
 /* Destructor */
 Downloader::~Downloader()
 {
+#ifdef ENABLE_LIBARIA2
   aria2::sessionFinal(session);
+#endif
   rmdir(tmpDir.c_str());
 }
 
-
+#ifdef ENABLE_LIBARIA2
 int Downloader::downloadEventCallback(aria2::Session* session,
                                       aria2::DownloadEvent event,
                                       aria2::A2Gid gid,
@@ -85,10 +91,12 @@ int Downloader::downloadEventCallback(aria2::Session* session,
   aria2::deleteDownloadHandle(dh);
   return 0;
 }
+#endif
 
 DownloadedFile Downloader::download(const std::string& url) {
   pthread_mutex_lock(&globalLock);
   DownloadedFile fileHandle;
+#ifdef ENABLE_LIBARIA2
   try {
     std::vector<std::string> uris = {url};
     aria2::KeyVals options;
@@ -106,6 +114,7 @@ DownloadedFile Downloader::download(const std::string& url) {
   } catch (...) {};
   this->fileHandle = nullptr;
   pthread_mutex_unlock(&globalLock);
+#endif
   return fileHandle;
 }
 

@@ -21,7 +21,9 @@
 #define KIWIX_DOWNLOADER_H
 
 #include <string>
-#include <aria2/aria2.h>
+#ifdef ENABLE_LIBARIA2
+# include <aria2/aria2.h>
+#endif
 #include <pthread.h>
 
 namespace kiwix
@@ -56,14 +58,15 @@ class Downloader
  private:
   static pthread_mutex_t globalLock;
 
-  aria2::Session* session;
-  DownloadedFile* fileHandle;
   std::string tmpDir;
-
+#ifdef ENABLE_LIBARIA2
+  DownloadedFile* fileHandle;
+  aria2::Session* session;
   static int downloadEventCallback(aria2::Session* session,
                                    aria2::DownloadEvent event,
                                    aria2::A2Gid gid,
                                    void* userData);
+#endif
 };
 }
 

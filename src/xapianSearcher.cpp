@@ -20,7 +20,9 @@
 #include "xapianSearcher.h"
 #include <sys/types.h>
 #include <unicode/locid.h>
-#include <unistd.h>
+#ifndef _WIN32
+#  include <unistd.h>
+#endif
 #include <zim/article.h>
 #include <zim/error.h>
 #include <zim/file.h>
