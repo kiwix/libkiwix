@@ -90,6 +90,12 @@ conf.set('VERSION', '"@0@"'.format(meson.project_version()))
 conf.set('ENABLE_CTPP2', has_ctpp2_dep)
 conf.set('ENABLE_LIBARIA2', libaria2_dep.found())
 
+if build_machine.system() == 'windows'
+     extra_link_args = ['-lshlwapi', '-lwinmm']
+else
+     extra_link_args = []
+endif
+
 subdir('include')
 subdir('scripts')
 subdir('static')
