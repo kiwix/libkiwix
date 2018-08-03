@@ -1,3 +1,11 @@
+kiwix-lib 2.0.2
+===============
+
+ * [Android] Forward c++ errors message de Java world.
+ * Follow redirection of favicon.
+ * Make aria2 dependency optional.
+ * Inculde unistd.h only on unix platform.
+
 kiwix-lib 2.0.1
 ===============
 
