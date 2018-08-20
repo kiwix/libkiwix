@@ -1,6 +1,4 @@
 
-jni_generator = find_program('gen_kiwix.sh')
-
 kiwix_jni = custom_target('jni',
   input: ['org/kiwix/kiwixlib/JNIKiwix.java',
           'org/kiwix/kiwixlib/JNIKiwixReader.java',
@@ -14,7 +12,7 @@ kiwix_jni = custom_target('jni',
            'org_kiwix_kiwixlib_JNIKiwixReader.h',
            'org_kiwix_kiwixlib_JNIKiwixSearcher.h',
            'org_kiwix_kiwixlib_JNIKiwixSearcher_Result.h'],
-  command:[jni_generator, '@INPUT@']
+  command:['javac', '-d', '@OUTDIR@', '-h', '@OUTDIR@', '@INPUT@']
 )
 
 kiwix_sources += [
