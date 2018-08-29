@@ -21,15 +21,13 @@
 #define KIWIX_DOWNLOADER_H
 
 #include <string>
-#ifdef ENABLE_LIBARIA2
-# include <aria2/aria2.h>
-#endif
 #include <pthread.h>
+#include <memory>
 
 namespace kiwix
 {
 
-
+class Aria2;
 struct DownloadedFile {
   DownloadedFile()
    : success(false) {}
@@ -56,17 +54,8 @@ class Downloader
   DownloadedFile download(const std::string& url);
 
  private:
-  static pthread_mutex_t globalLock;
 
-  std::string tmpDir;
-#ifdef ENABLE_LIBARIA2
-  DownloadedFile* fileHandle;
-  aria2::Session* session;
-  static int downloadEventCallback(aria2::Session* session,
-                                   aria2::DownloadEvent event,
-                                   aria2::A2Gid gid,
-                                   void* userData);
-#endif
+  std::unique_ptr<Aria2> mp_aria;
 };
 }
 

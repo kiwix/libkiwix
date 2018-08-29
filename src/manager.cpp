@@ -127,7 +127,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
 
        if (rel == "http://opds-spec.org/image/thumbnail") {
          auto faviconUrl = urlHost + linkNode.attribute("href").value();
-         auto downloader = Downloader();
+         Downloader downloader;
          auto fileHandle = downloader.download(faviconUrl);
          if (fileHandle.success) {
            auto content = getFileContent(fileHandle.path);

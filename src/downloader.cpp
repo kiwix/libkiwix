@@ -20,101 +20,73 @@
 #include "downloader.h"
 #include "common/pathTools.h"
 
-#ifndef _WIN32
-# include <unistd.h>
-#endif
+#include <thread>
+#include <chrono>
+
 #include <iostream>
+
+#include "aria2.h"
+#include "xmlrpc.h"
+#include "common/otherTools.h"
+#include <pugixml.hpp>
 
 namespace kiwix
 {
 
-pthread_mutex_t Downloader::globalLock = PTHREAD_MUTEX_INITIALIZER;
-
-
 /* Constructor */
-Downloader::Downloader()
+Downloader::Downloader() :
+  mp_aria(new Aria2())
 {
-#ifdef ENABLE_LIBARIA2
-  aria2::SessionConfig config;
-  config.downloadEventCallback = Downloader::downloadEventCallback;
-  config.userData = this;
-  tmpDir = makeTmpDirectory();
-  aria2::KeyVals options;
-  options.push_back(std::pair<std::string, std::string>("dir", tmpDir));
-  session = aria2::sessionNew(options, config);
-#endif
 }
 
 
 /* Destructor */
 Downloader::~Downloader()
 {
-#ifdef ENABLE_LIBARIA2
-  aria2::sessionFinal(session);
-#endif
-  rmdir(tmpDir.c_str());
 }
 
-#ifdef ENABLE_LIBARIA2
-int Downloader::downloadEventCallback(aria2::Session* session,
-                                      aria2::DownloadEvent event,
-                                      aria2::A2Gid gid,
-                                      void* userData)
-{
-  Downloader* downloader = static_cast<Downloader*>(userData);
-
-  auto fileHandle = downloader->fileHandle;
-  auto dh = aria2::getDownloadHandle(session, gid);
-
-  if (!dh) {
-    return 0;
+pugi::xml_node find_member_in_struct(pugi::xml_node struct_node, std::string member_name) {
+  for(auto member=struct_node.first_child(); member; member=member.next_sibling()) {
+    std::string _member_name = member.child("name").text().get();
+    if (_member_name == member_name) {
+      return member.child("value");
+    }
   }
-
-  switch (event) {
-    case aria2::EVENT_ON_DOWNLOAD_COMPLETE:
-      {
-        if (dh->getNumFiles() > 0) {
-          auto f = dh->getFile(1);
-          fileHandle->path = f.path;
-          fileHandle->success = true;
-        }
-      }
-      break;
-    case aria2::EVENT_ON_DOWNLOAD_ERROR:
-      {
-        fileHandle->success = false;
-      }
-      break;
-    default:
-      break;
-  }
-  aria2::deleteDownloadHandle(dh);
-  return 0;
+  return pugi::xml_node();
 }
-#endif
 
 DownloadedFile Downloader::download(const std::string& url) {
-  pthread_mutex_lock(&globalLock);
   DownloadedFile fileHandle;
-#ifdef ENABLE_LIBARIA2
   try {
     std::vector<std::string> uris = {url};
-    aria2::KeyVals options;
-    aria2::A2Gid gid;
-    int ret;
-    DownloadedFile fileHandle;
+    std::vector<std::string> status_key = {"status", "files"};
+    std::string gid;
     
-    ret = aria2::addUri(session, &gid, uris, options);
-    if (ret < 0) {
-      std::cerr << "Failed to download" << std::endl;
-    } else {
-      this->fileHandle = &fileHandle;
-      aria2::run(session, aria2::RUN_DEFAULT);
+    gid = mp_aria->addUri(uris);
+    std::cerr << "gid is : " << gid << std::endl;
+    pugi::xml_document ret;
+    while(true) {
+     auto strStatus = mp_aria->tellStatus(gid, status_key);
+     MethodResponse response(strStatus);
+     auto structNode = response.getParams().getParam(0).getValue().getStruct();
+     auto status = structNode.getMember("status").getValue().getAsS();
+     std::cerr << "Status is " << status << std::endl;
+     if (status  == "complete") {
+       fileHandle.success = true;
+       auto filesMember = structNode.getMember("files");
+       auto fileStruct = filesMember.getValue().getArray().getValue(0).getStruct();
+       fileHandle.path = fileStruct.getMember("path").getValue().getAsS();
+       std::cerr << "FilePath is " << fileHandle.path << std::endl;
+     } else if (status == "error") {
+       fileHandle.success = false;
+     } else {
+       // [TODO] Be wise here.
+       std::this_thread::sleep_for(std::chrono::microseconds(100000));
+       continue;
+     }
+     break;
     }
-  } catch (...) {};
-  this->fileHandle = nullptr;
-  pthread_mutex_unlock(&globalLock);
-#endif
+  } catch (...) { std::cerr << "waautena " << std::endl; };
   return fileHandle;
 }
 

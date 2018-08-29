@@ -18,7 +18,6 @@ libicu_dep = dependency('icu-i18n', static:static_deps)
 libzim_dep = dependency('libzim', version : '>=4.0.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
-libaria2_dep = dependency('libaria2', static:static_deps, required:false)
 
 ctpp2_include_path = ''
 has_ctpp2_dep = false
@@ -79,7 +78,7 @@ endif
 
 xapian_dep = dependency('xapian-core', required:false, static:static_deps)
 
-all_deps = [thread_dep, libicu_dep, libzim_dep, xapian_dep, pugixml_dep, libcurl_dep, libaria2_dep]
+all_deps = [thread_dep, libicu_dep, libzim_dep, xapian_dep, pugixml_dep, libcurl_dep]
 if has_ctpp2_dep
   all_deps += [ctpp2_dep]
 endif
@@ -89,7 +88,6 @@ inc = include_directories('include')
 conf = configuration_data()
 conf.set('VERSION', '"@0@"'.format(meson.project_version()))
 conf.set('ENABLE_CTPP2', has_ctpp2_dep)
-conf.set('ENABLE_LIBARIA2', libaria2_dep.found())
 
 if build_machine.system() == 'windows'
      extra_link_args = ['-lshlwapi', '-lwinmm']
@@ -104,9 +102,6 @@ subdir('src')
 subdir('test')
 
 pkg_requires = ['libzim', 'icu-i18n', 'pugixml', 'libcurl']
-if libaria2_dep.found()
-    pkg_requires += ['libaria2']
-endif
 if xapian_dep.found()
     pkg_requires += ['xapian-core']
 endif

@@ -2,5 +2,3 @@
 #mesondefine VERSION
 
 #mesondefine ENABLE_CTPP2
-
-#mesondefine ENABLE_LIBARIA2
