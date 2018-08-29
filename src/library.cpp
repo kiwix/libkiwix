@@ -65,6 +65,50 @@ bool Book::sortByLanguage(const kiwix::Book& a, const kiwix::Book& b)
   return strcmp(a.language.c_str(), b.language.c_str()) < 0;
 }
 
+bool Book::update(const kiwix::Book& other)
+{
+  if (readOnly)
+    return false;
+
+  readOnly = other.readOnly;
+
+  if (path.empty()) {
+    path = other.path;
+  }
+
+  if (pathAbsolute.empty()) {
+    pathAbsolute = other.pathAbsolute;
+  }
+
+  if (url.empty()) {
+    url = other.url;
+  }
+
+  if (tags.empty()) {
+    tags = other.tags;
+  }
+
+  if (name.empty()) {
+    name = other.name;
+  }
+
+  if (indexPath.empty()) {
+    indexPath = other.indexPath;
+    indexType = other.indexType;
+  }
+
+  if (indexPathAbsolute.empty()) {
+    indexPathAbsolute = other.indexPathAbsolute;
+    indexType = other.indexType;
+  }
+
+  if (faviconMimeType.empty()) {
+    favicon = other.favicon;
+    faviconMimeType = other.faviconMimeType;
+  }
+  return true;
+}
+
 std::string Book::getHumanReadableIdFromPath()
 {
   std::string id = pathAbsolute;
@@ -98,45 +142,7 @@ bool Library::addBook(const Book& book)
   std::vector<kiwix::Book>::iterator itr;
   for (itr = this->books.begin(); itr != this->books.end(); ++itr) {
     if (itr->id == book.id) {
-      if (!itr->readOnly) {
-        itr->readOnly = book.readOnly;
-
-        if (itr->path.empty()) {
-          itr->path = book.path;
-        }
-
-        if (itr->pathAbsolute.empty()) {
-          itr->pathAbsolute = book.pathAbsolute;
-        }
-
-        if (itr->url.empty()) {
-          itr->url = book.url;
-        }
-
-        if (itr->tags.empty()) {
-          itr->tags = book.tags;
-        }
-
-        if (itr->name.empty()) {
-          itr->name = book.name;
-        }
-
-        if (itr->indexPath.empty()) {
-          itr->indexPath = book.indexPath;
-          itr->indexType = book.indexType;
-        }
-
-        if (itr->indexPathAbsolute.empty()) {
-          itr->indexPathAbsolute = book.indexPathAbsolute;
-          itr->indexType = book.indexType;
-        }
-
-        if (itr->faviconMimeType.empty()) {
-          itr->favicon = book.favicon;
-          itr->faviconMimeType = book.faviconMimeType;
-        }
-      }
-
+      itr->update(book);
       return false;
     }
   }

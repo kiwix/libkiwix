@@ -48,6 +48,7 @@ class Book
   Book();
   ~Book();
 
+  bool update(const Book& other);
   static bool sortByLastOpen(const Book& a, const Book& b);
   static bool sortByTitle(const Book& a, const Book& b);
   static bool sortBySize(const Book& a, const Book& b);
