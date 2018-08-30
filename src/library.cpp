@@ -144,55 +144,33 @@ bool Library::addBook(const Book& book)
 {
   /* Try to find it */
   std::vector<kiwix::Book>::iterator itr;
-  for (itr = this->books.begin(); itr != this->books.end(); ++itr) {
-    if (itr->id == book.id) {
-      itr->update(book);
-      return false;
-    }
+  try {
+    auto& oldbook = books.at(book.id);
+    oldbook.update(book);
+    return false;
+  } catch (std::out_of_range&) {
+    books[book.id] = book;
+    return true;
   }
-
-  /* otherwise */
-  this->books.push_back(book);
-  return true;
 }
 
-
-bool Library::removeBookByIndex(const unsigned int bookIndex)
-{
-  books.erase(books.begin() + bookIndex);
-  return true;
-}
 
 bool Library::removeBookById(const std::string& id)
 {
-  auto itr = books.begin();
-  for(; itr != books.end(); itr ++) {
-    if (itr->id == id) {
-      break;
-    }
-  }
-  if (itr != books.end()) {
-    books.erase(itr);
-    return true;
-  }
-  return false;
+  return books.erase(id) == 1;
 }
 
 Book& Library::getBookById(const std::string& id)
 {
-  for(auto& book: books) {
-    if(book.id == id) {
-      return book;
-    }
-  }
-  throw std::runtime_error("");
+  return books.at(id);
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
                                    const bool remoteBooks)
 {
   unsigned int result = 0;
-  for (auto& book: books) {
+  for (auto& pair: books) {
+    auto& book = pair.second;
     if ((!book.path.empty() && localBooks)
         || (book.path.empty() && remoteBooks)) {
       result++;
@@ -208,7 +186,8 @@ Library Library::filter(const std::string& search) {
     return library;
   }
 
-  for(auto& book:books) {
+  for(auto& pair:books) {
+     auto& book = pair.second;
      if (matchRegex(book.title, "\\Q" + search + "\\E")
          || matchRegex(book.description, "\\Q" + search + "\\E")) {
        library.addBook(book);
@@ -228,7 +207,8 @@ bool Library::writeToFile(const std::string& path) {
     libraryNode.append_attribute("version") = version.c_str();
 
   /* Add each book */
-  for (auto& book: books) {
+  for (auto& pair: books) {
+    auto& book = pair.second;
     if (!book.readOnly) {
       pugi::xml_node bookNode = libraryNode.append_child("book");
       bookNode.append_attribute("id") = book.id.c_str();
@@ -312,7 +292,8 @@ std::vector<std::string> Library::getBooksLanguages()
   std::vector<std::string> booksLanguages;
   std::map<std::string, bool> booksLanguagesMap;
 
-  for (auto& book: books) {
+  for (auto& pair: books) {
+    auto& book = pair.second;
     if (booksLanguagesMap.find(book.language) == booksLanguagesMap.end()) {
       if (book.origId.empty()) {
         booksLanguagesMap[book.language] = true;
@@ -329,7 +310,8 @@ std::vector<std::string> Library::getBooksCreators()
   std::vector<std::string> booksCreators;
   std::map<std::string, bool> booksCreatorsMap;
 
-  for (auto& book: books) {
+  for (auto& pair: books) {
+    auto& book = pair.second;
     if (booksCreatorsMap.find(book.creator) == booksCreatorsMap.end()) {
       if (book.origId.empty()) {
         booksCreatorsMap[book.creator] = true;
@@ -345,8 +327,8 @@ std::vector<std::string> Library::getBooksIds()
 {
   std::vector<std::string> booksIds;
 
-  for (auto& book: books) {
-    booksIds.push_back(book.id);
+  for (auto& pair: books) {
+    booksIds.push_back(pair.first);
   }
 
   return booksIds;
@@ -357,7 +339,8 @@ std::vector<std::string> Library::getBooksPublishers()
   std::vector<std::string> booksPublishers;
   std::map<std::string, bool> booksPublishersMap;
 
-  for (auto& book:books) {
+  for (auto& pair:books) {
+    auto& book = pair.second;
     if (booksPublishersMap.find(book.publisher) == booksPublishersMap.end()) {
       if (book.origId.empty()) {
         booksPublishersMap[book.publisher] = true;

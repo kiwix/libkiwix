@@ -102,14 +102,6 @@ class Manager
   /**
    * Remove a book from the library.
    *
-   * @param bookIndex the index of the book to remove
-   * @return True
-   */
-  bool removeBookByIndex(const unsigned int bookIndex);
-
-  /**
-   * Remove a book from the library.
-   *
    * @param id the id of the book to remove.
    * @return True if the book were in the library.
    */

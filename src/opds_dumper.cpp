@@ -110,8 +110,8 @@ string OPDSDumper::dumpOPDSFeed()
     search_link.append_attribute("href") = searchDescriptionUrl.c_str();
   }
 
-  for (auto book: library.books) {
-    handleBook(book, root_node);
+  for (auto& pair: library.books) {
+    handleBook(pair.second, root_node);
   }
 
   return nodeToString(root_node);

@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include <vector>
+#include <map>
 
 #include "common/regexTools.h"
 #include "common/stringTools.h"
@@ -88,7 +88,7 @@ class Book
  */
 class Library
 {
-  std::vector<kiwix::Book> books;
+  std::map<std::string, kiwix::Book> books;
  public:
   Library();
   ~Library();
@@ -108,7 +108,6 @@ class Library
 
   Book& getBookById(const std::string& id);
 
-  bool removeBookByIndex(const unsigned int bookIndex);
   /**
    * Remove a book from the library.
    *

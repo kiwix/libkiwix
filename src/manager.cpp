@@ -285,11 +285,6 @@ bool Manager::readBookFromPath(const string path, kiwix::Book* book)
   return true;
 }
 
-bool Manager::removeBookByIndex(const unsigned int bookIndex)
-{
-  return this->library.removeBookByIndex(bookIndex);
-}
-
 bool Manager::removeBookById(const string id)
 {
   return library.removeBookById(id);
