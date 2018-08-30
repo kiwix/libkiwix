@@ -19,6 +19,8 @@
 
 #include "library.h"
 
+#include <pugixml.hpp>
+
 namespace kiwix
 {
 /* Constructor */
@@ -136,6 +138,8 @@ Library::Library() : version(KIWIX_LIBRARY_VERSION)
 Library::~Library()
 {
 }
+
+
 bool Library::addBook(const Book& book)
 {
   /* Try to find it */
@@ -152,9 +156,219 @@ bool Library::addBook(const Book& book)
   return true;
 }
 
+
 bool Library::removeBookByIndex(const unsigned int bookIndex)
 {
   books.erase(books.begin() + bookIndex);
   return true;
 }
+
+bool Library::removeBookById(const std::string& id)
+{
+  auto itr = books.begin();
+  for(; itr != books.end(); itr ++) {
+    if (itr->id == id) {
+      break;
+    }
+  }
+  if (itr != books.end()) {
+    books.erase(itr);
+    return true;
+  }
+  return false;
+}
+
+Book& Library::getBookById(const std::string& id)
+{
+  for(auto& book: books) {
+    if(book.id == id) {
+      return book;
+    }
+  }
+  throw std::runtime_error("");
+}
+
+unsigned int Library::getBookCount(const bool localBooks,
+                                   const bool remoteBooks)
+{
+  unsigned int result = 0;
+  for (auto& book: books) {
+    if ((!book.path.empty() && localBooks)
+        || (book.path.empty() && remoteBooks)) {
+      result++;
+    }
+  }
+  return result;
+}
+
+Library Library::filter(const std::string& search) {
+  Library library;
+
+  if (search.empty()) {
+    return library;
+  }
+
+  for(auto& book:books) {
+     if (matchRegex(book.title, "\\Q" + search + "\\E")
+         || matchRegex(book.description, "\\Q" + search + "\\E")) {
+       library.addBook(book);
+     }
+  }
+
+  return library;
+}
+
+bool Library::writeToFile(const std::string& path) {
+  pugi::xml_document doc;
+
+  /* Add the library node */
+  pugi::xml_node libraryNode = doc.append_child("library");
+
+  if (!version.empty())
+    libraryNode.append_attribute("version") = version.c_str();
+
+  /* Add each book */
+  for (auto& book: books) {
+    if (!book.readOnly) {
+      pugi::xml_node bookNode = libraryNode.append_child("book");
+      bookNode.append_attribute("id") = book.id.c_str();
+
+      if (!book.path.empty()) {
+        bookNode.append_attribute("path") = book.path.c_str();
+      }
+
+      if (!book.last.empty() && book.last != "undefined") {
+        bookNode.append_attribute("last") = book.last.c_str();
+      }
+
+      if (!book.indexPath.empty())
+        bookNode.append_attribute("indexPath") = book.indexPath.c_str();
+
+      if (!book.indexPath.empty() || !book.indexPathAbsolute.empty()) {
+        if (book.indexType == XAPIAN) {
+          bookNode.append_attribute("indexType") = "xapian";
+        }
+      }
+
+      if (book.origId.empty()) {
+        if (!book.title.empty())
+          bookNode.append_attribute("title") = book.title.c_str();
+
+        if (!book.name.empty())
+          bookNode.append_attribute("name") = book.name.c_str();
+
+        if (!book.tags.empty())
+          bookNode.append_attribute("tags") = book.tags.c_str();
+
+        if (!book.description.empty())
+          bookNode.append_attribute("description") = book.description.c_str();
+
+        if (!book.language.empty())
+          bookNode.append_attribute("language") = book.language.c_str();
+
+        if (!book.creator.empty())
+          bookNode.append_attribute("creator") = book.creator.c_str();
+
+        if (!book.publisher.empty())
+          bookNode.append_attribute("publisher") = book.publisher.c_str();
+
+        if (!book.favicon.empty())
+          bookNode.append_attribute("favicon") = book.favicon.c_str();
+
+        if (!book.faviconMimeType.empty())
+          bookNode.append_attribute("faviconMimeType")
+              = book.faviconMimeType.c_str();
+      }
+
+      if (!book.date.empty()) {
+        bookNode.append_attribute("date") = book.date.c_str();
+      }
+
+      if (!book.url.empty()) {
+        bookNode.append_attribute("url") = book.url.c_str();
+      }
+
+      if (!book.origId.empty())
+        bookNode.append_attribute("origId") = book.origId.c_str();
+
+      if (!book.articleCount.empty())
+        bookNode.append_attribute("articleCount") = book.articleCount.c_str();
+
+      if (!book.mediaCount.empty())
+        bookNode.append_attribute("mediaCount") = book.mediaCount.c_str();
+
+      if (!book.size.empty()) {
+        bookNode.append_attribute("size") = book.size.c_str();
+      }
+    }
+  }
+
+  /* saving file */
+  return doc.save_file(path.c_str());
+}
+
+std::vector<std::string> Library::getBooksLanguages()
+{
+  std::vector<std::string> booksLanguages;
+  std::map<std::string, bool> booksLanguagesMap;
+
+  for (auto& book: books) {
+    if (booksLanguagesMap.find(book.language) == booksLanguagesMap.end()) {
+      if (book.origId.empty()) {
+        booksLanguagesMap[book.language] = true;
+        booksLanguages.push_back(book.language);
+      }   
+    }   
+  }
+
+  return booksLanguages;
+}
+
+std::vector<std::string> Library::getBooksCreators()
+{
+  std::vector<std::string> booksCreators;
+  std::map<std::string, bool> booksCreatorsMap;
+
+  for (auto& book: books) {
+    if (booksCreatorsMap.find(book.creator) == booksCreatorsMap.end()) {
+      if (book.origId.empty()) {
+        booksCreatorsMap[book.creator] = true;
+        booksCreators.push_back(book.creator);
+      }
+    }
+  }
+
+  return booksCreators;
+}
+
+std::vector<std::string> Library::getBooksIds()
+{
+  std::vector<std::string> booksIds;
+
+  for (auto& book: books) {
+    booksIds.push_back(book.id);
+  }
+
+  return booksIds;
+}
+
+std::vector<std::string> Library::getBooksPublishers()
+{
+  std::vector<std::string> booksPublishers;
+  std::map<std::string, bool> booksPublishersMap;
+
+  for (auto& book:books) {
+    if (booksPublishersMap.find(book.publisher) == booksPublishersMap.end()) {
+      if (book.origId.empty()) {
+        booksPublishersMap[book.publisher] = true;
+        booksPublishers.push_back(book.publisher);
+      }
+    }
+  }
+
+  return booksPublishers;
+}
+
+
+
 }

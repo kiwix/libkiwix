@@ -38,6 +38,7 @@ namespace kiwix
 {
 enum supportedIndexType { UNKNOWN, XAPIAN };
 
+class OPDSDumper;
 
 /**
  * A class to store information about a book (a zim file)
@@ -88,6 +89,7 @@ class Book
  */
 class Library
 {
+  std::vector<kiwix::Book> books;
  public:
   Library();
   ~Library();
@@ -105,26 +107,72 @@ class Library
    */
   bool addBook(const Book& book);
 
+  Book& getBookById(const std::string& id);
+
+  bool removeBookByIndex(const unsigned int bookIndex);
   /**
    * Remove a book from the library.
    *
-   * @param bookIndex the index of the book to remove.
-   * @return True
+   * @param id the id of the book to remove.
+   * @return True if the book were in the lirbrary and has been removed.
    */
-  bool removeBookByIndex(const unsigned int bookIndex);
-  vector<kiwix::Book> books;
+  bool removeBookById(const std::string& id);
 
-  /*
-   * 'current' is the variable storing the current content/book id
-   * in the library. This is used to be able to load per default a
-   * content. As Kiwix may work with many library XML files, you may
-   * have "current" defined many time with different values. The
-   * last XML file read has the priority, Although we do not have an
-   * library object for each file, we want to be able to fallback to
-   * an 'old' current book if the one which should be load
-   * failed. That is the reason why we need a stack here
+  /**
+   * Write the library to a file.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly save.
    */
+  bool writeToFile(const std::string& path);
+
+  /**
+   * Get the number of book in the library.
+   *
+   * @param localBooks If we must count local books (books with a path).
+   * @param remoteBooks If we must count remote books (books with an url)
+   * @return The number of books.
+   */
+  unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
+
+  /**
+   * Filter the library and generate a new one with the keep elements.
+   *
+   * @param search List only books with search in the title or description.
+   * @return A `Library`.
+   */
+  Library filter(const string& search);
+
+  /**
+   * Get all langagues of the books in the library.
+   *
+   * @return A list of languages.
+   */
+  std::vector<std::string> getBooksLanguages();
+
+  /**
+   * Get all book creators of the books in the library.
+   *
+   * @return A list of book creators.
+   */
+  std::vector<std::string> getBooksCreators();
+
+  /**
+   * Get all book publishers of the books in the library.
+   *
+   * @return A list of book publishers.
+   */
+  std::vector<std::string> getBooksPublishers();
+
+  /**
+   * Get all book ids of the books in the library.
+   *
+   * @return A list of book ids.
+   */
+  std::vector<std::string> getBooksIds();
+
   stack<string> current;
+  friend class OPDSDumper;
 };
 }
 

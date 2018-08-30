@@ -194,105 +194,6 @@ bool Manager::readFile(const string nativePath,
   return retVal;
 }
 
-bool Manager::writeFile(const string path)
-{
-  pugi::xml_document doc;
-
-  /* Add the library node */
-  pugi::xml_node libraryNode = doc.append_child("library");
-
-  if (!getCurrentBookId().empty()) {
-    libraryNode.append_attribute("current") = getCurrentBookId().c_str();
-  }
-
-  if (!library.version.empty())
-    libraryNode.append_attribute("version") = library.version.c_str();
-
-  /* Add each book */
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (!itr->readOnly) {
-      this->checkAndCleanBookPaths(*itr, path);
-
-      pugi::xml_node bookNode = libraryNode.append_child("book");
-      bookNode.append_attribute("id") = itr->id.c_str();
-
-      if (!itr->path.empty()) {
-        bookNode.append_attribute("path") = itr->path.c_str();
-      }
-
-      if (!itr->last.empty() && itr->last != "undefined") {
-        bookNode.append_attribute("last") = itr->last.c_str();
-      }
-
-      if (!itr->indexPath.empty())
-        bookNode.append_attribute("indexPath") = itr->indexPath.c_str();
-
-      if (!itr->indexPath.empty() || !itr->indexPathAbsolute.empty()) {
-        if (itr->indexType == XAPIAN) {
-          bookNode.append_attribute("indexType") = "xapian";
-        }
-      }
-
-      if (itr->origId.empty()) {
-        if (!itr->title.empty())
-          bookNode.append_attribute("title") = itr->title.c_str();
-
-        if (!itr->name.empty())
-          bookNode.append_attribute("name") = itr->name.c_str();
-
-        if (!itr->tags.empty())
-          bookNode.append_attribute("tags") = itr->tags.c_str();
-
-        if (!itr->description.empty())
-          bookNode.append_attribute("description") = itr->description.c_str();
-
-        if (!itr->language.empty())
-          bookNode.append_attribute("language") = itr->language.c_str();
-
-        if (!itr->creator.empty())
-          bookNode.append_attribute("creator") = itr->creator.c_str();
-
-        if (!itr->publisher.empty())
-          bookNode.append_attribute("publisher") = itr->publisher.c_str();
-
-        if (!itr->favicon.empty())
-          bookNode.append_attribute("favicon") = itr->favicon.c_str();
-
-        if (!itr->faviconMimeType.empty())
-          bookNode.append_attribute("faviconMimeType")
-              = itr->faviconMimeType.c_str();
-      }
-
-      if (!itr->date.empty()) {
-        bookNode.append_attribute("date") = itr->date.c_str();
-      }
-
-      if (!itr->url.empty()) {
-        bookNode.append_attribute("url") = itr->url.c_str();
-      }
-
-      if (!itr->origId.empty())
-        bookNode.append_attribute("origId") = itr->origId.c_str();
-
-      if (!itr->articleCount.empty())
-        bookNode.append_attribute("articleCount") = itr->articleCount.c_str();
-
-      if (!itr->mediaCount.empty())
-        bookNode.append_attribute("mediaCount") = itr->mediaCount.c_str();
-
-      if (!itr->size.empty()) {
-        bookNode.append_attribute("size") = itr->size.c_str();
-      }
-    }
-  }
-
-  /* saving file */
-  doc.save_file(path.c_str());
-
-  return true;
-}
-
 
 bool Manager::setCurrentBookId(const string id)
 {
@@ -411,300 +312,62 @@ bool Manager::removeBookByIndex(const unsigned int bookIndex)
 
 bool Manager::removeBookById(const string id)
 {
-  unsigned int bookIndex = 0;
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (itr->id == id) {
-      return this->library.removeBookByIndex(bookIndex);
-    }
-    bookIndex++;
-  }
-  return false;
+  return library.removeBookById(id);
 }
 
-vector<string> Manager::getBooksLanguages()
-{
-  std::vector<string> booksLanguages;
-  std::vector<kiwix::Book>::iterator itr;
-  std::map<string, bool> booksLanguagesMap;
-
-  std::sort(
-      library.books.begin(), library.books.end(), kiwix::Book::sortByLanguage);
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (booksLanguagesMap.find(itr->language) == booksLanguagesMap.end()) {
-      if (itr->origId.empty()) {
-        booksLanguagesMap[itr->language] = true;
-        booksLanguages.push_back(itr->language);
-      }
-    }
-  }
-
-  return booksLanguages;
-}
-
-vector<string> Manager::getBooksCreators()
-{
-  std::vector<string> booksCreators;
-  std::vector<kiwix::Book>::iterator itr;
-  std::map<string, bool> booksCreatorsMap;
-
-  std::sort(
-      library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (booksCreatorsMap.find(itr->creator) == booksCreatorsMap.end()) {
-      if (itr->origId.empty()) {
-        booksCreatorsMap[itr->creator] = true;
-        booksCreators.push_back(itr->creator);
-      }
-    }
-  }
-
-  return booksCreators;
-}
-
-vector<string> Manager::getBooksIds()
-{
-  std::vector<string> booksIds;
-  std::vector<kiwix::Book>::iterator itr;
-
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    booksIds.push_back(itr->id);
-  }
-
-  return booksIds;
-}
-
-vector<string> Manager::getBooksPublishers()
-{
-  std::vector<string> booksPublishers;
-  std::vector<kiwix::Book>::iterator itr;
-  std::map<string, bool> booksPublishersMap;
-
-  std::sort(
-      library.books.begin(), library.books.end(), kiwix::Book::sortByPublisher);
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (booksPublishersMap.find(itr->publisher) == booksPublishersMap.end()) {
-      if (itr->origId.empty()) {
-        booksPublishersMap[itr->publisher] = true;
-        booksPublishers.push_back(itr->publisher);
-      }
-    }
-  }
-
-  return booksPublishers;
-}
-
-kiwix::Library Manager::cloneLibrary()
-{
-  return this->library;
-}
 bool Manager::getCurrentBook(Book& book)
 {
   string currentBookId = getCurrentBookId();
   if (currentBookId.empty()) {
     return false;
   } else {
-    getBookById(currentBookId, book);
+    book = library.getBookById(currentBookId);
     return true;
   }
 }
 
-bool Manager::getBookById(const string id, Book& book)
-{
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (itr->id == id) {
-      book = *itr;
-      return true;
-    }
-  }
-  return false;
-}
-
 bool Manager::updateBookLastOpenDateById(const string id)
-{
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (itr->id == id) {
-      char unixdate[12];
-      sprintf(unixdate, "%d", (int)time(NULL));
-      itr->last = unixdate;
-      return true;
-    }
-  }
-
+try {
+  auto book = library.getBookById(id);
+  char unixdate[12];
+  sprintf(unixdate, "%d", (int)time(NULL));
+  book.last = unixdate;
+  return true;
+} catch(...) {
   return false;
 }
 
 bool Manager::setBookIndex(const string id,
                            const string path,
                            const supportedIndexType type)
-{
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (itr->id == id) {
-      itr->indexPath = path;
-      itr->indexPathAbsolute
-          = isRelativePath(path)
+try {
+  auto book = library.getBookById(id);
+  book.indexPath = path;
+  book.indexPathAbsolute = isRelativePath(path)
                 ? computeAbsolutePath(
                       removeLastPathElement(writableLibraryPath, true, false),
                       path)
                 : path;
-      itr->indexType = type;
-      return true;
-    }
-  }
-
+  book.indexType = type;
+  return true;
+} catch (...) {
   return false;
 }
 
 bool Manager::setBookPath(const string id, const string path)
-{
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if (itr->id == id) {
-      itr->path = path;
-      itr->pathAbsolute
-          = isRelativePath(path)
-                ? computeAbsolutePath(
-                      removeLastPathElement(writableLibraryPath, true, false),
-                      path)
-                : path;
-      return true;
-    }
-  }
-
+try {
+  auto book = library.getBookById(id);
+  book.path = path;
+  book.pathAbsolute = isRelativePath(path)
+     ? computeAbsolutePath(
+        removeLastPathElement(writableLibraryPath, true, false),
+        path)
+     : path;
+  return true;
+} catch(...) {
   return false;
 }
 
-void Manager::removeBookPaths()
-{
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    itr->path = "";
-    itr->pathAbsolute = "";
-  }
-}
-
-unsigned int Manager::getBookCount(const bool localBooks,
-                                   const bool remoteBooks)
-{
-  unsigned int result = 0;
-  std::vector<kiwix::Book>::iterator itr;
-  for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-    if ((!itr->path.empty() && localBooks)
-        || (itr->path.empty() && remoteBooks)) {
-      result++;
-    }
-  }
-  return result;
-}
-
-bool Manager::listBooks(const supportedListMode mode,
-                        const supportedListSortBy sortBy,
-                        const unsigned int maxSize,
-                        const string language,
-                        const string creator,
-                        const string publisher,
-                        const string search)
-{
-  this->bookIdList.clear();
-  std::vector<kiwix::Book>::iterator itr;
-
-  /* Sort */
-  if (sortBy == TITLE) {
-    std::sort(
-        library.books.begin(), library.books.end(), kiwix::Book::sortByTitle);
-  } else if (sortBy == SIZE) {
-    std::sort(
-        library.books.begin(), library.books.end(), kiwix::Book::sortBySize);
-  } else if (sortBy == DATE) {
-    std::sort(
-        library.books.begin(), library.books.end(), kiwix::Book::sortByDate);
-  } else if (sortBy == CREATOR) {
-    std::sort(
-        library.books.begin(), library.books.end(), kiwix::Book::sortByCreator);
-  } else if (sortBy == PUBLISHER) {
-    std::sort(library.books.begin(),
-              library.books.end(),
-              kiwix::Book::sortByPublisher);
-  }
-
-  /* Special sort for LASTOPEN */
-  if (mode == LASTOPEN) {
-    std::sort(library.books.begin(),
-              library.books.end(),
-              kiwix::Book::sortByLastOpen);
-    for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-      if (!itr->last.empty()) {
-        this->bookIdList.push_back(itr->id);
-      }
-    }
-  } else {
-    /* Generate the list of book id */
-    for (itr = library.books.begin(); itr != library.books.end(); ++itr) {
-      bool ok = true;
-
-      if (mode == LOCAL && itr->path.empty()) {
-        ok = false;
-      }
-
-      if (ok == true && mode == REMOTE
-          && (!itr->path.empty() || itr->url.empty())) {
-        ok = false;
-      }
-
-      if (ok == true && maxSize != 0
-          && (unsigned int)atoi(itr->size.c_str()) > maxSize * 1024 * 1024) {
-        ok = false;
-      }
-
-      if (ok == true && !language.empty()
-          && !matchRegex(itr->language, language)) {
-        ok = false;
-      }
-
-      if (ok == true && !creator.empty() && itr->creator != creator) {
-        ok = false;
-      }
-
-      if (ok == true && !publisher.empty() && itr->publisher != publisher) {
-        ok = false;
-      }
-
-      if ((ok == true && !search.empty())
-          && !(matchRegex(itr->title, "\\Q" + search + "\\E")
-               || matchRegex(itr->description, "\\Q" + search + "\\E")
-               || matchRegex(itr->language, "\\Q" + search + "\\E"))) {
-        ok = false;
-      }
-
-      if (ok == true) {
-        this->bookIdList.push_back(itr->id);
-      }
-    }
-  }
-
-  return true;
-}
-
-
-Library Manager::filter(const std::string& search) {
-  Library library;
-
-  if (search.empty()) {
-    return library;
-  }
-
-  for(auto book:this->library.books) {
-     if (matchRegex(book.title, "\\Q" + search + "\\E")
-         || matchRegex(book.description, "\\Q" + search + "\\E")) {
-       library.addBook(book);
-     }
-  }
-
-  return library;
-}
 
 void Manager::checkAndCleanBookPaths(Book& book, const string& libraryPath)
 {

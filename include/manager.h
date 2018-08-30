@@ -100,15 +100,6 @@ class Manager
   bool readOpds(const string& content, const std::string& urlHost);
 
   /**
-   * Write the library to a file.
-   *
-   * @param path the path of the file to write.
-   * @return True.
-   */
-  bool writeFile(const string path);
-
-
-  /**
    * Remove a book from the library.
    *
    * @param bookIndex the index of the book to remove
@@ -194,13 +185,6 @@ class Manager
                        const bool checkMetaData = false);
 
   /**
-   * Clone and return the internal library.
-   *
-   * @return A clone of the library.
-   */
-  Library cloneLibrary();
-
-  /**
    * Get the book corresponding to an id.
    *
    * @param[in] id The id of the book
@@ -216,15 +200,6 @@ class Manager
    * @return True if there is a current book.
    */
   bool getCurrentBook(Book& book);
-
-  /**
-   * Get the number of book in the library.
-   *
-   * @param localBooks If we must count local books (books with a path).
-   * @param remoteBooks If we must count remote books (books with an url)
-   * @return The number of books.
-   */
-  unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
 
   /**
    * Update the "last open date" of a book
@@ -265,43 +240,6 @@ class Manager
                  const string creator,
                  const string publisher,
                  const string search);
-
-  /**
-   * Filter the library and generate a new one with the keep elements.
-   *
-   * @param search List only books with search in the title or description.
-   * @return A `Library`.
-   */
-  Library filter(const string& search);
-
-
-  /**
-   * Get all langagues of the books in the library.
-   *
-   * @return A list of languages.
-   */
-  vector<string> getBooksLanguages();
-
-  /**
-   * Get all book creators of the books in the library.
-   *
-   * @return A list of book creators.
-   */
-  vector<string> getBooksCreators();
-
-  /**
-   * Get all book publishers of the books in the library.
-   *
-   * @return A list of book publishers.
-   */
-  vector<string> getBooksPublishers();
-
-  /**
-   * Get all book ids of the books in the library.
-   *
-   * @return A list of book ids.
-   */
-  vector<string> getBooksIds();
 
   string writableLibraryPath;
 
