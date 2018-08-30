@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stack>
 #include <string>
 #include <vector>
 
@@ -171,7 +170,6 @@ class Library
    */
   std::vector<std::string> getBooksIds();
 
-  stack<string> current;
   friend class OPDSDumper;
 };
 }

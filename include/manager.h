@@ -116,22 +116,6 @@ class Manager
   bool removeBookById(const string id);
 
   /**
-   * Set the current book.
-   *
-   * @param id The id to add to the stack of current books.
-   *           If id is empty, remove the current book from the stack.
-   * @return True
-   */
-  bool setCurrentBookId(const string id);
-
-  /**
-   * Get the current book id.
-   *
-   * @return The id of the current book (or empty string if no current book).
-   */
-  string getCurrentBookId() const;
-
-  /**
    * Set the path of the external fulltext index associated to a book.
    *
    * @param id The id of the book to set.
@@ -192,14 +176,6 @@ class Manager
    * @return True if the book has been found.
    */
   bool getBookById(const string id, Book& book);
-
-  /**
-   * Get the current book.
-   *
-   * @param[out] The current book.
-   * @return True if there is a current book.
-   */
-  bool getCurrentBook(Book& book);
 
   /**
    * Update the "last open date" of a book

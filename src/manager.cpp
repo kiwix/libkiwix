@@ -36,9 +36,6 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
 {
   pugi::xml_node libraryNode = doc.child("library");
 
-  if (strlen(libraryNode.attribute("current").value()))
-    this->setCurrentBookId(libraryNode.attribute("current").value());
-
   string libraryVersion = libraryNode.attribute("version").value();
 
   for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode;
@@ -195,23 +192,6 @@ bool Manager::readFile(const string nativePath,
 }
 
 
-bool Manager::setCurrentBookId(const string id)
-{
-  if (library.current.empty() || library.current.top() != id) {
-    if (id.empty() && !library.current.empty()) {
-      library.current.pop();
-    } else {
-      library.current.push(id);
-    }
-  }
-  return true;
-}
-
-string Manager::getCurrentBookId() const
-{
-  return library.current.empty() ? "" : library.current.top();
-}
-
 /* Add a book to the library. Return empty string if failed, book id otherwise
  */
 string Manager::addBookFromPathAndGetId(const string pathToOpen,
@@ -313,17 +293,6 @@ bool Manager::removeBookByIndex(const unsigned int bookIndex)
 bool Manager::removeBookById(const string id)
 {
   return library.removeBookById(id);
-}
-
-bool Manager::getCurrentBook(Book& book)
-{
-  string currentBookId = getCurrentBookId();
-  if (currentBookId.empty()) {
-    return false;
-  } else {
-    book = library.getBookById(currentBookId);
-    return true;
-  }
 }
 
 bool Manager::updateBookLastOpenDateById(const string id)
