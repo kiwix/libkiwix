@@ -100,14 +100,6 @@ class Manager
   bool readOpds(const string& content, const std::string& urlHost);
 
   /**
-   * Remove a book from the library.
-   *
-   * @param id the id of the book to remove.
-   * @return True if the book were in the library.
-   */
-  bool removeBookById(const string id);
-
-  /**
    * Set the path of the external fulltext index associated to a book.
    *
    * @param id The id of the book to set.

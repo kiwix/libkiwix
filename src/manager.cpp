@@ -281,10 +281,6 @@ bool Manager::readBookFromPath(const string path, kiwix::Book* book)
   return true;
 }
 
-bool Manager::removeBookById(const string id)
-{
-  return library.removeBookById(id);
-}
 bool Manager::setBookIndex(const string id,
                            const string path,
                            const supportedIndexType type)
