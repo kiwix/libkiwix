@@ -25,7 +25,7 @@
 namespace kiwix
 {
 /* Constructor */
-OPDSDumper::OPDSDumper(Library library)
+OPDSDumper::OPDSDumper(Library* library)
   : library(library)
 {
 }
@@ -110,8 +110,10 @@ string OPDSDumper::dumpOPDSFeed()
     search_link.append_attribute("href") = searchDescriptionUrl.c_str();
   }
 
-  for (auto& pair: library.books) {
-    handleBook(pair.second, root_node);
+  if (library) {
+    for (auto& pair: library->books) {
+      handleBook(pair.second, root_node);
+    }
   }
 
   return nodeToString(root_node);

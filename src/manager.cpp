@@ -23,7 +23,9 @@
 namespace kiwix
 {
 /* Constructor */
-Manager::Manager() : writableLibraryPath("")
+Manager::Manager(Library* library):
+  writableLibraryPath(""),
+  library(library)
 {
 }
 /* Destructor */
@@ -87,7 +89,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     }
 
     if (ok) {
-      library.addBook(book);
+      library->addBook(book);
     }
   }
 
@@ -148,7 +150,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
     }
 
     /* Update the book properties with the new importer */
-    library.addBook(book);
+    library->addBook(book);
   }
 
   return true;
@@ -302,7 +304,7 @@ bool Manager::setBookIndex(const string id,
                            const string path,
                            const supportedIndexType type)
 try {
-  auto book = library.getBookById(id);
+  auto book = library->getBookById(id);
   book.setIndexPath(isRelativePath(path)
                 ? computeAbsolutePath(
                       removeLastPathElement(writableLibraryPath, true, false),
@@ -316,7 +318,7 @@ try {
 
 bool Manager::setBookPath(const string id, const string path)
 try {
-  auto book = library.getBookById(id);
+  auto book = library->getBookById(id);
   book.setPath(isRelativePath(path)
      ? computeAbsolutePath(
         removeLastPathElement(writableLibraryPath, true, false),

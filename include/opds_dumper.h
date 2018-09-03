@@ -45,7 +45,7 @@ class OPDSDumper
 {
  public:
   OPDSDumper() = default;
-  OPDSDumper(Library library);
+  OPDSDumper(Library* library);
   ~OPDSDumper();
 
   /**
@@ -89,10 +89,10 @@ class OPDSDumper
    *
    * @param library The library to dump.
    */
-  void setLibrary(Library library) { this->library = library; }
+  void setLibrary(Library* library) { this->library = library; }
 
  protected:
-  kiwix::Library library;
+  kiwix::Library* library;
   std::string id;
   std::string title;
   std::string date;

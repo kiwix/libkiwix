@@ -48,7 +48,7 @@ enum supportedListSortBy { TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 class Manager
 {
  public:
-  Manager();
+  Manager(Library* library);
   ~Manager();
 
   /**
@@ -214,7 +214,7 @@ class Manager
   vector<std::string> bookIdList;
 
  protected:
-  kiwix::Library library;
+  kiwix::Library* library;
 
   bool readBookFromPath(const string path, Book* book = NULL);
   bool parseXmlDom(const pugi::xml_document& doc,
