@@ -43,38 +43,46 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     bool ok = true;
     kiwix::Book book;
 
-    book.readOnly = readOnly;
-    book.id = bookNode.attribute("id").value();
-    book.path = bookNode.attribute("path").value();
-    book.last = (std::string(bookNode.attribute("last").value()) != "undefined"
+    book.setReadOnly(readOnly);
+    book.setId(bookNode.attribute("id").value());
+    std::string path = bookNode.attribute("path").value();
+    if (isRelativePath(path)) {
+      path = computeAbsolutePath(
+        removeLastPathElement(libraryPath, true, false), path);
+    }
+    book.setPath(path);
+    book.setLast(std::string(bookNode.attribute("last").value()) != "undefined"
                      ? bookNode.attribute("last").value()
                      : "");
-    book.indexPath = bookNode.attribute("indexPath").value();
-    book.indexType = XAPIAN;
-    book.title = bookNode.attribute("title").value();
-    book.name = bookNode.attribute("name").value();
-    book.tags = bookNode.attribute("tags").value();
-    book.description = bookNode.attribute("description").value();
-    book.language = bookNode.attribute("language").value();
-    book.date = bookNode.attribute("date").value();
-    book.creator = bookNode.attribute("creator").value();
-    book.publisher = bookNode.attribute("publisher").value();
-    book.url = bookNode.attribute("url").value();
-    book.origId = bookNode.attribute("origId").value();
-    book.articleCount = bookNode.attribute("articleCount").value();
-    book.mediaCount = bookNode.attribute("mediaCount").value();
-    book.size = bookNode.attribute("size").value();
-    book.favicon = bookNode.attribute("favicon").value();
-    book.faviconMimeType = bookNode.attribute("faviconMimeType").value();
-
-    /* Check absolute and relative paths */
-    this->checkAndCleanBookPaths(book, libraryPath);
+    std::string indexPath = bookNode.attribute("indexPath").value();
+    if (isRelativePath(indexPath)) {
+      indexPath = computeAbsolutePath(
+        removeLastPathElement(libraryPath, true, false), indexPath);
+    }
+    book.setIndexPath(indexPath);
+    book.setIndexType(XAPIAN);
+    book.setTitle(bookNode.attribute("title").value());
+    book.setName(bookNode.attribute("name").value());
+    book.setTags(bookNode.attribute("tags").value());
+    book.setDescription(bookNode.attribute("description").value());
+    book.setLanguage(bookNode.attribute("language").value());
+    book.setDate(bookNode.attribute("date").value());
+    book.setCreator(bookNode.attribute("creator").value());
+    book.setPublisher(bookNode.attribute("publisher").value());
+    book.setUrl(bookNode.attribute("url").value());
+    book.setOrigId(bookNode.attribute("origId").value());
+    book.setArticleCount(strtoull(bookNode.attribute("articleCount").value(), 0, 0));
+    book.setMediaCount(strtoull(bookNode.attribute("mediaCount").value(), 0, 0));
+    book.setSize(strtoull(bookNode.attribute("size").value(), 0, 0));
+    book.setFavicon(bookNode.attribute("favicon").value());
+    book.setFaviconMimeType(bookNode.attribute("faviconMimeType").value());
 
     /* Update the book properties with the new importer */
     if (libraryVersion.empty()
         || atoi(libraryVersion.c_str()) <= atoi(KIWIX_LIBRARY_VERSION)) {
-      if (!book.path.empty()) {
-        ok = this->readBookFromPath(book.pathAbsolute);
+      ok = false;
+      if (!book.path().empty()) {
+        ok = this->readBookFromPath(book.path());
       }
     }
 
@@ -111,13 +119,13 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
        entryNode = entryNode.next_sibling("entry")) {
     kiwix::Book book;
 
-    book.readOnly = false;
-    book.id = entryNode.child("id").child_value();
-    book.title = entryNode.child("title").child_value();
-    book.description = entryNode.child("summary").child_value();
-    book.language = entryNode.child("language").child_value();
-    book.date = entryNode.child("updated").child_value();
-    book.creator = entryNode.child("author").child("name").child_value();
+    book.setReadOnly(false);
+    book.setId(entryNode.child("id").child_value());
+    book.setTitle(entryNode.child("title").child_value());
+    book.setDescription(entryNode.child("summary").child_value());
+    book.setLanguage(entryNode.child("language").child_value());
+    book.setDate(entryNode.child("updated").child_value());
+    book.setCreator(entryNode.child("author").child("name").child_value());
     for(pugi::xml_node linkNode = entryNode.child("link"); linkNode;
         linkNode = linkNode.next_sibling("link")) {
        std::string rel = linkNode.attribute("rel").value();
@@ -128,14 +136,14 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
          auto fileHandle = downloader.download(faviconUrl);
          if (fileHandle.success) {
            auto content = getFileContent(fileHandle.path);
-           book.favicon = base64_encode((const unsigned char*)content.data(), content.size());
-           book.faviconMimeType = linkNode.attribute("type").value();
+           book.setFavicon(base64_encode((const unsigned char*)content.data(), content.size()));
+           book.setFaviconMimeType(linkNode.attribute("type").value());
          } else {
            std::cerr << "Cannot get favicon content from " << faviconUrl << std::endl;
          }
 
        } else if (rel == "http://opds-spec.org/acquisition/open-access") {
-         book.url = linkNode.attribute("href").value();
+         book.setUrl(linkNode.attribute("href").value());
        }
     }
 
@@ -203,21 +211,19 @@ string Manager::addBookFromPathAndGetId(const string pathToOpen,
 
   if (this->readBookFromPath(pathToOpen, &book)) {
     if (pathToSave != pathToOpen) {
-      book.path = pathToSave;
-      book.pathAbsolute
-          = isRelativePath(pathToSave)
+      book.setPath(isRelativePath(pathToSave)
                 ? computeAbsolutePath(
                       removeLastPathElement(writableLibraryPath, true, false),
                       pathToSave)
-                : pathToSave;
+                : pathToSave);
     }
 
     if (!checkMetaData
-        || (checkMetaData && !book.title.empty() && !book.language.empty()
-            && !book.date.empty())) {
-      book.url = url;
-      library.addBook(book);
-      return book.id;
+        || (checkMetaData && !book.title().empty() && !book.language().empty()
+            && !book.date().empty())) {
+      book.setUrl(url);
+      library->addBook(book);
+      return book.id();
     }
   }
 
@@ -242,37 +248,28 @@ bool Manager::readBookFromPath(const string path, kiwix::Book* book)
     kiwix::Reader* reader = new kiwix::Reader(path);
 
     if (book != NULL) {
-      book->path = path;
-      book->pathAbsolute = path;
-      book->id = reader->getId();
-      book->description = reader->getDescription();
-      book->language = reader->getLanguage();
-      book->date = reader->getDate();
-      book->creator = reader->getCreator();
-      book->publisher = reader->getPublisher();
-      book->title = reader->getTitle();
-      book->name = reader->getName();
-      book->tags = reader->getTags();
-      book->origId = reader->getOrigId();
-      std::ostringstream articleCountStream;
-      articleCountStream << reader->getArticleCount();
-      book->articleCount = articleCountStream.str();
-
-      std::ostringstream mediaCountStream;
-      mediaCountStream << reader->getMediaCount();
-      book->mediaCount = mediaCountStream.str();
-
-      ostringstream convert;
-      convert << reader->getFileSize();
-      book->size = convert.str();
+      book->setPath(path);
+      book->setId(reader->getId());
+      book->setDescription(reader->getDescription());
+      book->setLanguage(reader->getLanguage());
+      book->setDate(reader->getDate());
+      book->setCreator(reader->getCreator());
+      book->setPublisher(reader->getPublisher());
+      book->setTitle(reader->getTitle());
+      book->setName(reader->getName());
+      book->setTags(reader->getTags());
+      book->setOrigId(reader->getOrigId());
+      book->setArticleCount(reader->getArticleCount());
+      book->setMediaCount(reader->getMediaCount());
+      book->setSize(reader->getFileSize());
 
       string favicon;
       string faviconMimeType;
       if (reader->getFavicon(favicon, faviconMimeType)) {
-        book->favicon = base64_encode(
+        book->setFavicon(base64_encode(
             reinterpret_cast<const unsigned char*>(favicon.c_str()),
-            favicon.length());
-        book->faviconMimeType = faviconMimeType;
+            favicon.length()));
+        book->setFaviconMimeType(faviconMimeType);
       }
     }
 
@@ -306,13 +303,12 @@ bool Manager::setBookIndex(const string id,
                            const supportedIndexType type)
 try {
   auto book = library.getBookById(id);
-  book.indexPath = path;
-  book.indexPathAbsolute = isRelativePath(path)
+  book.setIndexPath(isRelativePath(path)
                 ? computeAbsolutePath(
                       removeLastPathElement(writableLibraryPath, true, false),
                       path)
-                : path;
-  book.indexType = type;
+                : path);
+  book.setIndexType(type);
   return true;
 } catch (...) {
   return false;
@@ -321,41 +317,14 @@ try {
 bool Manager::setBookPath(const string id, const string path)
 try {
   auto book = library.getBookById(id);
-  book.path = path;
-  book.pathAbsolute = isRelativePath(path)
+  book.setPath(isRelativePath(path)
      ? computeAbsolutePath(
         removeLastPathElement(writableLibraryPath, true, false),
         path)
-     : path;
+     : path);
   return true;
 } catch(...) {
   return false;
 }
 
-
-void Manager::checkAndCleanBookPaths(Book& book, const string& libraryPath)
-{
-  if (!book.path.empty()) {
-    if (isRelativePath(book.path)) {
-      book.pathAbsolute = computeAbsolutePath(
-          removeLastPathElement(libraryPath, true, false), book.path);
-    } else {
-      book.pathAbsolute = book.path;
-      book.path = computeRelativePath(
-          removeLastPathElement(libraryPath, true, false), book.pathAbsolute);
-    }
-  }
-
-  if (!book.indexPath.empty()) {
-    if (isRelativePath(book.indexPath)) {
-      book.indexPathAbsolute = computeAbsolutePath(
-          removeLastPathElement(libraryPath, true, false), book.indexPath);
-    } else {
-      book.indexPathAbsolute = book.indexPath;
-      book.indexPath
-          = computeRelativePath(removeLastPathElement(libraryPath, true, false),
-                                book.indexPathAbsolute);
-    }
-  }
-}
 }
