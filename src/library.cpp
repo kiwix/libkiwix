@@ -32,10 +32,6 @@ Book::~Book()
 {
 }
 /* Sort functions */
-bool Book::sortByLastOpen(const kiwix::Book& a, const kiwix::Book& b)
-{
-  return atoi(a.last.c_str()) > atoi(b.last.c_str());
-}
 bool Book::sortByTitle(const kiwix::Book& a, const kiwix::Book& b)
 {
   return a.m_title < b.m_title;

@@ -49,7 +49,6 @@ class Book
   ~Book();
 
   bool update(const Book& other);
-  static bool sortByLastOpen(const Book& a, const Book& b);
   static bool sortByTitle(const Book& a, const Book& b);
   static bool sortBySize(const Book& a, const Book& b);
   static bool sortByDate(const Book& a, const Book& b);
@@ -61,7 +60,6 @@ class Book
   bool readOnly() const { return m_readOnly; }
   const string& id() const { return m_id; }
   const string& path() const { return m_path; }
-  const string& last() const { return m_last; }
   const string& indexPath() const { return m_indexPath; }
   const supportedIndexType& indexType() const { return m_indexType; }
   const string& title() const { return m_title; }
@@ -83,7 +81,6 @@ class Book
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
   void setId(const std::string& id) { m_id = id; }
   void setPath(const std::string& path);
-  void setLast(const std::string& last) { m_last = last; }
   void setIndexPath(const std::string& indexPath);
   void setIndexType(supportedIndexType indexType) { m_indexType = indexType;}
   void setTitle(const std::string& title) { m_title = title; }
@@ -105,7 +102,6 @@ class Book
  protected:
   string m_id;
   string m_path;
-  string m_last;
   string m_indexPath;
   supportedIndexType m_indexType;
   string m_title;

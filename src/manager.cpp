@@ -53,9 +53,6 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
         removeLastPathElement(libraryPath, true, false), path);
     }
     book.setPath(path);
-    book.setLast(std::string(bookNode.attribute("last").value()) != "undefined"
-                     ? bookNode.attribute("last").value()
-                     : "");
     std::string indexPath = bookNode.attribute("indexPath").value();
     if (isRelativePath(indexPath)) {
       indexPath = computeAbsolutePath(
@@ -288,18 +285,6 @@ bool Manager::removeBookById(const string id)
 {
   return library.removeBookById(id);
 }
-
-bool Manager::updateBookLastOpenDateById(const string id)
-try {
-  auto book = library.getBookById(id);
-  char unixdate[12];
-  sprintf(unixdate, "%d", (int)time(NULL));
-  book.last = unixdate;
-  return true;
-} catch(...) {
-  return false;
-}
-
 bool Manager::setBookIndex(const string id,
                            const string path,
                            const supportedIndexType type)
