@@ -20,6 +20,8 @@
 #include "library.h"
 #include "reader.h"
 
+#include "common/base64.h"
+
 #include <pugixml.hpp>
 
 namespace kiwix
@@ -117,6 +119,67 @@ void Book::update(const kiwix::Reader& reader)
 
   reader.getFavicon(m_favicon, m_faviconMimeType);
 }
+
+#define ATTR(name) node.attribute(name).value()
+void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
+{
+  m_id = ATTR("id");
+  std::string path = ATTR("path");
+  if (isRelativePath(path)) {
+    path = computeAbsolutePath(baseDir, path);
+  }
+  m_path = path;
+  path = ATTR("indexPath");
+  if (!path.empty()) {
+    if (isRelativePath(path)) {
+      path = computeAbsolutePath(baseDir, path);
+    }
+    m_indexPath = path;
+    m_indexType = XAPIAN;
+  }
+  m_title = ATTR("title");
+  m_name = ATTR("name");
+  m_tags = ATTR("tags");
+  m_description = ATTR("description");
+  m_language = ATTR("language");
+  m_date = ATTR("date");
+  m_creator = ATTR("creator");
+  m_publisher = ATTR("publisher");
+  m_url = ATTR("url");
+  m_origId = ATTR("origId");
+  m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
+  m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
+  m_size = strtoull(ATTR("size"), 0, 0);
+  m_favicon = base64_decode(ATTR("favicon"));
+  m_faviconMimeType = ATTR("faviconMimeType");
+}
+#undef ATTR
+
+
+#define VALUE(name) node.child(name).child_value()
+void Book::updateFromOpds(const pugi::xml_node& node)
+{
+  m_id = VALUE("id");
+  if (!m_id.compare(0, 9, "urn:uuid:")) {
+    m_id.erase(0, 9);
+  }
+  m_title = VALUE("title");
+  m_description = VALUE("description");
+  m_language = VALUE("language");
+  m_date = VALUE("updated");
+  m_creator = node.child("author").child("name").child_value();
+  for(auto linkNode = node.child("link"); linkNode;
+           linkNode = linkNode.next_sibling("link")) {
+    std::string rel = linkNode.attribute("rel").value();
+
+    if (rel == "http://opds-spec.org/acquisition/open-access") {
+      m_url = linkNode.attribute("href").value();
+      break;
+    }
+ }
+
+}
+#undef VALUE
 
 std::string Book::getHumanReadableIdFromPath()
 {

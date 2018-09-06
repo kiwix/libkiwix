@@ -46,35 +46,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     kiwix::Book book;
 
     book.setReadOnly(readOnly);
-    book.setFavicon(base64_decode(bookNode.attribute("favicon").value());
-    book.setId(bookNode.attribute("id").value());
-    std::string path = bookNode.attribute("path").value();
-    if (isRelativePath(path)) {
-      path = computeAbsolutePath(
-        removeLastPathElement(libraryPath, true, false), path);
-    }
-    book.setPath(path);
-    std::string indexPath = bookNode.attribute("indexPath").value();
-    if (isRelativePath(indexPath)) {
-      indexPath = computeAbsolutePath(
-        removeLastPathElement(libraryPath, true, false), indexPath);
-    }
-    book.setIndexPath(indexPath);
-    book.setIndexType(XAPIAN);
-    book.setTitle(bookNode.attribute("title").value());
-    book.setName(bookNode.attribute("name").value());
-    book.setTags(bookNode.attribute("tags").value());
-    book.setDescription(bookNode.attribute("description").value());
-    book.setLanguage(bookNode.attribute("language").value());
-    book.setDate(bookNode.attribute("date").value());
-    book.setCreator(bookNode.attribute("creator").value());
-    book.setPublisher(bookNode.attribute("publisher").value());
-    book.setUrl(bookNode.attribute("url").value());
-    book.setOrigId(bookNode.attribute("origId").value());
-    book.setArticleCount(strtoull(bookNode.attribute("articleCount").value(), 0, 0));
-    book.setMediaCount(strtoull(bookNode.attribute("mediaCount").value(), 0, 0));
-    book.setSize(strtoull(bookNode.attribute("size").value(), 0, 0));
-    book.setFaviconMimeType(bookNode.attribute("faviconMimeType").value());
+    book.updateFromXml(bookNode, removeLastPathElement(libraryPath, true, false));
 
     /* Update the book properties with the new importer */
     if (libraryVersion.empty()
@@ -119,12 +91,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
     kiwix::Book book;
 
     book.setReadOnly(false);
-    book.setId(entryNode.child("id").child_value());
-    book.setTitle(entryNode.child("title").child_value());
-    book.setDescription(entryNode.child("summary").child_value());
-    book.setLanguage(entryNode.child("language").child_value());
-    book.setDate(entryNode.child("updated").child_value());
-    book.setCreator(entryNode.child("author").child("name").child_value());
+    book.updateFromOpds(entryNode);
     for(pugi::xml_node linkNode = entryNode.child("link"); linkNode;
         linkNode = linkNode.next_sibling("link")) {
        std::string rel = linkNode.attribute("rel").value();
@@ -140,9 +107,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
          } else {
            std::cerr << "Cannot get favicon content from " << faviconUrl << std::endl;
          }
-
-       } else if (rel == "http://opds-spec.org/acquisition/open-access") {
-         book.setUrl(linkNode.attribute("href").value());
+         break;
        }
     }
 
