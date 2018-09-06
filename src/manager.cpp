@@ -20,6 +20,8 @@
 #include "manager.h"
 #include "downloader.h"
 
+#include <pugixml.hpp>
+
 namespace kiwix
 {
 /* Constructor */
@@ -34,11 +36,11 @@ Manager::~Manager()
 }
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
                           const bool readOnly,
-                          const string libraryPath)
+                          const std::string& libraryPath)
 {
   pugi::xml_node libraryNode = doc.child("library");
 
-  string libraryVersion = libraryNode.attribute("version").value();
+  std::string libraryVersion = libraryNode.attribute("version").value();
 
   for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode;
        bookNode = bookNode.next_sibling("book")) {
@@ -65,9 +67,9 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
   return true;
 }
 
-bool Manager::readXml(const string& xml,
+bool Manager::readXml(const std::string& xml,
                       const bool readOnly,
-                      const string libraryPath)
+                      const std::string& libraryPath)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
@@ -120,7 +122,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
 
 
 
-bool Manager::readOpds(const string& content, const std::string& urlHost)
+bool Manager::readOpds(const std::string& content, const std::string& urlHost)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
@@ -134,13 +136,13 @@ bool Manager::readOpds(const string& content, const std::string& urlHost)
   return false;
 }
 
-bool Manager::readFile(const string path, const bool readOnly)
+bool Manager::readFile(const std::string& path, const bool readOnly)
 {
   return this->readFile(path, path, readOnly);
 }
 
-bool Manager::readFile(const string nativePath,
-                       const string UTF8Path,
+bool Manager::readFile(const std::string& nativePath,
+                       const std::string& UTF8Path,
                        const bool readOnly)
 {
   bool retVal = true;
@@ -166,10 +168,10 @@ bool Manager::readFile(const string nativePath,
 
 /* Add a book to the library. Return empty string if failed, book id otherwise
  */
-string Manager::addBookFromPathAndGetId(const string pathToOpen,
-                                        const string pathToSave,
-                                        const string url,
-                                        const bool checkMetaData)
+std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
+                                             const std::string& pathToSave,
+                                             const std::string& url,
+                                             const bool checkMetaData)
 {
   kiwix::Book book;
 
@@ -196,9 +198,9 @@ string Manager::addBookFromPathAndGetId(const string pathToOpen,
 
 /* Wrapper over Manager::addBookFromPath which return a bool instead of a string
  */
-bool Manager::addBookFromPath(const string pathToOpen,
-                              const string pathToSave,
-                              const string url,
+bool Manager::addBookFromPath(const std::string& pathToOpen,
+                              const std::string& pathToSave,
+                              const std::string& url,
                               const bool checkMetaData)
 {
   return !(
@@ -206,7 +208,7 @@ bool Manager::addBookFromPath(const string pathToOpen,
           .empty());
 }
 
-bool Manager::readBookFromPath(const string path, kiwix::Book* book)
+bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)
 {
   try {
     kiwix::Reader reader(path);
@@ -219,8 +221,8 @@ bool Manager::readBookFromPath(const string path, kiwix::Book* book)
   return true;
 }
 
-bool Manager::setBookIndex(const string id,
-                           const string path,
+bool Manager::setBookIndex(const std::string& id,
+                           const std::string& path,
                            const supportedIndexType type)
 try {
   auto book = library->getBookById(id);
@@ -235,7 +237,7 @@ try {
   return false;
 }
 
-bool Manager::setBookPath(const string id, const string path)
+bool Manager::setBookPath(const std::string& id, const std::string& path)
 try {
   auto book = library->getBookById(id);
   book.setPath(isRelativePath(path)

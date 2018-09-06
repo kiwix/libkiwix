@@ -21,19 +21,15 @@
 #define KIWIX_MANAGER_H
 
 #include "book.h"
-#include <time.h>
-#include <sstream>
-#include <string>
-
-#include <pugixml.hpp>
-
-#include "common/base64.h"
-#include "common/pathTools.h"
-#include "common/regexTools.h"
 #include "library.h"
 #include "reader.h"
 
-using namespace std;
+#include <string>
+#include <vector>
+
+namespace pugi {
+class xml_document;
+}
 
 namespace kiwix
 {
@@ -60,7 +56,7 @@ class Manager
    *                 updated content.
    * @return True if file has been properly parsed.
    */
-  bool readFile(const string path, const bool readOnly = true);
+  bool readFile(const std::string& path, const bool readOnly = true);
 
   /**
    * Read a `library.xml` and add book in the file to the library.
@@ -72,8 +68,8 @@ class Manager
    *                 updated content.
    * @return True if file has been properly parsed.
    */
-  bool readFile(const string nativePath,
-                const string UTF8Path,
+  bool readFile(const std::string& nativePath,
+                const std::string& UTF8Path,
                 const bool readOnly = true);
 
   /**
@@ -85,9 +81,9 @@ class Manager
    * @param libraryPath The library path (used to resolve relative path)
    * @return True if the content has been properly parsed.
    */
-  bool readXml(const string& xml,
+  bool readXml(const std::string& xml,
                const bool readOnly = true,
-               const string libraryPath = "");
+               const std::string& libraryPath = "");
 
   /**
    * Load a library content stored in a OPDS stream.
@@ -98,7 +94,7 @@ class Manager
    * @param libraryPath The library path (used to resolve relative path)
    * @return True if the content has been properly parsed.
    */
-  bool readOpds(const string& content, const std::string& urlHost);
+  bool readOpds(const std::string& content, const std::string& urlHost);
 
   /**
    * Set the path of the external fulltext index associated to a book.
@@ -108,8 +104,8 @@ class Manager
    * @param supportedIndexType The type of the fulltext index.
    * @return True if the book is in the library.
    */
-  bool setBookIndex(const string id,
-                    const string path,
+  bool setBookIndex(const std::string& id,
+                    const std::string& path,
                     const supportedIndexType type = XAPIAN);
 
   /**
@@ -119,7 +115,7 @@ class Manager
    * @param path The path of the zim file.
    * @return True if the book is in the library.
    */
-  bool setBookPath(const string id, const string path);
+  bool setBookPath(const std::string& id, const std::string& path);
 
   /**
    * Add a book to the library.
@@ -132,9 +128,9 @@ class Manager
    * @return The id of the book if the book has been added to the library.
    *         Else, an empty string.
    */
-  string addBookFromPathAndGetId(const string pathToOpen,
-                                 const string pathToSave = "",
-                                 const string url = "",
+  std::string addBookFromPathAndGetId(const std::string& pathToOpen,
+                                 const std::string& pathToSave = "",
+                                 const std::string& url = "",
                                  const bool checkMetaData = false);
 
   /**
@@ -148,9 +144,9 @@ class Manager
    * @return True if the book has been added to the library.
    */
 
-  bool addBookFromPath(const string pathToOpen,
-                       const string pathToSave = "",
-                       const string url = "",
+  bool addBookFromPath(const std::string& pathToOpen,
+                       const std::string& pathToSave = "",
+                       const std::string& url = "",
                        const bool checkMetaData = false);
 
   /**
@@ -160,7 +156,7 @@ class Manager
    * @param[out] book The book corresponding to the id.
    * @return True if the book has been found.
    */
-  bool getBookById(const string id, Book& book);
+  bool getBookById(const std::string& id, Book& book);
 
   /**
    * Update the "last open date" of a book
@@ -168,7 +164,7 @@ class Manager
    * @param id the id of the book.
    * @return True if the book is in the library.
    */
-  bool updateBookLastOpenDateById(const string id);
+  bool updateBookLastOpenDateById(const std::string& id);
 
   /**
    * Remove (set to empty) paths of all books in the library.
@@ -197,27 +193,27 @@ class Manager
   bool listBooks(const supportedListMode mode,
                  const supportedListSortBy sortBy,
                  const unsigned int maxSize,
-                 const string language,
-                 const string creator,
-                 const string publisher,
-                 const string search);
+                 const std::string& language,
+                 const std::string& creator,
+                 const std::string& publisher,
+                 const std::string& search);
 
-  string writableLibraryPath;
+  std::string writableLibraryPath;
 
-  vector<std::string> bookIdList;
+  std::vector<std::string> bookIdList;
 
  protected:
   kiwix::Library* library;
 
-  bool readBookFromPath(const string path, Book* book = NULL);
+  bool readBookFromPath(const std::string& path, Book* book = NULL);
   bool parseXmlDom(const pugi::xml_document& doc,
                    const bool readOnly,
-                   const string libraryPath);
+                   const std::string& libraryPath);
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost);
 
  private:
-  void checkAndCleanBookPaths(Book& book, const string& libraryPath);
+  void checkAndCleanBookPaths(Book& book, const std::string& libraryPath);
 };
 }
 
