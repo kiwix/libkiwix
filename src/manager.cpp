@@ -46,6 +46,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     kiwix::Book book;
 
     book.setReadOnly(readOnly);
+    book.setFavicon(base64_decode(bookNode.attribute("favicon").value());
     book.setId(bookNode.attribute("id").value());
     std::string path = bookNode.attribute("path").value();
     if (isRelativePath(path)) {
@@ -73,7 +74,6 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     book.setArticleCount(strtoull(bookNode.attribute("articleCount").value(), 0, 0));
     book.setMediaCount(strtoull(bookNode.attribute("mediaCount").value(), 0, 0));
     book.setSize(strtoull(bookNode.attribute("size").value(), 0, 0));
-    book.setFavicon(bookNode.attribute("favicon").value());
     book.setFaviconMimeType(bookNode.attribute("faviconMimeType").value());
 
     /* Update the book properties with the new importer */
@@ -135,7 +135,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
          auto fileHandle = downloader.download(faviconUrl);
          if (fileHandle.success) {
            auto content = getFileContent(fileHandle.path);
-           book.setFavicon(base64_encode(content));
+           book.setFavicon(content);
            book.setFaviconMimeType(linkNode.attribute("type").value());
          } else {
            std::cerr << "Cannot get favicon content from " << faviconUrl << std::endl;

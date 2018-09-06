@@ -268,7 +268,7 @@ bool Library::writeToFile(const std::string& path) {
           bookNode.append_attribute("publisher") = book.publisher().c_str();
 
         if (!book.favicon().empty())
-          bookNode.append_attribute("favicon") = book.favicon().c_str();
+          bookNode.append_attribute("favicon") = base64_encode(book.favicon()).c_str();
 
         if (!book.faviconMimeType().empty())
           bookNode.append_attribute("faviconMimeType")
