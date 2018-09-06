@@ -163,8 +163,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getFavicon(JNIEnv* env, jobject obj)
     std::string cMime;
     READER->getFavicon(cContent, cMime);
     favicon = c2jni(
-        base64_encode(reinterpret_cast<const unsigned char*>(cContent.c_str()),
-                      cContent.length()),
+        base64_encode(cContent),
         env);
   } catch (std::exception& e) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM favicon");

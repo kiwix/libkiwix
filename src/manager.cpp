@@ -135,7 +135,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
          auto fileHandle = downloader.download(faviconUrl);
          if (fileHandle.success) {
            auto content = getFileContent(fileHandle.path);
-           book.setFavicon(base64_encode((const unsigned char*)content.data(), content.size()));
+           book.setFavicon(base64_encode(content));
            book.setFaviconMimeType(linkNode.attribute("type").value());
          } else {
            std::cerr << "Cannot get favicon content from " << faviconUrl << std::endl;
