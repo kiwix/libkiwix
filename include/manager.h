@@ -203,7 +203,7 @@ class Manager
  protected:
   kiwix::Library* library;
 
-  bool readBookFromPath(const std::string& path, Book* book = NULL);
+  bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,
                    const bool readOnly,
                    const std::string& libraryPath);

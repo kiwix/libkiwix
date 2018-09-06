@@ -55,7 +55,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
         || atoi(libraryVersion.c_str()) <= atoi(KIWIX_LIBRARY_VERSION)) {
       ok = false;
       if (!book.getPath().empty()) {
-        ok = this->readBookFromPath(book.getPath());
+        ok = this->readBookFromPath(book.getPath(), &book);
       }
     }
 
