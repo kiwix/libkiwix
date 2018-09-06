@@ -38,6 +38,7 @@ namespace kiwix
 enum supportedIndexType { UNKNOWN, XAPIAN };
 
 class OPDSDumper;
+class Reader;
 
 /**
  * A class to store information about a book (a zim file)
@@ -49,6 +50,7 @@ class Book
   ~Book();
 
   bool update(const Book& other);
+  void update(const Reader& reader);
   static bool sortByTitle(const Book& a, const Book& b);
   static bool sortBySize(const Book& a, const Book& b);
   static bool sortByDate(const Book& a, const Book& b);

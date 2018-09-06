@@ -244,35 +244,8 @@ bool Manager::addBookFromPath(const string pathToOpen,
 bool Manager::readBookFromPath(const string path, kiwix::Book* book)
 {
   try {
-    kiwix::Reader* reader = new kiwix::Reader(path);
-
-    if (book != NULL) {
-      book->setPath(path);
-      book->setId(reader->getId());
-      book->setDescription(reader->getDescription());
-      book->setLanguage(reader->getLanguage());
-      book->setDate(reader->getDate());
-      book->setCreator(reader->getCreator());
-      book->setPublisher(reader->getPublisher());
-      book->setTitle(reader->getTitle());
-      book->setName(reader->getName());
-      book->setTags(reader->getTags());
-      book->setOrigId(reader->getOrigId());
-      book->setArticleCount(reader->getArticleCount());
-      book->setMediaCount(reader->getMediaCount());
-      book->setSize(reader->getFileSize());
-
-      string favicon;
-      string faviconMimeType;
-      if (reader->getFavicon(favicon, faviconMimeType)) {
-        book->setFavicon(base64_encode(
-            reinterpret_cast<const unsigned char*>(favicon.c_str()),
-            favicon.length()));
-        book->setFaviconMimeType(faviconMimeType);
-      }
-    }
-
-    delete reader;
+    kiwix::Reader reader(path);
+    book->update(reader);
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     return false;

@@ -18,6 +18,7 @@
  */
 
 #include "library.h"
+#include "reader.h"
 
 #include <pugixml.hpp>
 
@@ -95,6 +96,26 @@ bool Book::update(const kiwix::Book& other)
     m_faviconMimeType = other.m_faviconMimeType;
   }
   return true;
+}
+
+void Book::update(const kiwix::Reader& reader)
+{
+  m_path = reader.getZimFilePath();
+  m_id = reader.getId();
+  m_description = reader.getDescription();
+  m_language = reader.getLanguage();
+  m_date = reader.getDate();
+  m_creator = reader.getCreator();
+  m_publisher = reader.getPublisher();
+  m_title = reader.getTitle();
+  m_name = reader.getName();
+  m_tags = reader.getTags();
+  m_origId = reader.getOrigId();
+  m_articleCount = reader.getArticleCount();
+  m_mediaCount = reader.getMediaCount();
+  m_size = reader.getFileSize();
+
+  reader.getFavicon(m_favicon, m_faviconMimeType);
 }
 
 std::string Book::getHumanReadableIdFromPath()
