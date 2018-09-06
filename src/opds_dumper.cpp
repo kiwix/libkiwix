@@ -83,7 +83,7 @@ pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
   return entry_node;
 }
 
-string OPDSDumper::dumpOPDSFeed()
+string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds)
 {
   date = gen_date_str();
   pugi::xml_document doc;
@@ -111,8 +111,8 @@ string OPDSDumper::dumpOPDSFeed()
   }
 
   if (library) {
-    for (auto& pair: library->books) {
-      handleBook(pair.second, root_node);
+    for (auto& bookId: bookIds) {
+      handleBook(library->getBookById(bookId), root_node);
     }
   }
 

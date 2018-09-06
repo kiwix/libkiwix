@@ -54,7 +54,7 @@ class OPDSDumper
    * @param id The id of the library.
    * @return The OPDS feed.
    */
-  std::string dumpOPDSFeed();
+  std::string dumpOPDSFeed(const std::vector<std::string>& bookIds);
 
   /**
    * Set the id of the opds stream.
