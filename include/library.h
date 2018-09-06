@@ -20,115 +20,17 @@
 #ifndef KIWIX_LIBRARY_H
 #define KIWIX_LIBRARY_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <string>
+#include <vector>
 #include <map>
-
-#include "common/regexTools.h"
-#include "common/stringTools.h"
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
-using namespace std;
-
-namespace pugi {
-class xml_node;
-}
-
 namespace kiwix
 {
-enum supportedIndexType { UNKNOWN, XAPIAN };
 
+class Book;
 class OPDSDumper;
-class Reader;
-
-/**
- * A class to store information about a book (a zim file)
- */
-class Book
-{
- public:
-  Book();
-  ~Book();
-
-  bool update(const Book& other);
-  void update(const Reader& reader);
-  void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
-  void updateFromOpds(const pugi::xml_node& node);
-  static bool sortByTitle(const Book& a, const Book& b);
-  static bool sortBySize(const Book& a, const Book& b);
-  static bool sortByDate(const Book& a, const Book& b);
-  static bool sortByCreator(const Book& a, const Book& b);
-  static bool sortByPublisher(const Book& a, const Book& b);
-  static bool sortByLanguage(const Book& a, const Book& b);
-  string getHumanReadableIdFromPath();
-
-  bool readOnly() const { return m_readOnly; }
-  const string& getId() const { return m_id; }
-  const string& getPath() const { return m_path; }
-  const string& getIndexPath() const { return m_indexPath; }
-  const supportedIndexType& getIndexType() const { return m_indexType; }
-  const string& getTitle() const { return m_title; }
-  const string& getDescription() const { return m_description; }
-  const string& getLanguage() const { return m_language; }
-  const string& getCreator() const { return m_creator; }
-  const string& getPublisher() const { return m_publisher; }
-  const string& getDate() const { return m_date; }
-  const string& getUrl() const { return m_url; }
-  const string& getName() const { return m_name; }
-  const string& getTags() const { return m_tags; }
-  const string& getOrigId() const { return m_origId; }
-  const uint64_t& getArticleCount() const { return m_articleCount; }
-  const uint64_t& getMediaCount() const { return m_mediaCount; }
-  const uint64_t& getSize() const { return m_size; }
-  const string& getFavicon() const { return m_favicon; }
-  const string& getFaviconMimeType() const { return m_faviconMimeType; }
-
-  void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
-  void setId(const std::string& id) { m_id = id; }
-  void setPath(const std::string& path);
-  void setIndexPath(const std::string& indexPath);
-  void setIndexType(supportedIndexType indexType) { m_indexType = indexType;}
-  void setTitle(const std::string& title) { m_title = title; }
-  void setDescription(const std::string& description) { m_description = description; }
-  void setLanguage(const std::string& language) { m_language = language; }
-  void setCreator(const std::string& creator) { m_creator = creator; }
-  void setPublisher(const std::string& publisher) { m_publisher = publisher; }
-  void setDate(const std::string& date) { m_date = date; }
-  void setUrl(const std::string& url) { m_url = url; }
-  void setName(const std::string& name) { m_name = name; }
-  void setTags(const std::string& tags) { m_tags = tags; }
-  void setOrigId(const std::string& origId) { m_origId = origId; }
-  void setArticleCount(uint64_t articleCount) { m_articleCount = articleCount; }
-  void setMediaCount(uint64_t mediaCount) { m_mediaCount = mediaCount; }
-  void setSize(uint64_t size) { m_size = size; }
-  void setFavicon(const std::string& favicon) { m_favicon = favicon; }
-  void setFaviconMimeType(const std::string& faviconMimeType) { m_faviconMimeType = faviconMimeType; }
-
- protected:
-  string m_id;
-  string m_path;
-  string m_indexPath;
-  supportedIndexType m_indexType;
-  string m_title;
-  string m_description;
-  string m_language;
-  string m_creator;
-  string m_publisher;
-  string m_date;
-  string m_url;
-  string m_name;
-  string m_tags;
-  string m_origId;
-  uint64_t m_articleCount;
-  uint64_t m_mediaCount;
-  bool m_readOnly;
-  uint64_t m_size;
-  string m_favicon;
-  string m_faviconMimeType;
-};
 
 /**
  * A Library store several books.
@@ -140,7 +42,7 @@ class Library
   Library();
   ~Library();
 
-  string version;
+  std::string version;
   /**
    * Add a book to the library.
    *
@@ -186,7 +88,7 @@ class Library
    * @param search List only books with search in the title or description.
    * @return A `Library`.
    */
-  Library filter(const string& search);
+  Library filter(const std::string& search);
 
   /**
    * Get all langagues of the books in the library.

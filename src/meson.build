@@ -1,4 +1,5 @@
 kiwix_sources = [
+  'book.cpp',
   'library.cpp',
   'manager.cpp',
   'opds_dumper.cpp',

@@ -20,6 +20,7 @@
 #ifndef KIWIX_MANAGER_H
 #define KIWIX_MANAGER_H
 
+#include "book.h"
 #include <time.h>
 #include <sstream>
 #include <string>

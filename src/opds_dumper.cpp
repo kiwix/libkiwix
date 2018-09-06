@@ -18,7 +18,7 @@
  */
 
 #include "opds_dumper.h"
-
+#include "book.h"
 
 #include <common/otherTools.h>
 
