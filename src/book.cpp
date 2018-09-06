@@ -35,36 +35,6 @@ Book::Book() : m_readOnly(false)
 Book::~Book()
 {
 }
-/* Sort functions */
-bool Book::sortByTitle(const kiwix::Book& a, const kiwix::Book& b)
-{
-  return a.m_title < b.m_title;
-}
-
-bool Book::sortByDate(const kiwix::Book& a, const kiwix::Book& b)
-{
-  return a.m_date < b.m_date;
-}
-
-bool Book::sortBySize(const kiwix::Book& a, const kiwix::Book& b)
-{
-  return a.m_size < b.m_size;
-}
-
-bool Book::sortByPublisher(const kiwix::Book& a, const kiwix::Book& b)
-{
-  return a.m_publisher < b.m_publisher;
-}
-
-bool Book::sortByCreator(const kiwix::Book& a, const kiwix::Book& b)
-{
-  return a.m_creator < b.m_creator;
-}
-
-bool Book::sortByLanguage(const kiwix::Book& a, const kiwix::Book& b)
-{
-  return a.m_language < b.m_language;
-}
 
 bool Book::update(const kiwix::Book& other)
 {

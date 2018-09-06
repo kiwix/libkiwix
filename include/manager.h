@@ -33,8 +33,6 @@ class xml_document;
 
 namespace kiwix
 {
-enum supportedListMode { LASTOPEN, REMOTE, LOCAL };
-enum supportedListSortBy { TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 
 /**
  * A tool to manage a `Library`.

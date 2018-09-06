@@ -25,6 +25,7 @@
 #include "common/pathTools.h"
 
 #include <pugixml.hpp>
+#include <algorithm>
 
 namespace kiwix
 {
@@ -75,24 +76,6 @@ unsigned int Library::getBookCount(const bool localBooks,
     }
   }
   return result;
-}
-
-Library Library::filter(const std::string& search) {
-  Library library;
-
-  if (search.empty()) {
-    return library;
-  }
-
-  for(auto& pair:books) {
-     auto& book = pair.second;
-     if (matchRegex(book.getTitle(), "\\Q" + search + "\\E")
-         || matchRegex(book.getDescription(), "\\Q" + search + "\\E")) {
-       library.addBook(book);
-     }
-  }
-
-  return library;
 }
 
 bool Library::writeToFile(const std::string& path) {
@@ -217,17 +200,6 @@ std::vector<std::string> Library::getBooksCreators()
   return booksCreators;
 }
 
-std::vector<std::string> Library::getBooksIds()
-{
-  std::vector<std::string> booksIds;
-
-  for (auto& pair: books) {
-    booksIds.push_back(pair.first);
-  }
-
-  return booksIds;
-}
-
 std::vector<std::string> Library::getBooksPublishers()
 {
   std::vector<std::string> booksPublishers;
@@ -247,6 +219,134 @@ std::vector<std::string> Library::getBooksPublishers()
   return booksPublishers;
 }
 
+std::vector<std::string> Library::getBooksIds()
+{
+  std::vector<std::string> bookIds;
+
+  for (auto& pair: books) {
+    bookIds.push_back(pair.first);
+  }
+
+  return bookIds;
+}
+
+std::vector<std::string> Library::filter(const std::string& search)
+{
+  if (search.empty()) {
+    return getBooksIds();
+  }
+
+  std::vector<std::string> bookIds;
+  for(auto& pair:books) {
+     auto& book = pair.second;
+     if (matchRegex(book.getTitle(), "\\Q" + search + "\\E")
+         || matchRegex(book.getDescription(), "\\Q" + search + "\\E")) {
+       bookIds.push_back(pair.first);
+     }
+  }
+
+  return bookIds;
+}
+
+template<supportedListSortBy sort>
+struct Comparator {
+  Library* lib;
+  Comparator(Library* lib) : lib(lib) {}
+
+  bool operator() (const std::string& id1, const std::string& id2) {
+    return get_keys(id1) < get_keys(id2);
+  }
+
+  std::string get_keys(const std::string& id);
+  unsigned int get_keyi(const std::string& id);
+};
+
+template<>
+std::string Comparator<TITLE>::get_keys(const std::string& id)
+{
+  return lib->getBookById(id).getTitle();
+}
+
+template<>
+unsigned int Comparator<SIZE>::get_keyi(const std::string& id)
+{
+  return lib->getBookById(id).getSize();
+}
+
+template<>
+bool Comparator<SIZE>::operator() (const std::string& id1, const std::string& id2)
+{
+  return get_keyi(id1) < get_keyi(id2);
+}
+
+template<>
+std::string Comparator<DATE>::get_keys(const std::string& id)
+{
+  return lib->getBookById(id).getDate();
+}
+
+template<>
+std::string Comparator<CREATOR>::get_keys(const std::string& id)
+{
+  return lib->getBookById(id).getCreator();
+}
+
+template<>
+std::string Comparator<PUBLISHER>::get_keys(const std::string& id)
+{
+  return lib->getBookById(id).getPublisher();
+}
 
 
+std::vector<std::string> Library::listBooksIds(
+    supportedListMode mode,
+    supportedListSortBy sortBy,
+    const std::string& search,
+    const std::string& language,
+    const std::string& creator,
+    const std::string& publisher,
+    size_t maxSize) {
+
+  std::vector<std::string> bookIds;
+  for(auto& pair:books) {
+    auto& book = pair.second;
+    if (mode == LOCAL && book.getPath().empty())
+      continue;
+    if (mode == REMOTE && (!book.getPath().empty() || book.getUrl().empty()))
+      continue;
+    if (maxSize != 0 && book.getSize() > maxSize)
+      continue;
+    if (!language.empty() && book.getLanguage() != language)
+      continue;
+    if (!publisher.empty() && book.getPublisher() != publisher)
+      continue;
+    if (!creator.empty() && book.getCreator() != creator)
+      continue;
+    if (!search.empty() && !(matchRegex(book.getTitle(), "\\Q" + search + "\\E")
+                          || matchRegex(book.getDescription(), "\\Q" + search + "\\E")))
+      continue;
+    bookIds.push_back(pair.first);
+  }
+
+  switch(sortBy) {
+    case TITLE:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this));
+      break;
+    case SIZE:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<SIZE>(this));
+      break;
+    case DATE:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<DATE>(this));
+      break;
+    case CREATOR:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<CREATOR>(this));
+      break;
+    case PUBLISHER:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<PUBLISHER>(this));
+      break;
+    default:
+      break;
+  }
+  return bookIds;
+}
 }

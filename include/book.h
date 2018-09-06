@@ -46,12 +46,6 @@ class Book
   void update(const Reader& reader);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
   void updateFromOpds(const pugi::xml_node& node);
-  static bool sortByTitle(const Book& a, const Book& b);
-  static bool sortBySize(const Book& a, const Book& b);
-  static bool sortByDate(const Book& a, const Book& b);
-  static bool sortByCreator(const Book& a, const Book& b);
-  static bool sortByPublisher(const Book& a, const Book& b);
-  static bool sortByLanguage(const Book& a, const Book& b);
   std::string getHumanReadableIdFromPath();
 
   bool readOnly() const { return m_readOnly; }

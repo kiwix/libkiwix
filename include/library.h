@@ -32,6 +32,8 @@ namespace kiwix
 class Book;
 class OPDSDumper;
 
+enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
+enum supportedListMode { ALL, REMOTE, LOCAL };
 /**
  * A Library store several books.
  */
@@ -83,14 +85,6 @@ class Library
   unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
 
   /**
-   * Filter the library and generate a new one with the keep elements.
-   *
-   * @param search List only books with search in the title or description.
-   * @return A `Library`.
-   */
-  Library filter(const std::string& search);
-
-  /**
    * Get all langagues of the books in the library.
    *
    * @return A list of languages.
@@ -117,6 +111,43 @@ class Library
    * @return A list of book ids.
    */
   std::vector<std::string> getBooksIds();
+
+  /**
+   * Filter the library and generate a new one with the keep elements.
+   *
+   * This is equivalent to `listBookIds(ALL, UNSORTED, search)`.
+   *
+   * @param search List only books with search in the title or description.
+   * @return The list of bookIds corresponding to the query.
+   */
+  std::vector<std::string> filter(const std::string& search);
+
+
+  /**
+   * List books in the library.
+   *
+   * @param mode The mode of listing :
+   *             - ALL list all books.
+   *               (LOCAL and REMOTE. Other filters are applied).
+   *             - LOCAL list only local books.
+   *             - REMOTE list only remote books.
+   * @param sortBy Attribute to sort by the book list.
+   * @param search List only books with search in the title, description.
+   * @param language List only books in this language.
+   * @param creator List only books of this creator.
+   * @param publisher List only books of this publisher.
+   * @param maxSize Do not list book bigger than maxSize.
+   *                Set to 0 to cancel this filter.
+   * @return The list of bookIds corresponding to the query.
+   */
+  std::vector<std::string> listBooksIds(
+    supportedListMode = ALL,
+    supportedListSortBy sortBy = UNSORTED,
+    const std::string& search = "",
+    const std::string& language = "",
+    const std::string& creator = "",
+    const std::string& publisher = "",
+    size_t maxSize = 0);
 
   friend class OPDSDumper;
 };
