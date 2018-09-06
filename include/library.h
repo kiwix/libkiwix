@@ -66,25 +66,25 @@ class Book
   string getHumanReadableIdFromPath();
 
   bool readOnly() const { return m_readOnly; }
-  const string& id() const { return m_id; }
-  const string& path() const { return m_path; }
-  const string& indexPath() const { return m_indexPath; }
-  const supportedIndexType& indexType() const { return m_indexType; }
-  const string& title() const { return m_title; }
-  const string& description() const { return m_description; }
-  const string& language() const { return m_language; }
-  const string& creator() const { return m_creator; }
-  const string& publisher() const { return m_publisher; }
-  const string& date() const { return m_date; }
-  const string& url() const { return m_url; }
-  const string& name() const { return m_name; }
-  const string& tags() const { return m_tags; }
-  const string& origId() const { return m_origId; }
-  const uint64_t& articleCount() const { return m_articleCount; }
-  const uint64_t& mediaCount() const { return m_mediaCount; }
-  const uint64_t& size() const { return m_size; }
-  const string& favicon() const { return m_favicon; }
-  const string& faviconMimeType() const { return m_faviconMimeType; }
+  const string& getId() const { return m_id; }
+  const string& getPath() const { return m_path; }
+  const string& getIndexPath() const { return m_indexPath; }
+  const supportedIndexType& getIndexType() const { return m_indexType; }
+  const string& getTitle() const { return m_title; }
+  const string& getDescription() const { return m_description; }
+  const string& getLanguage() const { return m_language; }
+  const string& getCreator() const { return m_creator; }
+  const string& getPublisher() const { return m_publisher; }
+  const string& getDate() const { return m_date; }
+  const string& getUrl() const { return m_url; }
+  const string& getName() const { return m_name; }
+  const string& getTags() const { return m_tags; }
+  const string& getOrigId() const { return m_origId; }
+  const uint64_t& getArticleCount() const { return m_articleCount; }
+  const uint64_t& getMediaCount() const { return m_mediaCount; }
+  const uint64_t& getSize() const { return m_size; }
+  const string& getFavicon() const { return m_favicon; }
+  const string& getFaviconMimeType() const { return m_faviconMimeType; }
 
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
   void setId(const std::string& id) { m_id = id; }

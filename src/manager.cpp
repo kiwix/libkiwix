@@ -52,8 +52,8 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     if (libraryVersion.empty()
         || atoi(libraryVersion.c_str()) <= atoi(KIWIX_LIBRARY_VERSION)) {
       ok = false;
-      if (!book.path().empty()) {
-        ok = this->readBookFromPath(book.path());
+      if (!book.getPath().empty()) {
+        ok = this->readBookFromPath(book.getPath());
       }
     }
 
@@ -183,11 +183,11 @@ string Manager::addBookFromPathAndGetId(const string pathToOpen,
     }
 
     if (!checkMetaData
-        || (checkMetaData && !book.title().empty() && !book.language().empty()
-            && !book.date().empty())) {
+        || (checkMetaData && !book.getTitle().empty() && !book.getLanguage().empty()
+            && !book.getDate().empty())) {
       book.setUrl(url);
       library->addBook(book);
-      return book.id();
+      return book.getId();
     }
   }
 

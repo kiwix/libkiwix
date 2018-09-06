@@ -54,30 +54,30 @@ std::string gen_date_str()
 
 pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
   auto entry_node = root_node.append_child("entry");
-  ADD_TEXT_ENTRY(entry_node, "title", book.title());
-  ADD_TEXT_ENTRY(entry_node, "id", "urn:uuid:"+book.id());
+  ADD_TEXT_ENTRY(entry_node, "title", book.getTitle());
+  ADD_TEXT_ENTRY(entry_node, "id", "urn:uuid:"+book.getId());
   ADD_TEXT_ENTRY(entry_node, "icon", rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath());
   ADD_TEXT_ENTRY(entry_node, "updated", date);
-  ADD_TEXT_ENTRY(entry_node, "summary", book.description());
+  ADD_TEXT_ENTRY(entry_node, "summary", book.getDescription());
 
   auto content_node = entry_node.append_child("link");
   content_node.append_attribute("type") = "text/html";
   content_node.append_attribute("href") = (rootLocation + "/" + book.getHumanReadableIdFromPath()).c_str();
 
   auto author_node = entry_node.append_child("author");
-  ADD_TEXT_ENTRY(author_node, "name", book.creator());
+  ADD_TEXT_ENTRY(author_node, "name", book.getCreator());
 
-  if (! book.url().empty()) {
+  if (! book.getUrl().empty()) {
     auto acquisition_link = entry_node.append_child("link");
     acquisition_link.append_attribute("rel") = "http://opds-spec.org/acquisition/open-access";
     acquisition_link.append_attribute("type") = "application/x-zim";
-    acquisition_link.append_attribute("href") = book.url().c_str();
+    acquisition_link.append_attribute("href") = book.getUrl().c_str();
   }
 
-  if (! book.faviconMimeType().empty() ) {
+  if (! book.getFaviconMimeType().empty() ) {
     auto image_link = entry_node.append_child("link");
     image_link.append_attribute("rel") = "http://opds-spec.org/image/thumbnail";
-    image_link.append_attribute("type") = book.faviconMimeType().c_str();
+    image_link.append_attribute("type") = book.getFaviconMimeType().c_str();
     image_link.append_attribute("href") = (rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath()).c_str();
   }
   return entry_node;
