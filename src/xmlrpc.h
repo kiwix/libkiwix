@@ -202,10 +202,13 @@ class MethodCall {
     pugi::xml_document m_doc;
 
   public:
-    MethodCall(const std::string& methodName) {
+    MethodCall(const std::string& methodName, const std::string& secret) {
       auto mCall = m_doc.append_child("methodCall");
       mCall.append_child("methodName").text().set(methodName.c_str());
       mCall.append_child("params");
+      if (!secret.empty()) {
+        getParams().addParam().getValue().set(secret);
+      }
     }
 
     Params getParams() const {
