@@ -101,7 +101,7 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
 std::string Aria2::addUri(const std::vector<std::string>& uris)
 {
   MethodCall methodCall("aria2.addUri", m_secret);
-  auto uriParams = methodCall.getParams().addParam().getValue().getArray();
+  auto uriParams = methodCall.newParamValue().getArray();
   for (auto& uri : uris) {
     uriParams.addValue().set(uri);
   }
@@ -118,9 +118,9 @@ std::string Aria2::addUri(const std::vector<std::string>& uris)
 std::string Aria2::tellStatus(const std::string& gid, const std::vector<std::string>& statusKey)
 {
   MethodCall methodCall("aria2.tellStatus", m_secret);
-  methodCall.getParams().addParam().getValue().set(gid);
+  methodCall.newParamValue().set(gid);
   if (!statusKey.empty()) {
-    auto statusArray = methodCall.getParams().addParam().getValue().getArray();
+    auto statusArray = methodCall.newParamValue().getArray();
     for (auto& key : statusKey) {
       statusArray.addValue().set(key);
     }

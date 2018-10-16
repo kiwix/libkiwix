@@ -215,6 +215,10 @@ class MethodCall {
       return Params(m_doc.child("methodCall").child("params"));
     }
 
+    Value newParamValue() {
+      return getParams().addParam().getValue();
+    }
+
     std::string toString() const {
       return nodeToString(m_doc);
     }
@@ -236,11 +240,19 @@ class MethodResponse {
       return Params(params);
     }
 
+    Value getParamValue(int index) const {
+      return getParams().getParam(index).getValue();
+    }
+
+    bool isFault() const {
+      return (!!m_doc.child("methodResponse").child("fault"));
+    }
+
     Fault getFault() const {
       auto fault = m_doc.child("methodResponse").child("fault");
       if (!fault)
         throw InvalidRPCNode("No fault");
-      return Fault(fault);
+      return Fault(fault.child("value").child("struct"));
     }
 };
 
