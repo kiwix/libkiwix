@@ -51,6 +51,7 @@ class Book
   bool readOnly() const { return m_readOnly; }
   const std::string& getId() const { return m_id; }
   const std::string& getPath() const { return m_path; }
+  bool isPathValid() const { return m_pathValid; }
   const std::string& getIndexPath() const { return m_indexPath; }
   const supportedIndexType& getIndexType() const { return m_indexType; }
   const std::string& getTitle() const { return m_title; }
@@ -72,6 +73,7 @@ class Book
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
   void setId(const std::string& id) { m_id = id; }
   void setPath(const std::string& path);
+  void setPathValid(bool valid) { m_pathValid = valid; }
   void setIndexPath(const std::string& indexPath);
   void setIndexType(supportedIndexType indexType) { m_indexType = indexType;}
   void setTitle(const std::string& title) { m_title = title; }
@@ -93,6 +95,7 @@ class Book
  protected:
   std::string m_id;
   std::string m_path;
+  bool m_pathValid;
   std::string m_indexPath;
   supportedIndexType m_indexType;
   std::string m_title;

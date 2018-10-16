@@ -213,8 +213,10 @@ bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)
   try {
     kiwix::Reader reader(path);
     book->update(reader);
+    book->setPathValid(true);
   } catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
+    std::cerr << "Invalid " << path << " : " << e.what() << std::endl;
+    book->setPathValid(false);
     return false;
   }
 
