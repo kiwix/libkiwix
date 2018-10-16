@@ -152,8 +152,8 @@ bool Library::writeToFile(const std::string& path) {
       if (!book.getMediaCount())
         bookNode.append_attribute("mediaCount") = to_string(book.getMediaCount()).c_str();
 
-      if (!book.getSize()) {
-        bookNode.append_attribute("size") = to_string(book.getSize()).c_str();
+      if (book.getSize()) {
+        bookNode.append_attribute("size") = to_string(book.getSize()>>10).c_str();
       }
 
       if (!book.getDownloadId().empty()) {

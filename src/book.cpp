@@ -120,7 +120,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_origId = ATTR("origId");
   m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
   m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
-  m_size = strtoull(ATTR("size"), 0, 0);
+  m_size = strtoull(ATTR("size"), 0, 0) << 10;
   m_favicon = base64_decode(ATTR("favicon"));
   m_faviconMimeType = ATTR("faviconMimeType");
   try {
