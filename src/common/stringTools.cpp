@@ -60,7 +60,7 @@ std::string kiwix::removeAccents(const std::string& text)
 #ifndef __ANDROID__
 
 /* Prepare integer for display */
-std::string kiwix::beautifyInteger(const unsigned int number)
+std::string kiwix::beautifyInteger(uint64_t number)
 {
   std::stringstream numberStream;
   numberStream << number;
@@ -75,14 +75,19 @@ std::string kiwix::beautifyInteger(const unsigned int number)
   return numberString;
 }
 
-std::string kiwix::beautifyFileSize(const unsigned int number)
+std::string kiwix::beautifyFileSize(uint64_t number)
 {
-  if (number > 1024 * 1024) {
-    return kiwix::beautifyInteger(number / (1024 * 1024)) + " GB";
-  } else {
-    return kiwix::beautifyInteger(number / 1024 != 0 ? number / 1024 : 1)
-           + " MB";
-  }
+  std::stringstream ss;
+  ss << std::fixed << std::setprecision(2);
+  if (number>>30)
+    ss << (number/(1024.0*1024*1024)) << " GB";
+  else if (number>>20)
+    ss << (number/(1024.0*1024)) << " MB";
+  else if (number>>10)
+    ss << (number/1024.0) << " KB";
+  else
+    ss << number << " B";
+  return ss.str();
 }
 
 void kiwix::printStringInHexadecimal(icu::UnicodeString s)
