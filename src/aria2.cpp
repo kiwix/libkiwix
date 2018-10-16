@@ -22,6 +22,9 @@ Aria2::Aria2():
 
   std::string rpc_port = "--rpc-listen-port=" + std::to_string(m_port);
   std::string download_dir = "--dir=" + getDataDirectory();
+  std::string session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
+  std::string session = "--save-session=" + session_file;
+  std::string inputFile = "--input-file=" + session_file;
 //  std::string log_dir = "--log=\"" + logDir + "\"";
 #ifdef _WIN32
   int pid = GetCurrentProcessId();
@@ -37,7 +40,12 @@ Aria2::Aria2():
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());
   callCmd.push_back(download_dir.c_str());
+  if (fileExists(session_file)) {
+    callCmd.push_back(inputFile.c_str());
+  }
+  callCmd.push_back(session.c_str());
 //  callCmd.push_back(log_dir.c_str());
+  callCmd.push_back("--auto-save-interval=10");
   callCmd.push_back(stop_with_pid.c_str());
   callCmd.push_back("--allow-overwrite=true");
   callCmd.push_back("--dht-entry-point=router.bittorrent.com:6881");
@@ -66,7 +74,13 @@ Aria2::Aria2():
 Aria2::~Aria2()
 {
   curl_easy_cleanup(mp_curl);
-};
+}
+
+void Aria2::close()
+{
+  saveSession();
+  shutdown();
+}
 
 size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdata)
 {
@@ -127,5 +141,39 @@ std::string Aria2::tellStatus(const std::string& gid, const std::vector<std::str
   }
   return doRequest(methodCall);
 }
+
+std::vector<std::string> Aria2::tellActive()
+{
+  MethodCall methodCall("aria2.tellActive", m_secret);
+  auto statusArray = methodCall.newParamValue().getArray();
+  statusArray.addValue().set(std::string("gid"));
+  statusArray.addValue().set(std::string("following"));
+  auto responseContent = doRequest(methodCall);
+  MethodResponse response(responseContent);
+  std::vector<std::string> activeGID;
+  int index = 0;
+  while(true) {
+    try {
+      auto structNode = response.getParamValue(0).getArray().getValue(index++).getStruct();
+      auto gidNode = structNode.getMember("gid");
+      activeGID.push_back(gidNode.getValue().getAsS());
+    } catch (InvalidRPCNode& e) { break; }
+  }
+  return activeGID;
+}
+
+void Aria2::saveSession()
+{
+  MethodCall methodCall("aria2.saveSession", m_secret);
+  doRequest(methodCall);
+  std::cout << "session saved" << std::endl;
+}
+
+void Aria2::shutdown()
+{
+  MethodCall methodCall("aria2.shutdown", m_secret);
+  doRequest(methodCall);
+}
+
 
 } // end namespace kiwix

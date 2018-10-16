@@ -43,7 +43,9 @@ class Downloader
 {
  public:
   Downloader();
-  ~Downloader();
+  virtual ~Downloader();
+
+  void close();
 
   /**
    * Download a content.

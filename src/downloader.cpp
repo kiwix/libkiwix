@@ -45,6 +45,11 @@ Downloader::~Downloader()
 {
 }
 
+void Downloader::close()
+{
+  mp_aria->close();
+}
+
 pugi::xml_node find_member_in_struct(pugi::xml_node struct_node, std::string member_name) {
   for(auto member=struct_node.first_child(); member; member=member.next_sibling()) {
     std::string _member_name = member.child("name").text().get();
