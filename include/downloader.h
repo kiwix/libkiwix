@@ -35,6 +35,11 @@ struct DownloadedFile {
   std::string path;
 };
 
+class AriaError : public std::runtime_error {
+ public:
+  AriaError(const std::string& message) : std::runtime_error(message) {}
+};
+
 /**
  * A tool to download things.
  *

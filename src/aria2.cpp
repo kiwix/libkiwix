@@ -7,6 +7,7 @@
 #include <chrono>
 #include <common/otherTools.h>
 #include <common/pathTools.h>
+#include <downloader.h> // For AriaError
 
 namespace kiwix {
 
@@ -56,18 +57,24 @@ Aria2::Aria2():
   callCmd.push_back("--max-concurrent-downloads=42");
   callCmd.push_back("--rpc-max-request-size=6M");
   callCmd.push_back("--file-allocation=none");
+  callCmd.push_back(NULL);
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
   curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");
   curl_easy_setopt(mp_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(mp_curl, CURLOPT_POST, 1L);
 
-  while(true) {
+  int watchdog = 50;
+  while(--watchdog) {
     std::this_thread::sleep_for(std::chrono::microseconds(100));
     auto res = curl_easy_perform(mp_curl);
     if (res == CURLE_OK) {
       break;
     }
+  }
+  if (!watchdog) {
+    curl_easy_cleanup(mp_curl);
+    throw std::runtime_error("Cannot connect to aria2c rpc");
   }
 }
 
@@ -104,12 +111,18 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
     long response_code;
     curl_easy_getinfo(mp_curl, CURLINFO_RESPONSE_CODE, &response_code);
     pthread_mutex_unlock(&m_lock);
-    if (response_code == 200) {
-      return stringstream.str();
+    if (response_code != 200) {
+      throw std::runtime_error("Invalid return code from aria");
     }
+    auto responseContent = stringstream.str();
+    MethodResponse response(responseContent);
+    if (response.isFault()) {
+      throw AriaError(response.getFault().getFaultString());
+    }
+    return responseContent;
   }
   pthread_mutex_unlock(&m_lock);
-  return "";
+  throw std::runtime_error("Cannot perform request");
 }
 
 std::string Aria2::addUri(const std::vector<std::string>& uris)
@@ -121,12 +134,7 @@ std::string Aria2::addUri(const std::vector<std::string>& uris)
   }
   auto ret = doRequest(methodCall);
   MethodResponse response(ret);
-  try {
-    return response.getParams().getParam(0).getValue().getAsS();
-  } catch (InvalidRPCNode& err) {
-    std::cerr << response.getFault().getFaultString();
-  }
-  return "";
+  return response.getParamValue(0).getAsS();
 }
 
 std::string Aria2::tellStatus(const std::string& gid, const std::vector<std::string>& statusKey)
