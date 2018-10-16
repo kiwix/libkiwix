@@ -34,6 +34,24 @@ class xml_document;
 namespace kiwix
 {
 
+class LibraryManipulator {
+ public:
+  virtual ~LibraryManipulator() {}
+  virtual bool addBookToLibrary(Book book) = 0;
+};
+
+class DefaultLibraryManipulator : public LibraryManipulator {
+ public:
+  DefaultLibraryManipulator(Library* library) :
+    library(library) {}
+  virtual ~DefaultLibraryManipulator() {}
+  bool addBookToLibrary(Book book) {
+    return library->addBook(book);
+  }
+ private:
+   kiwix::Library* library;
+};
+
 /**
  * A tool to manage a `Library`.
  *
@@ -43,6 +61,7 @@ namespace kiwix
 class Manager
 {
  public:
+  Manager(LibraryManipulator* manipulator);
   Manager(Library* library);
   ~Manager();
 
@@ -93,27 +112,6 @@ class Manager
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content, const std::string& urlHost);
-
-  /**
-   * Set the path of the external fulltext index associated to a book.
-   *
-   * @param id The id of the book to set.
-   * @param path The path of the external fullext index.
-   * @param supportedIndexType The type of the fulltext index.
-   * @return True if the book is in the library.
-   */
-  bool setBookIndex(const std::string& id,
-                    const std::string& path,
-                    const supportedIndexType type = XAPIAN);
-
-  /**
-   * Set the path of the zim file associated to a book.
-   *
-   * @param id The id of the book to set.
-   * @param path The path of the zim file.
-   * @return True if the book is in the library.
-   */
-  bool setBookPath(const std::string& id, const std::string& path);
 
   /**
    * Add a book to the library.
@@ -201,7 +199,8 @@ class Manager
   std::vector<std::string> bookIdList;
 
  protected:
-  kiwix::Library* library;
+  kiwix::LibraryManipulator* manipulator;
+  bool mustDeleteManipulator;
 
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,

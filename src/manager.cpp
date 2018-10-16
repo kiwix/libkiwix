@@ -25,14 +25,26 @@
 namespace kiwix
 {
 /* Constructor */
-Manager::Manager(Library* library):
+Manager::Manager(LibraryManipulator* manipulator):
   writableLibraryPath(""),
-  library(library)
+  manipulator(manipulator),
+  mustDeleteManipulator(false)
 {
 }
+
+Manager::Manager(Library* library) :
+  writableLibraryPath(""),
+  manipulator(new DefaultLibraryManipulator(library)),
+  mustDeleteManipulator(true)
+{
+}
+
 /* Destructor */
 Manager::~Manager()
 {
+  if (mustDeleteManipulator) {
+    delete manipulator;
+  }
 }
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
                           const bool readOnly,
@@ -44,24 +56,20 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
 
   for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode;
        bookNode = bookNode.next_sibling("book")) {
-    bool ok = true;
     kiwix::Book book;
 
     book.setReadOnly(readOnly);
-    book.updateFromXml(bookNode, removeLastPathElement(libraryPath, true, false));
+    book.updateFromXml(bookNode,
+                       removeLastPathElement(libraryPath, true, false));
 
     /* Update the book properties with the new importer */
     if (libraryVersion.empty()
         || atoi(libraryVersion.c_str()) <= atoi(KIWIX_LIBRARY_VERSION)) {
-      ok = false;
       if (!book.getPath().empty()) {
-        ok = this->readBookFromPath(book.getPath(), &book);
+        this->readBookFromPath(book.getPath(), &book);
       }
     }
-
-    if (ok) {
-      library->addBook(book);
-    }
+    manipulator->addBookToLibrary(book);
   }
 
   return true;
@@ -114,7 +122,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
     }
 
     /* Update the book properties with the new importer */
-    library->addBook(book);
+    manipulator->addBookToLibrary(book);
   }
 
   return true;
@@ -188,7 +196,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
         || (checkMetaData && !book.getTitle().empty() && !book.getLanguage().empty()
             && !book.getDate().empty())) {
       book.setUrl(url);
-      library->addBook(book);
+      manipulator->addBookToLibrary(book);
       return book.getId();
     }
   }
@@ -221,35 +229,6 @@ bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)
   }
 
   return true;
-}
-
-bool Manager::setBookIndex(const std::string& id,
-                           const std::string& path,
-                           const supportedIndexType type)
-try {
-  auto book = library->getBookById(id);
-  book.setIndexPath(isRelativePath(path)
-                ? computeAbsolutePath(
-                      removeLastPathElement(writableLibraryPath, true, false),
-                      path)
-                : path);
-  book.setIndexType(type);
-  return true;
-} catch (...) {
-  return false;
-}
-
-bool Manager::setBookPath(const std::string& id, const std::string& path)
-try {
-  auto book = library->getBookById(id);
-  book.setPath(isRelativePath(path)
-     ? computeAbsolutePath(
-        removeLastPathElement(writableLibraryPath, true, false),
-        path)
-     : path);
-  return true;
-} catch(...) {
-  return false;
 }
 
 }
