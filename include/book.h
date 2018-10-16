@@ -69,6 +69,7 @@ class Book
   const uint64_t& getSize() const { return m_size; }
   const std::string& getFavicon() const { return m_favicon; }
   const std::string& getFaviconMimeType() const { return m_faviconMimeType; }
+  const std::string& getDownloadId() const { return m_downloadId; }
 
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
   void setId(const std::string& id) { m_id = id; }
@@ -91,9 +92,11 @@ class Book
   void setSize(uint64_t size) { m_size = size; }
   void setFavicon(const std::string& favicon) { m_favicon = favicon; }
   void setFaviconMimeType(const std::string& faviconMimeType) { m_faviconMimeType = faviconMimeType; }
+  void setDownloadId(const std::string& downloadId) { m_downloadId = downloadId; }
 
  protected:
   std::string m_id;
+  std::string m_downloadId;
   std::string m_path;
   bool m_pathValid;
   std::string m_indexPath;

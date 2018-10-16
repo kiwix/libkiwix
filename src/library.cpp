@@ -155,6 +155,10 @@ bool Library::writeToFile(const std::string& path) {
       if (!book.getSize()) {
         bookNode.append_attribute("size") = to_string(book.getSize()).c_str();
       }
+
+      if (!book.getDownloadId().empty()) {
+        bookNode.append_attribute("downloadId") = book.getDownloadId().c_str();
+      }
     }
   }
 
