@@ -122,33 +122,6 @@ std::vector<std::string> Downloader::getDownloadIds() {
   return ret;
 }
 
-DownloadedFile Downloader::download(const std::string& url) {
-  DownloadedFile fileHandle;
-  try {
-    std::vector<std::string> status_key = {"status", "files"};
-    auto download = startDownload(url);
-    std::cerr << "gid is : " << download->getDid() << std::endl;
-    pugi::xml_document ret;
-    while(true) {
-     download->updateStatus();
-     std::cerr << "Status is " << download->getStatus() << std::endl;
-     if (download->getStatus() == Download::COMPLETE) {
-       fileHandle.success = true;
-       fileHandle.path = download->getPath();
-       std::cerr << "FilePath is " << fileHandle.path << std::endl;
-     } else if (download->getStatus() == Download::ERROR) {
-       fileHandle.success = false;
-     } else {
-       // [TODO] Be wise here.
-       std::this_thread::sleep_for(std::chrono::microseconds(100000));
-       continue;
-     }
-     break;
-    }
-  } catch (...) { std::cerr << "waautena " << std::endl; };
-  return fileHandle;
-}
-
 Download* Downloader::startDownload(const std::string& uri)
 {
   for (auto& p: m_knownDownloads) {

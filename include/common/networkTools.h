@@ -44,6 +44,7 @@ namespace kiwix
 {
 std::map<std::string, std::string> getNetworkInterfaces();
 std::string getBestPublicIp();
+std::string download(const std::string& url);
 }
 
 #endif

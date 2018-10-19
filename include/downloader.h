@@ -89,14 +89,6 @@ class Downloader
 
   void close();
 
-  /**
-   * Download a content.
-   *
-   * @param url the url to download
-   * @return the content downloaded.
-   */
-  DownloadedFile download(const std::string& url);
-
   Download* startDownload(const std::string& uri);
   Download* getDownload(const std::string& did);
 

@@ -18,7 +18,7 @@
  */
 
 #include "manager.h"
-#include "downloader.h"
+#include "common/networkTools.h"
 
 #include <pugixml.hpp>
 
@@ -108,13 +108,10 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
 
        if (rel == "http://opds-spec.org/image/thumbnail") {
          auto faviconUrl = urlHost + linkNode.attribute("href").value();
-         Downloader downloader;
-         auto fileHandle = downloader.download(faviconUrl);
-         if (fileHandle.success) {
-           auto content = getFileContent(fileHandle.path);
-           book.setFavicon(content);
+         try {
+           book.setFavicon(download(faviconUrl));
            book.setFaviconMimeType(linkNode.attribute("type").value());
-         } else {
+         } catch (...) {
            std::cerr << "Cannot get favicon content from " << faviconUrl << std::endl;
          }
          break;
