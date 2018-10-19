@@ -148,6 +148,7 @@ void Book::updateFromOpds(const pugi::xml_node& node)
 
     if (rel == "http://opds-spec.org/acquisition/open-access") {
       m_url = linkNode.attribute("href").value();
+      m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
       break;
     }
  }

@@ -72,6 +72,7 @@ pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
     acquisition_link.append_attribute("rel") = "http://opds-spec.org/acquisition/open-access";
     acquisition_link.append_attribute("type") = "application/x-zim";
     acquisition_link.append_attribute("href") = book.getUrl().c_str();
+    acquisition_link.append_attribute("length") = std::to_string(book.getSize()).c_str();
   }
 
   if (! book.getFaviconMimeType().empty() ) {
