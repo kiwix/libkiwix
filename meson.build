@@ -19,6 +19,12 @@ libzim_dep = dependency('libzim', version : '>=4.0.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
 
+if target_machine.system() == 'windows' and static_deps
+  add_project_arguments('-DCURL_STATICLIB', language : 'cpp')
+endif
+
+
+
 ctpp2_include_path = ''
 has_ctpp2_dep = false
 ctpp2_prefix_install = get_option('ctpp2-install-prefix')

@@ -48,24 +48,24 @@ void Download::updateStatus(bool follow)
 //  std::cout << strStatus << std::endl;
   MethodResponse response(strStatus);
   if (response.isFault()) {
-    m_status = Download::UNKNOWN;
+    m_status = Download::K_UNKNOWN;
     return;
   }
   auto structNode = response.getParams().getParam(0).getValue().getStruct();
   auto _status = structNode.getMember("status").getValue().getAsS();
-  auto status = _status == "active" ? Download::ACTIVE
-              : _status == "waiting" ? Download::WAITING
-              : _status == "paused" ? Download::PAUSED
-              : _status == "error" ? Download::ERROR
-              : _status == "complete" ? Download::COMPLETE
-              : _status == "removed" ? Download::REMOVED
-              : Download::UNKNOWN;
-  if (status == COMPLETE) {
+  auto status = _status == "active" ? Download::K_ACTIVE
+              : _status == "waiting" ? Download::K_WAITING
+              : _status == "paused" ? Download::K_PAUSED
+              : _status == "error" ? Download::K_ERROR
+              : _status == "complete" ? Download::K_COMPLETE
+              : _status == "removed" ? Download::K_REMOVED
+              : Download::K_UNKNOWN;
+  if (status == K_COMPLETE) {
     try {
       auto followedByMember = structNode.getMember("followedBy");
       m_followedBy = followedByMember.getValue().getArray().getValue(0).getAsS();
       if (follow) {
-        status = ACTIVE;
+        status = K_ACTIVE;
         updateStatus(true);
         return;
       }

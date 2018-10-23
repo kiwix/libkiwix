@@ -45,13 +45,13 @@ class AriaError : public std::runtime_error {
 
 class Download {
  public:
-  typedef enum { ACTIVE, WAITING, PAUSED, ERROR, COMPLETE, REMOVED, UNKNOWN } StatusResult;
+  typedef enum { K_ACTIVE, K_WAITING, K_PAUSED, K_ERROR, K_COMPLETE, K_REMOVED, K_UNKNOWN } StatusResult;
 
   Download() :
-    m_status(UNKNOWN) {}
+    m_status(K_UNKNOWN) {}
   Download(std::shared_ptr<Aria2> p_aria, std::string did)
     : mp_aria(p_aria),
-      m_status(UNKNOWN),
+      m_status(K_UNKNOWN),
       m_did(did) {};
   void updateStatus(bool follow=false);
   StatusResult getStatus()          { return m_status; }
