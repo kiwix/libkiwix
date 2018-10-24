@@ -22,6 +22,7 @@
 
 #include "common/base64.h"
 #include "common/regexTools.h"
+#include "common/networkTools.h"
 
 #include <pugixml.hpp>
 
@@ -131,7 +132,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
 
 
 #define VALUE(name) node.child(name).child_value()
-void Book::updateFromOpds(const pugi::xml_node& node)
+void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost)
 {
   m_id = VALUE("id");
   if (!m_id.compare(0, 9, "urn:uuid:")) {
@@ -149,7 +150,10 @@ void Book::updateFromOpds(const pugi::xml_node& node)
     if (rel == "http://opds-spec.org/acquisition/open-access") {
       m_url = linkNode.attribute("href").value();
       m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
-      break;
+    }
+    if (rel == "http://opds-spec.org/image/thumbnail") {
+      m_faviconUrl = urlHost + linkNode.attribute("href").value();
+      m_faviconMimeType = linkNode.attribute("type").value();
     }
  }
 
@@ -187,6 +191,17 @@ void Book::setIndexPath(const std::string& indexPath)
   m_indexPath = isRelativePath(indexPath)
     ? computeAbsolutePath(getCurrentDirectory(), indexPath)
     : indexPath;
+}
+
+const std::string& Book::getFavicon() const {
+  if (m_favicon.empty() && !m_faviconUrl.empty()) {
+    try {
+      m_favicon = download(m_faviconUrl);
+    } catch(...) {
+      std::cerr << "Cannot download favicon from " << m_faviconUrl;
+    }
+  }
+  return m_favicon;
 }
 
 }
