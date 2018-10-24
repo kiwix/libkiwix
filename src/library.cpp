@@ -303,7 +303,7 @@ std::string Comparator<PUBLISHER>::get_keys(const std::string& id)
 
 
 std::vector<std::string> Library::listBooksIds(
-    supportedListMode mode,
+    int mode,
     supportedListSortBy sortBy,
     const std::string& search,
     const std::string& language,
@@ -314,9 +314,20 @@ std::vector<std::string> Library::listBooksIds(
   std::vector<std::string> bookIds;
   for(auto& pair:books) {
     auto& book = pair.second;
-    if (mode == LOCAL && book.getPath().empty())
+    auto local = !book.getPath().empty();
+    if (mode & LOCAL && !local)
       continue;
-    if (mode == REMOTE && (!book.getPath().empty() || book.getUrl().empty()))
+    if (mode & NOLOCAL && local)
+      continue;
+    auto valid = book.isPathValid();
+    if (mode & VALID && !valid)
+      continue;
+    if (mode & NOVALID && valid)
+      continue;
+    auto remote = !book.getUrl().empty();
+    if (mode & REMOTE && !remote)
+      continue;
+    if (mode & NOREMOTE && remote)
       continue;
     if (maxSize != 0 && book.getSize() > maxSize)
       continue;

@@ -45,7 +45,7 @@ class Book
   bool update(const Book& other);
   void update(const Reader& reader);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
-  void updateFromOpds(const pugi::xml_node& node);
+  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
   std::string getHumanReadableIdFromPath();
 
   bool readOnly() const { return m_readOnly; }
@@ -67,7 +67,7 @@ class Book
   const uint64_t& getArticleCount() const { return m_articleCount; }
   const uint64_t& getMediaCount() const { return m_mediaCount; }
   const uint64_t& getSize() const { return m_size; }
-  const std::string& getFavicon() const { return m_favicon; }
+  const std::string& getFavicon() const;
   const std::string& getFaviconMimeType() const { return m_faviconMimeType; }
   const std::string& getDownloadId() const { return m_downloadId; }
 
@@ -115,7 +115,8 @@ class Book
   uint64_t m_mediaCount;
   bool m_readOnly;
   uint64_t m_size;
-  std::string m_favicon;
+  mutable std::string m_favicon;
+  std::string m_faviconUrl;
   std::string m_faviconMimeType;
 };
 

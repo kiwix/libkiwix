@@ -50,6 +50,14 @@ std::string gen_date_str()
   return is.str();
 }
 
+void OPDSDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
+{
+  m_totalResults = totalResults;
+  m_startIndex = startIndex,
+  m_count = count;
+  m_isSearchResult = true;
+}
+
 #define ADD_TEXT_ENTRY(node, child, value) (node).append_child((child)).append_child(pugi::node_pcdata).set_value((value).c_str())
 
 pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
@@ -97,6 +105,12 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds)
 
   ADD_TEXT_ENTRY(root_node, "title", title);
   ADD_TEXT_ENTRY(root_node, "updated", date);
+
+  if (m_isSearchResult) {
+    ADD_TEXT_ENTRY(root_node, "totalResults", to_string(m_totalResults));
+    ADD_TEXT_ENTRY(root_node, "startIndex", to_string(m_startIndex));
+    ADD_TEXT_ENTRY(root_node, "itemsPerPage", to_string(m_count));
+  }
 
   auto self_link_node = root_node.append_child("link");
   self_link_node.append_attribute("rel") = "self";

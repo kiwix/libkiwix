@@ -18,7 +18,6 @@
  */
 
 #include "manager.h"
-#include "common/networkTools.h"
 
 #include <pugixml.hpp>
 
@@ -101,22 +100,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
     kiwix::Book book;
 
     book.setReadOnly(false);
-    book.updateFromOpds(entryNode);
-    for(pugi::xml_node linkNode = entryNode.child("link"); linkNode;
-        linkNode = linkNode.next_sibling("link")) {
-       std::string rel = linkNode.attribute("rel").value();
-
-       if (rel == "http://opds-spec.org/image/thumbnail") {
-         auto faviconUrl = urlHost + linkNode.attribute("href").value();
-         try {
-           book.setFavicon(download(faviconUrl));
-           book.setFaviconMimeType(linkNode.attribute("type").value());
-         } catch (...) {
-           std::cerr << "Cannot get favicon content from " << faviconUrl << std::endl;
-         }
-         break;
-       }
-    }
+    book.updateFromOpds(entryNode, urlHost);
 
     /* Update the book properties with the new importer */
     manipulator->addBookToLibrary(book);
