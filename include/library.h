@@ -33,7 +33,15 @@ class Book;
 class OPDSDumper;
 
 enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
-enum supportedListMode { ALL, REMOTE, LOCAL };
+enum supportedListMode {
+  ALL = 0,
+  LOCAL = 1,
+  REMOTE = 1 << 1,
+  NOLOCAL = 1 << 2,
+  NOREMOTE = 1 << 3,
+  VALID = 1 << 4,
+  NOVALID = 1 << 5
+};
 /**
  * A Library store several books.
  */
@@ -127,10 +135,15 @@ class Library
    * List books in the library.
    *
    * @param mode The mode of listing :
-   *             - ALL list all books.
-   *               (LOCAL and REMOTE. Other filters are applied).
-   *             - LOCAL list only local books.
-   *             - REMOTE list only remote books.
+   *             - LOCAL    : list only local books (with a path).
+   *             - REMOTE   : list only remote books (with an url).
+   *             - VALID    : list only valid books (without a path or with a
+   *                          path pointing to a valid zim file).
+   *             - NOLOCAL  : list only books without valid path.
+   *             - NOREMOTE : list only books without url.
+   *             - NOVALID  : list only books not valid.
+   *             - ALL : Do not do any filter (LOCAL or REMOTE)
+   *             - Flags can be combined.
    * @param sortBy Attribute to sort by the book list.
    * @param search List only books with search in the title, description.
    * @param language List only books in this language.
@@ -141,7 +154,7 @@ class Library
    * @return The list of bookIds corresponding to the query.
    */
   std::vector<std::string> listBooksIds(
-    supportedListMode = ALL,
+    int supportedListMode = ALL,
     supportedListSortBy sortBy = UNSORTED,
     const std::string& search = "",
     const std::string& language = "",
