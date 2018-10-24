@@ -191,7 +191,6 @@ std::string kiwix::download(const std::string& url) {
   auto curl = curl_easy_init();
   std::stringstream ss;
   curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-  curl_easy_setopt(curl, CURLOPT_PORT, 80);
   curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ss);
