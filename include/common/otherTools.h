@@ -26,9 +26,12 @@
 #include <unistd.h>
 #endif
 
+#include <pugixml.hpp>
+
 namespace kiwix
 {
 void sleep(unsigned int milliseconds);
+std::string nodeToString(pugi::xml_node node);
 }
 
 #endif

@@ -310,3 +310,29 @@ string getCurrentDirectory()
   free(a_cwd);
   return s_cwd;
 }
+
+string getDataDirectory()
+{
+#ifdef _WIN32
+  char* cDataDir = ::getenv("APPDATA");
+#else
+  char* cDataDir = ::getenv("KIWIX_DATA_DIR");
+#endif
+  std::string dataDir = cDataDir==nullptr ? "" : cDataDir;
+  if (!dataDir.empty())
+    return dataDir;
+#ifdef _WIN32
+  cDataDir = ::getenv("USERPROFILE");
+  dataDir = cDataDir==nullptr ? getCurrentDirectory() : cDataDir;
+#else
+  cDataDir = ::getenv("XDG_DATA_HOME");
+  dataDir = cDataDir==nullptr ? "" : cDataDir;
+  if (dataDir.empty()) {
+    cDataDir = ::getenv("HOME");
+    dataDir = cDataDir==nullptr ? getCurrentDirectory() : cDataDir;
+    dataDir = appendToDirectory(dataDir, ".local");
+    dataDir = appendToDirectory(dataDir, "share");
+  }
+#endif
+  return appendToDirectory(dataDir, "kiwix");
+}

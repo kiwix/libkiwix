@@ -19,6 +19,25 @@
 
 #include <common/networkTools.h>
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
+#include <net/if.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
+#include <curl/curl.h>
+
+#include <sstream>
+#include <iostream>
 
 
 std::map<std::string, std::string> kiwix::getNetworkInterfaces()
@@ -159,4 +178,33 @@ std::string kiwix::getBestPublicIp()
   }
 
   return "127.0.0.1";
+}
+
+size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdata)
+{
+  auto str = static_cast<std::stringstream*>(userdata);
+  str->write(ptr, nmemb);
+  return nmemb;
+}
+
+std::string kiwix::download(const std::string& url) {
+  auto curl = curl_easy_init();
+  std::stringstream ss;
+  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl, CURLOPT_PORT, 80);
+  curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ss);
+  auto res = curl_easy_perform(curl);
+  if (res != CURLE_OK) {
+    curl_easy_cleanup(curl);
+    throw std::runtime_error("Cannot perform request");
+  }
+  long response_code;
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+  curl_easy_cleanup(curl);
+  if (response_code != 200) {
+    throw std::runtime_error("Invalid return code from server");
+  }
+  return ss.str();
 }

@@ -1,0 +1,192 @@
+/*
+ * Copyright 2011 Emmanuel Engelhart <kelson@kiwix.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU  General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
+
+#include "book.h"
+#include "reader.h"
+
+#include "common/base64.h"
+#include "common/regexTools.h"
+
+#include <pugixml.hpp>
+
+namespace kiwix
+{
+/* Constructor */
+Book::Book() : m_readOnly(false)
+{
+}
+/* Destructor */
+Book::~Book()
+{
+}
+
+bool Book::update(const kiwix::Book& other)
+{
+  if (m_readOnly)
+    return false;
+
+  m_readOnly = other.m_readOnly;
+
+  if (m_path.empty()) {
+    m_path = other.m_path;
+  }
+
+  if (m_url.empty()) {
+    m_url = other.m_url;
+  }
+
+  if (m_tags.empty()) {
+    m_tags = other.m_tags;
+  }
+
+  if (m_name.empty()) {
+    m_name = other.m_name;
+  }
+
+  if (m_indexPath.empty()) {
+    m_indexPath = other.m_indexPath;
+    m_indexType = other.m_indexType;
+  }
+
+  if (m_faviconMimeType.empty()) {
+    m_favicon = other.m_favicon;
+    m_faviconMimeType = other.m_faviconMimeType;
+  }
+  return true;
+}
+
+void Book::update(const kiwix::Reader& reader)
+{
+  m_path = reader.getZimFilePath();
+  m_id = reader.getId();
+  m_description = reader.getDescription();
+  m_language = reader.getLanguage();
+  m_date = reader.getDate();
+  m_creator = reader.getCreator();
+  m_publisher = reader.getPublisher();
+  m_title = reader.getTitle();
+  m_name = reader.getName();
+  m_tags = reader.getTags();
+  m_origId = reader.getOrigId();
+  m_articleCount = reader.getArticleCount();
+  m_mediaCount = reader.getMediaCount();
+  m_size = reader.getFileSize();
+
+  reader.getFavicon(m_favicon, m_faviconMimeType);
+}
+
+#define ATTR(name) node.attribute(name).value()
+void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
+{
+  m_id = ATTR("id");
+  std::string path = ATTR("path");
+  if (isRelativePath(path)) {
+    path = computeAbsolutePath(baseDir, path);
+  }
+  m_path = path;
+  path = ATTR("indexPath");
+  if (!path.empty()) {
+    if (isRelativePath(path)) {
+      path = computeAbsolutePath(baseDir, path);
+    }
+    m_indexPath = path;
+    m_indexType = XAPIAN;
+  }
+  m_title = ATTR("title");
+  m_name = ATTR("name");
+  m_tags = ATTR("tags");
+  m_description = ATTR("description");
+  m_language = ATTR("language");
+  m_date = ATTR("date");
+  m_creator = ATTR("creator");
+  m_publisher = ATTR("publisher");
+  m_url = ATTR("url");
+  m_origId = ATTR("origId");
+  m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
+  m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
+  m_size = strtoull(ATTR("size"), 0, 0) << 10;
+  m_favicon = base64_decode(ATTR("favicon"));
+  m_faviconMimeType = ATTR("faviconMimeType");
+  try {
+    m_downloadId = ATTR("downloadId");
+  } catch(...) {}
+}
+#undef ATTR
+
+
+#define VALUE(name) node.child(name).child_value()
+void Book::updateFromOpds(const pugi::xml_node& node)
+{
+  m_id = VALUE("id");
+  if (!m_id.compare(0, 9, "urn:uuid:")) {
+    m_id.erase(0, 9);
+  }
+  m_title = VALUE("title");
+  m_description = VALUE("description");
+  m_language = VALUE("language");
+  m_date = VALUE("updated");
+  m_creator = node.child("author").child("name").child_value();
+  for(auto linkNode = node.child("link"); linkNode;
+           linkNode = linkNode.next_sibling("link")) {
+    std::string rel = linkNode.attribute("rel").value();
+
+    if (rel == "http://opds-spec.org/acquisition/open-access") {
+      m_url = linkNode.attribute("href").value();
+      m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
+      break;
+    }
+ }
+
+}
+#undef VALUE
+
+std::string Book::getHumanReadableIdFromPath()
+{
+  std::string id = m_path;
+  if (!id.empty()) {
+    kiwix::removeAccents(id);
+
+#ifdef _WIN32
+    id = replaceRegex(id, "", "^.*\\\\");
+#else
+    id = replaceRegex(id, "", "^.*/");
+#endif
+
+    id = replaceRegex(id, "", "\\.zim[a-z]*$");
+    id = replaceRegex(id, "_", " ");
+    id = replaceRegex(id, "plus", "\\+");
+  }
+  return id;
+}
+
+void Book::setPath(const std::string& path)
+{
+ m_path = isRelativePath(path)
+   ? computeAbsolutePath(getCurrentDirectory(), path)
+   : path;
+}
+
+void Book::setIndexPath(const std::string& indexPath)
+{
+  m_indexPath = isRelativePath(indexPath)
+    ? computeAbsolutePath(getCurrentDirectory(), indexPath)
+    : indexPath;
+}
+
+}

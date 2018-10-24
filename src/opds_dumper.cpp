@@ -18,35 +18,20 @@
  */
 
 #include "opds_dumper.h"
+#include "book.h"
+
+#include <common/otherTools.h>
 
 namespace kiwix
 {
 /* Constructor */
-OPDSDumper::OPDSDumper(Library library)
+OPDSDumper::OPDSDumper(Library* library)
   : library(library)
 {
 }
 /* Destructor */
 OPDSDumper::~OPDSDumper()
 {
-}
-
-struct xml_string_writer: pugi::xml_writer
-{
-    std::string result;
-
-    virtual void write(const void* data, size_t size)
-    {
-        result.append(static_cast<const char*>(data), size);
-    }
-};
-
-std::string node_to_string(pugi::xml_node node)
-{
-    xml_string_writer writer;
-    node.print(writer, "  ");
-
-    return writer.result;
 }
 
 std::string gen_date_str()
@@ -69,36 +54,37 @@ std::string gen_date_str()
 
 pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
   auto entry_node = root_node.append_child("entry");
-  ADD_TEXT_ENTRY(entry_node, "title", book.title);
-  ADD_TEXT_ENTRY(entry_node, "id", "urn:uuid:"+book.id);
+  ADD_TEXT_ENTRY(entry_node, "title", book.getTitle());
+  ADD_TEXT_ENTRY(entry_node, "id", "urn:uuid:"+book.getId());
   ADD_TEXT_ENTRY(entry_node, "icon", rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath());
   ADD_TEXT_ENTRY(entry_node, "updated", date);
-  ADD_TEXT_ENTRY(entry_node, "summary", book.description);
+  ADD_TEXT_ENTRY(entry_node, "summary", book.getDescription());
 
   auto content_node = entry_node.append_child("link");
   content_node.append_attribute("type") = "text/html";
   content_node.append_attribute("href") = (rootLocation + "/" + book.getHumanReadableIdFromPath()).c_str();
 
   auto author_node = entry_node.append_child("author");
-  ADD_TEXT_ENTRY(author_node, "name", book.creator);
+  ADD_TEXT_ENTRY(author_node, "name", book.getCreator());
 
-  if (! book.url.empty()) {
+  if (! book.getUrl().empty()) {
     auto acquisition_link = entry_node.append_child("link");
     acquisition_link.append_attribute("rel") = "http://opds-spec.org/acquisition/open-access";
     acquisition_link.append_attribute("type") = "application/x-zim";
-    acquisition_link.append_attribute("href") = book.url.c_str();
+    acquisition_link.append_attribute("href") = book.getUrl().c_str();
+    acquisition_link.append_attribute("length") = to_string(book.getSize()).c_str();
   }
 
-  if (! book.faviconMimeType.empty() ) {
+  if (! book.getFaviconMimeType().empty() ) {
     auto image_link = entry_node.append_child("link");
     image_link.append_attribute("rel") = "http://opds-spec.org/image/thumbnail";
-    image_link.append_attribute("type") = book.faviconMimeType.c_str();
+    image_link.append_attribute("type") = book.getFaviconMimeType().c_str();
     image_link.append_attribute("href") = (rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath()).c_str();
   }
   return entry_node;
 }
 
-string OPDSDumper::dumpOPDSFeed()
+string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds)
 {
   date = gen_date_str();
   pugi::xml_document doc;
@@ -125,11 +111,13 @@ string OPDSDumper::dumpOPDSFeed()
     search_link.append_attribute("href") = searchDescriptionUrl.c_str();
   }
 
-  for (auto book: library.books) {
-    handleBook(book, root_node);
+  if (library) {
+    for (auto& bookId: bookIds) {
+      handleBook(library->getBookById(bookId), root_node);
+    }
   }
 
-  return node_to_string(root_node);
+  return nodeToString(root_node);
 }
 
 }

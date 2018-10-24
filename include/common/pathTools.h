@@ -59,5 +59,6 @@ bool copyFile(const string& sourcePath, const string& destPath);
 string getLastPathElement(const string& path);
 string getExecutablePath();
 string getCurrentDirectory();
+string getDataDirectory();
 bool writeTextFile(const string& path, const string& content);
 #endif

@@ -20,30 +20,14 @@
 #ifndef KIWIX_NETWORKTOOLS_H
 #define KIWIX_NETWORKTOOLS_H
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <net/if.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#endif
-
-#include <iostream>
 #include <map>
 #include <string>
-#include <vector>
 
 namespace kiwix
 {
 std::map<std::string, std::string> getNetworkInterfaces();
 std::string getBestPublicIp();
+std::string download(const std::string& url);
 }
 
 #endif

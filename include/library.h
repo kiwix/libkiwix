@@ -20,78 +20,31 @@
 #ifndef KIWIX_LIBRARY_H
 #define KIWIX_LIBRARY_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stack>
 #include <string>
 #include <vector>
-
-#include "common/regexTools.h"
-#include "common/stringTools.h"
+#include <map>
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
-using namespace std;
-
 namespace kiwix
 {
-enum supportedIndexType { UNKNOWN, XAPIAN };
 
+class Book;
+class OPDSDumper;
 
-/**
- * A class to store information about a book (a zim file)
- */
-class Book
-{
- public:
-  Book();
-  ~Book();
-
-  static bool sortByLastOpen(const Book& a, const Book& b);
-  static bool sortByTitle(const Book& a, const Book& b);
-  static bool sortBySize(const Book& a, const Book& b);
-  static bool sortByDate(const Book& a, const Book& b);
-  static bool sortByCreator(const Book& a, const Book& b);
-  static bool sortByPublisher(const Book& a, const Book& b);
-  static bool sortByLanguage(const Book& a, const Book& b);
-  string getHumanReadableIdFromPath();
-
-  string id;
-  string path;
-  string pathAbsolute;
-  string last;
-  string indexPath;
-  string indexPathAbsolute;
-  supportedIndexType indexType;
-  string title;
-  string description;
-  string language;
-  string creator;
-  string publisher;
-  string date;
-  string url;
-  string name;
-  string tags;
-  string origId;
-  string articleCount;
-  string mediaCount;
-  bool readOnly;
-  string size;
-  string favicon;
-  string faviconMimeType;
-};
-
+enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
+enum supportedListMode { ALL, REMOTE, LOCAL };
 /**
  * A Library store several books.
  */
 class Library
 {
+  std::map<std::string, kiwix::Book> books;
  public:
   Library();
   ~Library();
 
-  string version;
+  std::string version;
   /**
    * Add a book to the library.
    *
@@ -104,26 +57,99 @@ class Library
    */
   bool addBook(const Book& book);
 
+  Book& getBookById(const std::string& id);
+
   /**
    * Remove a book from the library.
    *
-   * @param bookIndex the index of the book to remove.
-   * @return True
+   * @param id the id of the book to remove.
+   * @return True if the book were in the lirbrary and has been removed.
    */
-  bool removeBookByIndex(const unsigned int bookIndex);
-  vector<kiwix::Book> books;
+  bool removeBookById(const std::string& id);
 
-  /*
-   * 'current' is the variable storing the current content/book id
-   * in the library. This is used to be able to load per default a
-   * content. As Kiwix may work with many library XML files, you may
-   * have "current" defined many time with different values. The
-   * last XML file read has the priority, Although we do not have an
-   * library object for each file, we want to be able to fallback to
-   * an 'old' current book if the one which should be load
-   * failed. That is the reason why we need a stack here
+  /**
+   * Write the library to a file.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly save.
    */
-  stack<string> current;
+  bool writeToFile(const std::string& path);
+
+  /**
+   * Get the number of book in the library.
+   *
+   * @param localBooks If we must count local books (books with a path).
+   * @param remoteBooks If we must count remote books (books with an url)
+   * @return The number of books.
+   */
+  unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
+
+  /**
+   * Get all langagues of the books in the library.
+   *
+   * @return A list of languages.
+   */
+  std::vector<std::string> getBooksLanguages();
+
+  /**
+   * Get all book creators of the books in the library.
+   *
+   * @return A list of book creators.
+   */
+  std::vector<std::string> getBooksCreators();
+
+  /**
+   * Get all book publishers of the books in the library.
+   *
+   * @return A list of book publishers.
+   */
+  std::vector<std::string> getBooksPublishers();
+
+  /**
+   * Get all book ids of the books in the library.
+   *
+   * @return A list of book ids.
+   */
+  std::vector<std::string> getBooksIds();
+
+  /**
+   * Filter the library and generate a new one with the keep elements.
+   *
+   * This is equivalent to `listBookIds(ALL, UNSORTED, search)`.
+   *
+   * @param search List only books with search in the title or description.
+   * @return The list of bookIds corresponding to the query.
+   */
+  std::vector<std::string> filter(const std::string& search);
+
+
+  /**
+   * List books in the library.
+   *
+   * @param mode The mode of listing :
+   *             - ALL list all books.
+   *               (LOCAL and REMOTE. Other filters are applied).
+   *             - LOCAL list only local books.
+   *             - REMOTE list only remote books.
+   * @param sortBy Attribute to sort by the book list.
+   * @param search List only books with search in the title, description.
+   * @param language List only books in this language.
+   * @param creator List only books of this creator.
+   * @param publisher List only books of this publisher.
+   * @param maxSize Do not list book bigger than maxSize.
+   *                Set to 0 to cancel this filter.
+   * @return The list of bookIds corresponding to the query.
+   */
+  std::vector<std::string> listBooksIds(
+    supportedListMode = ALL,
+    supportedListSortBy sortBy = UNSORTED,
+    const std::string& search = "",
+    const std::string& language = "",
+    const std::string& creator = "",
+    const std::string& publisher = "",
+    size_t maxSize = 0);
+
+  friend class OPDSDumper;
 };
 }
 

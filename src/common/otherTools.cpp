@@ -27,3 +27,19 @@ void kiwix::sleep(unsigned int milliseconds)
   usleep(1000 * milliseconds);
 #endif
 }
+
+
+struct XmlStringWriter: pugi::xml_writer
+{
+  std::string result;
+  virtual void write(const void* data, size_t size){
+    result.append(static_cast<const char*>(data), size);
+  }
+};
+
+std::string kiwix::nodeToString(pugi::xml_node node)
+{
+  XmlStringWriter writer;
+  node.print(writer, "  ");
+  return writer.result;
+}

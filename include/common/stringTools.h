@@ -35,8 +35,8 @@ namespace kiwix
 {
 #ifndef __ANDROID__
 
-std::string beautifyInteger(const unsigned int number);
-std::string beautifyFileSize(const unsigned int number);
+std::string beautifyInteger(uint64_t number);
+std::string beautifyFileSize(uint64_t number);
 void printStringInHexadecimal(const char* s);
 void printStringInHexadecimal(icu::UnicodeString s);
 void stringReplacement(std::string& str,
@@ -64,6 +64,12 @@ std::string lcFirst(const std::string& word);
 std::string toTitle(const std::string& word);
 
 std::string normalize(const std::string& word);
+template<typename T>
+std::string to_string(T value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
 }
-
+} //namespace kiwix
 #endif

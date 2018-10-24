@@ -1,4 +1,5 @@
 headers = [
+  'book.h',
   'common.h',
   'library.h',
   'manager.h',

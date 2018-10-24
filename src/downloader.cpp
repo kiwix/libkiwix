@@ -20,102 +20,135 @@
 #include "downloader.h"
 #include "common/pathTools.h"
 
-#ifndef _WIN32
-# include <unistd.h>
-#endif
+#include <algorithm>
+#include <thread>
+#include <chrono>
+
 #include <iostream>
+
+#include "aria2.h"
+#include "xmlrpc.h"
+#include "common/otherTools.h"
+#include <pugixml.hpp>
 
 namespace kiwix
 {
 
-pthread_mutex_t Downloader::globalLock = PTHREAD_MUTEX_INITIALIZER;
-
+void Download::updateStatus(bool follow)
+{
+  static std::vector<std::string> statusKey = {"status", "files", "totalLength",
+                                               "completedLength", "followedBy",
+                                               "downloadSpeed", "verifiedLength"};
+  std::string strStatus;
+  if(follow && !m_followedBy.empty()) {
+    strStatus = mp_aria->tellStatus(m_followedBy, statusKey);
+  } else {
+    strStatus = mp_aria->tellStatus(m_did, statusKey);
+  }
+//  std::cout << strStatus << std::endl;
+  MethodResponse response(strStatus);
+  if (response.isFault()) {
+    m_status = Download::K_UNKNOWN;
+    return;
+  }
+  auto structNode = response.getParams().getParam(0).getValue().getStruct();
+  auto _status = structNode.getMember("status").getValue().getAsS();
+  auto status = _status == "active" ? Download::K_ACTIVE
+              : _status == "waiting" ? Download::K_WAITING
+              : _status == "paused" ? Download::K_PAUSED
+              : _status == "error" ? Download::K_ERROR
+              : _status == "complete" ? Download::K_COMPLETE
+              : _status == "removed" ? Download::K_REMOVED
+              : Download::K_UNKNOWN;
+  if (status == K_COMPLETE) {
+    try {
+      auto followedByMember = structNode.getMember("followedBy");
+      m_followedBy = followedByMember.getValue().getArray().getValue(0).getAsS();
+      if (follow) {
+        status = K_ACTIVE;
+        updateStatus(true);
+        return;
+      }
+    } catch (InvalidRPCNode& e) { }
+  }
+  m_status = status;
+  m_totalLength = structNode.getMember("totalLength").getValue().getAsI();
+  m_completedLength = structNode.getMember("completedLength").getValue().getAsI();
+  m_downloadSpeed = structNode.getMember("downloadSpeed").getValue().getAsI();
+  try {
+    auto verifiedLengthValue = structNode.getMember("verifiedLength").getValue();
+    m_verifiedLength = verifiedLengthValue.getAsI();
+  } catch (InvalidRPCNode& e) { m_verifiedLength = 0; }
+  auto filesMember = structNode.getMember("files");
+  auto fileStruct = filesMember.getValue().getArray().getValue(0).getStruct();
+  m_path = fileStruct.getMember("path").getValue().getAsS();
+  auto urisArray = fileStruct.getMember("uris").getValue().getArray();
+  int index = 0;
+  m_uris.clear();
+  while(true) {
+    try {
+      auto uriNode = urisArray.getValue(index++).getStruct().getMember("uri");
+      m_uris.push_back(uriNode.getValue().getAsS());
+    } catch(InvalidRPCNode& e) { break; }
+  }
+}
 
 /* Constructor */
-Downloader::Downloader()
+Downloader::Downloader() :
+  mp_aria(new Aria2())
 {
-#ifdef ENABLE_LIBARIA2
-  aria2::SessionConfig config;
-  config.downloadEventCallback = Downloader::downloadEventCallback;
-  config.userData = this;
-  tmpDir = makeTmpDirectory();
-  aria2::KeyVals options;
-  options.push_back(std::pair<std::string, std::string>("dir", tmpDir));
-  session = aria2::sessionNew(options, config);
-#endif
+  for (auto gid : mp_aria->tellActive()) {
+    m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+    m_knownDownloads[gid]->updateStatus();
+  }
 }
 
 
 /* Destructor */
 Downloader::~Downloader()
 {
-#ifdef ENABLE_LIBARIA2
-  aria2::sessionFinal(session);
-#endif
-  rmdir(tmpDir.c_str());
 }
 
-#ifdef ENABLE_LIBARIA2
-int Downloader::downloadEventCallback(aria2::Session* session,
-                                      aria2::DownloadEvent event,
-                                      aria2::A2Gid gid,
-                                      void* userData)
+void Downloader::close()
 {
-  Downloader* downloader = static_cast<Downloader*>(userData);
-
-  auto fileHandle = downloader->fileHandle;
-  auto dh = aria2::getDownloadHandle(session, gid);
-
-  if (!dh) {
-    return 0;
-  }
-
-  switch (event) {
-    case aria2::EVENT_ON_DOWNLOAD_COMPLETE:
-      {
-        if (dh->getNumFiles() > 0) {
-          auto f = dh->getFile(1);
-          fileHandle->path = f.path;
-          fileHandle->success = true;
-        }
-      }
-      break;
-    case aria2::EVENT_ON_DOWNLOAD_ERROR:
-      {
-        fileHandle->success = false;
-      }
-      break;
-    default:
-      break;
-  }
-  aria2::deleteDownloadHandle(dh);
-  return 0;
+  mp_aria->close();
 }
-#endif
 
-DownloadedFile Downloader::download(const std::string& url) {
-  pthread_mutex_lock(&globalLock);
-  DownloadedFile fileHandle;
-#ifdef ENABLE_LIBARIA2
+std::vector<std::string> Downloader::getDownloadIds() {
+  std::vector<std::string> ret;
+  for(auto& p:m_knownDownloads) {
+    ret.push_back(p.first);
+  }
+  return ret;
+}
+
+Download* Downloader::startDownload(const std::string& uri)
+{
+  for (auto& p: m_knownDownloads) {
+    auto& d = p.second;
+    auto& uris = d->getUris();
+    if (std::find(uris.begin(), uris.end(), uri) != uris.end())
+      return d.get();
+  }
+  std::vector<std::string> uris = {uri};
+  auto gid = mp_aria->addUri(uris);
+  m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+  return m_knownDownloads[gid].get();
+}
+
+Download* Downloader::getDownload(const std::string& did)
+{
   try {
-    std::vector<std::string> uris = {url};
-    aria2::KeyVals options;
-    aria2::A2Gid gid;
-    int ret;
-    DownloadedFile fileHandle;
-    
-    ret = aria2::addUri(session, &gid, uris, options);
-    if (ret < 0) {
-      std::cerr << "Failed to download" << std::endl;
-    } else {
-      this->fileHandle = &fileHandle;
-      aria2::run(session, aria2::RUN_DEFAULT);
+    return m_knownDownloads.at(did).get();
+  } catch(exception& e) {
+    for (auto gid : mp_aria->tellActive()) {
+      if (gid == did) {
+        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        return m_knownDownloads[gid].get();
+      }
     }
-  } catch (...) {};
-  this->fileHandle = nullptr;
-  pthread_mutex_unlock(&globalLock);
-#endif
-  return fileHandle;
+    throw e;
+  }
 }
 
 }
