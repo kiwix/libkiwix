@@ -21,7 +21,7 @@ Aria2::Aria2():
   m_downloadDir = getDataDirectory();
   std::vector<const char*> callCmd;
 
-  std::string rpc_port = "--rpc-listen-port=" + std::to_string(m_port);
+  std::string rpc_port = "--rpc-listen-port=" + to_string(m_port);
   std::string download_dir = "--dir=" + getDataDirectory();
   std::string session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
   std::string session = "--save-session=" + session_file;
@@ -32,7 +32,7 @@ Aria2::Aria2():
 #else
   pid_t pid = getpid();
 #endif
-  std::string stop_with_pid = "--stop-with-process=" + std::to_string(pid);
+  std::string stop_with_pid = "--stop-with-process=" + to_string(pid);
   std::string rpc_secret = "--rpc-secret=" + m_secret;
   m_secret = "token:"+m_secret;
 

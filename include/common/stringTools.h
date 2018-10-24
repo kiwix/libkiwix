@@ -64,6 +64,12 @@ std::string lcFirst(const std::string& word);
 std::string toTitle(const std::string& word);
 
 std::string normalize(const std::string& word);
+template<typename T>
+std::string to_string(T value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
 }
-
+} //namespace kiwix
 #endif

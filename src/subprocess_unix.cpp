@@ -7,6 +7,7 @@
 #include <iostream>
 #include <signal.h>
 #include <sys/wait.h>
+#include <stdlib.h>
 
 UnixImpl::UnixImpl():
   m_pid(0),
@@ -19,11 +20,31 @@ UnixImpl::UnixImpl():
 UnixImpl::~UnixImpl()
 {
   kill();
+// Android has no pthread_cancel :(
+#ifdef __ANDROID__
+  pthread_kill(m_waitingThread, SIGUSR1);
+#else
   pthread_cancel(m_waitingThread);
+#endif
 }
+
+#ifdef __ANDROID__
+void thread_exit_handler(int sig) {
+  pthread_exit(0);
+}
+#endif
 
 void* UnixImpl::waitForPID(void* _self)
 {
+#ifdef __ANDROID__
+  struct sigaction actions;
+  memset(&actions, 0, sizeof(actions));
+  sigemptyset(&actions.sa_mask);
+  actions.sa_flags = 0;
+  actions.sa_handler = thread_exit_handler;
+  sigaction(SIGUSR1, &actions, NULL);
+#endif
+
   UnixImpl* self = static_cast<UnixImpl*>(_self);
   waitpid(self->m_pid, NULL, WEXITED);
 
