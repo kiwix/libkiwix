@@ -85,6 +85,15 @@ class OPDSDumper
   void setSearchDescriptionUrl(const std::string& searchDescriptionUrl) { this->searchDescriptionUrl = searchDescriptionUrl; }
 
   /**
+   * Set some informations about the search results.
+   *
+   * @param totalResult the total number of results of the search.
+   * @param startIndex the start index of the result.
+   * @param count the number of result of the current set (or page).
+   */
+  void setOpenSearchInfo(int totalResult, int startIndex, int count);
+
+  /**
    * Set the library to dump.
    *
    * @param library The library to dump.
@@ -98,6 +107,10 @@ class OPDSDumper
   std::string date;
   std::string rootLocation;
   std::string searchDescriptionUrl;
+  int m_totalResults;
+  int m_startIndex;
+  int m_count;
+  bool m_isSearchResult = false;
 
  private:
   pugi::xml_node handleBook(Book book, pugi::xml_node root_node);
