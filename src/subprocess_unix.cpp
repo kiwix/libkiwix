@@ -58,7 +58,6 @@ void* UnixImpl::waitForPID(void* _self)
 void UnixImpl::run(const commandLine_t& commandLine)
 {
   const char* binary = commandLine[0];
-  std::cerr << "running " << binary << std::endl;
   int pid = fork();
   switch(pid) {
     case -1:

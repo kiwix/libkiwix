@@ -42,7 +42,6 @@ Library::~Library()
 bool Library::addBook(const Book& book)
 {
   /* Try to find it */
-  std::vector<kiwix::Book>::iterator itr;
   try {
     auto& oldbook = books.at(book.getId());
     oldbook.update(book);

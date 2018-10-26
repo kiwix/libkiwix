@@ -87,7 +87,7 @@ void Book::update(const kiwix::Reader& reader)
   m_origId = reader.getOrigId();
   m_articleCount = reader.getArticleCount();
   m_mediaCount = reader.getMediaCount();
-  m_size = reader.getFileSize();
+  m_size = reader.getFileSize() << 10;
 
   reader.getFavicon(m_favicon, m_faviconMimeType);
 }
