@@ -32,6 +32,7 @@ namespace kiwix
 {
 void sleep(unsigned int milliseconds);
 std::string nodeToString(pugi::xml_node node);
+std::string converta2toa3(const std::string& a2code);
 }
 
 #endif
