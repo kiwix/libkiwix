@@ -3,6 +3,7 @@
 
 #include "subprocess.h"
 
+#include <windows.h>
 #include <synchapi.h>
 
 class WinImpl : public SubprocessImpl
