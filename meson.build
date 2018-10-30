@@ -19,8 +19,10 @@ libzim_dep = dependency('libzim', version : '>=4.0.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
 
+extra_cflags = ''
 if target_machine.system() == 'windows' and static_deps
   add_project_arguments('-DCURL_STATICLIB', language : 'cpp')
+  extra_cflags += '-DCURL_STATICLIB'
 endif
 
 
@@ -112,11 +114,10 @@ if xapian_dep.found()
     pkg_requires += ['xapian-core']
 endif
 
-extra_cflags = ''
 if has_ctpp2_dep
   extra_libs += ctpp2_link_args
   if ctpp2_include_path != ''
-    extra_cflags = '-I'+ctpp2_include_path
+    extra_cflags = ' -I'+ctpp2_include_path
   endif
 endif
 
