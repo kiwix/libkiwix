@@ -36,7 +36,11 @@ Aria2::Aria2():
   std::string rpc_secret = "--rpc-secret=" + m_secret;
   m_secret = "token:"+m_secret;
 
+#ifdef _WIN32
+  callCmd.push_back("aria2c.exe");
+#else
   callCmd.push_back("aria2c");
+#endif
   callCmd.push_back("--enable-rpc");
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());
