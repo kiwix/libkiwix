@@ -55,7 +55,7 @@ void* UnixImpl::waitForPID(void* _self)
   return self;
 }
 
-void UnixImpl::run(const commandLine_t& commandLine)
+void UnixImpl::run(commandLine_t& commandLine)
 {
   const char* binary = commandLine[0];
   int pid = fork();
@@ -64,6 +64,7 @@ void UnixImpl::run(const commandLine_t& commandLine)
       std::cerr << "cannot fork" << std::endl;
       break;
     case 0:
+      commandLine.push_back(NULL);
       if (execvp(binary, const_cast<char* const*>(commandLine.data()))) {
         perror("Cannot launch\n");
         exit(-1);

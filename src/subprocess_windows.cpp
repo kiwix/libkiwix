@@ -50,7 +50,7 @@ std::unique_ptr<wchar_t[]> toWideChar(const std::string& value)
 }
 
 
-void WinImpl::run(const commandLine_t& commandLine)
+void WinImpl::run(commandLine_t& commandLine)
 {
   STARTUPINFOW startInfo = {0};
   PROCESS_INFORMATION procInfo;

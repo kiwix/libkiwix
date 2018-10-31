@@ -61,7 +61,6 @@ Aria2::Aria2():
   callCmd.push_back("--max-concurrent-downloads=42");
   callCmd.push_back("--rpc-max-request-size=6M");
   callCmd.push_back("--file-allocation=none");
-  callCmd.push_back(NULL);
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
   curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");

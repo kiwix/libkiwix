@@ -18,7 +18,7 @@ class WinImpl : public SubprocessImpl
     WinImpl();
     virtual ~WinImpl();
 
-    void run(const commandLine_t& commandLine);
+    void run(commandLine_t& commandLine);
     bool kill();
     bool isRunning();
 

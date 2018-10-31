@@ -8,7 +8,7 @@
 # include "subprocess_unix.h"
 #endif
 
-Subprocess::Subprocess(std::unique_ptr<SubprocessImpl> impl, const commandLine_t& commandLine) :
+Subprocess::Subprocess(std::unique_ptr<SubprocessImpl> impl, commandLine_t& commandLine) :
   mp_impl(std::move(impl))
 {
   mp_impl->run(commandLine);
@@ -19,7 +19,7 @@ Subprocess::~Subprocess()
   mp_impl->kill();
 }
 
-std::unique_ptr<Subprocess> Subprocess::run(const commandLine_t& commandLine)
+std::unique_ptr<Subprocess> Subprocess::run(commandLine_t& commandLine)
 {
 #ifdef _WIN32
   auto impl = std::unique_ptr<SubprocessImpl>(new WinImpl);
