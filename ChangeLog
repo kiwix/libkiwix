@@ -1,3 +1,51 @@
+kiwix-lib 3.0.0
+===============
+
+ * Change the downloader to use aria2 using a separated process (with rpc)
+   instead of using the libaria2. This simplify a lot the link process to
+   libaria2 on Windows.
+    - kiwix-lib doesn't depend on libaria2 anymore.
+    - kiwix-lib now depends on libcurl.
+ * [API break] Library class API has been updated :
+    - Books are referenced by id, not index. A lot of methods have been
+      updated this way.
+    - Books "list" is now private.
+    - There is no more "current" book.
+    - listBooksIds's filters have been updated.
+ * [API break] Book class API has been updated :
+    - Move the definition of Book in `book.h`.
+    - Use getter/setter methods instead public members.
+    - Size (getSize/setSize) is now returned in bytes, not kB.
+    - Dependending of how the book has been initialized (opdsfeed), the
+      faviconUrl may be stored in the book, the favicon being downloaded when
+      using `getFavicon`.
+    - The path (and indexPath) are always absolute path.
+    - Book has now a downloadId, corresponding to the aria2 download id (if
+      exists)
+  * [API break] Manager class API has been updated :
+    - The manager is mainly use to fill a Libray from a "library.xml" file or
+      opds feed. Other operations (has removeBookById, setBookPath, filter, ...)
+      have been removed.
+    - The manager use a intermediate class (LibraryManipulator) to add book to
+      the library. This dependency injection allow caller code to hook the add
+      of a book to the library.
+    - The manager work on a existing Library. It doesn't how a internal
+      Library.
+  * [API break] OpdsDumper class API has been updated :
+    - dumpOPDSFeed method now take the list of bookIds to dump instead of
+      dumping all books in the library.
+    - OpdsDumper can now dump openSearch result information (total result
+      count, start index, ...).
+  * [API break] Common tools API has been updated :
+    - `base64_encode` and `base64_decode` take std::string as arguments.
+    - New `download` function in networkTools.h using libcurl.
+    - New `getDataDirectory` function in pathTools.
+    - Better `beautifyInteger` and `beautifyFileSize` functions.
+    - New `nodeToString` function serializing a pugi::xml_node to a string.
+    - New `converta2toa3` function to convert alpha2 language code to aplha3
+      language code.
+
+
 kiwix-lib 2.0.2
 ===============
 
