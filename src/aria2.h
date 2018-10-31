@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <curl/curl.h>
+#include <pthread.h>
 
 namespace kiwix {
 

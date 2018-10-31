@@ -18,7 +18,7 @@ class UnixImpl : public SubprocessImpl
     UnixImpl();
     virtual ~UnixImpl();
 
-    void run(const commandLine_t& commandLine);
+    void run(commandLine_t& commandLine);
     bool kill();
     bool isRunning();
 

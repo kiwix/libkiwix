@@ -36,7 +36,11 @@ Aria2::Aria2():
   std::string rpc_secret = "--rpc-secret=" + m_secret;
   m_secret = "token:"+m_secret;
 
+#ifdef _WIN32
+  callCmd.push_back("aria2c.exe");
+#else
   callCmd.push_back("aria2c");
+#endif
   callCmd.push_back("--enable-rpc");
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());
@@ -57,7 +61,6 @@ Aria2::Aria2():
   callCmd.push_back("--max-concurrent-downloads=42");
   callCmd.push_back("--rpc-max-request-size=6M");
   callCmd.push_back("--file-allocation=none");
-  callCmd.push_back(NULL);
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
   curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");

@@ -11,7 +11,7 @@ typedef std::vector<const char *> commandLine_t;
 class SubprocessImpl
 {
   public:
-    virtual void run(const commandLine_t& commandLine) = 0;
+    virtual void run(commandLine_t& commandLine) = 0;
     virtual bool kill() = 0;
     virtual bool isRunning() = 0;
     virtual ~SubprocessImpl() = default;
@@ -22,10 +22,10 @@ class Subprocess
   private:
     // Impl depends of the system (window, unix, ...)
     std::unique_ptr<SubprocessImpl> mp_impl;
-    Subprocess(std::unique_ptr<SubprocessImpl> impl, const commandLine_t& commandLine);
+    Subprocess(std::unique_ptr<SubprocessImpl> impl, commandLine_t& commandLine);
 
   public:
-    static std::unique_ptr<Subprocess> run(const commandLine_t& commandLine);
+    static std::unique_ptr<Subprocess> run(commandLine_t& commandLine);
     ~Subprocess();
 
     bool isRunning();
