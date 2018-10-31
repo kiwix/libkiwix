@@ -55,15 +55,14 @@ void WinImpl::run(const commandLine_t& commandLine)
   STARTUPINFOW startInfo = {0};
   PROCESS_INFORMATION procInfo;
   startInfo.cb = sizeof(startInfo);
-  const char* binary = commandLine[0];
-  std::cerr << "running " << binary << std::endl;
   std::ostringstream oss;
   for(auto& item: commandLine) {
     oss << item << " ";
   }
+  auto wCommandLine = toWideChar(oss.str());
   if (CreateProcessW(
-    toWideChar(binary).get(),
-    toWideChar(oss.str()).get(),
+    NULL,
+    wCommandLine.get(),
     NULL,
     NULL,
     false,
