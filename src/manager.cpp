@@ -95,6 +95,15 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
 {
   pugi::xml_node libraryNode = doc.child("feed");
 
+  try {
+    m_totalBooks = strtoull(libraryNode.child("totalResults").child_value(), 0, 0);
+    m_startIndex = strtoull(libraryNode.child("startIndex").child_value(), 0, 0);
+    m_itemsPerPage = strtoull(libraryNode.child("itemsPerPage").child_value(), 0, 0);
+    m_hasSearchResult = true;
+  } catch(...) {
+    m_hasSearchResult = false;
+  }
+
   for (pugi::xml_node entryNode = libraryNode.child("entry"); entryNode;
        entryNode = entryNode.next_sibling("entry")) {
     kiwix::Book book;
