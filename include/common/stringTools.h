@@ -71,5 +71,13 @@ std::string to_string(T value)
     oss << value;
     return oss.str();
 }
+
+template<typename T>
+T extractFromString(const std::string& str) {
+    std::istringstream iss(str);
+    T ret;
+    iss >> ret;
+    return ret;
+}
 } //namespace kiwix
 #endif

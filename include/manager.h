@@ -196,7 +196,10 @@ class Manager
 
   std::string writableLibraryPath;
 
-  std::vector<std::string> bookIdList;
+  bool m_hasSearchResult = false;
+  uint64_t m_totalBooks = 0;
+  uint64_t m_startIndex = 0;
+  uint64_t m_itemsPerPage = 0;
 
  protected:
   kiwix::LibraryManipulator* manipulator;
