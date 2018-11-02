@@ -72,12 +72,12 @@ void Download::updateStatus(bool follow)
     } catch (InvalidRPCNode& e) { }
   }
   m_status = status;
-  m_totalLength = structNode.getMember("totalLength").getValue().getAsI();
-  m_completedLength = structNode.getMember("completedLength").getValue().getAsI();
-  m_downloadSpeed = structNode.getMember("downloadSpeed").getValue().getAsI();
+  m_totalLength = extractFromString<uint64_t>(structNode.getMember("totalLength").getValue().getAsS());
+  m_completedLength = extractFromString<uint64_t>(structNode.getMember("completedLength").getValue().getAsS());
+  m_downloadSpeed = extractFromString<uint64_t>(structNode.getMember("downloadSpeed").getValue().getAsS());
   try {
     auto verifiedLengthValue = structNode.getMember("verifiedLength").getValue();
-    m_verifiedLength = verifiedLengthValue.getAsI();
+    m_verifiedLength = extractFromString<uint64_t>(verifiedLengthValue.getAsS());
   } catch (InvalidRPCNode& e) { m_verifiedLength = 0; }
   auto filesMember = structNode.getMember("files");
   auto fileStruct = filesMember.getValue().getArray().getValue(0).getStruct();
