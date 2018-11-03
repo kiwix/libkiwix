@@ -35,9 +35,9 @@
 #endif
 
 #ifdef _WIN32
-#define SEPARATOR "\\"
+const std::string SEPARATOR("\\");
 #else
-#define SEPARATOR "/"
+const std::string SEPARATOR("/");
 #include <unistd.h>
 #endif
 
@@ -66,9 +66,7 @@ string computeRelativePath(const string path, const string absolutePath)
   while (commonCount < pathParts.size()
          && commonCount < absolutePathParts.size()
          && pathParts[commonCount] == absolutePathParts[commonCount]) {
-    if (!pathParts[commonCount].empty()) {
       commonCount++;
-    }
   }
 
   string relativePath;
@@ -76,18 +74,17 @@ string computeRelativePath(const string path, const string absolutePath)
   /* On Windows you have a token more because the root is represented
      by a letter */
   if (commonCount == 0) {
-    relativePath = "../";
+    relativePath = ".." + SEPARATOR;
   }
 #endif
 
   for (unsigned int i = commonCount; i < pathParts.size(); i++) {
-    relativePath += "../";
+    relativePath += ".." + SEPARATOR;
   }
   for (unsigned int i = commonCount; i < absolutePathParts.size(); i++) {
     relativePath += absolutePathParts[i];
-    relativePath += i + 1 < absolutePathParts.size() ? "/" : "";
+    relativePath += i + 1 < absolutePathParts.size() ? SEPARATOR : "";
   }
-
   return relativePath;
 }
 
