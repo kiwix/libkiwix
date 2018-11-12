@@ -44,7 +44,7 @@ Aria2::Aria2():
   m_secret = "token:"+m_secret;
 
   std::string aria2cmd = appendToDirectory(
-    removeLastPathElement(getExecutablePath()),
+    removeLastPathElement(getExecutablePath(), true, true),
     ARIA2_CMD);
   if (fileExists(aria2cmd)) {
     // A local aria2c exe exists (packaged with kiwix-desktop), use it.
@@ -81,7 +81,7 @@ Aria2::Aria2():
 
   int watchdog = 50;
   while(--watchdog) {
-    std::this_thread::sleep_for(std::chrono::microseconds(100));
+    std::this_thread::sleep_for(std::chrono::microseconds(10000));
     auto res = curl_easy_perform(mp_curl);
     if (res == CURLE_OK) {
       break;
