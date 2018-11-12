@@ -91,6 +91,7 @@ static std::map<std::string, std::string> codeisomapping {
   { "ee", "est" },
   { "eg", "egy" },
   { "eh", "esh" },
+  { "en", "eng" },
   { "er", "eri" },
   { "es", "esp" },
   { "et", "eth" },
