@@ -1,3 +1,11 @@
+kiwix-lib 3.0.3
+===============
+
+ * Add the 'en' language to the mapping alpha2-code ('en') to alpha3-code
+ ('eng').
+ * Correctly write the 'ArticleCount' and 'MediaCount' in the library.xml.
+ * Correctly fill the book size for the zim file size.
+
 kiwix-lib 3.0.2
 ===============
 
