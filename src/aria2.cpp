@@ -9,6 +9,13 @@
 #include <common/pathTools.h>
 #include <downloader.h> // For AriaError
 
+#ifdef _WIN32
+# define ARIA2_CMD "aria2c.exe"
+#else
+# define ARIA2_CMD "aria2c"
+#endif
+
+
 namespace kiwix {
 
 Aria2::Aria2():
@@ -36,11 +43,16 @@ Aria2::Aria2():
   std::string rpc_secret = "--rpc-secret=" + m_secret;
   m_secret = "token:"+m_secret;
 
-#ifdef _WIN32
-  callCmd.push_back("aria2c.exe");
-#else
-  callCmd.push_back("aria2c");
-#endif
+  std::string aria2cmd = appendToDirectory(
+    removeLastPathElement(getExecutablePath()),
+    ARIA2_CMD);
+  if (fileExists(aria2cmd)) {
+    // A local aria2c exe exists (packaged with kiwix-desktop), use it.
+    callCmd.push_back(aria2cmd.c_str());
+  } else {
+    // Try to use a potential installed aria2c.
+    callCmd.push_back(ARIA2_CMD);
+  }
   callCmd.push_back("--enable-rpc");
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());
