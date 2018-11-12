@@ -145,10 +145,10 @@ bool Library::writeToFile(const std::string& path) {
         bookNode.append_attribute("url") = book.getUrl().c_str();
       }
 
-      if (!book.getArticleCount())
+      if (book.getArticleCount())
         bookNode.append_attribute("articleCount") = to_string(book.getArticleCount()).c_str();
 
-      if (!book.getMediaCount())
+      if (book.getMediaCount())
         bookNode.append_attribute("mediaCount") = to_string(book.getMediaCount()).c_str();
 
       if (book.getSize()) {
