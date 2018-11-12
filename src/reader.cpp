@@ -851,7 +851,7 @@ bool Reader::isCorrupted() const
 unsigned int Reader::getFileSize() const
 {
   zim::File* file = this->getZimFileHandler();
-  zim::offset_type size = 0;
+  zim::size_type size = 0;
 
   if (file != NULL) {
     size = file->getFilesize();
