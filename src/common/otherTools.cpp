@@ -20,7 +20,7 @@
 #include <common/otherTools.h>
 #include <map>
 
-std::map<std::string, std::string> codeisomapping {
+static std::map<std::string, std::string> codeisomapping {
   { "af", "afg" },
   { "ax", "ala" },
   { "al", "alb" },
