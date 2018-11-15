@@ -68,6 +68,7 @@ class Book
   const uint64_t& getMediaCount() const { return m_mediaCount; }
   const uint64_t& getSize() const { return m_size; }
   const std::string& getFavicon() const;
+  const std::string& getFaviconUrl() const { return m_faviconUrl; }
   const std::string& getFaviconMimeType() const { return m_faviconMimeType; }
   const std::string& getDownloadId() const { return m_downloadId; }
 
