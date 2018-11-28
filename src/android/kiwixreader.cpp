@@ -24,7 +24,7 @@
 #include <android/log.h>
 #include "org_kiwix_kiwixlib_JNIKiwixReader.h"
 
-#include "common/base64.h"
+#include "tools/base64.h"
 #include "reader.h"
 #include "utils.h"
 

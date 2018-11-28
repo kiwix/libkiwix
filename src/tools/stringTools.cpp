@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <common/stringTools.h>
+#include <tools/stringTools.h>
 
 #include <unicode/normlzr.h>
 #include <unicode/rep.h>

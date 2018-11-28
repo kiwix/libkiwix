@@ -5,8 +5,8 @@
 #include <sstream>
 #include <thread>
 #include <chrono>
-#include <common/otherTools.h>
-#include <common/pathTools.h>
+#include <tools/otherTools.h>
+#include <tools/pathTools.h>
 #include <downloader.h> // For AriaError
 
 #ifdef _WIN32

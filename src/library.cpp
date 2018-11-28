@@ -21,9 +21,9 @@
 #include "book.h"
 #include "libxml_dumper.h"
 
-#include "common/base64.h"
-#include "common/regexTools.h"
-#include "common/pathTools.h"
+#include "tools/base64.h"
+#include "tools/regexTools.h"
+#include "tools/pathTools.h"
 
 #include <pugixml.hpp>
 #include <algorithm>
