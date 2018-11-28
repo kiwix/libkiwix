@@ -3,6 +3,7 @@ headers = [
   'common.h',
   'library.h',
   'manager.h',
+  'libxml_dumper.h',
   'opds_dumper.h',
   'downloader.h',
   'reader.h',

@@ -1,0 +1,108 @@
+/*
+ * Copyright 2017 Matthieu Gautier <mgautier@kymeria.fr>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU  General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
+
+#include "libxml_dumper.h"
+#include "book.h"
+
+#include <common/base64.h>
+#include <common/stringTools.h>
+#include <common/otherTools.h>
+
+namespace kiwix
+{
+/* Constructor */
+LibXMLDumper::LibXMLDumper(Library* library)
+  : library(library)
+{
+}
+/* Destructor */
+LibXMLDumper::~LibXMLDumper()
+{
+}
+
+#define ADD_ATTRIBUTE(node, name, value) { (node).append_attribute((name)) = (value).c_str(); }
+#define ADD_ATTR_NOT_EMPTY(node, name, value) { if (!(value).empty()) ADD_ATTRIBUTE(node, name, value); }
+
+void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
+  if (book.readOnly())
+    return;
+
+  auto entry_node = root_node.append_child("book");
+  ADD_ATTRIBUTE(entry_node, "id", book.getId());
+
+  if (!book.getPath().empty()) {
+    ADD_ATTRIBUTE(entry_node, "path", computeRelativePath(baseDir, book.getPath()));
+  }
+
+  if (!book.getIndexPath().empty()) {
+    ADD_ATTRIBUTE(entry_node, "indexPath", computeRelativePath(baseDir, book.getIndexPath()));
+    entry_node.append_attribute("indexType") = "xapian";
+  }
+
+  if (book.getOrigId().empty()) {
+    ADD_ATTR_NOT_EMPTY(entry_node, "title", book.getTitle());
+    ADD_ATTR_NOT_EMPTY(entry_node, "name", book.getName());
+    ADD_ATTR_NOT_EMPTY(entry_node, "tags", book.getTags());
+    ADD_ATTR_NOT_EMPTY(entry_node, "description", book.getDescription());
+    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getLanguage());
+    ADD_ATTR_NOT_EMPTY(entry_node, "creator", book.getCreator());
+    ADD_ATTR_NOT_EMPTY(entry_node, "publisher", book.getPublisher());
+    ADD_ATTR_NOT_EMPTY(entry_node, "faviconMimeType", book.getFaviconMimeType());
+    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getLanguage());
+    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getLanguage());
+    if (!book.getFavicon().empty())
+      ADD_ATTRIBUTE(entry_node, "favicon", base64_encode(book.getFavicon()));
+  } else {
+    ADD_ATTRIBUTE(entry_node, "origId", book.getOrigId());
+  }
+
+  ADD_ATTR_NOT_EMPTY(entry_node, "date", book.getDate());
+  ADD_ATTR_NOT_EMPTY(entry_node, "url", book.getUrl());
+
+  if (book.getArticleCount())
+    ADD_ATTRIBUTE(entry_node, "articleCount", to_string(book.getArticleCount()));
+
+  if (book.getMediaCount())
+    ADD_ATTRIBUTE(entry_node, "mediaCount", to_string(book.getMediaCount()));
+
+  if (book.getSize())
+    ADD_ATTRIBUTE(entry_node, "size", to_string(book.getSize()>>10));
+
+  ADD_ATTR_NOT_EMPTY(entry_node, "downloadId", book.getDownloadId());
+}
+
+string LibXMLDumper::dumpLibXMLContent(const std::vector<std::string>& bookIds)
+{
+  pugi::xml_document doc;
+
+  /* Add the library node */
+  pugi::xml_node libraryNode = doc.append_child("library");
+
+  libraryNode.append_attribute("version") = KIWIX_LIBRARY_VERSION;
+
+  if (library) {
+    for (auto& bookId: bookIds) {
+      handleBook(library->getBookById(bookId), libraryNode);
+    }
+  }
+
+  return nodeToString(libraryNode);
+}
+
+}

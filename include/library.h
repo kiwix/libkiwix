@@ -52,7 +52,6 @@ class Library
   Library();
   ~Library();
 
-  std::string version;
   /**
    * Add a book to the library.
    *
@@ -163,6 +162,7 @@ class Library
     size_t maxSize = 0);
 
   friend class OPDSDumper;
+  friend class libXMLDumper;
 };
 }
 

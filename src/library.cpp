@@ -19,6 +19,7 @@
 
 #include "library.h"
 #include "book.h"
+#include "libxml_dumper.h"
 
 #include "common/base64.h"
 #include "common/regexTools.h"
@@ -30,7 +31,7 @@
 namespace kiwix
 {
 /* Constructor */
-Library::Library() : version(KIWIX_LIBRARY_VERSION)
+Library::Library()
 {
 }
 /* Destructor */
@@ -78,91 +79,10 @@ unsigned int Library::getBookCount(const bool localBooks,
 }
 
 bool Library::writeToFile(const std::string& path) {
-  pugi::xml_document doc;
   auto baseDir = removeLastPathElement(path, true, false);
-
-  /* Add the library node */
-  pugi::xml_node libraryNode = doc.append_child("library");
-
-  if (!version.empty())
-    libraryNode.append_attribute("version") = version.c_str();
-
-  /* Add each book */
-  for (auto& pair: books) {
-    auto& book = pair.second;
-    if (!book.readOnly()) {
-      pugi::xml_node bookNode = libraryNode.append_child("book");
-      bookNode.append_attribute("id") = book.getId().c_str();
-
-      if (!book.getPath().empty()) {
-        bookNode.append_attribute("path") = computeRelativePath(
-            baseDir, book.getPath()).c_str();
-      }
-
-      if (!book.getIndexPath().empty()) {
-        bookNode.append_attribute("indexPath") = computeRelativePath(
-            baseDir, book.getIndexPath()).c_str();
-        bookNode.append_attribute("indexType") = "xapian";
-      }
-
-      if (book.getOrigId().empty()) {
-        if (!book.getTitle().empty())
-          bookNode.append_attribute("title") = book.getTitle().c_str();
-
-        if (!book.getName().empty())
-          bookNode.append_attribute("name") = book.getName().c_str();
-
-        if (!book.getTags().empty())
-          bookNode.append_attribute("tags") = book.getTags().c_str();
-
-        if (!book.getDescription().empty())
-          bookNode.append_attribute("description") = book.getDescription().c_str();
-
-        if (!book.getLanguage().empty())
-          bookNode.append_attribute("language") = book.getLanguage().c_str();
-
-        if (!book.getCreator().empty())
-          bookNode.append_attribute("creator") = book.getCreator().c_str();
-
-        if (!book.getPublisher().empty())
-          bookNode.append_attribute("publisher") = book.getPublisher().c_str();
-
-        if (!book.getFavicon().empty())
-          bookNode.append_attribute("favicon") = base64_encode(book.getFavicon()).c_str();
-
-        if (!book.getFaviconMimeType().empty())
-          bookNode.append_attribute("faviconMimeType")
-              = book.getFaviconMimeType().c_str();
-      } else {
-        bookNode.append_attribute("origId") = book.getOrigId().c_str();
-      }
-
-      if (!book.getDate().empty()) {
-        bookNode.append_attribute("date") = book.getDate().c_str();
-      }
-
-      if (!book.getUrl().empty()) {
-        bookNode.append_attribute("url") = book.getUrl().c_str();
-      }
-
-      if (book.getArticleCount())
-        bookNode.append_attribute("articleCount") = to_string(book.getArticleCount()).c_str();
-
-      if (book.getMediaCount())
-        bookNode.append_attribute("mediaCount") = to_string(book.getMediaCount()).c_str();
-
-      if (book.getSize()) {
-        bookNode.append_attribute("size") = to_string(book.getSize()>>10).c_str();
-      }
-
-      if (!book.getDownloadId().empty()) {
-        bookNode.append_attribute("downloadId") = book.getDownloadId().c_str();
-      }
-    }
-  }
-
-  /* saving file */
-  return doc.save_file(path.c_str());
+  LibXMLDumper dumper(this);
+  dumper.setBaseDir(baseDir);
+  return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
 }
 
 std::vector<std::string> Library::getBooksLanguages()
