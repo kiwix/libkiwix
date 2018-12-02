@@ -221,4 +221,27 @@ bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)
   return true;
 }
 
+bool Manager::readBookmarkFile(const std::string& path)
+{
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file(path.c_str());
+
+  if (!result) {
+    return false;
+  }
+
+  pugi::xml_node libraryNode = doc.child("bookmarks");
+
+  for (pugi::xml_node node = libraryNode.child("bookmark"); node;
+       node = node.next_sibling("bookmark")) {
+    kiwix::Bookmark bookmark;
+
+    bookmark.updateFromXml(node);
+
+    manipulator->addBookmarkToLibrary(bookmark);
+  }
+
+  return true;
+}
+
 }

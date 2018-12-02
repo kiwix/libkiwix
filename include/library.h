@@ -24,12 +24,14 @@
 #include <vector>
 #include <map>
 
+#include "book.h"
+#include "bookmark.h"
+
 #define KIWIX_LIBRARY_VERSION "20110515"
 
 namespace kiwix
 {
 
-class Book;
 class OPDSDumper;
 
 enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
@@ -47,12 +49,13 @@ enum supportedListMode {
  */
 class Library
 {
-  std::map<std::string, kiwix::Book> books;
+  std::map<std::string, kiwix::Book> m_books;
+  std::vector<kiwix::Bookmark> m_bookmarks;
+
  public:
   Library();
   ~Library();
 
-  std::string version;
   /**
    * Add a book to the library.
    *
@@ -64,6 +67,22 @@ class Library
    *         False if a book has been updated.
    */
   bool addBook(const Book& book);
+
+  /**
+   * Add a bookmark to the library.
+   *
+   * @param bookmark the book to add.
+   */
+  void addBookmark(const Bookmark& bookmark);
+
+  /**
+   * Remove a bookmarkk
+   *
+   * @param zimId The zimId of the bookmark.
+   * @param url The url of the bookmark.
+   * @return True if the bookmark has been removed.
+   */
+  bool removeBookmark(const std::string& zimId, const std::string& url);
 
   Book& getBookById(const std::string& id);
 
@@ -79,9 +98,17 @@ class Library
    * Write the library to a file.
    *
    * @param path the path of the file to write to.
-   * @return True if the library has been correctly save.
+   * @return True if the library has been correctly saved.
    */
   bool writeToFile(const std::string& path);
+
+  /**
+   * Write the library bookmarks to a file.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly saved.
+   */
+  bool writeBookmarksToFile(const std::string& path);
 
   /**
    * Get the number of book in the library.
@@ -112,6 +139,13 @@ class Library
    * @return A list of book publishers.
    */
   std::vector<std::string> getBooksPublishers();
+
+  /**
+   * Get all bookmarks.
+   *
+   * @return A list of bookmarks
+   */
+  const std::vector<kiwix::Bookmark>& getBookmarks() { return m_bookmarks; }
 
   /**
    * Get all book ids of the books in the library.
@@ -163,6 +197,7 @@ class Library
     size_t maxSize = 0);
 
   friend class OPDSDumper;
+  friend class libXMLDumper;
 };
 }
 

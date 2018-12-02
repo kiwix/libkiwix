@@ -19,6 +19,7 @@
 
 #include "library.h"
 #include "book.h"
+#include "libxml_dumper.h"
 
 #include "common/base64.h"
 #include "common/regexTools.h"
@@ -30,7 +31,7 @@
 namespace kiwix
 {
 /* Constructor */
-Library::Library() : version(KIWIX_LIBRARY_VERSION)
+Library::Library()
 {
 }
 /* Destructor */
@@ -43,31 +44,48 @@ bool Library::addBook(const Book& book)
 {
   /* Try to find it */
   try {
-    auto& oldbook = books.at(book.getId());
+    auto& oldbook = m_books.at(book.getId());
     oldbook.update(book);
     return false;
   } catch (std::out_of_range&) {
-    books[book.getId()] = book;
+    m_books[book.getId()] = book;
     return true;
   }
 }
 
+void Library::addBookmark(const Bookmark& bookmark)
+{
+  m_bookmarks.push_back(bookmark);
+}
+
+bool Library::removeBookmark(const std::string& zimId, const std::string& url)
+{
+  for(auto it=m_bookmarks.begin(); it!=m_bookmarks.end(); it++) {
+    if (it->getBookId() == zimId && it->getUrl() == url) {
+      m_bookmarks.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+
 
 bool Library::removeBookById(const std::string& id)
 {
-  return books.erase(id) == 1;
+  return m_books.erase(id) == 1;
 }
 
 Book& Library::getBookById(const std::string& id)
 {
-  return books.at(id);
+  return m_books.at(id);
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
                                    const bool remoteBooks)
 {
   unsigned int result = 0;
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     auto& book = pair.second;
     if ((!book.getPath().empty() && localBooks)
         || (book.getPath().empty() && remoteBooks)) {
@@ -78,91 +96,15 @@ unsigned int Library::getBookCount(const bool localBooks,
 }
 
 bool Library::writeToFile(const std::string& path) {
-  pugi::xml_document doc;
   auto baseDir = removeLastPathElement(path, true, false);
+  LibXMLDumper dumper(this);
+  dumper.setBaseDir(baseDir);
+  return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
+}
 
-  /* Add the library node */
-  pugi::xml_node libraryNode = doc.append_child("library");
-
-  if (!version.empty())
-    libraryNode.append_attribute("version") = version.c_str();
-
-  /* Add each book */
-  for (auto& pair: books) {
-    auto& book = pair.second;
-    if (!book.readOnly()) {
-      pugi::xml_node bookNode = libraryNode.append_child("book");
-      bookNode.append_attribute("id") = book.getId().c_str();
-
-      if (!book.getPath().empty()) {
-        bookNode.append_attribute("path") = computeRelativePath(
-            baseDir, book.getPath()).c_str();
-      }
-
-      if (!book.getIndexPath().empty()) {
-        bookNode.append_attribute("indexPath") = computeRelativePath(
-            baseDir, book.getIndexPath()).c_str();
-        bookNode.append_attribute("indexType") = "xapian";
-      }
-
-      if (book.getOrigId().empty()) {
-        if (!book.getTitle().empty())
-          bookNode.append_attribute("title") = book.getTitle().c_str();
-
-        if (!book.getName().empty())
-          bookNode.append_attribute("name") = book.getName().c_str();
-
-        if (!book.getTags().empty())
-          bookNode.append_attribute("tags") = book.getTags().c_str();
-
-        if (!book.getDescription().empty())
-          bookNode.append_attribute("description") = book.getDescription().c_str();
-
-        if (!book.getLanguage().empty())
-          bookNode.append_attribute("language") = book.getLanguage().c_str();
-
-        if (!book.getCreator().empty())
-          bookNode.append_attribute("creator") = book.getCreator().c_str();
-
-        if (!book.getPublisher().empty())
-          bookNode.append_attribute("publisher") = book.getPublisher().c_str();
-
-        if (!book.getFavicon().empty())
-          bookNode.append_attribute("favicon") = base64_encode(book.getFavicon()).c_str();
-
-        if (!book.getFaviconMimeType().empty())
-          bookNode.append_attribute("faviconMimeType")
-              = book.getFaviconMimeType().c_str();
-      } else {
-        bookNode.append_attribute("origId") = book.getOrigId().c_str();
-      }
-
-      if (!book.getDate().empty()) {
-        bookNode.append_attribute("date") = book.getDate().c_str();
-      }
-
-      if (!book.getUrl().empty()) {
-        bookNode.append_attribute("url") = book.getUrl().c_str();
-      }
-
-      if (book.getArticleCount())
-        bookNode.append_attribute("articleCount") = to_string(book.getArticleCount()).c_str();
-
-      if (book.getMediaCount())
-        bookNode.append_attribute("mediaCount") = to_string(book.getMediaCount()).c_str();
-
-      if (book.getSize()) {
-        bookNode.append_attribute("size") = to_string(book.getSize()>>10).c_str();
-      }
-
-      if (!book.getDownloadId().empty()) {
-        bookNode.append_attribute("downloadId") = book.getDownloadId().c_str();
-      }
-    }
-  }
-
-  /* saving file */
-  return doc.save_file(path.c_str());
+bool Library::writeBookmarksToFile(const std::string& path) {
+  LibXMLDumper dumper(this);
+  return writeTextFile(path, dumper.dumpLibXMLBookmark());
 }
 
 std::vector<std::string> Library::getBooksLanguages()
@@ -170,7 +112,7 @@ std::vector<std::string> Library::getBooksLanguages()
   std::vector<std::string> booksLanguages;
   std::map<std::string, bool> booksLanguagesMap;
 
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     auto& book = pair.second;
     auto& language = book.getLanguage();
     if (booksLanguagesMap.find(language) == booksLanguagesMap.end()) {
@@ -189,7 +131,7 @@ std::vector<std::string> Library::getBooksCreators()
   std::vector<std::string> booksCreators;
   std::map<std::string, bool> booksCreatorsMap;
 
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     auto& book = pair.second;
     auto& creator = book.getCreator();
     if (booksCreatorsMap.find(creator) == booksCreatorsMap.end()) {
@@ -208,7 +150,7 @@ std::vector<std::string> Library::getBooksPublishers()
   std::vector<std::string> booksPublishers;
   std::map<std::string, bool> booksPublishersMap;
 
-  for (auto& pair:books) {
+  for (auto& pair:m_books) {
     auto& book = pair.second;
     auto& publisher = book.getPublisher();
     if (booksPublishersMap.find(publisher) == booksPublishersMap.end()) {
@@ -226,7 +168,7 @@ std::vector<std::string> Library::getBooksIds()
 {
   std::vector<std::string> bookIds;
 
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     bookIds.push_back(pair.first);
   }
 
@@ -240,7 +182,7 @@ std::vector<std::string> Library::filter(const std::string& search)
   }
 
   std::vector<std::string> bookIds;
-  for(auto& pair:books) {
+  for(auto& pair:m_books) {
      auto& book = pair.second;
      if (matchRegex(book.getTitle(), "\\Q" + search + "\\E")
          || matchRegex(book.getDescription(), "\\Q" + search + "\\E")) {
@@ -311,7 +253,7 @@ std::vector<std::string> Library::listBooksIds(
     size_t maxSize) {
 
   std::vector<std::string> bookIds;
-  for(auto& pair:books) {
+  for(auto& pair:m_books) {
     auto& book = pair.second;
     auto local = !book.getPath().empty();
     if (mode & LOCAL && !local)
