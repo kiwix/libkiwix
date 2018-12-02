@@ -1,3 +1,10 @@
+kiwix-lib 3.1.0
+===============
+
+ * Add a method to get the favicon url of book (if available).
+ * Move dump code of library.xml in a specific class.
+ * Add a first support to bookmarks
+
 kiwix-lib 3.0.3
 ===============
 
