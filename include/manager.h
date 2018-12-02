@@ -38,6 +38,7 @@ class LibraryManipulator {
  public:
   virtual ~LibraryManipulator() {}
   virtual bool addBookToLibrary(Book book) = 0;
+  virtual void addBookmarkToLibrary(Bookmark bookmark) = 0;
 };
 
 class DefaultLibraryManipulator : public LibraryManipulator {
@@ -47,6 +48,9 @@ class DefaultLibraryManipulator : public LibraryManipulator {
   virtual ~DefaultLibraryManipulator() {}
   bool addBookToLibrary(Book book) {
     return library->addBook(book);
+  }
+  void addBookmarkToLibrary(Bookmark bookmark) {
+    library->addBookmark(bookmark);
   }
  private:
    kiwix::Library* library;
@@ -112,6 +116,15 @@ class Manager
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content, const std::string& urlHost);
+
+
+  /**
+   * Load a bookmark file.
+   *
+   * @param path The path of the file to read.
+   * @return True if the content has been properly parsed.
+   */
+  bool readBookmarkFile(const std::string& path);
 
   /**
    * Add a book to the library.

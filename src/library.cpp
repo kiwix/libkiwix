@@ -44,31 +44,48 @@ bool Library::addBook(const Book& book)
 {
   /* Try to find it */
   try {
-    auto& oldbook = books.at(book.getId());
+    auto& oldbook = m_books.at(book.getId());
     oldbook.update(book);
     return false;
   } catch (std::out_of_range&) {
-    books[book.getId()] = book;
+    m_books[book.getId()] = book;
     return true;
   }
 }
 
+void Library::addBookmark(const Bookmark& bookmark)
+{
+  m_bookmarks.push_back(bookmark);
+}
+
+bool Library::removeBookmark(const std::string& zimId, const std::string& url)
+{
+  for(auto it=m_bookmarks.begin(); it!=m_bookmarks.end(); it++) {
+    if (it->getBookId() == zimId && it->getUrl() == url) {
+      m_bookmarks.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+
 
 bool Library::removeBookById(const std::string& id)
 {
-  return books.erase(id) == 1;
+  return m_books.erase(id) == 1;
 }
 
 Book& Library::getBookById(const std::string& id)
 {
-  return books.at(id);
+  return m_books.at(id);
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
                                    const bool remoteBooks)
 {
   unsigned int result = 0;
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     auto& book = pair.second;
     if ((!book.getPath().empty() && localBooks)
         || (book.getPath().empty() && remoteBooks)) {
@@ -85,12 +102,17 @@ bool Library::writeToFile(const std::string& path) {
   return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
 }
 
+bool Library::writeBookmarksToFile(const std::string& path) {
+  LibXMLDumper dumper(this);
+  return writeTextFile(path, dumper.dumpLibXMLBookmark());
+}
+
 std::vector<std::string> Library::getBooksLanguages()
 {
   std::vector<std::string> booksLanguages;
   std::map<std::string, bool> booksLanguagesMap;
 
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     auto& book = pair.second;
     auto& language = book.getLanguage();
     if (booksLanguagesMap.find(language) == booksLanguagesMap.end()) {
@@ -109,7 +131,7 @@ std::vector<std::string> Library::getBooksCreators()
   std::vector<std::string> booksCreators;
   std::map<std::string, bool> booksCreatorsMap;
 
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     auto& book = pair.second;
     auto& creator = book.getCreator();
     if (booksCreatorsMap.find(creator) == booksCreatorsMap.end()) {
@@ -128,7 +150,7 @@ std::vector<std::string> Library::getBooksPublishers()
   std::vector<std::string> booksPublishers;
   std::map<std::string, bool> booksPublishersMap;
 
-  for (auto& pair:books) {
+  for (auto& pair:m_books) {
     auto& book = pair.second;
     auto& publisher = book.getPublisher();
     if (booksPublishersMap.find(publisher) == booksPublishersMap.end()) {
@@ -146,7 +168,7 @@ std::vector<std::string> Library::getBooksIds()
 {
   std::vector<std::string> bookIds;
 
-  for (auto& pair: books) {
+  for (auto& pair: m_books) {
     bookIds.push_back(pair.first);
   }
 
@@ -160,7 +182,7 @@ std::vector<std::string> Library::filter(const std::string& search)
   }
 
   std::vector<std::string> bookIds;
-  for(auto& pair:books) {
+  for(auto& pair:m_books) {
      auto& book = pair.second;
      if (matchRegex(book.getTitle(), "\\Q" + search + "\\E")
          || matchRegex(book.getDescription(), "\\Q" + search + "\\E")) {
@@ -231,7 +253,7 @@ std::vector<std::string> Library::listBooksIds(
     size_t maxSize) {
 
   std::vector<std::string> bookIds;
-  for(auto& pair:books) {
+  for(auto& pair:m_books) {
     auto& book = pair.second;
     auto local = !book.getPath().empty();
     if (mode & LOCAL && !local)

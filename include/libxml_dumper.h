@@ -49,6 +49,14 @@ class LibXMLDumper
    */
   std::string dumpLibXMLContent(const std::vector<std::string>& bookIds);
 
+
+  /**
+   * Dump the bookmark of the library.
+   *
+   * @return The bookmark.xml content.
+   */
+  std::string dumpLibXMLBookmark();
+
   /**
    * Set the base directory used.
    *
@@ -68,6 +76,7 @@ class LibXMLDumper
   std::string baseDir;
  private:
   void handleBook(Book book, pugi::xml_node root_node);
+  void handleBookmark(Bookmark bookmark, pugi::xml_node root_node);
 };
 }
 

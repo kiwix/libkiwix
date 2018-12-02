@@ -87,7 +87,31 @@ void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
   ADD_ATTR_NOT_EMPTY(entry_node, "downloadId", book.getDownloadId());
 }
 
-string LibXMLDumper::dumpLibXMLContent(const std::vector<std::string>& bookIds)
+#define ADD_TEXT_ENTRY(node, child, value) (node).append_child((child)).append_child(pugi::node_pcdata).set_value((value).c_str())
+
+void LibXMLDumper::handleBookmark(Bookmark bookmark, pugi::xml_node root_node) {
+
+  auto entry_node = root_node.append_child("bookmark");
+  auto book_node = entry_node.append_child("book");
+
+  try {
+    auto book = library->getBookById(bookmark.getBookId());
+    ADD_TEXT_ENTRY(book_node, "id", book.getId());
+    ADD_TEXT_ENTRY(book_node, "title", book.getTitle());
+    ADD_TEXT_ENTRY(book_node, "language", book.getLanguage());
+    ADD_TEXT_ENTRY(book_node, "date", book.getDate());
+  } catch (...) {
+    ADD_TEXT_ENTRY(book_node, "id", bookmark.getBookId());
+    ADD_TEXT_ENTRY(book_node, "title", bookmark.getBookTitle());
+    ADD_TEXT_ENTRY(book_node, "language", bookmark.getLanguage());
+    ADD_TEXT_ENTRY(book_node, "date", bookmark.getDate());
+  }
+  ADD_TEXT_ENTRY(entry_node, "title", bookmark.getTitle());
+  ADD_TEXT_ENTRY(entry_node, "url", bookmark.getUrl());
+}
+
+
+std::string LibXMLDumper::dumpLibXMLContent(const std::vector<std::string>& bookIds)
 {
   pugi::xml_document doc;
 
@@ -101,8 +125,22 @@ string LibXMLDumper::dumpLibXMLContent(const std::vector<std::string>& bookIds)
       handleBook(library->getBookById(bookId), libraryNode);
     }
   }
-
   return nodeToString(libraryNode);
+}
+
+std::string LibXMLDumper::dumpLibXMLBookmark()
+{
+  pugi::xml_document doc;
+
+  /* Add the library node */
+  pugi::xml_node bookmarksNode = doc.append_child("bookmarks");
+
+  if (library) {
+    for (auto& bookmark: library->getBookmarks()) {
+      handleBookmark(bookmark, bookmarksNode);
+    }
+  }
+  return nodeToString(bookmarksNode);
 }
 
 }
