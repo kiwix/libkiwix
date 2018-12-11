@@ -50,6 +50,13 @@ std::string gen_date_str()
   return is.str();
 }
 
+static std::string gen_date_from_yyyy_mm_dd(const std::string& date)
+{
+  std::stringstream is;
+  is << date << "T00:00::00:Z";
+  return is.str();
+}
+
 void OPDSDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
 {
   m_totalResults = totalResults;
@@ -65,7 +72,7 @@ pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
   ADD_TEXT_ENTRY(entry_node, "title", book.getTitle());
   ADD_TEXT_ENTRY(entry_node, "id", "urn:uuid:"+book.getId());
   ADD_TEXT_ENTRY(entry_node, "icon", rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath());
-  ADD_TEXT_ENTRY(entry_node, "updated", date);
+  ADD_TEXT_ENTRY(entry_node, "updated", gen_date_from_yyyy_mm_dd(book.getDate()));
   ADD_TEXT_ENTRY(entry_node, "summary", book.getDescription());
 
   auto content_node = entry_node.append_child("link");

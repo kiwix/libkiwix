@@ -64,8 +64,6 @@ void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
     ADD_ATTR_NOT_EMPTY(entry_node, "creator", book.getCreator());
     ADD_ATTR_NOT_EMPTY(entry_node, "publisher", book.getPublisher());
     ADD_ATTR_NOT_EMPTY(entry_node, "faviconMimeType", book.getFaviconMimeType());
-    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getLanguage());
-    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getLanguage());
     if (!book.getFavicon().empty())
       ADD_ATTRIBUTE(entry_node, "favicon", base64_encode(book.getFavicon()));
   } else {
