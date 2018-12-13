@@ -1,3 +1,11 @@
+kiwix-lib 3.1.1
+===============
+
+ * The OPDS feed book's date must be the date of the book, not the date of the
+ feed generation.
+ * Convert the standard opds date to our format (YYYY-MM-DD)
+ * Remove duplicate language attribute in the libxml dumper.
+
 kiwix-lib 3.1.0
 ===============
 
