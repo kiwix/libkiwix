@@ -26,6 +26,7 @@ Aria2::Aria2():
   m_lock(PTHREAD_MUTEX_INITIALIZER)
 {
   m_downloadDir = getDataDirectory();
+  makeDirectory(m_downloadDir);
   std::vector<const char*> callCmd;
 
   std::string rpc_port = "--rpc-listen-port=" + to_string(m_port);
