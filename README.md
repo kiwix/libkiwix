@@ -35,8 +35,6 @@ libraries need to be available:
 (package libpugixml-dev on Ubuntu)
 * ctpp2 ........................................ http://ctpp.havoc.ru/
 (package libctpp2-dev on Ubuntu)
-* Xapian ......................................... https://xapian.org/
-(package libxapian-dev on Ubuntu)
 * libaria2 .................................. https://aria2.github.io/
 (no package on Ubuntu)
 

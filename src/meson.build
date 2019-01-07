@@ -17,8 +17,6 @@ kiwix_sources = [
   'common/stringTools.cpp',
   'common/networkTools.cpp',
   'common/otherTools.cpp',
-  'xapian/htmlparse.cc',
-  'xapian/myhtmlparse.cc'
 ]
 kiwix_sources += lib_resources
 
@@ -26,10 +24,6 @@ if host_machine.system() == 'windows'
   kiwix_sources += 'subprocess_windows.cpp'
 else
   kiwix_sources += 'subprocess_unix.cpp'
-endif
-
-if xapian_dep.found()
-  kiwix_sources += ['xapianSearcher.cpp']
 endif
 
 if get_option('android')

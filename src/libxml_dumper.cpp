@@ -50,11 +50,6 @@ void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
     ADD_ATTRIBUTE(entry_node, "path", computeRelativePath(baseDir, book.getPath()));
   }
 
-  if (!book.getIndexPath().empty()) {
-    ADD_ATTRIBUTE(entry_node, "indexPath", computeRelativePath(baseDir, book.getIndexPath()));
-    entry_node.append_attribute("indexType") = "xapian";
-  }
-
   if (book.getOrigId().empty()) {
     ADD_ATTR_NOT_EMPTY(entry_node, "title", book.getTitle());
     ADD_ATTR_NOT_EMPTY(entry_node, "name", book.getName());

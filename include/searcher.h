@@ -57,24 +57,7 @@ struct SearcherInternal;
  * The Searcher class is reponsible to do different kind of search using the
  * fulltext index.
  *
- * Historically, there are two kind of fulltext index :
- *  - The legacy one, is the external fulltext index. A directory stored outside
- *    of the zim file.
- *  - The new one, a embedded fulltext index in the zim file.
- *
- * Legacy external fulltext index has to be considered as obsolet format with
- * less functionnalities:
- *  - No multi zim search ;
- *  - No geo_search ;
- *  - No suggestions search ;
- *
- * To reflect this, there is two Search creation "API":
- *  - One for the external fulltext index, using the constructor taking a
- *    xapianDirectoryPath) ;
- *  - One for the embedded fulltext index, using a "empty" constructor and the
- *  `add_reader` method".
- *
- *  On top of that, the Searcher may (if compiled with ctpp2) be used to
+ *  Searcher may (if compiled with ctpp2) be used to
  *  generate a html page for the search result. This use a template that need a
  *  humanReaderName. This feature is only used by kiwix-serve and this should be
  *  move outside of Searcher (and with a better API). If you don't use the html
@@ -92,18 +75,6 @@ class Searcher
    */
   Searcher(const string& humanReadableName = "");
 
-  /**
-   * The constructor for legacy external fulltext index.
-   *
-   * @param xapianDirectoryPath The path to the external index directory.
-   * @param reader The reader associated to the external index.
-   *               It will be used retrive the article content or generate
-   *               the snippet.
-   * @param humanReadableName The humanReadableName for the zim.
-   */
-  Searcher(const string& xapianDirectoryPath,
-           Reader* reader,
-           const string& humanReadableName);
   ~Searcher();
 
   /**
