@@ -60,11 +60,6 @@ bool Book::update(const kiwix::Book& other)
     m_name = other.m_name;
   }
 
-  if (m_indexPath.empty()) {
-    m_indexPath = other.m_indexPath;
-    m_indexType = other.m_indexType;
-  }
-
   if (m_faviconMimeType.empty()) {
     m_favicon = other.m_favicon;
     m_faviconMimeType = other.m_faviconMimeType;
@@ -101,14 +96,6 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
     path = computeAbsolutePath(baseDir, path);
   }
   m_path = path;
-  path = ATTR("indexPath");
-  if (!path.empty()) {
-    if (isRelativePath(path)) {
-      path = computeAbsolutePath(baseDir, path);
-    }
-    m_indexPath = path;
-    m_indexType = XAPIAN;
-  }
   m_title = ATTR("title");
   m_name = ATTR("name");
   m_tags = ATTR("tags");
@@ -192,13 +179,6 @@ void Book::setPath(const std::string& path)
  m_path = isRelativePath(path)
    ? computeAbsolutePath(getCurrentDirectory(), path)
    : path;
-}
-
-void Book::setIndexPath(const std::string& indexPath)
-{
-  m_indexPath = isRelativePath(indexPath)
-    ? computeAbsolutePath(getCurrentDirectory(), indexPath)
-    : indexPath;
 }
 
 const std::string& Book::getFavicon() const {
