@@ -25,15 +25,8 @@
 
 #include <zim/search.h>
 
-#ifdef ENABLE_CTPP2
-#include <ctpp2/CDT.hpp>
-#include <ctpp2/CTPP2FileLogger.hpp>
-#include <ctpp2/CTPP2SimpleVM.hpp>
-#include "ctpp2/CTPP2VMStringLoader.hpp"
+#include <mustache.hpp>
 #include "kiwixlib-resources.h"
-
-using namespace CTPP;
-#endif
 
 #define MAX_SEARCH_LEN 140
 
@@ -317,46 +310,30 @@ int _Result::get_readerIndex()
 {
   return iterator.get_fileIndex();
 }
-#ifdef ENABLE_CTPP2
 
 string Searcher::getHtml()
 {
-  SimpleVM oSimpleVM(
-      1024, //iIMaxFunctions (default value)
-      4096, //iIMaxArgStackSize (default value)
-      4096, //iIMaxCodeStackSize (default value)
-      10240 * 2 //iIMaxSteps (default*2)
-  );
-
-  // Fill data
-  CDT oData;
-  CDT resultsCDT(CDT::ARRAY_VAL);
+  kainjow::mustache::data results{kainjow::mustache::data::type::list};
 
   this->restart_search();
   Result* p_result = NULL;
   while ((p_result = this->getNextResult())) {
-    CDT result;
-    result["title"] = p_result->get_title();
-    result["url"] = p_result->get_url();
-    result["snippet"] = p_result->get_snippet();
-    result["contentId"] = humanReaderNames[p_result->get_readerIndex()];
-
-    if (p_result->get_size() >= 0) {
-      result["size"] = kiwix::beautifyInteger(p_result->get_size());
-    }
+    kainjow::mustache::data result;
+    result.set("title", p_result->get_title());
+    result.set("url", p_result->get_url());
+    result.set("snippet", p_result->get_snippet());
+    result.set("resultContentId", humanReaderNames[p_result->get_readerIndex()]);
 
     if (p_result->get_wordCount() >= 0) {
-      result["wordCount"] = kiwix::beautifyInteger(p_result->get_wordCount());
+      result.set("wordCount", kiwix::beautifyInteger(p_result->get_wordCount()));
     }
 
-    resultsCDT.PushBack(result);
+    results.push_back(result);
     delete p_result;
   }
-  this->restart_search();
-  oData["results"] = resultsCDT;
 
   // pages
-  CDT pagesCDT(CDT::ARRAY_VAL);
+  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
 
   unsigned int pageStart
       = this->resultStart / this->resultCountPerPage >= 5
@@ -372,48 +349,41 @@ string Searcher::getHtml()
   }
 
   for (unsigned int i = pageStart; i < pageStart + pageCount; i++) {
-    CDT page;
-    page["label"] = i + 1;
-    page["start"] = i * this->resultCountPerPage;
-    page["end"] = (i + 1) * this->resultCountPerPage;
+    kainjow::mustache::data page;
+    page.set("label", to_string(i + 1));
+    page.set("start", to_string(i * this->resultCountPerPage));
+    page.set("end", to_string((i + 1) * this->resultCountPerPage));
 
     if (i * this->resultCountPerPage == this->resultStart) {
-      page["selected"] = true;
+      page.set("selected", true);
     }
-
-    pagesCDT.PushBack(page);
+    pages.push_back(page);
   }
-  oData["pages"] = pagesCDT;
 
-  oData["count"] = kiwix::beautifyInteger(this->estimatedResultCount);
-  oData["searchPattern"] = kiwix::encodeDiples(this->searchPattern);
-  oData["searchPatternEncoded"] = urlEncode(this->searchPattern);
-  oData["resultStart"] = this->resultStart + 1;
-  oData["resultEnd"] = (this->resultEnd > this->estimatedResultCount
-                            ? this->estimatedResultCount
-                            : this->resultEnd);
-  oData["resultRange"] = this->resultCountPerPage;
-  oData["resultLastPageStart"]
-      = this->estimatedResultCount > this->resultCountPerPage
-            ? std::round(this->estimatedResultCount / this->resultCountPerPage) * this->resultCountPerPage
-            : 0;
-  oData["protocolPrefix"] = this->protocolPrefix;
-  oData["searchProtocolPrefix"] = this->searchProtocolPrefix;
-  oData["contentId"] = this->contentHumanReadableId;
+  std::string template_str = RESOURCE::search_result_tmpl;
+  kainjow::mustache::mustache tmpl(template_str);
 
-  std::string template_ct2 = RESOURCE::results_ct2;
-  VMStringLoader oLoader(template_ct2.c_str(), template_ct2.size());
+  kainjow::mustache::data allData;
+  allData.set("results", results);
+  allData.set("pages", pages);
+  allData.set("hasResult", this->estimatedResultCount != 0);
+  allData.set("count", kiwix::beautifyInteger(this->estimatedResultCount));
+  allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
+  allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
+  allData.set("resultStart", to_string(this->resultStart + 1));
+  allData.set("resultEnd", to_string(min(this->resultEnd, this->estimatedResultCount)));
+  allData.set("resultRange", to_string(this->resultCountPerPage));
+  allData.set("resultLastPageStart", to_string(this->estimatedResultCount > this->resultCountPerPage
+             ? round(this->estimatedResultCount / this->resultCountPerPage) * this->resultCountPerPage
+             : 0));
+  allData.set("lastResult", to_string(this->estimatedResultCount));
+  allData.set("protocolPrefix", this->protocolPrefix);
+  allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
+  allData.set("contentId", this->contentHumanReadableId);
 
-  FileLogger oLogger(stderr);
-
-  // DEBUG only (write output to stdout)
-  // oSimpleVM.Run(oData, oLoader, stdout, oLogger);
-
-  std::string sResult;
-  oSimpleVM.Run(oData, oLoader, sResult, oLogger);
-
-  return sResult;
+  std::stringstream ss;
+  tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
+  return ss.str();
 }
 
-#endif
 }

@@ -163,12 +163,10 @@ class Searcher
    */
   bool setSearchProtocolPrefix(const std::string prefix);
 
-#ifdef ENABLE_CTPP2
   /**
    * Generate the html page with the resutls of the search.
    */
   string getHtml();
-#endif
 
  protected:
   std::string beautifyInteger(const unsigned int number);

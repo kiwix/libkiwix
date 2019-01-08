@@ -91,68 +91,67 @@
       }
 
     </style>
-    <title>Search: <TMPL_var searchPattern></title>
+    <title>Search: {{searchPattern}}</title>
   </head>
   <body bgcolor="white">
     <div class="header">
-      <TMPL_if results>
+      {{#hasResult}}
         Results
         <b>
-          <TMPL_var resultStart>-<TMPL_var resultEnd>
+          {{resultStart}}-{{resultEnd}}
         </b> of <b>
-          <TMPL_var count>
+          {{count}}
         </b> for <b>
-          <TMPL_var searchPattern>
+          {{searchPattern}}
         </b>
-      <TMPL_else>
-        No results were found for <b><TMPL_var searchPattern></b>
-      </TMPL_if>
+      {{/hasResult}}
+      {{^hasResult}}
+        No results were found for <b>{{searchPattern}}</b>
+      {{/hasResult}}
     </div>
 
     <div class="results">
       <ul>
-        <TMPL_foreach results as result>
+        {{#results}}
           <li>
-            <a href="<TMPL_var protocolPrefix><TMPL_var result.contentId>/<TMPL_var result.url>">
-              <TMPL_var result.title>
+            <a href="{{protocolPrefix}}{{resultContentId}}/{{url}}">
+              {{title}}
             </a>
-            <cite>
-              <TMPL_if result.snippet>
-                <TMPL_var result.snippet>...
-              </TMPL_if>
-            </cite>
-            <TMPL_if wordCount>
-              <div class="informations"><TMPL_var wordCount> words</div>
-            </TMPL_if>
+            {{#snippet}}
+              <cite>{{>snippet}}...</cite>
+            {{/snippet}}
+            {{#wordCount}}
+              <div class="informations">{{wordCount}} words</div>
+            {{/wordCount}}
           </li>
-        </TMPL_foreach>
+        {{/results}}
       </ul>
     </div>
 
     <div class="footer">
       <ul>
-        <TMPL_if (resultLastPageStart>0)>
+        {{#resultLastPageStart}}
           <li>
-            <a href="<TMPL_var searchProtocolPrefix>pattern=<TMPL_var searchPatternEncoded><TMPL_if contentId>&content=<TMPL_var contentId></TMPL_if>&start=0&end=<TMPL_var resultRange>">
+            <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&end={{resultRange}}">
               ◀
             </a>
           </li>
-        </TMPL_if>
-        <TMPL_foreach pages as page>
+        {{/resultLastPageStart}}
+        {{#pages}}
           <li>
-            <a <TMPL_if page.selected>class="selected"</TMPL_if>
-               href="<TMPL_var searchProtocolPrefix>pattern=<TMPL_var searchPatternEncoded><TMPL_if contentId>&content=<TMPL_var contentId></TMPL_if>&start=<TMPL_var page.start>&end=<TMPL_var page.end>">
-              <TMPL_var page.label>
+            <a {{#selected}}class="selected"{{/selected}}
+               href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{start}}&end={{end}}">
+              {{label}}
             </a>
           </li>
-        </TMPL_foreach>
-        <TMPL_if (resultLastPageStart>0)>
+        {{/pages}}
+        {{#resultLastPageStart}}
           <li>
-            <a href="<TMPL_var searchProtocolPrefix>pattern=<TMPL_var searchPatternEncoded><TMPL_if contentId>&content=<TMPL_var contentId></TMPL_if>&start=<TMPL_var resultLastPageStart>&end=<TMPL_var (resultLastPageStart+resultRange)>">
+            <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&end={{lastResult}}">
               ▶
             </a>
           </li>
-        </TMPL_if>
+        {{/resultLastPageStart}}
       </ul>
     </div>
   </body>

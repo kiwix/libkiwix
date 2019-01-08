@@ -33,8 +33,6 @@ libraries need to be available:
 (package libzim-dev on Ubuntu)
 * Pugixml ........................................ http://pugixml.org/
 (package libpugixml-dev on Ubuntu)
-* ctpp2 ........................................ http://ctpp.havoc.ru/
-(package libctpp2-dev on Ubuntu)
 * libaria2 .................................. https://aria2.github.io/
 (no package on Ubuntu)
 
@@ -46,10 +44,6 @@ version by hand.
 
 If you want to install these dependencies locally, then use the
 kiwix-lib directory as install prefix.
-
-If you compile ctpp2 from source and want to compile the Kiwix library
-statically then you will probably need to rename ctpp2 static library
-from ctpp2-st.a to ctpp2.a.
 
 Environment
 -------------
