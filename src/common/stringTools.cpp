@@ -57,8 +57,6 @@ std::string kiwix::removeAccents(const std::string& text)
   return unaccentedText;
 }
 
-#ifndef __ANDROID__
-
 /* Prepare integer for display */
 std::string kiwix::beautifyInteger(uint64_t number)
 {
@@ -137,8 +135,6 @@ std::string kiwix::encodeDiples(const std::string& str)
   kiwix::stringReplacement(result, ">", "&gt;");
   return result;
 }
-
-#endif
 
 /* urlEncode() based on javascript encodeURI() &
    encodeURIComponent(). Mostly code from rstudio/httpuv (GPLv3) */

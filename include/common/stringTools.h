@@ -33,8 +33,6 @@
 
 namespace kiwix
 {
-#ifndef __ANDROID__
-
 std::string beautifyInteger(uint64_t number);
 std::string beautifyFileSize(uint64_t number);
 void printStringInHexadecimal(const char* s);
@@ -43,8 +41,6 @@ void stringReplacement(std::string& str,
                        const std::string& oldStr,
                        const std::string& newStr);
 std::string encodeDiples(const std::string& str);
-
-#endif
 
 std::string removeAccents(const std::string& text);
 void loadICUExternalTables();
