@@ -7,5 +7,5 @@ lib_resources = custom_target('resources',
              '--hfile', '@OUTPUT1@',
              '--source_dir', '@OUTDIR@',
              '@INPUT@'],
-    depend_files: 'static/search_result.tmpl'
+    depend_files: files('search_result.tmpl')
 )
