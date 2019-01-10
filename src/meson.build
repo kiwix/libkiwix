@@ -33,11 +33,6 @@ else
   install_dir = get_option('libdir')
 endif
 
-
-if has_ctpp2_dep
-  kiwix_sources += ['ctpp2/CTPP2VMStringLoader.cpp']
-endif
-
 config_h = configure_file(output : 'kiwix_config.h',
                configuration : conf,
                input : 'config.h.in')

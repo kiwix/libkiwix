@@ -1,1 +1,1 @@
-results.ct2
+search_result.tmpl

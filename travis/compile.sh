@@ -35,6 +35,7 @@ then
 else
   export PKG_CONFIG_PATH=${INSTALL_DIR}/lib/x86_64-linux-gnu/pkgconfig
 fi
-meson . build -Dctpp2-install-prefix=${INSTALL_DIR} ${MESON_OPTION}
+export CPPFLAGS="-I${INSTALL_DIR}/include"
+meson . build ${MESON_OPTION}
 cd build
 ninja
