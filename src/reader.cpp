@@ -762,7 +762,7 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
                                     unsigned int suggestionsCount)
 {
   std::vector<std::string> variants = this->getTitleVariants(prefix);
-  bool retVal;
+  bool retVal = false;
 
   this->suggestions.clear();
   this->suggestionsOffset = this->suggestions.begin();
