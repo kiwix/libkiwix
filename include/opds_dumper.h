@@ -26,9 +26,9 @@
 
 #include <pugixml.hpp>
 
-#include "common/base64.h"
-#include "common/pathTools.h"
-#include "common/regexTools.h"
+#include "tools/base64.h"
+#include "tools/pathTools.h"
+#include "tools/regexTools.h"
 #include "library.h"
 #include "reader.h"
 

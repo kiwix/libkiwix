@@ -15,12 +15,12 @@ headers = [
 install_headers(headers, subdir:'kiwix')
 
 install_headers(
-  'common/base64.h',
-  'common/networkTools.h',
-  'common/otherTools.h',
-  'common/pathTools.h',
-  'common/regexTools.h',
-  'common/stringTools.h',
-  subdir:'kiwix/common'
+  'tools/base64.h',
+  'tools/networkTools.h',
+  'tools/otherTools.h',
+  'tools/pathTools.h',
+  'tools/regexTools.h',
+  'tools/stringTools.h',
+  subdir:'kiwix/tools'
 )
 

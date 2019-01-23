@@ -29,8 +29,8 @@
 #include <string>
 #include <vector>
 #include <vector>
-#include "common/pathTools.h"
-#include "common/stringTools.h"
+#include "tools/pathTools.h"
+#include "tools/stringTools.h"
 #include "kiwix_config.h"
 
 using namespace std;

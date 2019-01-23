@@ -24,7 +24,6 @@
 #include <zim/article.h>
 #include <exception>
 #include <string>
-#include "common.h"
 
 using namespace std;
 

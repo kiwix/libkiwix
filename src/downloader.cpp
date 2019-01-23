@@ -18,7 +18,7 @@
  */
 
 #include "downloader.h"
-#include "common/pathTools.h"
+#include "tools/pathTools.h"
 
 #include <algorithm>
 #include <thread>
@@ -28,7 +28,7 @@
 
 #include "aria2.h"
 #include "xmlrpc.h"
-#include "common/otherTools.h"
+#include "tools/otherTools.h"
 #include <pugixml.hpp>
 
 namespace kiwix

@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <common/networkTools.h>
+#include <tools/networkTools.h>
 
 #ifdef _WIN32
 #include <winsock2.h>

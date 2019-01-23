@@ -3,7 +3,7 @@
 #ifndef KIWIX_XMLRPC_H_
 #define KIWIX_XMLRPC_H_
 
-#include <common/otherTools.h>
+#include <tools/otherTools.h>
 
 namespace kiwix {
 

@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <common/pathTools.h>
+#include <tools/pathTools.h>
 
 #ifdef __APPLE__
 #include <limits.h>

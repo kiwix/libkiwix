@@ -11,12 +11,12 @@ kiwix_sources = [
   'searcher.cpp',
   'subprocess.cpp',
   'aria2.cpp',
-  'common/base64.cpp',
-  'common/pathTools.cpp',
-  'common/regexTools.cpp',
-  'common/stringTools.cpp',
-  'common/networkTools.cpp',
-  'common/otherTools.cpp',
+  'tools/base64.cpp',
+  'tools/pathTools.cpp',
+  'tools/regexTools.cpp',
+  'tools/stringTools.cpp',
+  'tools/networkTools.cpp',
+  'tools/otherTools.cpp',
 ]
 kiwix_sources += lib_resources
 

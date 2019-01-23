@@ -20,9 +20,9 @@
 #include "libxml_dumper.h"
 #include "book.h"
 
-#include <common/base64.h>
-#include <common/stringTools.h>
-#include <common/otherTools.h>
+#include <tools/base64.h>
+#include <tools/stringTools.h>
+#include <tools/otherTools.h>
 
 namespace kiwix
 {

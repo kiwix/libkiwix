@@ -31,8 +31,8 @@
 #include <string>
 #include "common.h"
 #include "entry.h"
-#include "common/pathTools.h"
-#include "common/stringTools.h"
+#include "tools/pathTools.h"
+#include "tools/stringTools.h"
 
 using namespace std;
 
