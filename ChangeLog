@@ -1,3 +1,11 @@
+kiwix-lib 4.0.0
+===============
+
+ * [API break] Remove support for external index.
+ * Move to the mustache templating system instead of ctpp2.
+ * Make meson.build works for meson>=0.43.0
+ * [API break] Move the basic tools from the `common` directory to `tools`.
+
 kiwix-lib 3.1.1
 ===============
 
