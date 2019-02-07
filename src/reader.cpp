@@ -241,8 +241,6 @@ Entry Reader::getMainPage() const
     throw NoEntry();
   }
 
-  string url = "";
-
   zim::Article article;
   if (this->zimFileHandler->getFileheader().hasMainPage())
   {

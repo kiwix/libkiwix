@@ -208,12 +208,16 @@ bool Manager::addBookFromPath(const std::string& pathToOpen,
 
 bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)
 {
+  std::string tmp_path = path;
+  if (isRelativePath(path)) {
+    tmp_path = computeAbsolutePath(getCurrentDirectory(), path);
+  }
   try {
-    kiwix::Reader reader(path);
+    kiwix::Reader reader(tmp_path);
     book->update(reader);
     book->setPathValid(true);
   } catch (const std::exception& e) {
-    std::cerr << "Invalid " << path << " : " << e.what() << std::endl;
+    std::cerr << "Invalid " << tmp_path << " : " << e.what() << std::endl;
     book->setPathValid(false);
     return false;
   }
