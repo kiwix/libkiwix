@@ -91,7 +91,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getId(JNIEnv* env, jobject obj)
 JNIEXPORT jint JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_getFileSize(JNIEnv* env, jobject obj)
 {
-  jint size;
+  jint size = 0;
 
   try {
     int cSize = READER->getFileSize();
