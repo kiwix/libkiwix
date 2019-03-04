@@ -35,6 +35,9 @@ libraries need to be available:
 (package libpugixml-dev on Ubuntu)
 * libaria2 .................................. https://aria2.github.io/
 (no package on Ubuntu)
+* Mustache ....................... https://github.com/kainjow/Mustache
+(Just copy the header mustache.hpp somewhere it can be found by the
+compiler and/or set CPPFLAGS with correct '-I' option)
 
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
