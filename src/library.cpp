@@ -27,6 +27,7 @@
 
 #include <pugixml.hpp>
 #include <algorithm>
+#include <set>
 
 namespace kiwix
 {
@@ -250,6 +251,7 @@ std::vector<std::string> Library::listBooksIds(
     const std::string& language,
     const std::string& creator,
     const std::string& publisher,
+    const std::vector<std::string>& tags,
     size_t maxSize) {
 
   std::vector<std::string> bookIds;
@@ -270,6 +272,23 @@ std::vector<std::string> Library::listBooksIds(
       continue;
     if (mode & NOREMOTE && remote)
       continue;
+    if (!tags.empty()) {
+      auto vBookTags = split(book.getTags(), ";");
+      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
+      bool ok = true;
+      for (auto& t: tags) {
+        if (sBookTags.find(t) == sBookTags.end()) {
+          // A "filter" tag is not in the book tag.
+          // No need to loop for all "filter" tags.
+          ok = false;
+          break;
+        }
+      }
+      if (! ok ) {
+        // Skip the book
+        continue;
+      }
+    }
     if (maxSize != 0 && book.getSize() > maxSize)
       continue;
     if (!language.empty() && book.getLanguage() != language)
