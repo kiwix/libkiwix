@@ -1,3 +1,10 @@
+kiwix-lib 4.1.0
+===============
+
+ * Allow the library to be filtered by tags.
+ * Fix language mapping.
+ * Update README about mustache dependency.
+
 kiwix-lib 4.0.1
 ===============
 
