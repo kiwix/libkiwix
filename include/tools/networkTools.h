@@ -20,13 +20,10 @@
 #ifndef KIWIX_NETWORKTOOLS_H
 #define KIWIX_NETWORKTOOLS_H
 
-#include <map>
 #include <string>
 
 namespace kiwix
 {
-std::map<std::string, std::string> getNetworkInterfaces();
-std::string getBestPublicIp();
 std::string download(const std::string& url);
 }
 
