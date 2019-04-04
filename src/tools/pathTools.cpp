@@ -228,25 +228,20 @@ bool makeDirectory(const string& path)
 string makeTmpDirectory()
 {
 #ifdef _WIN32
-  char cbase[MAX_PATH+1];
-  int base_len = GetTempPath(MAX_PATH+1, cbase);
-  UUID uuid;
-  UuidCreate(&uuid);
-  char* dir_name;
-  UuidToString(&uuid, reinterpret_cast<unsigned char**>(&dir_name));
-  string dir(cbase, base_len);
-  dir += dir_name;
-  _mkdir(dir.c_str());
-  RpcStringFree(reinterpret_cast<unsigned char**>(&dir_name));
+  char cbase[MAX_PATH];
+  char ctmp[MAX_PATH];
+  GetTempPath(MAX_PATH-14, cbase);
+  // This create a file for us, ensure it is unique.
+  // So we need to delete it and create the directory using the same name.
+  GetTempFileName(cbase, "kiwix", 0, ctmp);
+  DeleteFile(ctmp);
+  _mkdir(ctmp);
+  return string(ctmp);
 #else
-  string base = "/tmp";
-  auto _template = base + "/kiwix-lib_XXXXXX";
-  char* _template_array = new char[_template.size()+1];
-  memcpy(_template_array, _template.c_str(), _template.size());
+  char _template_array[] = {"/tmp/kiwix-lib_XXXXXX"};
   string dir = mkdtemp(_template_array);
-  delete[] _template_array;
-#endif
   return dir;
+#endif
 }
 
 /* Try to create a link and if does not work then make a copy */
