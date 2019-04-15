@@ -44,5 +44,4 @@ kiwixlib = library('kiwix',
                    dependencies : all_deps,
                    version: meson.project_version(),
                    install: true,
-                   install_dir: install_dir,
-                   install_rpath: '$ORIGIN')
+                   install_dir: install_dir)
