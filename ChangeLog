@@ -1,3 +1,12 @@
+kiwix-lib 5.0.0
+===============
+
+ * Remove error message when trying to open an wrong zim file.
+ * Rewrite `makeTmpDirectory` to not use uuid functions on windows.
+ * [API break] Remove `getNetworkInterfaces` and `getBestPublicIp`.
+ * Remove rpath
+ * Detect infinite (and too long) redirect loops.
+
 kiwix-lib 4.1.0
 ===============
 
