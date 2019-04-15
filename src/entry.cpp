@@ -122,7 +122,6 @@ Entry Entry::getFinalEntry() const
   if (final_article.good()) {
     return final_article;
   }
-
   int loopCounter = 42;
   final_article = article;
   while (final_article.isRedirect() && loopCounter--) {
@@ -131,7 +130,10 @@ Entry Entry::getFinalEntry() const
       throw NoEntry();
     }
   }
-
+  // Prevent infinite loops.
+  if (final_article.isRedirect()) {
+    throw NoEntry();
+  }
   return final_article;
 }
 
