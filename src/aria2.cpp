@@ -3,8 +3,7 @@
 #include "aria2.h"
 #include "xmlrpc.h"
 #include <sstream>
-#include <thread>
-#include <chrono>
+#include <time.h>
 #include <tools/otherTools.h>
 #include <tools/pathTools.h>
 #include <downloader.h> // For AriaError
@@ -82,7 +81,8 @@ Aria2::Aria2():
 
   int watchdog = 50;
   while(--watchdog) {
-    std::this_thread::sleep_for(std::chrono::microseconds(10000));
+    struct timespec wait = {0, 10000000};
+    nanosleep(&wait, nullptr);
     auto res = curl_easy_perform(mp_curl);
     if (res == CURLE_OK) {
       break;
