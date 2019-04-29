@@ -171,7 +171,6 @@ std::vector<std::string> Aria2::tellActive()
   MethodCall methodCall("aria2.tellActive", m_secret);
   auto statusArray = methodCall.newParamValue().getArray();
   statusArray.addValue().set(std::string("gid"));
-  statusArray.addValue().set(std::string("following"));
   auto responseContent = doRequest(methodCall);
   MethodResponse response(responseContent);
   std::vector<std::string> activeGID;
@@ -184,6 +183,27 @@ std::vector<std::string> Aria2::tellActive()
     } catch (InvalidRPCNode& e) { break; }
   }
   return activeGID;
+}
+
+std::vector<std::string> Aria2::tellWaiting()
+{
+  MethodCall methodCall("aria2.tellWaiting", m_secret);
+  methodCall.newParamValue().set(0);
+  methodCall.newParamValue().set(99); // max number of downloads to be returned, don't know how to set this properly assumed that there will not be more than 99 paused downloads.
+  auto statusArray = methodCall.newParamValue().getArray();
+  statusArray.addValue().set(std::string("gid"));
+  auto responseContent = doRequest(methodCall);
+  MethodResponse response(responseContent);
+  std::vector<std::string> waitingGID;
+  int index = 0;
+  while(true) {
+    try {
+      auto structNode = response.getParamValue(0).getArray().getValue(index++).getStruct();
+      auto gidNode = structNode.getMember("gid");
+      waitingGID.push_back(gidNode.getValue().getAsS());
+    } catch (InvalidRPCNode& e) { break; }
+  }
+  return waitingGID;
 }
 
 void Aria2::saveSession()
@@ -199,5 +219,18 @@ void Aria2::shutdown()
   doRequest(methodCall);
 }
 
+void Aria2::pause(const std::string& gid)
+{
+    MethodCall methodCall("aria2.pause", m_secret);
+    methodCall.newParamValue().set(gid);
+    doRequest(methodCall);
+}
+
+void Aria2::unpause(const std::string& gid)
+{
+    MethodCall methodCall("aria2.unpause", m_secret);
+    methodCall.newParamValue().set(gid);
+    doRequest(methodCall);
+}
 
 } // end namespace kiwix

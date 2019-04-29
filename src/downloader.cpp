@@ -93,11 +93,33 @@ void Download::updateStatus(bool follow)
   }
 }
 
+void Download::resumeDownload()
+{
+    if (!m_followedBy.empty())
+        mp_aria->unpause(m_followedBy);
+    else
+        mp_aria->unpause(m_did);
+    updateStatus(true);
+}
+
+void Download::pauseDownload()
+{
+    if (!m_followedBy.empty())
+        mp_aria->pause(m_followedBy);
+    else
+        mp_aria->pause(m_did);
+    updateStatus(true);
+}
+
 /* Constructor */
 Downloader::Downloader() :
   mp_aria(new Aria2())
 {
   for (auto gid : mp_aria->tellActive()) {
+    m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+    m_knownDownloads[gid]->updateStatus();
+  }
+  for (auto gid : mp_aria->tellWaiting()) {
     m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
     m_knownDownloads[gid]->updateStatus();
   }
@@ -145,10 +167,17 @@ Download* Downloader::getDownload(const std::string& did)
     for (auto gid : mp_aria->tellActive()) {
       if (gid == did) {
         m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-        m_knownDownloads.at(gid).get()->updateStatus(true);        
+        m_knownDownloads.at(gid).get()->updateStatus(true);
         return m_knownDownloads[gid].get();
       }
     }
+    for (auto gid : mp_aria->tellWaiting()) {
+      if (gid == did) {
+        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        m_knownDownloads.at(gid).get()->updateStatus(true);
+        return m_knownDownloads[gid].get();
+      }
+  }
     throw e;
   }
 }
