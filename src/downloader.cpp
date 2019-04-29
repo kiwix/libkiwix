@@ -36,6 +36,8 @@ namespace kiwix
 
 void Download::updateStatus(bool follow)
 {
+  if (m_status == Download::K_REMOVED)
+    return;
   static std::vector<std::string> statusKey = {"status", "files", "totalLength",
                                                "completedLength", "followedBy",
                                                "downloadSpeed", "verifiedLength"};
@@ -109,6 +111,15 @@ void Download::pauseDownload()
     else
         mp_aria->pause(m_did);
     updateStatus(true);
+}
+
+void Download::cancelDownload()
+{
+    if (!m_followedBy.empty())
+        mp_aria->remove(m_followedBy);
+    else
+        mp_aria->remove(m_did);
+    m_status = Download::K_REMOVED;
 }
 
 /* Constructor */

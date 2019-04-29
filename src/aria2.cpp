@@ -233,4 +233,11 @@ void Aria2::unpause(const std::string& gid)
     doRequest(methodCall);
 }
 
+void Aria2::remove(const std::string& gid)
+{
+    MethodCall methodCall("aria2.remove", m_secret);
+    methodCall.newParamValue().set(gid);
+    doRequest(methodCall);
+}
+
 } // end namespace kiwix

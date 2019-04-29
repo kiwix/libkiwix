@@ -42,6 +42,7 @@ class Aria2
     void shutdown();
     void pause(const std::string& gid);
     void unpause(const std::string& gid);
+    void remove(const std::string& gid);
 };
 
 }; //end namespace kiwix
