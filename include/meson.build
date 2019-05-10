@@ -9,7 +9,8 @@ headers = [
   'downloader.h',
   'reader.h',
   'entry.h',
-  'searcher.h'
+  'searcher.h',
+  'kiwixserve.h'
 ]
 
 install_headers(headers, subdir:'kiwix')

@@ -17,6 +17,7 @@ kiwix_sources = [
   'tools/stringTools.cpp',
   'tools/networkTools.cpp',
   'tools/otherTools.cpp',
+  'kiwixserve.cpp',
 ]
 kiwix_sources += lib_resources
 
