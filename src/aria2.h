@@ -37,8 +37,12 @@ class Aria2
     std::string addUri(const std::vector<std::string>& uri);
     std::string tellStatus(const std::string& gid, const std::vector<std::string>& statusKey);
     std::vector<std::string> tellActive();
+    std::vector<std::string> tellWaiting();
     void saveSession();
     void shutdown();
+    void pause(const std::string& gid);
+    void unpause(const std::string& gid);
+    void remove(const std::string& gid);
 };
 
 }; //end namespace kiwix

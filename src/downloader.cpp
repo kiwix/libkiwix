@@ -36,6 +36,8 @@ namespace kiwix
 
 void Download::updateStatus(bool follow)
 {
+  if (m_status == Download::K_REMOVED)
+    return;
   static std::vector<std::string> statusKey = {"status", "files", "totalLength",
                                                "completedLength", "followedBy",
                                                "downloadSpeed", "verifiedLength"};
@@ -93,11 +95,42 @@ void Download::updateStatus(bool follow)
   }
 }
 
+void Download::resumeDownload()
+{
+    if (!m_followedBy.empty())
+        mp_aria->unpause(m_followedBy);
+    else
+        mp_aria->unpause(m_did);
+    updateStatus(true);
+}
+
+void Download::pauseDownload()
+{
+    if (!m_followedBy.empty())
+        mp_aria->pause(m_followedBy);
+    else
+        mp_aria->pause(m_did);
+    updateStatus(true);
+}
+
+void Download::cancelDownload()
+{
+    if (!m_followedBy.empty())
+        mp_aria->remove(m_followedBy);
+    else
+        mp_aria->remove(m_did);
+    m_status = Download::K_REMOVED;
+}
+
 /* Constructor */
 Downloader::Downloader() :
   mp_aria(new Aria2())
 {
   for (auto gid : mp_aria->tellActive()) {
+    m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+    m_knownDownloads[gid]->updateStatus();
+  }
+  for (auto gid : mp_aria->tellWaiting()) {
     m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
     m_knownDownloads[gid]->updateStatus();
   }
@@ -139,14 +172,23 @@ Download* Downloader::startDownload(const std::string& uri)
 Download* Downloader::getDownload(const std::string& did)
 {
   try {
+    m_knownDownloads.at(did).get()->updateStatus(true);
     return m_knownDownloads.at(did).get();
   } catch(exception& e) {
     for (auto gid : mp_aria->tellActive()) {
       if (gid == did) {
         m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        m_knownDownloads.at(gid).get()->updateStatus(true);
         return m_knownDownloads[gid].get();
       }
     }
+    for (auto gid : mp_aria->tellWaiting()) {
+      if (gid == did) {
+        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        m_knownDownloads.at(gid).get()->updateStatus(true);
+        return m_knownDownloads[gid].get();
+      }
+  }
     throw e;
   }
 }

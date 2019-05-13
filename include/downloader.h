@@ -54,6 +54,9 @@ class Download {
       m_status(K_UNKNOWN),
       m_did(did) {};
   void updateStatus(bool follow=false);
+  void pauseDownload();
+  void resumeDownload();
+  void cancelDownload();
   StatusResult getStatus()          { return m_status; }
   std::string  getDid()             { return m_did; }
   std::string  getFollowedBy()      { return m_followedBy; }
