@@ -74,6 +74,7 @@ pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
   ADD_TEXT_ENTRY(entry_node, "icon", rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath());
   ADD_TEXT_ENTRY(entry_node, "updated", gen_date_from_yyyy_mm_dd(book.getDate()));
   ADD_TEXT_ENTRY(entry_node, "summary", book.getDescription());
+  ADD_TEXT_ENTRY(entry_node, "tags", book.getTags());
 
   auto content_node = entry_node.append_child("link");
   content_node.append_attribute("type") = "text/html";
