@@ -765,7 +765,7 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
   this->suggestions.clear();
   this->suggestionsOffset = this->suggestions.begin();
   /* Try to search in the title using fulltext search database */
-  const zim::Search* suggestionSearch
+  const auto suggestionSearch
       = this->getZimFileHandler()->suggestions(prefix, 0, suggestionsCount);
 
   if (suggestionSearch->get_matches_estimated()) {
