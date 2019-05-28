@@ -1,5 +1,5 @@
 project('kiwix-lib', 'cpp',
-  version : '5.0.0',
+  version : '5.1.0',
   license : 'GPL',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
 
@@ -14,7 +14,7 @@ endif
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
-libzim_dep = dependency('libzim', version : '>=4.0.0', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=5.0.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
 
