@@ -1,3 +1,10 @@
+kiwix-lib 5.1.0
+===============
+
+ * Add function to pause, resume and stop downloads.
+ * Add zim's tags in the opds stream.
+ * Addapt to new libzim 5.0.0 API.
+
 kiwix-lib 5.0.0
 ===============
 
