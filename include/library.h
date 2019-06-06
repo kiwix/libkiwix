@@ -194,6 +194,7 @@ class Library
     const std::string& language = "",
     const std::string& creator = "",
     const std::string& publisher = "",
+    bool excludeTags = false,
     const std::vector<std::string>& tags = {},
     size_t maxSize = 0);
 

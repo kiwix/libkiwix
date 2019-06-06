@@ -251,6 +251,7 @@ std::vector<std::string> Library::listBooksIds(
     const std::string& language,
     const std::string& creator,
     const std::string& publisher,
+    bool excludeTags,
     const std::vector<std::string>& tags,
     size_t maxSize) {
 
@@ -277,7 +278,7 @@ std::vector<std::string> Library::listBooksIds(
       std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
       bool ok = true;
       for (auto& t: tags) {
-        if (sBookTags.find(t) == sBookTags.end()) {
+        if ((!excludeTags && sBookTags.find(t) == sBookTags.end()) || (excludeTags && sBookTags.find(t) != sBookTags.end())) {
           // A "filter" tag is not in the book tag.
           // No need to loop for all "filter" tags.
           ok = false;
