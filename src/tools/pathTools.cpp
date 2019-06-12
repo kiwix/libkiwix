@@ -30,11 +30,6 @@
 #endif
 
 #ifdef _WIN32
-#else
-#include <unistd.h>
-#endif
-
-#ifdef _WIN32
 const std::string SEPARATOR("\\");
 #else
 const std::string SEPARATOR("/");
