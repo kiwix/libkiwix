@@ -3,9 +3,13 @@
 
 #ifdef _WIN32
     # define KIWIXSERVE_CMD "kiwix-serve.exe"
+    # include <windows.h>
 #else
     # define KIWIXSERVE_CMD "kiwix-serve"
+    # include <unistd.h>
 #endif
+
+#include "tools/pathTools.h"
 
 namespace kiwix {
 
