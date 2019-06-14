@@ -190,6 +190,7 @@ class Library
   std::vector<std::string> listBooksIds(
     int supportedListMode = ALL,
     supportedListSortBy sortBy = UNSORTED,
+    const bool sortOrderAsc = true,
     const std::string& search = "",
     const std::string& language = "",
     const std::string& creator = "",

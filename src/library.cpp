@@ -247,6 +247,7 @@ std::string Comparator<PUBLISHER>::get_keys(const std::string& id)
 std::vector<std::string> Library::listBooksIds(
     int mode,
     supportedListSortBy sortBy,
+    const bool sortOrderAsc,
     const std::string& search,
     const std::string& language,
     const std::string& creator,
@@ -321,6 +322,9 @@ std::vector<std::string> Library::listBooksIds(
       break;
     default:
       break;
+  }
+  if (!sortOrderAsc) {
+      std::reverse(bookIds.begin(),bookIds.end());
   }
   return bookIds;
 }
