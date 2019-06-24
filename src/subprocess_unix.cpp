@@ -46,7 +46,7 @@ void* UnixImpl::waitForPID(void* _self)
 #endif
 
   UnixImpl* self = static_cast<UnixImpl*>(_self);
-  waitpid(self->m_pid, NULL, WEXITED);
+  waitpid(self->m_pid, NULL, 0);
 
   pthread_mutex_lock(&self->m_mutex);
   self->m_running = false;
