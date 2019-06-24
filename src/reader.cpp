@@ -772,6 +772,9 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
     for (auto current = suggestionSearch->begin();
          current != suggestionSearch->end();
          current++) {
+      if (!current->good()) {
+          continue;
+      }
       std::vector<std::string> suggestion;
       suggestion.push_back(current->getTitle());
       suggestion.push_back("/A/" + current->getUrl());
