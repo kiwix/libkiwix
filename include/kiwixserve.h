@@ -14,6 +14,7 @@ class KiwixServe
 
     void run();
     void shutDown();
+    bool isRunning();
 
   private:
   std::unique_ptr<Subprocess> mp_kiwixServe;
