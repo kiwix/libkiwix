@@ -58,4 +58,12 @@ void KiwixServe::shutDown()
         mp_kiwixServe->kill();
 }
 
+bool KiwixServe::isRunning()
+{
+    if (mp_kiwixServe) {
+        return (mp_kiwixServe->isRunning());
+    }
+    return false;
+}
+
 }
