@@ -58,9 +58,6 @@ class DefaultLibraryManipulator : public LibraryManipulator {
 
 /**
  * A tool to manage a `Library`.
- *
- * A `Manager` handle a internal `Library`.
- * This `Library` can be retrived with `cloneLibrary` method.
  */
 class Manager
 {
@@ -158,55 +155,6 @@ class Manager
                        const std::string& url = "",
                        const bool checkMetaData = false);
 
-  /**
-   * Get the book corresponding to an id.
-   *
-   * @param[in] id The id of the book
-   * @param[out] book The book corresponding to the id.
-   * @return True if the book has been found.
-   */
-  bool getBookById(const std::string& id, Book& book);
-
-  /**
-   * Update the "last open date" of a book
-   *
-   * @param id the id of the book.
-   * @return True if the book is in the library.
-   */
-  bool updateBookLastOpenDateById(const std::string& id);
-
-  /**
-   * Remove (set to empty) paths of all books in the library.
-   */
-  void removeBookPaths();
-
-  /**
-   * List books in the library.
-   *
-   * The books list will be available in public vector member `bookIdList`.
-   *
-   * @param mode The mode of listing :
-   *             - LASTOPEN sort by last opened book.
-   *             - LOCAL list only local file.
-   *             - REMOTE list only remote file.
-   * @param sortBy Attribute to sort by the book list.
-   * @param maxSize Do not list book bigger than maxSize MiB.
-   *                Set to 0 to cancel this filter.
-   * @param language List only books in this language.
-   * @param creator List only books of this creator.
-   * @param publisher List only books of this publisher.
-   * @param search List only books with search in the title, description or
-   *               language.
-   * @return True
-   */
-  bool listBooks(const supportedListMode mode,
-                 const supportedListSortBy sortBy,
-                 const unsigned int maxSize,
-                 const std::string& language,
-                 const std::string& creator,
-                 const std::string& publisher,
-                 const std::string& search);
-
   std::string writableLibraryPath;
 
   bool m_hasSearchResult = false;
@@ -225,8 +173,6 @@ class Manager
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost);
 
- private:
-  void checkAndCleanBookPaths(Book& book, const std::string& libraryPath);
 };
 }
 
