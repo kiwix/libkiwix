@@ -26,6 +26,7 @@
 
 #include "book.h"
 #include "bookmark.h"
+#include "common.h"
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
@@ -44,6 +45,65 @@ enum supportedListMode {
   VALID = 1 << 4,
   NOVALID = 1 << 5
 };
+
+class Filter {
+  private:
+    uint64_t activeFilters;
+    std::vector<std::string> _acceptTags;
+    std::vector<std::string> _rejectTags;
+    std::string _lang;
+    std::string _publisher;
+    std::string _creator;
+    size_t _maxSize;
+    std::string _query;
+
+  public:
+    Filter();
+    ~Filter() = default;
+
+    /**
+     *  Set the filter to check local.
+     *
+     *  A local book is a book with a path.
+     *  If accept is true, only local book are accepted.
+     *  If accept is false, only non local book are accepted.
+     */
+    Filter& local(bool accept);
+
+    /**
+     *  Set the filter to check remote.
+     *
+     *  A remote book is a book with a url.
+     *  If accept is true, only remote book are accepted.
+     *  If accept is false, only non remote book are accepted.
+     */
+    Filter& remote(bool accept);
+
+    /**
+     *  Set the filter to check validity.
+     *
+     *  A valid book is a book with a path pointing to a existing zim file.
+     *  If accept is true, only valid book are accepted.
+     *  If accept is false, only non valid book are accepted.
+     */
+    Filter& valid(bool accept);
+
+    /**
+     * Set the filter to only accept book with corresponding tag.
+     */
+    Filter& acceptTags(std::vector<std::string> tags);
+    Filter& rejectTags(std::vector<std::string> tags);
+
+    Filter& lang(std::string lang);
+    Filter& publisher(std::string publisher);
+    Filter& creator(std::string creator);
+    Filter& maxSize(size_t size);
+    Filter& query(std::string query);
+
+    bool accept(const Book& book) const;
+};
+
+
 /**
  * A Library store several books.
  */
@@ -162,8 +222,26 @@ class Library
    * @param search List only books with search in the title or description.
    * @return The list of bookIds corresponding to the query.
    */
-  std::vector<std::string> filter(const std::string& search);
+  DEPRECATED std::vector<std::string> filter(const std::string& search);
 
+
+  /**
+   * Filter the library and return the id of the keep elements.
+   *
+   * @param filter The filter to use.
+   * @return The list of bookIds corresponding to the filter.
+   */
+  std::vector<std::string> filter(const Filter& filter);
+
+
+  /**
+   * Sort (in place) bookIds using the given comparator.
+   *
+   * @param bookIds the list of book Ids to sort
+   * @param comparator how to sort the books
+   * @return The sorted list of books
+   */
+  void sort(std::vector<std::string>& bookIds, supportedListSortBy sortBy, bool ascending);
 
   /**
    * List books in the library.
@@ -187,7 +265,7 @@ class Library
    *                Set to 0 to cancel this filter.
    * @return The list of bookIds corresponding to the query.
    */
-  std::vector<std::string> listBooksIds(
+  DEPRECATED std::vector<std::string> listBooksIds(
     int supportedListMode = ALL,
     supportedListSortBy sortBy = UNSORTED,
     const std::string& search = "",

@@ -1,7 +1,8 @@
 
 
 tests = [
-    'parseUrl'
+    'parseUrl',
+    'library'
 ]
 
 
