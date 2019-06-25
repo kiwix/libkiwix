@@ -67,7 +67,7 @@ void UnixImpl::run(commandLine_t& commandLine)
       commandLine.push_back(NULL);
       if (execvp(binary, const_cast<char* const*>(commandLine.data()))) {
         perror("Cannot launch\n");
-        exit(-1);
+        _exit(-1);
       }
 
       break;
