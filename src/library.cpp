@@ -96,14 +96,16 @@ unsigned int Library::getBookCount(const bool localBooks,
   return result;
 }
 
-bool Library::writeToFile(const std::string& path) {
+bool Library::writeToFile(const std::string& path)
+{
   auto baseDir = removeLastPathElement(path, true, false);
   LibXMLDumper dumper(this);
   dumper.setBaseDir(baseDir);
   return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
 }
 
-bool Library::writeBookmarksToFile(const std::string& path) {
+bool Library::writeBookmarksToFile(const std::string& path)
+{
   LibXMLDumper dumper(this);
   return writeTextFile(path, dumper.dumpLibXMLBookmark());
 }
@@ -182,65 +184,102 @@ std::vector<std::string> Library::filter(const std::string& search)
     return getBooksIds();
   }
 
+  return filter(Filter().query(search));
+}
+
+
+std::vector<std::string> Library::filter(const Filter& filter)
+{
   std::vector<std::string> bookIds;
   for(auto& pair:m_books) {
-     auto& book = pair.second;
-     if (matchRegex(book.getTitle(), "\\Q" + search + "\\E")
-         || matchRegex(book.getDescription(), "\\Q" + search + "\\E")) {
-       bookIds.push_back(pair.first);
-     }
+    auto book = pair.second;
+    if(filter.accept(book)) {
+      bookIds.push_back(pair.first);
+    }
   }
-
   return bookIds;
 }
 
-template<supportedListSortBy sort>
-struct Comparator {
-  Library* lib;
-  Comparator(Library* lib) : lib(lib) {}
-
-  bool operator() (const std::string& id1, const std::string& id2) {
-    return get_keys(id1) < get_keys(id2);
-  }
-
-  std::string get_keys(const std::string& id);
-  unsigned int get_keyi(const std::string& id);
+template<supportedListSortBy SORT>
+struct KEY_TYPE {
+  typedef std::string TYPE;
 };
 
 template<>
-std::string Comparator<TITLE>::get_keys(const std::string& id)
+struct KEY_TYPE<SIZE> {
+  typedef size_t TYPE;
+};
+
+template<supportedListSortBy sort>
+class Comparator {
+  private:
+    Library* lib;
+    bool     ascending;
+
+    inline typename KEY_TYPE<sort>::TYPE get_key(const std::string& id);
+
+  public:
+    Comparator(Library* lib, bool ascending) : lib(lib), ascending(ascending) {}
+    inline bool operator() (const std::string& id1, const std::string& id2) {
+      if (ascending) {
+        return get_key(id1) < get_key(id2);
+      } else {
+        return get_key(id2) < get_key(id1);
+      }
+    }
+};
+
+template<>
+std::string Comparator<TITLE>::get_key(const std::string& id)
 {
   return lib->getBookById(id).getTitle();
 }
 
 template<>
-unsigned int Comparator<SIZE>::get_keyi(const std::string& id)
+size_t Comparator<SIZE>::get_key(const std::string& id)
 {
   return lib->getBookById(id).getSize();
 }
 
 template<>
-bool Comparator<SIZE>::operator() (const std::string& id1, const std::string& id2)
-{
-  return get_keyi(id1) < get_keyi(id2);
-}
-
-template<>
-std::string Comparator<DATE>::get_keys(const std::string& id)
+std::string Comparator<DATE>::get_key(const std::string& id)
 {
   return lib->getBookById(id).getDate();
 }
 
 template<>
-std::string Comparator<CREATOR>::get_keys(const std::string& id)
+std::string Comparator<CREATOR>::get_key(const std::string& id)
 {
   return lib->getBookById(id).getCreator();
 }
 
 template<>
-std::string Comparator<PUBLISHER>::get_keys(const std::string& id)
+std::string Comparator<PUBLISHER>::get_key(const std::string& id)
 {
   return lib->getBookById(id).getPublisher();
+}
+
+void Library::sort(std::vector<std::string>& bookIds, supportedListSortBy sort, bool ascending)
+{
+  switch(sort) {
+    case TITLE:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this, ascending));
+      break;
+    case SIZE:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<SIZE>(this, ascending));
+      break;
+    case DATE:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<DATE>(this, ascending));
+      break;
+    case CREATOR:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<CREATOR>(this, ascending));
+      break;
+    case PUBLISHER:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<PUBLISHER>(this, ascending));
+      break;
+    default:
+      break;
+  }
 }
 
 
@@ -254,74 +293,205 @@ std::vector<std::string> Library::listBooksIds(
     const std::vector<std::string>& tags,
     size_t maxSize) {
 
-  std::vector<std::string> bookIds;
-  for(auto& pair:m_books) {
-    auto& book = pair.second;
-    auto local = !book.getPath().empty();
-    if (mode & LOCAL && !local)
-      continue;
-    if (mode & NOLOCAL && local)
-      continue;
-    auto valid = book.isPathValid();
-    if (mode & VALID && !valid)
-      continue;
-    if (mode & NOVALID && valid)
-      continue;
-    auto remote = !book.getUrl().empty();
-    if (mode & REMOTE && !remote)
-      continue;
-    if (mode & NOREMOTE && remote)
-      continue;
-    if (!tags.empty()) {
-      auto vBookTags = split(book.getTags(), ";");
-      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
-      bool ok = true;
-      for (auto& t: tags) {
-        if (sBookTags.find(t) == sBookTags.end()) {
-          // A "filter" tag is not in the book tag.
-          // No need to loop for all "filter" tags.
-          ok = false;
-          break;
-        }
-      }
-      if (! ok ) {
-        // Skip the book
-        continue;
-      }
-    }
-    if (maxSize != 0 && book.getSize() > maxSize)
-      continue;
-    if (!language.empty() && book.getLanguage() != language)
-      continue;
-    if (!publisher.empty() && book.getPublisher() != publisher)
-      continue;
-    if (!creator.empty() && book.getCreator() != creator)
-      continue;
-    if (!search.empty() && !(matchRegex(book.getTitle(), "\\Q" + search + "\\E")
-                          || matchRegex(book.getDescription(), "\\Q" + search + "\\E")))
-      continue;
-    bookIds.push_back(pair.first);
-  }
+  Filter _filter;
+  if (mode & LOCAL)
+    _filter.local(true);
+  if (mode & NOLOCAL)
+    _filter.local(false);
+  if (mode & VALID)
+    _filter.valid(true);
+  if (mode & NOVALID)
+    _filter.valid(false);
+  if (mode & REMOTE)
+    _filter.remote(true);
+  if (mode & NOREMOTE)
+    _filter.remote(false);
+  if (!tags.empty())
+    _filter.acceptTags(tags);
+  if (maxSize != 0)
+    _filter.maxSize(maxSize);
+  if (!language.empty())
+    _filter.lang(language);
+  if (!publisher.empty())
+    _filter.publisher(publisher);
+  if (!creator.empty())
+    _filter.creator(creator);
+  if (!search.empty())
+    _filter.query(search);
 
-  switch(sortBy) {
-    case TITLE:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this));
-      break;
-    case SIZE:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<SIZE>(this));
-      break;
-    case DATE:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<DATE>(this));
-      break;
-    case CREATOR:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<CREATOR>(this));
-      break;
-    case PUBLISHER:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<PUBLISHER>(this));
-      break;
-    default:
-      break;
-  }
+  auto bookIds = filter(_filter);
+
+  sort(bookIds, sortBy, true);
   return bookIds;
 }
+
+Filter::Filter()
+  : activeFilters(0),
+    _maxSize(0)
+{};
+
+#define FLAG(x) (1 << x)
+enum filterTypes {
+  NONE = 0,
+  _LOCAL = FLAG(0),
+  _REMOTE = FLAG(1),
+  _NOLOCAL = FLAG(2),
+  _NOREMOTE = FLAG(3),
+  _VALID = FLAG(4),
+  _NOVALID = FLAG(5),
+  ACCEPTTAGS = FLAG(6),
+  REJECTTAGS = FLAG(7),
+  LANG = FLAG(8),
+  _PUBLISHER = FLAG(9),
+  _CREATOR = FLAG(10),
+  MAXSIZE = FLAG(11),
+  QUERY = FLAG(12),
+};
+
+Filter& Filter::local(bool accept)
+{
+  if (accept) {
+    activeFilters |= _LOCAL;
+    activeFilters &= ~_NOLOCAL;
+  } else {
+    activeFilters |= _NOLOCAL;
+    activeFilters &= ~_LOCAL;
+  }
+  return *this;
+}
+
+Filter& Filter::remote(bool accept)
+{
+  if (accept) {
+    activeFilters |= _REMOTE;
+    activeFilters &= ~_NOREMOTE;
+  } else {
+    activeFilters |= _NOREMOTE;
+    activeFilters &= ~_REMOTE;
+  }
+  return *this;
+}
+
+Filter& Filter::valid(bool accept)
+{
+  if (accept) {
+    activeFilters |= _VALID;
+    activeFilters &= ~_NOVALID;
+  } else {
+    activeFilters |= _NOVALID;
+    activeFilters &= ~_VALID;
+  }
+  return *this;
+}
+
+Filter& Filter::acceptTags(std::vector<std::string> tags)
+{
+  _acceptTags = tags;
+  activeFilters |= ACCEPTTAGS;
+  return *this;
+}
+
+Filter& Filter::rejectTags(std::vector<std::string> tags)
+{
+  _rejectTags = tags;
+  activeFilters |= REJECTTAGS;
+  return *this;
+}
+
+Filter& Filter::lang(std::string lang)
+{
+  _lang = lang;
+  activeFilters |= LANG;
+  return *this;
+}
+
+Filter& Filter::publisher(std::string publisher)
+{
+  _publisher = publisher;
+  activeFilters |= _PUBLISHER;
+  return *this;
+}
+
+Filter& Filter::creator(std::string creator)
+{
+  _creator = creator;
+  activeFilters |= _CREATOR;
+  return *this;
+}
+
+Filter& Filter::maxSize(size_t maxSize)
+{
+  _maxSize = maxSize;
+  activeFilters |= MAXSIZE;
+  return *this;
+}
+
+Filter& Filter::query(std::string query)
+{
+  _query = query;
+  activeFilters |= QUERY;
+  return *this;
+}
+
+#define ACTIVE(X) (activeFilters & (X))
+bool Filter::accept(const Book& book) const
+{
+  auto local = !book.getPath().empty();
+  if (ACTIVE(_LOCAL) && !local)
+    return false;
+  if (ACTIVE(_NOLOCAL) && local)
+    return false;
+  auto valid = book.isPathValid();
+  if (ACTIVE(_VALID) && !valid)
+    return false;
+  if (ACTIVE(_NOVALID) && valid)
+    return false;
+  auto remote = !book.getUrl().empty();
+  if (ACTIVE(_REMOTE) && !remote)
+    return false;
+  if (ACTIVE(_NOREMOTE) && remote)
+    return false;
+  if (ACTIVE(ACCEPTTAGS)) {
+    if (!_acceptTags.empty()) {
+      auto vBookTags = split(book.getTags(), ";");
+      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
+      for (auto& t: _acceptTags) {
+        if (sBookTags.find(t) == sBookTags.end()) {
+          return false;
+        }
+      }
+    }
+  }
+  if (ACTIVE(REJECTTAGS)) {
+    if (!_rejectTags.empty()) {
+      auto vBookTags = split(book.getTags(), ";");
+      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
+      for (auto& t: _rejectTags) {
+        if (sBookTags.find(t) != sBookTags.end()) {
+          return false;
+        }
+      }
+    }
+  }
+  if (ACTIVE(MAXSIZE) && book.getSize() > _maxSize)
+    return false;
+
+  if (ACTIVE(LANG) && book.getLanguage() != _lang)
+    return false;
+
+  if (ACTIVE(_PUBLISHER) && book.getPublisher() != _publisher)
+    return false;
+
+  if (ACTIVE(_CREATOR) && book.getCreator() != _creator)
+    return false;
+
+  if ( ACTIVE(QUERY)
+    && !(matchRegex(book.getTitle(), "\\Q" + _query + "\\E")
+        || matchRegex(book.getDescription(), "\\Q" + _query + "\\E")))
+    return false;
+
+  return true;
+
+}
+
 }
