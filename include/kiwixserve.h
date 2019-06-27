@@ -9,12 +9,13 @@ namespace kiwix {
 class KiwixServe
 {
   public:
-    KiwixServe();
+    KiwixServe(int port = 8181);
     ~KiwixServe();
 
     void run();
     void shutDown();
     bool isRunning();
+    int getPort() { return m_port; }
 
   private:
   std::unique_ptr<Subprocess> mp_kiwixServe;

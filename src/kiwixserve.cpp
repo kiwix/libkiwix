@@ -13,7 +13,7 @@
 
 namespace kiwix {
 
-KiwixServe::KiwixServe() : m_port(8181)
+KiwixServe::KiwixServe(int port) : m_port(port)
 {
 }
 
