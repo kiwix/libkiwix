@@ -372,6 +372,30 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
 }
 
 JNIEXPORT jboolean JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
+                                                         jobject obj,
+                                                         jobject titleObj,
+                                                         jobject urlObj)
+{
+  jboolean retVal = JNI_FALSE;
+  std::string cTitle;
+  std::string cUrl;
+
+  try {
+    if (READER->getNextSuggestion(cTitle, cUrl)) {
+      setStringObjValue(cTitle, titleObj, env);
+      setStringObjValue(cUrl, urlObj, env);
+      retVal = JNI_TRUE;
+    }
+  } catch (std::exception& e) {
+    __android_log_print(ANDROID_LOG_WARN, "kiwix", "Unable to get next suggestion");
+    __android_log_print(ANDROID_LOG_WARN, "kiwix", e.what());
+  }
+
+  return retVal;
+}
+
+JNIEXPORT jboolean JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_getPageUrlFromTitle(JNIEnv* env,
                                                            jobject obj,
                                                            jstring title,

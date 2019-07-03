@@ -104,6 +104,8 @@ public class JNIKiwixReader
 
   public native boolean getNextSuggestion(JNIKiwixString title);
 
+  public native boolean getNextSuggestion(JNIKiwixString title, JNIKiwixString url);
+
   public native boolean getPageUrlFromTitle(String title, JNIKiwixString url);
 
   public native String getDescription();
