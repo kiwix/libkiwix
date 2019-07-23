@@ -27,17 +27,13 @@ The Kiwix library relies on many third parts software libraries. They
 are prerequisites to the Kiwix library compilation. Following
 libraries need to be available:
 
-* ICU ................................... http://site.icu-project.org/
-(package libicu-dev on Ubuntu)
-* ZIM ........................................ http://www.openzim.org/
-(package libzim-dev on Ubuntu)
-* Pugixml ........................................ http://pugixml.org/
-(package libpugixml-dev on Ubuntu)
-* libaria2 .................................. https://aria2.github.io/
-(no package on Ubuntu)
-* Mustache ....................... https://github.com/kainjow/Mustache
-(Just copy the header mustache.hpp somewhere it can be found by the
-compiler and/or set CPPFLAGS with correct '-I' option)
+* [ICU](https://site.icu-project.org/) (package `libicu-dev` on Ubuntu)
+* [ZIM](https://openzim.org/) (package `libzim-dev` on Ubuntu)
+* [Pugixml](https://pugixml.org/) (package `libpugixml-dev` on Ubuntu)
+* [Aria2](https://aria2.github.io/) (package `aria2` on Ubuntu)
+* [Mustache](https://github.com/kainjow/Mustache) (Just copy the
+header `mustache.hpp` somewhere it can be found by the compiler and/or
+set CPPFLAGS with correct `-I` option)
 
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
@@ -46,13 +42,13 @@ In the worse case, you will have to download and compile bleeding edge
 version by hand.
 
 If you want to install these dependencies locally, then use the
-kiwix-lib directory as install prefix.
+`kiwix-lib` directory as install prefix.
 
 Environment
 -------------
 
-The Kiwix library builds using [Meson](http://mesonbuild.com/) version
-0.39 or higher. Meson relies itself on Ninja, pkg-config and few other
+The Kiwix library builds using [Meson](https://mesonbuild.com/) version
+0.43 or higher. Meson relies itself on Ninja, pkg-config and few other
 compilation tools.
 
 Install first the few common compilation tools:
@@ -61,14 +57,16 @@ Install first the few common compilation tools:
 * Pkg-config
 
 These tools should be packaged if you use a cutting edge operating
-system. If not, have a look to the "Troubleshooting" section.
+system. If not, have a look to the [Troubleshooting](#Troubleshooting)
+section.
 
 Compilation
 -----------
 
 Once all dependencies are installed, you can compile the Kiwix library
 with:
-```
+
+```bash
 meson . build
 ninja -C build
 ```
@@ -86,31 +84,32 @@ Installation
 If you want to install the Kiwix library and the headers you just have
 compiled on your system, here we go:
 
-```
+```bash
 ninja -C build install
 ```
 
-You might need to run the command as root (or using 'sudo'), depending
+You might need to run the command as root (or using `sudo`), depending
 where you want to install the libraries. After the installation
-succeeded, you may need to run ldconfig (as root).
+succeeded, you may need to run `ldconfig` (as root).
 
 Uninstallation
 ------------
 
 If you want to uninstall the Kiwix library:
 
-```
+```bash
 ninja -C build uninstall
 ```
 
 Like for the installation, you might need to run the command as root
-(or using 'sudo').
+(or using `sudo`).
 
 Troubleshooting
 ---------------
 
 If you need to install Meson "manually":
-```
+
+```bash
 virtualenv -p python3 ./ # Create virtualenv
 source bin/activate      # Activate the virtualenv
 pip3 install meson       # Install Meson
@@ -118,7 +117,8 @@ hash -r                  # Refresh bash paths
 ```
 
 If you need to install Ninja "manually":
-```
+
+```bash
 git clone git://github.com/ninja-build/ninja.git
 cd ninja
 git checkout release
