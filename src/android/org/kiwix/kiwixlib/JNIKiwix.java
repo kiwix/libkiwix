@@ -20,12 +20,16 @@
 
 package org.kiwix.kiwixlib;
 
+import android.content.Context;
+import com.getkeepsafe.relinker.ReLinker;
 import org.kiwix.kiwixlib.JNIKiwixReader;
 import org.kiwix.kiwixlib.JNIKiwixString;
 
 public class JNIKiwix
 {
-  static { System.loadLibrary("kiwix"); }
+  public JNIKiwix(final Context context){
+	Relinker.loadLibrary(context, "kiwix");
+  }
 
   public native void setDataDirectory(String icuDataDir);
 }
