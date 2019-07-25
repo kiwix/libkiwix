@@ -1,6 +1,6 @@
 
 kiwix_jni = custom_target('jni',
-  input: ['org/kiwix/kiwixlib/JNIKiwix.java',
+  input: ['org/kiwix/kiwixlib/JNIICU.java',
           'org/kiwix/kiwixlib/JNIKiwixReader.java',
           'org/kiwix/kiwixlib/JNIKiwixSearcher.java',
           'org/kiwix/kiwixlib/JNIKiwixInt.java',
@@ -16,7 +16,7 @@ kiwix_jni = custom_target('jni',
 )
 
 kiwix_sources += [
-    'android/kiwix.cpp',
+    'android/kiwixicu.cpp',
     'android/kiwixreader.cpp',
     'android/kiwixsearcher.cpp',
     kiwix_jni]
