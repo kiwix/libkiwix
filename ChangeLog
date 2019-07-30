@@ -1,3 +1,13 @@
+kiwix-lib 5.2.0
+===============
+
+ * kiwix-serve integration (as a seperated process).
+ * Fix crash in the suggestion search.
+ * Better API to filter the library books.
+ * New kiwix-lib application for android. (.aar)
+ * Use ReLinker to link with libkiwix.so in android.
+ * Correctly set the verbosity of zim search.
+
 kiwix-lib 5.1.0
 ===============
 
