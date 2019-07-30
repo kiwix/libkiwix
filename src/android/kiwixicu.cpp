@@ -19,7 +19,7 @@
  */
 
 #include <jni.h>
-#include "org_kiwix_kiwixlib_JNIKiwix.h"
+#include "org_kiwix_kiwixlib_JNIICU.h"
 
 #include <iostream>
 #include <string>
@@ -30,7 +30,7 @@
 
 pthread_mutex_t globalLock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 
-JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwix_setDataDirectory(
+JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIICU_setDataDirectory(
     JNIEnv* env, jobject obj, jstring dirStr)
 {
   std::string cPath = jni2c(dirStr, env);
