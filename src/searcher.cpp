@@ -107,22 +107,8 @@ void Searcher::search(std::string& search,
     cout << "Performing query `" << search << "'" << endl;
   }
 
-  /* If resultEnd & resultStart inverted */
-  if (resultStart > resultEnd) {
-    resultEnd += resultStart;
-    resultStart = resultEnd - resultStart;
-    resultEnd -= resultStart;
-  }
-
   /* Try to find results */
   if (resultStart != resultEnd) {
-    /* Avoid big researches */
-    this->resultCountPerPage = resultEnd - resultStart;
-    if (this->resultCountPerPage > MAX_SEARCH_LEN) {
-      resultEnd = resultStart + MAX_SEARCH_LEN;
-      this->resultCountPerPage = MAX_SEARCH_LEN;
-    }
-
     /* Perform the search */
     this->searchPattern = search;
     this->resultStart = resultStart;
@@ -159,23 +145,9 @@ void Searcher::geo_search(float latitude, float longitude, float distance,
     cout << "Performing geo query `" << distance << "&(" << latitude << ";" << longitude << ")'" << endl;
   }
 
-  /* If resultEnd & resultStart inverted */
-  if (resultStart > resultEnd) {
-    resultEnd += resultStart;
-    resultStart = resultEnd - resultStart;
-    resultEnd -= resultStart;
-  }
-
   /* Try to find results */
   if (resultStart == resultEnd) {
     return;
-  }
-
-  /* Avoid big researches */
-  this->resultCountPerPage = resultEnd - resultStart;
-  if (this->resultCountPerPage > MAX_SEARCH_LEN) {
-    resultEnd = resultStart + MAX_SEARCH_LEN;
-    this->resultCountPerPage = MAX_SEARCH_LEN;
   }
 
   /* Perform the search */
