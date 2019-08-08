@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <tools/pathTools.h>
+#include "tools/pathTools.h"
 
 #ifdef __APPLE__
 #include <limits.h>
@@ -36,6 +36,9 @@
 #include <vector>
 #include <sys/stat.h>
 #include <sstream>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 
 #ifdef _WIN32
 const std::string SEPARATOR("\\");

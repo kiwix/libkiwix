@@ -22,14 +22,9 @@
 
 #include <unicode/unistr.h>
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
-
-#include "pathTools.h"
+#include <sstream>
 
 namespace kiwix
 {

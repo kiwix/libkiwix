@@ -2,6 +2,7 @@
 
 #include "aria2.h"
 #include "xmlrpc.h"
+#include <iostream>
 #include <sstream>
 #include <thread>
 #include <chrono>
