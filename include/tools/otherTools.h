@@ -20,18 +20,16 @@
 #ifndef KIWIX_OTHERTOOLS_H
 #define KIWIX_OTHERTOOLS_H
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
+#include <string>
 
-#include <pugixml.hpp>
+namespace pugi {
+  class xml_node;
+}
 
 namespace kiwix
 {
 void sleep(unsigned int milliseconds);
-std::string nodeToString(pugi::xml_node node);
+std::string nodeToString(const pugi::xml_node& node);
 std::string converta2toa3(const std::string& a2code);
 }
 

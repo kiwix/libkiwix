@@ -15,7 +15,9 @@
 # define ARIA2_CMD "aria2c.exe"
 #else
 # define ARIA2_CMD "aria2c"
+# include <unistd.h>
 #endif
+
 
 
 namespace kiwix {
