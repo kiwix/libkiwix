@@ -27,7 +27,7 @@ std::string replaceRegex(const std::string& content,
                          const std::string& replacement,
                          const std::string& regex);
 std::string appendToFirstOccurence(const std::string& content,
-                                   const std::string regex,
+                                   const std::string& regex,
                                    const std::string& replacement);
 
 #endif
