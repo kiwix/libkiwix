@@ -19,6 +19,7 @@
 
 #include "library.h"
 #include "book.h"
+#include "reader.h"
 #include "libxml_dumper.h"
 
 #include "tools/base64.h"
@@ -32,6 +33,7 @@
 
 namespace kiwix
 {
+
 /* Constructor */
 Library::Library()
 {
@@ -81,6 +83,20 @@ bool Library::removeBookById(const std::string& id)
 Book& Library::getBookById(const std::string& id)
 {
   return m_books.at(id);
+}
+
+std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
+{
+  try {
+    return m_readers.at(id);
+  } catch (std::out_of_range& e) {}
+
+  auto book = getBookById(id);
+  if (!book.isPathValid())
+    return nullptr;
+  auto sptr = make_shared<Reader>(book.getPath());
+  m_readers[id] = sptr;
+  return sptr;
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
