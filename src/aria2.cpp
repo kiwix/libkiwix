@@ -7,6 +7,7 @@
 #include <chrono>
 #include <tools/otherTools.h>
 #include <tools/pathTools.h>
+#include <tools/stringTools.h>
 #include <downloader.h> // For AriaError
 
 #ifdef _WIN32

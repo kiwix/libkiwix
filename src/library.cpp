@@ -24,6 +24,7 @@
 #include "tools/base64.h"
 #include "tools/regexTools.h"
 #include "tools/pathTools.h"
+#include "tools/stringTools.h"
 
 #include <pugixml.hpp>
 #include <algorithm>

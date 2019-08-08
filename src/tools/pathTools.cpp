@@ -29,7 +29,13 @@
 #define getcwd _getcwd  // stupid MSFT "deprecation" warning
 #endif
 
+#include "tools/stringTools.h"
+
+#include <string.h>
 #include <map>
+#include <vector>
+#include <sys/stat.h>
+#include <sstream>
 
 #ifdef _WIN32
 const std::string SEPARATOR("\\");
@@ -44,7 +50,7 @@ const std::string SEPARATOR("/");
 #define PATH_MAX 1024
 #endif
 
-bool isRelativePath(const string& path)
+bool isRelativePath(const std::string& path)
 {
 #ifdef _WIN32
   return path.empty() || path.substr(1, 2) == ":\\" ? false : true;
@@ -53,7 +59,7 @@ bool isRelativePath(const string& path)
 #endif
 }
 
-string computeRelativePath(const string path, const string absolutePath)
+std::string computeRelativePath(const std::string& path, const std::string& absolutePath)
 {
   std::vector<std::string> pathParts = kiwix::split(path, SEPARATOR);
   std::vector<std::string> absolutePathParts
@@ -66,7 +72,7 @@ string computeRelativePath(const string path, const string absolutePath)
       commonCount++;
   }
 
-  string relativePath;
+  std::string relativePath;
 #ifdef _WIN32
   /* On Windows you have a token more because the root is represented
      by a letter */
@@ -86,9 +92,9 @@ string computeRelativePath(const string path, const string absolutePath)
 }
 
 /* Warning: the relative path must be with slashes */
-string computeAbsolutePath(const string path, const string relativePath)
+std::string computeAbsolutePath(const std::string& path, const std::string& relativePath)
 {
-  string absolutePath;
+  std::string absolutePath;
 
   if (path.empty()) {
     char* path = NULL;
@@ -100,7 +106,7 @@ string computeAbsolutePath(const string path, const string relativePath)
     path = getcwd(path, size);
 #endif
 
-    absolutePath = string(path) + SEPARATOR;
+    absolutePath = std::string(path) + SEPARATOR;
   } else {
     absolutePath = path.substr(path.length() - 1, 1) == SEPARATOR
                        ? path
@@ -115,11 +121,11 @@ string computeAbsolutePath(const string path, const string relativePath)
   char* token = strtok(cRelativePath, "/");
 
   while (token != NULL) {
-    if (string(token) == "..") {
+    if (std::string(token) == "..") {
       absolutePath = removeLastPathElement(absolutePath, true, false);
       token = strtok(NULL, "/");
     } else if (strcmp(token, ".") && strcmp(token, "")) {
-      absolutePath += string(token);
+      absolutePath += std::string(token);
       token = strtok(NULL, "/");
       if (token != NULL) {
         absolutePath += SEPARATOR;
@@ -132,11 +138,11 @@ string computeAbsolutePath(const string path, const string relativePath)
   return absolutePath;
 }
 
-string removeLastPathElement(const string path,
-                             const bool removePreSeparator,
-                             const bool removePostSeparator)
+std::string removeLastPathElement(const std::string& path,
+                                  const bool removePreSeparator,
+                                  const bool removePostSeparator)
 {
-  string newPath = path;
+  std::string newPath = path;
   size_t offset = newPath.find_last_of(SEPARATOR);
   if (removePreSeparator &&
 #ifndef _WIN32
@@ -151,18 +157,18 @@ string removeLastPathElement(const string path,
   return newPath;
 }
 
-string appendToDirectory(const string& directoryPath, const string& filename)
+std::string appendToDirectory(const std::string& directoryPath, const std::string& filename)
 {
-  string newPath = directoryPath + SEPARATOR + filename;
+  std::string newPath = directoryPath + SEPARATOR + filename;
   return newPath;
 }
 
-string getLastPathElement(const string& path)
+std::string getLastPathElement(const std::string& path)
 {
   return path.substr(path.find_last_of(SEPARATOR) + 1);
 }
 
-unsigned int getFileSize(const string& path)
+unsigned int getFileSize(const std::string& path)
 {
 #ifdef _WIN32
   struct _stat filestatus;
@@ -175,14 +181,14 @@ unsigned int getFileSize(const string& path)
   return filestatus.st_size / 1024;
 }
 
-string getFileSizeAsString(const string& path)
+std::string getFileSizeAsString(const std::string& path)
 {
-  ostringstream convert;
+  std::ostringstream convert;
   convert << getFileSize(path);
   return convert.str();
 }
 
-string getFileContent(const string& path)
+std::string getFileContent(const std::string& path)
 {
   std::ifstream f(path, std::ios::in|std::ios::ate);
   std::string content;
@@ -196,14 +202,14 @@ string getFileContent(const string& path)
   return content;
 }
 
-bool fileExists(const string& path)
+bool fileExists(const std::string& path)
 {
 #ifdef _WIN32
   return PathFileExists(path.c_str());
 #else
   bool flag = false;
-  fstream fin;
-  fin.open(path.c_str(), ios::in);
+  std::fstream fin;
+  fin.open(path.c_str(), std::ios::in);
   if (fin.is_open()) {
     flag = true;
   }
@@ -212,7 +218,7 @@ bool fileExists(const string& path)
 #endif
 }
 
-bool makeDirectory(const string& path)
+bool makeDirectory(const std::string& path)
 {
 #ifdef _WIN32
   int status = _mkdir(path.c_str());
@@ -222,7 +228,7 @@ bool makeDirectory(const string& path)
   return status == 0;
 }
 
-string makeTmpDirectory()
+std::string makeTmpDirectory()
 {
 #ifdef _WIN32
   char cbase[MAX_PATH];
@@ -233,16 +239,16 @@ string makeTmpDirectory()
   GetTempFileName(cbase, "kiwix", 0, ctmp);
   DeleteFile(ctmp);
   _mkdir(ctmp);
-  return string(ctmp);
+  return std::string(ctmp);
 #else
   char _template_array[] = {"/tmp/kiwix-lib_XXXXXX"};
-  string dir = mkdtemp(_template_array);
+  std::string dir = mkdtemp(_template_array);
   return dir;
 #endif
 }
 
 /* Try to create a link and if does not work then make a copy */
-bool copyFile(const string& sourcePath, const string& destPath)
+bool copyFile(const std::string& sourcePath, const std::string& destPath)
 {
   try {
 #ifndef _WIN32
@@ -254,15 +260,15 @@ bool copyFile(const string& sourcePath, const string& destPath)
 #ifndef _WIN32
     }
 #endif
-  } catch (exception& e) {
-    cerr << e.what() << endl;
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
     return false;
   }
 
   return true;
 }
 
-string getExecutablePath()
+std::string getExecutablePath()
 {
   char binRootPath[PATH_MAX];
 
@@ -283,7 +289,7 @@ string getExecutablePath()
   return "";
 }
 
-bool writeTextFile(const string& path, const string& content)
+bool writeTextFile(const std::string& path, const std::string& content)
 {
   std::ofstream file;
   file.open(path.c_str());
@@ -292,15 +298,15 @@ bool writeTextFile(const string& path, const string& content)
   return true;
 }
 
-string getCurrentDirectory()
+std::string getCurrentDirectory()
 {
   char* a_cwd = getcwd(NULL, 0);
-  string s_cwd(a_cwd);
+  std::string s_cwd(a_cwd);
   free(a_cwd);
   return s_cwd;
 }
 
-string getDataDirectory()
+std::string getDataDirectory()
 {
 #ifdef _WIN32
   char* cDataDir = ::getenv("APPDATA");

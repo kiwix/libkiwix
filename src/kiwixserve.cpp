@@ -10,6 +10,7 @@
 #endif
 
 #include "tools/pathTools.h"
+#include "tools/stringTools.h"
 
 namespace kiwix {
 
