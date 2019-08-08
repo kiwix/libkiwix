@@ -20,9 +20,6 @@
 #ifndef KIWIX_REGEXTOOLS_H
 #define KIWIX_REGEXTOOLS_H
 
-#include <unicode/regex.h>
-#include <unicode/ucnv.h>
-#include <map>
 #include <string>
 
 bool matchRegex(const std::string& content, const std::string& regex);
