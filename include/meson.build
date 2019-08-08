@@ -10,6 +10,7 @@ headers = [
   'reader.h',
   'entry.h',
   'searcher.h',
+  'search_renderer.h',
   'kiwixserve.h',
   'name_mapper.h'
 ]

@@ -65,16 +65,12 @@ struct SearcherInternal {
 };
 
 /* Constructor */
-Searcher::Searcher(const std::string& humanReadableName)
+Searcher::Searcher()
     : internal(new SearcherInternal()),
       searchPattern(""),
-      protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?"),
-      resultCountPerPage(0),
       estimatedResultCount(0),
       resultStart(0),
-      resultEnd(0),
-      contentHumanReadableId(humanReadableName)
+      resultEnd(0)
 {
   loadICUExternalTables();
 }
@@ -85,14 +81,19 @@ Searcher::~Searcher()
   delete internal;
 }
 
-bool Searcher::add_reader(Reader* reader, const std::string& humanReadableName)
+bool Searcher::add_reader(Reader* reader)
 {
   if (!reader->hasFulltextIndex()) {
       return false;
   }
   this->readers.push_back(reader);
-  this->humanReaderNames.push_back(humanReadableName);
   return true;
+}
+
+
+Reader* Searcher::get_reader(int readerIndex)
+{
+  return readers.at(readerIndex);
 }
 
 /* Search strings in the database */
@@ -233,18 +234,6 @@ unsigned int Searcher::getEstimatedResultCount()
   return this->estimatedResultCount;
 }
 
-bool Searcher::setProtocolPrefix(const std::string prefix)
-{
-  this->protocolPrefix = prefix;
-  return true;
-}
-
-bool Searcher::setSearchProtocolPrefix(const std::string prefix)
-{
-  this->searchProtocolPrefix = prefix;
-  return true;
-}
-
 _Result::_Result(zim::Search::iterator& iterator)
     : iterator(iterator)
 {
@@ -286,79 +275,5 @@ int _Result::get_readerIndex()
   return iterator.get_fileIndex();
 }
 
-string Searcher::getHtml()
-{
-  kainjow::mustache::data results{kainjow::mustache::data::type::list};
-
-  this->restart_search();
-  Result* p_result = NULL;
-  while ((p_result = this->getNextResult())) {
-    kainjow::mustache::data result;
-    result.set("title", p_result->get_title());
-    result.set("url", p_result->get_url());
-    result.set("snippet", p_result->get_snippet());
-    result.set("resultContentId", humanReaderNames[p_result->get_readerIndex()]);
-
-    if (p_result->get_wordCount() >= 0) {
-      result.set("wordCount", kiwix::beautifyInteger(p_result->get_wordCount()));
-    }
-
-    results.push_back(result);
-    delete p_result;
-  }
-
-  // pages
-  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
-
-  unsigned int pageStart
-      = this->resultStart / this->resultCountPerPage >= 5
-            ? this->resultStart / this->resultCountPerPage - 4
-            : 0;
-  unsigned int pageCount
-      = this->estimatedResultCount / this->resultCountPerPage + 1 - pageStart;
-
-  if (pageCount > 10) {
-    pageCount = 10;
-  } else if (pageCount == 1) {
-    pageCount = 0;
-  }
-
-  for (unsigned int i = pageStart; i < pageStart + pageCount; i++) {
-    kainjow::mustache::data page;
-    page.set("label", to_string(i + 1));
-    page.set("start", to_string(i * this->resultCountPerPage));
-    page.set("end", to_string((i + 1) * this->resultCountPerPage));
-
-    if (i * this->resultCountPerPage == this->resultStart) {
-      page.set("selected", true);
-    }
-    pages.push_back(page);
-  }
-
-  std::string template_str = RESOURCE::search_result_tmpl;
-  kainjow::mustache::mustache tmpl(template_str);
-
-  kainjow::mustache::data allData;
-  allData.set("results", results);
-  allData.set("pages", pages);
-  allData.set("hasResult", this->estimatedResultCount != 0);
-  allData.set("count", kiwix::beautifyInteger(this->estimatedResultCount));
-  allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
-  allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
-  allData.set("resultStart", to_string(this->resultStart + 1));
-  allData.set("resultEnd", to_string(min(this->resultEnd, this->estimatedResultCount)));
-  allData.set("resultRange", to_string(this->resultCountPerPage));
-  allData.set("resultLastPageStart", to_string(this->estimatedResultCount > this->resultCountPerPage
-             ? round(this->estimatedResultCount / this->resultCountPerPage) * this->resultCountPerPage
-             : 0));
-  allData.set("lastResult", to_string(this->estimatedResultCount));
-  allData.set("protocolPrefix", this->protocolPrefix);
-  allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
-  allData.set("contentId", this->contentHumanReadableId);
-
-  std::stringstream ss;
-  tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
-  return ss.str();
-}
 
 }

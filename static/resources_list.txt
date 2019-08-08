@@ -1,1 +1,1 @@
-search_result.tmpl
+templates/search_result.html

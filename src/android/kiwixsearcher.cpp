@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher_addReader(
 {
   auto searcher = SEARCHER;
 
-  searcher->add_reader(*(Handle<kiwix::Reader>::getHandle(env, reader)), "");
+  searcher->add_reader(*(Handle<kiwix::Reader>::getHandle(env, reader)));
 }
 
 JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher_search(

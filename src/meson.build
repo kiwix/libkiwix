@@ -9,6 +9,7 @@ kiwix_sources = [
   'reader.cpp',
   'entry.cpp',
   'searcher.cpp',
+  'search_renderer.cpp',
   'subprocess.cpp',
   'aria2.cpp',
   'tools/base64.cpp',
