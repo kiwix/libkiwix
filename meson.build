@@ -17,6 +17,7 @@ libicu_dep = dependency('icu-i18n', static:static_deps)
 libzim_dep = dependency('libzim', version : '>=5.0.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
+microhttpd_dep = dependency('libmicrohttpd', static:static_deps)
 
 if not compiler.has_header('mustache.hpp')
   error('Cannot found header mustache.hpp')
@@ -28,7 +29,7 @@ if target_machine.system() == 'windows' and static_deps
   extra_cflags += '-DCURL_STATICLIB'
 endif
 
-all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep, libcurl_dep]
+all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep]
 
 inc = include_directories('include')
 

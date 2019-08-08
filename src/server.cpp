@@ -1,0 +1,865 @@
+/*
+ * Copyright 2019 Matthieu Gautier <mgautier@kymeria.fr>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU  General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
+
+#define KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE 100
+
+#ifdef _WIN32
+
+#if !defined(__MINGW32__) && (_MSC_VER < 1600)
+#include "stdint4win.h"
+#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>  // otherwise socklen_t is not a recognized type
+//#include <Windows.h> // otherwise int is not a recognized type
+// typedef int off_t;
+// typedef SSIZE_T ssize_t;
+typedef UINT64 uint64_t;
+typedef UINT16 uint16_t;
+extern "C" {
+#include <microhttpd.h>
+}
+
+#endif
+
+#include "tools/otherTools.h"
+#include "tools/pathTools.h"
+#include "tools/regexTools.h"
+#include "tools/stringTools.h"
+#include "library.h"
+#include "name_mapper.h"
+#include "entry.h"
+#include "searcher.h"
+#include "search_renderer.h"
+#include "opds_dumper.h"
+
+#include <zim/uuid.h>
+
+#include <mustache.hpp>
+
+#include <pthread.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+#include <atomic>
+#include <string>
+#include <vector>
+#include <chrono>
+#include "kiwixlib-resources.h"
+
+#ifndef _WIN32
+//#include <arpa/inet.h>
+//#include <ifaddrs.h>
+//#include <netdb.h>
+//#include <stdint.h>
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+#endif
+
+#include "server.h"
+#include "server/request_context.h"
+#include "server/response.h"
+
+#ifdef interface
+#undef interface
+#endif
+
+
+#define MAX_SEARCH_LEN 140
+
+namespace kiwix {
+
+static IdNameMapper defaultNameMapper;
+
+static int staticHandlerCallback(void* cls,
+                                 struct MHD_Connection* connection,
+                                 const char* url,
+                                 const char* method,
+                                 const char* version,
+                                 const char* upload_data,
+                                 size_t* upload_data_size,
+                                 void** cont_cls);
+
+
+class InternalServer {
+  public:
+    InternalServer(Library& library,
+                   NameMapper* nameMapper,
+                   int port,
+                   std::string root,
+                   int nbThreads,
+                   bool verbose,
+                   bool withTaskbar,
+                   bool withLibraryButton);
+    virtual ~InternalServer() = default;
+
+    int handlerCallback(struct MHD_Connection* connection,
+                        const char* url,
+                        const char* method,
+                        const char* version,
+                        const char* upload_data,
+                        size_t* upload_data_size,
+                        void** cont_cls);
+    bool start();
+    void stop();
+
+  private:
+    Response handle_request(const RequestContext& request);
+    Response build_404(const RequestContext& request, const std::string& zimName);
+    Response build_homepage(const RequestContext& request);
+    Response handle_skin(const RequestContext& request);
+    Response handle_catalog(const RequestContext& request);
+    Response handle_meta(const RequestContext& request);
+    Response handle_search(const RequestContext& request);
+    Response handle_suggest(const RequestContext& request);
+    Response handle_random(const RequestContext& request);
+    Response handle_content(const RequestContext& request);
+
+    kainjow::mustache::data get_default_data();
+    Response get_default_response();
+
+    int m_port;
+    std::string m_root;
+    int m_nbThreads;
+    std::atomic_bool m_verbose;
+    bool m_withTaskbar;
+    bool m_withLibraryButton;
+    struct MHD_Daemon* mp_daemon;
+
+    Library& m_library;
+    NameMapper* mp_nameMapper;
+};
+
+
+Server::Server(Library& library, NameMapper* nameMapper) :
+  m_library(library),
+  mp_nameMapper(nameMapper),
+  mp_server(nullptr)
+{
+}
+
+Server::~Server() = default;
+
+bool Server::start() {
+  mp_server.reset(new InternalServer(
+    m_library,
+    mp_nameMapper,
+    m_port,
+    m_root,
+    m_nbThreads,
+    m_verbose,
+    m_withTaskbar,
+    m_withLibraryButton));
+  return mp_server->start();
+}
+
+void Server::stop() {
+  mp_server->stop();
+  mp_server.reset(nullptr);
+}
+
+
+InternalServer::InternalServer(Library& library,
+                               NameMapper* nameMapper,
+                               int port,
+                               std::string root,
+                               int nbThreads,
+                               bool verbose,
+                               bool withTaskbar,
+                               bool withLibraryButton) :
+  m_port(port),
+  m_root(root),
+  m_nbThreads(nbThreads),
+  m_verbose(verbose),
+  m_withTaskbar(withTaskbar),
+  m_withLibraryButton(withLibraryButton),
+  mp_daemon(nullptr),
+  m_library(library),
+  mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper)
+{}
+
+bool InternalServer::start() {
+ // TODO Readd selection of the interface
+#ifdef _WIN32
+  int flags = MHD_USE_SELECT_INTERNALLY;
+#else
+  int flags = MHD_USE_POLL_INTERNALLY;
+#endif
+  if (m_verbose.load())
+    flags |= MHD_USE_DEBUG;
+
+  mp_daemon = MHD_start_daemon(flags,
+                            m_port,
+                            NULL,
+                            NULL,
+                            &staticHandlerCallback,
+                            this,
+                            MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
+                            MHD_OPTION_END);
+  if (mp_daemon == nullptr) {
+    std::cerr << "Unable to instantiate the HTTP daemon. The port " << m_port
+              << " is maybe already occupied or need more permissions to be open. "
+                 "Please try as root or with a port number higher or equal to 1024."
+              << std::endl;
+    return false;
+  }
+  return true;
+}
+
+void InternalServer::stop()
+{
+  MHD_stop_daemon(mp_daemon);
+}
+
+static int staticHandlerCallback(void* cls,
+                                 struct MHD_Connection* connection,
+                                 const char* url,
+                                 const char* method,
+                                 const char* version,
+                                 const char* upload_data,
+                                 size_t* upload_data_size,
+                                 void** cont_cls)
+{
+  InternalServer* _this = static_cast<InternalServer*>(cls);
+
+  return _this->handlerCallback(connection,
+                                url,
+                                method,
+                                version,
+                                upload_data,
+                                upload_data_size,
+                                cont_cls);
+}
+
+int InternalServer::handlerCallback(struct MHD_Connection* connection,
+                                    const char* url,
+                                    const char* method,
+                                    const char* version,
+                                    const char* upload_data,
+                                    size_t* upload_data_size,
+                                    void** cont_cls)
+{
+  auto start_time = std::chrono::steady_clock::now();
+  if (m_verbose.load() ) {
+    printf("======================\n");
+    printf("Requesting : \n");
+    printf("full_url  : %s\n", url);
+  }
+  RequestContext request(connection, m_root, url, method, version);
+
+  if (m_verbose.load() ) {
+    request.print_debug_info();
+  }
+  /* Unexpected method */
+  if (request.get_method() != RequestMethod::GET
+   && request.get_method() != RequestMethod::POST) {
+    printf("Reject request because of unhandled request method.\n");
+    printf("----------------------\n");
+    return MHD_NO;
+  }
+
+  auto response = handle_request(request);
+
+  auto ret = response.send(request, connection);
+  auto end_time = std::chrono::steady_clock::now();
+  auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
+  if (m_verbose.load()) {
+    printf("Request time : %fs\n", time_span.count());
+    printf("----------------------\n");
+  }
+  return ret;
+}
+
+
+Response InternalServer::handle_request(const RequestContext& request)
+{
+  if (! request.is_valid_url())
+    return build_404(request, "");
+
+  if (kiwix::startsWith(request.get_url(), "/skin/"))
+    return handle_skin(request);
+
+  if (startsWith(request.get_url(), "/catalog"))
+    return handle_catalog(request);
+
+  if (request.get_url() == "/meta")
+    return handle_meta(request);
+
+  if (request.get_url() == "/search")
+    return handle_search(request);
+
+  if (request.get_url() == "/suggest")
+    return handle_suggest(request);
+
+  if (request.get_url() == "/random")
+    return handle_random(request);
+
+  return handle_content(request);
+}
+
+kainjow::mustache::data InternalServer::get_default_data()
+{
+  kainjow::mustache::data data;
+  data.set("root", m_root);
+  return data;
+}
+
+Response InternalServer::get_default_response()
+{
+  return Response(m_root, m_verbose.load(), m_withTaskbar, m_withLibraryButton);
+}
+
+
+Response InternalServer::build_404(const RequestContext& request,
+                                   const std::string& humanReadableBookId)
+{
+  kainjow::mustache::data results;
+  results.set("url", request.get_full_url());
+
+  auto response = get_default_response();
+  response.set_template(RESOURCE::templates::_404_html, results);
+  response.set_mimeType("text/html");
+  response.set_code(MHD_HTTP_NOT_FOUND);
+  response.set_compress(true);
+  response.set_taskbar(humanReadableBookId, "");
+
+  return response;
+}
+
+Response InternalServer::build_homepage(const RequestContext& request)
+{
+  auto data = get_default_data();
+
+  kainjow::mustache::data books{kainjow::mustache::data::type::list};
+  for (auto& bookId: m_library.getBooksIds()) {
+    auto& currentBook = m_library.getBookById(bookId);
+    if ( currentBook.getPath().empty()
+      || m_library.getReaderById(bookId) == nullptr) {
+      continue;
+    }
+
+    kainjow::mustache::data book;
+    book.set("name", currentBook.getHumanReadableIdFromPath());
+    book.set("title", currentBook.getTitle());
+    book.set("description", currentBook.getDescription());
+    book.set("articleCount", beautifyInteger(currentBook.getArticleCount()));
+    book.set("mediaCount", beautifyInteger(currentBook.getMediaCount()));
+    books.push_back(book);
+  }
+
+  data.set("books", books);
+
+  auto response = get_default_response();
+  response.set_template(RESOURCE::templates::index_html, data);
+  response.set_mimeType("text/html; charset=utf-8");
+  response.set_compress(true);
+  response.set_taskbar("", "");
+  return response;
+}
+
+Response InternalServer::handle_meta(const RequestContext& request)
+{
+  std::string humanReadableBookId;
+  std::string bookId;
+  std::string meta_name;
+  try {
+    humanReadableBookId = request.get_argument("content");
+    bookId = mp_nameMapper->getIdForName(humanReadableBookId);
+    meta_name = request.get_argument("name");
+  } catch (const std::out_of_range& e) {
+    return build_404(request, humanReadableBookId);
+  }
+
+  auto reader = m_library.getReaderById(bookId);
+  if (reader == nullptr) {
+    return build_404(request, humanReadableBookId);
+  }
+
+  std::string content;
+  std::string mimeType = "text";
+
+  if (meta_name == "title") {
+    content = reader->getTitle();
+  } else if (meta_name == "description") {
+    content = reader->getDescription();
+  } else if (meta_name == "language") {
+    content = reader->getLanguage();
+  } else if (meta_name == "name") {
+    content = reader->getName();
+  } else if (meta_name == "tags") {
+    content = reader->getTags();
+  } else if (meta_name == "date") {
+    content = reader->getDate();
+  } else if (meta_name == "creator") {
+    content = reader->getCreator();
+  } else if (meta_name == "publisher") {
+    content = reader->getPublisher();
+  } else if (meta_name == "favicon") {
+    reader->getFavicon(content, mimeType);
+  } else {
+    return build_404(request, humanReadableBookId);
+  }
+
+  auto response = get_default_response();
+  response.set_content(content);
+  response.set_mimeType(mimeType);
+  response.set_compress(false);
+  response.set_cache(true);
+  return response;
+}
+
+Response InternalServer::handle_suggest(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_suggest\n");
+  }
+
+  std::string content;
+  std::string mimeType;
+  unsigned int maxSuggestionCount = 10;
+  unsigned int suggestionCount = 0;
+  std::string suggestion;
+
+  std::string humanReadableBookId;
+  std::string bookId;
+  std::string term;
+  try {
+    humanReadableBookId = request.get_argument("content");
+    bookId = mp_nameMapper->getIdForName(humanReadableBookId);
+    term = request.get_argument("term");
+  } catch (const std::out_of_range&) {
+    return build_404(request, humanReadableBookId);
+  }
+
+  if (m_verbose.load()) {
+    printf("Searching suggestions for: \"%s\"\n", term.c_str());
+  }
+
+  auto reader = m_library.getReaderById(bookId);
+  kainjow::mustache::data results{kainjow::mustache::data::type::list};
+
+  bool first = true;
+  if (reader != nullptr) {
+    /* Get the suggestions */
+    reader->searchSuggestionsSmart(term, maxSuggestionCount);
+    while (reader->getNextSuggestion(suggestion)) {
+      kainjow::mustache::data result;
+      result.set("label", suggestion);
+      result.set("value", suggestion);
+      result.set("first", first);
+      first = false;
+      results.push_back(result);
+      suggestionCount++;
+    }
+  }
+
+  /* Propose the fulltext search if possible */
+  if (reader->hasFulltextIndex()) {
+    kainjow::mustache::data result;
+    result.set("label", "containing '" + term + "'...");
+    result.set("value", term);
+    result.set("first", first);
+    results.push_back(result);
+  }
+
+  auto data = get_default_data();
+  data.set("suggestions", results);
+
+  auto response = get_default_response();
+  response.set_template(RESOURCE::templates::suggestion_json, data);
+  response.set_mimeType("application/json; charset=utf-8");
+  response.set_compress(true);
+  return response;
+}
+
+Response InternalServer::handle_skin(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_skin\n");
+  }
+
+  auto response = get_default_response();
+  auto resourceName = request.get_url().substr(1);
+  try {
+    response.set_content(getResource(resourceName));
+  } catch (const ResourceNotFound& e) {
+    return build_404(request, "");
+  }
+  response.set_mimeType(getMimeTypeForFile(resourceName));
+  response.set_compress(true);
+  response.set_cache(true);
+  return response;
+}
+
+Response InternalServer::handle_search(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_search\n");
+  }
+
+  std::string content;
+  std::string mimeType;
+  std::string httpRedirection;
+
+  std::string humanReadableBookId;
+  std::string patternString;
+  std::string bookId;
+  try {
+    humanReadableBookId = request.get_argument("content");
+    bookId = mp_nameMapper->getIdForName(humanReadableBookId);
+  } catch (const std::out_of_range&) {}
+
+  try {
+    patternString = request.get_argument("pattern");
+  } catch (const std::out_of_range&) {}
+
+  /* Retrive geo search */
+  bool has_geo_query = false;
+  float latitude = 0;
+  float longitude = 0;
+  float distance = 0;
+  try {
+    latitude = request.get_argument<float>("latitude");
+    longitude = request.get_argument<float>("longitude");
+    distance = request.get_argument<float>("distance");
+    has_geo_query = true;
+  } catch(const std::out_of_range&) {}
+    catch(const std::invalid_argument&) {}
+
+  std::shared_ptr<Reader> reader(nullptr);
+  try {
+    reader = m_library.getReaderById(bookId);
+  } catch (const std::out_of_range&) {}
+
+  /* Try first to load directly the article */
+  if (reader != nullptr && !patternString.empty()) {
+    std::string patternCorrespondingUrl;
+    auto variants = reader->getTitleVariants(patternString);
+    auto variantsItr = variants.begin();
+
+    while (patternCorrespondingUrl.empty() && variantsItr != variants.end()) {
+      try {
+        auto entry = reader->getEntryFromTitle(*variantsItr);
+        entry = entry.getFinalEntry();
+        patternCorrespondingUrl = entry.getPath();
+        break;
+      } catch(kiwix::NoEntry& e) {
+        variantsItr++;
+      }
+    }
+
+    /* If article found then redirect directly to it */
+    if (!patternCorrespondingUrl.empty()) {
+      auto response = get_default_response();
+      response.set_redirection(m_root + "/" + humanReadableBookId + "/" + patternCorrespondingUrl);
+      return response;
+    }
+  }
+
+  /* Make the search */
+  auto response = get_default_response();
+  response.set_mimeType("text/html; charset=utf-8");
+  response.set_taskbar(humanReadableBookId, reader ? reader->getTitle() : "");
+  response.set_compress(true);
+
+  Searcher searcher;
+  if (reader) {
+    searcher.add_reader(reader.get());
+  } else {
+    if (humanReadableBookId.empty()) {
+      for (auto& bookId: m_library.filter(kiwix::Filter().local(true).valid(true))) {
+        auto currentReader = m_library.getReaderById(bookId);
+        if (currentReader) {
+          searcher.add_reader(currentReader.get());
+        }
+      }
+    } else {
+      response.set_content("<!DOCTYPE html>\n<html><head><meta content=\"text/html;charset=UTF-8\" http-equiv=\"content-type\" /><title>Fulltext search unavailable</title></head><body><h1>Not Found</h1><p>There is no article with the title <b>\"" + kiwix::encodeDiples(patternString) + "\"</b> and the fulltext search engine is not available for this content.</p></body></html>");
+      response.set_code(MHD_HTTP_NOT_FOUND);
+    }
+  }
+
+  if (!patternString.empty() || has_geo_query) {
+    auto start = 0;
+    try {
+      start = request.get_argument<unsigned int>("start");
+    } catch (const std::exception&) {}
+    auto end = 25;
+    try {
+      end = request.get_argument<unsigned int>("end");
+    } catch (const std::exception&) {}
+    if (start>end) {
+      auto tmp = start;
+      start = end;
+      end = tmp;
+    }
+    if (end > start + MAX_SEARCH_LEN) {
+      end = start + MAX_SEARCH_LEN;
+    }
+
+    /* Get the results */
+    try {
+      if (patternString.empty()) {
+        searcher.geo_search(latitude, longitude, distance,
+                             start, end, m_verbose.load());
+      } else {
+        searcher.search(patternString,
+                         start, end, m_verbose.load());
+      }
+      SearchRenderer renderer(&searcher, mp_nameMapper);
+      renderer.setSearchPattern(patternString);
+      renderer.setSearchContent(humanReadableBookId);
+      renderer.setProtocolPrefix(m_root + "/");
+      renderer.setSearchProtocolPrefix(m_root + "/search?");
+      response.set_content(renderer.getHtml());
+    } catch (const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+    }
+  } else {
+    response.set_content("<!DOCTYPE html>\n<html><head><meta content=\"text/html;charset=UTF-8\" http-equiv=\"content-type\" /><title>Fulltext search unavailable</title></head><body><h1>Not Found</h1><p>There is no article with the title <b>\"" + kiwix::encodeDiples(patternString) + "\"</b> and the fulltext search engine is not available for this content.</p></body></html>");
+    response.set_code(MHD_HTTP_NOT_FOUND);
+  }
+  return response;
+}
+
+Response InternalServer::handle_random(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_random\n");
+  }
+
+  std::string humanReadableBookId;
+  std::string bookId;
+  try {
+    humanReadableBookId = request.get_argument("content");
+    bookId = mp_nameMapper->getIdForName(humanReadableBookId);
+  } catch (const std::out_of_range&) {
+    return build_404(request, humanReadableBookId);
+  }
+
+  auto reader = m_library.getReaderById(bookId);
+  if (reader == nullptr) {
+    return build_404(request, humanReadableBookId);
+  }
+
+  try {
+    auto entry = reader->getRandomPage();
+    entry = entry.getFinalEntry();
+    auto response = get_default_response();
+    response.set_redirection(m_root + "/" + humanReadableBookId + "/" + kiwix::urlEncode(entry.getPath()));
+    return response;
+  } catch(kiwix::NoEntry& e) {
+    return build_404(request, humanReadableBookId);
+  }
+}
+
+Response InternalServer::handle_catalog(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_catalog");
+  }
+
+  std::string host;
+  std::string url;
+  try {
+    host = request.get_header("Host");
+    url  = request.get_url_part(1);
+  } catch (const std::out_of_range&) {
+    return build_404(request, "");
+  }
+
+  auto response = get_default_response();
+  if (url == "searchdescription.xml") {
+    response.set_template(RESOURCE::opensearchdescription_xml, get_default_data());
+    response.set_mimeType("application/opensearchdescription+xml");
+  } else {
+    zim::Uuid uuid;
+    kiwix::OPDSDumper opdsDumper;
+    opdsDumper.setRootLocation(m_root);
+    opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
+    opdsDumper.setId(kiwix::to_string(uuid));
+    opdsDumper.setLibrary(&m_library);
+    response.set_mimeType("application/atom+xml;profile=opds-catalog;kind=acquisition; charset=utf-8");
+    std::vector<std::string> bookIdsToDump;
+    if (url == "root.xml") {
+      opdsDumper.setTitle("All zims");
+      uuid = zim::Uuid::generate(host);
+
+      bookIdsToDump = m_library.filter(kiwix::Filter().valid(true).local(true).remote(true));
+    } else if (url == "search") {
+      std::string query;
+      std::string language;
+      std::vector<std::string> tags;
+      std::vector<std::string>  noTags;
+      size_t count(10);
+      size_t startIndex(0);
+      try {
+        query = request.get_argument("q");
+      } catch (const std::out_of_range&) {}
+      try {
+        language = request.get_argument("lang");
+      } catch (const std::out_of_range&) {}
+      try {
+        count = extractFromString<unsigned long>(request.get_argument("count"));
+      } catch (...) {}
+      try {
+        startIndex = extractFromString<unsigned long>(request.get_argument("start"));
+      } catch (...) {}
+      try {
+        tags = kiwix::split(request.get_argument("notag"), ";");
+      } catch (...) {}
+      try {
+        noTags = kiwix::split(request.get_argument("notag"), ";");
+      } catch (...) {}
+      opdsDumper.setTitle("Search result for " + query);
+      uuid = zim::Uuid::generate();
+      bookIdsToDump = m_library.filter(
+        kiwix::Filter().valid(true).local(true).remote(true)
+          .query(query)
+          .lang(language)
+          .acceptTags(tags)
+          .rejectTags(noTags)
+        );
+      auto totalResults = bookIdsToDump.size();
+      bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+startIndex);
+      if (count>0 && bookIdsToDump.size() > count) {
+        bookIdsToDump.resize(count);
+      }
+      opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
+    } else {
+      return build_404(request, "");
+    }
+
+    response.set_content(opdsDumper.dumpOPDSFeed(bookIdsToDump));
+  }
+
+  response.set_compress(true);
+  return response;
+}
+
+Response InternalServer::handle_content(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_content\n");
+  }
+
+  std::string baseUrl;
+  std::string content;
+  std::string mimeType;
+
+  kiwix::Entry entry;
+
+  std::string humanReadableBookId;
+  try {
+    humanReadableBookId = request.get_url_part(0);
+  } catch (const std::out_of_range& e) {
+    return build_homepage(request);
+  }
+  if (humanReadableBookId.size() == 0)
+    return build_homepage(request);
+
+  std::string bookId;
+  try {
+    bookId = mp_nameMapper->getIdForName(humanReadableBookId);
+  } catch (const std::out_of_range& e) {
+    return build_404(request, humanReadableBookId);
+  }
+
+  auto reader = m_library.getReaderById(bookId);
+  if (reader == nullptr) {
+    return build_404(request, humanReadableBookId);
+  }
+
+  auto urlStr = request.get_url().substr(humanReadableBookId.size()+1);
+  if (urlStr[0] == '/') {
+    urlStr = urlStr.substr(1);
+  }
+
+  try {
+    entry = reader->getEntryFromPath(urlStr);
+    if (entry.isRedirect() || urlStr.empty()) {
+      // If urlStr is empty, we want to mainPage.
+      // We must do a redirection to the real page.
+      entry = entry.getFinalEntry();
+      auto response = get_default_response();
+      response.set_redirection(m_root + "/" + humanReadableBookId + "/" +
+        kiwix::urlEncode(entry.getPath()));
+      return response;
+    }
+  } catch(kiwix::NoEntry& e) {
+    if (m_verbose.load())
+      printf("Failed to find %s\n", urlStr.c_str());
+
+    return build_404(request, humanReadableBookId);
+  }
+
+  try {
+    mimeType = entry.getMimetype();
+  } catch (exception& e) {
+    mimeType = "application/octet-stream";
+  }
+
+  if (m_verbose.load()) {
+    printf("Found %s\n", urlStr.c_str());
+    printf("mimeType: %s\n", mimeType.c_str());
+  }
+
+  if (mimeType.find("text/") != string::npos
+      || mimeType.find("application/javascript") != string::npos
+      || mimeType.find("application/json") != string::npos) {
+    zim::Blob raw_content = entry.getBlob();
+    content = string(raw_content.data(), raw_content.size());
+    auto response = get_default_response();
+    response.set_mimeType(mimeType);
+
+    /* Special rewrite URL in case of ZIM file use intern *asbolute* url like
+     * /A/Kiwix */
+    if (mimeType.find("text/html") != string::npos) {
+      content = replaceRegex(content,
+                             "$1$2" + m_root + "/" + humanReadableBookId + "/$3/",
+                             "(href|src)(=[\"|\']{0,1})/([A-Z|\\-])/");
+      content = replaceRegex(content,
+                             "$1$2" + m_root + "/" + humanReadableBookId + "/$3/",
+                             "(@import[ ]+)([\"|\']{0,1})/([A-Z|\\-])/");
+      response.set_taskbar(humanReadableBookId, reader->getTitle());
+    } else if (mimeType.find("text/css") != string::npos) {
+      content = replaceRegex(content,
+                             "$1$2" + m_root + "/" + humanReadableBookId + "/$3/",
+                             "(url|URL)(\\([\"|\']{0,1})/([A-Z|\\-])/");
+    }
+    response.set_content(content);
+    response.set_compress(true);
+    response.set_cache(true);
+    return response;
+  } else {
+    int range_len;
+    if (request.get_range().second == -1) {
+       range_len = entry.getSize() - request.get_range().first;
+    } else {
+       range_len = request.get_range().second - request.get_range().first;
+    }
+    auto response = get_default_response();
+    response.set_entry(entry);
+    response.set_mimeType(mimeType);
+    response.set_range_first(request.get_range().first);
+    response.set_range_len(range_len);
+    response.set_cache(true);
+    return response;
+  }
+}
+
+}

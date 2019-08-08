@@ -1,0 +1,7 @@
+[
+  {{#suggestions}}{{^first}},{{/first}}
+  {
+    "value" : "{{value}}",
+    "label" : "{{& label}}"
+  }{{/suggestions}}
+]

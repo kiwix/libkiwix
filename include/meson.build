@@ -11,6 +11,7 @@ headers = [
   'entry.h',
   'searcher.h',
   'search_renderer.h',
+  'server.h',
   'kiwixserve.h',
   'name_mapper.h'
 ]

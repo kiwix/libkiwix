@@ -25,6 +25,8 @@
 #include <exception>
 #include <string>
 
+#include "common.h"
+
 using namespace std;
 
 namespace kiwix

@@ -1,0 +1,26 @@
+<span class="kiwix">
+  <span id="kiwixtoolbar" class="ui-widget-header">
+    <div class="kiwix_centered">
+      <div class="kiwix_searchform">
+        <form class="kiwixsearch" method="GET" action="{{root}}/search" id="kiwixsearchform">
+          {{#hascontent}}<input type="hidden" name="content" value="{{content}}" />{{/hascontent}}
+          <label for="kiwixsearchbox">&#x1f50d;</label>
+          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text">
+        </form>
+      </div>
+      {{#hascontent}}
+        <input type="checkbox" id="kiwix_button_show_toggle">
+        <label for="kiwix_button_show_toggle"><img src="{{root}}/skin/caret.png" alt=""></label>
+        <div class="kiwix_button_cont">
+          {{#withlibrarybutton}}
+            <a id="kiwix_serve_taskbar_library_button" href="{{root}}/"><button>&#x1f3e0;</button></a>
+          {{/withlibrarybutton}}
+          <a id="kiwix_serve_taskbar_home_button" href="{{root}}/{{content}}/"><button>{{title}}</button></a>
+          <a id="kiwix_serve_taskbar_random_button"
+            href="{{root}}/random?content={{#urlencoded}}{{{content}}}{{/urlencoded}}"><button>&#x1F3B2;</button></a>
+        </div>
+       {{/hascontent}}
+    </div>
+  </span>
+</span>
+<div style="display: block; height: 5em;"></div>
