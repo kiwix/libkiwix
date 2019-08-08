@@ -29,6 +29,8 @@
 #define getcwd _getcwd  // stupid MSFT "deprecation" warning
 #endif
 
+#include <map>
+
 #ifdef _WIN32
 const std::string SEPARATOR("\\");
 #else
@@ -323,3 +325,49 @@ string getDataDirectory()
 #endif
   return appendToDirectory(dataDir, "kiwix");
 }
+
+static std::map<std::string, std::string> extMimeTypes = {
+ { "html", "text/html"},
+ { "htm", "text/html"},
+ { "png", "image/png"},
+ { "tiff", "image/tiff"},
+ { "tif", "image/tiff"},
+ { "jpeg", "image/jpeg"},
+ { "jpg", "image/jpeg"},
+ { "gif", "image/gif"},
+ { "svg", "image/svg+xml"},
+ { "txt", "text/plain"},
+ { "xml", "text/xml"},
+ { "pdf", "application/pdf"},
+ { "ogg", "application/ogg"},
+ { "js", "application/javascript"},
+ { "css", "text/css"},
+ { "otf", "application/vnd.ms-opentype"},
+ { "ttf", "application/font-ttf"},
+ { "woff", "application/font-woff"},
+ { "vtt", "text/vtt"}
+};
+
+/* Try to get the mimeType from the file extension */
+std::string getMimeTypeForFile(const std::string& filename)
+{
+  std::string mimeType = "text/plain";
+  auto pos = filename.find_last_of(".");
+
+  if (pos != std::string::npos) {
+    std::string extension = filename.substr(pos + 1);
+
+    auto it = extMimeTypes.find(extension);
+    if (it != extMimeTypes.end()) {
+      mimeType = it->second;
+    } else {
+      it = extMimeTypes.find(kiwix::lcAll(extension));
+      if (it != extMimeTypes.end()) {
+        mimeType = it->second;
+      }
+    }
+  }
+
+  return mimeType;
+}
+

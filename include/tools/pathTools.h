@@ -61,4 +61,5 @@ string getExecutablePath();
 string getCurrentDirectory();
 string getDataDirectory();
 bool writeTextFile(const string& path, const string& content);
+std::string getMimeTypeForFile(const std::string& filename);
 #endif
