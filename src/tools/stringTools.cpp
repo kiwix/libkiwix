@@ -377,3 +377,11 @@ std::string kiwix::normalize(const std::string& word)
 {
   return kiwix::lcAll(word);
 }
+
+
+bool kiwix::startsWith(const std::string& base, const std::string& start)
+{
+   return start.length() <= base.length()
+        && std::equal(start.begin(), start.end(), base.begin());
+}
+

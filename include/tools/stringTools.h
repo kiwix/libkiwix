@@ -70,5 +70,7 @@ T extractFromString(const std::string& str) {
     iss >> ret;
     return ret;
 }
+
+bool startsWith(const std::string& base, const std::string& start);
 } //namespace kiwix
 #endif
