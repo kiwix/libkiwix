@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#define KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE 100
+#include "server.h"
 
 #ifdef _WIN32
 # if !defined(__MINGW32__) && (_MSC_VER < 1600)
@@ -55,8 +55,6 @@ extern "C" {
 #include <mustache.hpp>
 
 #include <pthread.h>
-//#include <stdio.h>
-//#include <stdlib.h>
 #include <atomic>
 #include <string>
 #include <vector>
@@ -67,16 +65,11 @@ extern "C" {
 # include <arpa/inet.h>
 #endif
 
-#include "server.h"
 #include "server/request_context.h"
 #include "server/response.h"
 
-#ifdef interface
-#undef interface
-#endif
-
-
 #define MAX_SEARCH_LEN 140
+#define KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE 100
 
 namespace kiwix {
 
