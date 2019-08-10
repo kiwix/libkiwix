@@ -50,7 +50,7 @@ namespace kiwix
         */
        void stop();
 
-       void set_root(const std::string& root) { m_root = root; }
+       void set_root(const std::string& root);
        void set_addr(const std::string& addr) { m_addr = addr; }
        void set_port(int port) { m_port = port; }
        void set_nbThreads(int threads) { m_nbThreads = threads; }

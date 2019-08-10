@@ -172,6 +172,17 @@ void Server::stop() {
   mp_server.reset(nullptr);
 }
 
+void Server::set_root(const std::string& root)
+{
+  m_root = root;
+  if (m_root[0] != '/') {
+    m_root = "/" + m_root;
+  }
+  if (m_root.back() == '/') {
+    m_root.erase(m_root.size() - 1);
+  }
+}
+
 
 InternalServer::InternalServer(Library& library,
                                NameMapper* nameMapper,
