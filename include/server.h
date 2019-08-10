@@ -36,7 +36,7 @@ namespace kiwix
         *
         * @param library The library to serve.
         */
-       Server(Library& library, NameMapper* nameMapper=nullptr);
+       Server(Library* library, NameMapper* nameMapper=nullptr);
 
        virtual ~Server();
 
@@ -59,7 +59,7 @@ namespace kiwix
          { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
 
      protected:
-       Library& m_library;
+       Library* mp_library;
        NameMapper* mp_nameMapper;
        std::string m_root = "";
        std::string m_addr = "";

@@ -87,7 +87,7 @@ static int staticHandlerCallback(void* cls,
 
 class InternalServer {
   public:
-    InternalServer(Library& library,
+    InternalServer(Library* library,
                    NameMapper* nameMapper,
                    std::string addr,
                    int port,
@@ -132,13 +132,13 @@ class InternalServer {
     bool m_withLibraryButton;
     struct MHD_Daemon* mp_daemon;
 
-    Library& m_library;
+    Library* mp_library;
     NameMapper* mp_nameMapper;
 };
 
 
-Server::Server(Library& library, NameMapper* nameMapper) :
-  m_library(library),
+Server::Server(Library* library, NameMapper* nameMapper) :
+  mp_library(library),
   mp_nameMapper(nameMapper),
   mp_server(nullptr)
 {
@@ -148,7 +148,7 @@ Server::~Server() = default;
 
 bool Server::start() {
   mp_server.reset(new InternalServer(
-    m_library,
+    mp_library,
     mp_nameMapper,
     m_addr,
     m_port,
@@ -177,7 +177,7 @@ void Server::set_root(const std::string& root)
 }
 
 
-InternalServer::InternalServer(Library& library,
+InternalServer::InternalServer(Library* library,
                                NameMapper* nameMapper,
                                std::string addr,
                                int port,
@@ -194,7 +194,7 @@ InternalServer::InternalServer(Library& library,
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
   mp_daemon(nullptr),
-  m_library(library),
+  mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper)
 {}
 
@@ -366,8 +366,8 @@ Response InternalServer::build_homepage(const RequestContext& request)
   auto data = get_default_data();
 
   kainjow::mustache::data books{kainjow::mustache::data::type::list};
-  for (auto& bookId: m_library.filter(kiwix::Filter().local(true).valid(true))) {
-    auto& currentBook = m_library.getBookById(bookId);
+  for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
+    auto& currentBook = mp_library->getBookById(bookId);
 
     kainjow::mustache::data book;
     book.set("name", mp_nameMapper->getNameForId(bookId));
@@ -398,7 +398,7 @@ Response InternalServer::handle_meta(const RequestContext& request)
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
     meta_name = request.get_argument("name");
-    reader = m_library.getReaderById(bookId);
+    reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range& e) {
     return build_404(request, bookName);
   }
@@ -460,7 +460,7 @@ Response InternalServer::handle_suggest(const RequestContext& request)
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
     term = request.get_argument("term");
-    reader = m_library.getReaderById(bookId);
+    reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range&) {
     return build_404(request, bookName);
   }
@@ -557,7 +557,7 @@ Response InternalServer::handle_search(const RequestContext& request)
 
   std::shared_ptr<Reader> reader(nullptr);
   try {
-    reader = m_library.getReaderById(bookId);
+    reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range&) {}
 
   /* Try first to load directly the article */
@@ -604,8 +604,8 @@ Response InternalServer::handle_search(const RequestContext& request)
   if (reader) {
     searcher.add_reader(reader.get());
   } else {
-    for (auto& bookId: m_library.filter(kiwix::Filter().local(true).valid(true))) {
-      auto currentReader = m_library.getReaderById(bookId);
+    for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
+      auto currentReader = mp_library->getReaderById(bookId);
       if (currentReader) {
         searcher.add_reader(currentReader.get());
       }
@@ -662,7 +662,7 @@ Response InternalServer::handle_random(const RequestContext& request)
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
-    reader = m_library.getReaderById(bookId);
+    reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range&) {
     return build_404(request, bookName);
   }
@@ -714,13 +714,13 @@ Response InternalServer::handle_catalog(const RequestContext& request)
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
   opdsDumper.setId(kiwix::to_string(uuid));
-  opdsDumper.setLibrary(&m_library);
+  opdsDumper.setLibrary(mp_library);
   response.set_mimeType("application/atom+xml;profile=opds-catalog;kind=acquisition; charset=utf-8");
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
     opdsDumper.setTitle("All zims");
     uuid = zim::Uuid::generate(host);
-    bookIdsToDump = m_library.filter(kiwix::Filter().valid(true).local(true).remote(true));
+    bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
   } else if (url == "search") {
     std::string query;
     std::string language;
@@ -748,7 +748,7 @@ Response InternalServer::handle_catalog(const RequestContext& request)
     } catch (...) {}
     opdsDumper.setTitle("Search result for " + query);
     uuid = zim::Uuid::generate();
-    bookIdsToDump = m_library.filter(
+    bookIdsToDump = mp_library->filter(
       kiwix::Filter().valid(true).local(true).remote(true)
         .query(query)
         .lang(language)
@@ -792,7 +792,7 @@ Response InternalServer::handle_content(const RequestContext& request)
   std::shared_ptr<Reader> reader;
   try {
     bookId = mp_nameMapper->getIdForName(bookName);
-    reader = m_library.getReaderById(bookId);
+    reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range& e) {
     return build_404(request, bookName);
   }
