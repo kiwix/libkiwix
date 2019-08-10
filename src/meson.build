@@ -20,6 +20,7 @@ kiwix_sources = [
   'tools/networkTools.cpp',
   'tools/otherTools.cpp',
   'kiwixserve.cpp',
+  'name_mapper.cpp',
   'server/request_context.cpp',
   'server/response.cpp'
 ]

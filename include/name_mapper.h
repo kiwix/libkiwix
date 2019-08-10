@@ -21,9 +21,12 @@
 #define KIWIX_NAMEMAPPER_H
 
 #include <string>
+#include <map>
 
 namespace kiwix
 {
+
+class Library;
 
 class NameMapper {
   public:
@@ -38,6 +41,20 @@ class IdNameMapper : public NameMapper {
     virtual std::string getNameForId(const std::string& id) { return id; };
     virtual std::string getIdForName(const std::string& name) { return name; };
 };
+
+class HumanReadableNameMapper : public NameMapper {
+  private:
+    std::map<std::string, std::string> m_idToName;
+    std::map<std::string, std::string> m_nameToId;
+
+  public:
+    HumanReadableNameMapper(kiwix::Library& library, bool withAlias);
+    virtual ~HumanReadableNameMapper() = default;
+    virtual std::string getNameForId(const std::string& id);
+    virtual std::string getIdForName(const std::string& name);
+};
+
+
 
 }
 
