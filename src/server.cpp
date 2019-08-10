@@ -530,18 +530,14 @@ Response InternalServer::handle_search(const RequestContext& request)
     printf("** running handle_search\n");
   }
 
-  std::string content;
-  std::string mimeType;
-  std::string httpRedirection;
-
   std::string bookName;
-  std::string patternString;
   std::string bookId;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
   } catch (const std::out_of_range&) {}
 
+  std::string patternString;
   try {
     patternString = request.get_argument("pattern");
   } catch (const std::out_of_range&) {}
@@ -595,62 +591,61 @@ Response InternalServer::handle_search(const RequestContext& request)
   response.set_taskbar(bookName, reader ? reader->getTitle() : "");
   response.set_compress(true);
 
+  if ( (!reader && !bookName.empty())
+    || (patternString.empty() && ! has_geo_query) ) {
+    auto data = get_default_data();
+    data.set("pattern", encodeDiples(patternString));
+    response.set_template(RESOURCE::templates::no_search_result_html, data);
+    response.set_code(MHD_HTTP_NOT_FOUND);
+    return response;
+  }
+
   Searcher searcher;
   if (reader) {
     searcher.add_reader(reader.get());
   } else {
-    if (bookName.empty()) {
-      for (auto& bookId: m_library.filter(kiwix::Filter().local(true).valid(true))) {
-        auto currentReader = m_library.getReaderById(bookId);
-        if (currentReader) {
-          searcher.add_reader(currentReader.get());
-        }
+    for (auto& bookId: m_library.filter(kiwix::Filter().local(true).valid(true))) {
+      auto currentReader = m_library.getReaderById(bookId);
+      if (currentReader) {
+        searcher.add_reader(currentReader.get());
       }
-    } else {
-      response.set_content("<!DOCTYPE html>\n<html><head><meta content=\"text/html;charset=UTF-8\" http-equiv=\"content-type\" /><title>Fulltext search unavailable</title></head><body><h1>Not Found</h1><p>There is no article with the title <b>\"" + kiwix::encodeDiples(patternString) + "\"</b> and the fulltext search engine is not available for this content.</p></body></html>");
-      response.set_code(MHD_HTTP_NOT_FOUND);
     }
   }
 
-  if (!patternString.empty() || has_geo_query) {
-    auto start = 0;
-    try {
-      start = request.get_argument<unsigned int>("start");
-    } catch (const std::exception&) {}
-    auto end = 25;
-    try {
-      end = request.get_argument<unsigned int>("end");
-    } catch (const std::exception&) {}
-    if (start>end) {
-      auto tmp = start;
-      start = end;
-      end = tmp;
-    }
-    if (end > start + MAX_SEARCH_LEN) {
-      end = start + MAX_SEARCH_LEN;
-    }
+  auto start = 0;
+  try {
+    start = request.get_argument<unsigned int>("start");
+  } catch (const std::exception&) {}
+  auto end = 25;
+  try {
+    end = request.get_argument<unsigned int>("end");
+  } catch (const std::exception&) {}
+  if (start>end) {
+    auto tmp = start;
+    start = end;
+    end = tmp;
+  }
+  if (end > start + MAX_SEARCH_LEN) {
+    end = start + MAX_SEARCH_LEN;
+  }
 
-    /* Get the results */
-    try {
-      if (patternString.empty()) {
-        searcher.geo_search(latitude, longitude, distance,
-                             start, end, m_verbose.load());
-      } else {
-        searcher.search(patternString,
-                         start, end, m_verbose.load());
-      }
-      SearchRenderer renderer(&searcher, mp_nameMapper);
-      renderer.setSearchPattern(patternString);
-      renderer.setSearchContent(bookName);
-      renderer.setProtocolPrefix(m_root + "/");
-      renderer.setSearchProtocolPrefix(m_root + "/search?");
-      response.set_content(renderer.getHtml());
-    } catch (const std::exception& e) {
-      std::cerr << e.what() << std::endl;
+  /* Get the results */
+  try {
+    if (patternString.empty()) {
+      searcher.geo_search(latitude, longitude, distance,
+                           start, end, m_verbose.load());
+    } else {
+      searcher.search(patternString,
+                       start, end, m_verbose.load());
     }
-  } else {
-    response.set_content("<!DOCTYPE html>\n<html><head><meta content=\"text/html;charset=UTF-8\" http-equiv=\"content-type\" /><title>Fulltext search unavailable</title></head><body><h1>Not Found</h1><p>There is no article with the title <b>\"" + kiwix::encodeDiples(patternString) + "\"</b> and the fulltext search engine is not available for this content.</p></body></html>");
-    response.set_code(MHD_HTTP_NOT_FOUND);
+    SearchRenderer renderer(&searcher, mp_nameMapper);
+    renderer.setSearchPattern(patternString);
+    renderer.setSearchContent(bookName);
+    renderer.setProtocolPrefix(m_root + "/");
+    renderer.setSearchProtocolPrefix(m_root + "/search?");
+    response.set_content(renderer.getHtml());
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << std::endl;
   }
   return response;
 }

@@ -21,6 +21,7 @@ skin/caret.png
 skin/taskbar.js
 skin/taskbar.css
 templates/search_result.html
+templates/no_search_result.html
 templates/404.html
 templates/index.html
 templates/suggestion.json
