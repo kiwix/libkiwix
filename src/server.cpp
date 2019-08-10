@@ -165,7 +165,7 @@ void Server::stop() {
   mp_server.reset(nullptr);
 }
 
-void Server::set_root(const std::string& root)
+void Server::setRoot(const std::string& root)
 {
   m_root = root;
   if (m_root[0] != '/') {

@@ -50,12 +50,12 @@ namespace kiwix
         */
        void stop();
 
-       void set_root(const std::string& root);
-       void set_addr(const std::string& addr) { m_addr = addr; }
-       void set_port(int port) { m_port = port; }
-       void set_nbThreads(int threads) { m_nbThreads = threads; }
-       void set_verbose(bool verbose) { m_verbose = verbose; }
-       void set_taskbar(bool withTaskbar, bool withLibraryButton)
+       void setRoot(const std::string& root);
+       void setAddress(const std::string& addr) { m_addr = addr; }
+       void setPort(int port) { m_port = port; }
+       void setNbThreads(int threads) { m_nbThreads = threads; }
+       void setVerbose(bool verbose) { m_verbose = verbose; }
+       void setTaskbar(bool withTaskbar, bool withLibraryButton)
          { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
 
      protected:
