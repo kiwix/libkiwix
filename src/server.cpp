@@ -702,72 +702,73 @@ Response InternalServer::handle_catalog(const RequestContext& request)
     return build_404(request, "");
   }
 
+  if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
+    return build_404(request, "");
+  }
+
   auto response = get_default_response();
+  response.set_compress(true);
   if (url == "searchdescription.xml") {
     response.set_template(RESOURCE::opensearchdescription_xml, get_default_data());
     response.set_mimeType("application/opensearchdescription+xml");
-  } else {
-    zim::Uuid uuid;
-    kiwix::OPDSDumper opdsDumper;
-    opdsDumper.setRootLocation(m_root);
-    opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
-    opdsDumper.setId(kiwix::to_string(uuid));
-    opdsDumper.setLibrary(&m_library);
-    response.set_mimeType("application/atom+xml;profile=opds-catalog;kind=acquisition; charset=utf-8");
-    std::vector<std::string> bookIdsToDump;
-    if (url == "root.xml") {
-      opdsDumper.setTitle("All zims");
-      uuid = zim::Uuid::generate(host);
-
-      bookIdsToDump = m_library.filter(kiwix::Filter().valid(true).local(true).remote(true));
-    } else if (url == "search") {
-      std::string query;
-      std::string language;
-      std::vector<std::string> tags;
-      std::vector<std::string>  noTags;
-      size_t count(10);
-      size_t startIndex(0);
-      try {
-        query = request.get_argument("q");
-      } catch (const std::out_of_range&) {}
-      try {
-        language = request.get_argument("lang");
-      } catch (const std::out_of_range&) {}
-      try {
-        count = extractFromString<unsigned long>(request.get_argument("count"));
-      } catch (...) {}
-      try {
-        startIndex = extractFromString<unsigned long>(request.get_argument("start"));
-      } catch (...) {}
-      try {
-        tags = kiwix::split(request.get_argument("notag"), ";");
-      } catch (...) {}
-      try {
-        noTags = kiwix::split(request.get_argument("notag"), ";");
-      } catch (...) {}
-      opdsDumper.setTitle("Search result for " + query);
-      uuid = zim::Uuid::generate();
-      bookIdsToDump = m_library.filter(
-        kiwix::Filter().valid(true).local(true).remote(true)
-          .query(query)
-          .lang(language)
-          .acceptTags(tags)
-          .rejectTags(noTags)
-        );
-      auto totalResults = bookIdsToDump.size();
-      bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+startIndex);
-      if (count>0 && bookIdsToDump.size() > count) {
-        bookIdsToDump.resize(count);
-      }
-      opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
-    } else {
-      return build_404(request, "");
-    }
-
-    response.set_content(opdsDumper.dumpOPDSFeed(bookIdsToDump));
+    return response;
   }
 
-  response.set_compress(true);
+  zim::Uuid uuid;
+  kiwix::OPDSDumper opdsDumper;
+  opdsDumper.setRootLocation(m_root);
+  opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
+  opdsDumper.setId(kiwix::to_string(uuid));
+  opdsDumper.setLibrary(&m_library);
+  response.set_mimeType("application/atom+xml;profile=opds-catalog;kind=acquisition; charset=utf-8");
+  std::vector<std::string> bookIdsToDump;
+  if (url == "root.xml") {
+    opdsDumper.setTitle("All zims");
+    uuid = zim::Uuid::generate(host);
+    bookIdsToDump = m_library.filter(kiwix::Filter().valid(true).local(true).remote(true));
+  } else if (url == "search") {
+    std::string query;
+    std::string language;
+    std::vector<std::string> tags;
+    std::vector<std::string> noTags;
+    size_t count(10);
+    size_t startIndex(0);
+    try {
+      query = request.get_argument("q");
+    } catch (const std::out_of_range&) {}
+    try {
+      language = request.get_argument("lang");
+    } catch (const std::out_of_range&) {}
+    try {
+      count = extractFromString<unsigned long>(request.get_argument("count"));
+    } catch (...) {}
+    try {
+      startIndex = extractFromString<unsigned long>(request.get_argument("start"));
+    } catch (...) {}
+    try {
+      tags = kiwix::split(request.get_argument("notag"), ";");
+    } catch (...) {}
+    try {
+      noTags = kiwix::split(request.get_argument("notag"), ";");
+    } catch (...) {}
+    opdsDumper.setTitle("Search result for " + query);
+    uuid = zim::Uuid::generate();
+    bookIdsToDump = m_library.filter(
+      kiwix::Filter().valid(true).local(true).remote(true)
+        .query(query)
+        .lang(language)
+        .acceptTags(tags)
+        .rejectTags(noTags)
+      );
+    auto totalResults = bookIdsToDump.size();
+    bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+startIndex);
+    if (count>0 && bookIdsToDump.size() > count) {
+      bookIdsToDump.resize(count);
+    }
+    opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
+  }
+
+  response.set_content(opdsDumper.dumpOPDSFeed(bookIdsToDump));
   return response;
 }
 
