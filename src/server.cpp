@@ -20,22 +20,24 @@
 #define KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE 100
 
 #ifdef _WIN32
-
-#if !defined(__MINGW32__) && (_MSC_VER < 1600)
-#include "stdint4win.h"
+# if !defined(__MINGW32__) && (_MSC_VER < 1600)
+#   include "stdint4win.h"
+# endif
+# include <winsock2.h>
+# include <ws2tcpip.h>
+# ifdef __GNUC__
+  // inet_pton is not declared in mingw, even if the function exists.
+  extern "C" {
+    WINSOCK_API_LINKAGE  INT WSAAPI inet_pton( INT Family, PCSTR pszAddrString, PVOID pAddrBuf);
+  }
+# endif
+  typedef UINT64 uint64_t;
+  typedef UINT16 uint16_t;
 #endif
-#include <winsock2.h>
-#include <ws2tcpip.h>  // otherwise socklen_t is not a recognized type
-//#include <Windows.h> // otherwise int is not a recognized type
-// typedef int off_t;
-// typedef SSIZE_T ssize_t;
-typedef UINT64 uint64_t;
-typedef UINT16 uint16_t;
+
 extern "C" {
 #include <microhttpd.h>
 }
-
-#endif
 
 #include "tools/otherTools.h"
 #include "tools/pathTools.h"
@@ -62,12 +64,7 @@ extern "C" {
 #include "kiwixlib-resources.h"
 
 #ifndef _WIN32
-//#include <arpa/inet.h>
-//#include <ifaddrs.h>
-//#include <netdb.h>
-//#include <stdint.h>
-//#include <sys/socket.h>
-//#include <netinet/in.h>
+# include <arpa/inet.h>
 #endif
 
 #include "server.h"
@@ -99,6 +96,7 @@ class InternalServer {
   public:
     InternalServer(Library& library,
                    NameMapper* nameMapper,
+                   std::string addr,
                    int port,
                    std::string root,
                    int nbThreads,
@@ -132,6 +130,7 @@ class InternalServer {
     kainjow::mustache::data get_default_data();
     Response get_default_response();
 
+    std::string m_addr;
     int m_port;
     std::string m_root;
     int m_nbThreads;
@@ -158,6 +157,7 @@ bool Server::start() {
   mp_server.reset(new InternalServer(
     m_library,
     mp_nameMapper,
+    m_addr,
     m_port,
     m_root,
     m_nbThreads,
@@ -175,12 +175,14 @@ void Server::stop() {
 
 InternalServer::InternalServer(Library& library,
                                NameMapper* nameMapper,
+                               std::string addr,
                                int port,
                                std::string root,
                                int nbThreads,
                                bool verbose,
                                bool withTaskbar,
                                bool withLibraryButton) :
+  m_addr(addr),
   m_port(port),
   m_root(root),
   m_nbThreads(nbThreads),
@@ -193,7 +195,6 @@ InternalServer::InternalServer(Library& library,
 {}
 
 bool InternalServer::start() {
- // TODO Readd selection of the interface
 #ifdef _WIN32
   int flags = MHD_USE_SELECT_INTERNALLY;
 #else
@@ -202,12 +203,28 @@ bool InternalServer::start() {
   if (m_verbose.load())
     flags |= MHD_USE_DEBUG;
 
+
+  struct sockaddr_in sockAddr;
+  memset(&sockAddr, 0, sizeof(sockAddr));
+  sockAddr.sin_family = AF_INET;
+  sockAddr.sin_port = htons(m_port);
+  if (m_addr.empty()) {
+    if (0 != INADDR_ANY)
+      sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  } else {
+    if (inet_pton(AF_INET, m_addr.c_str(), &(sockAddr.sin_addr.s_addr)) == 0) {
+      std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
+      return false;
+    }
+  }
+
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
                             NULL,
                             NULL,
                             &staticHandlerCallback,
                             this,
+                            MHD_OPTION_SOCK_ADDR, &sockAddr,
                             MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
                             MHD_OPTION_END);
   if (mp_daemon == nullptr) {

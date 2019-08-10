@@ -51,6 +51,7 @@ namespace kiwix
        void stop();
 
        void set_root(const std::string& root) { m_root = root; }
+       void set_addr(const std::string& addr) { m_addr = addr; }
        void set_port(int port) { m_port = port; }
        void set_nbThreads(int threads) { m_nbThreads = threads; }
        void set_verbose(bool verbose) { m_verbose = verbose; }
@@ -61,6 +62,7 @@ namespace kiwix
        Library& m_library;
        NameMapper* mp_nameMapper;
        std::string m_root = "";
+       std::string m_addr = "";
        int m_port = 80;
        int m_nbThreads = 1;
        bool m_verbose = false;
