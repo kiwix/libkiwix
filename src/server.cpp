@@ -345,15 +345,11 @@ Response InternalServer::build_homepage(const RequestContext& request)
   auto data = get_default_data();
 
   kainjow::mustache::data books{kainjow::mustache::data::type::list};
-  for (auto& bookId: m_library.getBooksIds()) {
+  for (auto& bookId: m_library.filter(kiwix::Filter().local(true).valid(true))) {
     auto& currentBook = m_library.getBookById(bookId);
-    if ( currentBook.getPath().empty()
-      || m_library.getReaderById(bookId) == nullptr) {
-      continue;
-    }
 
     kainjow::mustache::data book;
-    book.set("name", currentBook.getHumanReadableIdFromPath());
+    book.set("name", mp_nameMapper->getNameForId(bookId));
     book.set("title", currentBook.getTitle());
     book.set("description", currentBook.getDescription());
     book.set("articleCount", beautifyInteger(currentBook.getArticleCount()));
@@ -376,15 +372,16 @@ Response InternalServer::handle_meta(const RequestContext& request)
   std::string humanReadableBookId;
   std::string bookId;
   std::string meta_name;
+  std::shared_ptr<Reader> reader;
   try {
     humanReadableBookId = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(humanReadableBookId);
     meta_name = request.get_argument("name");
+    reader = m_library.getReaderById(bookId);
   } catch (const std::out_of_range& e) {
     return build_404(request, humanReadableBookId);
   }
 
-  auto reader = m_library.getReaderById(bookId);
   if (reader == nullptr) {
     return build_404(request, humanReadableBookId);
   }
@@ -437,10 +434,12 @@ Response InternalServer::handle_suggest(const RequestContext& request)
   std::string humanReadableBookId;
   std::string bookId;
   std::string term;
+  std::shared_ptr<Reader> reader;
   try {
     humanReadableBookId = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(humanReadableBookId);
     term = request.get_argument("term");
+    reader = m_library.getReaderById(bookId);
   } catch (const std::out_of_range&) {
     return build_404(request, humanReadableBookId);
   }
@@ -449,7 +448,6 @@ Response InternalServer::handle_suggest(const RequestContext& request)
     printf("Searching suggestions for: \"%s\"\n", term.c_str());
   }
 
-  auto reader = m_library.getReaderById(bookId);
   kainjow::mustache::data results{kainjow::mustache::data::type::list};
 
   bool first = true;
@@ -644,14 +642,15 @@ Response InternalServer::handle_random(const RequestContext& request)
 
   std::string humanReadableBookId;
   std::string bookId;
+  std::shared_ptr<Reader> reader;
   try {
     humanReadableBookId = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(humanReadableBookId);
+    reader = m_library.getReaderById(bookId);
   } catch (const std::out_of_range&) {
     return build_404(request, humanReadableBookId);
   }
 
-  auto reader = m_library.getReaderById(bookId);
   if (reader == nullptr) {
     return build_404(request, humanReadableBookId);
   }
@@ -773,13 +772,14 @@ Response InternalServer::handle_content(const RequestContext& request)
     return build_homepage(request);
 
   std::string bookId;
+  std::shared_ptr<Reader> reader;
   try {
     bookId = mp_nameMapper->getIdForName(humanReadableBookId);
+    reader = m_library.getReaderById(bookId);
   } catch (const std::out_of_range& e) {
     return build_404(request, humanReadableBookId);
   }
 
-  auto reader = m_library.getReaderById(bookId);
   if (reader == nullptr) {
     return build_404(request, humanReadableBookId);
   }
