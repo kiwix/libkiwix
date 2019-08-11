@@ -31,7 +31,7 @@
 pthread_mutex_t globalLock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 
 JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIICU_setDataDirectory(
-    JNIEnv* env, jobject obj, jstring dirStr)
+    JNIEnv* env, jclass kclass, jstring dirStr)
 {
   std::string cPath = jni2c(dirStr, env);
 
