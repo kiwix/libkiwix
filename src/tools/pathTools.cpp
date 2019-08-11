@@ -121,22 +121,24 @@ std::string computeAbsolutePath(const std::string& path, const std::string& rela
 #else
   char* cRelativePath = strdup(relativePath.c_str());
 #endif
-  char* token = strtok(cRelativePath, "/");
+  char* saveptr = nullptr;
+  char* token = strtok_r(cRelativePath, "/", &saveptr);
 
   while (token != NULL) {
     if (std::string(token) == "..") {
       absolutePath = removeLastPathElement(absolutePath, true, false);
-      token = strtok(NULL, "/");
+      token = strtok_r(NULL, "/", &saveptr);
     } else if (strcmp(token, ".") && strcmp(token, "")) {
       absolutePath += std::string(token);
-      token = strtok(NULL, "/");
+      token = strtok_r(NULL, "/", &saveptr);
       if (token != NULL) {
         absolutePath += SEPARATOR;
       }
     } else {
-      token = strtok(NULL, "/");
+      token = strtok_r(NULL, "/", &saveptr);
     }
   }
+  free(cRelativePath);
 
   return absolutePath;
 }
