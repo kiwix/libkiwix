@@ -26,7 +26,7 @@ public class JNIKiwixLibrary
 {
   public native boolean addBook(String path) throws JNIKiwixException;
 
-  public JNIKiwixLibrary(String filename)
+  public JNIKiwixLibrary()
   {
     nativeHandle = getNativeLibrary();
   }
