@@ -20,45 +20,27 @@
 #ifndef KIWIX_PATHTOOLS_H
 #define KIWIX_PATHTOOLS_H
 
-#include <fcntl.h>
-#include <limits.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fstream>
-#include <ios>
-#include <iostream>
-#include <sstream>
 #include <string>
-#include <vector>
 
-#ifdef _WIN32
-#include <direct.h>
-#endif
+bool isRelativePath(const std::string& path);
+std::string computeAbsolutePath(const std::string& path, const std::string& relativePath);
+std::string computeRelativePath(const std::string& path, const std::string& absolutePath);
+std::string removeLastPathElement(const std::string& path,
+                                  const bool removePreSeparator = false,
+                                  const bool removePostSeparator = false);
+std::string appendToDirectory(const std::string& directoryPath, const std::string& filename);
 
-#include "stringTools.h"
-
-using namespace std;
-
-bool isRelativePath(const string& path);
-string computeAbsolutePath(const string path, const string relativePath);
-string computeRelativePath(const string path, const string absolutePath);
-string removeLastPathElement(const string path,
-                             const bool removePreSeparator = false,
-                             const bool removePostSeparator = false);
-string appendToDirectory(const string& directoryPath, const string& filename);
-
-unsigned int getFileSize(const string& path);
-string getFileSizeAsString(const string& path);
-string getFileContent(const string& path);
-bool fileExists(const string& path);
-bool makeDirectory(const string& path);
-string makeTmpDirectory();
-bool copyFile(const string& sourcePath, const string& destPath);
-string getLastPathElement(const string& path);
-string getExecutablePath();
-string getCurrentDirectory();
-string getDataDirectory();
-bool writeTextFile(const string& path, const string& content);
+unsigned int getFileSize(const std::string& path);
+std::string getFileSizeAsString(const std::string& path);
+std::string getFileContent(const std::string& path);
+bool fileExists(const std::string& path);
+bool makeDirectory(const std::string& path);
+std::string makeTmpDirectory();
+bool copyFile(const std::string& sourcePath, const std::string& destPath);
+std::string getLastPathElement(const std::string& path);
+std::string getExecutablePath();
+std::string getCurrentDirectory();
+std::string getDataDirectory();
+bool writeTextFile(const std::string& path, const std::string& content);
+std::string getMimeTypeForFile(const std::string& filename);
 #endif

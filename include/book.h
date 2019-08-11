@@ -45,7 +45,7 @@ class Book
   void update(const Reader& reader);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
-  std::string getHumanReadableIdFromPath();
+  std::string getHumanReadableIdFromPath() const;
 
   bool readOnly() const { return m_readOnly; }
   const std::string& getId() const { return m_id; }

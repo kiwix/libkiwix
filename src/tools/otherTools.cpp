@@ -17,8 +17,17 @@
  * MA 02110-1301, USA.
  */
 
-#include <tools/otherTools.h>
+#include "tools/otherTools.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <map>
+#include <pugixml.hpp>
+
 
 static std::map<std::string, std::string> codeisomapping {
 { "aa", "aar" },
@@ -185,7 +194,7 @@ struct XmlStringWriter: pugi::xml_writer
   }
 };
 
-std::string kiwix::nodeToString(pugi::xml_node node)
+std::string kiwix::nodeToString(const pugi::xml_node& node)
 {
   XmlStringWriter writer;
   node.print(writer, "  ");

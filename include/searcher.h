@@ -56,24 +56,14 @@ struct SearcherInternal;
 /**
  * The Searcher class is reponsible to do different kind of search using the
  * fulltext index.
- *
- *  Searcher may (if compiled with ctpp2) be used to
- *  generate a html page for the search result. This use a template that need a
- *  humanReaderName. This feature is only used by kiwix-serve and this should be
- *  move outside of Searcher (and with a better API). If you don't use the html
- *  rendering (getHtml method), you better should simply ignore the different
- *  humanReadeableName attributes (or give an empty string).
  */
 class Searcher
 {
  public:
   /**
    * The default constructor.
-   *
-   * @param humanReadableName The global zim's humanReadableName.
-   *                          Used to generate pagination links.
    */
-  Searcher(const string& humanReadableName = "");
+  Searcher();
 
   ~Searcher();
 
@@ -81,11 +71,13 @@ class Searcher
    * Add a reader (containing embedded fulltext index) to the search.
    *
    * @param reader The Reader for the zim containing the fulltext index.
-   * @param humanReaderName The human readable name of the reader.
    * @return true if the reader has been added.
    *         false if the reader cannot be added (no embedded fulltext index present)
    */
-  bool add_reader(Reader* reader, const std::string& humanReaderName);
+  bool add_reader(Reader* reader);
+
+
+  Reader* get_reader(int index);
 
   /**
    * Start a search on the zim associated to the Searcher.
@@ -151,22 +143,8 @@ class Searcher
    */
   unsigned int getEstimatedResultCount();
 
-  /**
-   * Set protocol prefix.
-   * Only used by getHtml.
-   */
-  bool setProtocolPrefix(const std::string prefix);
-
-  /**
-   * Set search protocol prefix.
-   * Only used by getHtml.
-   */
-  bool setSearchProtocolPrefix(const std::string prefix);
-
-  /**
-   * Generate the html page with the resutls of the search.
-   */
-  string getHtml();
+  unsigned int getResultStart() { return resultStart; }
+  unsigned int getResultEnd() { return resultEnd; }
 
  protected:
   std::string beautifyInteger(const unsigned int number);
@@ -177,16 +155,11 @@ class Searcher
                      const bool verbose = false);
 
   std::vector<Reader*> readers;
-  std::vector<std::string> humanReaderNames;
   SearcherInternal* internal;
   std::string searchPattern;
-  std::string protocolPrefix;
-  std::string searchProtocolPrefix;
-  unsigned int resultCountPerPage;
   unsigned int estimatedResultCount;
   unsigned int resultStart;
   unsigned int resultEnd;
-  std::string contentHumanReadableId;
 
  private:
   void reset();

@@ -20,7 +20,8 @@
 #include "opds_dumper.h"
 #include "book.h"
 
-#include <tools/otherTools.h>
+#include "tools/otherTools.h"
+#include <iomanip>
 
 namespace kiwix
 {

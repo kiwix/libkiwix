@@ -156,7 +156,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
 }
 #undef VALUE
 
-std::string Book::getHumanReadableIdFromPath()
+std::string Book::getHumanReadableIdFromPath() const
 {
   std::string id = m_path;
   if (!id.empty()) {

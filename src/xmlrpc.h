@@ -4,6 +4,7 @@
 #define KIWIX_XMLRPC_H_
 
 #include <tools/otherTools.h>
+#include <pugixml.hpp>
 
 namespace kiwix {
 

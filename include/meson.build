@@ -10,7 +10,10 @@ headers = [
   'reader.h',
   'entry.h',
   'searcher.h',
-  'kiwixserve.h'
+  'search_renderer.h',
+  'server.h',
+  'kiwixserve.h',
+  'name_mapper.h'
 ]
 
 install_headers(headers, subdir:'kiwix')
@@ -22,6 +25,7 @@ install_headers(
   'tools/pathTools.h',
   'tools/regexTools.h',
   'tools/stringTools.h',
+  'tools/lock.h',
   subdir:'kiwix/tools'
 )
 

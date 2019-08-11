@@ -19,12 +19,17 @@
 
 #include <tools/stringTools.h>
 
+#include <tools/pathTools.h>
 #include <unicode/normlzr.h>
 #include <unicode/rep.h>
 #include <unicode/translit.h>
 #include <unicode/ucnv.h>
 #include <unicode/uniset.h>
 #include <unicode/ustring.h>
+
+
+#include <iostream>
+#include <iomanip>
 
 /* tell ICU where to find its dat file (tables) */
 void kiwix::loadICUExternalTables()
@@ -36,7 +41,7 @@ void kiwix::loadICUExternalTables()
       = computeAbsolutePath(executableDirectory, "icudt58l.dat");
   try {
     u_setDataDirectory(datPath.c_str());
-  } catch (exception& e) {
+  } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
 #endif
@@ -372,3 +377,11 @@ std::string kiwix::normalize(const std::string& word)
 {
   return kiwix::lcAll(word);
 }
+
+
+bool kiwix::startsWith(const std::string& base, const std::string& start)
+{
+   return start.length() <= base.length()
+        && std::equal(start.begin(), start.end(), base.begin());
+}
+

@@ -8,7 +8,9 @@ kiwix_sources = [
   'downloader.cpp',
   'reader.cpp',
   'entry.cpp',
+  'server.cpp',
   'searcher.cpp',
+  'search_renderer.cpp',
   'subprocess.cpp',
   'aria2.cpp',
   'tools/base64.cpp',
@@ -18,6 +20,9 @@ kiwix_sources = [
   'tools/networkTools.cpp',
   'tools/otherTools.cpp',
   'kiwixserve.cpp',
+  'name_mapper.cpp',
+  'server/request_context.cpp',
+  'server/response.cpp'
 ]
 kiwix_sources += lib_resources
 

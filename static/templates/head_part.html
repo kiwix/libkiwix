@@ -1,0 +1,28 @@
+<link type="text/css" href="{{root}}/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
+<link type="text/css" href="{{root}}/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
+<link type="text/css" href="{{root}}/skin/taskbar.css" rel="Stylesheet" />
+<script type="text/javascript" src="{{root}}/skin/jquery-ui/external/jquery/jquery.js"></script>
+<script type="text/javascript" src="{{root}}/skin/jquery-ui/jquery-ui.min.js"></script>
+<script>
+  var jk = jQuery.noConflict();
+  jk(function() {
+  jk( "#kiwixsearchbox" ).autocomplete({
+
+  source: "{{root}}/suggest?content={{#urlencoded}}{{{content}}}{{/urlencoded}}",
+  dataType: "json",
+  cache: false,
+
+  select: function(event, ui) {
+  jk( "#kiwixsearchbox" ).val(ui.item.value);
+  jk( "#kiwixsearchform" ).submit();
+  },
+
+  });
+  });
+
+  /* cybook hack */
+  if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
+  	jk("html").addClass("cybook");
+  }
+</script>
+<script type="text/javascript" src="{{root}}/skin/taskbar.js" async></script>

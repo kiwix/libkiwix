@@ -22,14 +22,9 @@
 
 #include <unicode/unistr.h>
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
-
-#include "pathTools.h"
+#include <sstream>
 
 namespace kiwix
 {
@@ -75,5 +70,7 @@ T extractFromString(const std::string& str) {
     iss >> ret;
     return ret;
 }
+
+bool startsWith(const std::string& base, const std::string& start);
 } //namespace kiwix
 #endif

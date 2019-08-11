@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "book.h"
 #include "bookmark.h"
@@ -110,6 +111,7 @@ class Filter {
 class Library
 {
   std::map<std::string, kiwix::Book> m_books;
+  std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::vector<kiwix::Bookmark> m_bookmarks;
 
  public:
@@ -145,6 +147,7 @@ class Library
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
   Book& getBookById(const std::string& id);
+  std::shared_ptr<Reader> getReaderById(const std::string& id);
 
   /**
    * Remove a book from the library.

@@ -18,40 +18,45 @@
  */
 
 #include <tools/regexTools.h>
+#include <tools/lock.h>
 
-std::map<std::string, icu::RegexMatcher*> regexCache;
+#include <unicode/regex.h>
+#include <unicode/ucnv.h>
 
-icu::RegexMatcher* buildRegex(const std::string& regex)
+#include <memory>
+#include <map>
+#include <pthread.h>
+
+std::map<std::string, std::shared_ptr<icu::RegexPattern>> regexCache;
+static pthread_mutex_t regexLock = PTHREAD_MUTEX_INITIALIZER;
+
+std::unique_ptr<icu::RegexMatcher> buildMatcher(const std::string& regex, const icu::UnicodeString& content)
 {
-  icu::RegexMatcher* matcher;
-  auto itr = regexCache.find(regex);
-
+  std::shared_ptr<icu::RegexPattern> pattern;
   /* Regex is in cache */
-  if (itr != regexCache.end()) {
-    matcher = itr->second;
+  try {
+    pattern = regexCache.at(regex);
+  } catch (std::out_of_range&) {
+    // Redo the search with a lock to avoid race condition.
+    kiwix::Lock l(&regexLock);
+    try {
+      pattern = regexCache.at(regex);
+    } catch (std::out_of_range&) {
+      UErrorCode status = U_ZERO_ERROR;
+      UParseError pe;
+      icu::UnicodeString uregex(regex.c_str());
+      pattern.reset(icu::RegexPattern::compile(uregex, UREGEX_CASE_INSENSITIVE, pe, status));
+      regexCache[regex] = pattern;
+    }
   }
-
-  /* Regex needs to be parsed (and cached) */
-  else {
-    UErrorCode status = U_ZERO_ERROR;
-    icu::UnicodeString uregex(regex.c_str());
-    matcher = new icu::RegexMatcher(uregex, UREGEX_CASE_INSENSITIVE, status);
-    regexCache[regex] = matcher;
-  }
-
-  return matcher;
+  UErrorCode status = U_ZERO_ERROR;
+  return std::unique_ptr<icu::RegexMatcher>(pattern->matcher(content, status));
 }
 
-/* todo */
-void freeRegexCache()
-{
-}
 bool matchRegex(const std::string& content, const std::string& regex)
 {
   ucnv_setDefaultName("UTF-8");
-  icu::UnicodeString ucontent(content.c_str());
-  auto matcher = buildRegex(regex);
-  matcher->reset(ucontent);
+  auto matcher = buildMatcher(regex, content.c_str());
   return matcher->find();
 }
 
@@ -60,10 +65,9 @@ std::string replaceRegex(const std::string& content,
                          const std::string& regex)
 {
   ucnv_setDefaultName("UTF-8");
-  icu::UnicodeString ucontent(content.c_str());
   icu::UnicodeString ureplacement(replacement.c_str());
-  auto matcher = buildRegex(regex);
-  matcher->reset(ucontent);
+  icu::UnicodeString ucontent(content.c_str());
+  auto matcher = buildMatcher(regex, ucontent);
   UErrorCode status = U_ZERO_ERROR;
   auto uresult = matcher->replaceAll(ureplacement, status);
   std::string tmp;
@@ -72,15 +76,13 @@ std::string replaceRegex(const std::string& content,
 }
 
 std::string appendToFirstOccurence(const std::string& content,
-                                   const std::string regex,
+                                   const std::string& regex,
                                    const std::string& replacement)
 {
   ucnv_setDefaultName("UTF-8");
   icu::UnicodeString ucontent(content.c_str());
   icu::UnicodeString ureplacement(replacement.c_str());
-  auto matcher = buildRegex(regex);
-  matcher->reset(ucontent);
-
+  auto matcher = buildMatcher(regex, ucontent);
   if (matcher->find()) {
     UErrorCode status = U_ZERO_ERROR;
     ucontent.insert(matcher->end(status), ureplacement);
