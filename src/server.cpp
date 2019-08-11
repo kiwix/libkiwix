@@ -110,6 +110,7 @@ class InternalServer {
 
   private:
     Response handle_request(const RequestContext& request);
+    Response build_500(const std::string& msg);
     Response build_404(const RequestContext& request, const std::string& zimName);
     Response build_homepage(const RequestContext& request);
     Response handle_skin(const RequestContext& request);
@@ -295,6 +296,15 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
 
   auto response = handle_request(request);
 
+  if (response.getReturnCode() == MHD_HTTP_INTERNAL_SERVER_ERROR) {
+    printf("========== INTERNAL ERROR !! ============\n");
+    if (!m_verbose.load()) {
+      printf("Requesting : \n");
+      printf("full_url : %s\n", url);
+      request.print_debug_info();
+    }
+  }
+
   auto ret = response.send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
   auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
@@ -308,28 +318,36 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
 
 Response InternalServer::handle_request(const RequestContext& request)
 {
-  if (! request.is_valid_url())
-    return build_404(request, "");
+  try {
+    if (! request.is_valid_url())
+      return build_404(request, "");
 
-  if (kiwix::startsWith(request.get_url(), "/skin/"))
-    return handle_skin(request);
+    if (kiwix::startsWith(request.get_url(), "/skin/"))
+      return handle_skin(request);
 
-  if (startsWith(request.get_url(), "/catalog"))
-    return handle_catalog(request);
+    if (startsWith(request.get_url(), "/catalog"))
+      return handle_catalog(request);
 
-  if (request.get_url() == "/meta")
-    return handle_meta(request);
+    if (request.get_url() == "/meta")
+      return handle_meta(request);
 
-  if (request.get_url() == "/search")
-    return handle_search(request);
+    if (request.get_url() == "/search")
+      return handle_search(request);
 
-  if (request.get_url() == "/suggest")
-    return handle_suggest(request);
+    if (request.get_url() == "/suggest")
+     return handle_suggest(request);
 
-  if (request.get_url() == "/random")
-    return handle_random(request);
+    if (request.get_url() == "/random")
+      return handle_random(request);
 
-  return handle_content(request);
+    return handle_content(request);
+  } catch (std::exception& e) {
+    fprintf(stderr, "===== Unhandled error : %s\n", e.what());
+    return build_500(e.what());
+  } catch (...) {
+    fprintf(stderr, "===== Unhandled unknown error\n");
+    return build_500("Unknown error");
+  }
 }
 
 kainjow::mustache::data InternalServer::get_default_data()
@@ -358,6 +376,17 @@ Response InternalServer::build_404(const RequestContext& request,
   response.set_compress(true);
   response.set_taskbar(bookName, "");
 
+  return response;
+}
+
+Response InternalServer::build_500(const std::string& msg)
+{
+  kainjow::mustache::data data;
+  data.set("error", msg);
+  Response response(m_root, true, false, false);
+  response.set_template(RESOURCE::templates::_500_html, data);
+  response.set_mimeType("text/html");
+  response.set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
   return response;
 }
 

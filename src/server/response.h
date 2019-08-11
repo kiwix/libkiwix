@@ -61,6 +61,8 @@ class Response {
     void set_range_first(uint64_t start) { m_startRange = start; }
     void set_range_len(uint64_t len) { m_lenRange = len; }
 
+    int getReturnCode() { return m_returnCode; }
+
     void introduce_taskbar();
 
   private:

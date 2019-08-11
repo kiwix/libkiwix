@@ -23,8 +23,9 @@ skin/taskbar.css
 templates/search_result.html
 templates/no_search_result.html
 templates/404.html
+templates/500.html
 templates/index.html
 templates/suggestion.json
-opensearchdescription.xml
 templates/head_part.html
 templates/taskbar_part.html
+opensearchdescription.xml
