@@ -30,7 +30,7 @@
 std::map<std::string, std::shared_ptr<icu::RegexPattern>> regexCache;
 static pthread_mutex_t regexLock = PTHREAD_MUTEX_INITIALIZER;
 
-std::unique_ptr<icu::RegexMatcher> buildMatcher(const std::string& regex, const icu::UnicodeString& content)
+std::unique_ptr<icu::RegexMatcher> buildMatcher(const std::string& regex, icu::UnicodeString& content)
 {
   std::shared_ptr<icu::RegexPattern> pattern;
   /* Regex is in cache */
@@ -56,7 +56,8 @@ std::unique_ptr<icu::RegexMatcher> buildMatcher(const std::string& regex, const 
 bool matchRegex(const std::string& content, const std::string& regex)
 {
   ucnv_setDefaultName("UTF-8");
-  auto matcher = buildMatcher(regex, content.c_str());
+  icu::UnicodeString ucontent(content.c_str());
+  auto matcher = buildMatcher(regex, ucontent);
   return matcher->find();
 }
 
