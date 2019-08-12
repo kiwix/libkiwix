@@ -35,10 +35,13 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
       continue;
 
     auto aliasName = replaceRegex(bookName, "", "_[[:digit:]]{4}-[[:digit:]]{2}$");
+    if (aliasName == bookName) {
+      continue;
+    }
     if (m_nameToId.find(aliasName) == m_nameToId.end()) {
       m_nameToId[aliasName] = bookId;
     } else {
-      auto alreadyPresentPath = library.getBookById(aliasName).getPath();
+      auto alreadyPresentPath = library.getBookById(m_nameToId[aliasName]).getPath();
       std::cerr << "Path collision: " << alreadyPresentPath
                 << " and " << currentBook.getPath()
                 << " can't share the same URL path '" << aliasName << "'."
