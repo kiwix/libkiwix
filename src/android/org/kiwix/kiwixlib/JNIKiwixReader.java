@@ -38,7 +38,21 @@ public class JNIKiwixReader
 
   public native String getMimeType(String url);
 
-  public native byte[] getContent(String url,
+  /**
+   * Get the content of a article.
+   *
+   * Return a byte array of the content of the article.
+   * Set the title, mimeType to the title and mimeType of the article.
+   * Set the size to the size of the returned array.
+   *
+   * If the entry doesn't exist :
+   *  - return a empty byte array
+   *  - set all arguments (except url) to empty/0.
+   * If the entry exist but is a redirection :
+   *  - return an empty byte array
+   *  - set all arguments (including url) to information of the targeted article.
+   */
+  public native byte[] getContent(JNIKiwixString url,
                                   JNIKiwixString title,
                                   JNIKiwixString mimeType,
                                   JNIKiwixInt size);

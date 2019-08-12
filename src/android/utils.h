@@ -114,6 +114,13 @@ inline std::string jni2c(const jstring& val, JNIEnv* env)
 
 inline int jni2c(const jint val) { return (int)val; }
 /* Method to deal with variable passed by reference */
+inline std::string getStringObjValue(const jobject obj, JNIEnv* env)
+{
+  jclass objClass = env->GetObjectClass(obj);
+  jfieldID objFid = env->GetFieldID(objClass, "value", "Ljava/lang/String;");
+  jstring jstr = (jstring)env->GetObjectField(obj, objFid);
+  return jni2c(jstr, env);
+}
 inline void setStringObjValue(const std::string& value,
                               const jobject obj,
                               JNIEnv* env)

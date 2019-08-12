@@ -225,7 +225,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getMimeType(
 }
 
 JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContent(
-    JNIEnv* env, jobject obj, jstring url, jobject titleObj, jobject mimeTypeObj, jobject sizeObj)
+    JNIEnv* env, jobject obj, jobject url, jobject titleObj, jobject mimeTypeObj, jobject sizeObj)
 {
   /* Default values */
   setStringObjValue("", titleObj, env);
@@ -234,21 +234,24 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContent(
   jbyteArray data = env->NewByteArray(0);
 
   /* Retrieve the content */
-  std::string cUrl = jni2c(url, env);
+  std::string cUrl = getStringObjValue(url, env);
   unsigned int cSize = 0;
 
   try {
     auto entry = READER->getEntryFromEncodedPath(cUrl);
+    bool isRedirect = entry.isRedirect();
     entry = entry.getFinalEntry();
     cSize = entry.getSize();
     setIntObjValue(cSize, sizeObj, env);
-
-    data = env->NewByteArray(cSize);
-    env->SetByteArrayRegion(
-        data, 0, cSize, reinterpret_cast<const jbyte*>(entry.getBlob().data()));
-
     setStringObjValue(entry.getMimetype(), mimeTypeObj, env);
     setStringObjValue(entry.getTitle(), titleObj, env);
+    if (isRedirect) {
+      setStringObjValue(entry.getPath(), url, env);
+    } else {
+      data = env->NewByteArray(cSize);
+      env->SetByteArrayRegion(
+          data, 0, cSize, reinterpret_cast<const jbyte*>(entry.getBlob().data()));
+    }
   } catch (std::exception& e) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get content for url: %s", cUrl.c_str());
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
