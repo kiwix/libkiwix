@@ -7,7 +7,7 @@ tests = [
 ]
 
 
-gtest_dep = dependency('gtest', fallback: ['gtest', 'gtest_dep'])
+gtest_dep = dependency('gtest', main:true, fallback: ['gtest', 'gtest_dep'])
 
 foreach test_name : tests
     test_exe = executable(test_name, [test_name+'.cpp'],
