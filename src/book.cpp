@@ -29,7 +29,9 @@
 namespace kiwix
 {
 /* Constructor */
-Book::Book() : m_readOnly(false)
+Book::Book() :
+  m_pathValid(false),
+  m_readOnly(false)
 {
 }
 /* Destructor */
@@ -46,6 +48,7 @@ bool Book::update(const kiwix::Book& other)
 
   if (m_path.empty()) {
     m_path = other.m_path;
+    m_pathValid = other.m_pathValid;
   }
 
   if (m_url.empty()) {
@@ -83,6 +86,7 @@ void Book::update(const kiwix::Reader& reader)
   m_articleCount = reader.getArticleCount();
   m_mediaCount = reader.getMediaCount();
   m_size = static_cast<uint64_t>(reader.getFileSize()) << 10;
+  m_pathValid = true;
 
   reader.getFavicon(m_favicon, m_faviconMimeType);
 }
