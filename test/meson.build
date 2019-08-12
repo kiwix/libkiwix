@@ -2,7 +2,8 @@
 
 tests = [
     'parseUrl',
-    'library'
+    'library',
+    'regex'
 ]
 
 
