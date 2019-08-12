@@ -64,7 +64,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixLibrary_addBook(JNIEnv* env, jobject obj, jstrin
     book.update(reader);
     ret = LIBRARY->addBook(book);
   } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM main page");
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to add the book");
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
     ret = false;
   }
