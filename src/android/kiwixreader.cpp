@@ -224,6 +224,21 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getMimeType(
   return mimeType;
 }
 
+JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_checkUrl(
+     JNIEnv* env, jobject obj, jstring url)
+{
+  jstring finalUrl;
+  std::string cUrl = jni2c(url, env);
+  try {
+    auto entry = READER->getEntryFromEncodedPath(cUrl);
+    entry = entry.getFinalEntry();
+    finalUrl = c2jni(entry.getPath(), env);
+  } catch (std::exception& e) {
+    finalUrl = c2jni("", env);
+  }
+  return finalUrl;
+}
+
 JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContent(
     JNIEnv* env, jobject obj, jobject url, jobject titleObj, jobject mimeTypeObj, jobject sizeObj)
 {
