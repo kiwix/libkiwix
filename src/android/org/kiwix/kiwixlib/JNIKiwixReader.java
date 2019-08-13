@@ -39,6 +39,16 @@ public class JNIKiwixReader
   public native String getMimeType(String url);
 
   /**
+   * Check if a url exists and is a redirect or not.
+   *
+   * Return an empty string if the url doesn't exist in the reader.
+   * Return the url of the "final" entry.
+   * - equal to the input url if the entry is not a redirection.
+   * - different if the url is a redirection (and the webview should redirect to it).
+   */
+  public native String checkUrl(String url);
+
+  /**
    * Get the content of a article.
    *
    * Return a byte array of the content of the article.
