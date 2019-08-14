@@ -258,7 +258,7 @@ Entry Reader::getMainPage() const
 
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
-  static const char* const paths[] = {"-/favicon.png", "I/favicon.png", "I/favicon", "-/favicon"};
+  static const char* const paths[] = {"-/favicon", "-/favicon.png", "I/favicon.png", "I/favicon"};
 
   for (auto &path: paths) {
     try {
