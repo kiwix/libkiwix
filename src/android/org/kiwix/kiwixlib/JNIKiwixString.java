@@ -22,4 +22,16 @@ package org.kiwix.kiwixlib;
 public class JNIKiwixString
 {
   public String value;
+
+  public JNIKiwixString(String value) {
+    this.value = value;
+  }
+
+  public JNIKiwixString() {
+    this("");
+  }
+
+  public String getValue() {
+    return value;
+  }
 }
