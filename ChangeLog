@@ -1,3 +1,17 @@
+kiwix-lib 6.0.0
+===============
+
+ * Move the server code in kiwix-lib (from kiwix-serve).
+ * Add unit test on regex functions.
+ * Fix computerAbsolutePath (thread safe, memory leak).
+ * Correctly set the book's path as valid if we construct the book from a
+   reader.
+ * [JNI] Add a method to know if a article is a redirection.
+ * Do not embed the gtest dependency.
+ * [JNI] Add a constructor to JNIKiwixString.
+ * Change order of search of the favicon urls.
+ * Clean a lot of unecessary includes in headers. (potential "API break")
+
 kiwix-lib 5.2.0
 ===============
 
