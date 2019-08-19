@@ -94,6 +94,12 @@ std::string computeRelativePath(const std::string& path, const std::string& abso
   return relativePath;
 }
 
+#ifdef _WIN32
+# define STRTOK strtok_s
+#else
+# define STRTOK strtok_r
+#endif
+
 /* Warning: the relative path must be with slashes */
 std::string computeAbsolutePath(const std::string& path, const std::string& relativePath)
 {
@@ -122,20 +128,20 @@ std::string computeAbsolutePath(const std::string& path, const std::string& rela
   char* cRelativePath = strdup(relativePath.c_str());
 #endif
   char* saveptr = nullptr;
-  char* token = strtok_r(cRelativePath, "/", &saveptr);
+  char* token = STRTOK(cRelativePath, "/", &saveptr);
 
   while (token != NULL) {
     if (std::string(token) == "..") {
       absolutePath = removeLastPathElement(absolutePath, true, false);
-      token = strtok_r(NULL, "/", &saveptr);
+      token = STRTOK(NULL, "/", &saveptr);
     } else if (strcmp(token, ".") && strcmp(token, "")) {
       absolutePath += std::string(token);
-      token = strtok_r(NULL, "/", &saveptr);
+      token = STRTOK(NULL, "/", &saveptr);
       if (token != NULL) {
         absolutePath += SEPARATOR;
       }
     } else {
-      token = strtok_r(NULL, "/", &saveptr);
+      token = STRTOK(NULL, "/", &saveptr);
     }
   }
   free(cRelativePath);
