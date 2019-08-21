@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 28
@@ -19,3 +20,45 @@ android {
 dependencies {
     implementation 'com.getkeepsafe.relinker:relinker:1.3.1'
 }
+
+task writePom {
+  pom {
+    project {
+        group 'org.kiwix.kiwixlib'
+        artifactId 'kiwixlib'
+        version '6.0.0'
+        packaging 'aar'
+        name 'kiwixlib'
+        url 'https://github.com/kiwix/kiwix-lib'
+        licenses {
+            license {
+                name 'GPLv3'
+                url 'https://www.gnu.org/licenses/gpl-3.0.en.html'
+            }
+        }
+      developers {
+          developer {
+              id 'kiwix'
+              name 'kiwix'
+              email 'contact@kiwix.org'
+          }
+      }
+      scm {
+          connection 'https://github.com/kiwix/kiwix-lib.git'
+          developerConnection 'https://github.com/kiwix/kiwix-lib.git'
+          url 'https://github.com/kiwix/kiwix-lib'
+      }
+    }
+  }.withXml {
+    def dependenciesNode = asNode().appendNode('dependencies')
+
+    //Iterate over the implementation dependencies, adding a <dependency> node for each
+    configurations.implementation.allDependencies.each {
+      def dependencyNode = dependenciesNode.appendNode('dependency')
+      dependencyNode.appendNode('groupId', it.group)
+      dependencyNode.appendNode('artifactId', it.name)
+      dependencyNode.appendNode('version', it.version)
+    }
+  }.writeTo("$buildDir/pom.xml")
+}
+
