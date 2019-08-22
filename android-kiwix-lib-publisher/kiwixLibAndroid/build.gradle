@@ -26,7 +26,7 @@ task writePom {
     project {
         groupId 'org.kiwix.kiwixlib'
         artifactId 'kiwixlib'
-        version '6.0.1'
+        version '6.0.2'
         packaging 'aar'
         name 'kiwixlib'
         url 'https://github.com/kiwix/kiwix-lib'
