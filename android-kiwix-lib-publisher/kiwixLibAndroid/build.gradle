@@ -24,7 +24,7 @@ dependencies {
 task writePom {
   pom {
     project {
-        group 'org.kiwix.kiwixlib'
+        groupId 'org.kiwix.kiwixlib'
         artifactId 'kiwixlib'
         version '6.0.1'
         packaging 'aar'
