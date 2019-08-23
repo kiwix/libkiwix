@@ -102,7 +102,7 @@ public class JNIKiwixReader
 
   public native boolean searchSuggestions(String prefix, int count);
 
-  public native boolean getNextSuggestion(JNIKiwixString title);
+  /*public native boolean getNextSuggestion(JNIKiwixString title);*/
 
   public native boolean getNextSuggestion(JNIKiwixString title, JNIKiwixString url);
 

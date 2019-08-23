@@ -902,20 +902,20 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
 }
 
 /* Get next suggestion */
-bool Reader::getNextSuggestion(string& title)
-{
-  if (this->suggestionsOffset != this->suggestions.end()) {
-    /* title */
-    title = (*(this->suggestionsOffset))[0];
+// bool Reader::getNextSuggestion(string& title)
+// {
+//   if (this->suggestionsOffset != this->suggestions.end()) {
+//     /* title */
+//     title = (*(this->suggestionsOffset))[0];
 
-    /* increment the cursor for the next call */
-    this->suggestionsOffset++;
+//     /* increment the cursor for the next call */
+//     this->suggestionsOffset++;
 
-    return true;
-  }
+//     return true;
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
 bool Reader::getNextSuggestion(string& title, string& url)
 {

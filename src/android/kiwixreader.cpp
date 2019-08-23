@@ -350,7 +350,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_searchSuggestions(JNIEnv* env,
   return retVal;
 }
 
-JNIEXPORT jboolean JNICALL
+/*JNIEXPORT jboolean JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
                                                          jobject obj,
                                                          jobject titleObj)
@@ -369,7 +369,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
   }
 
   return retVal;
-}
+}*/
 
 JNIEXPORT jboolean JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
