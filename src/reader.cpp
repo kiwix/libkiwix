@@ -901,22 +901,6 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
   return retVal;
 }
 
-/* Get next suggestion */
-// bool Reader::getNextSuggestion(string& title)
-// {
-//   if (this->suggestionsOffset != this->suggestions.end()) {
-//     /* title */
-//     title = (*(this->suggestionsOffset))[0];
-
-//     /* increment the cursor for the next call */
-//     this->suggestionsOffset++;
-
-//     return true;
-//   }
-
-//   return false;
-// }
-
 bool Reader::getNextSuggestion(string& title, string& url)
 {
   if (this->suggestionsOffset != this->suggestions.end()) {
