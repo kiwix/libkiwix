@@ -901,6 +901,7 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
   return retVal;
 }
 
+/* Get next suggestion */
 bool Reader::getNextSuggestion(string& title, string& url)
 {
   if (this->suggestionsOffset != this->suggestions.end()) {
