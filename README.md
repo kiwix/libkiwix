@@ -1,8 +1,9 @@
 Kiwix library
 =============
 
-The Kiwix library provides the Kiwix software core. It contains the
-code shared by all Kiwix ports (Windows, Linux, OSX, Android, ...).
+The Kiwix library provides the [Kiwix](https://kiwix.org) software
+suite core. It contains the code shared by all Kiwix ports (Windows,
+Linux, OSX, Android, ...).
 
 [![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
 [![Build Status](https://travis-ci.org/kiwix/kiwix-lib.svg?branch=master)](https://travis-ci.org/kiwix/kiwix-lib)
@@ -57,9 +58,9 @@ The Kiwix library builds using [Meson](https://mesonbuild.com/) version
 compilation tools.
 
 Install first the few common compilation tools:
-* Meson
-* Ninja
-* Pkg-config
+* [Meson](https://mesonbuild.com/)
+* [Ninja](https://ninja-build.org/)
+* [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
 
 These tools should be packaged if you use a cutting edge operating
 system. If not, have a look to the [Troubleshooting](#Troubleshooting)
@@ -70,7 +71,6 @@ Compilation
 
 Once all dependencies are installed, you can compile the Kiwix library
 with:
-
 ```bash
 meson . build
 ninja -C build
@@ -88,32 +88,29 @@ Installation
 
 If you want to install the Kiwix library and the headers you just have
 compiled on your system, here we go:
-
 ```bash
 ninja -C build install
 ```
 
 You might need to run the command as root (or using `sudo`), depending
 where you want to install the libraries. After the installation
-succeeded, you may need to run `ldconfig` (as root).
+succeeded, you may need to run `ldconfig` (as `root`).
 
 Uninstallation
 ------------
 
 If you want to uninstall the Kiwix library:
-
 ```bash
 ninja -C build uninstall
 ```
 
-Like for the installation, you might need to run the command as root
+Like for the installation, you might need to run the command as `root`
 (or using `sudo`).
 
 Troubleshooting
 ---------------
 
 If you need to install Meson "manually":
-
 ```bash
 virtualenv -p python3 ./ # Create virtualenv
 source bin/activate      # Activate the virtualenv
@@ -122,7 +119,6 @@ hash -r                  # Refresh bash paths
 ```
 
 If you need to install Ninja "manually":
-
 ```bash
 git clone git://github.com/ninja-build/ninja.git
 cd ninja
@@ -142,4 +138,5 @@ repository.
 License
 -------
 
-GPLv3 or later, see COPYING for more details.
+[GPLv3](https://www.gnu.org/licenses/gpl-3.0) or later, see
+[COPYING](COPYING) for more details.
