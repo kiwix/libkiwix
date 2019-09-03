@@ -1,8 +1,12 @@
+kiwix-lib 6.0.3
+===============
+
+ * UI fixes in kiwix-serve rendering
+
 kiwix-lib 6.0.2
 ===============
 
  * Correctly set the groupId in the pom file.
-
 
 kiwix-lib 6.0.1
 ===============
