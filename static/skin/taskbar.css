@@ -132,6 +132,7 @@ body {
 .ui-autocomplete {
     background: white !important;
     border: solid 1px grey !important;
+    column-count: 1 !important;
 }
 
 li.ui-state-focus {
