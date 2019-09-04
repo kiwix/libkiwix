@@ -1,6 +1,7 @@
 kiwix-lib 6.0.3
 ===============
 
+ * force one column suggestion in kiwix-serve suggestions
  * fix fulltext search link in suggestions
  * UI fixes in kiwix-serve rendering
 
