@@ -519,7 +519,7 @@ Response InternalServer::handle_suggest(const RequestContext& request)
   if (reader->hasFulltextIndex()) {
     kainjow::mustache::data result;
     result.set("label", "containing '" + term + "'...");
-    result.set("value", term);
+    result.set("value", term + " ");
     result.set("first", first);
     results.push_back(result);
   }
