@@ -1,6 +1,7 @@
 kiwix-lib 6.0.3
 ===============
 
+ * fix fulltext search link in suggestions
  * UI fixes in kiwix-serve rendering
 
 kiwix-lib 6.0.2
