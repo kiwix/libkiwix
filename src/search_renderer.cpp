@@ -96,27 +96,29 @@ std::string SearchRenderer::getHtml()
   auto resultEnd = mp_searcher->getResultEnd();
   auto resultCountPerPage = resultEnd - resultStart;
   auto estimatedResultCount = mp_searcher->getEstimatedResultCount();
-
-  unsigned int pageStart
-      = resultStart / resultCountPerPage >= 5
-            ? resultStart / resultCountPerPage - 4
-            : 0;
-  unsigned int pageCount
-      = estimatedResultCount / resultCountPerPage + 1 - pageStart;
-
-  if (pageCount > 10) {
-    pageCount = 10;
-  } else if (pageCount == 1) {
-    pageCount = 0;
+  auto currentPage = 0U;
+  auto pageStart = 0U;
+  auto pageEnd = 0U;
+  auto lastPageStart = 0U;
+  if (resultCountPerPage) {
+    currentPage = resultStart/resultCountPerPage;
+    pageStart = currentPage > 4 ? currentPage-4 : 0;
+    pageEnd = currentPage + 5;
+    if (pageEnd > estimatedResultCount / resultCountPerPage) {
+      pageEnd = estimatedResultCount / resultCountPerPage;
+    }
+    if (estimatedResultCount > resultCountPerPage) {
+      lastPageStart = round(estimatedResultCount/resultCountPerPage) * resultCountPerPage;
+    }
   }
 
-  for (unsigned int i = pageStart; i < pageStart + pageCount; i++) {
+  for (unsigned int i = pageStart; i < pageEnd; i++) {
     kainjow::mustache::data page;
     page.set("label", to_string(i + 1));
     page.set("start", to_string(i * resultCountPerPage));
     page.set("end", to_string((i + 1) * resultCountPerPage));
 
-    if (i * resultCountPerPage == resultStart) {
+    if (i == currentPage) {
       page.set("selected", true);
     }
     pages.push_back(page);
@@ -135,9 +137,7 @@ std::string SearchRenderer::getHtml()
   allData.set("resultStart", to_string(resultStart + 1));
   allData.set("resultEnd", to_string(min(resultEnd, estimatedResultCount)));
   allData.set("resultRange", to_string(resultCountPerPage));
-  allData.set("resultLastPageStart", to_string(estimatedResultCount > resultCountPerPage
-             ? round(estimatedResultCount / resultCountPerPage) * resultCountPerPage
-             : 0));
+  allData.set("resultLastPageStart", to_string(lastPageStart));
   allData.set("lastResult", to_string(estimatedResultCount));
   allData.set("protocolPrefix", this->protocolPrefix);
   allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
