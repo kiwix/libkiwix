@@ -108,12 +108,12 @@ void Searcher::search(std::string& search,
     cout << "Performing query `" << search << "'" << endl;
   }
 
+  this->searchPattern = search;
+  this->resultStart = resultStart;
+  this->resultEnd = resultEnd;
   /* Try to find results */
   if (resultStart != resultEnd) {
     /* Perform the search */
-    this->searchPattern = search;
-    this->resultStart = resultStart;
-    this->resultEnd = resultEnd;
     string unaccentedSearch = removeAccents(search);
     std::vector<const zim::File*> zims;
     for (auto current = this->readers.begin(); current != this->readers.end();
@@ -146,17 +146,17 @@ void Searcher::geo_search(float latitude, float longitude, float distance,
     cout << "Performing geo query `" << distance << "&(" << latitude << ";" << longitude << ")'" << endl;
   }
 
-  /* Try to find results */
-  if (resultStart == resultEnd) {
-    return;
-  }
-
   /* Perform the search */
   std::ostringstream oss;
   oss << "Articles located less than " << distance << " meters of " << latitude << ";" << longitude;
   this->searchPattern = oss.str();
   this->resultStart = resultStart;
   this->resultEnd = resultEnd;
+
+  /* Try to find results */
+  if (resultStart == resultEnd) {
+    return;
+  }
 
   std::vector<const zim::File*> zims;
   for (auto current = this->readers.begin(); current != this->readers.end();
