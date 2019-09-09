@@ -283,6 +283,21 @@ std::string getExecutablePath()
 {
   char binRootPath[PATH_MAX];
 
+  char* cAppImage = ::getenv("APPIMAGE");
+  if (cAppImage) {
+    char* cArgv0 = ::getenv("ARGV0");
+    char* cOwd = ::getenv("OWD");
+    if (!cArgv0 && !cOwd) {
+      // Nothing to clean, goto in the same function...
+      // This is silly but .. ok..
+      // And we should pass here, if APPIMAGE is set ARGV0 and OWD should also
+      // (except if there is a bug in appimage)
+      goto normal;
+    }
+    return appendToDirectory(cOwd, cArgv0);
+  }
+normal:
+
 #ifdef _WIN32
   GetModuleFileName(NULL, binRootPath, PATH_MAX);
   return std::string(binRootPath);
