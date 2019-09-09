@@ -131,6 +131,7 @@ std::string SearchRenderer::getHtml()
   allData.set("results", results);
   allData.set("pages", pages);
   allData.set("hasResult", estimatedResultCount != 0);
+  allData.set("hasPages", pageStart != pageEnd);
   allData.set("count", kiwix::beautifyInteger(estimatedResultCount));
   allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
   allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
