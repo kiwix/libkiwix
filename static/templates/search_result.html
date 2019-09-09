@@ -95,7 +95,7 @@
   </head>
   <body bgcolor="white">
     <div class="header">
-      {{#hasResult}}
+      {{#hasResults}}
         Results
         <b>
           {{resultStart}}-{{resultEnd}}
@@ -104,10 +104,10 @@
         </b> for <b>
           {{searchPattern}}
         </b>
-      {{/hasResult}}
-      {{^hasResult}}
+      {{/hasResults}}
+      {{^hasResults}}
         No results were found for <b>{{searchPattern}}</b>
-      {{/hasResult}}
+      {{/hasResults}}
     </div>
 
     <div class="results">
