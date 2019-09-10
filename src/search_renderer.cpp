@@ -108,7 +108,7 @@ std::string SearchRenderer::getHtml()
       pageEnd = estimatedResultCount / resultCountPerPage;
     }
     if (estimatedResultCount > resultCountPerPage) {
-      lastPageStart = round(estimatedResultCount/resultCountPerPage) * resultCountPerPage;
+      lastPageStart = static_cast<int>(round(estimatedResultCount/resultCountPerPage)) * resultCountPerPage;
     }
   }
 
