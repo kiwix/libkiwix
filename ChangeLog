@@ -1,3 +1,8 @@
+kiwix-lib 7.0.0
+===============
+
+ * [API break] Add a argument to kiwix-serve to specify the library to use.
+
 kiwix-lib 6.0.4
 ===============
 
