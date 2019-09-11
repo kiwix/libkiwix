@@ -14,7 +14,9 @@
 
 namespace kiwix {
 
-KiwixServe::KiwixServe(int port) : m_port(port)
+KiwixServe::KiwixServe(const std::string& libraryPath, int port)
+  : m_port(port),
+    m_libraryPath(libraryPath)
 {
 }
 
@@ -43,13 +45,12 @@ void KiwixServe::run()
         // Try to use a potential installed kiwix-serve.
         callCmd.push_back(KIWIXSERVE_CMD);
     }
-    std::string libraryPath = getDataDirectory() + "/library.xml";
     std::string attachProcessOpt = "-a" + to_string(pid);
     std::string portOpt = "-p" + to_string(m_port);
     callCmd.push_back(attachProcessOpt.c_str());
     callCmd.push_back(portOpt.c_str());
     callCmd.push_back("-l");
-    callCmd.push_back(libraryPath.c_str());
+    callCmd.push_back(m_libraryPath.c_str());
     mp_kiwixServe = Subprocess::run(callCmd);
 }
 
