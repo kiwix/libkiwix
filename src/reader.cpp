@@ -337,14 +337,44 @@ string Reader::getDescription() const
   return value;
 }
 
+string Reader::getLongDescription() const
+{
+  METATAG("LongDescription")
+}
+
 string Reader::getLanguage() const
 {
   METATAG("Language")
 }
 
+string Reader::getLicense() const
+{
+  METATAG("License")
+}
+
 string Reader::getTags() const
 {
   METATAG("Tags")
+}
+
+string Reader::getRelation() const
+{
+  METATAG("Relation")
+}
+
+string Reader::getFlavour() const
+{
+  METATAG("Flavour")
+}
+
+string Reader::getSource() const
+{
+  METATAG("Source")
+}
+
+string Reader::getScraper() const
+{
+  METATAG("Scraper")
 }
 #undef METATAG
 

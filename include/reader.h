@@ -206,6 +206,13 @@ class Reader
   string getDescription() const;
 
   /**
+   * Get the long description of the zim file.
+   *
+   * @return The long description of the zim file as specifed in the zim metadata.
+   */
+  string getLongDescription() const;
+
+  /**
    * Get the language of the zim file.
    *
    * @return The language of the zim file as specified in the zim metadata.
@@ -213,11 +220,46 @@ class Reader
   string getLanguage() const;
 
   /**
+   * Get the license of the zim file.
+   *
+   * @return The license of the zim file as specified in the zim metadata.
+   */
+  string getLicense() const;
+
+  /**
    * Get the tags of the zim file.
    *
    * @return The tags of the zim file as specified in the zim metadata.
    */
   string getTags() const;
+
+  /**
+   * Get the relations of the zim file.
+   *
+   * @return The relation of the zim file as specified in the zim metadata.
+   */
+  string getRelation() const;
+
+  /**
+   * Get the flavour of the zim file.
+   *
+   * @return The flavour of the zim file as specified in the zim metadata.
+   */
+  string getFlavour() const;
+
+  /**
+   * Get the source of the zim file.
+   *
+   * @return The source of the zim file as specified in the zim metadata.
+   */
+  string getSource() const;
+
+  /**
+   * Get the scraper of the zim file.
+   *
+   * @return The scraper of the zim file as specified in the zim metadata.
+   */
+  string getScraper() const;
 
   /**
    * Get the origId of the zim file.
