@@ -289,11 +289,11 @@ bool Reader::getMetatag(const string& name, string& value) const
   }
 }
 
+#define METATAG(NAME) std::string v; getMetatag(NAME, v); return v;
+
 string Reader::getName() const
 {
-  string value;
-  this->getMetatag("Name", value);
-  return value;
+  METATAG("Name")
 }
 
 string Reader::getTitle() const
@@ -311,23 +311,17 @@ string Reader::getTitle() const
 
 string Reader::getCreator() const
 {
-  string value;
-  this->getMetatag("Creator", value);
-  return value;
+  METATAG("Creator")
 }
 
 string Reader::getPublisher() const
 {
-  string value;
-  this->getMetatag("Publisher", value);
-  return value;
+  METATAG("Publisher")
 }
 
 string Reader::getDate() const
 {
-  string value;
-  this->getMetatag("Date", value);
-  return value;
+  METATAG("Date")
 }
 
 string Reader::getDescription() const
@@ -345,17 +339,14 @@ string Reader::getDescription() const
 
 string Reader::getLanguage() const
 {
-  string value;
-  this->getMetatag("Language", value);
-  return value;
+  METATAG("Language")
 }
 
 string Reader::getTags() const
 {
-  string value;
-  this->getMetatag("Tags", value);
-  return value;
+  METATAG("Tags")
 }
+#undef METATAG
 
 string Reader::getOrigId() const
 {
