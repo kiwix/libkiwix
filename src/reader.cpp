@@ -289,6 +289,13 @@ bool Reader::getMetatag(const string& name, string& value) const
   }
 }
 
+string Reader::getName() const
+{
+  string value;
+  this->getMetatag("Name", value);
+  return value;
+}
+
 string Reader::getTitle() const
 {
   string value;
@@ -302,17 +309,24 @@ string Reader::getTitle() const
   return value;
 }
 
-string Reader::getName() const
+string Reader::getCreator() const
 {
   string value;
-  this->getMetatag("Name", value);
+  this->getMetatag("Creator", value);
   return value;
 }
 
-string Reader::getTags() const
+string Reader::getPublisher() const
 {
   string value;
-  this->getMetatag("Tags", value);
+  this->getMetatag("Publisher", value);
+  return value;
+}
+
+string Reader::getDate() const
+{
+  string value;
+  this->getMetatag("Date", value);
   return value;
 }
 
@@ -336,24 +350,10 @@ string Reader::getLanguage() const
   return value;
 }
 
-string Reader::getDate() const
+string Reader::getTags() const
 {
   string value;
-  this->getMetatag("Date", value);
-  return value;
-}
-
-string Reader::getCreator() const
-{
-  string value;
-  this->getMetatag("Creator", value);
-  return value;
-}
-
-string Reader::getPublisher() const
-{
-  string value;
-  this->getMetatag("Publisher", value);
+  this->getMetatag("Tags", value);
   return value;
 }
 

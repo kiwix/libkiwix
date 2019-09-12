@@ -161,6 +161,13 @@ class Reader
   bool getMetatag(const string& name, string& value) const;
 
   /**
+   * Get the name of the zim file.
+   *
+   * @return The name of the zim file as specified in the zim metadata.
+   */
+  string getName() const;
+
+  /**
    * Get the title of the zim file.
    *
    * @return The title of zim file as specified in the zim metadata.
@@ -168,6 +175,27 @@ class Reader
    *         file path.
    */
   string getTitle() const;
+
+  /**
+   * Get the creator of the zim file.
+   *
+   * @return The creator of the zim file as specified in the zim metadata.
+   */
+  string getCreator() const;
+
+  /**
+   * Get the publisher of the zim file.
+   *
+   * @return The publisher of the zim file as specified in the zim metadata.
+   */
+  string getPublisher() const;
+
+  /**
+   * Get the date of the zim file.
+   *
+   * @return The date of the zim file as specified in the zim metadata.
+   */
+  string getDate() const;
 
   /**
    * Get the description of the zim file.
@@ -185,39 +213,11 @@ class Reader
   string getLanguage() const;
 
   /**
-   * Get the name of the zim file.
-   *
-   * @return The name of the zim file as specified in the zim metadata.
-   */
-  string getName() const;
-
-  /**
    * Get the tags of the zim file.
    *
    * @return The tags of the zim file as specified in the zim metadata.
    */
   string getTags() const;
-
-  /**
-   * Get the date of the zim file.
-   *
-   * @return The date of the zim file as specified in the zim metadata.
-   */
-  string getDate() const;
-
-  /**
-   * Get the creator of the zim file.
-   *
-   * @return The creator of the zim file as specified in the zim metadata.
-   */
-  string getCreator() const;
-
-  /**
-   * Get the publisher of the zim file.
-   *
-   * @return The publisher of the zim file as specified in the zim metadata.
-   */
-  string getPublisher() const;
 
   /**
    * Get the origId of the zim file.
