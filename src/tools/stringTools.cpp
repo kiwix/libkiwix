@@ -298,6 +298,21 @@ std::vector<std::string> kiwix::split(const std::string& lhs, const char* rhs)
   return split(lhs.c_str(), rhs);
 }
 
+std::string kiwix::join(const std::vector<std::string>& list, const std::string& sep)
+{
+  std::stringstream ss;
+  bool first = true;
+  for (auto& s:list) {
+    if (first) {
+      ss << sep;
+      first = false;
+    }
+    ss << s;
+  }
+  return ss.str();
+}
+
+
 std::string kiwix::ucFirst(const std::string& word)
 {
   if (word.empty()) {

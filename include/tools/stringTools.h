@@ -47,6 +47,7 @@ std::vector<std::string> split(const std::string&, const std::string&);
 std::vector<std::string> split(const char*, const char*);
 std::vector<std::string> split(const std::string&, const char*);
 std::vector<std::string> split(const char*, const std::string&);
+std::string join(const std::vector<std::string>& list, const std::string& sep);
 
 std::string ucAll(const std::string& word);
 std::string lcAll(const std::string& word);
