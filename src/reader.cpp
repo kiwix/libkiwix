@@ -352,9 +352,52 @@ string Reader::getLicense() const
   METADATA("License")
 }
 
-string Reader::getTags() const
+std::vector<std::string> convertTags(const std::string& tags_str)
 {
-  METADATA("Tags")
+  auto tags = split(tags_str, ";");
+  std::vector<std::string> tagsList;
+  bool picSeen(false), vidSeen(false), detSeen(false), indexSeen(false);
+  for (auto tag: tags) {
+    picSeen |= (tag == "nopic" || startsWith(tag, "_pictures:"));
+    vidSeen |= (tag == "novid" || startsWith(tag, "_videos:"));
+    detSeen |= (tag == "nodet" || startsWith(tag, "_details:"));
+    indexSeen |= startsWith(tag, "_ftindex");
+    if (tag == "nopic") {
+      tagsList.push_back("_pictures:no");
+    } else if (tag == "novid") {
+      tagsList.push_back("_videos:no");
+    } else if (tag == "nodet") {
+      tagsList.push_back("_details:no");
+    } else if (tag == "_ftindex") {
+      tagsList.push_back("_ftindex:yes");
+    } else {
+      tagsList.push_back(tag);
+    }
+  }
+  if (!indexSeen) {
+    tagsList.push_back("_ftindex:no");
+  }
+  if (!picSeen) {
+    tagsList.push_back("_pictures:yes");
+  }
+  if (!vidSeen) {
+    tagsList.push_back("_videos:yes");
+  }
+  if (!detSeen) {
+    tagsList.push_back("_details:yes");
+  }
+  return tagsList;
+}
+
+string Reader::getTags(bool original) const
+{
+  string tags_str;
+  getMetadata("Tags", tags_str);
+  if (original) {
+    return tags_str;
+  }
+  auto tags = convertTags(tags_str);
+  return join(tags, ";");
 }
 
 string Reader::getRelation() const

@@ -229,9 +229,11 @@ class Reader
   /**
    * Get the tags of the zim file.
    *
-   * @return The tags of the zim file as specified in the zim metadata.
+   * @param original If true, return the original tags as specified in the zim metadata.
+   *                 Else, try to convert it to the new 'normalized' format.
+   * @return The tags of the zim file.
    */
-  string getTags() const;
+  string getTags(bool original=false) const;
 
   /**
    * Get the relations of the zim file.
