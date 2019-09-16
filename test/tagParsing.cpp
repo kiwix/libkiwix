@@ -60,6 +60,40 @@ TEST(ParseTagTest, convert)
   }
 }
 
+TEST(ParseTagTest, valid)
+{
+  std::string tagStr = "_ftindex:yes;_pictures:no;_videos:no;_details:yes;_category:foo;bar";
+  auto tagList = convertTags(tagStr);
+
+  ASSERT_EQ(parse_tag(tagList, "ftindex"), "yes");
+  ASSERT_EQ(parse_tag(tagList, "pictures"), "no");
+  ASSERT_EQ(parse_tag(tagList, "category"), "foo");
+  ASSERT_EQ(parse_tag(tagList, "details"), "yes");
+  ASSERT_THROW(parse_tag(tagList, "detail"), std::out_of_range);
+}
+
+TEST(ParseTagTest, compat)
+{
+  std::string tagStr = "_ftindex;nopic;foo;bar";
+  auto tagList = convertTags(tagStr);
+
+  ASSERT_EQ(parse_tag(tagList, "ftindex"), "yes");
+  ASSERT_EQ(parse_tag(tagList, "pictures"), "no");
+  ASSERT_EQ(parse_tag(tagList, "videos"), "yes");
+  ASSERT_EQ(parse_tag(tagList, "details"), "yes");
+}
+
+TEST(ParseTagTest, invalid)
+{
+  std::string tagStr = "_ftindex:y;_pictures;_videos:;_details:yes;_details:no;_category:foo;bar";
+  auto tagList = convertTags(tagStr);
+
+  ASSERT_EQ(parse_tag(tagList, "ftindex"), "y");
+  ASSERT_EQ(parse_tag(tagList, "pictures"), "yes");
+  ASSERT_EQ(parse_tag(tagList, "videos"), "");
+  ASSERT_EQ(parse_tag(tagList, "details"), "yes");
+}
+
 };
 int main(int argc, char** argv)
 {

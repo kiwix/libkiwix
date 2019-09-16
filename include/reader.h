@@ -236,6 +236,27 @@ class Reader
   string getTags(bool original=false) const;
 
   /**
+   * Get the value (as a string) of a specific tag.
+   *
+   * According to https://wiki.openzim.org/wiki/Tags
+   *
+   * @return The value of the specified tag.
+   * @throw  std::out_of_range if the specified tag is not found.
+   */
+  string getTagStr(const std::string& tagName) const;
+
+  /**
+   * Get the boolean value of a specific tag.
+   *
+   * According to https://wiki.openzim.org/wiki/Tags
+   *
+   * @return The boolean value of the specified tag.
+   * @throw  std::out_of_range if the specified tag is not found.
+   *         std::domain_error if the value of the tag cannot be convert to bool.
+   */
+  bool getTagBool(const std::string& tagName) const;
+
+  /**
    * Get the relations of the zim file.
    *
    * @return The relation of the zim file as specified in the zim metadata.

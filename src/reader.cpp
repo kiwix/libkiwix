@@ -400,6 +400,48 @@ string Reader::getTags(bool original) const
   return join(tags, ";");
 }
 
+string getTagValueFromTagList(const std::vector<std::string>& tagList, const std::string& tagName)
+{
+  for (auto tag: tagList) {
+    if (tag[0] == '_') {
+      auto delimPos = tag.find(':');
+      if (delimPos == string::npos) {
+        // No delimiter... what to do ?
+        continue;
+      }
+      auto cTagName = tag.substr(1, delimPos-1);
+      auto cTagValue = tag.substr(delimPos+1);
+      if (cTagName == tagName) {
+        return cTagValue;
+      }
+    }
+  }
+  std::stringstream ss;
+  ss << tagName << " cannot be found";
+  throw std::out_of_range(ss.str());
+}
+
+string Reader::getTagStr(const std::string& tagName) const
+{
+  string tags_str;
+  getMetadata("Tags", tags_str);
+  return getTagValueFromTagList(convertTags(tags_str), tagName);
+}
+
+bool Reader::getTagBool(const std::string& tagName) const
+{
+  auto tagValue = getTagStr(tagName);
+  if (tagValue == "yes") {
+    return true;
+  } else if (tagValue == "no") {
+    return false;
+  } else {
+    std::stringstream ss;
+    ss << "Tag value '" << tagValue << "' for " << tagName << " cannot be converted to bool.";
+    throw std::domain_error(ss.str());
+  }
+}
+
 string Reader::getRelation() const
 {
   METADATA("Relation")
