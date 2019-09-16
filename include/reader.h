@@ -158,7 +158,7 @@ class Reader
    * @param[out] value The value will be set to the content of the metadata.
    * @return True if it was possible to get the content of the metadata.
    */
-  bool getMetatag(const string& name, string& value) const;
+  bool getMetadata(const string& name, string& value) const;
 
   /**
    * Get the name of the zim file.

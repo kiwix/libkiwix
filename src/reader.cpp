@@ -278,7 +278,7 @@ string Reader::getZimFilePath() const
   return this->zimFilePath;
 }
 /* Return a metatag value */
-bool Reader::getMetatag(const string& name, string& value) const
+bool Reader::getMetadata(const string& name, string& value) const
 {
   try {
     auto entry = getEntryFromPath("M/"+name);
@@ -289,17 +289,17 @@ bool Reader::getMetatag(const string& name, string& value) const
   }
 }
 
-#define METATAG(NAME) std::string v; getMetatag(NAME, v); return v;
+#define METADATA(NAME) std::string v; getMetadata(NAME, v); return v;
 
 string Reader::getName() const
 {
-  METATAG("Name")
+  METADATA("Name")
 }
 
 string Reader::getTitle() const
 {
   string value;
-  this->getMetatag("Title", value);
+  this->getMetadata("Title", value);
   if (value.empty()) {
     value = getLastPathElement(zimFileHandler->getFilename());
     std::replace(value.begin(), value.end(), '_', ' ');
@@ -311,27 +311,27 @@ string Reader::getTitle() const
 
 string Reader::getCreator() const
 {
-  METATAG("Creator")
+  METADATA("Creator")
 }
 
 string Reader::getPublisher() const
 {
-  METATAG("Publisher")
+  METADATA("Publisher")
 }
 
 string Reader::getDate() const
 {
-  METATAG("Date")
+  METADATA("Date")
 }
 
 string Reader::getDescription() const
 {
   string value;
-  this->getMetatag("Description", value);
+  this->getMetadata("Description", value);
 
   /* Mediawiki Collection tends to use the "Subtitle" name */
   if (value.empty()) {
-    this->getMetatag("Subtitle", value);
+    this->getMetadata("Subtitle", value);
   }
 
   return value;
@@ -339,49 +339,49 @@ string Reader::getDescription() const
 
 string Reader::getLongDescription() const
 {
-  METATAG("LongDescription")
+  METADATA("LongDescription")
 }
 
 string Reader::getLanguage() const
 {
-  METATAG("Language")
+  METADATA("Language")
 }
 
 string Reader::getLicense() const
 {
-  METATAG("License")
+  METADATA("License")
 }
 
 string Reader::getTags() const
 {
-  METATAG("Tags")
+  METADATA("Tags")
 }
 
 string Reader::getRelation() const
 {
-  METATAG("Relation")
+  METADATA("Relation")
 }
 
 string Reader::getFlavour() const
 {
-  METATAG("Flavour")
+  METADATA("Flavour")
 }
 
 string Reader::getSource() const
 {
-  METATAG("Source")
+  METADATA("Source")
 }
 
 string Reader::getScraper() const
 {
-  METATAG("Scraper")
+  METADATA("Scraper")
 }
-#undef METATAG
+#undef METADATA
 
 string Reader::getOrigId() const
 {
   string value;
-  this->getMetatag("startfileuid", value);
+  this->getMetadata("startfileuid", value);
   if (value.empty()) {
     return "";
   }
