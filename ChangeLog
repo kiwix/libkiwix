@@ -1,3 +1,12 @@
+kiwix-lib 8.0.0
+===============
+
+ * Add new methods to get all (and new) metadata from the zim file.
+ * Add methods to get the value of a specific tag.
+ * [API Change] Convert tags value to the new convention.
+ * [API Change] Rename `getMatatag` method to `getMetadata`
+ * [ABI Change] Correctly detect executable path in appimage.
+
 kiwix-lib 7.0.0
 ===============
 
