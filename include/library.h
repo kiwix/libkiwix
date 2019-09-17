@@ -145,6 +145,7 @@ class Library
    * @return True if the bookmark has been removed.
    */
   bool removeBookmark(const std::string& zimId, const std::string& url);
+  void removeAllBookmarksByZimID(const std::string& zimId);
 
   Book& getBookById(const std::string& id);
   std::shared_ptr<Reader> getReaderById(const std::string& id);

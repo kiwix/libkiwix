@@ -73,10 +73,16 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
   return false;
 }
 
-
+void Library::removeAllBookmarksByZimID(const std::string& zimId)
+{
+  auto removeItem = std::remove_if(m_bookmarks.begin(),m_bookmarks.end(),
+    [zimId](kiwix::Bookmark &bookmark) { return (bookmark.getBookId() == zimId) ? true : false; });
+  m_bookmarks.erase(removeItem, m_bookmarks.end());
+}
 
 bool Library::removeBookById(const std::string& id)
 {
+  removeAllBookmarksByZimID(id);
   return m_books.erase(id) == 1;
 }
 
