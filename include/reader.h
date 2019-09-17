@@ -158,31 +158,7 @@ class Reader
    * @param[out] value The value will be set to the content of the metadata.
    * @return True if it was possible to get the content of the metadata.
    */
-  bool getMetatag(const string& name, string& value) const;
-
-  /**
-   * Get the title of the zim file.
-   *
-   * @return The title of zim file as specified in the zim metadata.
-   *         If no title has been set, return a title computed from the
-   *         file path.
-   */
-  string getTitle() const;
-
-  /**
-   * Get the description of the zim file.
-   *
-   * @return The description of the zim file as specified in the zim metadata.
-   *         If no description has been set, return the subtitle.
-   */
-  string getDescription() const;
-
-  /**
-   * Get the language of the zim file.
-   *
-   * @return The language of the zim file as specified in the zim metadata.
-   */
-  string getLanguage() const;
+  bool getMetadata(const string& name, string& value) const;
 
   /**
    * Get the name of the zim file.
@@ -192,18 +168,13 @@ class Reader
   string getName() const;
 
   /**
-   * Get the tags of the zim file.
+   * Get the title of the zim file.
    *
-   * @return The tags of the zim file as specified in the zim metadata.
+   * @return The title of zim file as specified in the zim metadata.
+   *         If no title has been set, return a title computed from the
+   *         file path.
    */
-  string getTags() const;
-
-  /**
-   * Get the date of the zim file.
-   *
-   * @return The date of the zim file as specified in the zim metadata.
-   */
-  string getDate() const;
+  string getTitle() const;
 
   /**
    * Get the creator of the zim file.
@@ -218,6 +189,100 @@ class Reader
    * @return The publisher of the zim file as specified in the zim metadata.
    */
   string getPublisher() const;
+
+  /**
+   * Get the date of the zim file.
+   *
+   * @return The date of the zim file as specified in the zim metadata.
+   */
+  string getDate() const;
+
+  /**
+   * Get the description of the zim file.
+   *
+   * @return The description of the zim file as specified in the zim metadata.
+   *         If no description has been set, return the subtitle.
+   */
+  string getDescription() const;
+
+  /**
+   * Get the long description of the zim file.
+   *
+   * @return The long description of the zim file as specifed in the zim metadata.
+   */
+  string getLongDescription() const;
+
+  /**
+   * Get the language of the zim file.
+   *
+   * @return The language of the zim file as specified in the zim metadata.
+   */
+  string getLanguage() const;
+
+  /**
+   * Get the license of the zim file.
+   *
+   * @return The license of the zim file as specified in the zim metadata.
+   */
+  string getLicense() const;
+
+  /**
+   * Get the tags of the zim file.
+   *
+   * @param original If true, return the original tags as specified in the zim metadata.
+   *                 Else, try to convert it to the new 'normalized' format.
+   * @return The tags of the zim file.
+   */
+  string getTags(bool original=false) const;
+
+  /**
+   * Get the value (as a string) of a specific tag.
+   *
+   * According to https://wiki.openzim.org/wiki/Tags
+   *
+   * @return The value of the specified tag.
+   * @throw  std::out_of_range if the specified tag is not found.
+   */
+  string getTagStr(const std::string& tagName) const;
+
+  /**
+   * Get the boolean value of a specific tag.
+   *
+   * According to https://wiki.openzim.org/wiki/Tags
+   *
+   * @return The boolean value of the specified tag.
+   * @throw  std::out_of_range if the specified tag is not found.
+   *         std::domain_error if the value of the tag cannot be convert to bool.
+   */
+  bool getTagBool(const std::string& tagName) const;
+
+  /**
+   * Get the relations of the zim file.
+   *
+   * @return The relation of the zim file as specified in the zim metadata.
+   */
+  string getRelation() const;
+
+  /**
+   * Get the flavour of the zim file.
+   *
+   * @return The flavour of the zim file as specified in the zim metadata.
+   */
+  string getFlavour() const;
+
+  /**
+   * Get the source of the zim file.
+   *
+   * @return The source of the zim file as specified in the zim metadata.
+   */
+  string getSource() const;
+
+  /**
+   * Get the scraper of the zim file.
+   *
+   * @return The scraper of the zim file as specified in the zim metadata.
+   */
+  string getScraper() const;
 
   /**
    * Get the origId of the zim file.

@@ -278,7 +278,7 @@ string Reader::getZimFilePath() const
   return this->zimFilePath;
 }
 /* Return a metatag value */
-bool Reader::getMetatag(const string& name, string& value) const
+bool Reader::getMetadata(const string& name, string& value) const
 {
   try {
     auto entry = getEntryFromPath("M/"+name);
@@ -289,10 +289,17 @@ bool Reader::getMetatag(const string& name, string& value) const
   }
 }
 
+#define METADATA(NAME) std::string v; getMetadata(NAME, v); return v;
+
+string Reader::getName() const
+{
+  METADATA("Name")
+}
+
 string Reader::getTitle() const
 {
   string value;
-  this->getMetatag("Title", value);
+  this->getMetadata("Title", value);
   if (value.empty()) {
     value = getLastPathElement(zimFileHandler->getFilename());
     std::replace(value.begin(), value.end(), '_', ' ');
@@ -302,65 +309,164 @@ string Reader::getTitle() const
   return value;
 }
 
-string Reader::getName() const
+string Reader::getCreator() const
 {
-  string value;
-  this->getMetatag("Name", value);
-  return value;
+  METADATA("Creator")
 }
 
-string Reader::getTags() const
+string Reader::getPublisher() const
 {
-  string value;
-  this->getMetatag("Tags", value);
-  return value;
+  METADATA("Publisher")
+}
+
+string Reader::getDate() const
+{
+  METADATA("Date")
 }
 
 string Reader::getDescription() const
 {
   string value;
-  this->getMetatag("Description", value);
+  this->getMetadata("Description", value);
 
   /* Mediawiki Collection tends to use the "Subtitle" name */
   if (value.empty()) {
-    this->getMetatag("Subtitle", value);
+    this->getMetadata("Subtitle", value);
   }
 
   return value;
 }
 
+string Reader::getLongDescription() const
+{
+  METADATA("LongDescription")
+}
+
 string Reader::getLanguage() const
 {
-  string value;
-  this->getMetatag("Language", value);
-  return value;
+  METADATA("Language")
 }
 
-string Reader::getDate() const
+string Reader::getLicense() const
 {
-  string value;
-  this->getMetatag("Date", value);
-  return value;
+  METADATA("License")
 }
 
-string Reader::getCreator() const
+std::vector<std::string> convertTags(const std::string& tags_str)
 {
-  string value;
-  this->getMetatag("Creator", value);
-  return value;
+  auto tags = split(tags_str, ";");
+  std::vector<std::string> tagsList;
+  bool picSeen(false), vidSeen(false), detSeen(false), indexSeen(false);
+  for (auto tag: tags) {
+    picSeen |= (tag == "nopic" || startsWith(tag, "_pictures:"));
+    vidSeen |= (tag == "novid" || startsWith(tag, "_videos:"));
+    detSeen |= (tag == "nodet" || startsWith(tag, "_details:"));
+    indexSeen |= startsWith(tag, "_ftindex");
+    if (tag == "nopic") {
+      tagsList.push_back("_pictures:no");
+    } else if (tag == "novid") {
+      tagsList.push_back("_videos:no");
+    } else if (tag == "nodet") {
+      tagsList.push_back("_details:no");
+    } else if (tag == "_ftindex") {
+      tagsList.push_back("_ftindex:yes");
+    } else {
+      tagsList.push_back(tag);
+    }
+  }
+  if (!indexSeen) {
+    tagsList.push_back("_ftindex:no");
+  }
+  if (!picSeen) {
+    tagsList.push_back("_pictures:yes");
+  }
+  if (!vidSeen) {
+    tagsList.push_back("_videos:yes");
+  }
+  if (!detSeen) {
+    tagsList.push_back("_details:yes");
+  }
+  return tagsList;
 }
 
-string Reader::getPublisher() const
+string Reader::getTags(bool original) const
 {
-  string value;
-  this->getMetatag("Publisher", value);
-  return value;
+  string tags_str;
+  getMetadata("Tags", tags_str);
+  if (original) {
+    return tags_str;
+  }
+  auto tags = convertTags(tags_str);
+  return join(tags, ";");
 }
+
+string getTagValueFromTagList(const std::vector<std::string>& tagList, const std::string& tagName)
+{
+  for (auto tag: tagList) {
+    if (tag[0] == '_') {
+      auto delimPos = tag.find(':');
+      if (delimPos == string::npos) {
+        // No delimiter... what to do ?
+        continue;
+      }
+      auto cTagName = tag.substr(1, delimPos-1);
+      auto cTagValue = tag.substr(delimPos+1);
+      if (cTagName == tagName) {
+        return cTagValue;
+      }
+    }
+  }
+  std::stringstream ss;
+  ss << tagName << " cannot be found";
+  throw std::out_of_range(ss.str());
+}
+
+string Reader::getTagStr(const std::string& tagName) const
+{
+  string tags_str;
+  getMetadata("Tags", tags_str);
+  return getTagValueFromTagList(convertTags(tags_str), tagName);
+}
+
+bool Reader::getTagBool(const std::string& tagName) const
+{
+  auto tagValue = getTagStr(tagName);
+  if (tagValue == "yes") {
+    return true;
+  } else if (tagValue == "no") {
+    return false;
+  } else {
+    std::stringstream ss;
+    ss << "Tag value '" << tagValue << "' for " << tagName << " cannot be converted to bool.";
+    throw std::domain_error(ss.str());
+  }
+}
+
+string Reader::getRelation() const
+{
+  METADATA("Relation")
+}
+
+string Reader::getFlavour() const
+{
+  METADATA("Flavour")
+}
+
+string Reader::getSource() const
+{
+  METADATA("Source")
+}
+
+string Reader::getScraper() const
+{
+  METADATA("Scraper")
+}
+#undef METADATA
 
 string Reader::getOrigId() const
 {
   string value;
-  this->getMetatag("startfileuid", value);
+  this->getMetadata("startfileuid", value);
   if (value.empty()) {
     return "";
   }
