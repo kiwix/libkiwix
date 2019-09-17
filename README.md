@@ -3,7 +3,7 @@ Kiwix library
 
 The Kiwix library provides the [Kiwix](https://kiwix.org) software
 suite core. It contains the code shared by all Kiwix ports (Windows,
-Linux, OSX, Android, ...).
+GNU/Linux, macOS, Android, iOS, ...).
 
 [![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
 [![AUR version](https://img.shields.io/aur/version/kiwix-lib)](https://aur.archlinux.org/packages/kiwix-lib/)
