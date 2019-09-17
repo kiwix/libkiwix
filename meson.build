@@ -1,5 +1,5 @@
 project('kiwix-lib', 'cpp',
-  version : '8.0.0', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
+  version : '8.0.1', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
   license : 'GPL',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
 

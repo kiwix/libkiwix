@@ -4,7 +4,8 @@ tests = [
     'parseUrl',
     'library',
     'regex',
-    'tagParsing'
+    'tagParsing',
+    'stringTools'
 ]
 
 
