@@ -59,7 +59,10 @@ bool Library::addBook(const Book& book)
 
 void Library::addBookmark(const Bookmark& bookmark)
 {
-  m_bookmarks.push_back(bookmark);
+  auto booksId = getBooksIds();
+  if (std::find(booksId.begin(), booksId.end(), bookmark.getBookId()) != booksId.end()) {
+      m_bookmarks.push_back(bookmark);
+  }
 }
 
 bool Library::removeBookmark(const std::string& zimId, const std::string& url)
