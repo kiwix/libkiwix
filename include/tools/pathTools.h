@@ -38,7 +38,7 @@ bool makeDirectory(const std::string& path);
 std::string makeTmpDirectory();
 bool copyFile(const std::string& sourcePath, const std::string& destPath);
 std::string getLastPathElement(const std::string& path);
-std::string getExecutablePath();
+std::string getExecutablePath(bool realPathOnly = false);
 std::string getCurrentDirectory();
 std::string getDataDirectory();
 bool writeTextFile(const std::string& path, const std::string& content);
