@@ -303,10 +303,10 @@ std::string kiwix::join(const std::vector<std::string>& list, const std::string&
   std::stringstream ss;
   bool first = true;
   for (auto& s:list) {
-    if (first) {
+    if (!first) {
       ss << sep;
-      first = false;
     }
+    first = false;
     ss << s;
   }
   return ss.str();
