@@ -5,7 +5,8 @@ tests = [
     'library',
     'regex',
     'tagParsing',
-    'stringTools'
+    'stringTools',
+    'pathTools'
 ]
 
 

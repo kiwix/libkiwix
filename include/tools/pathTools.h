@@ -25,9 +25,7 @@
 bool isRelativePath(const std::string& path);
 std::string computeAbsolutePath(const std::string& path, const std::string& relativePath);
 std::string computeRelativePath(const std::string& path, const std::string& absolutePath);
-std::string removeLastPathElement(const std::string& path,
-                                  const bool removePreSeparator = false,
-                                  const bool removePostSeparator = false);
+std::string removeLastPathElement(const std::string& path);
 std::string appendToDirectory(const std::string& directoryPath, const std::string& filename);
 
 unsigned int getFileSize(const std::string& path);

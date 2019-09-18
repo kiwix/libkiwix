@@ -59,7 +59,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
 
     book.setReadOnly(readOnly);
     book.updateFromXml(bookNode,
-                       removeLastPathElement(libraryPath, true, false));
+                       removeLastPathElement(libraryPath));
 
     /* Update the book properties with the new importer */
     if (libraryVersion.empty()
@@ -177,7 +177,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
     if (pathToSave != pathToOpen) {
       book.setPath(isRelativePath(pathToSave)
                 ? computeAbsolutePath(
-                      removeLastPathElement(writableLibraryPath, true, false),
+                      removeLastPathElement(writableLibraryPath),
                       pathToSave)
                 : pathToSave);
     }

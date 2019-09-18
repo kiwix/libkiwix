@@ -39,11 +39,12 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
 
 #ifdef _WIN32
-const std::string SEPARATOR("\\");
+  #define SEPARATOR "\\"
 #else
-const std::string SEPARATOR("/");
+  #define SEPARATOR "/"
 #include <unistd.h>
 #endif
 
@@ -62,11 +63,63 @@ bool isRelativePath(const std::string& path)
 #endif
 }
 
+std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool absolute)
+{
+  std::vector<std::string> ret;
+#ifdef _WIN32
+  //Special case if we have a drive directory not at first.
+  //Starts from there.
+  auto it = find_if(parts.rbegin(), parts.rend(),
+                    [](const std::string& p) ->bool
+                      { return p.length() == 2 && p[1] == ':'; });
+  if (it != parts.rend()) {
+    parts.erase(parts.begin(), it.base()-1);
+  }
+#endif
+
+  for (auto& part: parts) {
+    if (part == "..") {
+      if (absolute) {
+        // We try to remove as far as possible.
+        if (ret.size() > 1) {
+          ret.pop_back();
+        }
+      } else {
+        // We remove only if we can remove it.
+        // Else we add it.
+        if (!ret.empty() && ret.back() != "..") {
+          ret.pop_back();
+        } else {
+          ret.push_back("..");
+        }
+      }
+      continue;
+    }
+    if (part == "") {
+#ifndef _WIN32
+      if (ret.empty()) {
+        ret.push_back("");
+      }
+#endif
+      continue;
+    }
+    if (part == ".") {
+      continue;
+    }
+    ret.push_back(part);
+  }
+#ifndef _WIN32
+  if (absolute && ret.size() == 1 && ret.back() == "") {
+    ret.push_back("");
+  }
+#endif
+  return ret;
+}
+
 std::string computeRelativePath(const std::string& path, const std::string& absolutePath)
 {
-  std::vector<std::string> pathParts = kiwix::split(path, SEPARATOR);
-  std::vector<std::string> absolutePathParts
-      = kiwix::split(absolutePath, SEPARATOR);
+  auto pathParts = normalizeParts(kiwix::split(path, SEPARATOR, false), false);
+  auto absolutePathParts = kiwix::split(absolutePath, SEPARATOR, false);
 
   unsigned int commonCount = 0;
   while (commonCount < pathParts.size()
@@ -75,108 +128,63 @@ std::string computeRelativePath(const std::string& path, const std::string& abso
       commonCount++;
   }
 
-  std::string relativePath;
-#ifdef _WIN32
-  /* On Windows you have a token more because the root is represented
-     by a letter */
-  if (commonCount == 0) {
-    relativePath = ".." + SEPARATOR;
-  }
-#endif
-
+  std::vector<std::string> relativeParts;
   for (unsigned int i = commonCount; i < pathParts.size(); i++) {
-    relativePath += ".." + SEPARATOR;
+    relativeParts.push_back("..");
   }
   for (unsigned int i = commonCount; i < absolutePathParts.size(); i++) {
-    relativePath += absolutePathParts[i];
-    relativePath += i + 1 < absolutePathParts.size() ? SEPARATOR : "";
+    relativeParts.push_back(absolutePathParts[i]);
   }
-  return relativePath;
+  return kiwix::join(normalizeParts(relativeParts, false), SEPARATOR);
 }
 
-#ifdef _WIN32
-# define STRTOK strtok_s
-#else
-# define STRTOK strtok_r
-#endif
-
-/* Warning: the relative path must be with slashes */
 std::string computeAbsolutePath(const std::string& path, const std::string& relativePath)
 {
-  std::string absolutePath;
-
+  std::string absolutePath = path;
   if (path.empty()) {
-    char* path = NULL;
-    size_t size = 0;
-
+    char* cpath;
 #ifdef _WIN32
-    path = _getcwd(path, size);
+    cpath = _getcwd(NULL, 0);
 #else
-    path = getcwd(path, size);
+    cpath = getcwd(NULL, 0);
 #endif
-
-    absolutePath = std::string(path) + SEPARATOR;
-  } else {
-    absolutePath = path.substr(path.length() - 1, 1) == SEPARATOR
-                       ? path
-                       : path + SEPARATOR;
+    absolutePath = cpath;
+    free(cpath);
   }
 
-#if _WIN32
-  char* cRelativePath = _strdup(relativePath.c_str());
-#else
-  char* cRelativePath = strdup(relativePath.c_str());
-#endif
-  char* saveptr = nullptr;
-  char* token = STRTOK(cRelativePath, "/", &saveptr);
+  auto absoluteParts = normalizeParts(kiwix::split(absolutePath, SEPARATOR, false), true);
+  auto relativeParts = kiwix::split(relativePath, SEPARATOR, false);
 
-  while (token != NULL) {
-    if (std::string(token) == "..") {
-      absolutePath = removeLastPathElement(absolutePath, true, false);
-      token = STRTOK(NULL, "/", &saveptr);
-    } else if (strcmp(token, ".") && strcmp(token, "")) {
-      absolutePath += std::string(token);
-      token = STRTOK(NULL, "/", &saveptr);
-      if (token != NULL) {
-        absolutePath += SEPARATOR;
-      }
-    } else {
-      token = STRTOK(NULL, "/", &saveptr);
-    }
-  }
-  free(cRelativePath);
-
-  return absolutePath;
+  absoluteParts.insert(absoluteParts.end(), relativeParts.begin(), relativeParts.end());
+  return kiwix::join(normalizeParts(absoluteParts, true), SEPARATOR);
 }
 
-std::string removeLastPathElement(const std::string& path,
-                                  const bool removePreSeparator,
-                                  const bool removePostSeparator)
+std::string removeLastPathElement(const std::string& path)
 {
-  std::string newPath = path;
-  size_t offset = newPath.find_last_of(SEPARATOR);
-  if (removePreSeparator &&
-#ifndef _WIN32
-      offset != newPath.find_first_of(SEPARATOR) &&
-#endif
-      offset == newPath.length() - 1) {
-    newPath = newPath.substr(0, offset);
-    offset = newPath.find_last_of(SEPARATOR);
+  auto parts = normalizeParts(kiwix::split(path, SEPARATOR, false), false);
+  if (!parts.empty()) {
+    parts.pop_back();
   }
-  newPath = removePostSeparator ? newPath.substr(0, offset)
-                                : newPath.substr(0, offset + 1);
-  return newPath;
+  return kiwix::join(parts, SEPARATOR);
 }
 
 std::string appendToDirectory(const std::string& directoryPath, const std::string& filename)
 {
-  std::string newPath = directoryPath + SEPARATOR + filename;
+  std::string newPath = directoryPath;
+  if (!directoryPath.empty() && directoryPath.back() != SEPARATOR[0]) {
+    newPath += SEPARATOR;
+  }
+  newPath += filename;
   return newPath;
 }
 
 std::string getLastPathElement(const std::string& path)
 {
-  return path.substr(path.find_last_of(SEPARATOR) + 1);
+  auto parts = normalizeParts(kiwix::split(path, SEPARATOR), false);
+  if (parts.empty()) {
+    return "";
+  }
+  return parts.back();
 }
 
 unsigned int getFileSize(const std::string& path)

@@ -43,10 +43,7 @@ void loadICUExternalTables();
 std::string urlEncode(const std::string& value, bool encodeReserved = false);
 std::string urlDecode(const std::string& value, bool component = false);
 
-std::vector<std::string> split(const std::string&, const std::string&);
-std::vector<std::string> split(const char*, const char*);
-std::vector<std::string> split(const std::string&, const char*);
-std::vector<std::string> split(const char*, const std::string&);
+std::vector<std::string> split(const std::string&, const std::string&, bool trimEmpty = true);
 std::string join(const std::vector<std::string>& list, const std::string& sep);
 
 std::string ucAll(const std::string& word);

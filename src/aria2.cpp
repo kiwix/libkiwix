@@ -49,7 +49,7 @@ Aria2::Aria2():
   m_secret = "token:"+m_secret;
 
   std::string aria2cmd = appendToDirectory(
-    removeLastPathElement(getExecutablePath(true), true, true),
+    removeLastPathElement(getExecutablePath(true)),
     ARIA2_CMD);
   if (fileExists(aria2cmd)) {
     // A local aria2c exe exists (packaged with kiwix-desktop), use it.

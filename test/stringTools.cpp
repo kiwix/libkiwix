@@ -23,6 +23,7 @@
 
 namespace kiwix {
 std::string join(const std::vector<std::string>& list, const std::string& sep);
+std::vector<std::string> split(const std::string&  base, const std::string& sep, bool trimEmpty);
 };
 
 using namespace kiwix;
@@ -34,6 +35,22 @@ TEST(stringTools, join)
 {
   std::vector<std::string> list = { "a", "b", "c" };
   ASSERT_EQ(join(list, ";"), "a;b;c");
+}
+
+TEST(stringTools, split)
+{
+  std::vector<std::string> list1 = { "a", "b", "c" };
+  ASSERT_EQ(split("a;b;c", ";", false), list1);
+  ASSERT_EQ(split("a;b;c", ";", true), list1);
+  std::vector<std::string> list2 = { "", "a", "b", "c" };
+  ASSERT_EQ(split(";a;b;c", ";", false), list2);
+  ASSERT_EQ(split(";a;b;c", ";", true), list1);
+  std::vector<std::string> list3 = { "", "a", "b", "c", ""};
+  ASSERT_EQ(split(";a;b;c;", ";", false), list3);
+  ASSERT_EQ(split(";a;b;c;", ";", true), list1);
+  std::vector<std::string> list4 = { "", "a", "b", "", "c", ""};
+  ASSERT_EQ(split(";a;b;;c;", ";", false), list4);
+  ASSERT_EQ(split(";a;b;;c;", ";", true), list1);
 }
 
 };
