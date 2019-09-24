@@ -36,7 +36,7 @@ void KiwixServe::run()
 
     std::vector<const char*> callCmd;
     std::string kiwixServeCmd = appendToDirectory(
-        removeLastPathElement(getExecutablePath(true), true, true),
+        removeLastPathElement(getExecutablePath(true)),
         KIWIXSERVE_CMD);
     if (fileExists(kiwixServeCmd)) {
         // A local kiwix-serve exe exists (packaged with kiwix-desktop), use it.

@@ -115,7 +115,7 @@ unsigned int Library::getBookCount(const bool localBooks,
 
 bool Library::writeToFile(const std::string& path)
 {
-  auto baseDir = removeLastPathElement(path, true, false);
+  auto baseDir = removeLastPathElement(path);
   LibXMLDumper dumper(this);
   dumper.setBaseDir(baseDir);
   return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
