@@ -424,6 +424,35 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getDescription(JNIEnv* env, jobject obj)
   return description;
 }
 
+JNIEXPORT jint JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwixReader_getArticleCount(JNIEnv* env, jobject obj)
+{
+  jint articleCount = 0;
+  try {
+    auto cArticleCount = READER->getArticleCount();
+    articleCount = c2jni(cArticleCount);
+  } catch (std::exception& e) {
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get article count.");
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
+  }
+  return articleCount;
+}
+
+JNIEXPORT jint JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwixReader_getMediaCount(JNIEnv* env, jobject obj)
+{
+  jint mediaCount = 0;
+  try {
+    auto cMediaCount = READER->getMediaCount();
+    mediaCount = c2jni(cMediaCount);
+  } catch (std::exception& e) {
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get media count.");
+    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
+  }
+  return mediaCount;
+}
+
+
 JNIEXPORT jboolean JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getRandomPage(
     JNIEnv* env, jobject obj, jobject urlObj)
 {
