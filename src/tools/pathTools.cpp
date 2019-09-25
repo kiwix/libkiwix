@@ -54,6 +54,25 @@
 #define PATH_MAX 1024
 #endif
 
+
+#ifdef _WIN32
+std::string WideToUtf8(const std::wstring& wstr)
+{
+  auto needed_size = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), wstr.size(), NULL, 0, NULL, NULL);
+  std::string ret(needed_size, 0);
+  WideCharToMultiByte(CP_UTF8, 0, wstr.data(), wstr.size(), &ret[0], needed_size, NULL, NULL);
+  return ret;
+}
+
+std::wstring Utf8ToWide(const std::string& str)
+{
+  auto needed_size = MultiByteToWideChar(CP_UTF8, 0, str.data(), str.size(), NULL, 0);
+  std::wstring ret(needed_size, 0);
+  MultiByteToWideChar(CP_UTF8, 0, str.data(), str.size(), &ret[0], needed_size);
+  return ret;
+}
+#endif
+
 bool isRelativePath(const std::string& path)
 {
 #ifdef _WIN32
@@ -77,7 +96,9 @@ std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool abs
   }
 #endif
 
+  size_t index = 0;
   for (auto& part: parts) {
+    index++;
     if (part == "..") {
       if (absolute) {
         // We try to remove as far as possible.
@@ -97,7 +118,7 @@ std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool abs
     }
     if (part == "") {
 #ifndef _WIN32
-      if (ret.empty()) {
+      if (ret.empty() && (absolute || index<parts.size())) {
         ret.push_back("");
       }
 #endif
@@ -135,28 +156,23 @@ std::string computeRelativePath(const std::string& path, const std::string& abso
   for (unsigned int i = commonCount; i < absolutePathParts.size(); i++) {
     relativeParts.push_back(absolutePathParts[i]);
   }
-  return kiwix::join(normalizeParts(relativeParts, false), SEPARATOR);
+  auto ret = kiwix::join(normalizeParts(relativeParts, false), SEPARATOR);
+  return ret;
 }
 
 std::string computeAbsolutePath(const std::string& path, const std::string& relativePath)
 {
   std::string absolutePath = path;
   if (path.empty()) {
-    char* cpath;
-#ifdef _WIN32
-    cpath = _getcwd(NULL, 0);
-#else
-    cpath = getcwd(NULL, 0);
-#endif
-    absolutePath = cpath;
-    free(cpath);
+    absolutePath = getCurrentDirectory();
   }
 
   auto absoluteParts = normalizeParts(kiwix::split(absolutePath, SEPARATOR, false), true);
   auto relativeParts = kiwix::split(relativePath, SEPARATOR, false);
 
   absoluteParts.insert(absoluteParts.end(), relativeParts.begin(), relativeParts.end());
-  return kiwix::join(normalizeParts(absoluteParts, true), SEPARATOR);
+  auto ret = kiwix::join(normalizeParts(absoluteParts, true), SEPARATOR);
+  return ret;
 }
 
 std::string removeLastPathElement(const std::string& path)
@@ -165,7 +181,8 @@ std::string removeLastPathElement(const std::string& path)
   if (!parts.empty()) {
     parts.pop_back();
   }
-  return kiwix::join(parts, SEPARATOR);
+  auto ret = kiwix::join(parts, SEPARATOR);
+  return ret;
 }
 
 std::string appendToDirectory(const std::string& directoryPath, const std::string& filename)
@@ -184,7 +201,8 @@ std::string getLastPathElement(const std::string& path)
   if (parts.empty()) {
     return "";
   }
-  return parts.back();
+  auto ret = parts.back();
+  return ret;
 }
 
 unsigned int getFileSize(const std::string& path)
@@ -224,7 +242,7 @@ std::string getFileContent(const std::string& path)
 bool fileExists(const std::string& path)
 {
 #ifdef _WIN32
-  return PathFileExists(path.c_str());
+  return PathFileExistsW(Utf8ToWide(path).c_str());
 #else
   bool flag = false;
   std::fstream fin;
@@ -240,7 +258,7 @@ bool fileExists(const std::string& path)
 bool makeDirectory(const std::string& path)
 {
 #ifdef _WIN32
-  int status = _mkdir(path.c_str());
+  int status = _wmkdir(Utf8ToWide(path).c_str());
 #else
   int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
@@ -250,15 +268,15 @@ bool makeDirectory(const std::string& path)
 std::string makeTmpDirectory()
 {
 #ifdef _WIN32
-  char cbase[MAX_PATH];
-  char ctmp[MAX_PATH];
-  GetTempPath(MAX_PATH-14, cbase);
+  wchar_t cbase[MAX_PATH];
+  wchar_t ctmp[MAX_PATH];
+  GetTempPathW(MAX_PATH-14, cbase);
   // This create a file for us, ensure it is unique.
   // So we need to delete it and create the directory using the same name.
-  GetTempFileName(cbase, "kiwix", 0, ctmp);
-  DeleteFile(ctmp);
-  _mkdir(ctmp);
-  return std::string(ctmp);
+  GetTempFileNameW(cbase, L"kiwix", 0, ctmp);
+  DeleteFileW(ctmp);
+  _wmkdir(ctmp);
+  return WideToUtf8(ctmp);
 #else
   char _template_array[] = {"/tmp/kiwix-lib_XXXXXX"};
   std::string dir = mkdtemp(_template_array);
@@ -289,34 +307,36 @@ bool copyFile(const std::string& sourcePath, const std::string& destPath)
 
 std::string getExecutablePath(bool realPathOnly)
 {
-  char binRootPath[PATH_MAX];
-
   if (!realPathOnly) {
     char* cAppImage = ::getenv("APPIMAGE");
     if (cAppImage) {
       char* cArgv0 = ::getenv("ARGV0");
       char* cOwd = ::getenv("OWD");
       if (cArgv0 && cOwd) {
-        return appendToDirectory(cOwd, cArgv0);
+        auto ret = appendToDirectory(cOwd, cArgv0);
+        return ret;
       }
     }
   }
 
 #ifdef _WIN32
-  GetModuleFileName(NULL, binRootPath, PATH_MAX);
-  return std::string(binRootPath);
+  std::wstring binRootPath(PATH_MAX, 0);
+  GetModuleFileNameW(NULL, &binRootPath[0], PATH_MAX);
+  std::string ret = WideToUtf8(binRootPath);
+  return ret;
 #elif __APPLE__
+  char binRootPath[PATH_MAX];
   uint32_t max = (uint32_t)PATH_MAX;
   _NSGetExecutablePath(binRootPath, &max);
   return std::string(binRootPath);
 #else
+  char binRootPath[PATH_MAX];
   ssize_t size = readlink("/proc/self/exe", binRootPath, PATH_MAX);
   if (size != -1) {
     return std::string(binRootPath, size);
   }
-#endif
-
   return "";
+#endif
 }
 
 bool writeTextFile(const std::string& path, const std::string& content)
@@ -330,10 +350,16 @@ bool writeTextFile(const std::string& path, const std::string& content)
 
 std::string getCurrentDirectory()
 {
-  char* a_cwd = getcwd(NULL, 0);
-  std::string s_cwd(a_cwd);
+#ifdef _WIN32
+  wchar_t* a_cwd = _wgetcwd(NULL, 0);
+  std::string ret = WideToUtf8(a_cwd);
   free(a_cwd);
-  return s_cwd;
+#else
+  char* a_cwd = getcwd(NULL, 0);
+  std::string ret(a_cwd);
+  free(a_cwd);
+#endif
+  return ret;
 }
 
 std::string getDataDirectory()
@@ -344,8 +370,9 @@ std::string getDataDirectory()
   char* cDataDir = ::getenv("KIWIX_DATA_DIR");
 #endif
   std::string dataDir = cDataDir==nullptr ? "" : cDataDir;
-  if (!dataDir.empty())
+  if (!dataDir.empty()) {
     return dataDir;
+  }
 #ifdef _WIN32
   cDataDir = ::getenv("USERPROFILE");
   dataDir = cDataDir==nullptr ? getCurrentDirectory() : cDataDir;
@@ -359,7 +386,8 @@ std::string getDataDirectory()
     dataDir = appendToDirectory(dataDir, "share");
   }
 #endif
-  return appendToDirectory(dataDir, "kiwix");
+  auto ret = appendToDirectory(dataDir, "kiwix");
+  return ret;
 }
 
 static std::map<std::string, std::string> extMimeTypes = {
