@@ -43,6 +43,10 @@
 #define A5(a, b, c, d, e) A1(P5(a, b, c, d, e))
 
 std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool absolute);
+#ifdef _WIN32
+std::wstring Utf8ToWide(const std::string& str);
+std::string WideToUtf8(const std::wstring& wstr);
+#endif
 
 namespace
 {
@@ -79,7 +83,7 @@ TEST(pathTools, normalizePartsRelative)
 {
 #define N(...) normalizeParts(__VA_ARGS__, false)
   ASSERT_EQ(N({}), V({}));
-  ASSERT_EQ(N({""}), V({""}));
+  ASSERT_EQ(N({""}), V({}));
   ASSERT_EQ(N({"a"}), V({"a"}));
   ASSERT_EQ(N({"a", "b"}), V({"a", "b"}));
   ASSERT_EQ(N({"a", "b", ".."}), V({"a"}));
@@ -204,6 +208,20 @@ TEST(pathTools, dirChange)
   std::string abs_path = computeAbsolutePath(p1, relative_path);
   ASSERT_EQ(abs_path, p2);
   ASSERT_EQ(computeAbsolutePath(p1, "..\\..\\..\\..\\..\\d:\\d\\e\\foo.xml"), p2);
+}
+
+TEST(pathTools, Utf8ToWide)
+{
+  ASSERT_EQ(Utf8ToWide(u8""), L"");
+  ASSERT_EQ(Utf8ToWide(u8"test"), L"test");
+  ASSERT_EQ(Utf8ToWide(u8"testé`œà"), L"testé`œà");
+}
+
+TEST(pathTools, WideToUtf8)
+{
+  ASSERT_EQ(WideToUtf8(L""), u8"");
+  ASSERT_EQ(WideToUtf8(L"test"), u8"test");
+  ASSERT_EQ(WideToUtf8(L"testé`œà"), u8"testé`œà");
 }
 #endif
 
