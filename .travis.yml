@@ -31,6 +31,11 @@ addons:
       - gcc-mingw-w64-i686
       - gcc-mingw-w64-base
       - mingw-w64-tools
+      - gcovr
+  homebrew:
+    update: true
+    packages:
+      - gcovr
 matrix:
   include:
     - env: PLATFORM="native_dyn"

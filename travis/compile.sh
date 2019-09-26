@@ -38,6 +38,10 @@ else
   export PKG_CONFIG_PATH=${INSTALL_DIR}/lib/x86_64-linux-gnu/pkgconfig
 fi
 export CPPFLAGS="-I${INSTALL_DIR}/include"
+if [[ "$TEST" == "1" ]]
+then
+    MESON_OPTION="${MESON_OPTION} -Db_coverage=true"
+fi
 meson . build ${MESON_OPTION}
 cd build
 ninja
@@ -45,5 +49,9 @@ if [[ "$TEST" == "1" ]]
 then
   echo "Running test"
   export LD_LIBRARY_PATH=${INSTALL_DIR}/lib:${INSTALL_DIR}/lib64:${INSTALL_DIR}/lib/x86_64-linux-gnu
-  ninja test
+  meson test --verbose
+  ninja coverage
+  cd ..
+  echo "*** Publish code coverage"
+  bash <(curl -s https://codecov.io/bash)
 fi
