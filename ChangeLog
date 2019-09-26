@@ -1,3 +1,11 @@
+kiwix-lib 8.1.0
+===============
+
+ * Fix pathTools manipulation.
+ * Add missing implementation of getArticleCount and getMediaCount on android.
+ * Correctly convert windows path to utf8.
+ * Add code coverage in the CI
+
 kiwix-lib 8.0.1
 ===============
 
