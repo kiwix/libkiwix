@@ -208,7 +208,7 @@ class Library
    *
    * @return A list of bookmarks
    */
-  const std::vector<kiwix::Bookmark>& getBookmarks() { return m_bookmarks; }
+  const std::vector<kiwix::Bookmark> getBookmarks(bool onlyValidBookmarks = true);
 
   /**
    * Get all book ids of the books in the library.
