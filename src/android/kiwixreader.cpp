@@ -353,14 +353,17 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_searchSuggestions(JNIEnv* env,
 JNIEXPORT jboolean JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
                                                          jobject obj,
-                                                         jobject titleObj)
+                                                         jobject titleObj,
+                                                         jobject urlObj)
 {
   jboolean retVal = JNI_FALSE;
   std::string cTitle;
+  std::string cUrl;
 
   try {
-    if (READER->getNextSuggestion(cTitle)) {
+    if (READER->getNextSuggestion(cTitle, cUrl)) {
       setStringObjValue(cTitle, titleObj, env);
+      setStringObjValue(cUrl, urlObj, env);
       retVal = JNI_TRUE;
     }
   } catch (std::exception& e) {
