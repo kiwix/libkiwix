@@ -17,6 +17,7 @@ class KiwixServe
     void shutDown();
     bool isRunning();
     int getPort() { return m_port; }
+    int setPort(int port);
 
   private:
   std::unique_ptr<Subprocess> mp_kiwixServe;

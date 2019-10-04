@@ -68,4 +68,14 @@ bool KiwixServe::isRunning()
     return false;
 }
 
+int KiwixServe::setPort(int port)
+{
+    if (port >= 1 && port <= 65535) {
+        m_port = port;
+    } else {
+        return -1;
+    }
+    return m_port;
+}
+
 }
