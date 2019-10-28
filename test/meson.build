@@ -6,7 +6,8 @@ tests = [
     'regex',
     'tagParsing',
     'stringTools',
-    'pathTools'
+    'pathTools',
+    'kiwixserve'
 ]
 
 
