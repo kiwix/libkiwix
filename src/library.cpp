@@ -184,6 +184,21 @@ std::vector<std::string> Library::getBooksPublishers()
   return booksPublishers;
 }
 
+const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks)
+{
+  if (!onlyValidBookmarks) {
+    return m_bookmarks;
+  }
+  std::vector<kiwix::Bookmark> validBookmarks;
+  auto booksId = getBooksIds();
+  for(auto& bookmark:m_bookmarks) {
+    if (std::find(booksId.begin(), booksId.end(), bookmark.getBookId()) != booksId.end()) {
+      validBookmarks.push_back(bookmark);
+    }
+  }
+  return validBookmarks;
+}
+
 std::vector<std::string> Library::getBooksIds()
 {
   std::vector<std::string> bookIds;
