@@ -180,6 +180,7 @@ const char * sampleOpdsStream = R"(
 
 #include "../include/library.h"
 #include "../include/manager.h"
+#include "../include/bookmark.h"
 
 namespace
 {
@@ -191,8 +192,33 @@ class LibraryTest : public ::testing::Test {
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
   }
 
+    kiwix::Bookmark createBookmark(const std::string &id) {
+        kiwix::Bookmark bookmark;
+        bookmark.setBookId(id);
+        return bookmark;
+    };
+
   kiwix::Library lib;
 };
+
+TEST_F(LibraryTest, getBookMarksTest)
+{    
+    auto bookId1 = lib.getBooksIds()[0];
+    auto bookId2 = lib.getBooksIds()[1];
+
+    lib.addBookmark(createBookmark(bookId1));
+    lib.addBookmark(createBookmark("invalid-bookmark-id"));
+    lib.addBookmark(createBookmark(bookId2));
+    auto onlyValidBookmarks = lib.getBookmarks();
+    auto allBookmarks = lib.getBookmarks(false);
+
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-bookmark-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+}
 
 TEST_F(LibraryTest, sanityCheck)
 {
