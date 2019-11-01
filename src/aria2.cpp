@@ -78,18 +78,32 @@ Aria2::Aria2():
   callCmd.push_back("--max-concurrent-downloads=42");
   callCmd.push_back("--rpc-max-request-size=6M");
   callCmd.push_back("--file-allocation=none");
+  for (auto &cmd : callCmd) {
+      m_launchCmd.append(cmd).append(" ");
+  }
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
+  char errbuf[CURL_ERROR_SIZE];
   curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");
   curl_easy_setopt(mp_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(mp_curl, CURLOPT_POST, 1L);
+  curl_easy_setopt(mp_curl, CURLOPT_ERRORBUFFER, errbuf);
 
   int watchdog = 50;
   while(--watchdog) {
     sleep(10);
+    errbuf[0] = 0;
     auto res = curl_easy_perform(mp_curl);
     if (res == CURLE_OK) {
       break;
+    } else if (watchdog == 1) {
+      std::cerr <<" curl_easy_perform() failed." << std::endl;
+      fprintf(stderr, "\nlibcurl: (%d) ", res);
+      if (errbuf[0] != 0) {
+        std::cerr << errbuf << std::endl;
+      } else {
+        std::cerr << curl_easy_strerror(res) << std::endl;
+      }
     }
   }
   if (!watchdog) {

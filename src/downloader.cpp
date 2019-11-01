@@ -127,16 +127,23 @@ void Download::cancelDownload()
 Downloader::Downloader() :
   mp_aria(new Aria2())
 {
-  for (auto gid : mp_aria->tellActive()) {
-    m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-    m_knownDownloads[gid]->updateStatus();
+  try {
+    for (auto gid : mp_aria->tellActive()) {
+      m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+      m_knownDownloads[gid]->updateStatus();
+    }
+  } catch (std::exception& e) {
+    std::cerr << "aria2 tellActive failed : " << e.what();
   }
-  for (auto gid : mp_aria->tellWaiting()) {
-    m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-    m_knownDownloads[gid]->updateStatus();
+  try {
+    for (auto gid : mp_aria->tellWaiting()) {
+      m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+      m_knownDownloads[gid]->updateStatus();
+    }
+  } catch (std::exception& e) {
+    std::cerr << "aria2 tellWaiting failed : " << e.what();
   }
 }
-
 
 /* Destructor */
 Downloader::~Downloader()
@@ -154,6 +161,11 @@ std::vector<std::string> Downloader::getDownloadIds() {
     ret.push_back(p.first);
   }
   return ret;
+}
+
+const std::string &Downloader::getAria2LaunchCmd()
+{ 
+  return mp_aria->getLaunchCmd();
 }
 
 Download* Downloader::startDownload(const std::string& uri)
