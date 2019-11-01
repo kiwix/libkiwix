@@ -163,6 +163,11 @@ std::vector<std::string> Downloader::getDownloadIds() {
   return ret;
 }
 
+const std::string &Downloader::getAria2LaunchCmd()
+{ 
+  return mp_aria->getLaunchCmd();
+}
+
 Download* Downloader::startDownload(const std::string& uri)
 {
   for (auto& p: m_knownDownloads) {
