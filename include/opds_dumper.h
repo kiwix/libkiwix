@@ -31,6 +31,8 @@
 #include "tools/regexTools.h"
 #include "library.h"
 #include "reader.h"
+#include "searcher.h"
+#include "name_mapper.h"
 
 using namespace std;
 
@@ -100,6 +102,48 @@ class OPDSDumper
    */
   void setLibrary(Library* library) { this->library = library; }
 
+  /**
+   * Set the search pattern.
+   *
+   * @param library The library to dump.
+   */
+  void setSearchPattern(const std::string& searchPattern) { this->searchPattern = searchPattern; }
+
+  /**
+   * Set the protocol prefix.
+   *
+   * @param library The library to dump.
+   */
+  void setSearchProtocolPrefix(const std::string& searchProtocolPrefix) { this->searchProtocolPrefix = searchProtocolPrefix; }
+
+  /**
+   * Set the search pattern.
+   *
+   * @param library The library to dump.
+   */
+  void setProtocolPrefix(const std::string& protocolPrefix) { this->protocolPrefix = protocolPrefix; }
+
+  /**
+   * Set the result count per page
+   **/
+  void setResultCountPerPage(const unsigned int resultCountPerPage) { this->resultCountPerPage = resultCountPerPage; }
+
+  /**
+   * Set the estimated result count
+   **/
+  void setEstimatedResultCount(const unsigned int estimatedResultCount) { this->estimatedResultCount = estimatedResultCount; }
+
+  /**
+   * Set the result start
+   **/
+  void setResultStart(const unsigned int resultStart) { this->resultStart = resultStart; }
+
+  /**
+   * Dump the OPDS Search result feed
+   * @param searcher The searcher object allowing to retrieve results
+   **/ 
+  std::string dumpSearchResultFeed(Searcher& searcher, NameMapper& nameMapper);
+
  protected:
   kiwix::Library* library;
   std::string id;
@@ -107,6 +151,12 @@ class OPDSDumper
   std::string date;
   std::string rootLocation;
   std::string searchDescriptionUrl;
+  std::string searchPattern;
+  std::string searchProtocolPrefix;
+  std::string protocolPrefix;
+  unsigned int resultCountPerPage;
+  unsigned int estimatedResultCount;
+  unsigned int resultStart;
   int m_totalResults;
   int m_startIndex;
   int m_count;
@@ -114,6 +164,7 @@ class OPDSDumper
 
  private:
   pugi::xml_node handleBook(Book book, pugi::xml_node root_node);
+  pugi::xml_node handleResultEntry(const std::string& uid, Result* result, pugi::xml_node& root_node, NameMapper& nameMapper);
 };
 }
 

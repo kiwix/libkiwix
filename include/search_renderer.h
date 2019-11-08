@@ -21,6 +21,7 @@
 #define KIWIX_SEARCH_RENDERER_H
 
 #include <string>
+#include "opds_dumper.h"
 
 namespace kiwix
 {
@@ -61,9 +62,19 @@ class SearchRenderer
   void setSearchProtocolPrefix(const std::string& prefix);
 
   /**
-   * Generate the html page with the resutls of the search.
+   * Set the search description url for atom feed generation 
+   **/
+  void setSearchDescriptionUrl(const std::string& url);
+
+  /**
+   * Generate the html page with the results of the search.
    */
   std::string getHtml();
+
+  /**
+   * Generate the atom feed with the results of the search.
+   */
+  std::string getAtomFeed();
 
  protected:
   std::string beautifyInteger(const unsigned int number);
@@ -73,6 +84,7 @@ class SearchRenderer
   std::string searchPattern;
   std::string protocolPrefix;
   std::string searchProtocolPrefix;
+  std::string searchDescriptionUrl;
   unsigned int resultCountPerPage;
   unsigned int estimatedResultCount;
   unsigned int resultStart;

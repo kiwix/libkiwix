@@ -143,4 +143,68 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds)
   return nodeToString(root_node);
 }
 
+pugi::xml_node OPDSDumper::handleResultEntry(const std::string& uid, Result* result, pugi::xml_node& root_node, NameMapper& nameMapper) {
+  auto entry_node = root_node.append_child("entry");
+
+  std::string resultContentId = nameMapper.getNameForId(uid);
+  std::string url = this->protocolPrefix + resultContentId + "/" + result->get_url();
+
+  ADD_TEXT_ENTRY(entry_node, "title", result->get_title());
+  ADD_TEXT_ENTRY(entry_node, "id", url);
+  ADD_TEXT_ENTRY(entry_node, "summary", result->get_snippet());
+
+  auto content_node = entry_node.append_child("link");
+  content_node.append_attribute("type") = "text/html";
+  content_node.append_attribute("href") = url.c_str();
+
+  return entry_node;
+}
+
+string OPDSDumper::dumpSearchResultFeed(Searcher& searcher, NameMapper& nameMapper)
+{
+  std::string date = gen_date_str();
+  zim::Uuid uuid;
+
+  pugi::xml_document doc;
+
+  auto root_node = doc.append_child("feed");
+  root_node.append_attribute("xmlns") = "http://www.w3.org/2005/Atom";
+  root_node.append_attribute("xmlns:opds") = "http://opds-spec.org/2010/catalog";
+
+  ADD_TEXT_ENTRY(root_node, "id", this->searchDescriptionUrl);
+
+  ADD_TEXT_ENTRY(root_node, "title", "Search: "+ this->searchPattern);
+  ADD_TEXT_ENTRY(root_node, "updated", date);
+
+  if (this->estimatedResultCount > 0) {
+    ADD_TEXT_ENTRY(root_node, "totalResults", to_string(this->estimatedResultCount));
+    ADD_TEXT_ENTRY(root_node, "startIndex", to_string(this->resultStart + 1));
+    ADD_TEXT_ENTRY(root_node, "itemsPerPage", to_string(this->resultCountPerPage));
+  }
+
+  auto self_link_node = root_node.append_child("link");
+  self_link_node.append_attribute("rel") = "self";
+  self_link_node.append_attribute("href") = "";
+  self_link_node.append_attribute("type") = "application/atom+xml";
+
+
+  if (!this->searchDescriptionUrl.empty() ) {
+    auto search_link = root_node.append_child("link");
+    search_link.append_attribute("rel") = "search";
+    search_link.append_attribute("type") = "application/opensearchdescription+xml";
+    search_link.append_attribute("href") = this->searchDescriptionUrl.c_str();
+  }
+
+  Result* result = NULL;
+  while ((result = searcher.getNextResult())) {
+    auto reader = searcher.get_reader(result->get_readerIndex());
+    auto uid = reader->getId();
+    handleResultEntry(uid, result, root_node, nameMapper);
+  }
+
+  return nodeToString(root_node);
+}
+
+
+
 }

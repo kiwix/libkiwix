@@ -120,6 +120,8 @@ class InternalServer {
     Response handle_suggest(const RequestContext& request);
     Response handle_random(const RequestContext& request);
     Response handle_content(const RequestContext& request);
+    Response handle_search_descriptor(const RequestContext& request);
+    Response handle_search_results(const RequestContext& request);
 
     kainjow::mustache::data get_default_data();
     Response get_default_response();
@@ -331,7 +333,7 @@ Response InternalServer::handle_request(const RequestContext& request)
     if (request.get_url() == "/meta")
       return handle_meta(request);
 
-    if (request.get_url() == "/search")
+    if (kiwix::startsWith(request.get_url(), "/search"))
       return handle_search(request);
 
     if (request.get_url() == "/suggest")
@@ -553,7 +555,32 @@ Response InternalServer::handle_skin(const RequestContext& request)
   return response;
 }
 
-Response InternalServer::handle_search(const RequestContext& request)
+static bool is_atom_requested(const RequestContext& request) {
+  std::string accept_header = request.get_header("Accept");
+
+  if (accept_header.find("application/atom+xml") != std::string::npos) {
+    return true;
+  }
+
+  return false;
+}
+
+
+Response InternalServer::handle_search_descriptor(const RequestContext& request) {
+  if (m_verbose.load()) {
+    printf("** running handle_search_descriptor\n");
+  }
+
+  auto response = get_default_response();
+  response.set_template(RESOURCE::contentOpensearchDescription_xml, get_default_data());
+  response.set_mimeType("application/opensearchdescription+xml");
+  response.set_compress(true);
+  response.set_cache(true);
+  
+  return response;
+}
+
+Response InternalServer::handle_search_results(const RequestContext& request)
 {
   if (m_verbose.load()) {
     printf("** running handle_search\n");
@@ -667,16 +694,50 @@ Response InternalServer::handle_search(const RequestContext& request)
       searcher.search(patternString,
                        start, end, m_verbose.load());
     }
+    bool atomResult = is_atom_requested(request);
+    
     SearchRenderer renderer(&searcher, mp_nameMapper);
     renderer.setSearchPattern(patternString);
     renderer.setSearchContent(bookName);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
-    response.set_content(renderer.getHtml());
+    if (atomResult) {
+      response.set_content(renderer.getAtomFeed());
+    }
+    else {
+      response.set_content(renderer.getHtml());
+    }
+
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
   return response;
+}
+
+Response InternalServer::handle_search(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_search\n");
+  }
+
+  std::string host;
+  std::string url;
+  try {;
+    url  = request.get_url_part(1);
+  } catch (const std::out_of_range&) {
+    url = "";
+  }
+
+  std::string content;
+  std::string mimeType;
+
+  if (url == "searchdescription.xml") {
+    return this->handle_search_descriptor(request);
+  }
+  else {
+    return this->handle_search_results(request);
+  }
+
 }
 
 Response InternalServer::handle_random(const RequestContext& request)

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Zim content search</ShortName>
+  <Description>Search zim content in the library.</Description>
+  <Url type="application/atom+xml" 
+       xmlns:atom="http://www.w3.org/2005/Atom"
+       indexOffset="0"
+       template="/{{root}}/search?pattern={searchTerms}&amp;lang={language}&amp;count={count}&amp;start={startIndex}"/>
+</OpenSearchDescription>

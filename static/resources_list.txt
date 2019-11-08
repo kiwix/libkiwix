@@ -29,3 +29,4 @@ templates/suggestion.json
 templates/head_part.html
 templates/taskbar_part.html
 opensearchdescription.xml
+contentOpensearchDescription.xml
