@@ -168,7 +168,6 @@ std::string SearchRenderer::getAtomFeed() {
   opdsDumper.setSearchDescriptionUrl("search/searchdescription.xml");
 
   return opdsDumper.dumpSearchResultFeed(*mp_searcher, *mp_nameMapper);
-
 }
 
 

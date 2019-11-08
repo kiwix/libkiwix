@@ -707,7 +707,6 @@ Response InternalServer::handle_search_results(const RequestContext& request)
     else {
       response.set_content(renderer.getHtml());
     }
-
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
@@ -737,7 +736,6 @@ Response InternalServer::handle_search(const RequestContext& request)
   else {
     return this->handle_search_results(request);
   }
-
 }
 
 Response InternalServer::handle_random(const RequestContext& request)
