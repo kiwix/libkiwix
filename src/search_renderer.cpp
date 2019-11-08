@@ -66,6 +66,11 @@ void SearchRenderer::setSearchProtocolPrefix(const std::string& prefix)
   this->searchProtocolPrefix = prefix;
 }
 
+void SearchRenderer::setSearchDescriptionUrl(const std::string& searchDescriptionUrl)
+{
+  this->searchDescriptionUrl = searchDescriptionUrl;
+}
+
 std::string SearchRenderer::getHtml()
 {
   kainjow::mustache::data results{kainjow::mustache::data::type::list};
@@ -148,5 +153,23 @@ std::string SearchRenderer::getHtml()
   tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
   return ss.str();
 }
+
+
+std::string SearchRenderer::getAtomFeed() {
+  mp_searcher->restart_search();
+  kiwix::OPDSDumper opdsDumper;
+
+  opdsDumper.setSearchDescriptionUrl(this->searchDescriptionUrl);
+  opdsDumper.setSearchPattern(this->searchPattern);
+  opdsDumper.setResultCountPerPage(this->resultCountPerPage);
+  opdsDumper.setEstimatedResultCount(this->estimatedResultCount);
+  opdsDumper.setResultStart(this->resultStart);
+  opdsDumper.setProtocolPrefix(this->protocolPrefix);
+  opdsDumper.setSearchDescriptionUrl("search/searchdescription.xml");
+
+  return opdsDumper.dumpSearchResultFeed(*mp_searcher, *mp_nameMapper);
+
+}
+
 
 }
