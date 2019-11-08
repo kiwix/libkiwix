@@ -871,22 +871,6 @@ Response InternalServer::handle_content(const RequestContext& request)
     content = string(raw_content.data(), raw_content.size());
     auto response = get_default_response();
     response.set_mimeType(mimeType);
-
-    /* Special rewrite URL in case of ZIM file use intern *asbolute* url like
-     * /A/Kiwix */
-    if (mimeType.find("text/html") != string::npos) {
-      content = replaceRegex(content,
-                             "$1$2" + m_root + "/" + bookName + "/$3/",
-                             "(href|src)(=[\"|\']{0,1})/([A-Z|\\-])/");
-      content = replaceRegex(content,
-                             "$1$2" + m_root + "/" + bookName + "/$3/",
-                             "(@import[ ]+)([\"|\']{0,1})/([A-Z|\\-])/");
-      response.set_taskbar(bookName, reader->getTitle());
-    } else if (mimeType.find("text/css") != string::npos) {
-      content = replaceRegex(content,
-                             "$1$2" + m_root + "/" + bookName + "/$3/",
-                             "(url|URL)(\\([\"|\']{0,1})/([A-Z|\\-])/");
-    }
     response.set_content(content);
     response.set_compress(true);
     response.set_cache(true);
