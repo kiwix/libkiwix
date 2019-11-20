@@ -164,7 +164,7 @@ std::vector<std::string> Downloader::getDownloadIds() {
 }
 
 const std::string &Downloader::getAria2LaunchCmd()
-{ 
+{
   return mp_aria->getLaunchCmd();
 }
 

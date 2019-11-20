@@ -1,3 +1,10 @@
+kiwix-lib 8.2.0
+===============
+
+ * More debug information if aria2c command fails
+ * Allow to set kiwix-serve port
+ * Better (dead) bookmarks mgmt
+
 kiwix-lib 8.1.0
 ===============
 
