@@ -870,6 +870,10 @@ Response InternalServer::handle_content(const RequestContext& request)
     zim::Blob raw_content = entry.getBlob();
     content = string(raw_content.data(), raw_content.size());
     auto response = get_default_response();
+
+    if (mimeType.find("text/html") != string::npos)
+      response.set_taskbar(bookName, reader->getTitle());
+
     response.set_mimeType(mimeType);
     response.set_content(content);
     response.set_compress(true);
