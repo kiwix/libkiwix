@@ -8,6 +8,8 @@ REPO_NAME=${TRAVIS_REPO_SLUG#*/}
 cd $HOME
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]
 then
+  # upgrade wget as openssl is updated by travis
+  brew upgrade wget
   pip3 install meson==0.49.2
 
   wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-mac.zip
