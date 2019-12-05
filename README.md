@@ -7,7 +7,7 @@ GNU/Linux, macOS, Android, iOS, ...).
 
 [![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
 [![AUR version](https://img.shields.io/aur/version/kiwix-lib)](https://aur.archlinux.org/packages/kiwix-lib/)
-[![Build Status](https://travis-ci.org/kiwix/kiwix-lib.svg?branch=master)](https://travis-ci.org/kiwix/kiwix-lib)
+[![Build Status](https://travis-ci.com/kiwix/kiwix-lib.svg?branch=master)](https://travis-ci.com/kiwix/kiwix-lib)
 [![CodeFactor](https://www.codefactor.io/repository/github/kiwix/kiwix-lib/badge)](https://www.codefactor.io/repository/github/kiwix/kiwix-lib)
 [![Codecov](https://codecov.io/gh/kiwix/kiwix-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/kiwix/kiwix-lib)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
