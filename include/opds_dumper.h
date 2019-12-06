@@ -141,7 +141,7 @@ class OPDSDumper
   /**
    * Dump the OPDS Search result feed
    * @param searcher The searcher object allowing to retrieve results
-   **/ 
+   **/
   std::string dumpSearchResultFeed(Searcher& searcher, NameMapper& nameMapper);
 
  protected:

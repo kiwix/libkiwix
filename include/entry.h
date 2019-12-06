@@ -64,14 +64,14 @@ class Entry
      * @return the path of the entry.
      */
     std::string getPath() const;
-    
+
     /**
      * Get the title of the entry.
      *
      * @return the title of the entry.
      */
     std::string getTitle() const;
-        
+
     /**
      * Get the content of the entry.
      *
@@ -81,7 +81,7 @@ class Entry
      * @return the content of the entry.
      */
     std::string getContent() const;
-        
+
     /**
      * Get the blob of the entry.
      *
@@ -91,7 +91,7 @@ class Entry
      * @return the blob of the entry.
      */
     zim::Blob   getBlob(offset_type offset = 0) const;
-        
+
     /**
      * Get the blob of the entry.
      *
@@ -102,7 +102,7 @@ class Entry
      * @return the blob of the entry.
      */
     zim::Blob   getBlob(offset_type offset, size_type size) const;
-        
+
     /**
      * Get the info for direct access to the content of the entry.
      *
@@ -118,7 +118,7 @@ class Entry
      *         Return <"",0> if is not possible to read directly.
      */
     std::pair<std::string, offset_type> getDirectAccessInfo() const;
-        
+
     /**
      * Get the size of the entry.
      *
@@ -132,8 +132,8 @@ class Entry
      * @return the mime_type of the entry.
      */
     std::string getMimetype() const;
-    
-    
+
+
     /**
      * Get if the entry is a redirect entry.
      *

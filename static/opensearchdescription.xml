@@ -2,7 +2,7 @@
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
   <ShortName>Zim catalog search</ShortName>
   <Description>Search zim files in the catalog.</Description>
-  <Url type="application/atom+xml;profile=opds-catalog" 
+  <Url type="application/atom+xml;profile=opds-catalog"
        xmlns:atom="http://www.w3.org/2005/Atom"
        indexOffset="0"
        template="/{{root}}/catalog/search?q={searchTerms}&lang={language}&count={count}&start={startIndex}"/>

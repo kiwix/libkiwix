@@ -576,7 +576,7 @@ Response InternalServer::handle_search_descriptor(const RequestContext& request)
   response.set_mimeType("application/opensearchdescription+xml");
   response.set_compress(true);
   response.set_cache(true);
-  
+
   return response;
 }
 
@@ -695,7 +695,7 @@ Response InternalServer::handle_search_results(const RequestContext& request)
                        start, end, m_verbose.load());
     }
     bool atomResult = is_atom_requested(request);
-    
+
     SearchRenderer renderer(&searcher, mp_nameMapper);
     renderer.setSearchPattern(patternString);
     renderer.setSearchContent(bookName);

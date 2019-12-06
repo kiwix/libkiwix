@@ -62,7 +62,7 @@ class SearchRenderer
   void setSearchProtocolPrefix(const std::string& prefix);
 
   /**
-   * Set the search description url for atom feed generation 
+   * Set the search description url for atom feed generation
    **/
   void setSearchDescriptionUrl(const std::string& url);
 

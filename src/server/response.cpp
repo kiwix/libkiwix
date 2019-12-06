@@ -140,7 +140,7 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
       bool shouldCompress = m_compress && request.can_compress();
       shouldCompress &= m_mimeType.find("text/") != string::npos
                      || m_mimeType.find("application/javascript") != string::npos
-                     || m_mimeType.find("application/json") != string::npos; 
+                     || m_mimeType.find("application/json") != string::npos;
 
       shouldCompress &= (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE);
 
