@@ -8,7 +8,7 @@ TEST(KiwixServeTest, PortTest)
     kiwixServe.setPort(8484);
     EXPECT_EQ(kiwixServe.getPort(), 8484);
     EXPECT_EQ(kiwixServe.setPort(0), -1);
-    EXPECT_EQ(kiwixServe.setPort(3456789), -1);    
+    EXPECT_EQ(kiwixServe.setPort(3456789), -1);
 }
 
 int main(int argc, char** argv)
