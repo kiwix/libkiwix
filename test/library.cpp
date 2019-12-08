@@ -202,7 +202,7 @@ class LibraryTest : public ::testing::Test {
 };
 
 TEST_F(LibraryTest, getBookMarksTest)
-{    
+{
     auto bookId1 = lib.getBooksIds()[0];
     auto bookId2 = lib.getBooksIds()[1];
 
