@@ -2,6 +2,8 @@ kiwix-lib 8.2.3
 ===============
 
  * [OPDS] Correctly set the id of the OPDS stream.
+ * [OPDS] Do not try to filter the catalog if no filter field is given in the
+   request.
 
 kiwix-lib 8.2.2
 ===============
