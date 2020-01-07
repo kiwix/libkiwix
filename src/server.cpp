@@ -742,7 +742,6 @@ Response InternalServer::handle_catalog(const RequestContext& request)
   kiwix::OPDSDumper opdsDumper;
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
-  opdsDumper.setId(kiwix::to_string(uuid));
   opdsDumper.setLibrary(mp_library);
   response.set_mimeType("application/atom+xml;profile=opds-catalog;kind=acquisition; charset=utf-8");
   std::vector<std::string> bookIdsToDump;
@@ -792,6 +791,7 @@ Response InternalServer::handle_catalog(const RequestContext& request)
     opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
   }
 
+  opdsDumper.setId(kiwix::to_string(uuid));
   response.set_content(opdsDumper.dumpOPDSFeed(bookIdsToDump));
   return response;
 }

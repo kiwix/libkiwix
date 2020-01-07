@@ -1,3 +1,8 @@
+kiwix-lib 8.2.3
+===============
+
+ * [OPDS] Correctly set the id of the OPDS stream.
+
 kiwix-lib 8.2.2
 ===============
 
