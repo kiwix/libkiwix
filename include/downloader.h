@@ -97,7 +97,6 @@ class Downloader
 
   size_t getNbDownload() { return m_knownDownloads.size(); }
   std::vector<std::string> getDownloadIds();
-  const std::string &getAria2LaunchCmd();
 
  private:
   std::map<std::string, std::unique_ptr<Download>> m_knownDownloads;

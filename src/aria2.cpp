@@ -78,8 +78,9 @@ Aria2::Aria2():
   callCmd.push_back("--max-concurrent-downloads=42");
   callCmd.push_back("--rpc-max-request-size=6M");
   callCmd.push_back("--file-allocation=none");
+  std::string launchCmd;
   for (auto &cmd : callCmd) {
-      m_launchCmd.append(cmd).append(" ");
+      launchCmd.append(cmd).append(" ");
   }
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
@@ -108,7 +109,7 @@ Aria2::Aria2():
   }
   if (!watchdog) {
     curl_easy_cleanup(mp_curl);
-    throw std::runtime_error("Cannot connect to aria2c rpc");
+    throw std::runtime_error("Cannot connect to aria2c rpc. Aria2c launch cmd : " + launchCmd);
   }
 }
 
