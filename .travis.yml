@@ -4,6 +4,7 @@ sudo: true
 cache: ccache
 before_install:
 - PATH=$PATH:$HOME/bin
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew unlink python@2; brew link --overwrite python@3; fi
 install: travis/install_deps.sh
 script: travis/compile.sh
 env:
