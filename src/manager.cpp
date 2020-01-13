@@ -19,6 +19,8 @@
 
 #include "manager.h"
 
+#include "tools/pathTools.h"
+
 #include <pugixml.hpp>
 
 namespace kiwix
@@ -145,7 +147,12 @@ bool Manager::readFile(const std::string& nativePath,
 {
   bool retVal = true;
   pugi::xml_document doc;
+
+#ifdef _WIN32
+  pugi::xml_parse_result result = doc.load_file(Utf8ToWide(nativePath).c_str());
+#else
   pugi::xml_parse_result result = doc.load_file(nativePath.c_str());
+#endif
 
   if (result) {
     this->parseXmlDom(doc, readOnly, UTF8Path);
