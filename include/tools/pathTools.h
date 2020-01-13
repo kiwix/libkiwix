@@ -22,6 +22,10 @@
 
 #include <string>
 
+#ifdef _WIN32
+std::string WideToUtf8(const std::wstring& wstr);
+std::wstring Utf8ToWide(const std::string& str);
+#endif
 bool isRelativePath(const std::string& path);
 std::string computeAbsolutePath(const std::string& path, const std::string& relativePath);
 std::string computeRelativePath(const std::string& path, const std::string& absolutePath);
