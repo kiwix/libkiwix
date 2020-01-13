@@ -69,26 +69,12 @@ class Manager
   /**
    * Read a `library.xml` and add book in the file to the library.
    *
-   * @param path The path to the `library.xml`.
+   * @param path The (utf8) path to the `library.xml`.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
    * @return True if file has been properly parsed.
    */
   bool readFile(const std::string& path, const bool readOnly = true);
-
-  /**
-   * Read a `library.xml` and add book in the file to the library.
-   *
-   * @param nativePath The path of the `library.xml`
-   * @param UTF8Path The utf8 version (?) of the path. Also the path where the
-   *                 library will be writen i readOnly is False.
-   * @param readOnly Set if the libray path could be overwritten latter with
-   *                 updated content.
-   * @return True if file has been properly parsed.
-   */
-  bool readFile(const std::string& nativePath,
-                const std::string& UTF8Path,
-                const bool readOnly = true);
 
   /**
    * Load a library content store in the string.

@@ -138,24 +138,17 @@ bool Manager::readOpds(const std::string& content, const std::string& urlHost)
 
 bool Manager::readFile(const std::string& path, const bool readOnly)
 {
-  return this->readFile(path, path, readOnly);
-}
-
-bool Manager::readFile(const std::string& nativePath,
-                       const std::string& UTF8Path,
-                       const bool readOnly)
-{
   bool retVal = true;
   pugi::xml_document doc;
 
 #ifdef _WIN32
-  pugi::xml_parse_result result = doc.load_file(Utf8ToWide(nativePath).c_str());
+  pugi::xml_parse_result result = doc.load_file(Utf8ToWide(path).c_str());
 #else
-  pugi::xml_parse_result result = doc.load_file(nativePath.c_str());
+  pugi::xml_parse_result result = doc.load_file(path.c_str());
 #endif
 
   if (result) {
-    this->parseXmlDom(doc, readOnly, UTF8Path);
+    this->parseXmlDom(doc, readOnly, path);
   } else {
     retVal = false;
   }
@@ -164,7 +157,7 @@ bool Manager::readFile(const std::string& nativePath,
    * able to know where to save the library if new content are
    * available */
   if (!readOnly) {
-    this->writableLibraryPath = UTF8Path;
+    this->writableLibraryPath = path;
   }
 
   return retVal;
