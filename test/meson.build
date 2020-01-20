@@ -13,7 +13,7 @@ tests = [
 
 gtest_dep = dependency('gtest',
                        main:true,
-                       fallback: ['gtest', 'gtest_dep'],
+                       fallback: ['gtest', 'gtest_main_dep'],
                        required:false)
 
 if gtest_dep.found()
