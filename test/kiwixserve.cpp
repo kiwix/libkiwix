@@ -10,9 +10,3 @@ TEST(KiwixServeTest, PortTest)
     EXPECT_EQ(kiwixServe.setPort(0), -1);
     EXPECT_EQ(kiwixServe.setPort(3456789), -1);
 }
-
-int main(int argc, char** argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
