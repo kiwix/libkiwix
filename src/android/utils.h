@@ -29,6 +29,29 @@
 
 extern pthread_mutex_t globalLock;
 
+template<typename T>
+void allocate(JNIEnv* env, jobject thisObj)
+{
+  jclass thisClass = env->GetObjectClass(thisObj);
+  jfieldID fidNumber = env->GetFieldID(thisClass, "nativeHandle", "J");
+  T* ptr = new T();
+  env->SetLongField(thisObj, fidNumber, reinterpret_cast<jlong>(ptr));
+}
+
+template<typename T>
+T* getPtr(JNIEnv* env, jobject thisObj)
+{
+  jclass thisClass = env->GetObjectClass(thisObj);
+  jfieldID fidNumber = env->GetFieldID(thisClass, "nativeHandle", "J");
+  return reinterpret_cast<T*>(env->GetLongField(thisObj, fidNumber));
+}
+
+template<typename T>
+void dispose(JNIEnv* env, jobject thisObj)
+{
+  delete getPtr<T>(env, thisObj);
+}
+
 inline jfieldID getHandleField(JNIEnv* env, jobject obj)
 {
   jclass c = env->GetObjectClass(obj);

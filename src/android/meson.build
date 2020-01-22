@@ -1,6 +1,7 @@
 
 kiwix_jni = custom_target('jni',
   input: ['org/kiwix/kiwixlib/JNIICU.java',
+          'org/kiwix/kiwixlib/Book.java',
           'org/kiwix/kiwixlib/JNIKiwixReader.java',
           'org/kiwix/kiwixlib/JNIKiwixLibrary.java',
           'org/kiwix/kiwixlib/JNIKiwixSearcher.java',
@@ -11,6 +12,7 @@ kiwix_jni = custom_target('jni',
           'org/kiwix/kiwixlib/JNIKiwixException.java',
           'org/kiwix/kiwixlib/Pair.java'],
   output: ['org_kiwix_kiwixlib_JNIKiwix.h',
+           'org_kiwix_kiwixlib_Book.h',
            'org_kiwix_kiwixlib_JNIKiwixReader.h',
            'org_kiwix_kiwixlib_JNIKiwixLibrary.h',
            'org_kiwix_kiwixlib_JNIKiwixServer.h',
@@ -21,6 +23,7 @@ kiwix_jni = custom_target('jni',
 
 kiwix_sources += [
     'android/kiwixicu.cpp',
+    'android/book.cpp',
     'android/kiwixreader.cpp',
     'android/kiwixlibrary.cpp',
     'android/kiwixsearcher.cpp',
