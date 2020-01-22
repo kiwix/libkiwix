@@ -93,15 +93,31 @@ struct LockedHandle : public Lock {
   operator bool() const { return (h->h != nullptr); }
 };
 
-/* c2jni type conversion functions */
-inline jboolean c2jni(const bool& val) { return val ? JNI_TRUE : JNI_FALSE; }
+template<typename T>
+struct JType { };
+
+template<> struct JType<bool>{ typedef jboolean type_t; };
+template<> struct JType<int>{ typedef jint type_t; };
+template<> struct JType<long>{ typedef jlong type_t; };
+template<> struct JType<uint64_t> { typedef jlong type_t; };
+template<> struct JType<uint32_t> { typedef jlong type_t; };
+template<> struct JType<std::string>{ typedef jstring type_t; };
+
+template<typename T>
+inline typename JType<T>::type_t c2jni(const T& val, JNIEnv* env) {
+  return static_cast<typename JType<T>::type_t>(val);
+}
+
+template<>
+inline jboolean c2jni(const bool& val, JNIEnv* env) { return val ? JNI_TRUE : JNI_FALSE; }
+
+template<>
 inline jstring c2jni(const std::string& val, JNIEnv* env)
 {
   return env->NewStringUTF(val.c_str());
 }
 
-inline jint c2jni(const int val) { return (jint)val; }
-inline jint c2jni(const unsigned val) { return (unsigned)val; }
+
 /* jni2c type conversion functions */
 inline bool jni2c(const jboolean& val) { return val == JNI_TRUE; }
 inline std::string jni2c(const jstring& val, JNIEnv* env)
@@ -141,7 +157,7 @@ inline void setBoolObjValue(const bool value, const jobject obj, JNIEnv* env)
 {
   jclass objClass = env->GetObjectClass(obj);
   jfieldID objFid = env->GetFieldID(objClass, "value", "Z");
-  env->SetIntField(obj, objFid, c2jni(value));
+  env->SetIntField(obj, objFid, c2jni(value, env));
 }
 
 inline void setPairObjValue(const std::string& filename, const int offset,

@@ -95,7 +95,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getFileSize(JNIEnv* env, jobject obj)
 
   try {
     int cSize = READER->getFileSize();
-    size = c2jni(cSize);
+    size = c2jni(cSize, env);
   } catch (std::exception& e) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM file size");
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
@@ -234,7 +234,7 @@ JNIEXPORT jstring JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_checkUrl(
     entry = entry.getFinalEntry();
     finalUrl = c2jni(entry.getPath(), env);
   } catch (std::exception& e) {
-    finalUrl = c2jni("", env);
+    finalUrl = c2jni(std::string(), env);
   }
   return finalUrl;
 }
@@ -433,7 +433,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getArticleCount(JNIEnv* env, jobject obj)
   jint articleCount = 0;
   try {
     auto cArticleCount = READER->getArticleCount();
-    articleCount = c2jni(cArticleCount);
+    articleCount = c2jni(cArticleCount, env);
   } catch (std::exception& e) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get article count.");
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
@@ -447,7 +447,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getMediaCount(JNIEnv* env, jobject obj)
   jint mediaCount = 0;
   try {
     auto cMediaCount = READER->getMediaCount();
-    mediaCount = c2jni(cMediaCount);
+    mediaCount = c2jni(cMediaCount, env);
   } catch (std::exception& e) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get media count.");
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
