@@ -19,7 +19,7 @@
 
 package org.kiwix.kiwixlib;
 
-import org.kiwix.kiwixlib.JNIKiwixLibrary;
+import org.kiwix.kiwixlib.Library;
 
 public class Manager
 {
@@ -75,16 +75,16 @@ public class Manager
                                        String url,
                                        boolean checkMetaData);
 
-  public Manager(JNIKiwixLibrary library) {
+  public Manager(Library library) {
     allocate(library);
     _library = library;
   }
 
-  private JNIKiwixLibrary _library;
+  private Library _library;
 
   @Override
   protected void finalize() { dispose(); }
-  private native void allocate(JNIKiwixLibrary library);
+  private native void allocate(Library library);
   private native void dispose();
   private long nativeHandle;
 }

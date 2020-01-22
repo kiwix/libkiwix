@@ -35,8 +35,8 @@ JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixServer_getNativeServer(
   __android_log_print(ANDROID_LOG_INFO, "kiwix", "Attempting to create server");
   Lock l;
   try {
-    auto library = Handle<kiwix::Library>::getHandle(env, jLibrary);
-    kiwix::Server* server = new kiwix::Server(*library);
+    auto library = getPtr<kiwix::Library>(env, jLibrary);
+    kiwix::Server* server = new kiwix::Server(library);
     return reinterpret_cast<jlong>(new Handle<kiwix::Server>(server));
   } catch (std::exception& e) {
     __android_log_print(ANDROID_LOG_WARN, "kiwix", "Error creating the server");

@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2013 Emmanuel Engelhart <kelson@kiwix.org>
- * Copyright (C) 2017 Matthieu Gautier <mgautier@kymeria.fr>
+ * Copyright (C) 2019-2020 Matthieu Gautier <mgautier@kymeria.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -22,17 +21,18 @@ package org.kiwix.kiwixlib;
 
 import org.kiwix.kiwixlib.JNIKiwixException;
 
-public class JNIKiwixLibrary
+public class Library
 {
   public native boolean addBook(String path) throws JNIKiwixException;
 
-  public JNIKiwixLibrary()
+  public Library()
   {
-    nativeHandle = getNativeLibrary();
+    allocate();
   }
 
-  public native void dispose();
-
-  private native long getNativeLibrary();
+  @Override
+  protected void finalize() { dispose(); }
+  private native void allocate();
+  private native void dispose();
   private long nativeHandle;
 }

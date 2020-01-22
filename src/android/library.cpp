@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2013 Emmanuel Engelhart <kelson@kiwix.org>
- * Copyright (C) 2017 Matthieu Gautier <mgautier@kymeria.fr>
+ * Copyright (C) 2019-2020 Matthieu Gautier <mgautier@kymeria.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -21,52 +20,43 @@
 
 #include <jni.h>
 #include <android/log.h>
-#include "org_kiwix_kiwixlib_JNIKiwixLibrary.h"
+#include "org_kiwix_kiwixlib_Library.h"
 
 #include "library.h"
 #include "reader.h"
 #include "utils.h"
 
 /* Kiwix Reader JNI functions */
-JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixLibrary_getNativeLibrary(
-    JNIEnv* env, jobject obj)
+JNIEXPORT void JNICALL
+Java_org_kiwix_kiwixlib_Library_allocate(
+    JNIEnv* env, jobject thisObj)
 {
-  __android_log_print(ANDROID_LOG_INFO, "kiwix", "Attempting to create library");
-  Lock l;
-  try {
-    kiwix::Library* library = new kiwix::Library();
-    return reinterpret_cast<jlong>(new Handle<kiwix::Library>(library));
-  } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_WARN, "kiwix", "Error creating ZIM library");
-    __android_log_print(ANDROID_LOG_WARN, "kiwix", e.what());
-    return 0;
-  }
+  allocate<kiwix::Library>(env, thisObj);
 }
 
 JNIEXPORT void JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixLibrary_dispose(JNIEnv* env, jobject obj)
+Java_org_kiwix_kiwixlib_Library_dispose(JNIEnv* env, jobject thisObj)
 {
-  Handle<kiwix::Library>::dispose(env, obj);
+  dispose<kiwix::Library>(env, thisObj);
 }
 
-#define LIBRARY (Handle<kiwix::Library>::getHandle(env, obj))
+#define LIBRARY (getPtr<kiwix::Library>(env, thisObj))
 
 /* Kiwix library functions */
 JNIEXPORT jboolean JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixLibrary_addBook(JNIEnv* env, jobject obj, jstring path)
+Java_org_kiwix_kiwixlib_Library_addBook(
+  JNIEnv* env, jobject thisObj, jstring path)
 {
-  std::string cPath = jni2c(path, env);
-  bool ret;
+  auto cPath = jni2c(path, env);
 
   try {
     kiwix::Reader reader(cPath);
     kiwix::Book book;
     book.update(reader);
-    ret = LIBRARY->addBook(book);
+    return LIBRARY->addBook(book);
   } catch (std::exception& e) {
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to add the book");
     __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
-    ret = false;
   }
-  return ret;
+  return false;
 }

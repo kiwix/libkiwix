@@ -31,7 +31,7 @@ JNIEXPORT void JNICALL
 Java_org_kiwix_kiwixlib_Manager_allocate(
   JNIEnv* env, jobject thisObj, jobject libraryObj)
 {
-  auto lib = Handle<kiwix::Library>::getHandle(env, libraryObj);
+  auto lib = getPtr<kiwix::Library>(env, libraryObj);
   allocate<kiwix::Manager>(env, thisObj, lib);
 }
 
