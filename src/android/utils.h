@@ -29,12 +29,12 @@
 
 extern pthread_mutex_t globalLock;
 
-template<typename T>
-void allocate(JNIEnv* env, jobject thisObj)
+template<typename T, typename ...Args>
+void allocate(JNIEnv* env, jobject thisObj, Args && ...args)
 {
   jclass thisClass = env->GetObjectClass(thisObj);
   jfieldID fidNumber = env->GetFieldID(thisClass, "nativeHandle", "J");
-  T* ptr = new T();
+  T* ptr = new T(std::forward<Args>(args)...);
   env->SetLongField(thisObj, fidNumber, reinterpret_cast<jlong>(ptr));
 }
 
@@ -114,6 +114,7 @@ struct LockedHandle : public Lock {
   T* operator->() { return h->h; }
   T* operator*() { return h->h; }
   operator bool() const { return (h->h != nullptr); }
+  operator T*() const { return h->h; }
 };
 
 template<typename T>
