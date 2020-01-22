@@ -34,7 +34,7 @@ class Aria2
     virtual ~Aria2();
     void close();
 
-    std::string addUri(const std::vector<std::string>& uri);
+    std::string addUri(const std::vector<std::string>& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
     std::string tellStatus(const std::string& gid, const std::vector<std::string>& statusKey);
     std::vector<std::string> tellActive();
     std::vector<std::string> tellWaiting();
