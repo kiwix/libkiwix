@@ -284,8 +284,8 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
   /* Default values */
   /* Retrieve the content */
   std::string cUrl = jni2c(url, env);
-  unsigned int cOffset = jni2c(offset);
-  unsigned int cLen = jni2c(len);
+  unsigned int cOffset = jni2c(offset, env);
+  unsigned int cLen = jni2c(len, env);
   try {
     auto entry = READER->getEntryFromEncodedPath(cUrl);
     entry = entry.getFinalEntry();
@@ -336,7 +336,7 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_searchSuggestions(JNIEnv* env,
 {
   jboolean retVal = JNI_FALSE;
   std::string cPrefix = jni2c(prefix, env);
-  unsigned int cCount = jni2c(count);
+  unsigned int cCount = jni2c(count, env);
 
   try {
     if (READER->searchSuggestionsSmart(cPrefix, cCount)) {

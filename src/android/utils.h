@@ -175,9 +175,27 @@ inline jobjectArray c2jni(const std::vector<std::string>& val, JNIEnv* env)
   return array;
 }
 
+template<typename T, typename U=T>
+struct CType { };
+
+template<> struct CType<jboolean>{ typedef bool type_t; };
+template<> struct CType<jint>{ typedef int type_t; };
+template<> struct CType<jlong>{ typedef long type_t; };
+template<> struct CType<jstring>{ typedef std::string type_t; };
+
+template<typename U>
+struct CType<jobjectArray, U>{ typedef std::vector<typename CType<U>::type_t> type_t; };
 
 /* jni2c type conversion functions */
-inline bool jni2c(const jboolean& val) { return val == JNI_TRUE; }
+template<typename T, typename U=T>
+inline typename CType<T>::type_t jni2c(const T& val, JNIEnv* env) {
+  return static_cast<typename CType<T>::type_t>(val);
+}
+
+template<>
+inline bool jni2c(const jboolean& val, JNIEnv* env) { return val == JNI_TRUE; }
+
+template<>
 inline std::string jni2c(const jstring& val, JNIEnv* env)
 {
   const char* chars = env->GetStringUTFChars(val, 0);
@@ -186,7 +204,21 @@ inline std::string jni2c(const jstring& val, JNIEnv* env)
   return ret;
 }
 
-inline int jni2c(const jint val) { return (int)val; }
+template<typename U>
+inline typename CType<jobjectArray, U>::type_t jni2c(const jobjectArray& val, JNIEnv* env)
+{
+  jsize length = env->GetArrayLength(val);
+  typename CType<jobjectArray, U>::type_t v(length);
+
+  int i;
+  for (i = 0; i < length; i++) {
+    U obj = (U) env->GetObjectArrayElement(val, i);
+    auto cobj = jni2c<U>(obj, env);
+    v.push_back(cobj);
+  }
+  return v;
+}
+
 /* Method to deal with variable passed by reference */
 inline std::string getStringObjValue(const jobject obj, JNIEnv* env)
 {

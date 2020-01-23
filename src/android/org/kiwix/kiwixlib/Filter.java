@@ -19,27 +19,22 @@
 
 package org.kiwix.kiwixlib;
 
-import org.kiwix.kiwixlib.Book;
-import org.kiwix.kiwixlib.JNIKiwixException;
-
-public class Library
+public class Filter
 {
-  public native boolean addBook(String path) throws JNIKiwixException;
 
-  public native Book getBookById(String id);
-  public native int  getBookCount(boolean localBooks, boolean remoteBooks);
+  public native Filter local(boolean accept);
+  public native Filter remote(boolean accept);
+  public native Filter valid(boolean accept);
+  public native Filter acceptTags(String[] tags);
+  public native Filter rejectTags(String[] tags);
+  public native Filter lang(String lang);
+  public native Filter publisher(String publisher);
+  public native Filter creator(String creator);
+  public native Filter maxSize(long size);
+  public native Filter query(String query);
 
-  public native String[] getBooksIds();
-  public native String[] filter(Filter filter);
 
-  public native String[] getBooksLanguages();
-  public native String[] getBooksCreators();
-  public native String[] getBooksPublishers();
-
-  public Library()
-  {
-    allocate();
-  }
+  public Filter() { allocate(); }
 
   @Override
   protected void finalize() { dispose(); }

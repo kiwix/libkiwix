@@ -79,6 +79,11 @@ METHOD0(jobjectArray, Library, getBooksIds) {
   return c2jni(LIBRARY->getBooksIds(), env);
 }
 
+METHOD(jobjectArray, Library, filter, jobject filterObj) {
+  auto filter = getPtr<kiwix::Filter>(env, filterObj);
+  return c2jni(LIBRARY->filter(*filter), env);
+}
+
 METHOD0(jobjectArray, Library, getBooksLanguages) {
   return c2jni(LIBRARY->getBooksLanguages(), env);
 }
