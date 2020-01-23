@@ -60,3 +60,34 @@ Java_org_kiwix_kiwixlib_Library_addBook(
   }
   return false;
 }
+
+METHOD(jobject, Library, getBookById, jstring id) {
+  auto cId = jni2c(id, env);
+  auto cBook = new kiwix::Book(LIBRARY->getBookById(cId));
+  jclass cls = env->FindClass("org/kiwix/kiwixlib/Book");
+  jmethodID constructorId = env->GetMethodID(cls, "<init>", "()V");
+  jobject book = env->NewObject(cls, constructorId);
+  setPtr(env, book, cBook);
+  return book;
+}
+
+METHOD(jint, Library, getBookCount, jboolean localBooks, jboolean remoteBooks) {
+  return LIBRARY->getBookCount(localBooks, remoteBooks);
+}
+
+METHOD0(jobjectArray, Library, getBooksIds) {
+  return c2jni(LIBRARY->getBooksIds(), env);
+}
+
+METHOD0(jobjectArray, Library, getBooksLanguages) {
+  return c2jni(LIBRARY->getBooksLanguages(), env);
+}
+
+METHOD0(jobjectArray, Library, getBooksCreators) {
+  return c2jni(LIBRARY->getBooksCreators(), env);
+}
+
+METHOD0(jobjectArray, Library, getBooksPublisher) {
+  return c2jni(LIBRARY->getBooksPublishers(), env);
+}
+

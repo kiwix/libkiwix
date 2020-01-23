@@ -39,7 +39,7 @@ Java_org_kiwix_kiwixlib_Book_dispose(JNIEnv* env, jobject thisObj)
 
 #define BOOK (getPtr<kiwix::Book>(env, thisObj))
 
-#define METHOD(retType, name) JNIEXPORT retType JNICALL \
+#define GETTER(retType, name) JNIEXPORT retType JNICALL \
 Java_org_kiwix_kiwixlib_Book_##name (JNIEnv* env, jobject thisObj) \
 { \
   auto cRet = BOOK->name(); \
@@ -47,21 +47,23 @@ Java_org_kiwix_kiwixlib_Book_##name (JNIEnv* env, jobject thisObj) \
   return ret; \
 }
 
-METHOD(jstring, getId)
-METHOD(jstring, getPath)
-METHOD(jboolean, isPathValid)
-METHOD(jstring, getTitle)
-METHOD(jstring, getDescription)
-METHOD(jstring, getLanguage)
-METHOD(jstring, getCreator)
-METHOD(jstring, getPublisher)
-METHOD(jstring, getDate)
-METHOD(jstring, getUrl)
-METHOD(jstring, getName)
-METHOD(jstring, getTags)
-METHOD(jlong, getArticleCount)
-METHOD(jlong, getMediaCount)
-METHOD(jlong, getSize)
-METHOD(jstring, getFavicon)
-METHOD(jstring, getFaviconUrl)
-METHOD(jstring, getFaviconMimeType)
+GETTER(jstring, getId)
+GETTER(jstring, getPath)
+GETTER(jboolean, isPathValid)
+GETTER(jstring, getTitle)
+GETTER(jstring, getDescription)
+GETTER(jstring, getLanguage)
+GETTER(jstring, getCreator)
+GETTER(jstring, getPublisher)
+GETTER(jstring, getDate)
+GETTER(jstring, getUrl)
+GETTER(jstring, getName)
+GETTER(jstring, getTags)
+GETTER(jlong, getArticleCount)
+GETTER(jlong, getMediaCount)
+GETTER(jlong, getSize)
+GETTER(jstring, getFavicon)
+GETTER(jstring, getFaviconUrl)
+GETTER(jstring, getFaviconMimeType)
+
+#undef GETTER

@@ -26,16 +26,23 @@
 
 #include <pthread.h>
 #include <string>
+#include <vector>
 
 extern pthread_mutex_t globalLock;
+
+template<typename T>
+void setPtr(JNIEnv* env, jobject thisObj, T* ptr)
+{
+  jclass thisClass = env->GetObjectClass(thisObj);
+  jfieldID fieldId = env->GetFieldID(thisClass, "nativeHandle", "J");
+  env->SetLongField(thisObj, fieldId, reinterpret_cast<jlong>(ptr));
+}
 
 template<typename T, typename ...Args>
 void allocate(JNIEnv* env, jobject thisObj, Args && ...args)
 {
-  jclass thisClass = env->GetObjectClass(thisObj);
-  jfieldID fidNumber = env->GetFieldID(thisClass, "nativeHandle", "J");
   T* ptr = new T(std::forward<Args>(args)...);
-  env->SetLongField(thisObj, fidNumber, reinterpret_cast<jlong>(ptr));
+  setPtr(env, thisObj, ptr);
 }
 
 template<typename T>
@@ -52,11 +59,25 @@ void dispose(JNIEnv* env, jobject thisObj)
   delete getPtr<T>(env, thisObj);
 }
 
+#define METHOD0(retType, class, name) \
+JNIEXPORT retType JNICALL Java_org_kiwix_kiwixlib_##class##_##name( \
+ JNIEnv* env, jobject thisObj)
+
+#define METHOD(retType, class, name, ...) \
+JNIEXPORT retType JNICALL Java_org_kiwix_kiwixlib_##class##_##name( \
+  JNIEnv* env, jobject thisObj, __VA_ARGS__)
+
 inline jfieldID getHandleField(JNIEnv* env, jobject obj)
 {
   jclass c = env->GetObjectClass(obj);
   // J is the type signature for long:
   return env->GetFieldID(c, "nativeHandle", "J");
+}
+
+inline jobjectArray createArray(JNIEnv* env, size_t length, const std::string& type_sig)
+{
+  jclass c = env->FindClass(type_sig.c_str());
+  return env->NewObjectArray(length, c, NULL);
 }
 
 class Lock
@@ -126,6 +147,7 @@ template<> struct JType<long>{ typedef jlong type_t; };
 template<> struct JType<uint64_t> { typedef jlong type_t; };
 template<> struct JType<uint32_t> { typedef jlong type_t; };
 template<> struct JType<std::string>{ typedef jstring type_t; };
+template<> struct JType<std::vector<std::string>>{ typedef jobjectArray type_t; };
 
 template<typename T>
 inline typename JType<T>::type_t c2jni(const T& val, JNIEnv* env) {
@@ -139,6 +161,18 @@ template<>
 inline jstring c2jni(const std::string& val, JNIEnv* env)
 {
   return env->NewStringUTF(val.c_str());
+}
+
+template<>
+inline jobjectArray c2jni(const std::vector<std::string>& val, JNIEnv* env)
+{
+  auto array = createArray(env, val.size(), "java/lang/String");
+  size_t index = 0;
+  for (auto& elem: val) {
+    auto jElem = c2jni(elem, env);
+    env->SetObjectArrayElement(array, index++, jElem);
+  }
+  return array;
 }
 
 

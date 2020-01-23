@@ -19,11 +19,22 @@
 
 package org.kiwix.kiwixlib;
 
+import org.kiwix.kiwixlib.Book;
 import org.kiwix.kiwixlib.JNIKiwixException;
 
 public class Library
 {
   public native boolean addBook(String path) throws JNIKiwixException;
+
+  public native Book getBookById(String id);
+  public native int  getBookCount(boolean localBooks, boolean remoteBooks);
+
+  public native String[] getBooksIds();
+//  public native String[] filter(Filter filter);
+
+  public native String[] getBooksLanguages();
+  public native String[] getBooksCreators();
+  public native String[] getBooksPublishers();
 
   public Library()
   {
