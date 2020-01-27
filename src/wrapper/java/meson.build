@@ -44,8 +44,12 @@ kiwix_sources += jni_sources + [kiwix_jni]
 
 if 'java' in wrapper
   kiwix_jar = jar('kiwixlib', java_sources)
+  #junit_jar = files('org/kiwix/testing/junit-4.13.jar')
+  #test_jar = jar('testing', 'org/kiwix/testing/test.java',
+  #               link_with: [kiwix_jar, junit_jar])
+  #test('javatest', test_jar)
 endif
 
-install_subdir('org', install_dir: 'kiwix-lib/java')
+install_subdir('org', install_dir: 'kiwix-lib/java', exclude_directories: ['kiwix/testing'])
 install_subdir('res', install_dir: 'kiwix-lib')
 install_data('AndroidManifest.xml', install_dir: 'kiwix-lib')
