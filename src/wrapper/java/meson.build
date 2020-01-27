@@ -1,18 +1,22 @@
 
+java_sources = files([
+  'org/kiwix/kiwixlib/JNIICU.java',
+  'org/kiwix/kiwixlib/Book.java',
+  'org/kiwix/kiwixlib/JNIKiwixReader.java',
+  'org/kiwix/kiwixlib/Library.java',
+  'org/kiwix/kiwixlib/Manager.java',
+  'org/kiwix/kiwixlib/Filter.java',
+  'org/kiwix/kiwixlib/JNIKiwixSearcher.java',
+  'org/kiwix/kiwixlib/JNIKiwixServer.java',
+  'org/kiwix/kiwixlib/JNIKiwixInt.java',
+  'org/kiwix/kiwixlib/JNIKiwixString.java',
+  'org/kiwix/kiwixlib/JNIKiwixBool.java',
+  'org/kiwix/kiwixlib/JNIKiwixException.java',
+  'org/kiwix/kiwixlib/Pair.java'
+])
+
 kiwix_jni = custom_target('jni',
-  input: ['org/kiwix/kiwixlib/JNIICU.java',
-          'org/kiwix/kiwixlib/Book.java',
-          'org/kiwix/kiwixlib/JNIKiwixReader.java',
-          'org/kiwix/kiwixlib/Library.java',
-          'org/kiwix/kiwixlib/Manager.java',
-          'org/kiwix/kiwixlib/Filter.java',
-          'org/kiwix/kiwixlib/JNIKiwixSearcher.java',
-          'org/kiwix/kiwixlib/JNIKiwixServer.java',
-          'org/kiwix/kiwixlib/JNIKiwixInt.java',
-          'org/kiwix/kiwixlib/JNIKiwixString.java',
-          'org/kiwix/kiwixlib/JNIKiwixBool.java',
-          'org/kiwix/kiwixlib/JNIKiwixException.java',
-          'org/kiwix/kiwixlib/Pair.java'],
+  input: java_sources,
   output: ['org_kiwix_kiwixlib_JNIKiwix.h',
            'org_kiwix_kiwixlib_Book.h',
            'org_kiwix_kiwixlib_JNIKiwixReader.h',
@@ -25,7 +29,7 @@ kiwix_jni = custom_target('jni',
   command:['javac', '-d', '@OUTDIR@', '-h', '@OUTDIR@', '@INPUT@']
 )
 
-java_sources = files([
+jni_sources = files([
      'kiwixicu.cpp',
      'book.cpp',
      'kiwixreader.cpp',
@@ -36,7 +40,11 @@ java_sources = files([
      'kiwixserver.cpp',
 ])
 
-kiwix_sources += java_sources + [kiwix_jni]
+kiwix_sources += jni_sources + [kiwix_jni]
+
+if 'java' in wrapper
+  kiwix_jar = jar('kiwixlib', java_sources)
+endif
 
 install_subdir('org', install_dir: 'kiwix-lib/java')
 install_subdir('res', install_dir: 'kiwix-lib')
