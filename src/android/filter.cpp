@@ -19,7 +19,6 @@
 
 
 #include <jni.h>
-#include <android/log.h>
 #include "org_kiwix_kiwixlib_Filter.h"
 
 #include "library.h"

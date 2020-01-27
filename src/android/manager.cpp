@@ -20,7 +20,6 @@
 
 #include <jni.h>
 #include <zim/file.h>
-#include <android/log.h>
 #include "org_kiwix_kiwixlib_Manager.h"
 
 #include "manager.h"
@@ -53,8 +52,8 @@ Java_org_kiwix_kiwixlib_Manager_readFile(
   try {
     return MANAGER->readFile(cPath);
   } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get readFile");
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
+    LOG("Unable to get readFile");
+    LOG(e.what());
   }
   return false;
 }
@@ -69,8 +68,8 @@ Java_org_kiwix_kiwixlib_Manager_readXml(
   try {
     return MANAGER->readXml(cContent, false, cPath);
   } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM id");
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
+    LOG("Unable to get ZIM id");
+    LOG(e.what());
   }
 
   return false;
@@ -86,8 +85,8 @@ Java_org_kiwix_kiwixlib_Manager_readOpds(
   try {
     return MANAGER->readOpds(cContent, cUrl);
   } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM id");
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
+    LOG("Unable to get ZIM id");
+    LOG(e.what());
   }
 
   return false;
@@ -102,8 +101,8 @@ Java_org_kiwix_kiwixlib_Manager_readBookmarkFile(
   try {
     return MANAGER->readBookmarkFile(cPath);
   } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM id");
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
+    LOG("Unable to get ZIM id");
+    LOG(e.what());
   }
 
   return false;
@@ -125,8 +124,8 @@ Java_org_kiwix_kiwixlib_Manager_addBookFromPath(
       id = c2jni(cId, env);
     }
   } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to get ZIM file size");
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
+    LOG("Unable to get ZIM file size");
+    LOG(e.what());
   }
 
   return id;

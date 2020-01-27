@@ -27,6 +27,14 @@
 #include <pthread.h>
 #include <string>
 #include <vector>
+#include <iostream>
+
+#if __ANDROID__
+ #include <android/log.h>
+ #define LOG(...) __android_log_print(ANDROID_LOG_ERROR, "kiwix", __VA_ARGS__)
+#else
+ #define LOG(...)
+#endif
 
 extern pthread_mutex_t globalLock;
 

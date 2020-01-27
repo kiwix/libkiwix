@@ -19,7 +19,6 @@
 
 
 #include <jni.h>
-#include <android/log.h>
 #include "org_kiwix_kiwixlib_Library.h"
 
 #include "library.h"
@@ -55,9 +54,8 @@ Java_org_kiwix_kiwixlib_Library_addBook(
     book.update(reader);
     return LIBRARY->addBook(book);
   } catch (std::exception& e) {
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", "Unable to add the book");
-    __android_log_print(ANDROID_LOG_ERROR, "kiwix", e.what());
-  }
+    LOG("Unable to add the book");
+    LOG(e.what()); }
   return false;
 }
 
