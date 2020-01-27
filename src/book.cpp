@@ -45,28 +45,14 @@ bool Book::update(const kiwix::Book& other)
     return false;
 
   m_readOnly = other.m_readOnly;
+  m_path = other.m_path;
+  m_pathValid = other.m_pathValid;
+  m_url = other.m_url;
+  m_tags = other.m_tags;
+  m_name = other.m_name;
+  m_favicon = other.m_favicon;
+  m_faviconMimeType = other.m_faviconMimeType;
 
-  if (m_path.empty()) {
-    m_path = other.m_path;
-    m_pathValid = other.m_pathValid;
-  }
-
-  if (m_url.empty()) {
-    m_url = other.m_url;
-  }
-
-  if (m_tags.empty()) {
-    m_tags = other.m_tags;
-  }
-
-  if (m_name.empty()) {
-    m_name = other.m_name;
-  }
-
-  if (m_faviconMimeType.empty()) {
-    m_favicon = other.m_favicon;
-    m_faviconMimeType = other.m_faviconMimeType;
-  }
   return true;
 }
 
