@@ -25,16 +25,18 @@ kiwix_jni = custom_target('jni',
   command:['javac', '-d', '@OUTDIR@', '-h', '@OUTDIR@', '@INPUT@']
 )
 
-kiwix_sources += [
-    'android/kiwixicu.cpp',
-    'android/book.cpp',
-    'android/kiwixreader.cpp',
-    'android/library.cpp',
-    'android/manager.cpp',
-    'android/filter.cpp',
-    'android/kiwixsearcher.cpp',
-    'android/kiwixserver.cpp',
-    kiwix_jni]
+java_sources = files([
+     'kiwixicu.cpp',
+     'book.cpp',
+     'kiwixreader.cpp',
+     'library.cpp',
+     'manager.cpp',
+     'filter.cpp',
+     'kiwixsearcher.cpp',
+     'kiwixserver.cpp',
+])
+
+kiwix_sources += java_sources + [kiwix_jni]
 
 install_subdir('org', install_dir: 'kiwix-lib/java')
 install_subdir('res', install_dir: 'kiwix-lib')
