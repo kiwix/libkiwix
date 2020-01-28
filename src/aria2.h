@@ -26,7 +26,6 @@ class Aria2
     std::string m_downloadDir;
     CURL* mp_curl;
     pthread_mutex_t m_lock;
-    std::string m_launchCmd;
 
     std::string doRequest(const MethodCall& methodCall);
 
@@ -44,7 +43,6 @@ class Aria2
     void pause(const std::string& gid);
     void unpause(const std::string& gid);
     void remove(const std::string& gid);
-    const std::string &getLaunchCmd() { return m_launchCmd; };
 };
 
 }; //end namespace kiwix
