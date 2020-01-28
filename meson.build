@@ -5,11 +5,17 @@ project('kiwix-lib', 'cpp',
 
 compiler = meson.get_compiler('cpp')
 
-static_deps = get_option('android') or get_option('default_library') == 'static'
-if get_option('android')
+wrapper = get_option('wrapper')
+
+static_deps = 'android' in wrapper or 'java' in wrapper or get_option('default_library') == 'static'
+if 'android' in wrapper
   extra_libs = ['-llog']
 else
   extra_libs = []
+endif
+
+if 'java' in wrapper
+  add_languages('java')
 endif
 
 thread_dep = dependency('threads')

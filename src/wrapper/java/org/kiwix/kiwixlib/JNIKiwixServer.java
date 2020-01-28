@@ -20,7 +20,7 @@
 package org.kiwix.kiwixlib;
 
 import org.kiwix.kiwixlib.JNIKiwixException;
-import org.kiwix.kiwixlib.JNIKiwixLibrary;
+import org.kiwix.kiwixlib.Library;
 
 public class JNIKiwixServer
 {
@@ -38,11 +38,11 @@ public class JNIKiwixServer
 
   public native void stop();
 
-  public JNIKiwixServer(JNIKiwixLibrary library)
+  public JNIKiwixServer(Library library)
   {
     nativeHandle = getNativeServer(library);
   }
 
-  private native long getNativeServer(JNIKiwixLibrary library);
+  private native long getNativeServer(Library library);
   private long nativeHandle;
 }

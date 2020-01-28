@@ -18,21 +18,31 @@
  * MA 02110-1301, USA.
  */
 
-package org.kiwix.kiwixlib;
+#include <jni.h>
+#include "org_kiwix_kiwixlib_JNIICU.h"
 
-import org.kiwix.kiwixlib.JNIKiwixException;
+#include <iostream>
+#include <string>
 
-public class JNIKiwixLibrary
+#include "unicode/putil.h"
+
+#include "utils.h"
+
+#if __ANDROID__
+pthread_mutex_t globalLock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#else
+pthread_mutex_t globalLock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#endif
+
+JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIICU_setDataDirectory(
+    JNIEnv* env, jclass kclass, jstring dirStr)
 {
-  public native boolean addBook(String path) throws JNIKiwixException;
+  std::string cPath = jni2c(dirStr, env);
 
-  public JNIKiwixLibrary()
-  {
-    nativeHandle = getNativeLibrary();
+  Lock l;
+  try {
+    u_setDataDirectory(cPath.c_str());
+  } catch (...) {
+    std::cerr << "Unable to set data directory " << cPath << std::endl;
   }
-
-  public native void dispose();
-
-  private native long getNativeLibrary();
-  private long nativeHandle;
 }

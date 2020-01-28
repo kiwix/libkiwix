@@ -59,7 +59,7 @@ JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIKiwixSearcher_search(
     JNIEnv* env, jobject obj, jstring query, jint count)
 {
   std::string cquery = jni2c(query, env);
-  unsigned int ccount = jni2c(count);
+  unsigned int ccount = jni2c(count, env);
 
   SEARCHER->search(cquery, 0, ccount);
 }

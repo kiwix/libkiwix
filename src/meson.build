@@ -32,11 +32,14 @@ else
   kiwix_sources += 'subprocess_unix.cpp'
 endif
 
-if get_option('android')
-  subdir('android')
+if 'android' in wrapper
   install_dir = 'kiwix-lib/jniLibs/' + meson.get_cross_property('android_abi')
 else
   install_dir = get_option('libdir')
+endif
+
+if 'android' in wrapper or 'java' in wrapper
+  subdir('wrapper/java')
 endif
 
 config_h = configure_file(output : 'kiwix_config.h',

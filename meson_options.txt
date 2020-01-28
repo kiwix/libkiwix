@@ -1,2 +1,2 @@
-option('android', type : 'boolean', value : false,
-  description : 'Do we make a kiwix-lib for android')
+option('wrapper', type:'array', choices:['java', 'android'], value:[],
+  description: 'The wrapper to generate.')
