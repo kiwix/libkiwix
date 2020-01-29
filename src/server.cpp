@@ -768,7 +768,7 @@ Response InternalServer::handle_catalog(const RequestContext& request)
       startIndex = extractFromString<unsigned long>(request.get_argument("start"));
     } catch (...) {}
     try {
-      filter.acceptTags(kiwix::split(request.get_argument("notag"), ";"));
+      filter.acceptTags(kiwix::split(request.get_argument("tag"), ";"));
     } catch (...) {}
     try {
       filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
