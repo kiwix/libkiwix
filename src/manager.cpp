@@ -48,8 +48,9 @@ Manager::~Manager()
   }
 }
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
-                          const bool readOnly,
-                          const std::string& libraryPath)
+                          bool readOnly,
+                          const std::string& libraryPath,
+                          bool trustLibrary)
 {
   pugi::xml_node libraryNode = doc.child("library");
 
@@ -63,12 +64,8 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     book.updateFromXml(bookNode,
                        removeLastPathElement(libraryPath));
 
-    /* Update the book properties with the new importer */
-    if (libraryVersion.empty()
-        || atoi(libraryVersion.c_str()) <= atoi(KIWIX_LIBRARY_VERSION)) {
-      if (!book.getPath().empty()) {
-        this->readBookFromPath(book.getPath(), &book);
-      }
+    if (!trustLibrary && !book.getPath().empty()) {
+      this->readBookFromPath(book.getPath(), &book);
     }
     manipulator->addBookToLibrary(book);
   }
@@ -77,15 +74,16 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
 }
 
 bool Manager::readXml(const std::string& xml,
-                      const bool readOnly,
-                      const std::string& libraryPath)
+                      bool readOnly,
+                      const std::string& libraryPath,
+                      bool trustLibrary)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
       = doc.load_buffer_inplace((void*)xml.data(), xml.size());
 
   if (result) {
-    this->parseXmlDom(doc, readOnly, libraryPath);
+    this->parseXmlDom(doc, readOnly, libraryPath, trustLibrary);
   }
 
   return true;
@@ -136,7 +134,10 @@ bool Manager::readOpds(const std::string& content, const std::string& urlHost)
   return false;
 }
 
-bool Manager::readFile(const std::string& path, const bool readOnly)
+bool Manager::readFile(
+  const std::string& path,
+  bool readOnly,
+  bool trustLibrary)
 {
   bool retVal = true;
   pugi::xml_document doc;
@@ -148,7 +149,7 @@ bool Manager::readFile(const std::string& path, const bool readOnly)
 #endif
 
   if (result) {
-    this->parseXmlDom(doc, readOnly, path);
+    this->parseXmlDom(doc, readOnly, path, trustLibrary);
   } else {
     retVal = false;
   }
