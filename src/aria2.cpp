@@ -160,12 +160,15 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
   throw std::runtime_error("Cannot perform request");
 }
 
-std::string Aria2::addUri(const std::vector<std::string>& uris)
+std::string Aria2::addUri(const std::vector<std::string>& uris, const std::vector<std::pair<std::string, std::string>>& options)
 {
   MethodCall methodCall("aria2.addUri", m_secret);
   auto uriParams = methodCall.newParamValue().getArray();
   for (auto& uri : uris) {
     uriParams.addValue().set(uri);
+  }
+  for (auto& option : options) {
+    methodCall.newParamValue().getStruct().addMember(option.first).getValue().set(option.second);
   }
   auto ret = doRequest(methodCall);
   MethodResponse response(ret);

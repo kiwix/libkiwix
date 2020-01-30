@@ -163,7 +163,7 @@ std::vector<std::string> Downloader::getDownloadIds() {
   return ret;
 }
 
-Download* Downloader::startDownload(const std::string& uri)
+Download* Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
 {
   for (auto& p: m_knownDownloads) {
     auto& d = p.second;
@@ -172,7 +172,7 @@ Download* Downloader::startDownload(const std::string& uri)
       return d.get();
   }
   std::vector<std::string> uris = {uri};
-  auto gid = mp_aria->addUri(uris);
+  auto gid = mp_aria->addUri(uris, options);
   m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
   return m_knownDownloads[gid].get();
 }

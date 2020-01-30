@@ -92,7 +92,7 @@ class Downloader
 
   void close();
 
-  Download* startDownload(const std::string& uri);
+  Download* startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
   Download* getDownload(const std::string& did);
 
   size_t getNbDownload() { return m_knownDownloads.size(); }
