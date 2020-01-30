@@ -44,14 +44,30 @@ bool Book::update(const kiwix::Book& other)
   if (m_readOnly)
     return false;
 
+  if (m_id != other.m_id)
+    return false;
+
   m_readOnly = other.m_readOnly;
   m_path = other.m_path;
   m_pathValid = other.m_pathValid;
+  m_title = other.m_title;
+  m_description = other.m_description;
+  m_language = other.m_language;
+  m_creator = other.m_creator;
+  m_publisher = other.m_publisher;
+  m_date = other.m_date;
   m_url = other.m_url;
   m_name = other.m_name;
   m_tags = other.m_tags;
+  m_origId = other.m_origId;
+  m_articleCount = other.m_articleCount;
+  m_mediaCount = other.m_mediaCount;
+  m_size = other.m_size;
   m_favicon = other.m_favicon;
   m_faviconMimeType = other.m_faviconMimeType;
+  m_faviconUrl = other.m_faviconUrl;
+
+  m_downloadId = other.m_downloadId;
 
   return true;
 }
@@ -102,6 +118,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_size = strtoull(ATTR("size"), 0, 0) << 10;
   m_favicon = base64_decode(ATTR("favicon"));
   m_faviconMimeType = ATTR("faviconMimeType");
+  m_faviconUrl = ATTR("faviconUrl");
   try {
     m_downloadId = ATTR("downloadId");
   } catch(...) {}
