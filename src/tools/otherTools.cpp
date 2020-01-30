@@ -25,7 +25,10 @@
 #include <unistd.h>
 #endif
 
+#include "tools/stringTools.h"
+
 #include <map>
+#include <sstream>
 #include <pugixml.hpp>
 
 
@@ -204,3 +207,76 @@ std::string kiwix::nodeToString(const pugi::xml_node& node)
 std::string kiwix::converta2toa3(const std::string& a2code){
   return codeisomapping.at(a2code);
 }
+
+std::vector<std::string> kiwix::convertTags(const std::string& tags_str)
+{
+  auto tags = kiwix::split(tags_str, ";");
+  std::vector<std::string> tagsList;
+  bool picSeen(false), vidSeen(false), detSeen(false), indexSeen(false);
+  for (auto tag: tags) {
+    picSeen |= (tag == "nopic" || startsWith(tag, "_pictures:"));
+    vidSeen |= (tag == "novid" || startsWith(tag, "_videos:"));
+    detSeen |= (tag == "nodet" || startsWith(tag, "_details:"));
+    indexSeen |= kiwix::startsWith(tag, "_ftindex");
+    if (tag == "nopic") {
+      tagsList.push_back("_pictures:no");
+    } else if (tag == "novid") {
+      tagsList.push_back("_videos:no");
+    } else if (tag == "nodet") {
+      tagsList.push_back("_details:no");
+    } else if (tag == "_ftindex") {
+      tagsList.push_back("_ftindex:yes");
+    } else {
+      tagsList.push_back(tag);
+    }
+  }
+  if (!indexSeen) {
+    tagsList.push_back("_ftindex:no");
+  }
+  if (!picSeen) {
+    tagsList.push_back("_pictures:yes");
+  }
+  if (!vidSeen) {
+    tagsList.push_back("_videos:yes");
+  }
+  if (!detSeen) {
+    tagsList.push_back("_details:yes");
+  }
+  return tagsList;
+}
+
+std::string kiwix::getTagValueFromTagList(
+  const std::vector<std::string>& tagList, const std::string& tagName)
+{
+  for (auto tag: tagList) {
+    if (tag[0] == '_') {
+      auto delimPos = tag.find(':');
+      if (delimPos == std::string::npos) {
+        // No delimiter... what to do ?
+        continue;
+      }
+      auto cTagName = tag.substr(1, delimPos-1);
+      auto cTagValue = tag.substr(delimPos+1);
+      if (cTagName == tagName) {
+        return cTagValue;
+      }
+    }
+  }
+  std::stringstream ss;
+  ss << tagName << " cannot be found";
+  throw std::out_of_range(ss.str());
+}
+
+bool kiwix::convertStrToBool(const std::string& value)
+{
+  if (value == "yes") {
+    return true;
+  } else if (value == "no") {
+    return false;
+  }
+
+  std::stringstream ss;
+  ss << "Tag value '" << value << "' cannot be converted to bool.";
+  throw std::domain_error(ss.str());
+}
+
