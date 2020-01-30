@@ -19,7 +19,15 @@ public class Book
   public native String getDate();
   public native String getUrl();
   public native String getName();
+  public native String getFlavour();
   public native String getTags();
+  /**
+   * Return the value associated to the tag tagName
+   *
+   * @param tagName the tag name to search for.
+   * @return The value of the tag. If the tag is not found, return empty string.
+   */
+  public native String getTagStr(String tagName);
 
   public native long getArticleCount();
   public native long getMediaCount();

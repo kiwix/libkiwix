@@ -21,6 +21,7 @@
 #define KIWIX_OTHERTOOLS_H
 
 #include <string>
+#include <vector>
 
 namespace pugi {
   class xml_node;
@@ -28,9 +29,18 @@ namespace pugi {
 
 namespace kiwix
 {
-void sleep(unsigned int milliseconds);
-std::string nodeToString(const pugi::xml_node& node);
-std::string converta2toa3(const std::string& a2code);
+  void sleep(unsigned int milliseconds);
+  std::string nodeToString(const pugi::xml_node& node);
+  std::string converta2toa3(const std::string& a2code);
+
+  /*
+   * Convert all format tag string to new format
+   */
+  std::vector<std::string> convertTags(const std::string& tags_str);
+  std::string getTagValueFromTagList(const std::vector<std::string>& tagList,
+                                     const std::string& tagName);
+  bool convertStrToBool(const std::string& value);
+
 }
 
 #endif

@@ -58,6 +58,7 @@ GETTER(jstring, getPublisher)
 GETTER(jstring, getDate)
 GETTER(jstring, getUrl)
 GETTER(jstring, getName)
+GETTER(jstring, getFlavour)
 GETTER(jstring, getTags)
 GETTER(jlong, getArticleCount)
 GETTER(jlong, getMediaCount)
@@ -65,5 +66,12 @@ GETTER(jlong, getSize)
 GETTER(jstring, getFavicon)
 GETTER(jstring, getFaviconUrl)
 GETTER(jstring, getFaviconMimeType)
+
+METHOD(jstring, Book, getTagStr, jstring tagName) try {
+  auto cRet = Book->getTagStr(jni2c(tagName, env));
+  return c2jni(cRet, env);
+} catch(...) {
+  return c2jni<std::string>("", env);
+}
 
 #undef GETTER
