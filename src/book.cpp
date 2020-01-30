@@ -23,6 +23,7 @@
 #include "tools/base64.h"
 #include "tools/regexTools.h"
 #include "tools/networkTools.h"
+#include "tools/otherTools.h"
 
 #include <pugixml.hpp>
 
@@ -201,6 +202,14 @@ const std::string& Book::getFavicon() const {
     }
   }
   return m_favicon;
+}
+
+std::string Book::getTagStr(const std::string& tagName) const {
+  return getTagValueFromTagList(convertTags(m_tags), tagName);
+}
+
+bool Book::getTagBool(const std::string& tagName) const {
+  return convertStrToBool(getTagStr(tagName));
 }
 
 }

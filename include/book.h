@@ -60,6 +60,8 @@ class Book
   const std::string& getUrl() const { return m_url; }
   const std::string& getName() const { return m_name; }
   const std::string& getTags() const { return m_tags; }
+  std::string getTagStr(const std::string& tagName) const;
+  bool getTagBool(const std::string& tagName) const;
   const std::string& getOrigId() const { return m_origId; }
   const uint64_t& getArticleCount() const { return m_articleCount; }
   const uint64_t& getMediaCount() const { return m_mediaCount; }
