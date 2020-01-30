@@ -70,12 +70,14 @@ void OPDSDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
 
 pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
   auto entry_node = root_node.append_child("entry");
-  ADD_TEXT_ENTRY(entry_node, "title", book.getTitle());
   ADD_TEXT_ENTRY(entry_node, "id", "urn:uuid:"+book.getId());
-  ADD_TEXT_ENTRY(entry_node, "icon", rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath());
-  ADD_TEXT_ENTRY(entry_node, "updated", gen_date_from_yyyy_mm_dd(book.getDate()));
+  ADD_TEXT_ENTRY(entry_node, "title", book.getTitle());
   ADD_TEXT_ENTRY(entry_node, "summary", book.getDescription());
+  ADD_TEXT_ENTRY(entry_node, "language", book.getLanguage());
+  ADD_TEXT_ENTRY(entry_node, "updated", gen_date_from_yyyy_mm_dd(book.getDate()));
+  ADD_TEXT_ENTRY(entry_node, "name", book.getName());
   ADD_TEXT_ENTRY(entry_node, "tags", book.getTags());
+  ADD_TEXT_ENTRY(entry_node, "icon", rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath());
 
   auto content_node = entry_node.append_child("link");
   content_node.append_attribute("type") = "text/html";
@@ -83,6 +85,9 @@ pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
 
   auto author_node = entry_node.append_child("author");
   ADD_TEXT_ENTRY(author_node, "name", book.getCreator());
+
+  auto publisher_node = entry_node.append_child("publisher");
+  ADD_TEXT_ENTRY(publisher_node, "name", book.getPublisher());
 
   if (! book.getUrl().empty()) {
     auto acquisition_link = entry_node.append_child("link");
