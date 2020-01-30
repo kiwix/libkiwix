@@ -106,6 +106,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
     path = computeAbsolutePath(baseDir, path);
   }
   m_path = path;
+  m_pathValid = fileExists(path);
   m_title = ATTR("title");
   m_description = ATTR("description");
   m_language = ATTR("language");

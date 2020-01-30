@@ -74,7 +74,7 @@ class Manager
    *                 updated content.
    * @return True if file has been properly parsed.
    */
-  bool readFile(const std::string& path, const bool readOnly = true);
+  bool readFile(const std::string& path, bool readOnly = true, bool trustLibrary = true);
 
   /**
    * Load a library content store in the string.
@@ -87,7 +87,8 @@ class Manager
    */
   bool readXml(const std::string& xml,
                const bool readOnly = true,
-               const std::string& libraryPath = "");
+               const std::string& libraryPath = "",
+               bool trustLibrary = true);
 
   /**
    * Load a library content stored in a OPDS stream.
@@ -154,8 +155,9 @@ class Manager
 
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,
-                   const bool readOnly,
-                   const std::string& libraryPath);
+                   bool readOnly,
+                   const std::string& libraryPath,
+                   bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost);
 
