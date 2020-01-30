@@ -48,8 +48,8 @@ bool Book::update(const kiwix::Book& other)
   m_path = other.m_path;
   m_pathValid = other.m_pathValid;
   m_url = other.m_url;
-  m_tags = other.m_tags;
   m_name = other.m_name;
+  m_tags = other.m_tags;
   m_favicon = other.m_favicon;
   m_faviconMimeType = other.m_faviconMimeType;
 
@@ -59,13 +59,14 @@ bool Book::update(const kiwix::Book& other)
 void Book::update(const kiwix::Reader& reader)
 {
   m_path = reader.getZimFilePath();
+  m_pathValid = true;
   m_id = reader.getId();
+  m_title = reader.getTitle();
   m_description = reader.getDescription();
   m_language = reader.getLanguage();
-  m_date = reader.getDate();
   m_creator = reader.getCreator();
   m_publisher = reader.getPublisher();
-  m_title = reader.getTitle();
+  m_date = reader.getDate();
   m_name = reader.getName();
   m_tags = reader.getTags();
   m_origId = reader.getOrigId();
@@ -87,14 +88,14 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   }
   m_path = path;
   m_title = ATTR("title");
-  m_name = ATTR("name");
-  m_tags = ATTR("tags");
   m_description = ATTR("description");
   m_language = ATTR("language");
-  m_date = ATTR("date");
   m_creator = ATTR("creator");
   m_publisher = ATTR("publisher");
+  m_date = ATTR("date");
   m_url = ATTR("url");
+  m_name = ATTR("name");
+  m_tags = ATTR("tags");
   m_origId = ATTR("origId");
   m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
   m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
@@ -124,12 +125,12 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
     m_id.erase(0, 9);
   }
   m_title = VALUE("title");
-  m_name = VALUE("name");
   m_description = VALUE("summary");
   m_language = VALUE("language");
-  m_date = fromOpdsDate(VALUE("updated"));
   m_creator = node.child("author").child("name").child_value();
   m_publisher = node.child("publisher").child("name").child_value();
+  m_date = fromOpdsDate(VALUE("updated"));
+  m_name = VALUE("name");
   m_tags = VALUE("tags");
   for(auto linkNode = node.child("link"); linkNode;
            linkNode = linkNode.next_sibling("link")) {
