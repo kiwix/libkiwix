@@ -62,6 +62,7 @@ class Book
   const std::string& getTags() const { return m_tags; }
   std::string getTagStr(const std::string& tagName) const;
   bool getTagBool(const std::string& tagName) const;
+  const std::string& getFlavour() const { return m_flavour; }
   const std::string& getOrigId() const { return m_origId; }
   const uint64_t& getArticleCount() const { return m_articleCount; }
   const uint64_t& getMediaCount() const { return m_mediaCount; }
@@ -83,6 +84,7 @@ class Book
   void setDate(const std::string& date) { m_date = date; }
   void setUrl(const std::string& url) { m_url = url; }
   void setName(const std::string& name) { m_name = name; }
+  void setFlavour(const std::string& flavour) { m_flavour = flavour; }
   void setTags(const std::string& tags) { m_tags = tags; }
   void setOrigId(const std::string& origId) { m_origId = origId; }
   void setArticleCount(uint64_t articleCount) { m_articleCount = articleCount; }
@@ -105,6 +107,7 @@ class Book
   std::string m_date;
   std::string m_url;
   std::string m_name;
+  std::string m_flavour;
   std::string m_tags;
   std::string m_origId;
   uint64_t m_articleCount;

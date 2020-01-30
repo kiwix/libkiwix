@@ -59,6 +59,7 @@ bool Book::update(const kiwix::Book& other)
   m_date = other.m_date;
   m_url = other.m_url;
   m_name = other.m_name;
+  m_flavour = other.m_flavour;
   m_tags = other.m_tags;
   m_origId = other.m_origId;
   m_articleCount = other.m_articleCount;
@@ -85,6 +86,7 @@ void Book::update(const kiwix::Reader& reader)
   m_publisher = reader.getPublisher();
   m_date = reader.getDate();
   m_name = reader.getName();
+  m_flavour = reader.getFlavour();
   m_tags = reader.getTags();
   m_origId = reader.getOrigId();
   m_articleCount = reader.getArticleCount();
@@ -112,6 +114,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_date = ATTR("date");
   m_url = ATTR("url");
   m_name = ATTR("name");
+  m_flavour = ATTR("flavour");
   m_tags = ATTR("tags");
   m_origId = ATTR("origId");
   m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
@@ -142,6 +145,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   if (!m_id.compare(0, 9, "urn:uuid:")) {
     m_id.erase(0, 9);
   }
+  // No path on opds.
   m_title = VALUE("title");
   m_description = VALUE("summary");
   m_language = VALUE("language");
@@ -149,6 +153,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_publisher = node.child("publisher").child("name").child_value();
   m_date = fromOpdsDate(VALUE("updated"));
   m_name = VALUE("name");
+  m_flavour = VALUE("flavour");
   m_tags = VALUE("tags");
   for(auto linkNode = node.child("link"); linkNode;
            linkNode = linkNode.next_sibling("link")) {
