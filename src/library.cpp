@@ -466,23 +466,26 @@ Filter& Filter::query(std::string query)
 }
 
 #define ACTIVE(X) (activeFilters & (X))
+#define FILTER(TAG, TEST) if (ACTIVE(TAG) && !(TEST)) { return false; }
 bool Filter::accept(const Book& book) const
 {
   auto local = !book.getPath().empty();
-  if (ACTIVE(_LOCAL) && !local)
-    return false;
-  if (ACTIVE(_NOLOCAL) && local)
-    return false;
+  FILTER(_LOCAL, local)
+  FILTER(_NOLOCAL, !local)
+
   auto valid = book.isPathValid();
-  if (ACTIVE(_VALID) && !valid)
-    return false;
-  if (ACTIVE(_NOVALID) && valid)
-    return false;
+  FILTER(_VALID, valid)
+  FILTER(_NOVALID, !valid)
+
   auto remote = !book.getUrl().empty();
-  if (ACTIVE(_REMOTE) && !remote)
-    return false;
-  if (ACTIVE(_NOREMOTE) && remote)
-    return false;
+  FILTER(_REMOTE, remote)
+  FILTER(_NOREMOTE, !remote)
+
+  FILTER(MAXSIZE, book.getSize() <= _maxSize)
+  FILTER(LANG, book.getLanguage() == _lang)
+  FILTER(_PUBLISHER, book.getPublisher() == _publisher)
+  FILTER(_CREATOR, book.getCreator() == _creator)
+
   if (ACTIVE(ACCEPTTAGS)) {
     if (!_acceptTags.empty()) {
       auto vBookTags = split(book.getTags(), ";");
@@ -505,18 +508,6 @@ bool Filter::accept(const Book& book) const
       }
     }
   }
-  if (ACTIVE(MAXSIZE) && book.getSize() > _maxSize)
-    return false;
-
-  if (ACTIVE(LANG) && book.getLanguage() != _lang)
-    return false;
-
-  if (ACTIVE(_PUBLISHER) && book.getPublisher() != _publisher)
-    return false;
-
-  if (ACTIVE(_CREATOR) && book.getCreator() != _creator)
-    return false;
-
   if ( ACTIVE(QUERY)
     && !(matchRegex(book.getTitle(), "\\Q" + _query + "\\E")
         || matchRegex(book.getDescription(), "\\Q" + _query + "\\E")))
