@@ -378,6 +378,7 @@ enum filterTypes {
   _CREATOR = FLAG(10),
   MAXSIZE = FLAG(11),
   QUERY = FLAG(12),
+  NAME = FLAG(13),
 };
 
 Filter& Filter::local(bool accept)
@@ -465,6 +466,13 @@ Filter& Filter::query(std::string query)
   return *this;
 }
 
+Filter& Filter::name(std::string name)
+{
+  _name = name;
+  activeFilters |= NAME;
+  return *this;
+}
+
 #define ACTIVE(X) (activeFilters & (X))
 #define FILTER(TAG, TEST) if (ACTIVE(TAG) && !(TEST)) { return false; }
 bool Filter::accept(const Book& book) const
@@ -485,6 +493,7 @@ bool Filter::accept(const Book& book) const
   FILTER(LANG, book.getLanguage() == _lang)
   FILTER(_PUBLISHER, book.getPublisher() == _publisher)
   FILTER(_CREATOR, book.getCreator() == _creator)
+  FILTER(NAME, book.getName() == _name)
 
   if (ACTIVE(ACCEPTTAGS)) {
     if (!_acceptTags.empty()) {

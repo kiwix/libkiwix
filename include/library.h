@@ -57,6 +57,7 @@ class Filter {
     std::string _creator;
     size_t _maxSize;
     std::string _query;
+    std::string _name;
 
   public:
     Filter();
@@ -100,6 +101,7 @@ class Filter {
     Filter& creator(std::string creator);
     Filter& maxSize(size_t size);
     Filter& query(std::string query);
+    Filter& name(std::string name);
 
     bool accept(const Book& book) const;
 };
