@@ -759,6 +759,12 @@ Response InternalServer::handle_catalog(const RequestContext& request)
       filter.query(query);
     } catch (const std::out_of_range&) {}
     try {
+      filter.maxSize(extractFromString<unsigned long>(request.get_argument("maxsize")));
+    } catch (...) {}
+    try {
+      filter.name(request.get_argument("name"));
+    } catch (const std::out_of_range&) {}
+    try {
       filter.lang(request.get_argument("lang"));
     } catch (const std::out_of_range&) {}
     try {
