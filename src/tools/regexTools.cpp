@@ -25,6 +25,7 @@
 
 #include <memory>
 #include <map>
+#include <stdexcept>
 #include <pthread.h>
 
 std::map<std::string, std::shared_ptr<icu::RegexPattern>> regexCache;
