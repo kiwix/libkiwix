@@ -4,6 +4,7 @@
 
 #include <windows.h>
 #include <winbase.h>
+#include <shlwapi.h>
 #include <iostream>
 #include <sstream>
 
@@ -34,17 +35,20 @@ DWORD WINAPI WinImpl::waitForPID(void* _self)
   return 0;
 }
 
-std::unique_ptr<wchar_t[]> toWideChar(const std::string& value)
+std::unique_ptr<wchar_t[]> toWideChar(const std::string& value, size_t min_size = 0)
 {
-  auto size = MultiByteToWideChar(CP_UTF8, 0,
+  size_t size = MultiByteToWideChar(CP_UTF8, 0,
                 value.c_str(), -1, nullptr, 0);
-  auto wdata = std::unique_ptr<wchar_t[]>(new wchar_t[size]);
+  auto wdata = std::unique_ptr<wchar_t[]>(new wchar_t[size>min_size?size:min_size]);
   auto ret = MultiByteToWideChar(CP_UTF8, 0,
                 value.c_str(), -1, wdata.get(), size);
   if (0 == ret) {
     std::ostringstream oss;
     oss << "Cannot convert to wchar : " << GetLastError();
     throw std::runtime_error(oss.str());
+  }
+  if (size < min_size) {
+    memset(wdata.get() + size, 0, min_size-size);
   }
   return wdata;
 }
@@ -55,14 +59,16 @@ void WinImpl::run(commandLine_t& commandLine)
   STARTUPINFOW startInfo = {0};
   PROCESS_INFORMATION procInfo;
   startInfo.cb = sizeof(startInfo);
-  std::ostringstream oss;
+  std::wostringstream oss;
   for(auto& item: commandLine) {
-    oss << item << " ";
+    auto witem = toWideChar(item, MAX_PATH);
+    PathQuoteSpacesW(witem.get());
+    oss << witem.get() << " ";
   }
-  auto wCommandLine = toWideChar(oss.str());
+  auto wCommandLine = oss.str();
   if (CreateProcessW(
     NULL,
-    wCommandLine.get(),
+    const_cast<wchar_t*>(wCommandLine.c_str()),
     NULL,
     NULL,
     false,
@@ -70,7 +76,8 @@ void WinImpl::run(commandLine_t& commandLine)
     NULL,
     NULL,
     &startInfo,
-    &procInfo)) {
+    &procInfo))
+  {
     m_pid = procInfo.dwProcessId;
     m_handle = procInfo.hProcess;
     CloseHandle(procInfo.hThread);
