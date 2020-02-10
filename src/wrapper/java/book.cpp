@@ -68,7 +68,7 @@ GETTER(jstring, getFaviconUrl)
 GETTER(jstring, getFaviconMimeType)
 
 METHOD(jstring, Book, getTagStr, jstring tagName) try {
-  auto cRet = Book->getTagStr(jni2c(tagName, env));
+  auto cRet = BOOK->getTagStr(jni2c(tagName, env));
   return c2jni(cRet, env);
 } catch(...) {
   return c2jni<std::string>("", env);
