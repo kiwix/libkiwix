@@ -5,6 +5,10 @@ public class Book
 {
   public Book() { allocate(); }
 
+
+  public native void update(Book book);
+  public native void update(JNIKiwixReader reader);
+
   @Override
   protected void finalize() { dispose();  }
 

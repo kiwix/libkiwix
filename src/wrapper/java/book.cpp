@@ -39,6 +39,16 @@ Java_org_kiwix_kiwixlib_Book_dispose(JNIEnv* env, jobject thisObj)
 
 #define BOOK (getPtr<kiwix::Book>(env, thisObj))
 
+METHOD(void, Book, update__Lorg_kiwix_kiwixlib_Book_2, jobject otherBook)
+{
+  BOOK->update(*getPtr<kiwix::Book>(env, otherBook));
+}
+
+METHOD(void, Book, update__Lorg_kiwix_kiwixlib_JNIKiwixReader_2, jobject reader)
+{
+  BOOK->update(**Handle<kiwix::Reader>::getHandle(env, reader));
+}
+
 #define GETTER(retType, name) JNIEXPORT retType JNICALL \
 Java_org_kiwix_kiwixlib_Book_##name (JNIEnv* env, jobject thisObj) \
 { \
