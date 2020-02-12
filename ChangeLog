@@ -1,9 +1,27 @@
-kiwix-lib 8.2.3
+kiwix-lib 9.0.0
 ===============
 
  * [OPDS] Correctly set the id of the OPDS stream.
  * [OPDS] Do not try to filter the catalog if no filter field is given in the
    request.
+ * [WINDOWS] Correctly convert path to wide chars when opening the library.xml
+ * [LIBRARY] Remove the function the read file using a native path.
+   All path must be utf8, no need to pass a native path along the utf8 path.
+ * [TEST] Fix tests using the main function of gtest instead of custom one.
+ * [CI] Move to github CI instead of Travis.
+ * The `Book::update` method always update the book's fields. Even if they are
+   not empty.
+ * [JAVA] Add wrapping around the library manager (opds parsing)
+ * [ARIA2] Add api option to start download with option (destination folder)
+ * [OPDS] Fixes about opds parsing, generation (missing attributes)
+   and requesting (server)
+ * Add methods on `Book` to get specific tag values (was on `Reader` only)
+ * Add flavour attribute to `Book`
+ * Fix opensearch description.
+ * Trust the given library.xml (by default) instead of reading the value from
+   the zim files.
+ * [OPDS] Be able to filter the content by name or size.
+ * [WINDOWS] Fix launching subcommand when there is spaces in the path.
 
 kiwix-lib 8.2.2
 ===============
