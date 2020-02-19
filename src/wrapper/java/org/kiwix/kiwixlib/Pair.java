@@ -22,5 +22,5 @@ package org.kiwix.kiwixlib;
 public class Pair
 {
   public String filename;
-  public int offset;
+  public long offset;
 }
