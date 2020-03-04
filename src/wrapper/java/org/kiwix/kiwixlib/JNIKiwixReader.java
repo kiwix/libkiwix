@@ -83,6 +83,16 @@ public class JNIKiwixReader
                                       JNIKiwixInt size);
 
   /**
+   *
+   * Get the size of an article.
+   *
+   * @param   url The url of the article.
+   * @return  The size of the final (redirections are resolved) article (in byte).
+   *          Return 0 if the article is not found.
+   */
+  public native long getArticleSize(String url);
+
+  /**
    * getDirectAccessInformation.
    *
    * Return information giving where the content is located in the zim file.

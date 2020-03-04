@@ -21,6 +21,7 @@
 
 #include <jni.h>
 #include <zim/file.h>
+#include <exception>
 #include "org_kiwix_kiwixlib_JNIKiwixReader.h"
 
 #include "tools/base64.h"
@@ -303,6 +304,22 @@ JNIEXPORT jbyteArray JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getContentPa
     LOG(e.what());
   }
   return data;
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_kiwix_kiwixlib_JNIKiwixReader_getArticleSize(
+    JNIEnv* env, jobject obj, jstring url)
+{
+  std::string cUrl = jni2c(url, env);
+  try {
+    auto entry = READER->getEntryFromEncodedPath(cUrl);
+    entry = entry.getFinalEntry();
+    return c2jni(entry.getSize(), env);
+  } catch(std::exception& e) {
+    LOG("Unable to get size for url : %s", cUrl.c_str());
+    LOG(e.what());
+  }
+  return c2jni(0, env);
 }
 
 JNIEXPORT jobject JNICALL
