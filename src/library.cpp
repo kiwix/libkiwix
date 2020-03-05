@@ -85,6 +85,18 @@ Book& Library::getBookById(const std::string& id)
   return m_books.at(id);
 }
 
+Book& Library::getBookByPath(const std::string& path)
+{
+  for(auto& it: m_books) {
+    auto& book = it.second;
+    if (book.getPath() == path)
+      return book;
+  }
+  std::ostringstream ss;
+  ss << "No book with path " << path << " in the library." << std::endl;
+  throw std::out_of_range(ss.str());
+}
+
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
   try {
