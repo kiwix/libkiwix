@@ -89,7 +89,7 @@ class Searcher
    * @param resultEnd the end offset of the search results (used for pagination).
    * @param verbose print some info on stdout if true.
    */
-  void search(std::string& search,
+  void search(const std::string& search,
               unsigned int resultStart,
               unsigned int resultEnd,
               const bool verbose = false);

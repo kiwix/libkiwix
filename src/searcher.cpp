@@ -97,7 +97,7 @@ Reader* Searcher::get_reader(int readerIndex)
 }
 
 /* Search strings in the database */
-void Searcher::search(std::string& search,
+void Searcher::search(const std::string& search,
                       unsigned int resultStart,
                       unsigned int resultEnd,
                       const bool verbose)
