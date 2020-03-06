@@ -258,4 +258,12 @@ TEST_F(LibraryTest, filterCheck)
   EXPECT_EQ(bookIds.size(), 1U);
 
 }
+
+TEST_F(LibraryTest, getBookByPath)
+{
+  auto& book = lib.getBookById(lib.getBooksIds()[0]);
+  book.setPath("/some/abs/path.zim");
+  EXPECT_EQ(lib.getBookByPath("/some/abs/path.zim").getId(), book.getId());
+  EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
+}
 };

@@ -149,6 +149,7 @@ class Library
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
   Book& getBookById(const std::string& id);
+  Book& getBookByPath(const std::string& path);
   std::shared_ptr<Reader> getReaderById(const std::string& id);
 
   /**
