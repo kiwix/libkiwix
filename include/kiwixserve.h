@@ -18,6 +18,7 @@ class KiwixServe
     bool isRunning();
     int getPort() { return m_port; }
     int setPort(int port);
+    void setLibraryPath(std::string path) { m_libraryPath = path; }
 
   private:
   std::unique_ptr<Subprocess> mp_kiwixServe;

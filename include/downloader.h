@@ -88,7 +88,7 @@ class Download {
 class Downloader
 {
  public:
-  Downloader();
+  Downloader(std::string sessionFileDir = "");
   virtual ~Downloader();
 
   void close();

@@ -30,7 +30,7 @@ class Aria2
     std::string doRequest(const MethodCall& methodCall);
 
   public:
-    Aria2();
+    Aria2(std::string sessionFileDir = "");
     virtual ~Aria2();
     void close();
 

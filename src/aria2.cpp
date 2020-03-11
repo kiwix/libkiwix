@@ -22,7 +22,7 @@
 
 namespace kiwix {
 
-Aria2::Aria2():
+Aria2::Aria2(std::string sessionFileDir):
   mp_aria(nullptr),
   m_port(42042),
   m_secret("kiwixariarpc"),
@@ -35,7 +35,12 @@ Aria2::Aria2():
 
   std::string rpc_port = "--rpc-listen-port=" + to_string(m_port);
   std::string download_dir = "--dir=" + getDataDirectory();
-  std::string session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
+  std::string session_file;
+  if (sessionFileDir.empty()) {
+    session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
+  } else {
+    session_file = appendToDirectory(sessionFileDir, "kiwix.session");
+  }
   std::string session = "--save-session=" + session_file;
   std::string inputFile = "--input-file=" + session_file;
 //  std::string log_dir = "--log=\"" + logDir + "\"";
