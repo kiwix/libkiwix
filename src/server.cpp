@@ -95,7 +95,8 @@ class InternalServer {
                    int nbThreads,
                    bool verbose,
                    bool withTaskbar,
-                   bool withLibraryButton);
+                   bool withLibraryButton,
+                   bool blockExternalLinks);
     virtual ~InternalServer() = default;
 
     int handlerCallback(struct MHD_Connection* connection,
@@ -119,6 +120,7 @@ class InternalServer {
     Response handle_search(const RequestContext& request);
     Response handle_suggest(const RequestContext& request);
     Response handle_random(const RequestContext& request);
+    Response handle_captured_external(const RequestContext& request);
     Response handle_content(const RequestContext& request);
 
     kainjow::mustache::data get_default_data();
@@ -131,6 +133,7 @@ class InternalServer {
     std::atomic_bool m_verbose;
     bool m_withTaskbar;
     bool m_withLibraryButton;
+    bool m_blockExternalLinks;
     struct MHD_Daemon* mp_daemon;
 
     Library* mp_library;
@@ -157,7 +160,8 @@ bool Server::start() {
     m_nbThreads,
     m_verbose,
     m_withTaskbar,
-    m_withLibraryButton));
+    m_withLibraryButton,
+    m_blockExternalLinks));
   return mp_server->start();
 }
 
@@ -186,7 +190,8 @@ InternalServer::InternalServer(Library* library,
                                int nbThreads,
                                bool verbose,
                                bool withTaskbar,
-                               bool withLibraryButton) :
+                               bool withLibraryButton,
+                               bool blockExternalLinks) :
   m_addr(addr),
   m_port(port),
   m_root(root),
@@ -194,6 +199,7 @@ InternalServer::InternalServer(Library* library,
   m_verbose(verbose),
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
+  m_blockExternalLinks(blockExternalLinks),
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper)
@@ -340,6 +346,9 @@ Response InternalServer::handle_request(const RequestContext& request)
     if (request.get_url() == "/random")
       return handle_random(request);
 
+    if (request.get_url() == "/external")
+      return handle_captured_external(request);
+
     return handle_content(request);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
@@ -359,7 +368,7 @@ kainjow::mustache::data InternalServer::get_default_data()
 
 Response InternalServer::get_default_response()
 {
-  return Response(m_root, m_verbose.load(), m_withTaskbar, m_withLibraryButton);
+  return Response(m_root, m_verbose.load(), m_withTaskbar, m_withLibraryButton, m_blockExternalLinks);
 }
 
 
@@ -383,7 +392,7 @@ Response InternalServer::build_500(const std::string& msg)
 {
   kainjow::mustache::data data;
   data.set("error", msg);
-  Response response(m_root, true, false, false);
+  Response response(m_root, true, false, false, false);
   response.set_template(RESOURCE::templates::_500_html, data);
   response.set_mimeType("text/html");
   response.set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
@@ -709,6 +718,26 @@ Response InternalServer::handle_random(const RequestContext& request)
   } catch(kiwix::NoEntry& e) {
     return build_404(request, bookName);
   }
+}
+
+Response InternalServer::handle_captured_external(const RequestContext& request)
+{
+  std::string source = "";
+  try {
+    source = kiwix::urlDecode(request.get_argument("source"));
+  } catch (const std::out_of_range& e) {}
+
+  if (source.empty())
+    return build_404(request, "");
+
+  auto data = get_default_data();
+  data.set("source", source);
+  auto response = get_default_response();
+  response.set_template(RESOURCE::templates::captured_external_html, data);
+  response.set_mimeType("text/html; charset=utf-8");
+  response.set_compress(true);
+  response.set_taskbar("", "", false);
+  return response;
 }
 
 Response InternalServer::handle_catalog(const RequestContext& request)

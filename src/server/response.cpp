@@ -17,7 +17,7 @@
 
 namespace kiwix {
 
-Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton)
+Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks)
   : m_verbose(verbose),
     m_root(root),
     m_content(""),
@@ -25,6 +25,7 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
     m_returnCode(MHD_HTTP_OK),
     m_withTaskbar(withTaskbar),
     m_withLibraryButton(withLibraryButton),
+    m_blockExternalLinks(blockExternalLinks),
     m_useCache(false),
     m_addTaskbar(false),
     m_bookName(""),
@@ -124,6 +125,14 @@ void Response::introduce_taskbar()
     m_content,
     "<body[^>]*>",
     taskbar_part);
+
+  if ( m_blockExternalLinks ) {
+    const std::string capture_external_part = getResource("templates/block_external.js");
+    m_content = appendToFirstOccurence(
+      m_content,
+      "block external links\n",
+      capture_external_part);
+  }
 }
 
 
@@ -239,11 +248,12 @@ void Response::set_entry(const Entry& entry) {
   m_mode = ResponseMode::ENTRY;
 }
 
-void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle)
+void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle, bool blockExternalLinks)
 {
   m_addTaskbar = true;
   m_bookName = bookName;
   m_bookTitle = bookTitle;
+  m_blockExternalLinks = blockExternalLinks;
 }
 
 

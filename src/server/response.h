@@ -42,7 +42,7 @@ class RequestContext;
 
 class Response {
   public:
-    Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton);
+    Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks);
     ~Response() = default;
 
     int send(const RequestContext& request, MHD_Connection* connection);
@@ -57,7 +57,8 @@ class Response {
     void set_code(int code) { m_returnCode = code; }
     void set_cache(bool cache) { m_useCache = cache; }
     void set_compress(bool compress) { m_compress = compress; }
-    void set_taskbar(const std::string& bookName, const std::string& bookTitle);
+    void set_taskbar(const std::string& bookName, const std::string& bookTitle) { return set_taskbar(bookName, bookTitle, m_blockExternalLinks); }
+    void set_taskbar(const std::string& bookName, const std::string& bookTitle, bool blockExternalLinks);
     void set_range_first(uint64_t start) { m_startRange = start; }
     void set_range_len(uint64_t len) { m_lenRange = len; }
 
@@ -75,6 +76,7 @@ class Response {
     int m_returnCode;
     bool m_withTaskbar;
     bool m_withLibraryButton;
+    bool m_blockExternalLinks;
     bool m_useCache;
     bool m_compress;
     bool m_addTaskbar;

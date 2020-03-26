@@ -28,4 +28,6 @@ templates/index.html
 templates/suggestion.json
 templates/head_part.html
 templates/taskbar_part.html
+templates/captured_external.html
+templates/block_external.js
 opensearchdescription.xml
