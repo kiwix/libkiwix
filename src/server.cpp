@@ -392,7 +392,7 @@ Response InternalServer::build_500(const std::string& msg)
 {
   kainjow::mustache::data data;
   data.set("error", msg);
-  Response response(m_root, true, false, false, false);
+  Response response(m_root, true, false, false, m_blockExternalLinks);
   response.set_template(RESOURCE::templates::_500_html, data);
   response.set_mimeType("text/html");
   response.set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
@@ -732,7 +732,7 @@ Response InternalServer::handle_captured_external(const RequestContext& request)
 
   auto data = get_default_data();
   data.set("source", source);
-  Response response = Response(m_root, m_verbose.load(), m_withTaskbar, m_withLibraryButton, false);
+  auto response = get_default_response();
   response.set_template(RESOURCE::templates::captured_external_html, data);
   response.set_mimeType("text/html; charset=utf-8");
   response.set_compress(true);
