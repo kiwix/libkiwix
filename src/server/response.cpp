@@ -117,7 +117,7 @@ void Response::introduce_taskbar()
   auto head_content = render_template(RESOURCE::templates::head_part_html, data);
   m_content = appendToFirstOccurence(
     m_content,
-    "<head>",
+    "<head>\n",
     head_content);
 
   auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
@@ -125,16 +125,19 @@ void Response::introduce_taskbar()
     m_content,
     "<body[^>]*>",
     taskbar_part);
-
-  if ( m_blockExternalLinks ) {
-    const std::string capture_external_part = getResource("templates/block_external.js");
-    m_content = appendToFirstOccurence(
-      m_content,
-      "block external links\n",
-      capture_external_part);
-  }
 }
 
+
+void Response::inject_externallinks_blocker()
+{
+  kainjow::mustache::data data;
+  data.set("root", m_root);
+  auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
+  m_content = appendToFirstOccurence(
+    m_content,
+    "<head>\n",
+    script_tag);
+}
 
 
 int Response::send(const RequestContext& request, MHD_Connection* connection)
@@ -144,6 +147,9 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
     case ResponseMode::RAW_CONTENT : {
       if (m_addTaskbar) {
         introduce_taskbar();
+      }
+      if ( m_blockExternalLinks ) {
+        inject_externallinks_blocker();
       }
 
       bool shouldCompress = m_compress && request.can_compress();
@@ -248,12 +254,11 @@ void Response::set_entry(const Entry& entry) {
   m_mode = ResponseMode::ENTRY;
 }
 
-void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle, bool blockExternalLinks)
+void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle)
 {
   m_addTaskbar = true;
   m_bookName = bookName;
   m_bookTitle = bookTitle;
-  m_blockExternalLinks = blockExternalLinks;
 }
 
 

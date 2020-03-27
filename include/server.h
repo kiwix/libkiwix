@@ -56,9 +56,9 @@ namespace kiwix
        void setNbThreads(int threads) { m_nbThreads = threads; }
        void setVerbose(bool verbose) { m_verbose = verbose; }
        void setTaskbar(bool withTaskbar, bool withLibraryButton)
-        { setTaskbar(withTaskbar, withLibraryButton, m_blockExternalLinks); }
-       void setTaskbar(bool withTaskbar, bool withLibraryButton, bool blockExternalLinks)
-         { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; m_blockExternalLinks = blockExternalLinks; }
+        { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
+       void setBlockExternalLinks(bool blockExternalLinks)
+        { m_blockExternalLinks = blockExternalLinks; }
 
      protected:
        Library* mp_library;

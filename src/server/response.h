@@ -57,14 +57,14 @@ class Response {
     void set_code(int code) { m_returnCode = code; }
     void set_cache(bool cache) { m_useCache = cache; }
     void set_compress(bool compress) { m_compress = compress; }
-    void set_taskbar(const std::string& bookName, const std::string& bookTitle) { return set_taskbar(bookName, bookTitle, m_blockExternalLinks); }
-    void set_taskbar(const std::string& bookName, const std::string& bookTitle, bool blockExternalLinks);
+    void set_taskbar(const std::string& bookName, const std::string& bookTitle);
     void set_range_first(uint64_t start) { m_startRange = start; }
     void set_range_len(uint64_t len) { m_lenRange = len; }
 
     int getReturnCode() { return m_returnCode; }
 
     void introduce_taskbar();
+    void inject_externallinks_blocker();
 
   private:
     bool m_verbose;

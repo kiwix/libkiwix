@@ -86,9 +86,9 @@ Java_org_kiwix_kiwixlib_JNIKiwixServer_setTaskbar(JNIEnv* env, jobject obj, jboo
 }
 
 JNIEXPORT void JNICALL
-Java_org_kiwix_kiwixlib_JNIKiwixServer_setTaskbar(JNIEnv* env, jobject obj, jboolean withTaskbar, jboolean withLibraryButton, jboolean blockExternalLinks)
+Java_org_kiwix_kiwixlib_JNIKiwixServer_setBlockExternalLinks(JNIEnv* env, jobject obj, jboolean blockExternalLinks)
 {
-  SERVER->setTaskbar(withTaskbar, withLibraryButton, blockExternalLinks);
+  SERVER->setBlockExternalLinks(blockExternalLinks);
 }
 
 JNIEXPORT jboolean JNICALL

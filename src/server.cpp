@@ -346,7 +346,7 @@ Response InternalServer::handle_request(const RequestContext& request)
     if (request.get_url() == "/random")
       return handle_random(request);
 
-    if (request.get_url() == "/external")
+    if (request.get_url() == "/catch/external")
       return handle_captured_external(request);
 
     return handle_content(request);
@@ -732,11 +732,11 @@ Response InternalServer::handle_captured_external(const RequestContext& request)
 
   auto data = get_default_data();
   data.set("source", source);
-  auto response = get_default_response();
+  Response response = Response(m_root, m_verbose.load(), m_withTaskbar, m_withLibraryButton, false);
   response.set_template(RESOURCE::templates::captured_external_html, data);
   response.set_mimeType("text/html; charset=utf-8");
   response.set_compress(true);
-  response.set_taskbar("", "", false);
+  response.set_taskbar("", "");
   return response;
 }
 

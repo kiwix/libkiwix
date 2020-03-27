@@ -33,7 +33,8 @@ public class JNIKiwixServer
   public native void setNbThreads(int nbTreads);
 
   public native void setTaskbar(boolean withTaskBar, boolean witLibraryButton);
-  public native void setTaskbar(boolean withTaskBar, boolean witLibraryButton, boolean blockExternalLinks);
+
+  public native void setBlockExternalLinks(boolean blockExternalLinks);
 
   public native boolean start();
 
