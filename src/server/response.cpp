@@ -17,7 +17,7 @@
 
 namespace kiwix {
 
-Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton)
+Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks)
   : m_verbose(verbose),
     m_root(root),
     m_content(""),
@@ -25,6 +25,7 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
     m_returnCode(MHD_HTTP_OK),
     m_withTaskbar(withTaskbar),
     m_withLibraryButton(withLibraryButton),
+    m_blockExternalLinks(blockExternalLinks),
     m_useCache(false),
     m_addTaskbar(false),
     m_bookName(""),
@@ -116,7 +117,7 @@ void Response::introduce_taskbar()
   auto head_content = render_template(RESOURCE::templates::head_part_html, data);
   m_content = appendToFirstOccurence(
     m_content,
-    "<head>",
+    "<head>\n",
     head_content);
 
   auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
@@ -127,6 +128,17 @@ void Response::introduce_taskbar()
 }
 
 
+void Response::inject_externallinks_blocker()
+{
+  kainjow::mustache::data data;
+  data.set("root", m_root);
+  auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
+  m_content = appendToFirstOccurence(
+    m_content,
+    "<head>\n",
+    script_tag);
+}
+
 
 int Response::send(const RequestContext& request, MHD_Connection* connection)
 {
@@ -135,6 +147,9 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
     case ResponseMode::RAW_CONTENT : {
       if (m_addTaskbar) {
         introduce_taskbar();
+      }
+      if ( m_blockExternalLinks ) {
+        inject_externallinks_blocker();
       }
 
       bool shouldCompress = m_compress && request.can_compress();

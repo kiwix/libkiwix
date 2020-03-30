@@ -56,7 +56,9 @@ namespace kiwix
        void setNbThreads(int threads) { m_nbThreads = threads; }
        void setVerbose(bool verbose) { m_verbose = verbose; }
        void setTaskbar(bool withTaskbar, bool withLibraryButton)
-         { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
+        { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
+       void setBlockExternalLinks(bool blockExternalLinks)
+        { m_blockExternalLinks = blockExternalLinks; }
 
      protected:
        Library* mp_library;
@@ -68,6 +70,7 @@ namespace kiwix
        bool m_verbose = false;
        bool m_withTaskbar = true;
        bool m_withLibraryButton = true;
+       bool m_blockExternalLinks = false;
        std::unique_ptr<InternalServer> mp_server;
   };
 }

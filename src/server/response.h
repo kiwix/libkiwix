@@ -42,7 +42,7 @@ class RequestContext;
 
 class Response {
   public:
-    Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton);
+    Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks);
     ~Response() = default;
 
     int send(const RequestContext& request, MHD_Connection* connection);
@@ -64,6 +64,7 @@ class Response {
     int getReturnCode() { return m_returnCode; }
 
     void introduce_taskbar();
+    void inject_externallinks_blocker();
 
   private:
     bool m_verbose;
@@ -75,6 +76,7 @@ class Response {
     int m_returnCode;
     bool m_withTaskbar;
     bool m_withLibraryButton;
+    bool m_blockExternalLinks;
     bool m_useCache;
     bool m_compress;
     bool m_addTaskbar;

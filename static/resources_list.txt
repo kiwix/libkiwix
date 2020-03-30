@@ -20,6 +20,7 @@ skin/jquery-ui/jquery-ui.min.css
 skin/caret.png
 skin/taskbar.js
 skin/taskbar.css
+skin/block_external.js
 templates/search_result.html
 templates/no_search_result.html
 templates/404.html
@@ -28,4 +29,6 @@ templates/index.html
 templates/suggestion.json
 templates/head_part.html
 templates/taskbar_part.html
+templates/external_blocker_part.html
+templates/captured_external.html
 opensearchdescription.xml

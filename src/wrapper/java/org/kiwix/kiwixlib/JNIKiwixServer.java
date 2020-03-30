@@ -34,6 +34,8 @@ public class JNIKiwixServer
 
   public native void setTaskbar(boolean withTaskBar, boolean witLibraryButton);
 
+  public native void setBlockExternalLinks(boolean blockExternalLinks);
+
   public native boolean start();
 
   public native void stop();
