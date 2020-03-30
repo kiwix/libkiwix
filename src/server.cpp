@@ -392,7 +392,7 @@ Response InternalServer::build_500(const std::string& msg)
 {
   kainjow::mustache::data data;
   data.set("error", msg);
-  Response response(m_root, true, false, false, m_blockExternalLinks);
+  Response response(m_root, true, false, false, false);
   response.set_template(RESOURCE::templates::_500_html, data);
   response.set_mimeType("text/html");
   response.set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
