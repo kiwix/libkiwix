@@ -41,7 +41,7 @@ libraries need to be available:
 * [Aria2](https://aria2.github.io/) (package `aria2` on Ubuntu)
 * [Mustache](https://github.com/kainjow/Mustache) (Just copy the
 header `mustache.hpp` somewhere it can be found by the compiler and/or
-set CPPFLAGS with correct `-I` option)
+set CPPFLAGS with correct `-I` option). Use Mustache version 3 only.
 
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
