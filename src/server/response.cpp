@@ -117,7 +117,7 @@ void Response::introduce_taskbar()
   auto head_content = render_template(RESOURCE::templates::head_part_html, data);
   m_content = appendToFirstOccurence(
     m_content,
-    "<head>\n",
+    "<head>",
     head_content);
 
   auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
@@ -135,7 +135,7 @@ void Response::inject_externallinks_blocker()
   auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
   m_content = appendToFirstOccurence(
     m_content,
-    "<head>\n",
+    "<head>",
     script_tag);
 }
 
