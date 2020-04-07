@@ -156,6 +156,8 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_name = VALUE("name");
   m_flavour = VALUE("flavour");
   m_tags = VALUE("tags");
+  m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
+  m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   for(auto linkNode = node.child("link"); linkNode;
            linkNode = linkNode.next_sibling("link")) {
     std::string rel = linkNode.attribute("rel").value();
