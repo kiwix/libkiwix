@@ -98,7 +98,7 @@ class Book
   std::string m_id;
   std::string m_downloadId;
   std::string m_path;
-  bool m_pathValid;
+  bool m_pathValid = false;
   std::string m_title;
   std::string m_description;
   std::string m_language;
@@ -110,10 +110,10 @@ class Book
   std::string m_flavour;
   std::string m_tags;
   std::string m_origId;
-  uint64_t m_articleCount;
-  uint64_t m_mediaCount;
-  bool m_readOnly;
-  uint64_t m_size;
+  uint64_t m_articleCount = 0;
+  uint64_t m_mediaCount = 0;
+  bool m_readOnly = false;
+  uint64_t m_size = 0;
   mutable std::string m_favicon;
   std::string m_faviconUrl;
   std::string m_faviconMimeType;
