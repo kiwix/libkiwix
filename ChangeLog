@@ -1,3 +1,12 @@
+kiwix-lib 9.1.0
+===============
+
+ * [JAVA] Add a method to get the size of an article.
+ * Add a new method to the libray to get the book by path.
+ * Add a option to make the server blocks external link.
+   Links are intercepted by js an redirected to a "portail" page.
+ * [ODPS] Correctly handle book's articleCount and mediaCount.
+
 kiwix-lib 9.0.1
 ===============
 
