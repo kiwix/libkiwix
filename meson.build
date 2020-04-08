@@ -20,7 +20,7 @@ endif
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
-libzim_dep = dependency('libzim', version : '>=5.0.0', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=6.1.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
 microhttpd_dep = dependency('libmicrohttpd', static:static_deps)
