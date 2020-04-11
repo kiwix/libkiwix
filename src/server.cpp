@@ -247,8 +247,8 @@ bool InternalServer::start() {
               << std::endl;
     return false;
   }
-  auto server_start_time = std::chrono::system_clock::now();
-  m_etag = std::to_string(server_start_time.time_since_epoch().count());
+  auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
+  m_etag = "\"" + std::to_string(server_start_time.count()) + "\"";
   return true;
 }
 
