@@ -56,6 +56,7 @@ class Response {
     void set_mimeType(const std::string& mimeType) { m_mimeType = mimeType; }
     void set_code(int code) { m_returnCode = code; }
     void set_cache(bool cache) { m_useCache = cache; }
+    void set_etag(const std::string& etag) { m_etag = etag; }
     void set_compress(bool compress) { m_compress = compress; }
     void set_taskbar(const std::string& bookName, const std::string& bookTitle);
     void set_range_first(uint64_t start) { m_startRange = start; }
@@ -84,6 +85,7 @@ class Response {
     std::string m_bookTitle;
     uint64_t m_startRange;
     uint64_t m_lenRange;
+    std::string m_etag;
 };
 
 }

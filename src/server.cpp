@@ -138,6 +138,8 @@ class InternalServer {
 
     Library* mp_library;
     NameMapper* mp_nameMapper;
+
+    std::string m_etag;
 };
 
 
@@ -245,6 +247,8 @@ bool InternalServer::start() {
               << std::endl;
     return false;
   }
+  auto server_start_time = std::chrono::system_clock::now();
+  m_etag = std::to_string(server_start_time.time_since_epoch().count());
   return true;
 }
 
@@ -424,6 +428,7 @@ Response InternalServer::build_homepage(const RequestContext& request)
   response.set_mimeType("text/html; charset=utf-8");
   response.set_compress(true);
   response.set_taskbar("", "");
+  response.set_etag(m_etag);
   return response;
 }
 

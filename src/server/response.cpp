@@ -222,6 +222,8 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
   MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
   MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
     m_useCache ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
+  if ( ! m_etag.empty() )
+      MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, m_etag.c_str());
 
   if (m_returnCode == MHD_HTTP_OK && request.has_range())
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
