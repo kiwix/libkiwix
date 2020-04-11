@@ -248,7 +248,7 @@ bool InternalServer::start() {
     return false;
   }
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
-  m_etag = "\"" + std::to_string(server_start_time.count()) + "\"";
+  m_etag = "\"" + kiwix::to_string(server_start_time.count()) + "\"";
   return true;
 }
 
