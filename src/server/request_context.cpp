@@ -45,6 +45,22 @@ RequestMethod str2RequestMethod(const std::string& method) {
   else                          return RequestMethod::OTHER;
 }
 
+std::string
+fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
+{
+  if (rootLocation.empty()) {
+    // nothing special to handle.
+    return full_url;
+  } else if (full_url == rootLocation) {
+    return "/";
+  } else if (full_url.size() > rootLocation.size() &&
+             full_url.substr(0, rootLocation.size()+1) == rootLocation + "/") {
+    return full_url.substr(rootLocation.size());
+  } else {
+    return "";
+  }
+}
+
 } // unnamed namespace
 
 RequestContext::RequestContext(struct MHD_Connection* connection,
@@ -53,8 +69,7 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
                                const std::string& _method,
                                const std::string& version) :
   full_url(_url),
-  url(_url),
-  valid_url(true),
+  url(fullURL2LocalURL(_url, rootLocation)),
   method(str2RequestMethod(_method)),
   version(version),
   requestIndex(s_requestIndex++),
@@ -64,21 +79,6 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
 {
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
-
-  valid_url = true;
-  if (rootLocation.empty()) {
-    // nothing special to handle.
-    url = full_url;
-  } else {
-    if (full_url == rootLocation) {
-      url = "/";
-    } else if (full_url.size() > rootLocation.size() &&
-               full_url.substr(0, rootLocation.size()+1) == rootLocation + "/") {
-      url = full_url.substr(rootLocation.size());
-    } else {
-      valid_url = false;
-    }
-  }
 
   try {
     acceptEncodingDeflate =
@@ -143,10 +143,11 @@ void RequestContext::print_debug_info() const {
     printf(" - %s : '%s'\n", it->first.c_str(), it->second.c_str());
   }
   printf("Parsed : \n");
+  printf("full_url: %s\n", full_url.c_str());
   printf("url   : %s\n", url.c_str());
   printf("acceptEncodingDeflate : %d\n", acceptEncodingDeflate);
   printf("has_range : %d\n", accept_range);
-  printf("is_valid_url : %d\n", valid_url);
+  printf("is_valid_url : %d\n", is_valid_url());
   printf(".............\n");
 }
 
@@ -184,7 +185,7 @@ std::string RequestContext::get_full_url() const {
 }
 
 bool RequestContext::is_valid_url() const {
-  return valid_url;
+  return !url.empty();
 }
 
 bool RequestContext::has_range() const {

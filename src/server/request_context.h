@@ -86,7 +86,6 @@ class RequestContext {
   private:
     std::string full_url;
     std::string url;
-    bool valid_url;
     RequestMethod method;
     std::string version;
     unsigned long long requestIndex;
