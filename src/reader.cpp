@@ -714,7 +714,6 @@ bool Reader::searchSuggestions(const string& prefix,
                                const bool reset)
 {
   bool retVal = false;
-  zim::File::const_iterator articleItr;
 
   /* Reset the suggestions otherwise check if the suggestions number is less
    * than the suggestionsCount */
@@ -732,7 +731,7 @@ bool Reader::searchSuggestions(const string& prefix,
     return false;
   }
 
-  for (articleItr = zimFileHandler->findByTitle('A', prefix);
+  for (auto articleItr = zimFileHandler->findByTitle('A', prefix);
        articleItr != zimFileHandler->end()
        && articleItr->getTitle().compare(0, prefix.size(), prefix) == 0
        && this->suggestions.size() < suggestionsCount;
