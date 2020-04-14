@@ -22,18 +22,16 @@ if gtest_dep.found() and not meson.is_cross_build()
                    output : 'zimfile.zim',
                    copy: true )
 
-    # XXX: implicit_include_directories must be set to false, otherwise
-    # XXX: '#include <regex>' includes the regex unit test binary
-    httplib = library('httplib', 'httplib.cpp',
-                      install: false,
-                      implicit_include_directories: false)
-
     foreach test_name : tests
+        test_sources = [test_name+'.cpp']
+        if test_name == 'server'
+            test_sources += 'httplib.cpp'
+        endif
         # XXX: implicit_include_directories must be set to false, otherwise
         # XXX: '#include <regex>' includes the regex unit test binary
-        test_exe = executable(test_name, [test_name+'.cpp'],
+        test_exe = executable(test_name, test_sources,
                               implicit_include_directories: false,
-                              link_with : [kiwixlib, httplib],
+                              link_with : kiwixlib,
                               link_args: extra_link_args,
                               dependencies : all_deps + [gtest_dep],
                              build_rpath : '$ORIGIN')
