@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 
-#include "kiwix/manager.h"
-#include "kiwix/server.h"
-#include "kiwix/name_mapper.h"
+#include "../include/manager.h"
+#include "../include/server.h"
+#include "../include/name_mapper.h"
 
-#include "httplib.h"
+#include "./httplib.h"
 
 
 class ZimFileServer
