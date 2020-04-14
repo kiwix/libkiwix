@@ -1,8 +1,4 @@
 
-configure_file(input : 'data/wikipedia_en_ray_charles_mini_2020-03.zim',
-               output : 'zimfile.zim',
-               copy: true )
-
 tests = [
     'parseUrl',
     'library',
@@ -21,13 +17,17 @@ gtest_dep = dependency('gtest',
                        fallback: ['gtest', 'gtest_main_dep'],
                        required:false)
 
-# XXX: implicit_include_directories must be set to false, otherwise
-# XXX: '#include <regex>' includes the regex unit test binary
-httplib = library('httplib', 'httplib.cpp',
-                  install: false,
-                  implicit_include_directories: false)
-
 if gtest_dep.found() and not meson.is_cross_build()
+    configure_file(input : 'data/wikipedia_en_ray_charles_mini_2020-03.zim',
+                   output : 'zimfile.zim',
+                   copy: true )
+
+    # XXX: implicit_include_directories must be set to false, otherwise
+    # XXX: '#include <regex>' includes the regex unit test binary
+    httplib = library('httplib', 'httplib.cpp',
+                      install: false,
+                      implicit_include_directories: false)
+
     foreach test_name : tests
         # XXX: implicit_include_directories must be set to false, otherwise
         # XXX: '#include <regex>' includes the regex unit test binary
