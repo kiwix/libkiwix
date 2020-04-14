@@ -46,12 +46,16 @@ class Server : public ::testing::Test
 {
 protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
+  std::unique_ptr<ZimFileServer>   zfs2_;
   std::unique_ptr<httplib::Client> client1_;
+  std::unique_ptr<httplib::Client> client2_;
 
 protected:
   void SetUp() override {
-    zfs1_.reset(new ZimFileServer("127.0.0.1", 8888, "zimfile.zim"));
-    client1_.reset(new httplib::Client("127.0.0.1", 8888));
+    zfs1_.reset(new ZimFileServer("127.0.0.1", 8001, "zimfile.zim"));
+    zfs2_.reset(new ZimFileServer("127.0.0.1", 8002, "zimfile.zim"));
+    client1_.reset(new httplib::Client("127.0.0.1", 8001));
+    client2_.reset(new httplib::Client("127.0.0.1", 8002));
   }
 
   void TearDown() override {
@@ -66,8 +70,11 @@ TEST_F(Server, shouldSupportTheHeadMethod)
 
 TEST_F(Server, shouldSetTheETagHeader)
 {
-  const auto h1 = client1_->Head("/");
-  ASSERT_TRUE(h1->has_header("ETag"));
+  const auto responseToGet = client1_->Get("/");
+  ASSERT_TRUE(responseToGet->has_header("ETag"));
+
+  const auto responseToHead = client1_->Head("/");
+  ASSERT_TRUE(responseToHead->has_header("ETag"));
 }
 
 TEST_F(Server, shouldUseTheSameEtagInResponsesToDifferentRequestsOfTheSameURL)
@@ -75,4 +82,18 @@ TEST_F(Server, shouldUseTheSameEtagInResponsesToDifferentRequestsOfTheSameURL)
   const auto h1 = client1_->Head("/");
   const auto h2 = client1_->Head("/");
   ASSERT_EQ(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
+}
+
+TEST_F(Server, shouldUseTheSameEtagForHeadAndGet)
+{
+  const auto g = client1_->Get("/");
+  const auto h = client1_->Head("/");
+  ASSERT_EQ(h->get_header_value("ETag"), g->get_header_value("ETag"));
+}
+
+TEST_F(Server, differentServerInstancesShouldProduceDifferentETags)
+{
+  const auto h1 = client1_->Head("/");
+  const auto h2 = client2_->Head("/");
+  ASSERT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
 }
