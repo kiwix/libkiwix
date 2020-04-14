@@ -1,4 +1,7 @@
 
+configure_file(input : 'data/wikipedia_en_ray_charles_mini_2020-03.zim',
+               output : 'zimfile.zim',
+               copy: true )
 
 tests = [
     'parseUrl',
@@ -8,6 +11,7 @@ tests = [
     'stringTools',
     'pathTools',
     'kiwixserve',
+    'server',
     'book'
 ]
 
@@ -17,13 +21,22 @@ gtest_dep = dependency('gtest',
                        fallback: ['gtest', 'gtest_main_dep'],
                        required:false)
 
+# XXX: implicit_include_directories must be set to false, otherwise
+# XXX: '#include <regex>' includes the regex unit test binary
+httplib = library('httplib', 'httplib.cpp',
+                  install: false,
+                  implicit_include_directories: false)
+
 if gtest_dep.found() and not meson.is_cross_build()
     foreach test_name : tests
+        # XXX: implicit_include_directories must be set to false, otherwise
+        # XXX: '#include <regex>' includes the regex unit test binary
         test_exe = executable(test_name, [test_name+'.cpp'],
-                              link_with : kiwixlib,
+                              implicit_include_directories: false,
+                              link_with : [kiwixlib, httplib],
                               link_args: extra_link_args,
                               dependencies : all_deps + [gtest_dep],
                              build_rpath : '$ORIGIN')
-        test(test_name, test_exe)
+        test(test_name, test_exe, workdir: meson.current_build_dir())
     endforeach
 endif
