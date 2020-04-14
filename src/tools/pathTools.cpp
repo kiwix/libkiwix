@@ -18,6 +18,7 @@
  */
 
 #include "tools/pathTools.h"
+#include <stdexcept>
 
 #ifdef __APPLE__
 #include <limits.h>
@@ -42,11 +43,15 @@
 #include <algorithm>
 
 #ifdef _WIN32
-  #define SEPARATOR "\\"
+# define SEPARATOR "\\"
+# include <io.h>
 #else
-  #define SEPARATOR "/"
-#include <unistd.h>
+# define SEPARATOR "/"
+# include <unistd.h>
+# include <sys/stat.h>
 #endif
+
+#include <fcntl.h>
 
 #include <stdlib.h>
 
@@ -227,14 +232,33 @@ std::string getFileSizeAsString(const std::string& path)
 
 std::string getFileContent(const std::string& path)
 {
-  std::ifstream f(path, std::ios::in|std::ios::ate);
+#ifdef _WIN32
+  auto wpath = Utf8ToWide(path);
+  auto fd = _wopen(wpath.c_str(), _O_RDONLY | _O_BINARY);
+#else
+  auto fd = open(path.c_str(), O_RDONLY);
+#endif
   std::string content;
-  if (f.is_open()) {
-    auto size = f.tellg();
-    content.reserve(size);
-    f.seekg(0, std::ios::beg);
-    content.assign((std::istreambuf_iterator<char>(f)),
-                    std::istreambuf_iterator<char>());
+  if (fd != -1) {
+#ifdef _WIN32
+    auto size = _lseeki64(fd, 0, SEEK_END);
+#else
+    auto size = lseek(fd, 0, SEEK_END);
+#endif
+    content.resize(size);
+#ifdef _WIN32
+    _lseeki64(fd, 0, SEEK_SET);
+#else
+    lseek(fd, 0, SEEK_SET);
+#endif
+    auto p = (char*)content.data();
+    while (size) {
+      auto readsize = size > 2048 ? 2048 : size;
+      readsize = ::read(fd, p, readsize);
+      p += readsize;
+      size -= readsize;
+    }
+    close(fd);
   }
   return content;
 }
@@ -287,22 +311,22 @@ std::string makeTmpDirectory()
 /* Try to create a link and if does not work then make a copy */
 bool copyFile(const std::string& sourcePath, const std::string& destPath)
 {
+#ifdef _WIN32
+  return CopyFileW(Utf8ToWide(sourcePath).c_str(), Utf8ToWide(destPath).c_str(), 1);
+#else
   try {
-#ifndef _WIN32
     if (link(sourcePath.c_str(), destPath.c_str()) != 0) {
-#endif
       std::ifstream infile(sourcePath.c_str(), std::ios_base::binary);
       std::ofstream outfile(destPath.c_str(), std::ios_base::binary);
       outfile << infile.rdbuf();
-#ifndef _WIN32
     }
-#endif
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
     return false;
   }
 
   return true;
+#endif
 }
 
 std::string getExecutablePath(bool realPathOnly)
@@ -341,10 +365,21 @@ std::string getExecutablePath(bool realPathOnly)
 
 bool writeTextFile(const std::string& path, const std::string& content)
 {
-  std::ofstream file;
-  file.open(path.c_str());
-  file << content;
-  file.close();
+#ifdef _WIN32
+  auto wpath = Utf8ToWide(path);
+  auto fd = _wopen(wpath.c_str(), _O_WRONLY | _O_CREAT | _O_TRUNC, S_IWRITE);
+#else
+  auto fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC,
+                               S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+#endif
+  if (fd == -1)
+    return false;
+
+  if (write(fd, content.c_str(), content.size()) != (long)content.size()) {
+    close(fd);
+    return false;
+  }
+  close(fd);
   return true;
 }
 
