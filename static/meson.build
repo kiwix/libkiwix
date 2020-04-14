@@ -1,3 +1,8 @@
+resource_files = run_command(find_program('python'),
+                    '-c',
+                    'import sys; f=open(sys.argv[1]); print(f.read())',
+                    files('resources_list.txt')
+                 ).stdout().strip().split('\n')
 
 lib_resources = custom_target('resources',
     input: 'resources_list.txt',
@@ -7,5 +12,5 @@ lib_resources = custom_target('resources',
              '--hfile', '@OUTPUT1@',
              '--source_dir', '@OUTDIR@',
              '@INPUT@'],
-    build_always_stale: true
+    depend_files: resource_files
 )
