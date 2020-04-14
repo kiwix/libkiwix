@@ -75,6 +75,8 @@ namespace kiwix {
 
 static IdNameMapper defaultNameMapper;
 
+typedef kainjow::mustache::data MustacheData;
+
 static int staticHandlerCallback(void* cls,
                                  struct MHD_Connection* connection,
                                  const char* url,
@@ -123,7 +125,8 @@ class InternalServer {
     Response handle_captured_external(const RequestContext& request);
     Response handle_content(const RequestContext& request);
 
-    kainjow::mustache::data get_default_data();
+    MustacheData get_default_data() const;
+    MustacheData homepage_data() const;
     Response get_default_response();
 
     std::string m_addr;
@@ -359,9 +362,9 @@ Response InternalServer::handle_request(const RequestContext& request)
   }
 }
 
-kainjow::mustache::data InternalServer::get_default_data()
+MustacheData InternalServer::get_default_data() const
 {
-  kainjow::mustache::data data;
+  MustacheData data;
   data.set("root", m_root);
   return data;
 }
@@ -375,7 +378,7 @@ Response InternalServer::get_default_response()
 Response InternalServer::build_404(const RequestContext& request,
                                    const std::string& bookName)
 {
-  kainjow::mustache::data results;
+  MustacheData results;
   results.set("url", request.get_full_url());
 
   auto response = get_default_response();
@@ -390,7 +393,7 @@ Response InternalServer::build_404(const RequestContext& request,
 
 Response InternalServer::build_500(const std::string& msg)
 {
-  kainjow::mustache::data data;
+  MustacheData data;
   data.set("error", msg);
   Response response(m_root, true, false, false, false);
   response.set_template(RESOURCE::templates::_500_html, data);
@@ -399,15 +402,15 @@ Response InternalServer::build_500(const std::string& msg)
   return response;
 }
 
-Response InternalServer::build_homepage(const RequestContext& request)
+MustacheData InternalServer::homepage_data() const
 {
   auto data = get_default_data();
 
-  kainjow::mustache::data books{kainjow::mustache::data::type::list};
+  MustacheData books{MustacheData::type::list};
   for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
     auto& currentBook = mp_library->getBookById(bookId);
 
-    kainjow::mustache::data book;
+    MustacheData book;
     book.set("name", mp_nameMapper->getNameForId(bookId));
     book.set("title", currentBook.getTitle());
     book.set("description", currentBook.getDescription());
@@ -417,9 +420,13 @@ Response InternalServer::build_homepage(const RequestContext& request)
   }
 
   data.set("books", books);
+  return data;
+}
 
+Response InternalServer::build_homepage(const RequestContext& request)
+{
   auto response = get_default_response();
-  response.set_template(RESOURCE::templates::index_html, data);
+  response.set_template(RESOURCE::templates::index_html, homepage_data());
   response.set_mimeType("text/html; charset=utf-8");
   response.set_compress(true);
   response.set_taskbar("", "");
@@ -507,14 +514,14 @@ Response InternalServer::handle_suggest(const RequestContext& request)
     printf("Searching suggestions for: \"%s\"\n", term.c_str());
   }
 
-  kainjow::mustache::data results{kainjow::mustache::data::type::list};
+  MustacheData results{MustacheData::type::list};
 
   bool first = true;
   if (reader != nullptr) {
     /* Get the suggestions */
     reader->searchSuggestionsSmart(term, maxSuggestionCount);
     while (reader->getNextSuggestion(suggestion)) {
-      kainjow::mustache::data result;
+      MustacheData result;
       result.set("label", suggestion);
       result.set("value", suggestion);
       result.set("first", first);
@@ -526,7 +533,7 @@ Response InternalServer::handle_suggest(const RequestContext& request)
 
   /* Propose the fulltext search if possible */
   if (reader->hasFulltextIndex()) {
-    kainjow::mustache::data result;
+    MustacheData result;
     result.set("label", "containing '" + term + "'...");
     result.set("value", term + " ");
     result.set("first", first);
