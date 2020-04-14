@@ -111,7 +111,7 @@ class InternalServer {
     bool start();
     void stop();
 
-  private:
+  private: // functions
     Response handle_request(const RequestContext& request);
     Response build_500(const std::string& msg);
     Response build_404(const RequestContext& request, const std::string& zimName);
@@ -129,6 +129,9 @@ class InternalServer {
     MustacheData homepage_data() const;
     Response get_default_response();
 
+    bool client_already_has_this_entity(const RequestContext& request) const;
+
+  private: // data
     std::string m_addr;
     int m_port;
     std::string m_root;
@@ -428,13 +431,30 @@ MustacheData InternalServer::homepage_data() const
   return data;
 }
 
+bool InternalServer::client_already_has_this_entity(const RequestContext& request) const
+{
+  try {
+    return m_etag == request.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
+  } catch (const std::out_of_range&) {
+    return false;
+  }
+}
+
 Response InternalServer::build_homepage(const RequestContext& request)
 {
   auto response = get_default_response();
-  response.set_template(RESOURCE::templates::index_html, homepage_data());
-  response.set_mimeType("text/html; charset=utf-8");
-  response.set_compress(true);
-  response.set_taskbar("", "");
+  if ( client_already_has_this_entity(request) )
+  {
+    response.set_code(MHD_HTTP_NOT_MODIFIED);
+    response.set_content("");
+  }
+  else
+  {
+    response.set_template(RESOURCE::templates::index_html, homepage_data());
+    response.set_mimeType("text/html; charset=utf-8");
+    response.set_compress(true);
+    response.set_taskbar("", "");
+  }
   response.set_etag(m_etag);
   return response;
 }

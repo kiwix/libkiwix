@@ -6,6 +6,12 @@
 
 #include "./httplib.h"
 
+bool is_valid_etag(const std::string& etag)
+{
+  return etag.size() >= 2 &&
+         etag.front() == '"' &&
+         etag.back() == '"';
+}
 
 class ZimFileServer
 {
@@ -71,10 +77,12 @@ TEST_F(Server, shouldSupportTheHeadMethod)
 TEST_F(Server, shouldSetTheETagHeader)
 {
   const auto responseToGet = client1_->Get("/");
-  ASSERT_TRUE(responseToGet->has_header("ETag"));
+  EXPECT_TRUE(responseToGet->has_header("ETag"));
+  EXPECT_TRUE(is_valid_etag(responseToGet->get_header_value("ETag")));
 
   const auto responseToHead = client1_->Head("/");
-  ASSERT_TRUE(responseToHead->has_header("ETag"));
+  EXPECT_TRUE(responseToHead->has_header("ETag"));
+  EXPECT_TRUE(is_valid_etag(responseToHead->get_header_value("ETag")));
 }
 
 TEST_F(Server, shouldUseTheSameEtagInResponsesToDifferentRequestsOfTheSameURL)
@@ -96,4 +104,25 @@ TEST_F(Server, differentServerInstancesShouldProduceDifferentETags)
   const auto h1 = client1_->Head("/");
   const auto h2 = client2_->Head("/");
   ASSERT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
+}
+
+TEST_F(Server, shouldRespondWith304ToIfNoneMatchRequestsWithMatchingEtag)
+{
+  const auto g = client1_->Get("/");
+  const auto etag = g->get_header_value("Etag");
+  const auto h = client1_->Head("/", { {"If-None-Match", etag} } );
+  const auto g2 = client1_->Get("/", { {"If-None-Match", etag} } );
+  EXPECT_EQ(304, h->status);
+  EXPECT_EQ(304, g2->status);
+}
+
+TEST_F(Server, shouldSendFullResponseToIfNoneMatchRequestsWithMismatchingEtag)
+{
+  const auto g = client1_->Get("/");
+  const auto etag = g->get_header_value("Etag");
+  const auto etag2 = etag.substr(0, etag.size() - 1) + "x\"";
+  const auto h = client1_->Head("/", { {"If-None-Match", etag2} } );
+  const auto g2 = client1_->Get("/", { {"If-None-Match", etag2} } );
+  EXPECT_EQ(200, h->status);
+  EXPECT_EQ(200, g2->status);
 }
