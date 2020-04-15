@@ -48,7 +48,7 @@ ZimFileServer::~ZimFileServer()
   server->stop();
 }
 
-class Server : public ::testing::Test
+class ServerTest : public ::testing::Test
 {
 protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
@@ -69,12 +69,12 @@ protected:
   }
 };
 
-TEST_F(Server, shouldSupportTheHeadMethod)
+TEST_F(ServerTest, HeadMethodIsSupported)
 {
   ASSERT_EQ(200, client1_->Head("/")->status);
 }
 
-TEST_F(Server, shouldSetTheETagHeader)
+TEST_F(ServerTest, ETagHeaderIsSet)
 {
   const auto responseToGet = client1_->Get("/");
   EXPECT_TRUE(responseToGet->has_header("ETag"));
@@ -85,28 +85,28 @@ TEST_F(Server, shouldSetTheETagHeader)
   EXPECT_TRUE(is_valid_etag(responseToHead->get_header_value("ETag")));
 }
 
-TEST_F(Server, shouldUseTheSameEtagInResponsesToDifferentRequestsOfTheSameURL)
+TEST_F(ServerTest, EtagIsTheSameInResponsesToDifferentRequestsOfTheSameURL)
 {
   const auto h1 = client1_->Head("/");
   const auto h2 = client1_->Head("/");
   ASSERT_EQ(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
 }
 
-TEST_F(Server, shouldUseTheSameEtagForHeadAndGet)
+TEST_F(ServerTest, EtagIsTheSameAcrossHeadAndGet)
 {
   const auto g = client1_->Get("/");
   const auto h = client1_->Head("/");
   ASSERT_EQ(h->get_header_value("ETag"), g->get_header_value("ETag"));
 }
 
-TEST_F(Server, differentServerInstancesShouldProduceDifferentETags)
+TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
 {
   const auto h1 = client1_->Head("/");
   const auto h2 = client2_->Head("/");
   ASSERT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
 }
 
-TEST_F(Server, shouldRespondWith304ToIfNoneMatchRequestsWithMatchingEtag)
+TEST_F(ServerTest, IfNoneMatchRequestsWithMatchingEtagResultIn304Responses)
 {
   const auto g = client1_->Get("/");
   const auto etag = g->get_header_value("Etag");
@@ -116,7 +116,7 @@ TEST_F(Server, shouldRespondWith304ToIfNoneMatchRequestsWithMatchingEtag)
   EXPECT_EQ(304, g2->status);
 }
 
-TEST_F(Server, shouldSendFullResponseToIfNoneMatchRequestsWithMismatchingEtag)
+TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingEtagResultIn200Responses)
 {
   const auto g = client1_->Get("/");
   const auto etag = g->get_header_value("Etag");
