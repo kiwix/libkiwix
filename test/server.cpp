@@ -66,7 +66,7 @@ ZimFileServer::~ZimFileServer()
   server->stop();
 }
 
-class ServerTest : public ::testing::Test
+class ServerTest : public ::testing::TestWithParam<const char*>
 {
 protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
@@ -82,89 +82,95 @@ protected:
   void TearDown() override {
     zfs1_.reset();
   }
+
+  const char* test_path() const { return GetParam(); }
 };
 
-TEST_F(ServerTest, HeadMethodIsSupported)
+TEST_P(ServerTest, HeadMethodIsSupported)
 {
-  ASSERT_EQ(200, zfs1_->HEAD("/")->status);
+  ASSERT_EQ(200, zfs1_->HEAD(test_path())->status);
 }
 
-TEST_F(ServerTest, TheResponseToHeadRequestHasNoBody)
+TEST_P(ServerTest, TheResponseToHeadRequestHasNoBody)
 {
-  ASSERT_TRUE(zfs1_->HEAD("/")->body.empty());
+  ASSERT_TRUE(zfs1_->HEAD(test_path())->body.empty());
 }
 
-TEST_F(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
+TEST_P(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
 {
-  httplib::Headers g = zfs1_->GET("/")->headers;
-  httplib::Headers h = zfs1_->HEAD("/")->headers;
+  httplib::Headers g = zfs1_->GET(test_path())->headers;
+  httplib::Headers h = zfs1_->HEAD(test_path())->headers;
   g.erase("Date");
   h.erase("Date");
   ASSERT_EQ(g, h);
 }
 
-TEST_F(ServerTest, ETagHeaderIsSet)
+TEST_P(ServerTest, ETagHeaderIsSet)
 {
-  const auto responseToGet = zfs1_->GET("/");
+  const auto responseToGet = zfs1_->GET(test_path());
   EXPECT_TRUE(responseToGet->has_header("ETag"));
   EXPECT_TRUE(is_valid_etag(responseToGet->get_header_value("ETag")));
 
-  const auto responseToHead = zfs1_->HEAD("/");
+  const auto responseToHead = zfs1_->HEAD(test_path());
   EXPECT_TRUE(responseToHead->has_header("ETag"));
   EXPECT_TRUE(is_valid_etag(responseToHead->get_header_value("ETag")));
 }
 
-TEST_F(ServerTest, EtagIsTheSameInResponsesToDifferentRequestsOfTheSameURL)
+TEST_P(ServerTest, EtagIsTheSameInResponsesToDifferentRequestsOfTheSameURL)
 {
-  const auto h1 = zfs1_->HEAD("/");
-  const auto h2 = zfs1_->HEAD("/");
+  const auto h1 = zfs1_->HEAD(test_path());
+  const auto h2 = zfs1_->HEAD(test_path());
   ASSERT_EQ(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
 }
 
-TEST_F(ServerTest, EtagIsTheSameAcrossHeadAndGet)
+TEST_P(ServerTest, EtagIsTheSameAcrossHeadAndGet)
 {
-  const auto g = zfs1_->GET("/");
-  const auto h = zfs1_->HEAD("/");
+  const auto g = zfs1_->GET(test_path());
+  const auto h = zfs1_->HEAD(test_path());
   ASSERT_EQ(h->get_header_value("ETag"), g->get_header_value("ETag"));
 }
 
-TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
+TEST_P(ServerTest, DifferentServerInstancesProduceDifferentETags)
 {
   ZimFileServer zfs2(PORT + 1, ZIMFILE);
-  const auto h1 = zfs1_->HEAD("/");
-  const auto h2 = zfs2.HEAD("/");
+  const auto h1 = zfs1_->HEAD(test_path());
+  const auto h2 = zfs2.HEAD(test_path());
   ASSERT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
 }
 
-TEST_F(ServerTest, IfNoneMatchRequestsWithMatchingEtagResultIn304Responses)
+TEST_P(ServerTest, IfNoneMatchRequestsWithMatchingEtagResultIn304Responses)
 {
-  const auto g = zfs1_->GET("/");
+  const auto g = zfs1_->GET(test_path());
   const auto etag = g->get_header_value("Etag");
-  const auto h = zfs1_->HEAD("/", { {"If-None-Match", etag} } );
-  const auto g2 = zfs1_->GET("/", { {"If-None-Match", etag} } );
+  const auto h = zfs1_->HEAD(test_path(), { {"If-None-Match", etag} } );
+  const auto g2 = zfs1_->GET(test_path(), { {"If-None-Match", etag} } );
   EXPECT_EQ(304, h->status);
   EXPECT_EQ(304, g2->status);
 }
 
-TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingEtagResultIn200Responses)
+TEST_P(ServerTest, IfNoneMatchRequestsWithMismatchingEtagResultIn200Responses)
 {
-  const auto g = zfs1_->GET("/");
+  const auto g = zfs1_->GET(test_path());
   const auto etag = g->get_header_value("Etag");
   const auto etag2 = etag.substr(0, etag.size() - 1) + "x\"";
-  const auto h = zfs1_->HEAD("/", { {"If-None-Match", etag2} } );
-  const auto g2 = zfs1_->GET("/", { {"If-None-Match", etag2} } );
+  const auto h = zfs1_->HEAD(test_path(), { {"If-None-Match", etag2} } );
+  const auto g2 = zfs1_->GET(test_path(), { {"If-None-Match", etag2} } );
   EXPECT_EQ(200, h->status);
   EXPECT_EQ(200, g2->status);
 }
 
-TEST_F(ServerTest, ETagDependsOnTheValueOfAcceptEncodingHeader)
+TEST_P(ServerTest, ETagDependsOnTheValueOfAcceptEncodingHeader)
 {
-  const auto h1 = zfs1_->HEAD("/");
-  const auto h2 = zfs1_->HEAD("/", { {"Accept-Encoding", "deflate"} } );
-  const auto h3 = zfs1_->HEAD("/", { {"Accept-Encoding", ""} } );
+  const auto h1 = zfs1_->HEAD(test_path());
+  const auto h2 = zfs1_->HEAD(test_path(), { {"Accept-Encoding", "deflate"} } );
+  const auto h3 = zfs1_->HEAD(test_path(), { {"Accept-Encoding", ""} } );
   ASSERT_EQ(200, h2->status);
   ASSERT_EQ(200, h3->status);
   EXPECT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
   EXPECT_NE(h1->get_header_value("ETag"), h3->get_header_value("ETag"));
   EXPECT_NE(h2->get_header_value("ETag"), h3->get_header_value("ETag"));
 }
+
+INSTANTIATE_TEST_CASE_P(Kiwix,
+                        ServerTest,
+                        ::testing::Values("/", "/zimfile/A/index"));
