@@ -89,6 +89,20 @@ TEST_F(ServerTest, HeadMethodIsSupported)
   ASSERT_EQ(200, zfs1_->HEAD("/")->status);
 }
 
+TEST_F(ServerTest, TheResponseToHeadRequestHasNoBody)
+{
+  ASSERT_TRUE(zfs1_->HEAD("/")->body.empty());
+}
+
+TEST_F(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
+{
+  httplib::Headers g = zfs1_->GET("/")->headers;
+  httplib::Headers h = zfs1_->HEAD("/")->headers;
+  g.erase("Date");
+  h.erase("Date");
+  ASSERT_EQ(g, h);
+}
+
 TEST_F(ServerTest, ETagHeaderIsSet)
 {
   const auto responseToGet = zfs1_->GET("/");
