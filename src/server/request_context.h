@@ -82,6 +82,7 @@ class RequestContext {
     std::pair<int, int> get_range() const;
 
     bool can_compress() const { return acceptEncodingDeflate; }
+    std::string hash(const std::string& seed) const;
 
   private:
     std::string full_url;

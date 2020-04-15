@@ -26,6 +26,8 @@
 #include <cstdio>
 #include <atomic>
 
+#include <zim/uuid.h>
+
 namespace kiwix {
 
 static std::atomic_ullong s_requestIndex(0);
@@ -203,6 +205,13 @@ std::string RequestContext::get_argument(const std::string& name) const {
 
 std::string RequestContext::get_header(const std::string& name) const {
   return headers.at(name);
+}
+
+std::string RequestContext::hash(const std::string& seed) const {
+  const zim::Uuid uuid = zim::Uuid::generate(seed + ";" + full_url);
+  std::ostringstream ss;
+  ss << uuid;
+  return ss.str();
 }
 
 }

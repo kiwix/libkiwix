@@ -129,6 +129,7 @@ class InternalServer {
     MustacheData homepage_data() const;
     Response get_default_response();
 
+    std::string make_etag(const RequestContext& r) const;
     bool client_already_has_this_entity(const RequestContext& request) const;
 
   private: // data
@@ -145,7 +146,7 @@ class InternalServer {
     Library* mp_library;
     NameMapper* mp_nameMapper;
 
-    std::string m_etag;
+    std::string m_etag_seed;
 };
 
 
@@ -254,7 +255,7 @@ bool InternalServer::start() {
     return false;
   }
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
-  m_etag = "\"" + kiwix::to_string(server_start_time.count()) + "\"";
+  m_etag_seed = kiwix::to_string(server_start_time.count());
   return true;
 }
 
@@ -431,10 +432,15 @@ MustacheData InternalServer::homepage_data() const
   return data;
 }
 
-bool InternalServer::client_already_has_this_entity(const RequestContext& request) const
+std::string InternalServer::make_etag(const RequestContext& r) const
+{
+  return "\"" + r.hash(m_etag_seed) + "\"";
+}
+
+bool InternalServer::client_already_has_this_entity(const RequestContext& r) const
 {
   try {
-    return m_etag == request.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
+    return r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH) == make_etag(r);
   } catch (const std::out_of_range&) {
     return false;
   }
@@ -455,7 +461,7 @@ Response InternalServer::build_homepage(const RequestContext& request)
     response.set_compress(true);
     response.set_taskbar("", "");
   }
-  response.set_etag(m_etag);
+  response.set_etag(make_etag(request));
   return response;
 }
 
