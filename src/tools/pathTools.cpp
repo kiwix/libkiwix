@@ -435,6 +435,7 @@ std::string getDataDirectory()
 #endif
   if (!dataDir.empty()) {
     dataDir = appendToDirectory(dataDir, "kiwix");
+    makeDirectory(dataDir);
     return dataDir;
   }
 
