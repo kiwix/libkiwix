@@ -207,8 +207,25 @@ std::string RequestContext::get_header(const std::string& name) const {
   return headers.at(name);
 }
 
+namespace
+{
+
+// The list of headers that must be included in the computation
+// of the ETag corresponding to a given request
+std::string request_descriptor_headers[] = {
+  "Accept-Encoding"
+};
+
+} // unnamed namespace
+
 std::string RequestContext::hash(const std::string& seed) const {
-  const zim::Uuid uuid = zim::Uuid::generate(seed + ";" + full_url);
+  std::string request_descriptor;
+  for ( const auto& header_name : request_descriptor_headers ) {
+    try {
+      request_descriptor += header_name + ":" + get_header(header_name);
+    } catch (const std::out_of_range&) {}
+  }
+  const zim::Uuid uuid = zim::Uuid::generate(seed + ";" + request_descriptor);
   std::ostringstream ss;
   ss << uuid;
   return ss.str();

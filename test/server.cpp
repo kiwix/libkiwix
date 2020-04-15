@@ -156,3 +156,15 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingEtagResultIn200Responses)
   EXPECT_EQ(200, h->status);
   EXPECT_EQ(200, g2->status);
 }
+
+TEST_F(ServerTest, ETagDependsOnTheValueOfAcceptEncodingHeader)
+{
+  const auto h1 = zfs1_->HEAD("/");
+  const auto h2 = zfs1_->HEAD("/", { {"Accept-Encoding", "deflate"} } );
+  const auto h3 = zfs1_->HEAD("/", { {"Accept-Encoding", ""} } );
+  ASSERT_EQ(200, h2->status);
+  ASSERT_EQ(200, h3->status);
+  EXPECT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
+  EXPECT_NE(h1->get_header_value("ETag"), h3->get_header_value("ETag"));
+  EXPECT_NE(h2->get_header_value("ETag"), h3->get_header_value("ETag"));
+}
