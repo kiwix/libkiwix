@@ -115,6 +115,7 @@ class InternalServer {
     Response handle_request(const RequestContext& request);
     Response build_500(const std::string& msg);
     Response build_404(const RequestContext& request, const std::string& zimName);
+    Response build_redirect(const std::string& bookName, const kiwix::Entry& entry) const;
     Response build_homepage(const RequestContext& request);
     Response handle_skin(const RequestContext& request);
     Response handle_catalog(const RequestContext& request);
@@ -721,10 +722,7 @@ Response InternalServer::handle_random(const RequestContext& request)
 
   try {
     auto entry = reader->getRandomPage();
-    entry = entry.getFinalEntry();
-    auto response = get_default_response();
-    response.set_redirection(m_root + "/" + bookName + "/" + kiwix::urlEncode(entry.getPath()));
-    return response;
+    return build_redirect(bookName, entry.getFinalEntry());
   } catch(kiwix::NoEntry& e) {
     return build_404(request, bookName);
   }
@@ -876,6 +874,15 @@ InternalServer::get_reader(const std::string& bookName) const
   return reader;
 }
 
+Response
+InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
+{
+  auto response = get_default_response();
+  response.set_redirection(m_root + "/" + bookName + "/" +
+                           kiwix::urlEncode(entry.getPath()));
+  return response;
+}
+
 Response InternalServer::handle_content(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -905,11 +912,7 @@ Response InternalServer::handle_content(const RequestContext& request)
     if (entry.isRedirect() || urlStr.empty()) {
       // If urlStr is empty, we want to mainPage.
       // We must do a redirection to the real page.
-      entry = entry.getFinalEntry();
-      auto response = get_default_response();
-      response.set_redirection(m_root + "/" + bookName + "/" +
-        kiwix::urlEncode(entry.getPath()));
-      return response;
+      return build_redirect(bookName, entry.getFinalEntry());
     }
   } catch(kiwix::NoEntry& e) {
     if (m_verbose.load())
