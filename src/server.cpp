@@ -846,6 +846,15 @@ std::string get_book_name(const RequestContext& request)
   }
 }
 
+std::string get_mime_type(const kiwix::Entry& entry)
+{
+  try {
+    return entry.getMimetype();
+  } catch (exception& e) {
+    return "application/octet-stream";
+  }
+}
+
 } // unnamed namespace
 
 std::shared_ptr<Reader>
@@ -866,9 +875,7 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("** running handle_content\n");
   }
 
-  std::string baseUrl;
   std::string content;
-  std::string mimeType;
 
   kiwix::Entry entry;
 
@@ -904,11 +911,7 @@ Response InternalServer::handle_content(const RequestContext& request)
     return build_404(request, bookName);
   }
 
-  try {
-    mimeType = entry.getMimetype();
-  } catch (exception& e) {
-    mimeType = "application/octet-stream";
-  }
+  const std::string mimeType = get_mime_type(entry);
 
   if (m_verbose.load()) {
     printf("Found %s\n", urlStr.c_str());
