@@ -129,6 +129,9 @@ class InternalServer {
     MustacheData homepage_data() const;
     Response get_default_response();
 
+    std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
+
+  private: // data
     std::string m_addr;
     int m_port;
     std::string m_root;
@@ -845,6 +848,18 @@ std::string get_book_name(const RequestContext& request)
 
 } // unnamed namespace
 
+std::shared_ptr<Reader>
+InternalServer::get_reader(const std::string& bookName) const
+{
+  std::shared_ptr<Reader> reader;
+  try {
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    reader = mp_library->getReaderById(bookId);
+  } catch (const std::out_of_range& e) {
+  }
+  return reader;
+}
+
 Response InternalServer::handle_content(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -861,15 +876,7 @@ Response InternalServer::handle_content(const RequestContext& request)
   if (bookName.empty())
     return build_homepage(request);
 
-  std::string bookId;
-  std::shared_ptr<Reader> reader;
-  try {
-    bookId = mp_nameMapper->getIdForName(bookName);
-    reader = mp_library->getReaderById(bookId);
-  } catch (const std::out_of_range& e) {
-    return build_404(request, bookName);
-  }
-
+  const std::shared_ptr<Reader> reader = get_reader(bookName);
   if (reader == nullptr) {
     return build_404(request, bookName);
   }
