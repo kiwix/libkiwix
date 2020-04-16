@@ -86,9 +86,70 @@ protected:
   const char* test_path() const { return GetParam(); }
 };
 
+struct Resource
+{
+  const char* url;
+};
+
+Resource resources200[] = {
+  { "/" },
+
+  { "/skin/jquery-ui/jquery-ui.structure.min.css" },
+  { "/skin/jquery-ui/jquery-ui.min.js" },
+  { "/skin/jquery-ui/external/jquery/jquery.js" },
+  { "/skin/jquery-ui/images/ui-bg_flat_0_aaaaaa_40x100.png" },
+  { "/skin/jquery-ui/images/ui-bg_flat_75_ffffff_40x100.png" },
+  { "/skin/jquery-ui/images/ui-icons_222222_256x240.png" },
+  { "/skin/jquery-ui/images/ui-bg_glass_55_fbf9ee_1x400.png" },
+  { "/skin/jquery-ui/images/ui-bg_highlight-soft_75_cccccc_1x100.png" },
+  { "/skin/jquery-ui/images/ui-bg_glass_65_ffffff_1x400.png" },
+  { "/skin/jquery-ui/images/ui-icons_2e83ff_256x240.png" },
+  { "/skin/jquery-ui/images/ui-icons_cd0a0a_256x240.png" },
+  { "/skin/jquery-ui/images/ui-icons_888888_256x240.png" },
+  { "/skin/jquery-ui/images/ui-bg_glass_75_e6e6e6_1x400.png" },
+  { "/skin/jquery-ui/images/animated-overlay.gif" },
+  { "/skin/jquery-ui/images/ui-bg_glass_75_dadada_1x400.png" },
+  { "/skin/jquery-ui/images/ui-icons_454545_256x240.png" },
+  { "/skin/jquery-ui/images/ui-bg_glass_95_fef1ec_1x400.png" },
+  { "/skin/jquery-ui/jquery-ui.theme.min.css" },
+  { "/skin/jquery-ui/jquery-ui.min.css" },
+  { "/skin/caret.png" },
+  { "/skin/taskbar.js" },
+  { "/skin/taskbar.css" },
+  { "/skin/block_external.js" },
+
+  { "/catalog/root.xml" },
+  { "/catalog/searchdescription.xml" },
+  { "/catalog/search" },
+
+  { "/meta?content=zimfile&name=title" },
+  { "/meta?content=zimfile&name=description" },
+  { "/meta?content=zimfile&name=language" },
+  { "/meta?content=zimfile&name=name" },
+  { "/meta?content=zimfile&name=tags" },
+  { "/meta?content=zimfile&name=date" },
+  { "/meta?content=zimfile&name=creator" },
+  { "/meta?content=zimfile&name=publisher" },
+  { "/meta?content=zimfile&name=favicon" },
+
+  { "/search?content=zimfile&pattern=abcd" },
+
+  { "/suggest?content=zimfile&term=abcd" },
+
+  { "/catch/external?source=www.example.com" },
+
+  { "/zimfile/A/index" },
+};
+
+TEST_F(ServerTest, 200)
+{
+  for ( const Resource& res : resources200 )
+    EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
+}
+
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
 {
-  auto g = zfs1_->HEAD("/zimfile");
+  auto g = zfs1_->GET("/zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
   ASSERT_EQ("/zimfile/A/index", g->get_header_value("Location"));
