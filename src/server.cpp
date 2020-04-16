@@ -920,10 +920,6 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("** running handle_content\n");
   }
 
-  std::string content;
-
-  kiwix::Entry entry;
-
   const std::string bookName = get_book_name(request);
   if (bookName.empty())
     return build_homepage(request);
@@ -938,18 +934,21 @@ Response InternalServer::handle_content(const RequestContext& request)
     urlStr = urlStr.substr(1);
   }
 
+  kiwix::Entry entry;
+
   try {
     entry = reader->getEntryFromPath(urlStr);
-    if (entry.isRedirect() || urlStr.empty()) {
-      // If urlStr is empty, we want to mainPage.
-      // We must do a redirection to the real page.
-      return build_redirect(bookName, entry.getFinalEntry());
-    }
   } catch(kiwix::NoEntry& e) {
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
     return build_404(request, bookName);
+  }
+
+  if (entry.isRedirect() || urlStr.empty()) {
+    // If urlStr is empty, we want to mainPage.
+    // We must do a redirection to the real page.
+    return build_redirect(bookName, entry.getFinalEntry());
   }
 
   const std::string mimeType = get_mime_type(entry);
@@ -958,6 +957,8 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("Found %s\n", urlStr.c_str());
     printf("mimeType: %s\n", mimeType.c_str());
   }
+
+  std::string content;
 
   if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
