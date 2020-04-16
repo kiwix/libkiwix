@@ -889,10 +889,6 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("** running handle_content\n");
   }
 
-  std::string content;
-
-  kiwix::Entry entry;
-
   const std::string bookName = get_book_name(request);
   if (bookName.empty())
     return build_homepage(request);
@@ -906,6 +902,8 @@ Response InternalServer::handle_content(const RequestContext& request)
   if (urlStr[0] == '/') {
     urlStr = urlStr.substr(1);
   }
+
+  kiwix::Entry entry;
 
   try {
     entry = reader->getEntryFromPath(urlStr);
@@ -927,6 +925,8 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("Found %s\n", urlStr.c_str());
     printf("mimeType: %s\n", mimeType.c_str());
   }
+
+  std::string content;
 
   if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
