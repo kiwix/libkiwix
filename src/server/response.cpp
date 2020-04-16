@@ -140,85 +140,99 @@ void Response::inject_externallinks_blocker()
 }
 
 MHD_Response*
-Response::create_mhd_response(const RequestContext& request)
+Response::create_raw_content_mhd_response(const RequestContext& request)
 {
-  MHD_Response* response = nullptr;
-  switch (m_mode) {
-    case ResponseMode::RAW_CONTENT : {
-      if (m_addTaskbar) {
-        introduce_taskbar();
-      }
-      if ( m_blockExternalLinks ) {
-        inject_externallinks_blocker();
-      }
+  if (m_addTaskbar) {
+    introduce_taskbar();
+  }
+  if ( m_blockExternalLinks ) {
+    inject_externallinks_blocker();
+  }
 
-      bool shouldCompress = m_compress && request.can_compress();
-      shouldCompress &= m_mimeType.find("text/") != string::npos
-                     || m_mimeType.find("application/javascript") != string::npos
-                     || m_mimeType.find("application/json") != string::npos;
+  bool shouldCompress = m_compress && request.can_compress();
+  shouldCompress &= m_mimeType.find("text/") != string::npos
+                 || m_mimeType.find("application/javascript") != string::npos
+                 || m_mimeType.find("application/json") != string::npos;
 
-      shouldCompress &= (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE);
+  shouldCompress &= (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE);
 
-      if (shouldCompress) {
-        std::vector<Bytef> compr_buffer(compressBound(m_content.size()));
-        uLongf comprLen = compr_buffer.capacity();
-        int err = compress(&compr_buffer[0],
-                           &comprLen,
-                           (const Bytef*)(m_content.data()),
-                           m_content.size());
-        if (err == Z_OK && comprLen > 2 && comprLen < (m_content.size() + 2)) {
-          /* /!\ Internet Explorer has a bug with deflate compression.
-             It can not handle the first two bytes (compression headers)
-             We need to chunk them off (move the content 2bytes)
-             It has no incidence on other browsers
-             See http://www.subbu.org/blog/2008/03/ie7-deflate-or-not and comments */
-          m_content = string((char*)&compr_buffer[2], comprLen - 2);
-        } else {
-          shouldCompress = false;
-        }
-      }
-
-      response = MHD_create_response_from_buffer(
-        m_content.size(), const_cast<char*>(m_content.data()), MHD_RESPMEM_MUST_COPY);
-
-      if (shouldCompress) {
-        MHD_add_response_header(
-            response, MHD_HTTP_HEADER_VARY, "Accept-Encoding");
-        MHD_add_response_header(
-            response, MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
-      }
-      MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
-      break;
-    }
-
-    case ResponseMode::REDIRECTION : {
-      response = MHD_create_response_from_buffer(0, nullptr, MHD_RESPMEM_MUST_COPY);
-      MHD_add_response_header(response, MHD_HTTP_HEADER_LOCATION, m_content.c_str());
-      break;
-    }
-
-    case ResponseMode::ENTRY : {
-      response = MHD_create_response_from_callback(m_entry.getSize(),
-                                                   16384,
-                                                   callback_reader_from_entry,
-                                                   new RunningResponse(m_entry, m_startRange),
-                                                   callback_free_response);
-      MHD_add_response_header(response,
-        MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
-      MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
-      std::ostringstream oss;
-      oss << "bytes " << m_startRange << "-" << m_startRange + m_lenRange - 1
-          << "/" << m_entry.getSize();
-
-      MHD_add_response_header(response,
-        MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
-
-      MHD_add_response_header(response,
-        MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(m_lenRange).c_str());
-      break;
+  if (shouldCompress) {
+    std::vector<Bytef> compr_buffer(compressBound(m_content.size()));
+    uLongf comprLen = compr_buffer.capacity();
+    int err = compress(&compr_buffer[0],
+                       &comprLen,
+                       (const Bytef*)(m_content.data()),
+                       m_content.size());
+    if (err == Z_OK && comprLen > 2 && comprLen < (m_content.size() + 2)) {
+      /* /!\ Internet Explorer has a bug with deflate compression.
+         It can not handle the first two bytes (compression headers)
+         We need to chunk them off (move the content 2bytes)
+         It has no incidence on other browsers
+         See http://www.subbu.org/blog/2008/03/ie7-deflate-or-not and comments */
+      m_content = string((char*)&compr_buffer[2], comprLen - 2);
+    } else {
+      shouldCompress = false;
     }
   }
+
+  MHD_Response* response = MHD_create_response_from_buffer(
+    m_content.size(), const_cast<char*>(m_content.data()), MHD_RESPMEM_MUST_COPY);
+
+  if (shouldCompress) {
+    MHD_add_response_header(
+        response, MHD_HTTP_HEADER_VARY, "Accept-Encoding");
+    MHD_add_response_header(
+        response, MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
+  }
+  MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
   return response;
+}
+
+MHD_Response*
+Response::create_redirection_mhd_response() const
+{
+  MHD_Response* response = MHD_create_response_from_buffer(0, nullptr, MHD_RESPMEM_MUST_COPY);
+  MHD_add_response_header(response, MHD_HTTP_HEADER_LOCATION, m_content.c_str());
+  return response;
+}
+
+MHD_Response*
+Response::create_entry_mhd_response() const
+{
+  MHD_Response* response = MHD_create_response_from_callback(m_entry.getSize(),
+                                               16384,
+                                               callback_reader_from_entry,
+                                               new RunningResponse(m_entry, m_startRange),
+                                               callback_free_response);
+  MHD_add_response_header(response,
+    MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
+  MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
+  std::ostringstream oss;
+  oss << "bytes " << m_startRange << "-" << m_startRange + m_lenRange - 1
+      << "/" << m_entry.getSize();
+
+  MHD_add_response_header(response,
+    MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
+
+  MHD_add_response_header(response,
+    MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(m_lenRange).c_str());
+  return response;
+}
+
+MHD_Response*
+Response::create_mhd_response(const RequestContext& request)
+{
+  switch (m_mode) {
+    case ResponseMode::RAW_CONTENT :
+      return create_raw_content_mhd_response(request);
+
+    case ResponseMode::REDIRECTION :
+      return create_redirection_mhd_response();
+
+    case ResponseMode::ENTRY :
+      return create_entry_mhd_response();
+  }
+  return nullptr;
 }
 
 int Response::send(const RequestContext& request, MHD_Connection* connection)
