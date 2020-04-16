@@ -82,12 +82,35 @@ struct Resource
   const char* url;
 };
 
-Resource resources200[] = {
+std::ostream& operator<<(std::ostream& out, const Resource& r)
+{
+  out << "url: " << r.url;
+  return out;
+}
+
+Resource resources200Compressible[] = {
   { "/" },
 
   { "/skin/jquery-ui/jquery-ui.structure.min.css" },
   { "/skin/jquery-ui/jquery-ui.min.js" },
   { "/skin/jquery-ui/external/jquery/jquery.js" },
+  { "/skin/jquery-ui/jquery-ui.theme.min.css" },
+  { "/skin/jquery-ui/jquery-ui.min.css" },
+  { "/skin/taskbar.js" },
+  { "/skin/taskbar.css" },
+  { "/skin/block_external.js" },
+
+  { "/search?content=zimfile&pattern=abcd" },
+
+  { "/suggest?content=zimfile&term=ray" },
+
+  { "/catch/external?source=www.example.com" },
+
+  { "/zimfile/A/index" },
+  { "/zimfile/A/Ray_Charles" },
+};
+
+Resource resources200Uncompressible[] = {
   { "/skin/jquery-ui/images/ui-bg_flat_0_aaaaaa_40x100.png" },
   { "/skin/jquery-ui/images/ui-bg_flat_75_ffffff_40x100.png" },
   { "/skin/jquery-ui/images/ui-icons_222222_256x240.png" },
@@ -102,12 +125,7 @@ Resource resources200[] = {
   { "/skin/jquery-ui/images/ui-bg_glass_75_dadada_1x400.png" },
   { "/skin/jquery-ui/images/ui-icons_454545_256x240.png" },
   { "/skin/jquery-ui/images/ui-bg_glass_95_fef1ec_1x400.png" },
-  { "/skin/jquery-ui/jquery-ui.theme.min.css" },
-  { "/skin/jquery-ui/jquery-ui.min.css" },
   { "/skin/caret.png" },
-  { "/skin/taskbar.js" },
-  { "/skin/taskbar.css" },
-  { "/skin/block_external.js" },
 
   { "/catalog/root.xml" },
   { "/catalog/searchdescription.xml" },
@@ -123,19 +141,36 @@ Resource resources200[] = {
   { "/meta?content=zimfile&name=publisher" },
   { "/meta?content=zimfile&name=favicon" },
 
-  { "/search?content=zimfile&pattern=abcd" },
-
-  { "/suggest?content=zimfile&term=abcd" },
-
-  { "/catch/external?source=www.example.com" },
-
-  { "/zimfile/A/index" },
+  { "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 };
+
 
 TEST_F(ServerTest, 200)
 {
-  for ( const Resource& res : resources200 )
+  for ( const Resource& res : resources200Compressible )
     EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
+
+  for ( const Resource& res : resources200Uncompressible )
+    EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
+}
+
+TEST_F(ServerTest, CompressibleContentIsCompressedIfAcceptable)
+{
+  for ( const Resource& res : resources200Compressible ) {
+    const auto x = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} });
+    EXPECT_EQ(200, x->status) << res;
+    EXPECT_EQ("deflate", x->get_header_value("Content-Encoding")) << res;
+    EXPECT_EQ("Accept-Encoding", x->get_header_value("Vary")) << res;
+  }
+}
+
+TEST_F(ServerTest, UncompressibleContentIsNotCompressed)
+{
+  for ( const Resource& res : resources200Uncompressible ) {
+    const auto x = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} });
+    EXPECT_EQ(200, x->status) << res;
+    EXPECT_EQ("", x->get_header_value("Content-Encoding")) << res;
+  }
 }
 
 const char* urls404[] = {
