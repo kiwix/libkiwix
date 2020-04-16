@@ -86,6 +86,14 @@ protected:
   const char* test_path() const { return GetParam(); }
 };
 
+TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
+{
+  auto g = zfs1_->HEAD("/zimfile");
+  ASSERT_EQ(302, g->status);
+  ASSERT_TRUE(g->has_header("Location"));
+  ASSERT_EQ("/zimfile/A/index", g->get_header_value("Location"));
+}
+
 TEST_P(ServerTest, HeadMethodIsSupported)
 {
   ASSERT_EQ(200, zfs1_->HEAD(test_path())->status);
