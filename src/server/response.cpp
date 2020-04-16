@@ -139,8 +139,8 @@ void Response::inject_externallinks_blocker()
     script_tag);
 }
 
-
-int Response::send(const RequestContext& request, MHD_Connection* connection)
+MHD_Response*
+Response::create_mhd_response(const RequestContext& request)
 {
   MHD_Response* response = nullptr;
   switch (m_mode) {
@@ -218,6 +218,12 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
       break;
     }
   }
+  return response;
+}
+
+int Response::send(const RequestContext& request, MHD_Connection* connection)
+{
+  MHD_Response* response = create_mhd_response(request);
 
   MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
   MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,

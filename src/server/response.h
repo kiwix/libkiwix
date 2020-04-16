@@ -67,7 +67,10 @@ class Response {
     void introduce_taskbar();
     void inject_externallinks_blocker();
 
-  private:
+  private: // functions
+    MHD_Response* create_mhd_response(const RequestContext& request);
+
+  private: // data
     bool m_verbose;
     ResponseMode m_mode;
     std::string m_root;
