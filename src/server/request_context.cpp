@@ -222,7 +222,7 @@ std::string RequestContext::hash(const std::string& seed) const {
   std::string request_descriptor;
   for ( const auto& header_name : request_descriptor_headers ) {
     try {
-      request_descriptor += header_name + ":" + get_header(header_name);
+      request_descriptor += header_name + ":" + get_header(header_name) + ";";
     } catch (const std::out_of_range&) {}
   }
   const zim::Uuid uuid = zim::Uuid::generate(seed + ";" + request_descriptor);
