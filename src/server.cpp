@@ -863,6 +863,20 @@ Response InternalServer::handle_catalog(const RequestContext& request)
   return response;
 }
 
+namespace
+{
+
+std::string get_book_name(const RequestContext& request)
+{
+  try {
+    return request.get_url_part(0);
+  } catch (const std::out_of_range& e) {
+    return std::string();
+  }
+}
+
+} // unnamed namespace
+
 Response InternalServer::handle_content(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -875,12 +889,7 @@ Response InternalServer::handle_content(const RequestContext& request)
 
   kiwix::Entry entry;
 
-  std::string bookName;
-  try {
-    bookName = request.get_url_part(0);
-  } catch (const std::out_of_range& e) {
-    return build_homepage(request);
-  }
+  const std::string bookName = get_book_name(request);
   if (bookName.empty())
     return build_homepage(request);
 
