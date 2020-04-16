@@ -147,6 +147,28 @@ TEST_F(ServerTest, 200)
     EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
 }
 
+const char* urls404[] = {
+  "/non-existent-item",
+  "/skin/non-existent-skin-resource",
+  "/catalog/non-existent-item",
+  "/meta",
+  "/meta?content=zimfile",
+  "/meta?content=zimfile&name=non-existent-item",
+  "/meta?content=non-existent-book&name=title",
+  "/search",
+  "/suggest",
+  "/suggest?content=zimfile",
+  "/suggest?content=non-existent-book&term=abcd",
+  "/catch/external",
+  "/zimfile/A/non-existent-article",
+};
+
+TEST_F(ServerTest, 404)
+{
+  for ( const char* url : urls404 )
+    EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
+}
+
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
 {
   auto g = zfs1_->GET("/zimfile");
