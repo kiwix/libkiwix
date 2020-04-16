@@ -50,7 +50,7 @@ class Response {
     void set_template(const std::string& template_str, kainjow::mustache::data data);
     void set_content(const std::string& content);
     void set_redirection(const std::string& url);
-    void set_entry(const Entry& entry);
+    void set_entry(const Entry& entry, const RequestContext& request);
 
 
     void set_mimeType(const std::string& mimeType) { m_mimeType = mimeType; }

@@ -17,6 +17,35 @@
 
 namespace kiwix {
 
+namespace
+{
+// some utilities
+
+std::string get_mime_type(const kiwix::Entry& entry)
+{
+  try {
+    return entry.getMimetype();
+  } catch (exception& e) {
+    return "application/octet-stream";
+  }
+}
+
+bool is_compressible_mime_type(const std::string& mimeType)
+{
+  return mimeType.find("text/") != string::npos
+      || mimeType.find("application/javascript") != string::npos
+      || mimeType.find("application/json") != string::npos;
+}
+
+int get_range_len(const kiwix::Entry& entry, RequestContext::ByteRange range)
+{
+  return range.second == -1
+       ? entry.getSize() - range.first
+       : range.second - range.first;
+}
+
+} // unnamed namespace
+
 Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks)
   : m_verbose(verbose),
     m_root(root),
@@ -269,9 +298,25 @@ void Response::set_redirection(const std::string& url) {
   m_returnCode = MHD_HTTP_FOUND;
 }
 
-void Response::set_entry(const Entry& entry) {
+void Response::set_entry(const Entry& entry, const RequestContext& request) {
   m_entry = entry;
   m_mode = ResponseMode::ENTRY;
+
+  const std::string mimeType = get_mime_type(entry);
+  set_mimeType(mimeType);
+  set_cache(true);
+
+  if ( is_compressible_mime_type(mimeType) ) {
+    zim::Blob raw_content = entry.getBlob();
+    const std::string content = string(raw_content.data(), raw_content.size());
+
+    set_content(content);
+    set_compress(true);
+  } else {
+    const int range_len = get_range_len(entry, request.get_range());
+    set_range_first(request.get_range().first);
+    set_range_len(range_len);
+  }
 }
 
 void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle)
