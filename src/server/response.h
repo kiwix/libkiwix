@@ -68,6 +68,9 @@ class Response {
 
   private: // functions
     MHD_Response* create_mhd_response(const RequestContext& request);
+    MHD_Response* create_raw_content_mhd_response(const RequestContext& request);
+    MHD_Response* create_redirection_mhd_response() const;
+    MHD_Response* create_entry_mhd_response() const;
 
   private: // data
     bool m_verbose;
