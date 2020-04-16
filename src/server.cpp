@@ -966,14 +966,15 @@ Response InternalServer::handle_content(const RequestContext& request)
   }
 
   auto response = get_default_response();
+
+  ///////////////////////////////////////////////////////////
+  // This chunk of code should go into Response::set_entry()
   response.set_mimeType(mimeType);
   response.set_cache(true);
+
   if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
     const std::string content = string(raw_content.data(), raw_content.size());
-
-    if (mimeType.find("text/html") != string::npos)
-      response.set_taskbar(bookName, reader->getTitle());
 
     response.set_content(content);
     response.set_compress(true);
@@ -983,6 +984,12 @@ Response InternalServer::handle_content(const RequestContext& request)
     response.set_range_first(request.get_range().first);
     response.set_range_len(range_len);
   }
+  // This chunk of code should go into Response::set_entry()
+  ///////////////////////////////////////////////////////////
+
+  if (mimeType.find("text/html") != string::npos)
+    response.set_taskbar(bookName, reader->getTitle());
+
   return response;
 }
 
