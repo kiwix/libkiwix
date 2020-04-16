@@ -150,11 +150,14 @@ TEST_F(ServerTest, 200)
 const char* urls404[] = {
   "/non-existent-item",
   "/skin/non-existent-skin-resource",
+  "/catalog",
   "/catalog/non-existent-item",
   "/meta",
   "/meta?content=zimfile",
   "/meta?content=zimfile&name=non-existent-item",
   "/meta?content=non-existent-book&name=title",
+  "/random",
+  "/random?content=non-existent-book",
   "/search",
   "/suggest",
   "/suggest?content=zimfile",
@@ -167,6 +170,14 @@ TEST_F(ServerTest, 404)
 {
   for ( const char* url : urls404 )
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
+}
+
+TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
+{
+  auto g = zfs1_->GET("/random?content=zimfile");
+  ASSERT_EQ(302, g->status);
+  ASSERT_TRUE(g->has_header("Location"));
+  ASSERT_TRUE(g->get_header_value("Location").find("/zimfile/A/") != std::string::npos);
 }
 
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
