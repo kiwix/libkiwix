@@ -884,20 +884,6 @@ std::string get_mime_type(const kiwix::Entry& entry)
   }
 }
 
-bool is_compressible_mime_type(const std::string& mimeType)
-{
-  return mimeType.find("text/") != string::npos
-      || mimeType.find("application/javascript") != string::npos
-      || mimeType.find("application/json") != string::npos;
-}
-
-int get_range_len(const kiwix::Entry& entry, RequestContext::ByteRange range)
-{
-  return range.second == -1
-       ? entry.getSize() - range.first
-       : range.second - range.first;
-}
-
 } // unnamed namespace
 
 std::shared_ptr<Reader>
@@ -967,25 +953,7 @@ Response InternalServer::handle_content(const RequestContext& request)
 
   auto response = get_default_response();
 
-  ///////////////////////////////////////////////////////////
-  // This chunk of code should go into Response::set_entry()
-  response.set_mimeType(mimeType);
-  response.set_cache(true);
-
-  if ( is_compressible_mime_type(mimeType) ) {
-    zim::Blob raw_content = entry.getBlob();
-    const std::string content = string(raw_content.data(), raw_content.size());
-
-    response.set_content(content);
-    response.set_compress(true);
-  } else {
-    const int range_len = get_range_len(entry, request.get_range());
-    response.set_entry(entry);
-    response.set_range_first(request.get_range().first);
-    response.set_range_len(range_len);
-  }
-  // This chunk of code should go into Response::set_entry()
-  ///////////////////////////////////////////////////////////
+  response.set_entry(entry, request);
 
   if (mimeType.find("text/html") != string::npos)
     response.set_taskbar(bookName, reader->getTitle());
