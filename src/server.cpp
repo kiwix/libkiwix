@@ -127,7 +127,7 @@ class InternalServer {
 
     MustacheData get_default_data() const;
     MustacheData homepage_data() const;
-    Response get_default_response();
+    Response get_default_response() const;
 
     std::string make_etag(const RequestContext& r) const;
     bool client_already_has_this_entity(const RequestContext& request) const;
@@ -380,7 +380,7 @@ MustacheData InternalServer::get_default_data() const
   return data;
 }
 
-Response InternalServer::get_default_response()
+Response InternalServer::get_default_response() const
 {
   return Response(m_root, m_verbose.load(), m_withTaskbar, m_withLibraryButton, m_blockExternalLinks);
 }
