@@ -886,6 +886,13 @@ std::string get_mime_type(const kiwix::Entry& entry)
   }
 }
 
+bool is_compressible_mime_type(const std::string& mimeType)
+{
+  return mimeType.find("text/") != string::npos
+      || mimeType.find("application/javascript") != string::npos
+      || mimeType.find("application/json") != string::npos;
+}
+
 } // unnamed namespace
 
 std::shared_ptr<Reader>
@@ -949,9 +956,7 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("mimeType: %s\n", mimeType.c_str());
   }
 
-  if (mimeType.find("text/") != string::npos
-      || mimeType.find("application/javascript") != string::npos
-      || mimeType.find("application/json") != string::npos) {
+  if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
     content = string(raw_content.data(), raw_content.size());
     auto response = get_default_response();
