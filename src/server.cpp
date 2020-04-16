@@ -933,29 +933,25 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("mimeType: %s\n", mimeType.c_str());
   }
 
+  auto response = get_default_response();
+  response.set_mimeType(mimeType);
+  response.set_cache(true);
   if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
     const std::string content = string(raw_content.data(), raw_content.size());
-    auto response = get_default_response();
 
     if (mimeType.find("text/html") != string::npos)
       response.set_taskbar(bookName, reader->getTitle());
 
-    response.set_mimeType(mimeType);
     response.set_content(content);
     response.set_compress(true);
-    response.set_cache(true);
-    return response;
   } else {
     const int range_len = get_range_len(entry, request.get_range());
-    auto response = get_default_response();
     response.set_entry(entry);
-    response.set_mimeType(mimeType);
     response.set_range_first(request.get_range().first);
     response.set_range_len(range_len);
-    response.set_cache(true);
-    return response;
   }
+  return response;
 }
 
 }
