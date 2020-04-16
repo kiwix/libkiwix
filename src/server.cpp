@@ -936,17 +936,24 @@ Response InternalServer::handle_content(const RequestContext& request)
   }
 
   auto response = get_default_response();
-
-  response.set_entry(entry, request);
-
-  if (m_verbose.load()) {
-    printf("Found %s\n", entry.getPath().c_str());
-    printf("mimeType: %s\n", response.get_mimeType().c_str());
+  if ( client_already_has_this_entity(request) )
+  {
+    response.set_code(MHD_HTTP_NOT_MODIFIED);
+    response.set_content("");
   }
+  else
+  {
+    response.set_entry(entry, request);
 
-  if (response.get_mimeType().find("text/html") != string::npos)
-    response.set_taskbar(bookName, reader->getTitle());
+    if (m_verbose.load()) {
+      printf("Found %s\n", entry.getPath().c_str());
+      printf("mimeType: %s\n", response.get_mimeType().c_str());
+    }
 
+    if (response.get_mimeType().find("text/html") != string::npos)
+      response.set_taskbar(bookName, reader->getTitle());
+  }
+  response.set_etag(make_etag(request));
   return response;
 }
 
