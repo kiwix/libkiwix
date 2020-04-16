@@ -860,6 +860,13 @@ bool is_compressible_mime_type(const std::string& mimeType)
       || mimeType.find("application/json") != string::npos;
 }
 
+int get_range_len(const kiwix::Entry& entry, RequestContext::ByteRange range)
+{
+  return range.second == -1
+       ? entry.getSize() - range.first
+       : range.second - range.first;
+}
+
 } // unnamed namespace
 
 std::shared_ptr<Reader>
@@ -926,11 +933,9 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("mimeType: %s\n", mimeType.c_str());
   }
 
-  std::string content;
-
   if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
-    content = string(raw_content.data(), raw_content.size());
+    const std::string content = string(raw_content.data(), raw_content.size());
     auto response = get_default_response();
 
     if (mimeType.find("text/html") != string::npos)
@@ -942,12 +947,7 @@ Response InternalServer::handle_content(const RequestContext& request)
     response.set_cache(true);
     return response;
   } else {
-    int range_len;
-    if (request.get_range().second == -1) {
-       range_len = entry.getSize() - request.get_range().first;
-    } else {
-       range_len = request.get_range().second - request.get_range().first;
-    }
+    const int range_len = get_range_len(entry, request.get_range());
     auto response = get_default_response();
     response.set_entry(entry);
     response.set_mimeType(mimeType);

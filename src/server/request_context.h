@@ -51,7 +51,10 @@ class IndexError: public std::runtime_error {};
 
 
 class RequestContext {
-  public:
+  public: // types
+  typedef std::pair<int, int> ByteRange;
+
+  public: // functions
     RequestContext(struct MHD_Connection* connection,
                    std::string rootLocation,
                    const std::string& url,
@@ -79,11 +82,11 @@ class RequestContext {
     std::string get_full_url() const;
 
     bool has_range() const;
-    std::pair<int, int> get_range() const;
+    ByteRange get_range() const;
 
     bool can_compress() const { return acceptEncodingDeflate; }
 
-  private:
+  private: // data
     std::string full_url;
     std::string url;
     RequestMethod method;
@@ -93,10 +96,11 @@ class RequestContext {
     bool acceptEncodingDeflate;
 
     bool accept_range;
-    std::pair<int, int> range_pair;
+    ByteRange range_pair;
     std::map<std::string, std::string> headers;
     std::map<std::string, std::string> arguments;
 
+  private: // functions
     static int fill_header(void *, enum MHD_ValueKind, const char*, const char*);
     static int fill_argument(void *, enum MHD_ValueKind, const char*, const char*);
 };
