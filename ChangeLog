@@ -1,3 +1,8 @@
+kiwix-lib 9.1.1
+===============
+
+ * Fix the detection of the dataDirectory on windows.
+
 kiwix-lib 9.1.0
 ===============
 
