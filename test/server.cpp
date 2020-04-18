@@ -50,6 +50,8 @@ ZimFileServer::ZimFileServer(int serverPort, std::string zimpath)
 
   if ( !server->start() )
     throw std::runtime_error("ZimFileServer failed to start");
+  if ( serverPort == 0 )
+    serverPort = server->getPort();
 
   client.reset(new httplib::Client(address, serverPort));
 }
@@ -64,7 +66,7 @@ class ServerTest : public ::testing::Test
 protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
 
-  const int PORT = 8001;
+  const int PORT = 0;
   const std::string ZIMFILE = "./test/zimfile.zim";
 
 protected:

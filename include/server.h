@@ -53,6 +53,7 @@ namespace kiwix
        void setRoot(const std::string& root);
        void setAddress(const std::string& addr) { m_addr = addr; }
        void setPort(int port) { m_port = port; }
+       int getPort() const { return m_port; }
        void setNbThreads(int threads) { m_nbThreads = threads; }
        void setVerbose(bool verbose) { m_verbose = verbose; }
        void setTaskbar(bool withTaskbar, bool withLibraryButton)
