@@ -109,8 +109,6 @@ class InternalServer {
     bool start();
     void stop();
 
-    int getPort() const { return m_port; }
-
   private:
     Response handle_request(const RequestContext& request);
     Response build_500(const std::string& msg);
@@ -164,9 +162,7 @@ bool Server::start() {
     m_withTaskbar,
     m_withLibraryButton,
     m_blockExternalLinks));
-  auto s = mp_server->start();
-  m_port = mp_server->getPort();
-  return s;
+  return mp_server->start();
 }
 
 void Server::stop() {
@@ -249,8 +245,6 @@ bool InternalServer::start() {
               << std::endl;
     return false;
   }
-  if (m_port == 0)
-    m_port = MHD_get_daemon_info(mp_daemon, MHD_DAEMON_INFO_BIND_PORT)->port;
   return true;
 }
 
