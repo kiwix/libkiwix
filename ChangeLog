@@ -1,3 +1,8 @@
+kiwix-lib 9.1.2
+===============
+
+ * Do not use the pathToSave if it is empty.
+
 kiwix-lib 9.1.1
 ===============
 
