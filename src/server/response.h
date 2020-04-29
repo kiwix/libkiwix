@@ -50,7 +50,7 @@ class Response {
     void set_template(const std::string& template_str, kainjow::mustache::data data);
     void set_content(const std::string& content);
     void set_redirection(const std::string& url);
-    void set_entry(const Entry& entry);
+    void set_entry(const Entry& entry, const RequestContext& request);
 
 
     void set_mimeType(const std::string& mimeType) { m_mimeType = mimeType; }
@@ -62,11 +62,18 @@ class Response {
     void set_range_len(uint64_t len) { m_lenRange = len; }
 
     int getReturnCode() { return m_returnCode; }
+    std::string get_mimeType() const { return m_mimeType; }
 
     void introduce_taskbar();
     void inject_externallinks_blocker();
 
-  private:
+  private: // functions
+    MHD_Response* create_mhd_response(const RequestContext& request);
+    MHD_Response* create_raw_content_mhd_response(const RequestContext& request);
+    MHD_Response* create_redirection_mhd_response() const;
+    MHD_Response* create_entry_mhd_response() const;
+
+  private: // data
     bool m_verbose;
     ResponseMode m_mode;
     std::string m_root;

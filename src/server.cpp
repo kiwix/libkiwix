@@ -75,6 +75,8 @@ namespace kiwix {
 
 static IdNameMapper defaultNameMapper;
 
+typedef kainjow::mustache::data MustacheData;
+
 static int staticHandlerCallback(void* cls,
                                  struct MHD_Connection* connection,
                                  const char* url,
@@ -113,6 +115,7 @@ class InternalServer {
     Response handle_request(const RequestContext& request);
     Response build_500(const std::string& msg);
     Response build_404(const RequestContext& request, const std::string& zimName);
+    Response build_redirect(const std::string& bookName, const kiwix::Entry& entry) const;
     Response build_homepage(const RequestContext& request);
     Response handle_skin(const RequestContext& request);
     Response handle_catalog(const RequestContext& request);
@@ -123,9 +126,13 @@ class InternalServer {
     Response handle_captured_external(const RequestContext& request);
     Response handle_content(const RequestContext& request);
 
-    kainjow::mustache::data get_default_data();
-    Response get_default_response();
+    MustacheData get_default_data() const;
+    MustacheData homepage_data() const;
+    Response get_default_response() const;
 
+    std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
+
+  private: // data
     std::string m_addr;
     int m_port;
     std::string m_root;
@@ -359,14 +366,14 @@ Response InternalServer::handle_request(const RequestContext& request)
   }
 }
 
-kainjow::mustache::data InternalServer::get_default_data()
+MustacheData InternalServer::get_default_data() const
 {
-  kainjow::mustache::data data;
+  MustacheData data;
   data.set("root", m_root);
   return data;
 }
 
-Response InternalServer::get_default_response()
+Response InternalServer::get_default_response() const
 {
   return Response(m_root, m_verbose.load(), m_withTaskbar, m_withLibraryButton, m_blockExternalLinks);
 }
@@ -375,7 +382,7 @@ Response InternalServer::get_default_response()
 Response InternalServer::build_404(const RequestContext& request,
                                    const std::string& bookName)
 {
-  kainjow::mustache::data results;
+  MustacheData results;
   results.set("url", request.get_full_url());
 
   auto response = get_default_response();
@@ -390,7 +397,7 @@ Response InternalServer::build_404(const RequestContext& request,
 
 Response InternalServer::build_500(const std::string& msg)
 {
-  kainjow::mustache::data data;
+  MustacheData data;
   data.set("error", msg);
   Response response(m_root, true, false, false, false);
   response.set_template(RESOURCE::templates::_500_html, data);
@@ -399,15 +406,15 @@ Response InternalServer::build_500(const std::string& msg)
   return response;
 }
 
-Response InternalServer::build_homepage(const RequestContext& request)
+MustacheData InternalServer::homepage_data() const
 {
   auto data = get_default_data();
 
-  kainjow::mustache::data books{kainjow::mustache::data::type::list};
+  MustacheData books{MustacheData::type::list};
   for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
     auto& currentBook = mp_library->getBookById(bookId);
 
-    kainjow::mustache::data book;
+    MustacheData book;
     book.set("name", mp_nameMapper->getNameForId(bookId));
     book.set("title", currentBook.getTitle());
     book.set("description", currentBook.getDescription());
@@ -417,9 +424,13 @@ Response InternalServer::build_homepage(const RequestContext& request)
   }
 
   data.set("books", books);
+  return data;
+}
 
+Response InternalServer::build_homepage(const RequestContext& request)
+{
   auto response = get_default_response();
-  response.set_template(RESOURCE::templates::index_html, data);
+  response.set_template(RESOURCE::templates::index_html, homepage_data());
   response.set_mimeType("text/html; charset=utf-8");
   response.set_compress(true);
   response.set_taskbar("", "");
@@ -507,14 +518,14 @@ Response InternalServer::handle_suggest(const RequestContext& request)
     printf("Searching suggestions for: \"%s\"\n", term.c_str());
   }
 
-  kainjow::mustache::data results{kainjow::mustache::data::type::list};
+  MustacheData results{MustacheData::type::list};
 
   bool first = true;
   if (reader != nullptr) {
     /* Get the suggestions */
     reader->searchSuggestionsSmart(term, maxSuggestionCount);
     while (reader->getNextSuggestion(suggestion)) {
-      kainjow::mustache::data result;
+      MustacheData result;
       result.set("label", suggestion);
       result.set("value", suggestion);
       result.set("first", first);
@@ -526,7 +537,7 @@ Response InternalServer::handle_suggest(const RequestContext& request)
 
   /* Propose the fulltext search if possible */
   if (reader->hasFulltextIndex()) {
-    kainjow::mustache::data result;
+    MustacheData result;
     result.set("label", "containing '" + term + "'...");
     result.set("value", term + " ");
     result.set("first", first);
@@ -711,10 +722,7 @@ Response InternalServer::handle_random(const RequestContext& request)
 
   try {
     auto entry = reader->getRandomPage();
-    entry = entry.getFinalEntry();
-    auto response = get_default_response();
-    response.set_redirection(m_root + "/" + bookName + "/" + kiwix::urlEncode(entry.getPath()));
-    return response;
+    return build_redirect(bookName, entry.getFinalEntry());
   } catch(kiwix::NoEntry& e) {
     return build_404(request, bookName);
   }
@@ -824,36 +832,52 @@ Response InternalServer::handle_catalog(const RequestContext& request)
   return response;
 }
 
+namespace
+{
+
+std::string get_book_name(const RequestContext& request)
+{
+  try {
+    return request.get_url_part(0);
+  } catch (const std::out_of_range& e) {
+    return std::string();
+  }
+}
+
+} // unnamed namespace
+
+std::shared_ptr<Reader>
+InternalServer::get_reader(const std::string& bookName) const
+{
+  std::shared_ptr<Reader> reader;
+  try {
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    reader = mp_library->getReaderById(bookId);
+  } catch (const std::out_of_range& e) {
+  }
+  return reader;
+}
+
+Response
+InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
+{
+  auto response = get_default_response();
+  response.set_redirection(m_root + "/" + bookName + "/" +
+                           kiwix::urlEncode(entry.getPath()));
+  return response;
+}
+
 Response InternalServer::handle_content(const RequestContext& request)
 {
   if (m_verbose.load()) {
     printf("** running handle_content\n");
   }
 
-  std::string baseUrl;
-  std::string content;
-  std::string mimeType;
-
-  kiwix::Entry entry;
-
-  std::string bookName;
-  try {
-    bookName = request.get_url_part(0);
-  } catch (const std::out_of_range& e) {
-    return build_homepage(request);
-  }
+  const std::string bookName = get_book_name(request);
   if (bookName.empty())
     return build_homepage(request);
 
-  std::string bookId;
-  std::shared_ptr<Reader> reader;
-  try {
-    bookId = mp_nameMapper->getIdForName(bookName);
-    reader = mp_library->getReaderById(bookId);
-  } catch (const std::out_of_range& e) {
-    return build_404(request, bookName);
-  }
-
+  const std::shared_ptr<Reader> reader = get_reader(bookName);
   if (reader == nullptr) {
     return build_404(request, bookName);
   }
@@ -863,16 +887,14 @@ Response InternalServer::handle_content(const RequestContext& request)
     urlStr = urlStr.substr(1);
   }
 
+  kiwix::Entry entry;
+
   try {
     entry = reader->getEntryFromPath(urlStr);
     if (entry.isRedirect() || urlStr.empty()) {
       // If urlStr is empty, we want to mainPage.
       // We must do a redirection to the real page.
-      entry = entry.getFinalEntry();
-      auto response = get_default_response();
-      response.set_redirection(m_root + "/" + bookName + "/" +
-        kiwix::urlEncode(entry.getPath()));
-      return response;
+      return build_redirect(bookName, entry.getFinalEntry());
     }
   } catch(kiwix::NoEntry& e) {
     if (m_verbose.load())
@@ -881,47 +903,19 @@ Response InternalServer::handle_content(const RequestContext& request)
     return build_404(request, bookName);
   }
 
-  try {
-    mimeType = entry.getMimetype();
-  } catch (exception& e) {
-    mimeType = "application/octet-stream";
-  }
+  auto response = get_default_response();
+
+  response.set_entry(entry, request);
 
   if (m_verbose.load()) {
-    printf("Found %s\n", urlStr.c_str());
-    printf("mimeType: %s\n", mimeType.c_str());
+    printf("Found %s\n", entry.getPath().c_str());
+    printf("mimeType: %s\n", response.get_mimeType().c_str());
   }
 
-  if (mimeType.find("text/") != string::npos
-      || mimeType.find("application/javascript") != string::npos
-      || mimeType.find("application/json") != string::npos) {
-    zim::Blob raw_content = entry.getBlob();
-    content = string(raw_content.data(), raw_content.size());
-    auto response = get_default_response();
+  if (response.get_mimeType().find("text/html") != string::npos)
+    response.set_taskbar(bookName, reader->getTitle());
 
-    if (mimeType.find("text/html") != string::npos)
-      response.set_taskbar(bookName, reader->getTitle());
-
-    response.set_mimeType(mimeType);
-    response.set_content(content);
-    response.set_compress(true);
-    response.set_cache(true);
-    return response;
-  } else {
-    int range_len;
-    if (request.get_range().second == -1) {
-       range_len = entry.getSize() - request.get_range().first;
-    } else {
-       range_len = request.get_range().second - request.get_range().first;
-    }
-    auto response = get_default_response();
-    response.set_entry(entry);
-    response.set_mimeType(mimeType);
-    response.set_range_first(request.get_range().first);
-    response.set_range_len(range_len);
-    response.set_cache(true);
-    return response;
-  }
+  return response;
 }
 
 }

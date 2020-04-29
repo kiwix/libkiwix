@@ -30,59 +30,55 @@ namespace kiwix {
 
 static std::atomic_ullong s_requestIndex(0);
 
+namespace {
+
+RequestMethod str2RequestMethod(const std::string& method) {
+  if      (method == "GET")     return RequestMethod::GET;
+  else if (method == "HEAD")    return RequestMethod::HEAD;
+  else if (method == "POST")    return RequestMethod::POST;
+  else if (method == "PUT")     return RequestMethod::PUT;
+  else if (method == "DELETE")  return RequestMethod::DELETE_;
+  else if (method == "CONNECT") return RequestMethod::CONNECT;
+  else if (method == "OPTIONS") return RequestMethod::OPTIONS;
+  else if (method == "TRACE")   return RequestMethod::TRACE;
+  else if (method == "PATCH")   return RequestMethod::PATCH;
+  else                          return RequestMethod::OTHER;
+}
+
+std::string
+fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
+{
+  if (rootLocation.empty()) {
+    // nothing special to handle.
+    return full_url;
+  } else if (full_url == rootLocation) {
+    return "/";
+  } else if (full_url.size() > rootLocation.size() &&
+             full_url.substr(0, rootLocation.size()+1) == rootLocation + "/") {
+    return full_url.substr(rootLocation.size());
+  } else {
+    return "";
+  }
+}
+
+} // unnamed namespace
+
 RequestContext::RequestContext(struct MHD_Connection* connection,
                                std::string rootLocation,
                                const std::string& _url,
-                               const std::string& method,
+                               const std::string& _method,
                                const std::string& version) :
   full_url(_url),
-  url(_url),
-  valid_url(true),
+  url(fullURL2LocalURL(_url, rootLocation)),
+  method(str2RequestMethod(_method)),
   version(version),
   requestIndex(s_requestIndex++),
   acceptEncodingDeflate(false),
   accept_range(false),
   range_pair(0, -1)
 {
-  if (method == "GET") {
-    this->method = RequestMethod::GET;
-  } else if (method == "HEAD") {
-    this->method = RequestMethod::HEAD;
-  } else if (method == "POST") {
-    this->method = RequestMethod::POST;
-  } else if (method == "PUT") {
-    this->method = RequestMethod::PUT;
-  } else if (method == "DELETE") {
-    this->method = RequestMethod::DELETE_;
-  } else if (method == "CONNECT") {
-    this->method = RequestMethod::CONNECT;
-  } else if (method == "OPTIONS") {
-    this->method = RequestMethod::OPTIONS;
-  } else if (method == "TRACE") {
-    this->method = RequestMethod::TRACE;
-  } else if (method == "PATCH") {
-    this->method = RequestMethod::PATCH;
-  } else {
-    this->method = RequestMethod::OTHER;
-  }
-
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
-
-  valid_url = true;
-  if (rootLocation.empty()) {
-    // nothing special to handle.
-    url = full_url;
-  } else {
-    if (full_url == rootLocation) {
-      url = "/";
-    } else if (full_url.size() > rootLocation.size() &&
-               full_url.substr(0, rootLocation.size()+1) == rootLocation + "/") {
-      url = full_url.substr(rootLocation.size());
-    } else {
-      valid_url = false;
-    }
-  }
 
   try {
     acceptEncodingDeflate =
@@ -147,10 +143,11 @@ void RequestContext::print_debug_info() const {
     printf(" - %s : '%s'\n", it->first.c_str(), it->second.c_str());
   }
   printf("Parsed : \n");
+  printf("full_url: %s\n", full_url.c_str());
   printf("url   : %s\n", url.c_str());
   printf("acceptEncodingDeflate : %d\n", acceptEncodingDeflate);
   printf("has_range : %d\n", accept_range);
-  printf("is_valid_url : %d\n", valid_url);
+  printf("is_valid_url : %d\n", is_valid_url());
   printf(".............\n");
 }
 
@@ -188,7 +185,7 @@ std::string RequestContext::get_full_url() const {
 }
 
 bool RequestContext::is_valid_url() const {
-  return valid_url;
+  return !url.empty();
 }
 
 bool RequestContext::has_range() const {
