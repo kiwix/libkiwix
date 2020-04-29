@@ -62,6 +62,7 @@ class Response {
     void set_range_len(uint64_t len) { m_lenRange = len; }
 
     int getReturnCode() { return m_returnCode; }
+    std::string get_mimeType() const { return m_mimeType; }
 
     void introduce_taskbar();
     void inject_externallinks_blocker();
