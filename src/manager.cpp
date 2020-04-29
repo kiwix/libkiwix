@@ -175,7 +175,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
   kiwix::Book book;
 
   if (this->readBookFromPath(pathToOpen, &book)) {
-    if (pathToSave != pathToOpen) {
+    if (!pathToSave.empty() && pathToSave != pathToOpen) {
       book.setPath(isRelativePath(pathToSave)
                 ? computeAbsolutePath(
                       removeLastPathElement(writableLibraryPath),

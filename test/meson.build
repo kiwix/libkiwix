@@ -1,4 +1,6 @@
-
+configure_file(input : 'data/example.zim',
+               output : 'example.zim',
+               copy: true )
 
 tests = [
     'parseUrl',
@@ -8,7 +10,8 @@ tests = [
     'stringTools',
     'pathTools',
     'kiwixserve',
-    'book'
+    'book',
+    'manager'
 ]
 
 
