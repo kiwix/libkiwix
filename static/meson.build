@@ -1,4 +1,4 @@
-resource_files = run_command(find_program('python'),
+resource_files = run_command(find_program('python3'),
                     '-c',
                     'import sys; f=open(sys.argv[1]); print(f.read())',
                     files('resources_list.txt')
