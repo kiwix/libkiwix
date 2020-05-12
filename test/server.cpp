@@ -1,10 +1,11 @@
+
+#include "./httplib.h"
 #include "gtest/gtest.h"
 
 #include "../include/manager.h"
 #include "../include/server.h"
 #include "../include/name_mapper.h"
 
-#include "./httplib.h"
 
 using TestContextImpl = std::vector<std::pair<std::string, std::string> >;
 struct TestContext : TestContextImpl {
