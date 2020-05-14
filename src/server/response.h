@@ -25,6 +25,7 @@
 
 #include <mustache.hpp>
 #include "entry.h"
+#include "etag.h"
 
 extern "C" {
 #include <microhttpd.h>
@@ -55,17 +56,21 @@ class Response {
 
     void set_mimeType(const std::string& mimeType) { m_mimeType = mimeType; }
     void set_code(int code) { m_returnCode = code; }
-    void set_cache(bool cache) { m_useCache = cache; }
+    void set_cacheable() { m_etag.set_option(ETag::CACHEABLE_ENTITY); }
+    void set_server_id(const std::string& id) { m_etag.set_server_id(id); }
+    void set_etag(const ETag& etag) { m_etag = etag; }
     void set_compress(bool compress) { m_compress = compress; }
     void set_taskbar(const std::string& bookName, const std::string& bookTitle);
     void set_range_first(uint64_t start) { m_startRange = start; }
     void set_range_len(uint64_t len) { m_lenRange = len; }
 
-    int getReturnCode() { return m_returnCode; }
+    int getReturnCode() const { return m_returnCode; }
     std::string get_mimeType() const { return m_mimeType; }
 
     void introduce_taskbar();
     void inject_externallinks_blocker();
+
+    bool can_compress(const RequestContext& request) const;
 
   private: // functions
     MHD_Response* create_mhd_response(const RequestContext& request);
@@ -84,13 +89,13 @@ class Response {
     bool m_withTaskbar;
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
-    bool m_useCache;
     bool m_compress;
     bool m_addTaskbar;
     std::string m_bookName;
     std::string m_bookTitle;
     uint64_t m_startRange;
     uint64_t m_lenRange;
+    ETag m_etag;
 };
 
 }

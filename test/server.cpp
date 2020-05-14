@@ -6,6 +6,13 @@
 
 #include "./httplib.h"
 
+bool is_valid_etag(const std::string& etag)
+{
+  return etag.size() >= 2 &&
+         etag.front() == '"' &&
+         etag.back() == '"';
+}
+
 template<class T1, class T2>
 T1 concat(T1 a, const T2& b)
 {
@@ -92,8 +99,12 @@ protected:
   }
 };
 
+const bool WITH_ETAG = true;
+const bool NO_ETAG = false;
+
 struct Resource
 {
+  bool etag_expected;
   const char* url;
 };
 
@@ -106,59 +117,46 @@ std::ostream& operator<<(std::ostream& out, const Resource& r)
 typedef std::vector<Resource> ResourceCollection;
 
 const ResourceCollection resources200Compressible{
-  { "/" },
+  { WITH_ETAG, "/" },
 
-  { "/skin/jquery-ui/jquery-ui.structure.min.css" },
-  { "/skin/jquery-ui/jquery-ui.min.js" },
-  { "/skin/jquery-ui/external/jquery/jquery.js" },
-  { "/skin/jquery-ui/jquery-ui.theme.min.css" },
-  { "/skin/jquery-ui/jquery-ui.min.css" },
-  { "/skin/taskbar.js" },
-  { "/skin/taskbar.css" },
-  { "/skin/block_external.js" },
+  { WITH_ETAG, "/skin/jquery-ui/jquery-ui.structure.min.css" },
+  { WITH_ETAG, "/skin/jquery-ui/jquery-ui.min.js" },
+  { WITH_ETAG, "/skin/jquery-ui/external/jquery/jquery.js" },
+  { WITH_ETAG, "/skin/jquery-ui/jquery-ui.theme.min.css" },
+  { WITH_ETAG, "/skin/jquery-ui/jquery-ui.min.css" },
+  { WITH_ETAG, "/skin/taskbar.js" },
+  { WITH_ETAG, "/skin/taskbar.css" },
+  { WITH_ETAG, "/skin/block_external.js" },
 
-  { "/search?content=zimfile&pattern=abcd" },
+  { NO_ETAG,   "/search?content=zimfile&pattern=abcd" },
 
-  { "/suggest?content=zimfile&term=ray" },
+  { NO_ETAG,   "/suggest?content=zimfile&term=ray" },
 
-  { "/catch/external?source=www.example.com" },
+  { NO_ETAG,   "/catch/external?source=www.example.com" },
 
-  { "/zimfile/A/index" },
-  { "/zimfile/A/Ray_Charles" },
+  { WITH_ETAG, "/zimfile/A/index" },
+  { WITH_ETAG, "/zimfile/A/Ray_Charles" },
 };
 
 const ResourceCollection resources200Uncompressible{
-  { "/skin/jquery-ui/images/ui-bg_flat_0_aaaaaa_40x100.png" },
-  { "/skin/jquery-ui/images/ui-bg_flat_75_ffffff_40x100.png" },
-  { "/skin/jquery-ui/images/ui-icons_222222_256x240.png" },
-  { "/skin/jquery-ui/images/ui-bg_glass_55_fbf9ee_1x400.png" },
-  { "/skin/jquery-ui/images/ui-bg_highlight-soft_75_cccccc_1x100.png" },
-  { "/skin/jquery-ui/images/ui-bg_glass_65_ffffff_1x400.png" },
-  { "/skin/jquery-ui/images/ui-icons_2e83ff_256x240.png" },
-  { "/skin/jquery-ui/images/ui-icons_cd0a0a_256x240.png" },
-  { "/skin/jquery-ui/images/ui-icons_888888_256x240.png" },
-  { "/skin/jquery-ui/images/ui-bg_glass_75_e6e6e6_1x400.png" },
-  { "/skin/jquery-ui/images/animated-overlay.gif" },
-  { "/skin/jquery-ui/images/ui-bg_glass_75_dadada_1x400.png" },
-  { "/skin/jquery-ui/images/ui-icons_454545_256x240.png" },
-  { "/skin/jquery-ui/images/ui-bg_glass_95_fef1ec_1x400.png" },
-  { "/skin/caret.png" },
+  { WITH_ETAG, "/skin/jquery-ui/images/animated-overlay.gif" },
+  { WITH_ETAG, "/skin/caret.png" },
 
-  { "/catalog/root.xml" },
-  { "/catalog/searchdescription.xml" },
-  { "/catalog/search" },
+  { NO_ETAG,   "/catalog/root.xml" },
+  { NO_ETAG,   "/catalog/searchdescription.xml" },
+  { NO_ETAG,   "/catalog/search" },
 
-  { "/meta?content=zimfile&name=title" },
-  { "/meta?content=zimfile&name=description" },
-  { "/meta?content=zimfile&name=language" },
-  { "/meta?content=zimfile&name=name" },
-  { "/meta?content=zimfile&name=tags" },
-  { "/meta?content=zimfile&name=date" },
-  { "/meta?content=zimfile&name=creator" },
-  { "/meta?content=zimfile&name=publisher" },
-  { "/meta?content=zimfile&name=favicon" },
+  { WITH_ETAG, "/meta?content=zimfile&name=title" },
+  { WITH_ETAG, "/meta?content=zimfile&name=description" },
+  { WITH_ETAG, "/meta?content=zimfile&name=language" },
+  { WITH_ETAG, "/meta?content=zimfile&name=name" },
+  { WITH_ETAG, "/meta?content=zimfile&name=tags" },
+  { WITH_ETAG, "/meta?content=zimfile&name=date" },
+  { WITH_ETAG, "/meta?content=zimfile&name=creator" },
+  { WITH_ETAG, "/meta?content=zimfile&name=publisher" },
+  { WITH_ETAG, "/meta?content=zimfile&name=favicon" },
 
-  { "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
+  { WITH_ETAG, "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 };
 
 ResourceCollection all200Resources()
@@ -258,5 +256,70 @@ TEST_F(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
     httplib::Headers g = zfs1_->GET(res.url)->headers;
     httplib::Headers h = zfs1_->HEAD(res.url)->headers;
     EXPECT_EQ(invariantHeaders(g), invariantHeaders(h)) << res;
+  }
+}
+
+TEST_F(ServerTest, ETagHeaderIsSetAsNeeded)
+{
+  for ( const Resource& res : all200Resources() ) {
+    const auto responseToGet = zfs1_->GET(res.url);
+    EXPECT_EQ(res.etag_expected, responseToGet->has_header("ETag")) << res;
+    if ( res.etag_expected )
+      EXPECT_TRUE(is_valid_etag(responseToGet->get_header_value("ETag")));
+  }
+}
+
+TEST_F(ServerTest, ETagIsTheSameInResponsesToDifferentRequestsOfTheSameURL)
+{
+  for ( const Resource& res : all200Resources() ) {
+    const auto h1 = zfs1_->HEAD(res.url);
+    const auto h2 = zfs1_->HEAD(res.url);
+    EXPECT_EQ(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
+  }
+}
+
+TEST_F(ServerTest, ETagIsTheSameAcrossHeadAndGet)
+{
+  for ( const Resource& res : all200Resources() ) {
+    const auto g = zfs1_->GET(res.url);
+    const auto h = zfs1_->HEAD(res.url);
+    EXPECT_EQ(h->get_header_value("ETag"), g->get_header_value("ETag"));
+  }
+}
+
+TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
+{
+  ZimFileServer zfs2(PORT + 1, ZIMFILE);
+  for ( const Resource& res : all200Resources() ) {
+    if ( !res.etag_expected ) continue;
+    const auto h1 = zfs1_->HEAD(res.url);
+    const auto h2 = zfs2.HEAD(res.url);
+    EXPECT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
+  }
+}
+
+TEST_F(ServerTest, CompressionInfluencesETag)
+{
+  for ( const Resource& res : resources200Compressible ) {
+    if ( ! res.etag_expected ) continue;
+    const auto g1 = zfs1_->GET(res.url);
+    const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
+    const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} } );
+    const auto etag = g1->get_header_value("ETag");
+    EXPECT_EQ(etag, g2->get_header_value("ETag"));
+    EXPECT_NE(etag, g3->get_header_value("ETag"));
+  }
+}
+
+TEST_F(ServerTest, ETagOfUncompressibleContentIsNotAffectedByAcceptEncoding)
+{
+  for ( const Resource& res : resources200Uncompressible ) {
+    if ( ! res.etag_expected ) continue;
+    const auto g1 = zfs1_->GET(res.url);
+    const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
+    const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} } );
+    const auto etag = g1->get_header_value("ETag");
+    EXPECT_EQ(etag, g2->get_header_value("ETag")) << res;
+    EXPECT_EQ(etag, g3->get_header_value("ETag")) << res;
   }
 }

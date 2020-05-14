@@ -131,6 +131,7 @@ class InternalServer {
     Response get_default_response() const;
 
     std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
+    bool etag_not_needed(const RequestContext& r) const;
 
   private: // data
     std::string m_addr;
@@ -145,6 +146,8 @@ class InternalServer {
 
     Library* mp_library;
     NameMapper* mp_nameMapper;
+
+    std::string m_server_id;
 };
 
 
@@ -252,6 +255,8 @@ bool InternalServer::start() {
               << std::endl;
     return false;
   }
+  auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
+  m_server_id = kiwix::to_string(server_start_time.count());
   return true;
 }
 
@@ -318,6 +323,9 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
       request.print_debug_info();
     }
   }
+
+  if (response.getReturnCode() == MHD_HTTP_OK && !etag_not_needed(request))
+    response.set_server_id(m_server_id);
 
   auto ret = response.send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
@@ -428,6 +436,16 @@ MustacheData InternalServer::homepage_data() const
   return data;
 }
 
+bool InternalServer::etag_not_needed(const RequestContext& request) const
+{
+  const std::string url = request.get_url();
+  return kiwix::startsWith(url, "/catalog")
+      || url == "/search"
+      || url == "/suggest"
+      || url == "/random"
+      || url == "/catch/external";
+}
+
 Response InternalServer::build_homepage(const RequestContext& request)
 {
   auto response = get_default_response();
@@ -486,7 +504,7 @@ Response InternalServer::handle_meta(const RequestContext& request)
   response.set_content(content);
   response.set_mimeType(mimeType);
   response.set_compress(false);
-  response.set_cache(true);
+  response.set_cacheable();
   return response;
 }
 
@@ -570,7 +588,7 @@ Response InternalServer::handle_skin(const RequestContext& request)
   }
   response.set_mimeType(getMimeTypeForFile(resourceName));
   response.set_compress(true);
-  response.set_cache(true);
+  response.set_cacheable();
   return response;
 }
 
