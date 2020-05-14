@@ -67,6 +67,14 @@ class ETag
     bool get_option(Option opt) const;
     std::string get_etag() const;
 
+
+    static ETag match(const std::string& etags, const std::string& server_id);
+
+  private: // functions
+    ETag(const std::string& serverId, const std::string& options);
+
+    static ETag parse(std::string s);
+
   private: // data
     std::string m_serverId;
     std::string m_options;

@@ -111,10 +111,11 @@ class InternalServer {
     bool start();
     void stop();
 
-  private:
+  private: // functions
     Response handle_request(const RequestContext& request);
     Response build_500(const std::string& msg);
     Response build_404(const RequestContext& request, const std::string& zimName);
+    Response build_304(const RequestContext& request, const ETag& etag) const;
     Response build_redirect(const std::string& bookName, const kiwix::Entry& entry) const;
     Response build_homepage(const RequestContext& request);
     Response handle_skin(const RequestContext& request);
@@ -132,6 +133,7 @@ class InternalServer {
 
     std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
     bool etag_not_needed(const RequestContext& r) const;
+    ETag get_matching_if_none_match_etag(const RequestContext& request) const;
 
   private: // data
     std::string m_addr;
@@ -337,12 +339,24 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
   return ret;
 }
 
+Response InternalServer::build_304(const RequestContext& request, const ETag& etag) const
+{
+  auto response = get_default_response();
+  response.set_code(MHD_HTTP_NOT_MODIFIED);
+  response.set_etag(etag);
+  response.set_content("");
+  return response;
+}
 
 Response InternalServer::handle_request(const RequestContext& request)
 {
   try {
     if (! request.is_valid_url())
       return build_404(request, "");
+
+    const ETag etag = get_matching_if_none_match_etag(request);
+    if ( etag )
+      return build_304(request, etag);
 
     if (kiwix::startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
@@ -444,6 +458,17 @@ bool InternalServer::etag_not_needed(const RequestContext& request) const
       || url == "/suggest"
       || url == "/random"
       || url == "/catch/external";
+}
+
+ETag
+InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
+{
+  try {
+    const std::string etag_list = r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
+    return ETag::match(etag_list, m_server_id);
+  } catch (const std::out_of_range&) {
+    return ETag();
+  }
 }
 
 Response InternalServer::build_homepage(const RequestContext& request)

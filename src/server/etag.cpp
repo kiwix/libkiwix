@@ -20,7 +20,10 @@
 
 #include "etag.h"
 
+#include "tools/stringTools.h"
+
 #include <algorithm>
+#include <sstream>
 
 namespace kiwix {
 
@@ -32,9 +35,34 @@ namespace {
 // this file). However it is better to have some mnemonics in the option names,
 // hence below variable: all_options[opt] corresponds to the character going
 // into the ETag for ETag::Option opt.
+// IMPORTANT: The characters in all_options must come in sorted order (so that
+// IMPORTANT: isValidOptionsString() works correctly).
 const char all_options[] = "cz";
 
 static_assert(ETag::OPTION_COUNT == sizeof(all_options) - 1, "");
+
+bool isValidServerId(const std::string& s)
+{
+  return !s.empty() && s.find_first_of("\"/") == std::string::npos;
+}
+
+bool isSubsequenceOf(const std::string& s, const std::string& sortedString)
+{
+  std::string::size_type i = 0;
+  for ( const char c : s )
+  {
+    const std::string::size_type j = sortedString.find(c, i);
+    if ( j == std::string::npos )
+      return false;
+    i = j+1;
+  }
+  return true;
+}
+
+bool isValidOptionsString(const std::string& s)
+{
+  return isSubsequenceOf(s, all_options);
+}
 
 } // namespace
 
@@ -59,6 +87,49 @@ std::string ETag::get_etag() const
     return std::string();
 
   return "\"" + m_serverId + "/" + m_options + "\"";
+}
+
+ETag::ETag(const std::string& serverId, const std::string& options)
+{
+  if ( isValidServerId(serverId) && isValidOptionsString(options) )
+  {
+    m_serverId = serverId;
+    m_options = options;
+  }
+}
+
+ETag ETag::parse(std::string s)
+{
+  if ( kiwix::startsWith("W/", s) )
+    s = s.substr(2);
+
+  if ( s.front() != '"' || s.back() != '"' )
+    return ETag();
+
+  s = s.substr(1, s.size()-2);
+
+  const std::string::size_type i = s.find('/');
+  if ( i == std::string::npos )
+    return ETag();
+
+  return ETag(s.substr(0, i), s.substr(i+1));
+}
+
+ETag ETag::match(const std::string& etags, const std::string& server_id)
+{
+  std::istringstream ss(etags);
+  std::string etag_str;
+  while ( ss >> etag_str )
+  {
+    if ( etag_str.back() == ',' )
+      etag_str.pop_back();
+
+    const ETag etag = parse(etag_str);
+    if ( etag && etag.m_serverId == server_id )
+      return etag;
+  }
+
+  return ETag();
 }
 
 } // namespace kiwix

@@ -6,6 +6,22 @@
 
 #include "./httplib.h"
 
+using TestContextImpl = std::vector<std::pair<std::string, std::string> >;
+struct TestContext : TestContextImpl {
+  TestContext(const std::initializer_list<value_type>& il)
+    : TestContextImpl(il)
+  {}
+};
+
+std::ostream& operator<<(std::ostream& out, const TestContext& ctx)
+{
+  out << "Test context:\n";
+  for ( const auto& kv : ctx )
+    out << "\t" << kv.first << ": " << kv.second << "\n";
+  out << std::endl;
+  return out;
+}
+
 bool is_valid_etag(const std::string& etag)
 {
   return etag.size() >= 2 &&
@@ -321,5 +337,72 @@ TEST_F(ServerTest, ETagOfUncompressibleContentIsNotAffectedByAcceptEncoding)
     const auto etag = g1->get_header_value("ETag");
     EXPECT_EQ(etag, g2->get_header_value("ETag")) << res;
     EXPECT_EQ(etag, g3->get_header_value("ETag")) << res;
+  }
+}
+
+// Pick from the response those headers that are required to be present in the
+// 304 (Not Modified) response if they would be set in the 200 (OK) response.
+// NOTE: The "Date" header (which should belong to that list as required
+// NOTE: by RFC 7232) is not included (since the result of this function
+// NOTE: will be used to check the equality of headers from the 200 and 304
+// NOTe: responses).
+Headers special304Headers(const httplib::Response& r)
+{
+  Headers result;
+  std::copy_if(
+    r.headers.begin(), r.headers.end(),
+    std::inserter(result, result.end()),
+    [](const Headers::value_type& x) {
+       return x.first == "Cache-Control"
+           || x.first == "Content-Location"
+           || x.first == "ETag"
+           || x.first == "Expires"
+           || x.first == "Vary";
+  });
+  return result;
+}
+
+// make a list of three etags with the given one in the middle
+std::string make_etag_list(const std::string& etag)
+{
+  return "\"x" + etag.substr(1) + ", "
+       + etag + ", "
+       + etag.substr(0, etag.size()-2) + "\"";
+}
+
+TEST_F(ServerTest, IfNoneMatchRequestsWithMatchingETagResultIn304Responses)
+{
+  const char* const encodings[] = { "", "deflate" };
+  for ( const Resource& res : all200Resources() ) {
+    for ( const char* enc: encodings ) {
+      if ( ! res.etag_expected ) continue;
+      const TestContext ctx{ {"url", res.url}, {"encoding", enc} };
+
+      const auto g = zfs1_->GET(res.url, { {"Accept-Encoding", enc} });
+      const auto etag = g->get_header_value("ETag");
+
+      const std::string etags = make_etag_list(etag);
+      const Headers headers{{"If-None-Match", etags}, {"Accept-Encoding", enc}};
+      const auto g2 = zfs1_->GET(res.url, headers );
+      const auto h = zfs1_->HEAD(res.url, headers );
+      EXPECT_EQ(304, h->status) << ctx;
+      EXPECT_EQ(304, g2->status) << ctx;
+      EXPECT_EQ(special304Headers(*g), special304Headers(*g2)) << ctx;
+      EXPECT_EQ(special304Headers(*g2), special304Headers(*h)) << ctx;
+      EXPECT_TRUE(g2->body.empty()) << ctx;
+    }
+  }
+}
+
+TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
+{
+  for ( const Resource& res : all200Resources() ) {
+    const auto g = zfs1_->GET(res.url);
+    const auto etag = g->get_header_value("ETag");
+    const auto etag2 = etag.substr(0, etag.size() - 1) + "x\"";
+    const auto h = zfs1_->HEAD(res.url, { {"If-None-Match", etag2} } );
+    const auto g2 = zfs1_->GET(res.url, { {"If-None-Match", etag2} } );
+    EXPECT_EQ(200, h->status);
+    EXPECT_EQ(200, g2->status);
   }
 }
