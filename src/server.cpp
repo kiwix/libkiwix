@@ -301,7 +301,8 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
   }
   /* Unexpected method */
   if (request.get_method() != RequestMethod::GET
-   && request.get_method() != RequestMethod::POST) {
+   && request.get_method() != RequestMethod::POST
+   && request.get_method() != RequestMethod::HEAD) {
     printf("Reject request because of unhandled request method.\n");
     printf("----------------------\n");
     return MHD_NO;

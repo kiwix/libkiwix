@@ -6,10 +6,25 @@
 
 #include "./httplib.h"
 
+template<class T1, class T2>
+T1 concat(T1 a, const T2& b)
+{
+  a.insert(a.end(), b.begin(), b.end());
+  return a;
+}
+
+typedef httplib::Headers Headers;
+
+Headers invariantHeaders(Headers headers)
+{
+  headers.erase("Date");
+  return headers;
+}
+
+
 class ZimFileServer
 {
 public: // types
-  typedef httplib::Headers                    Headers;
   typedef std::shared_ptr<httplib::Response>  Response;
 
 public: // functions
@@ -88,7 +103,9 @@ std::ostream& operator<<(std::ostream& out, const Resource& r)
   return out;
 }
 
-Resource resources200Compressible[] = {
+typedef std::vector<Resource> ResourceCollection;
+
+const ResourceCollection resources200Compressible{
   { "/" },
 
   { "/skin/jquery-ui/jquery-ui.structure.min.css" },
@@ -110,7 +127,7 @@ Resource resources200Compressible[] = {
   { "/zimfile/A/Ray_Charles" },
 };
 
-Resource resources200Uncompressible[] = {
+const ResourceCollection resources200Uncompressible{
   { "/skin/jquery-ui/images/ui-bg_flat_0_aaaaaa_40x100.png" },
   { "/skin/jquery-ui/images/ui-bg_flat_75_ffffff_40x100.png" },
   { "/skin/jquery-ui/images/ui-icons_222222_256x240.png" },
@@ -144,13 +161,14 @@ Resource resources200Uncompressible[] = {
   { "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 };
 
+ResourceCollection all200Resources()
+{
+  return concat(resources200Compressible, resources200Uncompressible);
+}
 
 TEST_F(ServerTest, 200)
 {
-  for ( const Resource& res : resources200Compressible )
-    EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
-
-  for ( const Resource& res : resources200Uncompressible )
+  for ( const Resource& res : all200Resources() )
     EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
 }
 
@@ -220,4 +238,25 @@ TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
   ASSERT_EQ("/zimfile/A/index", g->get_header_value("Location"));
+}
+
+TEST_F(ServerTest, HeadMethodIsSupported)
+{
+  for ( const Resource& res : all200Resources() )
+    EXPECT_EQ(200, zfs1_->HEAD(res.url)->status) << res;
+}
+
+TEST_F(ServerTest, TheResponseToHeadRequestHasNoBody)
+{
+  for ( const Resource& res : all200Resources() )
+    EXPECT_TRUE(zfs1_->HEAD(res.url)->body.empty()) << res;
+}
+
+TEST_F(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
+{
+  for ( const Resource& res : all200Resources() ) {
+    httplib::Headers g = zfs1_->GET(res.url)->headers;
+    httplib::Headers h = zfs1_->HEAD(res.url)->headers;
+    EXPECT_EQ(invariantHeaders(g), invariantHeaders(h)) << res;
+  }
 }
