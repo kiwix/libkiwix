@@ -209,6 +209,12 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
   MHD_Response* response = MHD_create_response_from_buffer(
     m_content.size(), const_cast<char*>(m_content.data()), MHD_RESPMEM_MUST_COPY);
 
+  // At shis point m_etag.get_option(ETag::COMPRESSED_CONTENT) and
+  // shouldCompress can have different values. This can happen for a 304 (Not
+  // Modified) response generated while handling a conditional If-None-Match
+  // request. In that case the m_etag (together with its COMPRESSED_CONTENT
+  // option) is obtained from the ETag list of the If-None-Match header and the
+  // response has no body (which shouldn't be compressed).
   if ( m_etag.get_option(ETag::COMPRESSED_CONTENT) ) {
     MHD_add_response_header(
         response, MHD_HTTP_HEADER_VARY, "Accept-Encoding");
