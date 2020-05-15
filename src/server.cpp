@@ -111,10 +111,11 @@ class InternalServer {
     bool start();
     void stop();
 
-  private:
+  private: // functions
     Response handle_request(const RequestContext& request);
     Response build_500(const std::string& msg);
     Response build_404(const RequestContext& request, const std::string& zimName);
+    Response build_304(const RequestContext& request, const ETag& etag) const;
     Response build_redirect(const std::string& bookName, const kiwix::Entry& entry) const;
     Response build_homepage(const RequestContext& request);
     Response handle_skin(const RequestContext& request);
@@ -131,6 +132,8 @@ class InternalServer {
     Response get_default_response() const;
 
     std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
+    bool etag_not_needed(const RequestContext& r) const;
+    ETag get_matching_if_none_match_etag(const RequestContext& request) const;
 
   private: // data
     std::string m_addr;
@@ -145,6 +148,8 @@ class InternalServer {
 
     Library* mp_library;
     NameMapper* mp_nameMapper;
+
+    std::string m_server_id;
 };
 
 
@@ -252,6 +257,8 @@ bool InternalServer::start() {
               << std::endl;
     return false;
   }
+  auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
+  m_server_id = kiwix::to_string(server_start_time.count());
   return true;
 }
 
@@ -301,7 +308,8 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
   }
   /* Unexpected method */
   if (request.get_method() != RequestMethod::GET
-   && request.get_method() != RequestMethod::POST) {
+   && request.get_method() != RequestMethod::POST
+   && request.get_method() != RequestMethod::HEAD) {
     printf("Reject request because of unhandled request method.\n");
     printf("----------------------\n");
     return MHD_NO;
@@ -318,6 +326,9 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
     }
   }
 
+  if (response.getReturnCode() == MHD_HTTP_OK && !etag_not_needed(request))
+    response.set_server_id(m_server_id);
+
   auto ret = response.send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
   auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
@@ -328,12 +339,24 @@ int InternalServer::handlerCallback(struct MHD_Connection* connection,
   return ret;
 }
 
+Response InternalServer::build_304(const RequestContext& request, const ETag& etag) const
+{
+  auto response = get_default_response();
+  response.set_code(MHD_HTTP_NOT_MODIFIED);
+  response.set_etag(etag);
+  response.set_content("");
+  return response;
+}
 
 Response InternalServer::handle_request(const RequestContext& request)
 {
   try {
     if (! request.is_valid_url())
       return build_404(request, "");
+
+    const ETag etag = get_matching_if_none_match_etag(request);
+    if ( etag )
+      return build_304(request, etag);
 
     if (kiwix::startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
@@ -427,6 +450,27 @@ MustacheData InternalServer::homepage_data() const
   return data;
 }
 
+bool InternalServer::etag_not_needed(const RequestContext& request) const
+{
+  const std::string url = request.get_url();
+  return kiwix::startsWith(url, "/catalog")
+      || url == "/search"
+      || url == "/suggest"
+      || url == "/random"
+      || url == "/catch/external";
+}
+
+ETag
+InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
+{
+  try {
+    const std::string etag_list = r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
+    return ETag::match(etag_list, m_server_id);
+  } catch (const std::out_of_range&) {
+    return ETag();
+  }
+}
+
 Response InternalServer::build_homepage(const RequestContext& request)
 {
   auto response = get_default_response();
@@ -485,7 +529,7 @@ Response InternalServer::handle_meta(const RequestContext& request)
   response.set_content(content);
   response.set_mimeType(mimeType);
   response.set_compress(false);
-  response.set_cache(true);
+  response.set_cacheable();
   return response;
 }
 
@@ -569,7 +613,7 @@ Response InternalServer::handle_skin(const RequestContext& request)
   }
   response.set_mimeType(getMimeTypeForFile(resourceName));
   response.set_compress(true);
-  response.set_cache(true);
+  response.set_cacheable();
   return response;
 }
 

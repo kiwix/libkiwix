@@ -55,7 +55,6 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
     m_withTaskbar(withTaskbar),
     m_withLibraryButton(withLibraryButton),
     m_blockExternalLinks(blockExternalLinks),
-    m_useCache(false),
     m_addTaskbar(false),
     m_bookName(""),
     m_startRange(0),
@@ -168,6 +167,14 @@ void Response::inject_externallinks_blocker()
     script_tag);
 }
 
+bool
+Response::can_compress(const RequestContext& request) const
+{
+  return request.can_compress()
+      && is_compressible_mime_type(m_mimeType)
+      && (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE);
+}
+
 MHD_Response*
 Response::create_raw_content_mhd_response(const RequestContext& request)
 {
@@ -178,10 +185,7 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
     inject_externallinks_blocker();
   }
 
-  bool shouldCompress = m_compress && request.can_compress();
-  shouldCompress &= is_compressible_mime_type(m_mimeType);
-  shouldCompress &= (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE);
-
+  bool shouldCompress = m_compress && can_compress(request);
   if (shouldCompress) {
     std::vector<Bytef> compr_buffer(compressBound(m_content.size()));
     uLongf comprLen = compr_buffer.capacity();
@@ -196,6 +200,7 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
          It has no incidence on other browsers
          See http://www.subbu.org/blog/2008/03/ie7-deflate-or-not and comments */
       m_content = string((char*)&compr_buffer[2], comprLen - 2);
+      m_etag.set_option(ETag::COMPRESSED_CONTENT);
     } else {
       shouldCompress = false;
     }
@@ -204,9 +209,17 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
   MHD_Response* response = MHD_create_response_from_buffer(
     m_content.size(), const_cast<char*>(m_content.data()), MHD_RESPMEM_MUST_COPY);
 
-  if (shouldCompress) {
+  // At shis point m_etag.get_option(ETag::COMPRESSED_CONTENT) and
+  // shouldCompress can have different values. This can happen for a 304 (Not
+  // Modified) response generated while handling a conditional If-None-Match
+  // request. In that case the m_etag (together with its COMPRESSED_CONTENT
+  // option) is obtained from the ETag list of the If-None-Match header and the
+  // response has no body (which shouldn't be compressed).
+  if ( m_etag.get_option(ETag::COMPRESSED_CONTENT) ) {
     MHD_add_response_header(
         response, MHD_HTTP_HEADER_VARY, "Accept-Encoding");
+  }
+  if (shouldCompress) {
     MHD_add_response_header(
         response, MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
   }
@@ -267,7 +280,10 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
 
   MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
   MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
-    m_useCache ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
+    m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
+  const std::string etag = m_etag.get_etag();
+  if ( ! etag.empty() )
+      MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
 
   if (m_returnCode == MHD_HTTP_OK && request.has_range())
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
@@ -301,7 +317,7 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
 
   const std::string mimeType = get_mime_type(entry);
   set_mimeType(mimeType);
-  set_cache(true);
+  set_cacheable();
 
   if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
