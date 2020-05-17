@@ -280,8 +280,9 @@ TEST_F(ServerTest, ETagHeaderIsSetAsNeeded)
   for ( const Resource& res : all200Resources() ) {
     const auto responseToGet = zfs1_->GET(res.url);
     EXPECT_EQ(res.etag_expected, responseToGet->has_header("ETag")) << res;
-    if ( res.etag_expected )
+    if ( res.etag_expected ) {
       EXPECT_TRUE(is_valid_etag(responseToGet->get_header_value("ETag")));
+    }
   }
 }
 
