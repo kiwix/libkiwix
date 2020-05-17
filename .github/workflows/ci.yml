@@ -54,18 +54,26 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - native_static
-          - native_dyn
+          - native_static_xenial
+          - native_dyn_xenial
+          - native_static_focal
+          - native_dyn_focal
           - android_arm
           - android_arm64
           - win32_static
           - win32_dyn
         include:
-          - target: native_static
+          - target: native_static_xenial
             image_variant: xenial
             lib_postfix: '/x86_64-linux-gnu'
-          - target: native_dyn
+          - target: native_dyn_xenial
             image_variant: xenial
+            lib_postfix: '/x86_64-linux-gnu'
+          - target: native_static_focal
+            image_variant: focal
+            lib_postfix: '/x86_64-linux-gnu'
+          - target: native_dyn_focal
+            image_variant: focal
             lib_postfix: '/x86_64-linux-gnu'
           - target: android_arm
             image_variant: xenial
@@ -104,7 +112,8 @@ jobs:
     - name: Install deps
       shell: bash
       run: |
-        ARCHIVE_NAME=deps2_${OS_NAME}_${{matrix.target}}_kiwix-lib.tar.xz
+        TARGET_RADICAL=$(echo ${{matrix.target}} | sed -E 's/_([^_]*)$//')
+        ARCHIVE_NAME=deps2_${OS_NAME}_${TARGET_RADICAL}_kiwix-lib.tar.xz
         wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C /home/runner
     - name: Compile
       shell: bash
