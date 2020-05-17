@@ -34,6 +34,8 @@ bool is_compressible_mime_type(const std::string& mimeType)
 {
   return mimeType.find("text/") != string::npos
       || mimeType.find("application/javascript") != string::npos
+      || mimeType.find("application/atom") != string::npos
+      || mimeType.find("application/opensearchdescription") != string::npos
       || mimeType.find("application/json") != string::npos;
 }
 

@@ -144,6 +144,10 @@ const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/skin/taskbar.css" },
   { WITH_ETAG, "/skin/block_external.js" },
 
+  { NO_ETAG,   "/catalog/root.xml" },
+  { NO_ETAG,   "/catalog/searchdescription.xml" },
+  { NO_ETAG,   "/catalog/search" },
+
   { NO_ETAG,   "/search?content=zimfile&pattern=abcd" },
 
   { NO_ETAG,   "/suggest?content=zimfile&term=ray" },
@@ -157,10 +161,6 @@ const ResourceCollection resources200Compressible{
 const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/skin/jquery-ui/images/animated-overlay.gif" },
   { WITH_ETAG, "/skin/caret.png" },
-
-  { NO_ETAG,   "/catalog/root.xml" },
-  { NO_ETAG,   "/catalog/searchdescription.xml" },
-  { NO_ETAG,   "/catalog/search" },
 
   { WITH_ETAG, "/meta?content=zimfile&name=title" },
   { WITH_ETAG, "/meta?content=zimfile&name=description" },
