@@ -824,7 +824,7 @@ Response InternalServer::handle_catalog(const RequestContext& request)
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
   opdsDumper.setLibrary(mp_library);
-  response.set_mimeType("application/atom+xml;profile=opds-catalog;kind=acquisition; charset=utf-8");
+  response.set_mimeType("application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
     opdsDumper.setTitle("All zims");
