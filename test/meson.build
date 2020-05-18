@@ -12,8 +12,12 @@ tests = [
     'kiwixserve',
     'book',
     'manager',
-    'server'
 ]
+
+if build_machine.system() != 'windows'
+  tests += ['server']
+endif
+
 
 
 gtest_dep = dependency('gtest',
