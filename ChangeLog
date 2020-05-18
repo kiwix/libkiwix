@@ -1,3 +1,11 @@
+kiwix-lib 9.2
+=============
+
+ * Add tests
+ * Refactoring server code.
+ * [SERVER] Add HEAD, Etag and If-None-Match support.
+ * [SERVER] Compress opds catalog answers.
+
 kiwix-lib 9.1.2
 ===============
 
