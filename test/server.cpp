@@ -408,3 +408,32 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
     EXPECT_EQ(200, g2->status);
   }
 }
+
+TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
+{
+  const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const auto full = zfs1_->GET(url);
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=0-100000"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ(full->body, p->body);
+    EXPECT_EQ("bytes 0-20076/20077", p->get_header_value("Content-Range"));
+  }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=0-10"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ("bytes 0-10/20077", p->get_header_value("Content-Range"));
+    EXPECT_EQ(11, p->body.size());
+    EXPECT_EQ(full->body.substr(0, 11), p->body);
+  }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=123-456"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ("bytes 123-456/20077", p->get_header_value("Content-Range"));
+    EXPECT_EQ(334, p->body.size());
+    EXPECT_EQ(full->body.substr(123, 334), p->body);
+  }
+}
