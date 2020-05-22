@@ -20,6 +20,7 @@
 
 
 #include "request_context.h"
+#include "tools/stringTools.h"
 #include <string.h>
 #include <stdexcept>
 #include <sstream>
@@ -87,22 +88,26 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
 
   /*Check if range is requested. */
   try {
-    auto range = get_header(MHD_HTTP_HEADER_RANGE);
-    int start = 0;
-    int end = -1;
-    std::istringstream iss(range);
-    char c;
+    std::string range = get_header(MHD_HTTP_HEADER_RANGE);
+    const std::string byteUnitSpec("bytes=");
+    if ( kiwix::startsWith(range, byteUnitSpec) ) {
+      range.erase(0, byteUnitSpec.size());
+      int start = 0;
+      int end = -1;
+      std::istringstream iss(range);
+      char c;
 
-    iss >> start >> c;
-    if (iss.good() && c=='-') {
-      iss >> end;
-      if (iss.fail()) {
-        // Something went wrong will extracting.
-        end = -1;
-      }
-      if (iss.eof()) {
-        accept_range = true;
-        range_pair = std::pair<int, int>(start, end);
+      iss >> start >> c;
+      if (iss.good() && c=='-') {
+        iss >> end;
+        if (iss.fail()) {
+          // Something went wrong will extracting.
+          end = -1;
+        }
+        if (iss.eof()) {
+          accept_range = true;
+          range_pair = std::pair<int, int>(start, end);
+        }
       }
     }
   } catch (const std::out_of_range&) {}
