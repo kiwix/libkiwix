@@ -241,7 +241,7 @@ Response::create_redirection_mhd_response() const
 MHD_Response*
 Response::create_entry_mhd_response() const
 {
-  MHD_Response* response = MHD_create_response_from_callback(m_entry.getSize(),
+  MHD_Response* response = MHD_create_response_from_callback(m_lenRange,
                                                16384,
                                                callback_reader_from_entry,
                                                new RunningResponse(m_entry, m_startRange),
