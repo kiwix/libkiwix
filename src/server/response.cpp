@@ -43,7 +43,7 @@ int get_range_len(const kiwix::Entry& entry, RequestContext::ByteRange range)
 {
   return range.second == -1
        ? entry.getSize() - range.first
-       : range.second - range.first;
+       : range.second - range.first + 1;
 }
 
 } // unnamed namespace
