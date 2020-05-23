@@ -104,7 +104,7 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   version(version),
   requestIndex(s_requestIndex++),
   acceptEncodingDeflate(false),
-  range_pair(0, -1)
+  byteRange_()
 {
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
@@ -115,7 +115,7 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   } catch (const std::out_of_range&) {}
 
   try {
-    range_pair = parse_byte_range(get_header(MHD_HTTP_HEADER_RANGE));
+    byteRange_ = parse_byte_range(get_header(MHD_HTTP_HEADER_RANGE));
   } catch (const std::out_of_range&) {}
 }
 
@@ -199,11 +199,11 @@ bool RequestContext::is_valid_url() const {
 }
 
 bool RequestContext::has_range() const {
-  return range_pair.first <= range_pair.second;
+  return byteRange_.first() <= byteRange_.last();
 }
 
 RequestContext::ByteRange RequestContext::get_range() const {
-  return range_pair;
+  return byteRange_;
 }
 
 template<>

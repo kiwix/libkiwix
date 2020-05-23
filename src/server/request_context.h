@@ -52,7 +52,18 @@ class IndexError: public std::runtime_error {};
 
 class RequestContext {
   public: // types
-  typedef std::pair<int, int> ByteRange;
+    class ByteRange {
+      public: // functions
+        ByteRange() : ByteRange(0, -1) {}
+        ByteRange(int64_t first, int64_t last) : first_(first), last_(last) {}
+
+        int64_t first() const { return first_; }
+        int64_t last() const { return last_; }
+
+      private: // data
+        int64_t first_;
+        int64_t last_;
+    };
 
   public: // functions
     RequestContext(struct MHD_Connection* connection,
@@ -95,7 +106,7 @@ class RequestContext {
 
     bool acceptEncodingDeflate;
 
-    ByteRange range_pair;
+    ByteRange byteRange_;
     std::map<std::string, std::string> headers;
     std::map<std::string, std::string> arguments;
 

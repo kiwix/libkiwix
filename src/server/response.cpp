@@ -41,10 +41,10 @@ bool is_compressible_mime_type(const std::string& mimeType)
 
 int get_range_len(const kiwix::Entry& entry, RequestContext::ByteRange range)
 {
-  const int entrySize = entry.getSize();
-  return range.second == -1
-       ? entrySize - range.first
-       : std::min(range.second + 1, entrySize) - range.first;
+  const int64_t entrySize = entry.getSize();
+  return range.last() == -1
+       ? entrySize - range.first()
+       : std::min(range.last() + 1, entrySize) - range.first();
 }
 
 } // unnamed namespace
@@ -330,7 +330,7 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
     set_compress(true);
   } else {
     const int range_len = get_range_len(entry, request.get_range());
-    set_range_first(request.get_range().first);
+    set_range_first(request.get_range().first());
     set_range_len(range_len);
   }
 }
