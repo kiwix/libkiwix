@@ -87,7 +87,7 @@ class RequestContext {
     bool can_compress() const { return acceptEncodingDeflate; }
 
   private: // functions
-    void parse_byte_range(std::string range);
+    static ByteRange parse_byte_range(std::string range);
 
   private: // data
     std::string full_url;

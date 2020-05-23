@@ -86,16 +86,16 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   } catch (const std::out_of_range&) {}
 
   try {
-    std::string range = get_header(MHD_HTTP_HEADER_RANGE);
-    parse_byte_range(range);
+    range_pair = parse_byte_range(get_header(MHD_HTTP_HEADER_RANGE));
   } catch (const std::out_of_range&) {}
 }
 
 RequestContext::~RequestContext()
 {}
 
-void RequestContext::parse_byte_range(std::string range)
+RequestContext::ByteRange RequestContext::parse_byte_range(std::string range)
 {
+  ByteRange byteRange{0, -1};
   const std::string byteUnitSpec("bytes=");
   if ( kiwix::startsWith(range, byteUnitSpec) ) {
     range.erase(0, byteUnitSpec.size());
@@ -112,10 +112,11 @@ void RequestContext::parse_byte_range(std::string range)
         end = -1;
       }
       if (iss.eof()) {
-        range_pair = std::pair<int, int>(start, end);
+        byteRange = ByteRange(start, end);
       }
     }
   }
+  return byteRange;
 }
 
 
@@ -199,7 +200,7 @@ bool RequestContext::has_range() const {
   return range_pair.first <= range_pair.second;
 }
 
-std::pair<int, int> RequestContext::get_range() const {
+RequestContext::ByteRange RequestContext::get_range() const {
   return range_pair;
 }
 
