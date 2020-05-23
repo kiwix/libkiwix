@@ -62,6 +62,35 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
   }
 }
 
+using ByteRange = RequestContext::ByteRange;
+
+ByteRange parse_byte_range(std::string range)
+{
+  ByteRange byteRange{0, -1};
+  const std::string byteUnitSpec("bytes=");
+  if ( kiwix::startsWith(range, byteUnitSpec) ) {
+    range.erase(0, byteUnitSpec.size());
+    int start = 0;
+    int end = -1;
+    std::istringstream iss(range);
+    char c;
+
+    iss >> start >> c;
+    if (iss.good() && c=='-') {
+      iss >> end;
+      if (iss.fail()) {
+        // Something went wrong while extracting
+        end = -1;
+      }
+      if (iss.eof()) {
+        byteRange = ByteRange(start, end);
+      }
+    }
+  }
+  return byteRange;
+}
+
+
 } // unnamed namespace
 
 RequestContext::RequestContext(struct MHD_Connection* connection,
@@ -92,33 +121,6 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
 
 RequestContext::~RequestContext()
 {}
-
-RequestContext::ByteRange RequestContext::parse_byte_range(std::string range)
-{
-  ByteRange byteRange{0, -1};
-  const std::string byteUnitSpec("bytes=");
-  if ( kiwix::startsWith(range, byteUnitSpec) ) {
-    range.erase(0, byteUnitSpec.size());
-    int start = 0;
-    int end = -1;
-    std::istringstream iss(range);
-    char c;
-
-    iss >> start >> c;
-    if (iss.good() && c=='-') {
-      iss >> end;
-      if (iss.fail()) {
-        // Something went wrong while extracting
-        end = -1;
-      }
-      if (iss.eof()) {
-        byteRange = ByteRange(start, end);
-      }
-    }
-  }
-  return byteRange;
-}
-
 
 int RequestContext::fill_header(void *__this, enum MHD_ValueKind kind,
                                  const char *key, const char *value)
