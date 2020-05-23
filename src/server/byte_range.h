@@ -31,6 +31,7 @@ class ByteRange
 
     int64_t first() const { return first_; }
     int64_t last() const { return last_; }
+    int64_t length() const { return last_ + 1 - first_; }
 
   private: // data
     int64_t first_;

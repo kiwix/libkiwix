@@ -39,12 +39,13 @@ bool is_compressible_mime_type(const std::string& mimeType)
       || mimeType.find("application/json") != string::npos;
 }
 
-int get_range_len(const kiwix::Entry& entry, ByteRange range)
+ByteRange resolve_byte_range(const kiwix::Entry& entry, ByteRange range)
 {
   const int64_t entrySize = entry.getSize();
-  return range.last() == -1
-       ? entrySize - range.first()
-       : std::min(range.last() + 1, entrySize) - range.first();
+  const int64_t resolved_last = range.last() < 0
+                              ? entrySize - 1
+                              : std::min(entrySize-1, range.last());
+  return ByteRange(range.first(), resolved_last);
 }
 
 } // unnamed namespace
@@ -59,9 +60,7 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
     m_withLibraryButton(withLibraryButton),
     m_blockExternalLinks(blockExternalLinks),
     m_addTaskbar(false),
-    m_bookName(""),
-    m_startRange(0),
-    m_lenRange(0)
+    m_bookName("")
 {
 }
 
@@ -241,23 +240,24 @@ Response::create_redirection_mhd_response() const
 MHD_Response*
 Response::create_entry_mhd_response() const
 {
-  MHD_Response* response = MHD_create_response_from_callback(m_lenRange,
+  const auto content_length = m_byteRange.length();
+  MHD_Response* response = MHD_create_response_from_callback(content_length,
                                                16384,
                                                callback_reader_from_entry,
-                                               new RunningResponse(m_entry, m_startRange),
+                                               new RunningResponse(m_entry, m_byteRange.first()),
                                                callback_free_response);
   MHD_add_response_header(response,
     MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
   MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
   std::ostringstream oss;
-  oss << "bytes " << m_startRange << "-" << m_startRange + m_lenRange - 1
+  oss << "bytes " << m_byteRange.first() << "-" << m_byteRange.last()
       << "/" << m_entry.getSize();
 
   MHD_add_response_header(response,
     MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
 
   MHD_add_response_header(response,
-    MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(m_lenRange).c_str());
+    MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(content_length).c_str());
   return response;
 }
 
@@ -329,9 +329,7 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
     set_content(content);
     set_compress(true);
   } else {
-    const int range_len = get_range_len(entry, request.get_range());
-    set_range_first(request.get_range().first());
-    set_range_len(range_len);
+    m_byteRange = resolve_byte_range(entry, request.get_range());
   }
 }
 
