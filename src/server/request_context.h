@@ -27,6 +27,8 @@
 #include <map>
 #include <stdexcept>
 
+#include "byte_range.h"
+
 extern "C" {
 #include <microhttpd.h>
 }
@@ -51,20 +53,6 @@ class IndexError: public std::runtime_error {};
 
 
 class RequestContext {
-  public: // types
-    class ByteRange {
-      public: // functions
-        ByteRange() : ByteRange(0, -1) {}
-        ByteRange(int64_t first, int64_t last) : first_(first), last_(last) {}
-
-        int64_t first() const { return first_; }
-        int64_t last() const { return last_; }
-
-      private: // data
-        int64_t first_;
-        int64_t last_;
-    };
-
   public: // functions
     RequestContext(struct MHD_Connection* connection,
                    std::string rootLocation,

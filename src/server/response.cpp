@@ -39,7 +39,7 @@ bool is_compressible_mime_type(const std::string& mimeType)
       || mimeType.find("application/json") != string::npos;
 }
 
-int get_range_len(const kiwix::Entry& entry, RequestContext::ByteRange range)
+int get_range_len(const kiwix::Entry& entry, ByteRange range)
 {
   const int64_t entrySize = entry.getSize();
   return range.last() == -1

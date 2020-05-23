@@ -62,8 +62,6 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
   }
 }
 
-using ByteRange = RequestContext::ByteRange;
-
 ByteRange parse_byte_range(std::string range)
 {
   ByteRange byteRange{0, -1};
@@ -202,7 +200,7 @@ bool RequestContext::has_range() const {
   return byteRange_.first() <= byteRange_.last();
 }
 
-RequestContext::ByteRange RequestContext::get_range() const {
+ByteRange RequestContext::get_range() const {
   return byteRange_;
 }
 
