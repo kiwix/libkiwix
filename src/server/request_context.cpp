@@ -86,9 +86,14 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
         (get_header(MHD_HTTP_HEADER_ACCEPT_ENCODING).find("deflate") != std::string::npos);
   } catch (const std::out_of_range&) {}
 
-  /*Check if range is requested. */
   try {
     std::string range = get_header(MHD_HTTP_HEADER_RANGE);
+    parse_byte_range(range);
+  } catch (const std::out_of_range&) {}
+}
+
+void RequestContext::parse_byte_range(std::string range)
+{
     const std::string byteUnitSpec("bytes=");
     if ( kiwix::startsWith(range, byteUnitSpec) ) {
       range.erase(0, byteUnitSpec.size());
@@ -110,7 +115,6 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
         }
       }
     }
-  } catch (const std::out_of_range&) {}
 }
 
 RequestContext::~RequestContext()
