@@ -92,33 +92,33 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   } catch (const std::out_of_range&) {}
 }
 
-void RequestContext::parse_byte_range(std::string range)
-{
-    const std::string byteUnitSpec("bytes=");
-    if ( kiwix::startsWith(range, byteUnitSpec) ) {
-      range.erase(0, byteUnitSpec.size());
-      int start = 0;
-      int end = -1;
-      std::istringstream iss(range);
-      char c;
-
-      iss >> start >> c;
-      if (iss.good() && c=='-') {
-        iss >> end;
-        if (iss.fail()) {
-          // Something went wrong will extracting.
-          end = -1;
-        }
-        if (iss.eof()) {
-          accept_range = true;
-          range_pair = std::pair<int, int>(start, end);
-        }
-      }
-    }
-}
-
 RequestContext::~RequestContext()
 {}
+
+void RequestContext::parse_byte_range(std::string range)
+{
+  const std::string byteUnitSpec("bytes=");
+  if ( kiwix::startsWith(range, byteUnitSpec) ) {
+    range.erase(0, byteUnitSpec.size());
+    int start = 0;
+    int end = -1;
+    std::istringstream iss(range);
+    char c;
+
+    iss >> start >> c;
+    if (iss.good() && c=='-') {
+      iss >> end;
+      if (iss.fail()) {
+        // Something went wrong while extracting
+        end = -1;
+      }
+      if (iss.eof()) {
+        accept_range = true;
+        range_pair = std::pair<int, int>(start, end);
+      }
+    }
+  }
+}
 
 
 int RequestContext::fill_header(void *__this, enum MHD_ValueKind kind,
