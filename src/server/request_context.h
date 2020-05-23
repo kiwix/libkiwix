@@ -98,7 +98,6 @@ class RequestContext {
 
     bool acceptEncodingDeflate;
 
-    bool accept_range;
     ByteRange range_pair;
     std::map<std::string, std::string> headers;
     std::map<std::string, std::string> arguments;

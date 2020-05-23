@@ -75,7 +75,6 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   version(version),
   requestIndex(s_requestIndex++),
   acceptEncodingDeflate(false),
-  accept_range(false),
   range_pair(0, -1)
 {
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
@@ -113,7 +112,6 @@ void RequestContext::parse_byte_range(std::string range)
         end = -1;
       }
       if (iss.eof()) {
-        accept_range = true;
         range_pair = std::pair<int, int>(start, end);
       }
     }
@@ -155,7 +153,7 @@ void RequestContext::print_debug_info() const {
   printf("full_url: %s\n", full_url.c_str());
   printf("url   : %s\n", url.c_str());
   printf("acceptEncodingDeflate : %d\n", acceptEncodingDeflate);
-  printf("has_range : %d\n", accept_range);
+  printf("has_range : %d\n", has_range());
   printf("is_valid_url : %d\n", is_valid_url());
   printf(".............\n");
 }
@@ -198,7 +196,7 @@ bool RequestContext::is_valid_url() const {
 }
 
 bool RequestContext::has_range() const {
-  return accept_range;
+  return range_pair.first <= range_pair.second;
 }
 
 std::pair<int, int> RequestContext::get_range() const {
