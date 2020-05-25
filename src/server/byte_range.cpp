@@ -85,6 +85,9 @@ ByteRange ByteRange::resolve(int64_t contentSize) const
 
   const int64_t resolved_last = std::min(contentSize-1, last());
 
+  if ( resolved_first > resolved_last )
+    return ByteRange(INVALID, 0, contentSize-1);
+
   return ByteRange(RESOLVED_PARTIAL_CONTENT, resolved_first, resolved_last);
 }
 

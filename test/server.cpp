@@ -465,7 +465,9 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 
   const char* invalidRanges[] = {
     "0-10", "bytes=", "bytes=123", "bytes=-10-20", "bytes=10-20xxx",
-    "bytes=10-0", "bytes=10-20, 30-40"
+    "bytes=10-0", // reversed range
+    "bytes=10-20, 30-40", // multi-range
+    "bytes=1000000-", "bytes=30000-30100" // unsatisfiable ranges
   };
 
   for( const char* range : invalidRanges )
