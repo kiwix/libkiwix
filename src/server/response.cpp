@@ -273,7 +273,7 @@ MHD_Response*
 Response::create_mhd_response(const RequestContext& request)
 {
   switch (m_mode) {
-    case ResponseMode::ERROR:
+    case ResponseMode::ERROR_RESPONSE:
       return create_error_response(request);
 
     case ResponseMode::RAW_CONTENT :
@@ -292,7 +292,7 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
 {
   MHD_Response* response = create_mhd_response(request);
 
-  if ( m_mode != ResponseMode::ERROR ) {
+  if ( m_mode != ResponseMode::ERROR_RESPONSE ) {
     MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
     MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
       m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
@@ -345,7 +345,7 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
   } else if ( m_byteRange.kind() == ByteRange::INVALID ) {
     set_code(416);
     set_content("");
-    m_mode = ResponseMode::ERROR;
+    m_mode = ResponseMode::ERROR_RESPONSE;
   }
 }
 

@@ -35,7 +35,7 @@ extern "C" {
 namespace kiwix {
 
 enum class ResponseMode {
-  ERROR,
+  ERROR_RESPONSE,
   RAW_CONTENT,
   REDIRECTION,
   ENTRY
