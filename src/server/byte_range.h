@@ -25,15 +25,37 @@ namespace kiwix {
 
 class ByteRange
 {
-  public: // functions
-    ByteRange() : ByteRange(0, -1) {}
-    ByteRange(int64_t first, int64_t last) : first_(first), last_(last) {}
+  public: // types
+    enum Kind {
+      // No byte-range was present in the request
+      NONE,
 
+      // This byte-range has been parsed from request
+      PARSED,
+
+      // This is a response to a regular request
+      RESOLVED_FULL_CONTENT,
+
+      // This is a response to a range request
+      RESOLVED_PARTIAL_CONTENT
+    };
+
+  public: // functions
+    ByteRange() : kind_(NONE), first_(0), last_(-1) {}
+
+    ByteRange(Kind kind, int64_t first, int64_t last)
+      : kind_(kind)
+      , first_(first)
+      , last_(last)
+    {}
+
+    Kind kind() const { return kind_; }
     int64_t first() const { return first_; }
     int64_t last() const { return last_; }
     int64_t length() const { return last_ + 1 - first_; }
 
   private: // data
+    Kind kind_;
     int64_t first_;
     int64_t last_;
 };

@@ -64,7 +64,7 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
 
 ByteRange parse_byte_range(std::string range)
 {
-  ByteRange byteRange{0, -1};
+  ByteRange byteRange;
   const std::string byteUnitSpec("bytes=");
   if ( kiwix::startsWith(range, byteUnitSpec) ) {
     range.erase(0, byteUnitSpec.size());
@@ -81,7 +81,7 @@ ByteRange parse_byte_range(std::string range)
         end = -1;
       }
       if (iss.eof()) {
-        byteRange = ByteRange(start, end);
+        byteRange = ByteRange(ByteRange::PARSED, start, end);
       }
     }
   }
@@ -197,7 +197,7 @@ bool RequestContext::is_valid_url() const {
 }
 
 bool RequestContext::has_range() const {
-  return byteRange_.first() <= byteRange_.last();
+  return byteRange_.kind() == ByteRange::PARSED;
 }
 
 ByteRange RequestContext::get_range() const {

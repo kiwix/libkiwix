@@ -42,10 +42,14 @@ bool is_compressible_mime_type(const std::string& mimeType)
 ByteRange resolve_byte_range(const kiwix::Entry& entry, ByteRange range)
 {
   const int64_t entrySize = entry.getSize();
+
+  if ( range.kind() == ByteRange::NONE )
+    return ByteRange(ByteRange::RESOLVED_FULL_CONTENT, 0, entrySize-1);
+
   const int64_t resolved_last = range.last() < 0
                               ? entrySize - 1
                               : std::min(entrySize-1, range.last());
-  return ByteRange(range.first(), resolved_last);
+  return ByteRange(ByteRange::RESOLVED_PARTIAL_CONTENT, range.first(), resolved_last);
 }
 
 } // unnamed namespace
@@ -288,7 +292,7 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
   if ( ! etag.empty() )
       MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
 
-  if (m_returnCode == MHD_HTTP_OK && request.has_range())
+  if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
 
   if (m_verbose)
@@ -322,6 +326,8 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
   set_mimeType(mimeType);
   set_cacheable();
 
+  // XXX: Which of the Accept-Encoding and Range headers has precedence if both
+  // XXX: are present? Can partial content be compressed?
   if ( is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
     const std::string content = string(raw_content.data(), raw_content.size());
