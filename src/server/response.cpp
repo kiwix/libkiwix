@@ -173,7 +173,7 @@ MHD_Response*
 Response::create_error_response(const RequestContext& request) const
 {
   MHD_Response* response = MHD_create_response_from_buffer(0, NULL, MHD_RESPMEM_PERSISTENT);
-  if ( m_returnCode == MHD_HTTP_RANGE_NOT_SATISFIABLE ) {
+  if ( m_returnCode == 416 ) {
     std::ostringstream oss;
     oss << "bytes */" << m_byteRange.length();
 
@@ -343,7 +343,7 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
     set_content(content);
     set_compress(true);
   } else if ( m_byteRange.kind() == ByteRange::INVALID ) {
-    set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
+    set_code(416);
     set_content("");
     m_mode = ResponseMode::ERROR;
   }
