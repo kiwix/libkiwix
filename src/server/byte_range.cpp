@@ -48,13 +48,13 @@ ByteRange ByteRange::parse(std::string rangeStr)
     if (iss >> start) {
       if ( start < 0 ) {
         if ( iss.eof() )
-          byteRange = ByteRange(ByteRange::PARSED, start, end);
+          byteRange = ByteRange(PARSED, start, end);
       } else {
         char c;
         if (iss >> c && c=='-') {
           iss >> end; // if this fails, end is not modified, which is OK
           if (iss.eof() && start <= end)
-            byteRange = ByteRange(ByteRange::PARSED, start, end);
+            byteRange = ByteRange(PARSED, start, end);
         }
       }
     }
