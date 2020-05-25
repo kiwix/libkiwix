@@ -21,6 +21,8 @@
 #ifndef KIWIXLIB_SERVER_BYTE_RANGE_H
 #define KIWIXLIB_SERVER_BYTE_RANGE_H
 
+#include <cstdint>
+
 namespace kiwix {
 
 class ByteRange
@@ -41,13 +43,8 @@ class ByteRange
     };
 
   public: // functions
-    ByteRange() : kind_(NONE), first_(0), last_(-1) {}
-
-    ByteRange(Kind kind, int64_t first, int64_t last)
-      : kind_(kind)
-      , first_(first)
-      , last_(last)
-    {}
+    ByteRange();
+    ByteRange(Kind kind, int64_t first, int64_t last);
 
     Kind kind() const { return kind_; }
     int64_t first() const { return first_; }

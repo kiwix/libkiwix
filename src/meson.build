@@ -21,6 +21,7 @@ kiwix_sources = [
   'tools/otherTools.cpp',
   'kiwixserve.cpp',
   'name_mapper.cpp',
+  'server/byte_range.cpp',
   'server/etag.cpp',
   'server/request_context.cpp',
   'server/response.cpp'
