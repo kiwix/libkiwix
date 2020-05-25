@@ -62,4 +62,18 @@ ByteRange ByteRange::parse(std::string rangeStr)
   return byteRange;
 }
 
+ByteRange ByteRange::resolve(int64_t contentSize) const
+{
+  if ( kind() == NONE )
+    return ByteRange(RESOLVED_FULL_CONTENT, 0, contentSize-1);
+
+  const int64_t resolved_first = first() < 0
+                               ? std::max(int64_t(0), contentSize + first())
+                               : first();
+
+  const int64_t resolved_last = std::min(contentSize-1, last());
+
+  return ByteRange(RESOLVED_PARTIAL_CONTENT, resolved_first, resolved_last);
+}
+
 } // namespace kiwix

@@ -39,21 +39,6 @@ bool is_compressible_mime_type(const std::string& mimeType)
       || mimeType.find("application/json") != string::npos;
 }
 
-ByteRange resolve_byte_range(const kiwix::Entry& entry, ByteRange range)
-{
-  const int64_t entrySize = entry.getSize();
-
-  if ( range.kind() == ByteRange::NONE )
-    return ByteRange(ByteRange::RESOLVED_FULL_CONTENT, 0, entrySize-1);
-
-  const int64_t resolved_first = range.first() < 0
-                               ? std::max(int64_t(0), entrySize + range.first())
-                               : range.first();
-
-  const int64_t resolved_last = std::min(entrySize-1, range.last());
-
-  return ByteRange(ByteRange::RESOLVED_PARTIAL_CONTENT, resolved_first, resolved_last);
-}
 
 } // unnamed namespace
 
@@ -338,7 +323,7 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
     set_content(content);
     set_compress(true);
   } else {
-    m_byteRange = resolve_byte_range(entry, request.get_range());
+    m_byteRange = request.get_range().resolve(entry.getSize());
   }
 }
 

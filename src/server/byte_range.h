@@ -53,6 +53,7 @@ class ByteRange
     int64_t length() const { return last_ + 1 - first_; }
 
     static ByteRange parse(std::string rangeStr);
+    ByteRange resolve(int64_t contentSize) const;
 
   private: // data
     Kind kind_;
