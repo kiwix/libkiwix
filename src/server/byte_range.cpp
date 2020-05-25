@@ -20,6 +20,8 @@
 
 #include "byte_range.h"
 
+#include "tools/stringTools.h"
+
 namespace kiwix {
 
 ByteRange::ByteRange()
@@ -33,5 +35,31 @@ ByteRange::ByteRange(Kind kind, int64_t first, int64_t last)
   , first_(first)
   , last_(last)
 {}
+
+ByteRange ByteRange::parse(std::string rangeStr)
+{
+  ByteRange byteRange;
+  const std::string byteUnitSpec("bytes=");
+  if ( kiwix::startsWith(rangeStr, byteUnitSpec) ) {
+    rangeStr.erase(0, byteUnitSpec.size());
+    std::istringstream iss(rangeStr);
+
+    int64_t start, end = INT64_MAX;
+    if (iss >> start) {
+      if ( start < 0 ) {
+        if ( iss.eof() )
+          byteRange = ByteRange(ByteRange::PARSED, start, end);
+      } else {
+        char c;
+        if (iss >> c && c=='-') {
+          iss >> end; // if this fails, end is not modified, which is OK
+          if (iss.eof())
+            byteRange = ByteRange(ByteRange::PARSED, start, end);
+        }
+      }
+    }
+  }
+  return byteRange;
+}
 
 } // namespace kiwix

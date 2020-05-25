@@ -22,6 +22,7 @@
 #define KIWIXLIB_SERVER_BYTE_RANGE_H
 
 #include <cstdint>
+#include <string>
 
 namespace kiwix {
 
@@ -50,6 +51,8 @@ class ByteRange
     int64_t first() const { return first_; }
     int64_t last() const { return last_; }
     int64_t length() const { return last_ + 1 - first_; }
+
+    static ByteRange parse(std::string rangeStr);
 
   private: // data
     Kind kind_;

@@ -20,7 +20,6 @@
 
 
 #include "request_context.h"
-#include "tools/stringTools.h"
 #include <string.h>
 #include <stdexcept>
 #include <sstream>
@@ -63,32 +62,6 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
   }
 }
 
-ByteRange parse_byte_range(std::string range)
-{
-  ByteRange byteRange;
-  const std::string byteUnitSpec("bytes=");
-  if ( kiwix::startsWith(range, byteUnitSpec) ) {
-    range.erase(0, byteUnitSpec.size());
-    std::istringstream iss(range);
-
-    int64_t start, end = INT64_MAX;
-    if (iss >> start) {
-      if ( start < 0 ) {
-        if ( iss.eof() )
-          byteRange = ByteRange(ByteRange::PARSED, start, end);
-      } else {
-        char c;
-        if (iss >> c && c=='-') {
-          iss >> end; // if this fails, end is not modified, which is OK
-          if (iss.eof())
-            byteRange = ByteRange(ByteRange::PARSED, start, end);
-        }
-      }
-    }
-  }
-  return byteRange;
-}
-
 
 } // unnamed namespace
 
@@ -114,7 +87,7 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   } catch (const std::out_of_range&) {}
 
   try {
-    byteRange_ = parse_byte_range(get_header(MHD_HTTP_HEADER_RANGE));
+    byteRange_ = ByteRange::parse(get_header(MHD_HTTP_HEADER_RANGE));
   } catch (const std::out_of_range&) {}
 }
 
