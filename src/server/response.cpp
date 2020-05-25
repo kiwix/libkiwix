@@ -46,10 +46,15 @@ ByteRange resolve_byte_range(const kiwix::Entry& entry, ByteRange range)
   if ( range.kind() == ByteRange::NONE )
     return ByteRange(ByteRange::RESOLVED_FULL_CONTENT, 0, entrySize-1);
 
+  const int64_t resolved_first = range.first() < 0
+                               ? std::max(int64_t(0), entrySize + range.first())
+                               : range.first();
+
   const int64_t resolved_last = range.last() < 0
                               ? entrySize - 1
                               : std::min(entrySize-1, range.last());
-  return ByteRange(ByteRange::RESOLVED_PARTIAL_CONTENT, range.first(), resolved_last);
+
+  return ByteRange(ByteRange::RESOLVED_PARTIAL_CONTENT, resolved_first, resolved_last);
 }
 
 } // unnamed namespace

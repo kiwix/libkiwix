@@ -26,6 +26,7 @@
 #include <sstream>
 #include <cstdio>
 #include <atomic>
+#include <limits>
 
 namespace kiwix {
 
@@ -64,6 +65,8 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
 
 ByteRange parse_byte_range(std::string range)
 {
+  const int64_t int64_max = std::numeric_limits<int64_t>::max();
+
   ByteRange byteRange;
   const std::string byteUnitSpec("bytes=");
   if ( kiwix::startsWith(range, byteUnitSpec) ) {
@@ -73,15 +76,21 @@ ByteRange parse_byte_range(std::string range)
     std::istringstream iss(range);
     char c;
 
-    iss >> start >> c;
-    if (iss.good() && c=='-') {
-      iss >> end;
-      if (iss.fail()) {
-        // Something went wrong while extracting
-        end = -1;
-      }
-      if (iss.eof()) {
-        byteRange = ByteRange(ByteRange::PARSED, start, end);
+    iss >> start;
+    if ( start < 0 ) {
+      if ( iss.eof() )
+        byteRange = ByteRange(ByteRange::PARSED, start, int64_max);
+    } else {
+      iss >> c;
+      if (iss.good() && c=='-') {
+        iss >> end;
+        if (iss.fail()) {
+          // Something went wrong while extracting
+          end = -1;
+        }
+        if (iss.eof()) {
+          byteRange = ByteRange(ByteRange::PARSED, start, end);
+        }
       }
     }
   }

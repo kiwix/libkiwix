@@ -436,4 +436,18 @@ TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
     EXPECT_EQ(334, p->body.size());
     EXPECT_EQ(full->body.substr(123, 334), p->body);
   }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=20000-"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ(full->body.substr(20000), p->body);
+    EXPECT_EQ("bytes 20000-20076/20077", p->get_header_value("Content-Range"));
+  }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=-100"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ(full->body.substr(19977), p->body);
+    EXPECT_EQ("bytes 19977-20076/20077", p->get_header_value("Content-Range"));
+  }
 }
