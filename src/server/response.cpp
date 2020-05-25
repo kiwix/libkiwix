@@ -170,6 +170,20 @@ Response::can_compress(const RequestContext& request) const
 }
 
 MHD_Response*
+Response::create_error_response(const RequestContext& request) const
+{
+  MHD_Response* response = MHD_create_response_from_buffer(0, NULL, MHD_RESPMEM_PERSISTENT);
+  if ( m_returnCode == MHD_HTTP_RANGE_NOT_SATISFIABLE ) {
+    std::ostringstream oss;
+    oss << "bytes */" << m_byteRange.length();
+
+    MHD_add_response_header(response,
+      MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
+  }
+  return response;
+}
+
+MHD_Response*
 Response::create_raw_content_mhd_response(const RequestContext& request)
 {
   if (m_addTaskbar) {
@@ -259,6 +273,9 @@ MHD_Response*
 Response::create_mhd_response(const RequestContext& request)
 {
   switch (m_mode) {
+    case ResponseMode::ERROR:
+      return create_error_response(request);
+
     case ResponseMode::RAW_CONTENT :
       return create_raw_content_mhd_response(request);
 
@@ -275,12 +292,14 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
 {
   MHD_Response* response = create_mhd_response(request);
 
-  MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
-  MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
-    m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
-  const std::string etag = m_etag.get_etag();
-  if ( ! etag.empty() )
-      MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
+  if ( m_mode != ResponseMode::ERROR ) {
+    MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
+    MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
+      m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
+    const std::string etag = m_etag.get_etag();
+    if ( ! etag.empty() )
+        MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
+  }
 
   if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
@@ -316,16 +335,17 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
   set_mimeType(mimeType);
   set_cacheable();
 
-  // XXX: Which of the Accept-Encoding and Range headers has precedence if both
-  // XXX: are present? Can partial content be compressed?
-  if ( is_compressible_mime_type(mimeType) ) {
+  m_byteRange = request.get_range().resolve(entry.getSize());
+  if ( m_byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT && is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
     const std::string content = string(raw_content.data(), raw_content.size());
 
     set_content(content);
     set_compress(true);
-  } else {
-    m_byteRange = request.get_range().resolve(entry.getSize());
+  } else if ( m_byteRange.kind() == ByteRange::INVALID ) {
+    set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
+    set_content("");
+    m_mode = ResponseMode::ERROR;
   }
 }
 

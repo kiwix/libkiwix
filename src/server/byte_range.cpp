@@ -38,7 +38,7 @@ ByteRange::ByteRange(Kind kind, int64_t first, int64_t last)
 
 ByteRange ByteRange::parse(std::string rangeStr)
 {
-  ByteRange byteRange;
+  ByteRange byteRange(INVALID, 0, INT64_MAX);
   const std::string byteUnitSpec("bytes=");
   if ( kiwix::startsWith(rangeStr, byteUnitSpec) ) {
     rangeStr.erase(0, byteUnitSpec.size());
@@ -53,12 +53,13 @@ ByteRange ByteRange::parse(std::string rangeStr)
         char c;
         if (iss >> c && c=='-') {
           iss >> end; // if this fails, end is not modified, which is OK
-          if (iss.eof())
+          if (iss.eof() && start <= end)
             byteRange = ByteRange(ByteRange::PARSED, start, end);
         }
       }
     }
   }
+
   return byteRange;
 }
 
@@ -66,6 +67,9 @@ ByteRange ByteRange::resolve(int64_t contentSize) const
 {
   if ( kind() == NONE )
     return ByteRange(RESOLVED_FULL_CONTENT, 0, contentSize-1);
+
+  if ( kind() == INVALID )
+    return ByteRange(INVALID, 0, contentSize-1);
 
   const int64_t resolved_first = first() < 0
                                ? std::max(int64_t(0), contentSize + first())

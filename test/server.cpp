@@ -458,3 +458,22 @@ TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
     EXPECT_EQ("bytes", p->get_header_value("Accept-Ranges"));
   }
 }
+
+TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
+{
+  const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+
+  const char* invalidRanges[] = {
+    "0-10", "bytes=", "bytes=123", "bytes=-10-20", "bytes=10-20xxx",
+    "bytes=10-0", "bytes=10-20, 30-40"
+  };
+
+  for( const char* range : invalidRanges )
+  {
+    const TestContext ctx{ {"Range", range} };
+    const auto p = zfs1_->GET(url, { {"Range", range } } );
+    EXPECT_EQ(416, p->status) << ctx;
+    EXPECT_TRUE(p->body.empty()) << ctx;
+    EXPECT_EQ("bytes */20077", p->get_header_value("Content-Range")) << ctx;
+  }
+}

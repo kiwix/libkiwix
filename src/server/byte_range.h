@@ -33,6 +33,11 @@ class ByteRange
       // No byte-range was present in the request
       NONE,
 
+      // The value of the Range header is not a valid continuous range.
+      // Note that a valid (according to RFC7233) sequence of byte ranges is
+      // considered invalid in this context.
+      INVALID,
+
       // This byte-range has been parsed from request
       PARSED,
 
