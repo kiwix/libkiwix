@@ -24,6 +24,32 @@
 
 namespace kiwix {
 
+namespace {
+
+ByteRange parseByteRange(const std::string& rangeStr)
+{
+  std::istringstream iss(rangeStr);
+
+  int64_t start, end = INT64_MAX;
+  if (iss >> start) {
+    if ( start < 0 ) {
+      if ( iss.eof() )
+        return ByteRange(ByteRange::PARSED, start, end);
+    } else {
+      char c;
+      if (iss >> c && c=='-') {
+        iss >> end; // if this fails, end is not modified, which is OK
+        if (iss.eof() && start <= end)
+          return ByteRange(ByteRange::PARSED, start, end);
+      }
+    }
+  }
+
+  return ByteRange(ByteRange::INVALID, 0, INT64_MAX);
+}
+
+} // unnamed namespace
+
 ByteRange::ByteRange()
   : kind_(NONE)
   , first_(0)
@@ -36,31 +62,13 @@ ByteRange::ByteRange(Kind kind, int64_t first, int64_t last)
   , last_(last)
 {}
 
-ByteRange ByteRange::parse(std::string rangeStr)
+ByteRange ByteRange::parse(const std::string& rangeStr)
 {
-  ByteRange byteRange(INVALID, 0, INT64_MAX);
   const std::string byteUnitSpec("bytes=");
-  if ( kiwix::startsWith(rangeStr, byteUnitSpec) ) {
-    rangeStr.erase(0, byteUnitSpec.size());
-    std::istringstream iss(rangeStr);
+  if ( ! kiwix::startsWith(rangeStr, byteUnitSpec) )
+    return ByteRange(INVALID, 0, INT64_MAX);
 
-    int64_t start, end = INT64_MAX;
-    if (iss >> start) {
-      if ( start < 0 ) {
-        if ( iss.eof() )
-          byteRange = ByteRange(PARSED, start, end);
-      } else {
-        char c;
-        if (iss >> c && c=='-') {
-          iss >> end; // if this fails, end is not modified, which is OK
-          if (iss.eof() && start <= end)
-            byteRange = ByteRange(PARSED, start, end);
-        }
-      }
-    }
-  }
-
-  return byteRange;
+  return parseByteRange(rangeStr.substr(byteUnitSpec.size()));
 }
 
 ByteRange ByteRange::resolve(int64_t contentSize) const
