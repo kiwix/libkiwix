@@ -25,7 +25,7 @@ namespace kiwix {
 ByteRange::ByteRange()
   : kind_(NONE)
   , first_(0)
-  , last_(-1)
+  , last_(INT64_MAX)
 {}
 
 ByteRange::ByteRange(Kind kind, int64_t first, int64_t last)

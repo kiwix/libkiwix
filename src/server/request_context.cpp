@@ -65,31 +65,23 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
 
 ByteRange parse_byte_range(std::string range)
 {
-  const int64_t int64_max = std::numeric_limits<int64_t>::max();
-
   ByteRange byteRange;
   const std::string byteUnitSpec("bytes=");
   if ( kiwix::startsWith(range, byteUnitSpec) ) {
     range.erase(0, byteUnitSpec.size());
-    int start = 0;
-    int end = -1;
     std::istringstream iss(range);
-    char c;
 
-    iss >> start;
-    if ( start < 0 ) {
-      if ( iss.eof() )
-        byteRange = ByteRange(ByteRange::PARSED, start, int64_max);
-    } else {
-      iss >> c;
-      if (iss.good() && c=='-') {
-        iss >> end;
-        if (iss.fail()) {
-          // Something went wrong while extracting
-          end = -1;
-        }
-        if (iss.eof()) {
+    int64_t start, end = INT64_MAX;
+    if (iss >> start) {
+      if ( start < 0 ) {
+        if ( iss.eof() )
           byteRange = ByteRange(ByteRange::PARSED, start, end);
+      } else {
+        char c;
+        if (iss >> c && c=='-') {
+          iss >> end; // if this fails, end is not modified, which is OK
+          if (iss.eof())
+            byteRange = ByteRange(ByteRange::PARSED, start, end);
         }
       }
     }
