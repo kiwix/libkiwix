@@ -241,12 +241,14 @@ Response::create_entry_mhd_response() const
   MHD_add_response_header(response,
     MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
   MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
-  std::ostringstream oss;
-  oss << "bytes " << m_byteRange.first() << "-" << m_byteRange.last()
-      << "/" << m_entry.getSize();
+  if ( m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT ) {
+    std::ostringstream oss;
+    oss << "bytes " << m_byteRange.first() << "-" << m_byteRange.last()
+        << "/" << m_entry.getSize();
 
-  MHD_add_response_header(response,
-    MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
+    MHD_add_response_header(response,
+      MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
+  }
 
   MHD_add_response_header(response,
     MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(content_length).c_str());
