@@ -479,3 +479,18 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
     EXPECT_EQ("bytes */20077", p->get_header_value("Content-Range")) << ctx;
   }
 }
+
+TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
+{
+  const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+
+  const Headers onlyRange{ {"Range", "bytes=123-456"} };
+  Headers rangeAndCompression(onlyRange);
+  rangeAndCompression.insert({"Accept-Encoding", "deflate"});
+
+  const auto p1 = zfs1_->GET(url, onlyRange);
+  const auto p2 = zfs1_->GET(url, rangeAndCompression);
+  EXPECT_EQ(p1->status, p2->status);
+  EXPECT_EQ(invariantHeaders(p1->headers), invariantHeaders(p2->headers));
+  EXPECT_EQ(p1->body, p2->body);
+}
