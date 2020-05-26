@@ -126,7 +126,7 @@ void RequestContext::print_debug_info() const {
   printf("full_url: %s\n", full_url.c_str());
   printf("url   : %s\n", url.c_str());
   printf("acceptEncodingDeflate : %d\n", acceptEncodingDeflate);
-  printf("has_range : %d\n", has_range());
+  printf("has_range : %d\n", byteRange_.kind() != ByteRange::NONE);
   printf("is_valid_url : %d\n", is_valid_url());
   printf(".............\n");
 }
@@ -166,10 +166,6 @@ std::string RequestContext::get_full_url() const {
 
 bool RequestContext::is_valid_url() const {
   return !url.empty();
-}
-
-bool RequestContext::has_range() const {
-  return byteRange_.kind() == ByteRange::PARSED;
 }
 
 ByteRange RequestContext::get_range() const {

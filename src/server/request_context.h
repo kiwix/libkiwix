@@ -80,7 +80,6 @@ class RequestContext {
     std::string get_url_part(int part) const;
     std::string get_full_url() const;
 
-    bool has_range() const;
     ByteRange get_range() const;
 
     bool can_compress() const { return acceptEncodingDeflate; }
