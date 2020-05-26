@@ -49,7 +49,7 @@ class ByteRange
       // This is a response to a regular (non-range) request
       RESOLVED_FULL_CONTENT,
 
-      // The range request is valid but unsatisfiable
+      // The range request is invalid or unsatisfiable
       RESOLVED_UNSATISFIABLE,
 
       // This is a response to a (satisfiable) range request
