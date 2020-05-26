@@ -336,7 +336,8 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
   set_cacheable();
 
   m_byteRange = request.get_range().resolve(entry.getSize());
-  if ( m_byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT && is_compressible_mime_type(mimeType) ) {
+  const bool noRange = m_byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
+  if ( noRange && is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
     const std::string content = string(raw_content.data(), raw_content.size());
 
