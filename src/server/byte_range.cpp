@@ -22,6 +22,8 @@
 
 #include "tools/stringTools.h"
 
+#include <cassert>
+
 namespace kiwix {
 
 namespace {
@@ -34,7 +36,7 @@ ByteRange parseByteRange(const std::string& rangeStr)
   if (iss >> start) {
     if ( start < 0 ) {
       if ( iss.eof() )
-        return ByteRange(ByteRange::PARSED, start, end);
+        return ByteRange(-start);
     } else {
       char c;
       if (iss >> c && c=='-') {
@@ -60,7 +62,37 @@ ByteRange::ByteRange(Kind kind, int64_t first, int64_t last)
   : kind_(kind)
   , first_(first)
   , last_(last)
-{}
+{
+  assert(kind != NONE);
+  assert(first >= 0);
+  assert(last >= first);
+}
+
+ByteRange::ByteRange(int64_t suffix_length)
+  : kind_(PARSED)
+  , first_(-suffix_length)
+  , last_(INT64_MAX)
+{
+  assert(suffix_length > 0);
+}
+
+int64_t ByteRange::first() const
+{
+  assert(kind_ > PARSED);
+  return first_;
+}
+
+int64_t ByteRange::last() const
+{
+  assert(kind_ > PARSED);
+  return last_;
+}
+
+int64_t ByteRange::length() const
+{
+  assert(kind_ > PARSED);
+  return last_ + 1 - first_;
+}
 
 ByteRange ByteRange::parse(const std::string& rangeStr)
 {
@@ -77,16 +109,16 @@ ByteRange ByteRange::resolve(int64_t contentSize) const
     return ByteRange(RESOLVED_FULL_CONTENT, 0, contentSize-1);
 
   if ( kind() == INVALID )
-    return ByteRange(INVALID, 0, contentSize-1);
+    return ByteRange(RESOLVED_UNSATISFIABLE, 0, contentSize-1);
 
-  const int64_t resolved_first = first() < 0
-                               ? std::max(int64_t(0), contentSize + first())
-                               : first();
+  const int64_t resolved_first = first_ < 0
+                               ? std::max(int64_t(0), contentSize + first_)
+                               : first_;
 
-  const int64_t resolved_last = std::min(contentSize-1, last());
+  const int64_t resolved_last = std::min(contentSize-1, last_);
 
   if ( resolved_first > resolved_last )
-    return ByteRange(INVALID, 0, contentSize-1);
+    return ByteRange(RESOLVED_UNSATISFIABLE, 0, contentSize-1);
 
   return ByteRange(RESOLVED_PARTIAL_CONTENT, resolved_first, resolved_last);
 }

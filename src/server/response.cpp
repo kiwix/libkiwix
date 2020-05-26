@@ -342,7 +342,7 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
 
     set_content(content);
     set_compress(true);
-  } else if ( m_byteRange.kind() == ByteRange::INVALID ) {
+  } else if ( m_byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE ) {
     set_code(416);
     set_content("");
     m_mode = ResponseMode::ERROR_RESPONSE;
