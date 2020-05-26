@@ -29,7 +29,6 @@ namespace kiwix {
 class ByteRange
 {
   public: // types
-
     // ByteRange is parsed in a request, then it must be resolved (taking
     // into account the actual size of the requested resource) before
     // being applied in the response.
