@@ -25,7 +25,6 @@
 #include <sstream>
 #include <cstdio>
 #include <atomic>
-#include <limits>
 
 namespace kiwix {
 
@@ -61,7 +60,6 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
     return "";
   }
 }
-
 
 } // unnamed namespace
 
