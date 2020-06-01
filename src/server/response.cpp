@@ -39,12 +39,6 @@ bool is_compressible_mime_type(const std::string& mimeType)
       || mimeType.find("application/json") != string::npos;
 }
 
-int get_range_len(const kiwix::Entry& entry, RequestContext::ByteRange range)
-{
-  return range.second == -1
-       ? entry.getSize() - range.first
-       : range.second - range.first;
-}
 
 } // unnamed namespace
 
@@ -58,9 +52,7 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
     m_withLibraryButton(withLibraryButton),
     m_blockExternalLinks(blockExternalLinks),
     m_addTaskbar(false),
-    m_bookName(""),
-    m_startRange(0),
-    m_lenRange(0)
+    m_bookName("")
 {
 }
 
@@ -178,6 +170,20 @@ Response::can_compress(const RequestContext& request) const
 }
 
 MHD_Response*
+Response::create_error_response(const RequestContext& request) const
+{
+  MHD_Response* response = MHD_create_response_from_buffer(0, NULL, MHD_RESPMEM_PERSISTENT);
+  if ( m_returnCode == 416 ) {
+    std::ostringstream oss;
+    oss << "bytes */" << m_byteRange.length();
+
+    MHD_add_response_header(response,
+      MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
+  }
+  return response;
+}
+
+MHD_Response*
 Response::create_raw_content_mhd_response(const RequestContext& request)
 {
   if (m_addTaskbar) {
@@ -240,23 +246,26 @@ Response::create_redirection_mhd_response() const
 MHD_Response*
 Response::create_entry_mhd_response() const
 {
-  MHD_Response* response = MHD_create_response_from_callback(m_entry.getSize(),
+  const auto content_length = m_byteRange.length();
+  MHD_Response* response = MHD_create_response_from_callback(content_length,
                                                16384,
                                                callback_reader_from_entry,
-                                               new RunningResponse(m_entry, m_startRange),
+                                               new RunningResponse(m_entry, m_byteRange.first()),
                                                callback_free_response);
   MHD_add_response_header(response,
     MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
   MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
-  std::ostringstream oss;
-  oss << "bytes " << m_startRange << "-" << m_startRange + m_lenRange - 1
-      << "/" << m_entry.getSize();
+  if ( m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT ) {
+    std::ostringstream oss;
+    oss << "bytes " << m_byteRange.first() << "-" << m_byteRange.last()
+        << "/" << m_entry.getSize();
+
+    MHD_add_response_header(response,
+      MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
+  }
 
   MHD_add_response_header(response,
-    MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
-
-  MHD_add_response_header(response,
-    MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(m_lenRange).c_str());
+    MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(content_length).c_str());
   return response;
 }
 
@@ -264,6 +273,9 @@ MHD_Response*
 Response::create_mhd_response(const RequestContext& request)
 {
   switch (m_mode) {
+    case ResponseMode::ERROR_RESPONSE:
+      return create_error_response(request);
+
     case ResponseMode::RAW_CONTENT :
       return create_raw_content_mhd_response(request);
 
@@ -280,14 +292,16 @@ int Response::send(const RequestContext& request, MHD_Connection* connection)
 {
   MHD_Response* response = create_mhd_response(request);
 
-  MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
-  MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
-    m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
-  const std::string etag = m_etag.get_etag();
-  if ( ! etag.empty() )
-      MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
+  if ( m_mode != ResponseMode::ERROR_RESPONSE ) {
+    MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
+    MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
+      m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
+    const std::string etag = m_etag.get_etag();
+    if ( ! etag.empty() )
+        MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
+  }
 
-  if (m_returnCode == MHD_HTTP_OK && request.has_range())
+  if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
 
   if (m_verbose)
@@ -321,16 +335,18 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
   set_mimeType(mimeType);
   set_cacheable();
 
-  if ( is_compressible_mime_type(mimeType) ) {
+  m_byteRange = request.get_range().resolve(entry.getSize());
+  const bool noRange = m_byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
+  if ( noRange && is_compressible_mime_type(mimeType) ) {
     zim::Blob raw_content = entry.getBlob();
     const std::string content = string(raw_content.data(), raw_content.size());
 
     set_content(content);
     set_compress(true);
-  } else {
-    const int range_len = get_range_len(entry, request.get_range());
-    set_range_first(request.get_range().first);
-    set_range_len(range_len);
+  } else if ( m_byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE ) {
+    set_code(416);
+    set_content("");
+    m_mode = ResponseMode::ERROR_RESPONSE;
   }
 }
 

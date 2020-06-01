@@ -408,3 +408,89 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
     EXPECT_EQ(200, g2->status);
   }
 }
+
+TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
+{
+  const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const auto full = zfs1_->GET(url);
+  EXPECT_FALSE(full->has_header("Content-Range"));
+  EXPECT_EQ("bytes", full->get_header_value("Accept-Ranges"));
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=0-100000"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ(full->body, p->body);
+    EXPECT_EQ("bytes 0-20076/20077", p->get_header_value("Content-Range"));
+    EXPECT_EQ("bytes", p->get_header_value("Accept-Ranges"));
+  }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=0-10"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ("bytes 0-10/20077", p->get_header_value("Content-Range"));
+    EXPECT_EQ(11, p->body.size());
+    EXPECT_EQ(full->body.substr(0, 11), p->body);
+    EXPECT_EQ("bytes", p->get_header_value("Accept-Ranges"));
+  }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=123-456"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ("bytes 123-456/20077", p->get_header_value("Content-Range"));
+    EXPECT_EQ(334, p->body.size());
+    EXPECT_EQ(full->body.substr(123, 334), p->body);
+    EXPECT_EQ("bytes", p->get_header_value("Accept-Ranges"));
+  }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=20000-"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ(full->body.substr(20000), p->body);
+    EXPECT_EQ("bytes 20000-20076/20077", p->get_header_value("Content-Range"));
+    EXPECT_EQ("bytes", p->get_header_value("Accept-Ranges"));
+  }
+
+  {
+    const auto p = zfs1_->GET(url, { {"Range", "bytes=-100"} } );
+    EXPECT_EQ(206, p->status);
+    EXPECT_EQ(full->body.substr(19977), p->body);
+    EXPECT_EQ("bytes 19977-20076/20077", p->get_header_value("Content-Range"));
+    EXPECT_EQ("bytes", p->get_header_value("Accept-Ranges"));
+  }
+}
+
+TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
+{
+  const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+
+  const char* invalidRanges[] = {
+    "0-10", "bytes=", "bytes=123", "bytes=-10-20", "bytes=10-20xxx",
+    "bytes=10-0", // reversed range
+    "bytes=10-20, 30-40", // multi-range
+    "bytes=1000000-", "bytes=30000-30100" // unsatisfiable ranges
+  };
+
+  for( const char* range : invalidRanges )
+  {
+    const TestContext ctx{ {"Range", range} };
+    const auto p = zfs1_->GET(url, { {"Range", range } } );
+    EXPECT_EQ(416, p->status) << ctx;
+    EXPECT_TRUE(p->body.empty()) << ctx;
+    EXPECT_EQ("bytes */20077", p->get_header_value("Content-Range")) << ctx;
+  }
+}
+
+TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
+{
+  const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+
+  const Headers onlyRange{ {"Range", "bytes=123-456"} };
+  Headers rangeAndCompression(onlyRange);
+  rangeAndCompression.insert({"Accept-Encoding", "deflate"});
+
+  const auto p1 = zfs1_->GET(url, onlyRange);
+  const auto p2 = zfs1_->GET(url, rangeAndCompression);
+  EXPECT_EQ(p1->status, p2->status);
+  EXPECT_EQ(invariantHeaders(p1->headers), invariantHeaders(p2->headers));
+  EXPECT_EQ(p1->body, p2->body);
+}

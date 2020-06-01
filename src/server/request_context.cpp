@@ -74,8 +74,7 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   version(version),
   requestIndex(s_requestIndex++),
   acceptEncodingDeflate(false),
-  accept_range(false),
-  range_pair(0, -1)
+  byteRange_()
 {
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
@@ -85,32 +84,13 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
         (get_header(MHD_HTTP_HEADER_ACCEPT_ENCODING).find("deflate") != std::string::npos);
   } catch (const std::out_of_range&) {}
 
-  /*Check if range is requested. */
   try {
-    auto range = get_header(MHD_HTTP_HEADER_RANGE);
-    int start = 0;
-    int end = -1;
-    std::istringstream iss(range);
-    char c;
-
-    iss >> start >> c;
-    if (iss.good() && c=='-') {
-      iss >> end;
-      if (iss.fail()) {
-        // Something went wrong will extracting.
-        end = -1;
-      }
-      if (iss.eof()) {
-        accept_range = true;
-        range_pair = std::pair<int, int>(start, end);
-      }
-    }
+    byteRange_ = ByteRange::parse(get_header(MHD_HTTP_HEADER_RANGE));
   } catch (const std::out_of_range&) {}
 }
 
 RequestContext::~RequestContext()
 {}
-
 
 int RequestContext::fill_header(void *__this, enum MHD_ValueKind kind,
                                  const char *key, const char *value)
@@ -146,7 +126,7 @@ void RequestContext::print_debug_info() const {
   printf("full_url: %s\n", full_url.c_str());
   printf("url   : %s\n", url.c_str());
   printf("acceptEncodingDeflate : %d\n", acceptEncodingDeflate);
-  printf("has_range : %d\n", accept_range);
+  printf("has_range : %d\n", byteRange_.kind() != ByteRange::NONE);
   printf("is_valid_url : %d\n", is_valid_url());
   printf(".............\n");
 }
@@ -188,12 +168,8 @@ bool RequestContext::is_valid_url() const {
   return !url.empty();
 }
 
-bool RequestContext::has_range() const {
-  return accept_range;
-}
-
-std::pair<int, int> RequestContext::get_range() const {
-  return range_pair;
+ByteRange RequestContext::get_range() const {
+  return byteRange_;
 }
 
 template<>

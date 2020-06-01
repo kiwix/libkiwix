@@ -24,6 +24,7 @@
 #include <string>
 
 #include <mustache.hpp>
+#include "byte_range.h"
 #include "entry.h"
 #include "etag.h"
 
@@ -34,6 +35,7 @@ extern "C" {
 namespace kiwix {
 
 enum class ResponseMode {
+  ERROR_RESPONSE,
   RAW_CONTENT,
   REDIRECTION,
   ENTRY
@@ -61,8 +63,6 @@ class Response {
     void set_etag(const ETag& etag) { m_etag = etag; }
     void set_compress(bool compress) { m_compress = compress; }
     void set_taskbar(const std::string& bookName, const std::string& bookTitle);
-    void set_range_first(uint64_t start) { m_startRange = start; }
-    void set_range_len(uint64_t len) { m_lenRange = len; }
 
     int getReturnCode() const { return m_returnCode; }
     std::string get_mimeType() const { return m_mimeType; }
@@ -74,6 +74,7 @@ class Response {
 
   private: // functions
     MHD_Response* create_mhd_response(const RequestContext& request);
+    MHD_Response* create_error_response(const RequestContext& request) const;
     MHD_Response* create_raw_content_mhd_response(const RequestContext& request);
     MHD_Response* create_redirection_mhd_response() const;
     MHD_Response* create_entry_mhd_response() const;
@@ -93,8 +94,7 @@ class Response {
     bool m_addTaskbar;
     std::string m_bookName;
     std::string m_bookTitle;
-    uint64_t m_startRange;
-    uint64_t m_lenRange;
+    ByteRange m_byteRange;
     ETag m_etag;
 };
 

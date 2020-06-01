@@ -27,6 +27,8 @@
 #include <map>
 #include <stdexcept>
 
+#include "byte_range.h"
+
 extern "C" {
 #include <microhttpd.h>
 }
@@ -51,9 +53,6 @@ class IndexError: public std::runtime_error {};
 
 
 class RequestContext {
-  public: // types
-  typedef std::pair<int, int> ByteRange;
-
   public: // functions
     RequestContext(struct MHD_Connection* connection,
                    std::string rootLocation,
@@ -81,7 +80,6 @@ class RequestContext {
     std::string get_url_part(int part) const;
     std::string get_full_url() const;
 
-    bool has_range() const;
     ByteRange get_range() const;
 
     bool can_compress() const { return acceptEncodingDeflate; }
@@ -95,8 +93,7 @@ class RequestContext {
 
     bool acceptEncodingDeflate;
 
-    bool accept_range;
-    ByteRange range_pair;
+    ByteRange byteRange_;
     std::map<std::string, std::string> headers;
     std::map<std::string, std::string> arguments;
 
