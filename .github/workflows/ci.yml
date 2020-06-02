@@ -53,30 +53,41 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target:
+        name:
           - native_static
           - native_dyn
+          - native_dyn_bionic
           - android_arm
           - android_arm64
           - win32_static
           - win32_dyn
         include:
-          - target: native_static
+          - name: native_static
+            target: native_static
             image_variant: xenial
             lib_postfix: '/x86_64-linux-gnu'
-          - target: native_dyn
+          - name: native_dyn
+            target: native_dyn
             image_variant: xenial
             lib_postfix: '/x86_64-linux-gnu'
-          - target: android_arm
+          - name: native_dyn_bionic
+            target: native_dyn
+            image_variant: bionic
+            lib_postfix: '/x86_64-linux-gnu'
+          - name: android_arm
+            target: android_arm
             image_variant: xenial
             lib_postfix: '/x86_64-linux-gnu'
-          - target: android_arm64
+          - name: android_arm64
+            target: android_arm64
             image_variant: xenial
             lib_postfix: '/x86_64-linux-gnu'
-          - target: win32_static
+          - name: win32_static
+            target: win32_static
             image_variant: f31
             lib_postfix: '64'
-          - target: win32_dyn
+          - name: win32_dyn
+            target: win32_dyn
             image_variant: f31
             lib_postfix: '64'
     env:
@@ -147,6 +158,6 @@ jobs:
         curl https://codecov.io/bash -o codecov.sh
         bash codecov.sh -n "${OS_NAME}_${{matrix.target}}" -Z
         rm codecov.sh
-      if: startsWith(matrix.target, 'native_')
+      if: startsWith(matrix.target, 'native_') && matrix.image_variant == 'xenial'
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
