@@ -65,7 +65,7 @@ ByteRange::ByteRange(Kind kind, int64_t first, int64_t last)
 {
   assert(kind != NONE);
   assert(first >= 0);
-  assert(last >= first);
+  assert(last >= first || (first == 0 && last == -1));
 }
 
 ByteRange::ByteRange(int64_t suffix_length)
