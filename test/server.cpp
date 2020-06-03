@@ -490,6 +490,25 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
   }
 }
 
+TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
+{
+  const char url[] = "/corner_cases/-/empty.js";
+
+  const char* ranges[] = {
+    "bytes=0-",
+    "bytes=-100"
+  };
+
+  for( const char* range : ranges )
+  {
+    const TestContext ctx{ {"Range", range} };
+    const auto p = zfs1_->GET(url, { {"Range", range } } );
+    EXPECT_EQ(416, p->status) << ctx;
+    EXPECT_TRUE(p->body.empty()) << ctx;
+    EXPECT_EQ("bytes */0", p->get_header_value("Content-Range")) << ctx;
+  }
+}
+
 TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
 {
   const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
