@@ -29,6 +29,9 @@ if gtest_dep.found() and not meson.is_cross_build()
     configure_file(input : 'data/wikipedia_en_ray_charles_mini_2020-03.zim',
                    output : 'zimfile.zim',
                    copy: true )
+    configure_file(input : 'data/corner_cases.zim',
+                   output : 'corner_cases.zim',
+                   copy: true )
 
     foreach test_name : tests
         # XXX: implicit_include_directories must be set to false, otherwise
