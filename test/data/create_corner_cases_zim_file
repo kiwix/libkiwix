@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+cd "$(dirname "$0")"
+rm -f corner_cases.zim
+zimwriterfs -w empty.html \
+            -f empty.png \
+            -l=en \
+            -t="ZIM corner cases" \
+            -d="" \
+            -c="" \
+            -p="" \
+            corner_cases \
+            corner_cases.zim \
+&& echo 'corner_cases.zim was successfully created' \
+|| echo '!!! Failed to create corner_cases.zim !!!' >&2

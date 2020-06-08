@@ -50,9 +50,10 @@ class ZimFileServer
 {
 public: // types
   typedef std::shared_ptr<httplib::Response>  Response;
+  typedef std::vector<std::string> FilePathCollection;
 
 public: // functions
-  ZimFileServer(int serverPort, std::string zimpath);
+  ZimFileServer(int serverPort, const FilePathCollection& zimpaths);
   ~ZimFileServer();
 
   Response GET(const char* path, const Headers& headers = Headers())
@@ -73,11 +74,13 @@ private: // data
   std::unique_ptr<httplib::Client> client;
 };
 
-ZimFileServer::ZimFileServer(int serverPort, std::string zimpath)
+ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
 : manager(&this->library)
 {
-  if (!manager.addBookFromPath(zimpath, zimpath, "", false))
-    throw std::runtime_error("Unable to add the ZIM file '" + zimpath + "'");
+  for ( const auto zimpath : zimpaths ) {
+    if (!manager.addBookFromPath(zimpath, zimpath, "", false))
+      throw std::runtime_error("Unable to add the ZIM file '" + zimpath + "'");
+  }
 
   const std::string address = "127.0.0.1";
   nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
@@ -104,11 +107,14 @@ protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
 
   const int PORT = 8001;
-  const std::string ZIMFILE = "./test/zimfile.zim";
+  const ZimFileServer::FilePathCollection ZIMFILES {
+    "./test/zimfile.zim",
+    "./test/corner_cases.zim"
+  };
 
 protected:
   void SetUp() override {
-    zfs1_.reset(new ZimFileServer(PORT, ZIMFILE));
+    zfs1_.reset(new ZimFileServer(PORT, ZIMFILES));
   }
 
   void TearDown() override {
@@ -174,6 +180,10 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/meta?content=zimfile&name=favicon" },
 
   { WITH_ETAG, "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
+
+  { WITH_ETAG, "/corner_cases/A/empty.html" },
+  { WITH_ETAG, "/corner_cases/-/empty.css" },
+  { WITH_ETAG, "/corner_cases/-/empty.js" },
 };
 
 ResourceCollection all200Resources()
@@ -307,7 +317,7 @@ TEST_F(ServerTest, ETagIsTheSameAcrossHeadAndGet)
 
 TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
 {
-  ZimFileServer zfs2(PORT + 1, ZIMFILE);
+  ZimFileServer zfs2(PORT + 1, ZIMFILES);
   for ( const Resource& res : all200Resources() ) {
     if ( !res.etag_expected ) continue;
     const auto h1 = zfs1_->HEAD(res.url);
@@ -477,6 +487,25 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
     EXPECT_EQ(416, p->status) << ctx;
     EXPECT_TRUE(p->body.empty()) << ctx;
     EXPECT_EQ("bytes */20077", p->get_header_value("Content-Range")) << ctx;
+  }
+}
+
+TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
+{
+  const char url[] = "/corner_cases/-/empty.js";
+
+  const char* ranges[] = {
+    "bytes=0-",
+    "bytes=-100"
+  };
+
+  for( const char* range : ranges )
+  {
+    const TestContext ctx{ {"Range", range} };
+    const auto p = zfs1_->GET(url, { {"Range", range } } );
+    EXPECT_EQ(416, p->status) << ctx;
+    EXPECT_TRUE(p->body.empty()) << ctx;
+    EXPECT_EQ("bytes */0", p->get_header_value("Content-Range")) << ctx;
   }
 }
 
