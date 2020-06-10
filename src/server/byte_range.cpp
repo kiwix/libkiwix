@@ -23,6 +23,7 @@
 #include "tools/stringTools.h"
 
 #include <cassert>
+#include <algorithm>
 
 namespace kiwix {
 
