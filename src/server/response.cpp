@@ -1,6 +1,6 @@
 
 
-
+#include "byte_range.h"
 #include "response.h"
 #include "request_context.h"
 #include "kiwixlib-resources.h"
