@@ -18,6 +18,11 @@ if 'java' in wrapper
   add_languages('java')
 endif
 
+# See https://github.com/kiwix/kiwix-lib/issues/371
+if target_machine.cpu_family() in ['arm', 'mips', 'm68k', 'ppc']
+  extra_libs += '-latomic'
+endif
+
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
 libzim_dep = dependency('libzim', version : '>=6.1.1', static:static_deps)

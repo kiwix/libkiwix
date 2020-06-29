@@ -53,6 +53,7 @@ kiwixlib = library('kiwix',
                    kiwix_sources,
                    include_directories : inc,
                    dependencies : all_deps,
+                   link_args: extra_libs,
                    version: meson.project_version(),
                    install: true,
                    install_dir: install_dir)
