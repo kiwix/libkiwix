@@ -1,3 +1,11 @@
+kiwix-lib 9.2.3
+===============
+
+ * Add test on byte-range
+ * Fix compilation on bionic and windows.
+ * Allow building using debian packaged kainjow-mustache
+ * Pass `-latomic` compile option for architectures that need it
+
 kiwix-lib 9.2.2
 ===============
 
