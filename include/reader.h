@@ -43,6 +43,8 @@ namespace kiwix
  * The Reader class is the class who allow to get an entry content from a zim
  * file.
  */
+
+using SuggestionsList_t = std::vector<std::vector<std::string>>;
 class Reader
 {
  public:
@@ -419,6 +421,10 @@ class Reader
    *
    * Suggestions are stored in an internal vector and can be retrieved using
    * `getNextSuggestion` method.
+   * This method is not thread safe and is deprecated. Use :
+   * bool searchSuggestions(const string& prefix,
+   *                        unsigned int suggestionsCount,
+   *                        SuggestionsList_t& results);
    *
    * @param prefix The prefix to search.
    * @param suggestionsCount How many suggestions to search for.
@@ -426,11 +432,48 @@ class Reader
    *              If false, add suggestions to the internal vector
    *              (until internal vector size is suggestionCount (or no more
    *               suggestion))
-   * @return True if some suggestions where added to the internal vector.
+   * @return True if some suggestions have been added to the internal vector.
    */
-  bool searchSuggestions(const string& prefix,
+  DEPRECATED bool searchSuggestions(const string& prefix,
                          unsigned int suggestionsCount,
                          const bool reset = true);
+
+  /**
+   * Search for entries with title starting with prefix (case sensitive).
+   *
+   * Suggestions are added to the `result` vector.
+   *
+   * @param prefix The prefix to search.
+   * @param suggestionsCount How many suggestions to search for.
+   * @param result The vector where to store the suggestions.
+   * @return True if some suggestions have been added to the vector.
+   */
+
+  bool searchSuggestions(const string& prefix,
+                         unsigned int suggestionsCount,
+                         SuggestionsList_t& resuls);
+
+  /**
+   * Search for entries for the given prefix.
+   *
+   * If the zim file has a internal fulltext index, the suggestions will be
+   * searched using it.
+   * Else the suggestions will be search using `searchSuggestions` while trying
+   * to be smart about case sensitivity (using `getTitleVariants`).
+   *
+   * In any case, suggestions are stored in an internal vector and can be
+   * retrieved using `getNextSuggestion` method.
+   * The internal vector will be reset.
+   * This method is not thread safe and is deprecated. Use :
+   * bool searchSuggestionsSmart(const string& prefix,
+   *                             unsigned int suggestionsCount,
+   *                             SuggestionsList_t& results);
+   *
+   * @param prefix The prefix to search for.
+   * @param suggestionsCount How many suggestions to search for.
+   */
+  DEPRECATED bool searchSuggestionsSmart(const string& prefix,
+                              unsigned int suggestionsCount);
 
   /**
    * Search for entries for the given prefix.
@@ -446,9 +489,13 @@ class Reader
    *
    * @param prefix The prefix to search for.
    * @param suggestionsCount How many suggestions to search for.
+   * @param results The vector where to store the suggestions
+   * @return True if some suggestions have been added to the results.
    */
-  bool searchSuggestionsSmart(const string& prefix,
-                              unsigned int suggestionsCount);
+   bool searchSuggestionsSmart(const string& prefix,
+                              unsigned int suggestionsCount,
+                              SuggestionsList_t& results);
+
 
   /**
    * Check if the url exists in the zim file.
@@ -490,7 +537,7 @@ class Reader
    * @param[out] title the title of the suggestion.
    * @return True if title has been set.
    */
-  bool getNextSuggestion(string& title);
+  DEPRECATED bool getNextSuggestion(string& title);
 
   /**
    * Get the next suggestion title and url.
@@ -499,7 +546,7 @@ class Reader
    * @param[out] url the url of the suggestion.
    * @return True if title and url have been set.
    */
-  bool getNextSuggestion(string& title, string& url);
+  DEPRECATED bool getNextSuggestion(string& title, string& url);
 
   /**
    * Get if we can check zim file integrity (has a checksum).
@@ -559,8 +606,8 @@ class Reader
   zim::size_type nsICount;
   std::string zimFilePath;
 
-  std::vector<std::vector<std::string>> suggestions;
-  std::vector<std::vector<std::string>>::iterator suggestionsOffset;
+  SuggestionsList_t suggestions;
+  SuggestionsList_t::iterator suggestionsOffset;
 
  private:
   std::map<const std::string, unsigned int> parseCounterMetadata() const;

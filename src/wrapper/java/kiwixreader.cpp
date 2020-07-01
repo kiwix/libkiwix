@@ -355,9 +355,12 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_searchSuggestions(JNIEnv* env,
   unsigned int cCount = jni2c(count, env);
 
   try {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (READER->searchSuggestionsSmart(cPrefix, cCount)) {
       retVal = JNI_TRUE;
     }
+#pragma GCC diagnostic pop
   } catch (std::exception& e) {
     LOG("Unable to get search results for pattern: %s", cPrefix.c_str());
     LOG(e.what());
@@ -377,11 +380,14 @@ Java_org_kiwix_kiwixlib_JNIKiwixReader_getNextSuggestion(JNIEnv* env,
   std::string cUrl;
 
   try {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     if (READER->getNextSuggestion(cTitle, cUrl)) {
       setStringObjValue(cTitle, titleObj, env);
       setStringObjValue(cUrl, urlObj, env);
       retVal = JNI_TRUE;
     }
+#pragma GCC diagnostic pop
   } catch (std::exception& e) {
     LOG("Unable to get next suggestion");
     LOG(e.what());
