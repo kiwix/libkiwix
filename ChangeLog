@@ -1,3 +1,9 @@
+kiwix-lib 9.3.0
+===============
+
+ * Add a thread safe method to search suggestions.
+   Old methods are now deprecated.
+
 kiwix-lib 9.2.3
 ===============
 
