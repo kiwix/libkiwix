@@ -709,12 +709,11 @@ bool Reader::hasFulltextIndex() const
 }
 
 /* Search titles by prefix */
+
 bool Reader::searchSuggestions(const string& prefix,
                                unsigned int suggestionsCount,
                                const bool reset)
 {
-  bool retVal = false;
-
   /* Reset the suggestions otherwise check if the suggestions number is less
    * than the suggestionsCount */
   if (reset) {
@@ -726,6 +725,21 @@ bool Reader::searchSuggestions(const string& prefix,
     }
   }
 
+  auto ret =  searchSuggestions(prefix, suggestionsCount, this->suggestions);
+
+  /* Set the cursor to the begining */
+  this->suggestionsOffset = this->suggestions.begin();
+
+  return ret;
+}
+
+
+bool Reader::searchSuggestions(const string& prefix,
+                               unsigned int suggestionsCount,
+                               SuggestionsList_t& results)
+{
+  bool retVal = false;
+
   /* Return if no prefix */
   if (prefix.size() == 0) {
     return false;
@@ -734,7 +748,7 @@ bool Reader::searchSuggestions(const string& prefix,
   for (auto articleItr = zimFileHandler->findByTitle('A', prefix);
        articleItr != zimFileHandler->end()
        && articleItr->getTitle().compare(0, prefix.size(), prefix) == 0
-       && this->suggestions.size() < suggestionsCount;
+       && results.size() < suggestionsCount;
        ++articleItr) {
     /* Extract the interesting part of article title & url */
     std::string normalizedArticleTitle
@@ -754,8 +768,8 @@ bool Reader::searchSuggestions(const string& prefix,
        title) */
     bool insert = true;
     std::vector<std::vector<std::string>>::iterator suggestionItr;
-    for (suggestionItr = this->suggestions.begin();
-         suggestionItr != this->suggestions.end();
+    for (suggestionItr = results.begin();
+         suggestionItr != results.end();
          suggestionItr++) {
       int result = normalizedArticleTitle.compare((*suggestionItr)[2]);
       if (result == 0 && articleFinalUrl.compare((*suggestionItr)[1]) == 0) {
@@ -772,15 +786,12 @@ bool Reader::searchSuggestions(const string& prefix,
       suggestion.push_back(articleItr->getTitle());
       suggestion.push_back(articleFinalUrl);
       suggestion.push_back(normalizedArticleTitle);
-      this->suggestions.insert(suggestionItr, suggestion);
+      results.insert(suggestionItr, suggestion);
     }
 
     /* Suggestions where found */
     retVal = true;
   }
-
-  /* Set the cursor to the begining */
-  this->suggestionsOffset = this->suggestions.begin();
 
   return retVal;
 }
@@ -796,15 +807,28 @@ std::vector<std::string> Reader::getTitleVariants(
   return variants;
 }
 
-/* Try also a few variations of the prefix to have better results */
+
 bool Reader::searchSuggestionsSmart(const string& prefix,
                                     unsigned int suggestionsCount)
+{
+  this->suggestions.clear();
+  this->suggestionsOffset = this->suggestions.begin();
+
+  auto ret = searchSuggestionsSmart(prefix, suggestionsCount, this->suggestions);
+
+  this->suggestionsOffset = this->suggestions.begin();
+
+  return ret;
+}
+
+/* Try also a few variations of the prefix to have better results */
+bool Reader::searchSuggestionsSmart(const string& prefix,
+                                    unsigned int suggestionsCount,
+                                    SuggestionsList_t& results)
 {
   std::vector<std::string> variants = this->getTitleVariants(prefix);
   bool retVal = false;
 
-  this->suggestions.clear();
-  this->suggestionsOffset = this->suggestions.begin();
   /* Try to search in the title using fulltext search database */
   const auto suggestionSearch
       = this->getZimFileHandler()->suggestions(prefix, 0, suggestionsCount);
@@ -820,15 +844,14 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
       suggestion.push_back(current->getTitle());
       suggestion.push_back("/A/" + current->getUrl());
       suggestion.push_back(kiwix::normalize(current->getTitle()));
-      this->suggestions.push_back(suggestion);
+      results.push_back(suggestion);
     }
-    this->suggestionsOffset = this->suggestions.begin();
     retVal = true;
   } else {
     for (std::vector<std::string>::iterator variantsItr = variants.begin();
          variantsItr != variants.end();
          variantsItr++) {
-      retVal = this->searchSuggestions(*variantsItr, suggestionsCount, false)
+      retVal = this->searchSuggestions(*variantsItr, suggestionsCount, results)
                || retVal;
     }
   }

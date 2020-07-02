@@ -543,7 +543,6 @@ Response InternalServer::handle_suggest(const RequestContext& request)
   std::string mimeType;
   unsigned int maxSuggestionCount = 10;
   unsigned int suggestionCount = 0;
-  std::string suggestion;
 
   std::string bookName;
   std::string bookId;
@@ -567,11 +566,12 @@ Response InternalServer::handle_suggest(const RequestContext& request)
   bool first = true;
   if (reader != nullptr) {
     /* Get the suggestions */
-    reader->searchSuggestionsSmart(term, maxSuggestionCount);
-    while (reader->getNextSuggestion(suggestion)) {
+    SuggestionsList_t suggestions;
+    reader->searchSuggestionsSmart(term, maxSuggestionCount, suggestions);
+    for(auto& suggestion:suggestions) {
       MustacheData result;
-      result.set("label", suggestion);
-      result.set("value", suggestion);
+      result.set("label", suggestion[0]);
+      result.set("value", suggestion[0]);
       result.set("first", first);
       first = false;
       results.push_back(result);
