@@ -31,7 +31,6 @@
 #include <vector>
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
-#include "kiwix_config.h"
 
 using namespace std;
 
