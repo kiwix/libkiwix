@@ -36,7 +36,7 @@
 #endif
 
 extern "C" {
-#include <microhttpd.h>
+#include "microhttpd_wrapper.h"
 }
 
 #include "tools/otherTools.h"
@@ -77,14 +77,14 @@ static IdNameMapper defaultNameMapper;
 
 typedef kainjow::mustache::data MustacheData;
 
-static int staticHandlerCallback(void* cls,
-                                 struct MHD_Connection* connection,
-                                 const char* url,
-                                 const char* method,
-                                 const char* version,
-                                 const char* upload_data,
-                                 size_t* upload_data_size,
-                                 void** cont_cls);
+static MHD_Result staticHandlerCallback(void* cls,
+                                        struct MHD_Connection* connection,
+                                        const char* url,
+                                        const char* method,
+                                        const char* version,
+                                        const char* upload_data,
+                                        size_t* upload_data_size,
+                                        void** cont_cls);
 
 
 class InternalServer {
@@ -101,13 +101,13 @@ class InternalServer {
                    bool blockExternalLinks);
     virtual ~InternalServer() = default;
 
-    int handlerCallback(struct MHD_Connection* connection,
-                        const char* url,
-                        const char* method,
-                        const char* version,
-                        const char* upload_data,
-                        size_t* upload_data_size,
-                        void** cont_cls);
+    MHD_Result handlerCallback(struct MHD_Connection* connection,
+                               const char* url,
+                               const char* method,
+                               const char* version,
+                               const char* upload_data,
+                               size_t* upload_data_size,
+                               void** cont_cls);
     bool start();
     void stop();
 
@@ -267,14 +267,14 @@ void InternalServer::stop()
   MHD_stop_daemon(mp_daemon);
 }
 
-static int staticHandlerCallback(void* cls,
-                                 struct MHD_Connection* connection,
-                                 const char* url,
-                                 const char* method,
-                                 const char* version,
-                                 const char* upload_data,
-                                 size_t* upload_data_size,
-                                 void** cont_cls)
+static MHD_Result staticHandlerCallback(void* cls,
+                                        struct MHD_Connection* connection,
+                                        const char* url,
+                                        const char* method,
+                                        const char* version,
+                                        const char* upload_data,
+                                        size_t* upload_data_size,
+                                        void** cont_cls)
 {
   InternalServer* _this = static_cast<InternalServer*>(cls);
 
@@ -287,13 +287,13 @@ static int staticHandlerCallback(void* cls,
                                 cont_cls);
 }
 
-int InternalServer::handlerCallback(struct MHD_Connection* connection,
-                                    const char* url,
-                                    const char* method,
-                                    const char* version,
-                                    const char* upload_data,
-                                    size_t* upload_data_size,
-                                    void** cont_cls)
+MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
+                                           const char* url,
+                                           const char* method,
+                                           const char* version,
+                                           const char* upload_data,
+                                           size_t* upload_data_size,
+                                           void** cont_cls)
 {
   auto start_time = std::chrono::steady_clock::now();
   if (m_verbose.load() ) {
