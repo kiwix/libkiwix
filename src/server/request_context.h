@@ -30,7 +30,7 @@
 #include "byte_range.h"
 
 extern "C" {
-#include <microhttpd.h>
+#include "microhttpd_wrapper.h"
 }
 
 namespace kiwix {
@@ -98,8 +98,8 @@ class RequestContext {
     std::map<std::string, std::string> arguments;
 
   private: // functions
-    static int fill_header(void *, enum MHD_ValueKind, const char*, const char*);
-    static int fill_argument(void *, enum MHD_ValueKind, const char*, const char*);
+    static MHD_Result fill_header(void *, enum MHD_ValueKind, const char*, const char*);
+    static MHD_Result fill_argument(void *, enum MHD_ValueKind, const char*, const char*);
 };
 
 template<> std::string RequestContext::get_argument(const std::string& name) const;

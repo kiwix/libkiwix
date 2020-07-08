@@ -57,8 +57,8 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
 }
 
 
-static int print_key_value (void *cls, enum MHD_ValueKind kind,
-                            const char *key, const char *value)
+static MHD_Result print_key_value (void *cls, enum MHD_ValueKind kind,
+                                   const char *key, const char *value)
 {
   printf (" - %s: '%s'\n", key, value);
   return MHD_YES;
@@ -288,7 +288,7 @@ Response::create_mhd_response(const RequestContext& request)
   return nullptr;
 }
 
-int Response::send(const RequestContext& request, MHD_Connection* connection)
+MHD_Result Response::send(const RequestContext& request, MHD_Connection* connection)
 {
   MHD_Response* response = create_mhd_response(request);
 

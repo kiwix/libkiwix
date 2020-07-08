@@ -29,7 +29,7 @@
 #include "etag.h"
 
 extern "C" {
-#include <microhttpd.h>
+#include "microhttpd_wrapper.h"
 }
 
 namespace kiwix {
@@ -48,7 +48,7 @@ class Response {
     Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks);
     ~Response() = default;
 
-    int send(const RequestContext& request, MHD_Connection* connection);
+    MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 
     void set_template(const std::string& template_str, kainjow::mustache::data data);
     void set_content(const std::string& content);

@@ -92,16 +92,16 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
 RequestContext::~RequestContext()
 {}
 
-int RequestContext::fill_header(void *__this, enum MHD_ValueKind kind,
-                                 const char *key, const char *value)
+MHD_Result RequestContext::fill_header(void *__this, enum MHD_ValueKind kind,
+                                       const char *key, const char *value)
 {
   RequestContext *_this = static_cast<RequestContext*>(__this);
   _this->headers[key] = value;
   return MHD_YES;
 }
 
-int RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
-                                   const char *key, const char* value)
+MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
+                                         const char *key, const char* value)
 {
   RequestContext *_this = static_cast<RequestContext*>(__this);
   _this->arguments[key] = value == nullptr ? "" : value;
