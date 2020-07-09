@@ -42,6 +42,6 @@ if gtest_dep.found() and not meson.is_cross_build()
                               link_args: extra_link_args,
                               dependencies : all_deps + [gtest_dep],
                              build_rpath : '$ORIGIN')
-        test(test_name, test_exe)
+        test(test_name, test_exe, timeout : 160)
     endforeach
 endif
