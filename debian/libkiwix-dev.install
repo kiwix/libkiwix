@@ -1,0 +1,4 @@
+usr/include
+usr/lib/*/libkiwix.so
+usr/lib/*/pkgconfig
+usr/bin
