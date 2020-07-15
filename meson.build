@@ -19,7 +19,7 @@ if 'java' in wrapper
 endif
 
 # See https://github.com/kiwix/kiwix-lib/issues/371
-if target_machine.cpu_family() in ['arm', 'mips', 'm68k', 'ppc']
+if target_machine.cpu_family() in ['arm', 'mips', 'm68k', 'ppc', 'sh4']
   extra_libs += '-latomic'
 endif
 
