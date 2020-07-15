@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tommi Maekitalo
+ * Copyright (C) 2019 Matthieu Gautier <mgautier@kymeria.fr>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -262,8 +262,13 @@ TEST_F(LibraryTest, filterCheck)
 TEST_F(LibraryTest, getBookByPath)
 {
   auto& book = lib.getBookById(lib.getBooksIds()[0]);
-  book.setPath("/some/abs/path.zim");
-  EXPECT_EQ(lib.getBookByPath("/some/abs/path.zim").getId(), book.getId());
+#ifdef _WIN32
+  auto path = "C:\\some\\abs\\path.zim";
+#else
+  auto path = "/some/abs/path.zim";
+#endif
+  book.setPath(path);
+  EXPECT_EQ(lib.getBookByPath(path).getId(), book.getId());
   EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
 }
 };

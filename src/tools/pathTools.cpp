@@ -81,13 +81,19 @@ std::wstring Utf8ToWide(const std::string& str)
 bool isRelativePath(const std::string& path)
 {
 #ifdef _WIN32
-  return path.empty() || path.substr(1, 2) == ":\\" ? false : true;
+  if (path.size() < 3 ) {
+    return true;
+  }
+  if (path.substr(1, 2) == ":\\" || path.substr(0, 2) == "\\\\") {
+    return false;
+  }
+  return true;
 #else
   return path.empty() || path.substr(0, 1) == "/" ? false : true;
 #endif
 }
 
-std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool absolute)
+std::vector<std::string> normalizeParts(std::vector<std::string>& parts, bool absolute)
 {
   std::vector<std::string> ret;
 #ifdef _WIN32
@@ -95,9 +101,34 @@ std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool abs
   //Starts from there.
   auto it = find_if(parts.rbegin(), parts.rend(),
                     [](const std::string& p) ->bool
-                      { return p.length() == 2 && p[1] == ':'; });
+                      { return ((p.length() == 2 && p[1] == ':')
+                             || (p.length() > 2 && p[0] == '\\' && p[1] == '\\')); });
   if (it != parts.rend()) {
     parts.erase(parts.begin(), it.base()-1);
+  }
+  // Special case for samba mount point starting with two "\\" ("\\\\samba\\foo")
+  if (parts.size() > 2  && parts[0].empty() && parts[1].empty()) {
+    parts.erase(parts.begin(), parts.begin()+2);
+    parts[0] = "\\\\" + parts[0];
+  }
+  // Special case if we have a samba drive not at first.
+  // Path is "..\\\\sambdadrive\\..\\.." So we will have an empty part.
+  auto previous_empty = false;
+  for (it = parts.rbegin(); it!=parts.rend(); it++) {
+    if(it->empty()) {
+      if (previous_empty) {
+        it++;
+        break;
+      } else {
+        previous_empty = true;
+      }
+    } else {
+      previous_empty = false;
+    }
+  }
+  if (it != parts.rend()) {
+    parts.erase(parts.begin(), it.base()-1);
+    parts[0] = "\\\\" + parts[0];
   }
 #endif
 
@@ -144,8 +175,10 @@ std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool abs
 
 std::string computeRelativePath(const std::string& path, const std::string& absolutePath)
 {
-  auto pathParts = normalizeParts(kiwix::split(path, SEPARATOR, false), false);
-  auto absolutePathParts = kiwix::split(absolutePath, SEPARATOR, false);
+  auto parts = kiwix::split(path, SEPARATOR, false);
+  auto pathParts = normalizeParts(parts, false);
+  parts = kiwix::split(absolutePath, SEPARATOR, false);
+  auto absolutePathParts = normalizeParts(parts, true);
 
   unsigned int commonCount = 0;
   while (commonCount < pathParts.size()
@@ -172,8 +205,10 @@ std::string computeAbsolutePath(const std::string& path, const std::string& rela
     absolutePath = getCurrentDirectory();
   }
 
-  auto absoluteParts = normalizeParts(kiwix::split(absolutePath, SEPARATOR, false), true);
-  auto relativeParts = kiwix::split(relativePath, SEPARATOR, false);
+  auto parts = kiwix::split(absolutePath, SEPARATOR, false);
+  auto absoluteParts = normalizeParts(parts, true);
+  parts = kiwix::split(relativePath, SEPARATOR, false);
+  auto relativeParts = normalizeParts(parts, false);
 
   absoluteParts.insert(absoluteParts.end(), relativeParts.begin(), relativeParts.end());
   auto ret = kiwix::join(normalizeParts(absoluteParts, true), SEPARATOR);
@@ -182,7 +217,8 @@ std::string computeAbsolutePath(const std::string& path, const std::string& rela
 
 std::string removeLastPathElement(const std::string& path)
 {
-  auto parts = normalizeParts(kiwix::split(path, SEPARATOR, false), false);
+  auto parts_ = kiwix::split(path, SEPARATOR, false);
+  auto parts = normalizeParts(parts_, false);
   if (!parts.empty()) {
     parts.pop_back();
   }
@@ -202,7 +238,8 @@ std::string appendToDirectory(const std::string& directoryPath, const std::strin
 
 std::string getLastPathElement(const std::string& path)
 {
-  auto parts = normalizeParts(kiwix::split(path, SEPARATOR), false);
+  auto parts_ = kiwix::split(path, SEPARATOR);
+  auto parts = normalizeParts(parts_, false);
   if (parts.empty()) {
     return "";
   }

@@ -25,6 +25,7 @@
 #ifdef _WIN32
 # define S "\\"
 # define AS "c:"
+# define A_SAMBA "\\\\sambadir"
 #else
 # define S "/"
 # define AS ""
@@ -42,7 +43,10 @@
 #define A4(a, b, c, d) A1(P4(a, b, c, d))
 #define A5(a, b, c, d, e) A1(P5(a, b, c, d, e))
 
-std::vector<std::string> normalizeParts(std::vector<std::string> parts, bool absolute);
+std::vector<std::string> normalizeParts(std::vector<std::string>& parts, bool absolute);
+std::vector<std::string> nParts(std::vector<std::string> parts, bool absolute) {
+  return normalizeParts(parts, absolute);
+}
 #ifdef _WIN32
 std::wstring Utf8ToWide(const std::string& str);
 std::string WideToUtf8(const std::wstring& wstr);
@@ -54,7 +58,7 @@ namespace
 #define V std::vector<std::string>
 TEST(pathTools, normalizePartsAbsolute)
 {
-#define N(...) normalizeParts(__VA_ARGS__, true)
+#define N(...) nParts(__VA_ARGS__, true)
   ASSERT_EQ(N({}), V({}));
 #ifdef _WIN32
   ASSERT_EQ(N({"c:"}), V({"c:"}));
@@ -75,13 +79,14 @@ TEST(pathTools, normalizePartsAbsolute)
 
 #ifdef _WIN32
   ASSERT_EQ(N({"c:", "a", "b", ".", "c", "d:", "..", "foo"}), V({"d:", "foo"}));
+  ASSERT_EQ(N({"","","samba","a","b"}), V({"\\\\samba", "a", "b"}));
 #endif
 #undef N
 }
 
 TEST(pathTools, normalizePartsRelative)
 {
-#define N(...) normalizeParts(__VA_ARGS__, false)
+#define N(...) nParts(__VA_ARGS__, false)
   ASSERT_EQ(N({}), V({}));
   ASSERT_EQ(N({""}), V({}));
   ASSERT_EQ(N({"a"}), V({"a"}));
@@ -103,6 +108,10 @@ TEST(pathTools, isRelativePath)
   ASSERT_TRUE(isRelativePath(P4("foo","","bar","")));
   ASSERT_FALSE(isRelativePath(A1("foo")));
   ASSERT_FALSE(isRelativePath(A2("foo", "bar")));
+#ifdef _WIN32
+  ASSERT_FALSE(isRelativePath(P2(A_SAMBA, "foo")));
+  ASSERT_FALSE(isRelativePath(P3(A_SAMBA, "foo", "bar")));
+#endif
 }
 
 TEST(pathTools, computeAbsolutePath)
@@ -121,6 +130,12 @@ TEST(pathTools, computeAbsolutePath)
             A5("a","b","c","d","foo"));
   ASSERT_EQ(computeAbsolutePath(A5("a","b","c","d","e"), P5("..","..","..","g","foo")),
             A4("a","b","g","foo"));
+#ifdef _WIN32
+  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b",""), P2("..","foo")),
+            P3(A_SAMBA,"a","foo"));
+  ASSERT_EQ(computeAbsolutePath(P6(A_SAMBA,"a","b","c","d","e"), P5("..","..","..","g","foo")),
+            P5(A_SAMBA,"a","b","g","foo"));
+#endif
 }
 
 TEST(pathTools, computeRelativePath)
@@ -137,6 +152,13 @@ TEST(pathTools, computeRelativePath)
             P2("..","foo"));
   ASSERT_EQ(computeRelativePath(A5("a","b","c","d","e"), A4("a","b","g","foo")),
             P5("..","..","..","g","foo"));
+#ifdef _WIN32
+  ASSERT_EQ(computeRelativePath(P3(A_SAMBA,"a","b"), P3(A_SAMBA,"a","foo")),
+            P2("..","foo"));
+  ASSERT_EQ(computeRelativePath(P6(A_SAMBA,"a","b","c","d","e"), P5(A_SAMBA,"a","b","g","foo")),
+            P5("..","..","..","g","foo"));
+
+#endif
 }
 
 TEST(pathTools, removeLastPathElement)
@@ -179,6 +201,15 @@ TEST(pathTools, goUp)
             "c:");
   ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P4("..","..","..","..")),
             "c:");
+  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), ".."),
+            P3(A_SAMBA,"a", "b"));
+  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P2("..","..")),
+            P2(A_SAMBA,"a"));
+  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P3("..","..","..")),
+            A_SAMBA);
+  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P4("..","..","..","..")),
+            A_SAMBA);
+
 #else
   ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P3("..","..","..")),
             "/");
@@ -195,6 +226,12 @@ TEST(pathTools, goUp)
             A1("foo"));
   ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P5("..","..","..","..","foo")),
             A1("foo"));
+#ifdef _WIN32
+  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P4("..","..","..","foo")),
+            P2(A_SAMBA,"foo"));
+  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P5("..","..","..","..","foo")),
+            P2(A_SAMBA,"foo"));
+#endif
 }
 
 
@@ -203,11 +240,22 @@ TEST(pathTools, dirChange)
 {
   std::string p1("c:\\a\\b\\c");
   std::string p2("d:\\d\\e\\foo.xml");
-  std::string relative_path = computeRelativePath(p1, p2);
-  ASSERT_EQ(relative_path, "d:\\d\\e\\foo.xml");
-  std::string abs_path = computeAbsolutePath(p1, relative_path);
-  ASSERT_EQ(abs_path, p2);
-  ASSERT_EQ(computeAbsolutePath(p1, "..\\..\\..\\..\\..\\d:\\d\\e\\foo.xml"), p2);
+  {
+    std::string relative_path = computeRelativePath(p1, p2);
+    ASSERT_EQ(relative_path, p2);
+    std::string abs_path = computeAbsolutePath(p1, relative_path);
+    ASSERT_EQ(abs_path, p2);
+    ASSERT_EQ(computeAbsolutePath(p1, "..\\..\\..\\..\\..\\d:\\d\\e\\foo.xml"), p2);
+  }
+  std::string ps("\\\\samba\\d\\e\\foo.xml");
+  {
+    std::string relative_path = computeRelativePath(p1, ps);
+    ASSERT_EQ(relative_path, ps);
+    std::string abs_path = computeAbsolutePath(p1, relative_path);
+    ASSERT_EQ(abs_path, ps);
+    // I'm not sure this test is valid on windows :/
+//    ASSERT_EQ(computeAbsolutePath(p1, "..\\..\\..\\..\\..\\\\samba\\d\\e\\foo.xml"), ps);
+  }
 }
 
 TEST(pathTools, Utf8ToWide)
