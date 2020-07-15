@@ -1,3 +1,15 @@
+kiwix-lib 9.3.1
+===============
+
+ * Fix handling of samba path on windows.
+ * Do not include `kiwix_config.h` in public header.
+ * Fix compilation with libmicrohttpd v0.97.1
+ * Increase default test timeout to 160seconds/test.
+ * Add automatic debian packaging.
+ * Use non-minified version of jquery-ui.js
+ * Pass `-latomic` compile option for sh4 architecture.
+ * Make mesion install `kiwix-compile-resources` man page.
+
 kiwix-lib 9.3.0
 ===============
 
