@@ -1,6 +1,6 @@
 project('kiwix-lib', 'cpp',
   version : '9.3.0', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
-  license : 'GPL',
+  license : 'GPLv3+',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
 
 compiler = meson.get_compiler('cpp')
