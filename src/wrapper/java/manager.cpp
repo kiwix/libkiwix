@@ -19,7 +19,6 @@
 
 
 #include <jni.h>
-#include <zim/file.h>
 #include "org_kiwix_kiwixlib_Manager.h"
 
 #include "manager.h"

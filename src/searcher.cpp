@@ -115,14 +115,14 @@ void Searcher::search(const std::string& search,
   if (resultStart != resultEnd) {
     /* Perform the search */
     string unaccentedSearch = removeAccents(search);
-    std::vector<const zim::File*> zims;
+    std::vector<zim::Archive> archives;
     for (auto current = this->readers.begin(); current != this->readers.end();
          current++) {
       if ( (*current)->hasFulltextIndex() ) {
-          zims.push_back((*current)->getZimFileHandler());
+          archives.push_back(*(*current)->getZimArchive());
       }
     }
-    zim::Search* search = new zim::Search(zims);
+    zim::Search* search = new zim::Search(archives);
     search->set_verbose(verbose);
     search->set_query(unaccentedSearch);
     search->set_range(resultStart, resultEnd);
@@ -158,12 +158,12 @@ void Searcher::geo_search(float latitude, float longitude, float distance,
     return;
   }
 
-  std::vector<const zim::File*> zims;
+  std::vector<zim::Archive> archives;
   for (auto current = this->readers.begin(); current != this->readers.end();
        current++) {
-    zims.push_back((*current)->getZimFileHandler());
+    archives.push_back(*(*current)->getZimArchive());
   }
-  zim::Search* search = new zim::Search(zims);
+  zim::Search* search = new zim::Search(archives);
   search->set_verbose(verbose);
   search->set_query("");
   search->set_georange(latitude, longitude, distance);
@@ -213,12 +213,12 @@ void Searcher::suggestions(std::string& searchPattern, const bool verbose)
   this->resultEnd = 10;
   string unaccentedSearch = removeAccents(searchPattern);
 
-  std::vector<const zim::File*> zims;
+  std::vector<zim::Archive> archives;
   for (auto current = this->readers.begin(); current != this->readers.end();
        current++) {
-    zims.push_back((*current)->getZimFileHandler());
+    archives.push_back(*(*current)->getZimArchive());
   }
-  zim::Search* search = new zim::Search(zims);
+  zim::Search* search = new zim::Search(archives);
   search->set_verbose(verbose);
   search->set_query(unaccentedSearch);
   search->set_range(resultStart, resultEnd);
@@ -257,10 +257,7 @@ std::string _Result::get_snippet()
 }
 std::string _Result::get_content()
 {
-  if (iterator->good()) {
-    return iterator->getData();
-  }
-  return "";
+  return iterator->getItem(true).getData();
 }
 int _Result::get_size()
 {

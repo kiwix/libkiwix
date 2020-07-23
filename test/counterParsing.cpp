@@ -24,7 +24,7 @@
 #include <zim/zim.h>
 
 namespace kiwix {
-using CounterType = std::map<const std::string, zim::article_index_type>;
+using CounterType = std::map<const std::string, zim::entry_index_type>;
 CounterType parseMimetypeCounter(const std::string& counterData);
 };
 

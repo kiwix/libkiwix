@@ -72,7 +72,7 @@ class Response {
     ETag m_etag;
     std::map<std::string, std::string> m_customHeaders;
 
-    friend class EntryResponse; // temporary to allow the builder to change m_mode
+    friend class ItemResponse;
 };
 
 
@@ -104,15 +104,15 @@ class ContentResponse : public Response {
     std::string m_bookTitle;
  };
 
-class EntryResponse : public Response {
+class ItemResponse : public Response {
   public:
-    EntryResponse(bool verbose, const Entry& entry, const std::string& mimetype, const ByteRange& byterange);
-    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const Entry& entry);
+    ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
+    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
 
-    Entry m_entry;
+    zim::Item m_item;
     std::string m_mimeType;
 };
 

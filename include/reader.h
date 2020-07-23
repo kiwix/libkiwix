@@ -21,10 +21,8 @@
 #define KIWIX_READER_H
 
 #include <stdio.h>
-#include <zim/article.h>
-#include <zim/file.h>
-#include <zim/fileiterator.h>
 #include <zim/zim.h>
+#include <zim/archive.h>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -58,7 +56,7 @@ class Reader
    *                    (.zim extesion).
    */
   Reader(const string zimFilePath);
-  ~Reader();
+  ~Reader() = default;
 
   /**
    * Get the number of "displayable" entries in the zim file.
@@ -109,13 +107,6 @@ class Reader
    *         The main entry is excluded from the potential results.
    */
   Entry getRandomPage() const;
-
-  /**
-   * Get the entry of the first page.
-   *
-   * @return The first entry in the 'A' namespace.
-   */
-  Entry getFirstPage() const;
 
   /**
    * Get the entry of the main page.
@@ -455,14 +446,10 @@ class Reader
    *
    * @return The libzim file handler.
    */
-  zim::File* getZimFileHandler() const;
+  zim::Archive* getZimArchive() const;
 
  protected:
-  zim::File* zimFileHandler;
-  zim::size_type firstArticleOffset;
-  zim::size_type lastArticleOffset;
-  zim::size_type nsACount;
-  zim::size_type nsICount;
+  std::unique_ptr<zim::Archive> zimArchive;
   std::string zimFilePath;
 
   SuggestionsList_t suggestions;
