@@ -177,25 +177,6 @@ string Reader::getId() const
   return s.str();
 }
 
-/* Return a page url from a title */
-bool Reader::getPageUrlFromTitle(const string& title, string& url) const
-{
-  try {
-    auto entry = getEntryFromTitle(title);
-    entry = entry.getFinalEntry();
-    url = entry.getPath();
-    return true;
-  } catch (NoEntry& e) {
-    return false;
-  }
-}
-
-/* Return an URL from a title */
-string Reader::getRandomPageUrl() const
-{
-  return getRandomPage().getPath();
-}
-
 Entry Reader::getRandomPage() const
 {
   if (!this->zimFileHandler) {
@@ -412,12 +393,6 @@ string Reader::getOrigId() const
   return origID;
 }
 
-/* Return the first page URL */
-string Reader::getFirstPageUrl() const
-{
-  return getFirstPage().getPath();
-}
-
 Entry Reader::getFirstPage() const
 {
   if (!this->zimFileHandler) {
@@ -432,41 +407,6 @@ Entry Reader::getFirstPage() const
   }
 
   return article;
-}
-
-bool _parseUrl(const string& url, char* ns, string& title)
-{
-  /* Offset to visit the url */
-  unsigned int urlLength = url.size();
-  unsigned int offset = 0;
-
-  /* Ignore the first '/' */
-  if (url[offset] == '/')
-    offset++;
-
-  if (url[offset] == '/' || offset >= urlLength)
-    return false;
-
-  /* Get namespace */
-  *ns = url[offset++];
-
-  if (url[offset] != '/' || offset >= urlLength)
-    return false;
-
-  offset++;
-
-  if ( offset >= urlLength)
-    return false;
-
-  /* Get content title */
-  title = url.substr(offset, urlLength - offset);
-
-  return true;
-}
-
-bool Reader::parseUrl(const string& url, char* ns, string& title) const
-{
-  return _parseUrl(url, ns, title);
 }
 
 Entry Reader::getEntryFromPath(const std::string& path) const
@@ -510,29 +450,6 @@ Entry Reader::getEntryFromTitle(const std::string& title) const
   return article;
 }
 
-/* Return article by url */
-bool Reader::getArticleObjectByDecodedUrl(const string& url,
-                                          zim::Article& article) const
-{
-  if (this->zimFileHandler == NULL) {
-    return false;
-  }
-
-  /* Parse the url */
-  char ns = 0;
-  string urlStr;
-  _parseUrl(url, &ns, urlStr);
-
-  /* Main page */
-  if (urlStr.empty() && ns == 0) {
-    _parseUrl(this->getMainPage().getPath(), &ns, urlStr);
-  }
-
-  /* Extract the content from the zim file */
-  article = zimFileHandler->getArticle(ns, urlStr);
-  return article.good();
-}
-
 /* Return the mimeType without the content */
 bool Reader::getMimeTypeByUrl(const string& url, string& mimeType) const
 {
@@ -544,130 +461,7 @@ bool Reader::getMimeTypeByUrl(const string& url, string& mimeType) const
     mimeType = "";
     return false;
   }
-}
 
-bool get_content_by_decoded_url(const Reader& reader,
-                                const string& url,
-                                string& content,
-                                string& title,
-                                unsigned int& contentLength,
-                                string& contentType,
-                                string& baseUrl)
-{
-  content = "";
-  contentType = "";
-  contentLength = 0;
-
-  try {
-    auto entry = reader.getEntryFromPath(url);
-    entry = entry.getFinalEntry();
-    baseUrl = entry.getPath();
-    contentType = entry.getMimetype();
-    content = entry.getContent();
-    contentLength = entry.getSize();
-    title = entry.getTitle();
-
-    /* Try to set a stub HTML header/footer if necesssary */
-    if (contentType.find("text/html") != string::npos
-      && content.find("<body") == std::string::npos
-      && content.find("<BODY") == std::string::npos) {
-      content = "<html><head><title>" + title +
-              "</title><meta http-equiv=\"Content-Type\" content=\"text/html; "
-              "charset=utf-8\" /></head><body>" +
-              content + "</body></html>";
-    }
-    return true;
-  } catch (NoEntry& e) {
-    return false;
-  }
-}
-
-
-/* Get a content from a zim file */
-bool Reader::getContentByUrl(const string& url,
-                             string& content,
-                             string& title,
-                             unsigned int& contentLength,
-                             string& contentType) const
-{
-  std::string stubRedirectUrl;
-  return get_content_by_decoded_url(*this,
-                                kiwix::urlDecode(url),
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                stubRedirectUrl);
-}
-
-bool Reader::getContentByEncodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType,
-                                    string& baseUrl) const
-{
-  return get_content_by_decoded_url(*this,
-                                kiwix::urlDecode(url),
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                baseUrl);
-}
-
-bool Reader::getContentByEncodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType) const
-{
-  std::string stubRedirectUrl;
-  return get_content_by_decoded_url(*this,
-                                kiwix::urlDecode(url),
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                stubRedirectUrl);
-}
-
-bool Reader::getContentByDecodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType) const
-{
-  std::string stubRedirectUrl;
-  return get_content_by_decoded_url(*this,
-                                url,
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                stubRedirectUrl);
-}
-
-bool Reader::getContentByDecodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType,
-                                    string& baseUrl) const
-{
-  return get_content_by_decoded_url(*this,
-                                url,
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                baseUrl);
-}
-
-/* Check if an article exists */
-bool Reader::urlExists(const string& url) const
-{
-  return pathExists(url);
 }
 
 bool Reader::pathExists(const string& path) const
