@@ -26,6 +26,8 @@
 #include <cstdio>
 #include <atomic>
 
+#include "tools/stringTools.h"
+
 namespace kiwix {
 
 static std::atomic_ullong s_requestIndex(0);
@@ -96,7 +98,7 @@ MHD_Result RequestContext::fill_header(void *__this, enum MHD_ValueKind kind,
                                        const char *key, const char *value)
 {
   RequestContext *_this = static_cast<RequestContext*>(__this);
-  _this->headers[key] = value;
+  _this->headers[lcAll(key)] = value;
   return MHD_YES;
 }
 
@@ -178,7 +180,7 @@ std::string RequestContext::get_argument(const std::string& name) const {
 }
 
 std::string RequestContext::get_header(const std::string& name) const {
-  return headers.at(name);
+  return headers.at(lcAll(name));
 }
 
 }
