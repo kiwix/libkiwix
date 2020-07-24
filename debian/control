@@ -1,10 +1,10 @@
 Source: libkiwix
 Priority: optional
 Maintainer: Kiwix team <kiwix@kiwix.org>
-Build-Depends: debhelper-compat (= 12),
+Build-Depends: debhelper-compat (= 13),
  meson,
  pkg-config,
- libzim-dev (>= 6.0.0),
+ libzim-dev (>= 6.1.8),
  libcurl4-gnutls-dev,
  libicu-dev,
  libgtest-dev,

@@ -3,3 +3,6 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
 	dh $@ --buildsystem=meson
+
+override_dh_auto_test:
+	dh_auto_test -- -t 3
