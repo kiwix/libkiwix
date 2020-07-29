@@ -371,7 +371,7 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
 
   auto response = ContentResponse::build(*this, content, mimeType);
   response->set_cacheable();
-  return response;
+  return std::move(response);
 }
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
@@ -433,7 +433,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   data.set("suggestions", results);
 
   auto response = ContentResponse::build(*this, RESOURCE::templates::suggestion_json, data, "application/json; charset=utf-8");
-  return response;
+  return std::move(response);
 }
 
 std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& request)
@@ -449,7 +449,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
         getResource(resourceName),
         getMimeTypeForFile(resourceName));
     response->set_cacheable();
-    return response;
+    return std::move(response);
   } catch (const ResourceNotFound& e) {
     return Response::build_404(*this, request, "");
   }
@@ -523,7 +523,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
     response->set_taskbar(bookName, reader ? reader->getTitle() : "");
     response->set_code(MHD_HTTP_NOT_FOUND);
-    return response;
+    return std::move(response);
   }
 
   Searcher searcher;
@@ -579,7 +579,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       response->set_code(MHD_HTTP_NO_CONTENT);
     }
 
-    return response;
+    return std::move(response);
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     return Response::build_500(*this, e.what());
@@ -651,7 +651,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
 
   if (url == "searchdescription.xml") {
     auto response = ContentResponse::build(*this, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
-    return response;
+    return std::move(response);
   }
 
   zim::Uuid uuid;
@@ -710,7 +710,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
       *this,
       opdsDumper.dumpOPDSFeed(bookIdsToDump),
       "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
-  return response;
+  return std::move(response);
 }
 
 namespace

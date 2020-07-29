@@ -71,7 +71,7 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   auto response = ContentResponse::build(server, "", "");
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->m_etag = etag;
-  return response;
+  return std::move(response);
 }
 
 std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName)
@@ -83,7 +83,7 @@ std::unique_ptr<Response> Response::build_404(const InternalServer& server, cons
   response->set_code(MHD_HTTP_NOT_FOUND);
   response->set_taskbar(bookName, "");
 
-  return response;
+  return std::move(response);
 }
 
 std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg)
@@ -377,7 +377,7 @@ std::unique_ptr<Response> EntryResponse::build(const InternalServer& server, con
     auto response = ContentResponse::build(server, content, mimetype);
     response->set_cacheable();
     response->m_byteRange = byteRange;
-    return response;
+    return std::move(response);
   }
 
   if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
