@@ -253,31 +253,6 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
 }
 
 
-MHD_Response*
-Response::create_entry_mhd_response() const
-{
-  const auto content_length = m_byteRange.length();
-  MHD_Response* response = MHD_create_response_from_callback(content_length,
-                                               16384,
-                                               callback_reader_from_entry,
-                                               new RunningResponse(m_entry, m_byteRange.first()),
-                                               callback_free_response);
-  MHD_add_response_header(response,
-    MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
-  MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
-  if ( m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT ) {
-    std::ostringstream oss;
-    oss << "bytes " << m_byteRange.first() << "-" << m_byteRange.last()
-        << "/" << m_entry.getSize();
-
-    MHD_add_response_header(response,
-      MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
-  }
-
-  MHD_add_response_header(response,
-    MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(content_length).c_str());
-  return response;
-}
 
 MHD_Response*
 Response::create_mhd_response(const RequestContext& request)
@@ -288,9 +263,6 @@ Response::create_mhd_response(const RequestContext& request)
 
     case ResponseMode::RAW_CONTENT :
       return create_raw_content_mhd_response(request);
-
-    case ResponseMode::ENTRY :
-      return create_entry_mhd_response();
   }
   return nullptr;
 }
@@ -322,30 +294,6 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
 void Response::set_template(const std::string& template_str, kainjow::mustache::data data) {
   m_content = render_template(template_str, data);
   m_mode = ResponseMode::RAW_CONTENT;
-}
-
-void Response::set_entry(const Entry& entry, const RequestContext& request) {
-  m_entry = entry;
-  m_mode = ResponseMode::ENTRY;
-
-  const std::string mimeType = get_mime_type(entry);
-  set_mimeType(mimeType);
-  set_cacheable();
-
-  m_byteRange = request.get_range().resolve(entry.getSize());
-  const bool noRange = m_byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
-  if ( noRange && is_compressible_mime_type(mimeType) ) {
-    zim::Blob raw_content = entry.getBlob();
-    const std::string content = string(raw_content.data(), raw_content.size());
-
-    m_content = content;
-    m_mode = ResponseMode::RAW_CONTENT;
-    set_compress(true);
-  } else if ( m_byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE ) {
-    set_code(416);
-    m_content = "";
-    m_mode = ResponseMode::ERROR_RESPONSE;
-  }
 }
 
 void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle)
@@ -400,6 +348,77 @@ std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, c
         mimetype));
 }
 
+EntryResponse::EntryResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const Entry& entry, const std::string& mimetype, const ByteRange& byterange) :
+  Response(root, verbose, withTaskbar, withLibraryButton, blockExternalLinks),
+  m_entry(entry)
+{
+  m_mimeType = mimetype;
+  m_byteRange = byterange;
+  m_mode = ResponseMode::RAW_CONTENT; // We don't care about raw, but we must init it to something else than error.
+  set_cacheable();
+}
+
+std::unique_ptr<Response> EntryResponse::build(const InternalServer& server, const RequestContext& request, const Entry& entry)
+{
+  const std::string mimetype = get_mime_type(entry);
+  auto byteRange = request.get_range().resolve(entry.getSize());
+  const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
+  if (noRange && is_compressible_mime_type(mimetype)) {
+    // Return a contentResponse
+    zim::Blob raw_content = entry.getBlob();
+    const std::string content = string(raw_content.data(), raw_content.size());
+    auto response = ContentResponse::build(server, content, mimetype);
+    response->set_cacheable();
+    response->set_compress(true);
+    response->m_byteRange = byteRange;
+    return response;
+  }
+
+  if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
+    auto response = ContentResponse::build(server, "", mimetype);
+    response->set_cacheable();
+    response->set_code(416);
+    response->m_byteRange = byteRange;
+    response->m_mode = ResponseMode::ERROR_RESPONSE;
+    return response;
+  }
+
+  return std::unique_ptr<Response>(new EntryResponse(
+        server.m_root,
+        server.m_verbose.load(),
+        server.m_withTaskbar,
+        server.m_withLibraryButton,
+        server.m_blockExternalLinks,
+        entry,
+        mimetype,
+        byteRange));
+}
+
+MHD_Response*
+EntryResponse::create_mhd_response(const RequestContext& request)
+{
+  const auto content_length = m_byteRange.length();
+  MHD_Response* response = MHD_create_response_from_callback(content_length,
+                                               16384,
+                                               callback_reader_from_entry,
+                                               new RunningResponse(m_entry, m_byteRange.first()),
+                                               callback_free_response);
+  MHD_add_response_header(response,
+    MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
+  MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
+  if ( m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT ) {
+    std::ostringstream oss;
+    oss << "bytes " << m_byteRange.first() << "-" << m_byteRange.last()
+        << "/" << m_entry.getSize();
+
+    MHD_add_response_header(response,
+      MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
+  }
+
+  MHD_add_response_header(response,
+    MHD_HTTP_HEADER_CONTENT_LENGTH, kiwix::to_string(content_length).c_str());
+  return response;
+}
 
 
 }

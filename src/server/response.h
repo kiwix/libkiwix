@@ -37,11 +37,12 @@ namespace kiwix {
 enum class ResponseMode {
   ERROR_RESPONSE,
   RAW_CONTENT,
-  ENTRY
 };
 
 class InternalServer;
 class RequestContext;
+
+class EntryResponse;
 
 class Response {
   public:
@@ -53,8 +54,6 @@ class Response {
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 
     void set_template(const std::string& template_str, kainjow::mustache::data data);
-    void set_entry(const Entry& entry, const RequestContext& request);
-
 
     void set_mimeType(const std::string& mimeType) { m_mimeType = mimeType; }
     void set_code(int code) { m_returnCode = code; }
@@ -77,14 +76,12 @@ class Response {
     virtual MHD_Response* create_mhd_response(const RequestContext& request);
     MHD_Response* create_error_response(const RequestContext& request) const;
     MHD_Response* create_raw_content_mhd_response(const RequestContext& request);
-    MHD_Response* create_entry_mhd_response() const;
 
   protected: // data
     bool m_verbose;
     ResponseMode m_mode;
     std::string m_root;
     std::string m_content;
-    Entry m_entry;
     std::string m_mimeType;
     int m_returnCode;
     bool m_withTaskbar;
@@ -95,6 +92,8 @@ class Response {
     std::string m_bookTitle;
     ByteRange m_byteRange;
     ETag m_etag;
+
+    friend class EntryResponse; // temporary to allow the builder to change m_mode
 };
 
 
@@ -116,6 +115,19 @@ class ContentResponse : public Response {
     ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype);
 
     static std::unique_ptr<Response> build(const InternalServer& server, const std::string& content, const std::string& mimetype);
+};
+
+class EntryResponse : public Response {
+  public:
+    EntryResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const Entry& entry, const std::string& mimetype, const ByteRange& byterange);
+
+    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const Entry& entry);
+
+  private:
+    MHD_Response* create_mhd_response(const RequestContext& request);
+
+    Entry m_entry;
+
 };
 
 }

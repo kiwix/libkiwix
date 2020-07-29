@@ -840,9 +840,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     return build_404(request, bookName);
   }
 
-  auto response = Response::build(*this);
-
-  response->set_entry(entry, request);
+  auto response = EntryResponse::build(*this, request, entry);
   response->set_taskbar(bookName, reader->getTitle());
 
   if (m_verbose.load()) {
