@@ -54,34 +54,21 @@ bool is_compressible_mime_type(const std::string& mimeType)
 
 } // unnamed namespace
 
-Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks)
+Response::Response(bool verbose)
   : m_verbose(verbose),
-    m_mode(ResponseMode::RAW_CONTENT),
-    m_root(root),
-    m_content(""),
-    m_mimeType(""),
-    m_returnCode(MHD_HTTP_OK),
-    m_withTaskbar(withTaskbar),
-    m_withLibraryButton(withLibraryButton),
-    m_blockExternalLinks(blockExternalLinks),
-    m_bookName(""),
-    m_bookTitle("")
+    m_mode(ResponseMode::OK_RESPONSE),
+    m_returnCode(MHD_HTTP_OK)
 {
 }
 
 std::unique_ptr<Response> Response::build(const InternalServer& server)
 {
-  return std::unique_ptr<Response>(new Response(
-        server.m_root,
-        server.m_verbose.load(),
-        server.m_withTaskbar,
-        server.m_withLibraryButton,
-        server.m_blockExternalLinks));
+  return std::unique_ptr<Response>(new Response(server.m_verbose.load()));
 }
 
 std::unique_ptr<Response> Response::build_304(const InternalServer& server, const ETag& etag)
 {
-  auto response = Response::build(server);
+  auto response = ContentResponse::build(server, "", "");
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->m_etag = etag;
   return response;
@@ -94,7 +81,6 @@ std::unique_ptr<Response> Response::build_404(const InternalServer& server, cons
 
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
-  response->set_compress(true);
   response->set_taskbar(bookName, "");
 
   return response;
@@ -171,7 +157,7 @@ void print_response_info(int retCode, MHD_Response* response)
 
 
 
-void Response::introduce_taskbar()
+void ContentResponse::introduce_taskbar()
 {
   kainjow::mustache::data data;
   data.set("root", m_root);
@@ -193,7 +179,7 @@ void Response::introduce_taskbar()
 }
 
 
-void Response::inject_externallinks_blocker()
+void ContentResponse::inject_externallinks_blocker()
 {
   kainjow::mustache::data data;
   data.set("root", m_root);
@@ -205,7 +191,7 @@ void Response::inject_externallinks_blocker()
 }
 
 bool
-Response::can_compress(const RequestContext& request) const
+ContentResponse::can_compress(const RequestContext& request) const
 {
   return request.can_compress()
       && is_compressible_mime_type(m_mimeType)
@@ -213,14 +199,14 @@ Response::can_compress(const RequestContext& request) const
 }
 
 bool
-Response::contentDecorationAllowed() const
+ContentResponse::contentDecorationAllowed() const
 {
     return (startsWith(m_mimeType, "text/html")
          && m_mimeType.find(";raw=true") == std::string::npos);
 }
 
 MHD_Response*
-Response::create_error_response(const RequestContext& request) const
+Response::create_mhd_response(const RequestContext& request)
 {
   MHD_Response* response = MHD_create_response_from_buffer(0, NULL, MHD_RESPMEM_PERSISTENT);
   if ( m_returnCode == 416 ) {
@@ -234,7 +220,7 @@ Response::create_error_response(const RequestContext& request) const
 }
 
 MHD_Response*
-Response::create_raw_content_mhd_response(const RequestContext& request)
+ContentResponse::create_mhd_response(const RequestContext& request)
 {
   if (contentDecorationAllowed()) {
     if (m_withTaskbar) {
@@ -287,21 +273,6 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
   return response;
 }
 
-
-
-MHD_Response*
-Response::create_mhd_response(const RequestContext& request)
-{
-  switch (m_mode) {
-    case ResponseMode::ERROR_RESPONSE:
-      return create_error_response(request);
-
-    case ResponseMode::RAW_CONTENT :
-      return create_raw_content_mhd_response(request);
-  }
-  return nullptr;
-}
-
 MHD_Result Response::send(const RequestContext& request, MHD_Connection* connection)
 {
   MHD_Response* response = create_mhd_response(request);
@@ -326,15 +297,15 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle)
+void ContentResponse::set_taskbar(const std::string& bookName, const std::string& bookTitle)
 {
   m_bookName = bookName;
   m_bookTitle = bookTitle;
 }
 
 
-RedirectionResponse::RedirectionResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& redirectionUrl) :
-  Response(root, verbose, withTaskbar, withLibraryButton, blockExternalLinks),
+RedirectionResponse::RedirectionResponse(bool verbose, const std::string& redirectionUrl):
+  Response(verbose),
   m_redirectionUrl(redirectionUrl)
 {
   m_returnCode = MHD_HTTP_FOUND;
@@ -343,11 +314,7 @@ RedirectionResponse::RedirectionResponse(const std::string& root, bool verbose, 
 std::unique_ptr<Response> RedirectionResponse::build(const InternalServer& server, const std::string& redirectionUrl)
 {
    return std::unique_ptr<Response>(new RedirectionResponse(
-        server.m_root,
         server.m_verbose.load(),
-        server.m_withTaskbar,
-        server.m_withLibraryButton,
-        server.m_blockExternalLinks,
         redirectionUrl));
 }
 
@@ -359,16 +326,21 @@ MHD_Response* RedirectionResponse::create_mhd_response(const RequestContext& req
 }
 
 ContentResponse::ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
-  Response(root, verbose, withTaskbar, withLibraryButton, blockExternalLinks)
-{
-  m_content = content;
-  m_mimeType = mimetype;
-  m_mode = ResponseMode::RAW_CONTENT;
-}
+  Response(verbose),
+  m_root(root),
+  m_content(content),
+  m_mimeType(mimetype),
+  m_withTaskbar(withTaskbar),
+  m_withLibraryButton(withLibraryButton),
+  m_blockExternalLinks(blockExternalLinks),
+  m_compress(is_compressible_mime_type(mimetype)),
+  m_bookName(""),
+  m_bookTitle("")
+{}
 
-std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype)
+std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype)
 {
-   return std::unique_ptr<Response>(new ContentResponse(
+   return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
         server.m_verbose.load(),
         server.m_withTaskbar,
@@ -378,19 +350,18 @@ std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, c
         mimetype));
 }
 
-std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype) {
+std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype) {
   auto content = render_template(template_str, data);
   return ContentResponse::build(server, content, mimetype);
 }
 
 
-EntryResponse::EntryResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const Entry& entry, const std::string& mimetype, const ByteRange& byterange) :
-  Response(root, verbose, withTaskbar, withLibraryButton, blockExternalLinks),
-  m_entry(entry)
+EntryResponse::EntryResponse(bool verbose, const Entry& entry, const std::string& mimetype, const ByteRange& byterange) :
+  Response(verbose),
+  m_entry(entry),
+  m_mimeType(mimetype)
 {
-  m_mimeType = mimetype;
   m_byteRange = byterange;
-  m_mode = ResponseMode::RAW_CONTENT; // We don't care about raw, but we must init it to something else than error.
   set_cacheable();
 }
 
@@ -405,26 +376,20 @@ std::unique_ptr<Response> EntryResponse::build(const InternalServer& server, con
     const std::string content = string(raw_content.data(), raw_content.size());
     auto response = ContentResponse::build(server, content, mimetype);
     response->set_cacheable();
-    response->set_compress(true);
     response->m_byteRange = byteRange;
     return response;
   }
 
   if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
-    auto response = ContentResponse::build(server, "", mimetype);
+    auto response = Response::build(server);
     response->set_cacheable();
     response->set_code(416);
     response->m_byteRange = byteRange;
-    response->m_mode = ResponseMode::ERROR_RESPONSE;
     return response;
   }
 
   return std::unique_ptr<Response>(new EntryResponse(
-        server.m_root,
         server.m_verbose.load(),
-        server.m_withTaskbar,
-        server.m_withLibraryButton,
-        server.m_blockExternalLinks,
         entry,
         mimetype,
         byteRange));

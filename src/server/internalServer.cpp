@@ -322,9 +322,7 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  auto response = ContentResponse::build(*this, RESOURCE::templates::index_html, homepage_data(), "text/html; charset=utf-8");
-  response->set_compress(true);
-  return response;
+  return ContentResponse::build(*this, RESOURCE::templates::index_html, homepage_data(), "text/html; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
@@ -372,7 +370,6 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   }
 
   auto response = ContentResponse::build(*this, content, mimeType);
-  response->set_compress(false);
   response->set_cacheable();
   return response;
 }
@@ -436,7 +433,6 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   data.set("suggestions", results);
 
   auto response = ContentResponse::build(*this, RESOURCE::templates::suggestion_json, data, "application/json; charset=utf-8");
-  response->set_compress(true);
   return response;
 }
 
@@ -452,7 +448,6 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
         *this,
         getResource(resourceName),
         getMimeTypeForFile(resourceName));
-    response->set_compress(true);
     response->set_cacheable();
     return response;
   } catch (const ResourceNotFound& e) {
@@ -527,7 +522,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     data.set("pattern", encodeDiples(patternString));
     auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
     response->set_taskbar(bookName, reader ? reader->getTitle() : "");
-    response->set_compress(true);
     response->set_code(MHD_HTTP_NOT_FOUND);
     return response;
   }
@@ -579,7 +573,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     response->set_taskbar(bookName, reader ? reader->getTitle() : "");
-    response->set_compress(true);
     //changing status code if no result obtained
     if(searcher.getEstimatedResultCount() == 0)
     {
@@ -634,9 +627,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
 
   auto data = get_default_data();
   data.set("source", source);
-  auto response = ContentResponse::build(*this, RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
-  response->set_compress(true);
-  return response;
+  return ContentResponse::build(*this, RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
@@ -660,7 +651,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
 
   if (url == "searchdescription.xml") {
     auto response = ContentResponse::build(*this, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
-    response->set_compress(true);
     return response;
   }
 
@@ -720,7 +710,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
       *this,
       opdsDumper.dumpOPDSFeed(bookIdsToDump),
       "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
-  response->set_compress(true);
   return response;
 }
 
@@ -794,11 +783,13 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   auto response = EntryResponse::build(*this, request, entry);
-  response->set_taskbar(bookName, reader->getTitle());
+  try {
+    dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, reader->getTitle());
+  } catch (std::bad_cast& e) {}
 
   if (m_verbose.load()) {
     printf("Found %s\n", entry.getPath().c_str());
-    printf("mimeType: %s\n", response->get_mimeType().c_str());
+    printf("mimeType: %s\n", entry.getMimetype().c_str());
   }
 
   return response;
