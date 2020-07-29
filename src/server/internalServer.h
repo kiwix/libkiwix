@@ -106,6 +106,7 @@ class InternalServer {
     std::string m_server_id;
 
     friend std::unique_ptr<Response> Response::build(const InternalServer& server);
+    friend std::unique_ptr<Response> RedirectionResponse::build(const InternalServer& server, const std::string& redirectionUrl);
 };
 
 }

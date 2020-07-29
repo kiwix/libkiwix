@@ -37,7 +37,6 @@ namespace kiwix {
 enum class ResponseMode {
   ERROR_RESPONSE,
   RAW_CONTENT,
-  REDIRECTION,
   ENTRY
 };
 
@@ -47,7 +46,7 @@ class RequestContext;
 class Response {
   public:
     Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks);
-    ~Response() = default;
+    virtual ~Response() = default;
 
     static std::unique_ptr<Response> build(const InternalServer& server);
 
@@ -55,7 +54,6 @@ class Response {
 
     void set_template(const std::string& template_str, kainjow::mustache::data data);
     void set_content(const std::string& content);
-    void set_redirection(const std::string& url);
     void set_entry(const Entry& entry, const RequestContext& request);
 
 
@@ -77,13 +75,12 @@ class Response {
     bool contentDecorationAllowed() const;
 
   private: // functions
-    MHD_Response* create_mhd_response(const RequestContext& request);
+    virtual MHD_Response* create_mhd_response(const RequestContext& request);
     MHD_Response* create_error_response(const RequestContext& request) const;
     MHD_Response* create_raw_content_mhd_response(const RequestContext& request);
-    MHD_Response* create_redirection_mhd_response() const;
     MHD_Response* create_entry_mhd_response() const;
 
-  private: // data
+  protected: // data
     bool m_verbose;
     ResponseMode m_mode;
     std::string m_root;
@@ -99,6 +96,20 @@ class Response {
     std::string m_bookTitle;
     ByteRange m_byteRange;
     ETag m_etag;
+};
+
+
+class RedirectionResponse : public Response {
+  public:
+    RedirectionResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& redirectionUrl);
+
+    static std::unique_ptr<Response> build(const InternalServer& server, const std::string& redirectionUrl);
+
+
+  private:
+    MHD_Response* create_mhd_response(const RequestContext& request);
+
+    std::string m_redirectionUrl;
 };
 
 }

@@ -252,13 +252,6 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
   return response;
 }
 
-MHD_Response*
-Response::create_redirection_mhd_response() const
-{
-  MHD_Response* response = MHD_create_response_from_buffer(0, nullptr, MHD_RESPMEM_MUST_COPY);
-  MHD_add_response_header(response, MHD_HTTP_HEADER_LOCATION, m_content.c_str());
-  return response;
-}
 
 MHD_Response*
 Response::create_entry_mhd_response() const
@@ -295,9 +288,6 @@ Response::create_mhd_response(const RequestContext& request)
 
     case ResponseMode::RAW_CONTENT :
       return create_raw_content_mhd_response(request);
-
-    case ResponseMode::REDIRECTION :
-      return create_redirection_mhd_response();
 
     case ResponseMode::ENTRY :
       return create_entry_mhd_response();
@@ -338,12 +328,6 @@ void Response::set_content(const std::string& content) {
   m_mode = ResponseMode::RAW_CONTENT;
 }
 
-void Response::set_redirection(const std::string& url) {
-  m_content = url;
-  m_mode = ResponseMode::REDIRECTION;
-  m_returnCode = MHD_HTTP_FOUND;
-}
-
 void Response::set_entry(const Entry& entry, const RequestContext& request) {
   m_entry = entry;
   m_mode = ResponseMode::ENTRY;
@@ -372,6 +356,33 @@ void Response::set_taskbar(const std::string& bookName, const std::string& bookT
   m_bookName = bookName;
   m_bookTitle = bookTitle;
 }
+
+
+RedirectionResponse::RedirectionResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& redirectionUrl) :
+  Response(root, verbose, withTaskbar, withLibraryButton, blockExternalLinks),
+  m_redirectionUrl(redirectionUrl)
+{
+  m_returnCode = MHD_HTTP_FOUND;
+}
+
+std::unique_ptr<Response> RedirectionResponse::build(const InternalServer& server, const std::string& redirectionUrl)
+{
+   return std::unique_ptr<Response>(new RedirectionResponse(
+        server.m_root,
+        server.m_verbose.load(),
+        server.m_withTaskbar,
+        server.m_withLibraryButton,
+        server.m_blockExternalLinks,
+        redirectionUrl));
+}
+
+MHD_Response* RedirectionResponse::create_mhd_response(const RequestContext& request)
+{
+  MHD_Response* response = MHD_create_response_from_buffer(0, nullptr, MHD_RESPMEM_MUST_COPY);
+  MHD_add_response_header(response, MHD_HTTP_HEADER_LOCATION, m_redirectionUrl.c_str());
+  return response;
+}
+
 
 
 }
