@@ -84,7 +84,6 @@ class InternalServer {
 
     MustacheData get_default_data() const;
     MustacheData homepage_data() const;
-    std::unique_ptr<Response> get_default_response() const;
 
     std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
     bool etag_not_needed(const RequestContext& r) const;
@@ -105,6 +104,8 @@ class InternalServer {
     NameMapper* mp_nameMapper;
 
     std::string m_server_id;
+
+    friend std::unique_ptr<Response> Response::build(const InternalServer& server);
 };
 
 }

@@ -41,12 +41,15 @@ enum class ResponseMode {
   ENTRY
 };
 
+class InternalServer;
 class RequestContext;
 
 class Response {
   public:
     Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks);
     ~Response() = default;
+
+    static std::unique_ptr<Response> build(const InternalServer& server);
 
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 

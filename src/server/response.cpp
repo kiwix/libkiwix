@@ -3,6 +3,7 @@
 
 #include "response.h"
 #include "request_context.h"
+#include "internalServer.h"
 #include "kiwixlib-resources.h"
 
 #include "tools/regexTools.h"
@@ -54,6 +55,16 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
     m_bookName(""),
     m_bookTitle("")
 {
+}
+
+std::unique_ptr<Response> Response::build(const InternalServer& server)
+{
+  return std::unique_ptr<Response>(new Response(
+        server.m_root,
+        server.m_verbose.load(),
+        server.m_withTaskbar,
+        server.m_withLibraryButton,
+        server.m_blockExternalLinks));
 }
 
 

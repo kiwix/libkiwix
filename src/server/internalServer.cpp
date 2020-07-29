@@ -232,7 +232,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
 
 std::unique_ptr<Response> InternalServer::build_304(const RequestContext& request, const ETag& etag) const
 {
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->set_etag(etag);
   response->set_content("");
@@ -287,24 +287,13 @@ MustacheData InternalServer::get_default_data() const
   return data;
 }
 
-std::unique_ptr<Response> InternalServer::get_default_response() const
-{
-  return std::unique_ptr<Response>(new Response(
-        m_root,
-        m_verbose.load(),
-        m_withTaskbar,
-        m_withLibraryButton,
-        m_blockExternalLinks));
-}
-
-
 std::unique_ptr<Response> InternalServer::build_404(const RequestContext& request,
                                    const std::string& bookName)
 {
   MustacheData results;
   results.set("url", request.get_full_url());
 
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_template(RESOURCE::templates::_404_html, results);
   response->set_mimeType("text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
@@ -370,7 +359,7 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_template(RESOURCE::templates::index_html, homepage_data());
   response->set_mimeType("text/html; charset=utf-8");
   response->set_compress(true);
@@ -421,7 +410,7 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
     return build_404(request, bookName);
   }
 
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_content(content);
   response->set_mimeType(mimeType);
   response->set_compress(false);
@@ -487,7 +476,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   auto data = get_default_data();
   data.set("suggestions", results);
 
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_template(RESOURCE::templates::suggestion_json, data);
   response->set_mimeType("application/json; charset=utf-8");
   response->set_compress(true);
@@ -500,7 +489,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     printf("** running handle_skin\n");
   }
 
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   auto resourceName = request.get_url().substr(1);
   try {
     response->set_content(getResource(resourceName));
@@ -568,14 +557,14 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
     /* If article found then redirect directly to it */
     if (!patternCorrespondingUrl.empty()) {
-      auto response = get_default_response();
+      auto response = Response::build(*this);
       response->set_redirection(m_root + "/" + bookName + "/" + patternCorrespondingUrl);
       return response;
     }
   }
 
   /* Make the search */
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_mimeType("text/html; charset=utf-8");
   response->set_taskbar(bookName, reader ? reader->getTitle() : "");
   response->set_compress(true);
@@ -689,7 +678,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
 
   auto data = get_default_data();
   data.set("source", source);
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_template(RESOURCE::templates::captured_external_html, data);
   response->set_mimeType("text/html; charset=utf-8");
   response->set_compress(true);
@@ -715,7 +704,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     return build_404(request, "");
   }
 
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_compress(true);
   if (url == "searchdescription.xml") {
     response->set_template(RESOURCE::opensearchdescription_xml, get_default_data());
@@ -809,7 +798,7 @@ InternalServer::get_reader(const std::string& bookName) const
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
 {
-  auto response = get_default_response();
+  auto response = Response::build(*this);
   response->set_redirection(m_root + "/" + bookName + "/" +
                            kiwix::urlEncode(entry.getPath()));
   return response;
@@ -851,7 +840,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     return build_404(request, bookName);
   }
 
-  auto response = get_default_response();
+  auto response = Response::build(*this);
 
   response->set_entry(entry, request);
   response->set_taskbar(bookName, reader->getTitle());
