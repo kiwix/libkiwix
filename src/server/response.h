@@ -53,7 +53,6 @@ class Response {
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 
     void set_template(const std::string& template_str, kainjow::mustache::data data);
-    void set_content(const std::string& content);
     void set_entry(const Entry& entry, const RequestContext& request);
 
 
@@ -110,6 +109,13 @@ class RedirectionResponse : public Response {
     MHD_Response* create_mhd_response(const RequestContext& request);
 
     std::string m_redirectionUrl;
+};
+
+class ContentResponse : public Response {
+  public:
+    ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype);
+
+    static std::unique_ptr<Response> build(const InternalServer& server, const std::string& content, const std::string& mimetype);
 };
 
 }

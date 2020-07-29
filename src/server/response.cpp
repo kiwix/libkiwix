@@ -320,11 +320,7 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
 }
 
 void Response::set_template(const std::string& template_str, kainjow::mustache::data data) {
-  set_content(render_template(template_str, data));
-}
-
-void Response::set_content(const std::string& content) {
-  m_content = content;
+  m_content = render_template(template_str, data);
   m_mode = ResponseMode::RAW_CONTENT;
 }
 
@@ -342,11 +338,12 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
     zim::Blob raw_content = entry.getBlob();
     const std::string content = string(raw_content.data(), raw_content.size());
 
-    set_content(content);
+    m_content = content;
+    m_mode = ResponseMode::RAW_CONTENT;
     set_compress(true);
   } else if ( m_byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE ) {
     set_code(416);
-    set_content("");
+    m_content = "";
     m_mode = ResponseMode::ERROR_RESPONSE;
   }
 }
@@ -381,6 +378,26 @@ MHD_Response* RedirectionResponse::create_mhd_response(const RequestContext& req
   MHD_Response* response = MHD_create_response_from_buffer(0, nullptr, MHD_RESPMEM_MUST_COPY);
   MHD_add_response_header(response, MHD_HTTP_HEADER_LOCATION, m_redirectionUrl.c_str());
   return response;
+}
+
+ContentResponse::ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
+  Response(root, verbose, withTaskbar, withLibraryButton, blockExternalLinks)
+{
+  m_content = content;
+  m_mimeType = mimetype;
+  m_mode = ResponseMode::RAW_CONTENT;
+}
+
+std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype)
+{
+   return std::unique_ptr<Response>(new ContentResponse(
+        server.m_root,
+        server.m_verbose.load(),
+        server.m_withTaskbar,
+        server.m_withLibraryButton,
+        server.m_blockExternalLinks,
+        content,
+        mimetype));
 }
 
 

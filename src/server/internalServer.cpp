@@ -232,10 +232,10 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
 
 std::unique_ptr<Response> InternalServer::build_304(const RequestContext& request, const ETag& etag) const
 {
-  auto response = Response::build(*this);
+  // This is just to set the m_mode.
+  auto response = ContentResponse::build(*this, "", "");
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->set_etag(etag);
-  response->set_content("");
   return response;
 }
 
@@ -410,9 +410,7 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
     return build_404(request, bookName);
   }
 
-  auto response = Response::build(*this);
-  response->set_content(content);
-  response->set_mimeType(mimeType);
+  auto response = ContentResponse::build(*this, content, mimeType);
   response->set_compress(false);
   response->set_cacheable();
   return response;
@@ -489,17 +487,18 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     printf("** running handle_skin\n");
   }
 
-  auto response = Response::build(*this);
   auto resourceName = request.get_url().substr(1);
   try {
-    response->set_content(getResource(resourceName));
+    auto response = ContentResponse::build(
+        *this,
+        getResource(resourceName),
+        getMimeTypeForFile(resourceName));
+    response->set_compress(true);
+    response->set_cacheable();
+    return response;
   } catch (const ResourceNotFound& e) {
     return build_404(request, "");
   }
-  response->set_mimeType(getMimeTypeForFile(resourceName));
-  response->set_compress(true);
-  response->set_cacheable();
-  return response;
 }
 
 std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& request)
@@ -563,15 +562,14 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   }
 
   /* Make the search */
-  auto response = Response::build(*this);
-  response->set_mimeType("text/html; charset=utf-8");
-  response->set_taskbar(bookName, reader ? reader->getTitle() : "");
-  response->set_compress(true);
-
   if ( (!reader && !bookName.empty())
     || (patternString.empty() && ! has_geo_query) ) {
     auto data = get_default_data();
     data.set("pattern", encodeDiples(patternString));
+    auto response = Response::build(*this);
+    response->set_mimeType("text/html; charset=utf-8");
+    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    response->set_compress(true);
     response->set_template(RESOURCE::templates::no_search_result_html, data);
     response->set_code(MHD_HTTP_NOT_FOUND);
     return response;
@@ -622,18 +620,20 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
-    response->set_content(renderer.getHtml());
+    auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
+    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    response->set_compress(true);
+    //changing status code if no result obtained
+    if(searcher.getEstimatedResultCount() == 0)
+    {
+      response->set_code(MHD_HTTP_NO_CONTENT);
+    }
+
+    return response;
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
+    return build_500(e.what());
   }
-
-  //changing status code if no result obtained
-  if(searcher.getEstimatedResultCount() == 0)
-  {
-    response.set_code(MHD_HTTP_NO_CONTENT);
-  }
-
-  return response;
 }
 
 std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& request)
@@ -703,9 +703,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     return build_404(request, "");
   }
 
-  auto response = Response::build(*this);
-  response->set_compress(true);
   if (url == "searchdescription.xml") {
+    auto response = Response::build(*this);
+    response->set_compress(true);
     response->set_template(RESOURCE::opensearchdescription_xml, get_default_data());
     response->set_mimeType("application/opensearchdescription+xml");
     return response;
@@ -716,7 +716,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
   opdsDumper.setLibrary(mp_library);
-  response->set_mimeType("application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
     opdsDumper.setTitle("All zims");
@@ -764,7 +763,11 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   opdsDumper.setId(kiwix::to_string(uuid));
-  response->set_content(opdsDumper.dumpOPDSFeed(bookIdsToDump));
+  auto response = ContentResponse::build(
+      *this,
+      opdsDumper.dumpOPDSFeed(bookIdsToDump),
+      "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
+  response->set_compress(true);
   return response;
 }
 
