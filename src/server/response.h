@@ -50,16 +50,15 @@ class Response {
     virtual ~Response() = default;
 
     static std::unique_ptr<Response> build(const InternalServer& server);
+    static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
+    static std::unique_ptr<Response> build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName);
+    static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
 
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 
-    void set_template(const std::string& template_str, kainjow::mustache::data data);
-
-    void set_mimeType(const std::string& mimeType) { m_mimeType = mimeType; }
     void set_code(int code) { m_returnCode = code; }
     void set_cacheable() { m_etag.set_option(ETag::CACHEABLE_ENTITY); }
     void set_server_id(const std::string& id) { m_etag.set_server_id(id); }
-    void set_etag(const ETag& etag) { m_etag = etag; }
     void set_compress(bool compress) { m_compress = compress; }
     void set_taskbar(const std::string& bookName, const std::string& bookTitle);
 
@@ -100,7 +99,6 @@ class Response {
 class RedirectionResponse : public Response {
   public:
     RedirectionResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& redirectionUrl);
-
     static std::unique_ptr<Response> build(const InternalServer& server, const std::string& redirectionUrl);
 
 
@@ -113,14 +111,13 @@ class RedirectionResponse : public Response {
 class ContentResponse : public Response {
   public:
     ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype);
-
     static std::unique_ptr<Response> build(const InternalServer& server, const std::string& content, const std::string& mimetype);
+    static std::unique_ptr<Response> build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype);
 };
 
 class EntryResponse : public Response {
   public:
     EntryResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const Entry& entry, const std::string& mimetype, const ByteRange& byterange);
-
     static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const Entry& entry);
 
   private:

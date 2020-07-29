@@ -68,9 +68,6 @@ class InternalServer {
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
-    std::unique_ptr<Response> build_500(const std::string& msg);
-    std::unique_ptr<Response> build_404(const RequestContext& request, const std::string& zimName);
-    std::unique_ptr<Response> build_304(const RequestContext& request, const ETag& etag) const;
     std::unique_ptr<Response> build_redirect(const std::string& bookName, const kiwix::Entry& entry) const;
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
     std::unique_ptr<Response> handle_skin(const RequestContext& request);
@@ -109,6 +106,7 @@ class InternalServer {
     friend std::unique_ptr<Response> RedirectionResponse::build(const InternalServer& server, const std::string& redirectionUrl);
     friend std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype);
     friend std::unique_ptr<Response> EntryResponse::build(const InternalServer& server, const RequestContext& request, const Entry& entry);
+    friend std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg);
 
 };
 

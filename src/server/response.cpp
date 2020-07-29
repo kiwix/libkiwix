@@ -22,6 +22,17 @@ namespace
 {
 // some utilities
 
+std::string render_template(const std::string& template_str, kainjow::mustache::data data)
+{
+  kainjow::mustache::mustache tmpl(template_str);
+  kainjow::mustache::data urlencode{kainjow::mustache::lambda2{
+                               [](const std::string& str,const kainjow::mustache::renderer& r) { return urlEncode(r(str), true); }}};
+  data.set("urlencoded", urlencode);
+  std::stringstream ss;
+  tmpl.render(data, [&ss](const std::string& str) { ss << str; });
+  return ss.str();
+}
+
 std::string get_mime_type(const kiwix::Entry& entry)
 {
   try {
@@ -45,6 +56,7 @@ bool is_compressible_mime_type(const std::string& mimeType)
 
 Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks)
   : m_verbose(verbose),
+    m_mode(ResponseMode::RAW_CONTENT),
     m_root(root),
     m_content(""),
     m_mimeType(""),
@@ -66,6 +78,39 @@ std::unique_ptr<Response> Response::build(const InternalServer& server)
         server.m_withLibraryButton,
         server.m_blockExternalLinks));
 }
+
+std::unique_ptr<Response> Response::build_304(const InternalServer& server, const ETag& etag)
+{
+  auto response = Response::build(server);
+  response->set_code(MHD_HTTP_NOT_MODIFIED);
+  response->m_etag = etag;
+  return response;
+}
+
+std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName)
+{
+  MustacheData results;
+  results.set("url", request.get_full_url());
+
+  auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
+  response->set_code(MHD_HTTP_NOT_FOUND);
+  response->set_compress(true);
+  response->set_taskbar(bookName, "");
+
+  return response;
+}
+
+std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg)
+{
+  MustacheData data;
+  data.set("error", msg);
+  auto content = render_template(RESOURCE::templates::_500_html, data);
+  std::unique_ptr<Response> response (
+      new ContentResponse(server.m_root, true, false, false, false, content, "text/html"));
+  response->set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
+  return response;
+}
+
 
 
 static MHD_Result print_key_value (void *cls, enum MHD_ValueKind kind,
@@ -124,16 +169,6 @@ void print_response_info(int retCode, MHD_Response* response)
 }
 
 
-std::string render_template(const std::string& template_str, kainjow::mustache::data data)
-{
-  kainjow::mustache::mustache tmpl(template_str);
-  kainjow::mustache::data urlencode{kainjow::mustache::lambda2{
-                               [](const std::string& str,const kainjow::mustache::renderer& r) { return urlEncode(r(str), true); }}};
-  data.set("urlencoded", urlencode);
-  std::stringstream ss;
-  tmpl.render(data, [&ss](const std::string& str) { ss << str; });
-  return ss.str();
-}
 
 
 void Response::introduce_taskbar()
@@ -291,11 +326,6 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-void Response::set_template(const std::string& template_str, kainjow::mustache::data data) {
-  m_content = render_template(template_str, data);
-  m_mode = ResponseMode::RAW_CONTENT;
-}
-
 void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle)
 {
   m_bookName = bookName;
@@ -347,6 +377,12 @@ std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, c
         content,
         mimetype));
 }
+
+std::unique_ptr<Response> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype) {
+  auto content = render_template(template_str, data);
+  return ContentResponse::build(server, content, mimetype);
+}
+
 
 EntryResponse::EntryResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const Entry& entry, const std::string& mimetype, const ByteRange& byterange) :
   Response(root, verbose, withTaskbar, withLibraryButton, blockExternalLinks),

@@ -230,24 +230,15 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   return ret;
 }
 
-std::unique_ptr<Response> InternalServer::build_304(const RequestContext& request, const ETag& etag) const
-{
-  // This is just to set the m_mode.
-  auto response = ContentResponse::build(*this, "", "");
-  response->set_code(MHD_HTTP_NOT_MODIFIED);
-  response->set_etag(etag);
-  return response;
-}
-
 std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& request)
 {
   try {
     if (! request.is_valid_url())
-      return build_404(request, "");
+      return Response::build_404(*this, request, "");
 
     const ETag etag = get_matching_if_none_match_etag(request);
     if ( etag )
-      return build_304(request, etag);
+      return Response::build_304(*this, etag);
 
     if (kiwix::startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
@@ -273,10 +264,10 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     return handle_content(request);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
-    return build_500(e.what());
+    return Response::build_500(*this, e.what());
   } catch (...) {
     fprintf(stderr, "===== Unhandled unknown error\n");
-    return build_500("Unknown error");
+    return Response::build_500(*this, "Unknown error");
   }
 }
 
@@ -285,34 +276,6 @@ MustacheData InternalServer::get_default_data() const
   MustacheData data;
   data.set("root", m_root);
   return data;
-}
-
-std::unique_ptr<Response> InternalServer::build_404(const RequestContext& request,
-                                   const std::string& bookName)
-{
-  MustacheData results;
-  results.set("url", request.get_full_url());
-
-  auto response = Response::build(*this);
-  response->set_template(RESOURCE::templates::_404_html, results);
-  response->set_mimeType("text/html");
-  response->set_code(MHD_HTTP_NOT_FOUND);
-  response->set_compress(true);
-  response->set_taskbar(bookName, "");
-
-  return response;
-}
-
-std::unique_ptr<Response> InternalServer::build_500(const std::string& msg)
-{
-  MustacheData data;
-  data.set("error", msg);
-  std::unique_ptr<Response> response(
-      new Response(m_root, true, false, false, false));
-  response->set_template(RESOURCE::templates::_500_html, data);
-  response->set_mimeType("text/html");
-  response->set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
-  return response;
 }
 
 MustacheData InternalServer::homepage_data() const
@@ -359,9 +322,7 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  auto response = Response::build(*this);
-  response->set_template(RESOURCE::templates::index_html, homepage_data());
-  response->set_mimeType("text/html; charset=utf-8");
+  auto response = ContentResponse::build(*this, RESOURCE::templates::index_html, homepage_data(), "text/html; charset=utf-8");
   response->set_compress(true);
   return response;
 }
@@ -378,11 +339,11 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
     meta_name = request.get_argument("name");
     reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range& e) {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   if (reader == nullptr) {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   std::string content;
@@ -407,7 +368,7 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   } else if (meta_name == "favicon") {
     reader->getFavicon(content, mimeType);
   } else {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   auto response = ContentResponse::build(*this, content, mimeType);
@@ -437,7 +398,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     term = request.get_argument("term");
     reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range&) {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   if (m_verbose.load()) {
@@ -474,9 +435,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   auto data = get_default_data();
   data.set("suggestions", results);
 
-  auto response = Response::build(*this);
-  response->set_template(RESOURCE::templates::suggestion_json, data);
-  response->set_mimeType("application/json; charset=utf-8");
+  auto response = ContentResponse::build(*this, RESOURCE::templates::suggestion_json, data, "application/json; charset=utf-8");
   response->set_compress(true);
   return response;
 }
@@ -497,7 +456,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     response->set_cacheable();
     return response;
   } catch (const ResourceNotFound& e) {
-    return build_404(request, "");
+    return Response::build_404(*this, request, "");
   }
 }
 
@@ -566,11 +525,9 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     || (patternString.empty() && ! has_geo_query) ) {
     auto data = get_default_data();
     data.set("pattern", encodeDiples(patternString));
-    auto response = Response::build(*this);
-    response->set_mimeType("text/html; charset=utf-8");
+    auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
     response->set_taskbar(bookName, reader ? reader->getTitle() : "");
     response->set_compress(true);
-    response->set_template(RESOURCE::templates::no_search_result_html, data);
     response->set_code(MHD_HTTP_NOT_FOUND);
     return response;
   }
@@ -632,7 +589,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     return response;
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return build_500(e.what());
+    return Response::build_500(*this, e.what());
   }
 }
 
@@ -650,18 +607,18 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     bookId = mp_nameMapper->getIdForName(bookName);
     reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range&) {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   if (reader == nullptr) {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   try {
     auto entry = reader->getRandomPage();
     return build_redirect(bookName, entry.getFinalEntry());
   } catch(kiwix::NoEntry& e) {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 }
 
@@ -673,13 +630,11 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
   } catch (const std::out_of_range& e) {}
 
   if (source.empty())
-    return build_404(request, "");
+    return Response::build_404(*this, request, "");
 
   auto data = get_default_data();
   data.set("source", source);
-  auto response = Response::build(*this);
-  response->set_template(RESOURCE::templates::captured_external_html, data);
-  response->set_mimeType("text/html; charset=utf-8");
+  auto response = ContentResponse::build(*this, RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
   response->set_compress(true);
   return response;
 }
@@ -696,18 +651,16 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
-    return build_404(request, "");
+    return Response::build_404(*this, request, "");
   }
 
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return build_404(request, "");
+    return Response::build_404(*this, request, "");
   }
 
   if (url == "searchdescription.xml") {
-    auto response = Response::build(*this);
+    auto response = ContentResponse::build(*this, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
     response->set_compress(true);
-    response->set_template(RESOURCE::opensearchdescription_xml, get_default_data());
-    response->set_mimeType("application/opensearchdescription+xml");
     return response;
   }
 
@@ -816,7 +769,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   const std::shared_ptr<Reader> reader = get_reader(bookName);
   if (reader == nullptr) {
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   auto urlStr = request.get_url().substr(bookName.size()+1);
@@ -837,7 +790,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
-    return build_404(request, bookName);
+    return Response::build_404(*this, request, bookName);
   }
 
   auto response = EntryResponse::build(*this, request, entry);
