@@ -50,6 +50,7 @@ class Response {
     static std::unique_ptr<Response> build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName);
     static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
     static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
+    static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
 
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 
@@ -74,18 +75,6 @@ class Response {
     friend class EntryResponse; // temporary to allow the builder to change m_mode
 };
 
-
-class RedirectionResponse : public Response {
-  public:
-    RedirectionResponse(bool verbose, const std::string& redirectionUrl);
-    static std::unique_ptr<Response> build(const InternalServer& server, const std::string& redirectionUrl);
-
-
-  private:
-    MHD_Response* create_mhd_response(const RequestContext& request);
-
-    std::string m_redirectionUrl;
-};
 
 class ContentResponse : public Response {
   public:

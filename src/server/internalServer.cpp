@@ -511,7 +511,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     /* If article found then redirect directly to it */
     if (!patternCorrespondingUrl.empty()) {
       auto redirectUrl = m_root + "/" + bookName + "/" + patternCorrespondingUrl;
-      return RedirectionResponse::build(*this, redirectUrl);
+      return Response::build_redirect(*this, redirectUrl);
     }
   }
 
@@ -743,7 +743,7 @@ std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
 {
   auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(entry.getPath());
-  return RedirectionResponse::build(*this, redirectUrl);
+  return Response::build_redirect(*this, redirectUrl);
 }
 
 std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& request)

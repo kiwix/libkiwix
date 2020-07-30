@@ -111,6 +111,15 @@ std::unique_ptr<Response> Response::build_500(const InternalServer& server, cons
 }
 
 
+std::unique_ptr<Response> Response::build_redirect(const InternalServer& server, const std::string& redirectUrl)
+{
+  auto response = Response::build(server);
+  response->m_returnCode = MHD_HTTP_FOUND;
+  response->add_header(MHD_HTTP_HEADER_LOCATION, redirectUrl);
+  return response;
+}
+
+
 
 static MHD_Result print_key_value (void *cls, enum MHD_ValueKind kind,
                                    const char *key, const char *value)
@@ -221,7 +230,7 @@ ContentResponse::contentDecorationAllowed() const
 MHD_Response*
 Response::create_mhd_response(const RequestContext& request)
 {
-  MHD_Response* response = MHD_create_response_from_buffer(0, NULL, MHD_RESPMEM_PERSISTENT);
+  MHD_Response* response = MHD_create_response_from_buffer(0, nullptr, MHD_RESPMEM_PERSISTENT);
   return response;
 }
 
@@ -302,27 +311,6 @@ void ContentResponse::set_taskbar(const std::string& bookName, const std::string
   m_bookTitle = bookTitle;
 }
 
-
-RedirectionResponse::RedirectionResponse(bool verbose, const std::string& redirectionUrl):
-  Response(verbose),
-  m_redirectionUrl(redirectionUrl)
-{
-  m_returnCode = MHD_HTTP_FOUND;
-}
-
-std::unique_ptr<Response> RedirectionResponse::build(const InternalServer& server, const std::string& redirectionUrl)
-{
-   return std::unique_ptr<Response>(new RedirectionResponse(
-        server.m_verbose.load(),
-        redirectionUrl));
-}
-
-MHD_Response* RedirectionResponse::create_mhd_response(const RequestContext& request)
-{
-  MHD_Response* response = MHD_create_response_from_buffer(0, nullptr, MHD_RESPMEM_MUST_COPY);
-  MHD_add_response_header(response, MHD_HTTP_HEADER_LOCATION, m_redirectionUrl.c_str());
-  return response;
-}
 
 ContentResponse::ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
   Response(verbose),
