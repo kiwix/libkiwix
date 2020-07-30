@@ -22,6 +22,7 @@
 #define KIWIXLIB_SERVER_RESPONSE_H
 
 #include <string>
+#include <map>
 
 #include <mustache.hpp>
 #include "byte_range.h"
@@ -52,6 +53,7 @@ class Response {
     static std::unique_ptr<Response> build(const InternalServer& server);
     static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
     static std::unique_ptr<Response> build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName);
+    static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
     static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
 
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
@@ -59,6 +61,7 @@ class Response {
     void set_code(int code) { m_returnCode = code; }
     void set_cacheable() { m_etag.set_option(ETag::CACHEABLE_ENTITY); }
     void set_server_id(const std::string& id) { m_etag.set_server_id(id); }
+    void add_header(const std::string& name, const std::string& value) { m_customHeaders[name] = value; }
 
     int getReturnCode() const { return m_returnCode; }
 
@@ -72,6 +75,7 @@ class Response {
     int m_returnCode;
     ByteRange m_byteRange;
     ETag m_etag;
+    std::map<std::string, std::string> m_customHeaders;
 
     friend class EntryResponse; // temporary to allow the builder to change m_mode
 };

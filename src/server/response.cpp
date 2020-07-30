@@ -86,6 +86,17 @@ std::unique_ptr<Response> Response::build_404(const InternalServer& server, cons
   return std::move(response);
 }
 
+std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
+{
+  auto response = Response::build(server);
+  response->set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
+  std::ostringstream oss;
+  oss << "bytes */" << resourceLength;
+  response->add_header(MHD_HTTP_HEADER_CONTENT_RANGE, oss.str());
+
+  return response;
+}
+
 std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg)
 {
   MustacheData data;
@@ -209,13 +220,6 @@ MHD_Response*
 Response::create_mhd_response(const RequestContext& request)
 {
   MHD_Response* response = MHD_create_response_from_buffer(0, NULL, MHD_RESPMEM_PERSISTENT);
-  if ( m_returnCode == 416 ) {
-    std::ostringstream oss;
-    oss << "bytes */" << m_byteRange.length();
-
-    MHD_add_response_header(response,
-      MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());
-  }
   return response;
 }
 
@@ -284,6 +288,9 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
     const std::string etag = m_etag.get_etag();
     if ( ! etag.empty() )
         MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
+  }
+  for(auto& p: m_customHeaders) {
+    MHD_add_response_header(response, p.first.c_str(), p.second.c_str());
   }
 
   if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
@@ -381,10 +388,8 @@ std::unique_ptr<Response> EntryResponse::build(const InternalServer& server, con
   }
 
   if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
-    auto response = Response::build(server);
+    auto response = Response::build_416(server, entry.getSize());
     response->set_cacheable();
-    response->set_code(416);
-    response->m_byteRange = byteRange;
     return response;
   }
 
