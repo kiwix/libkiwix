@@ -67,10 +67,13 @@ std::unique_ptr<Response> Response::build(const InternalServer& server)
 
 std::unique_ptr<Response> Response::build_304(const InternalServer& server, const ETag& etag)
 {
-  auto response = ContentResponse::build(server, "", "");
+  auto response = Response::build(server);
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->m_etag = etag;
-  return std::move(response);
+  if ( etag.get_option(ETag::COMPRESSED_CONTENT) ) {
+    response->add_header(MHD_HTTP_HEADER_VARY, "Accept-Encoding");
+  }
+  return response;
 }
 
 std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName)
@@ -258,17 +261,9 @@ ContentResponse::create_mhd_response(const RequestContext& request)
   MHD_Response* response = MHD_create_response_from_buffer(
     m_content.size(), const_cast<char*>(m_content.data()), MHD_RESPMEM_MUST_COPY);
 
-  // At shis point m_etag.get_option(ETag::COMPRESSED_CONTENT) and
-  // shouldCompress can have different values. This can happen for a 304 (Not
-  // Modified) response generated while handling a conditional If-None-Match
-  // request. In that case the m_etag (together with its COMPRESSED_CONTENT
-  // option) is obtained from the ETag list of the If-None-Match header and the
-  // response has no body (which shouldn't be compressed).
-  if ( m_etag.get_option(ETag::COMPRESSED_CONTENT) ) {
+  if (shouldCompress) {
     MHD_add_response_header(
         response, MHD_HTTP_HEADER_VARY, "Accept-Encoding");
-  }
-  if (shouldCompress) {
     MHD_add_response_header(
         response, MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
   }
