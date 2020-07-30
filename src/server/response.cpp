@@ -58,6 +58,7 @@ Response::Response(bool verbose)
   : m_verbose(verbose),
     m_returnCode(MHD_HTTP_OK)
 {
+  add_header(MHD_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 }
 
 std::unique_ptr<Response> Response::build(const InternalServer& server)
@@ -118,8 +119,6 @@ std::unique_ptr<Response> Response::build_redirect(const InternalServer& server,
   response->add_header(MHD_HTTP_HEADER_LOCATION, redirectUrl);
   return response;
 }
-
-
 
 static MHD_Result print_key_value (void *cls, enum MHD_ValueKind kind,
                                    const char *key, const char *value)
@@ -276,7 +275,6 @@ ContentResponse::create_mhd_response(const RequestContext& request)
     MHD_add_response_header(
         response, MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
   }
-  MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
   return response;
 }
 
@@ -284,7 +282,6 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
 {
   MHD_Response* response = create_mhd_response(request);
 
-  MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
   MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
     m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
   const std::string etag = m_etag.get_etag();
@@ -323,7 +320,9 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, bool wit
   m_compress(is_compressible_mime_type(mimetype)),
   m_bookName(""),
   m_bookTitle("")
-{}
+{
+  add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
+}
 
 std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype)
 {
@@ -342,7 +341,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& se
   return ContentResponse::build(server, content, mimetype);
 }
 
-
 EntryResponse::EntryResponse(bool verbose, const Entry& entry, const std::string& mimetype, const ByteRange& byterange) :
   Response(verbose),
   m_entry(entry),
@@ -350,6 +348,7 @@ EntryResponse::EntryResponse(bool verbose, const Entry& entry, const std::string
 {
   m_byteRange = byterange;
   set_cacheable();
+  add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
 std::unique_ptr<Response> EntryResponse::build(const InternalServer& server, const RequestContext& request, const Entry& entry)
@@ -389,8 +388,6 @@ EntryResponse::create_mhd_response(const RequestContext& request)
                                                callback_reader_from_entry,
                                                new RunningResponse(m_entry, m_byteRange.first()),
                                                callback_free_response);
-  MHD_add_response_header(response,
-    MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType.c_str());
   MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
   if ( m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT ) {
     std::ostringstream oss;
