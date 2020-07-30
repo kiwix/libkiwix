@@ -35,11 +35,6 @@ extern "C" {
 
 namespace kiwix {
 
-enum class ResponseMode {
-  OK_RESPONSE,
-  ERROR_RESPONSE,
-};
-
 class InternalServer;
 class RequestContext;
 
@@ -71,7 +66,6 @@ class Response {
 
   protected: // data
     bool m_verbose;
-    ResponseMode m_mode;
     int m_returnCode;
     ByteRange m_byteRange;
     ETag m_etag;

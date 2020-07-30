@@ -56,7 +56,6 @@ bool is_compressible_mime_type(const std::string& mimeType)
 
 Response::Response(bool verbose)
   : m_verbose(verbose),
-    m_mode(ResponseMode::OK_RESPONSE),
     m_returnCode(MHD_HTTP_OK)
 {
 }
@@ -281,14 +280,12 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
 {
   MHD_Response* response = create_mhd_response(request);
 
-  if ( m_mode != ResponseMode::ERROR_RESPONSE ) {
-    MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
-    MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
-      m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
-    const std::string etag = m_etag.get_etag();
-    if ( ! etag.empty() )
-        MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
-  }
+  MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
+  MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
+    m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
+  const std::string etag = m_etag.get_etag();
+  if ( ! etag.empty() )
+    MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
   for(auto& p: m_customHeaders) {
     MHD_add_response_header(response, p.first.c_str(), p.second.c_str());
   }
