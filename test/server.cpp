@@ -523,3 +523,17 @@ TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
   EXPECT_EQ(invariantHeaders(p1->headers), invariantHeaders(p2->headers));
   EXPECT_EQ(p1->body, p2->body);
 }
+
+TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
+{
+  const char url[] = "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const auto r0 = zfs1_->GET(url, { {"Range", "bytes=100-200"} } );
+
+  const char* header_variations[] = { "RANGE", "range", "rAnGe", "RaNgE" };
+  for ( const char* header : header_variations ) {
+    const auto r = zfs1_->GET(url, { {header, "bytes=100-200"} } );
+    EXPECT_EQ(206, r->status);
+    EXPECT_EQ("bytes 100-200/20077", r->get_header_value("Content-Range"));
+    EXPECT_EQ(r0->body, r->body);
+  }
+}
