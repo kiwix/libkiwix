@@ -740,6 +740,13 @@ Response InternalServer::handle_search(const RequestContext& request)
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
+
+  //changing status code if no result obtained
+  if(searcher.getEstimatedResultCount() == 0)
+  {
+    response.set_code(MHD_HTTP_NO_CONTENT);
+  }
+
   return response;
 }
 
