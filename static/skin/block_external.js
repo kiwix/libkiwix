@@ -1,3 +1,4 @@
+// `block_path` variable used by openzim/warc2zim to detect whether URL blocking is enabled or not
 var block_path = "/catch/external";
 // called only on external links
 function capture_event(e, target) { target.setAttribute("href", encodeURI(block_path + "?source=" + target.href)); }
