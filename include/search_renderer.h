@@ -61,6 +61,13 @@ class SearchRenderer
   void setSearchProtocolPrefix(const std::string& prefix);
 
   /**
+   * set result count per page
+   */
+  void setPageLength(unsigned int pageLength){
+    this->pageLength  = pageLength;
+  }
+
+  /**
    * Generate the html page with the resutls of the search.
    */
   std::string getHtml();
@@ -73,10 +80,9 @@ class SearchRenderer
   std::string searchPattern;
   std::string protocolPrefix;
   std::string searchProtocolPrefix;
-  unsigned int resultCountPerPage;
+  unsigned int pageLength;
   unsigned int estimatedResultCount;
   unsigned int resultStart;
-  unsigned int resultEnd;
 };
 
 

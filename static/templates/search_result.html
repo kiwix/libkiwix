@@ -133,7 +133,7 @@
         <ul>
           {{#resultLastPageStart}}
             <li>
-              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&end={{resultRange}}">
+              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&pageLength={{pageLength}}">
                 ◀
               </a>
             </li>
@@ -141,14 +141,14 @@
           {{#pages}}
             <li>
               <a {{#selected}}class="selected"{{/selected}}
-                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{start}}&end={{end}}">
+                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{start}}&pageLength={{pageLength}}">
                 {{label}}
               </a>
             </li>
           {{/pages}}
           {{#resultLastPageStart}}
             <li>
-              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&end={{lastResult}}">
+              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&pageLength={{pageLength}}">
                 ▶
               </a>
             </li>
