@@ -38,10 +38,12 @@ libraries need to be available:
 * [ICU](https://site.icu-project.org/) (package `libicu-dev` on Ubuntu)
 * [ZIM](https://openzim.org/) (package `libzim-dev` on Ubuntu)
 * [Pugixml](https://pugixml.org/) (package `libpugixml-dev` on Ubuntu)
-* [Aria2](https://aria2.github.io/) (package `aria2` on Ubuntu)
 * [Mustache](https://github.com/kainjow/Mustache) (Just copy the
 header `mustache.hpp` somewhere it can be found by the compiler and/or
 set CPPFLAGS with correct `-I` option). Use Mustache version 3 only.
+
+The following dependency needs to be available at runtime:
+* [Aria2](https://aria2.github.io/) (package `aria2` on Ubuntu)
 
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
