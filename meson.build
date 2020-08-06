@@ -7,19 +7,19 @@ compiler = meson.get_compiler('cpp')
 
 wrapper = get_option('wrapper')
 
-static_deps = 'android' in wrapper or 'java' in wrapper or get_option('default_library') == 'static'
-if 'android' in wrapper
+static_deps = wrapper.contains('android') or wrapper.contains('java') or get_option('default_library') == 'static'
+if wrapper.contains('android')
   extra_libs = ['-llog']
 else
   extra_libs = []
 endif
 
-if 'java' in wrapper
+if wrapper.contains('java')
   add_languages('java')
 endif
 
 # See https://github.com/kiwix/kiwix-lib/issues/371
-if target_machine.cpu_family() in ['arm', 'mips', 'm68k', 'ppc', 'sh4']
+if ['arm', 'mips', 'm68k', 'ppc', 'sh4'].contains(target_machine.cpu_family())
   extra_libs += '-latomic'
 endif
 
