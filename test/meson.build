@@ -26,7 +26,7 @@ if gtest_dep.found() and not meson.is_cross_build()
                    output : 'example.zim',
                    copy: true )
 
-    configure_file(input : 'data/wikipedia_en_ray_charles_mini_2020-03.zim',
+    configure_file(input : 'data/zimfile.zim',
                    output : 'zimfile.zim',
                    copy: true )
     configure_file(input : 'data/corner_cases.zim',
