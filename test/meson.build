@@ -1,7 +1,3 @@
-configure_file(input : 'data/example.zim',
-               output : 'example.zim',
-               copy: true )
-
 tests = [
     'parseUrl',
     'library',
@@ -26,6 +22,10 @@ gtest_dep = dependency('gtest',
                        required:false)
 
 if gtest_dep.found() and not meson.is_cross_build()
+    configure_file(input : 'data/example.zim',
+                   output : 'example.zim',
+                   copy: true )
+
     configure_file(input : 'data/wikipedia_en_ray_charles_mini_2020-03.zim',
                    output : 'zimfile.zim',
                    copy: true )
