@@ -28,9 +28,25 @@ if gtest_dep.found() and not meson.is_cross_build()
       'corner_cases.zim'
     ]
     foreach file : data_files
+        # configure_file(input : 'data/' + file,
+        #                output : file,
+        #                copy: true )
+        #
+        # Above (commented) command doesn't work with Meson versions below 0.47
+        # (in which the 'copy' keyword was first introduced). We want to keep
+        # compatibility with Ubuntu 18.04 Bionic (which has Meson version 0.45)
+        # until its EOL.
+        #
+        # Below is a python based workaround.
         configure_file(input : 'data/' + file,
                        output : file,
-                       copy: true )
+                       command: [
+                         find_program('python3'),
+                          '-c',
+                          'import sys; import shutil; shutil.copy(sys.argv[1], sys.argv[2])',
+                          '@INPUT@',
+                          '@OUTPUT@'
+                       ])
     endforeach
 
     foreach test_name : tests
