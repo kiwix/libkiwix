@@ -963,7 +963,7 @@ Response InternalServer::handle_content(const RequestContext& request)
     printf("mimeType: %s\n", response.get_mimeType().c_str());
   }
 
-  if (response.get_mimeType().find("text/html") != string::npos)
+  if ( startsWith(response.get_mimeType(), "text/html") )
     response.set_taskbar(bookName, reader->getTitle());
 
   return response;

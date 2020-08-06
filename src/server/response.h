@@ -71,6 +71,7 @@ class Response {
     void inject_externallinks_blocker();
 
     bool can_compress(const RequestContext& request) const;
+    bool contentDecorationAllowed() const;
 
   private: // functions
     MHD_Response* create_mhd_response(const RequestContext& request);
