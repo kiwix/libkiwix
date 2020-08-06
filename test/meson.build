@@ -22,16 +22,16 @@ gtest_dep = dependency('gtest',
                        required:false)
 
 if gtest_dep.found() and not meson.is_cross_build()
-    configure_file(input : 'data/example.zim',
-                   output : 'example.zim',
-                   copy: true )
-
-    configure_file(input : 'data/zimfile.zim',
-                   output : 'zimfile.zim',
-                   copy: true )
-    configure_file(input : 'data/corner_cases.zim',
-                   output : 'corner_cases.zim',
-                   copy: true )
+    data_files = [
+      'example.zim',
+      'zimfile.zim',
+      'corner_cases.zim'
+    ]
+    foreach file : data_files
+        configure_file(input : 'data/' + file,
+                       output : file,
+                       copy: true )
+    endforeach
 
     foreach test_name : tests
         # XXX: implicit_include_directories must be set to false, otherwise
