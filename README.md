@@ -58,7 +58,7 @@ Environment
 -------------
 
 The Kiwix library builds using [Meson](https://mesonbuild.com/) version
-0.43 or higher. Meson relies itself on Ninja, pkg-config and few other
+0.45 or higher. Meson relies itself on Ninja, pkg-config and few other
 compilation tools.
 
 Install first the few common compilation tools:
