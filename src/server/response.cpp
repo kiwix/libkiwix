@@ -127,8 +127,8 @@ std::string render_template(const std::string& template_str, kainjow::mustache::
 
 void Response::introduce_taskbar()
 {
-  if (! m_withTaskbar)
-    // Taskbar is globally disabled.
+  if ( !m_withTaskbar || !contentDecorationAllowed() )
+    // Taskbar either globally disabled or not allowed for this type
     return;
   kainjow::mustache::data data;
   data.set("root", m_root);
@@ -152,6 +152,8 @@ void Response::introduce_taskbar()
 
 void Response::inject_externallinks_blocker()
 {
+  if ( !contentDecorationAllowed() )
+    return;
   kainjow::mustache::data data;
   data.set("root", m_root);
   auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
@@ -167,6 +169,12 @@ Response::can_compress(const RequestContext& request) const
   return request.can_compress()
       && is_compressible_mime_type(m_mimeType)
       && (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE);
+}
+
+bool
+Response::contentDecorationAllowed() const
+{
+    return m_mimeType.find(";raw=true") == std::string::npos;
 }
 
 MHD_Response*
@@ -189,7 +197,7 @@ Response::create_raw_content_mhd_response(const RequestContext& request)
   if (m_addTaskbar) {
     introduce_taskbar();
   }
-  if ( m_blockExternalLinks ) {
+  if ( m_blockExternalLinks && startsWith(m_mimeType, "text/html") ) {
     inject_externallinks_blocker();
   }
 
