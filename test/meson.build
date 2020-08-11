@@ -1,7 +1,3 @@
-configure_file(input : 'data/example.zim',
-               output : 'example.zim',
-               copy: true )
-
 tests = [
     'parseUrl',
     'library',
@@ -26,12 +22,32 @@ gtest_dep = dependency('gtest',
                        required:false)
 
 if gtest_dep.found() and not meson.is_cross_build()
-    configure_file(input : 'data/wikipedia_en_ray_charles_mini_2020-03.zim',
-                   output : 'zimfile.zim',
-                   copy: true )
-    configure_file(input : 'data/corner_cases.zim',
-                   output : 'corner_cases.zim',
-                   copy: true )
+    data_files = [
+      'example.zim',
+      'zimfile.zim',
+      'corner_cases.zim'
+    ]
+    foreach file : data_files
+        # configure_file(input : 'data/' + file,
+        #                output : file,
+        #                copy: true )
+        #
+        # Above (commented) command doesn't work with Meson versions below 0.47
+        # (in which the 'copy' keyword was first introduced). We want to keep
+        # compatibility with Ubuntu 18.04 Bionic (which has Meson version 0.45)
+        # until its EOL.
+        #
+        # Below is a python based workaround.
+        configure_file(input : 'data/' + file,
+                       output : file,
+                       command: [
+                         find_program('python3'),
+                          '-c',
+                          'import sys; import shutil; shutil.copy(sys.argv[1], sys.argv[2])',
+                          '@INPUT@',
+                          '@OUTPUT@'
+                       ])
+    endforeach
 
     foreach test_name : tests
         # XXX: implicit_include_directories must be set to false, otherwise
