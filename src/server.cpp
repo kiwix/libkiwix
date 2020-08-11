@@ -477,7 +477,6 @@ Response InternalServer::build_homepage(const RequestContext& request)
   response.set_template(RESOURCE::templates::index_html, homepage_data());
   response.set_mimeType("text/html; charset=utf-8");
   response.set_compress(true);
-  response.set_taskbar("", "");
   return response;
 }
 
@@ -795,7 +794,6 @@ Response InternalServer::handle_captured_external(const RequestContext& request)
   response.set_template(RESOURCE::templates::captured_external_html, data);
   response.set_mimeType("text/html; charset=utf-8");
   response.set_compress(true);
-  response.set_taskbar("", "");
   return response;
 }
 
@@ -957,14 +955,13 @@ Response InternalServer::handle_content(const RequestContext& request)
   auto response = get_default_response();
 
   response.set_entry(entry, request);
+  response.set_taskbar(bookName, reader->getTitle());
 
   if (m_verbose.load()) {
     printf("Found %s\n", entry.getPath().c_str());
     printf("mimeType: %s\n", response.get_mimeType().c_str());
   }
 
-  if ( startsWith(response.get_mimeType(), "text/html") )
-    response.set_taskbar(bookName, reader->getTitle());
 
   return response;
 }

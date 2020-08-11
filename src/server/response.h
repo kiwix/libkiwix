@@ -92,7 +92,6 @@ class Response {
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
     bool m_compress;
-    bool m_addTaskbar;
     std::string m_bookName;
     std::string m_bookTitle;
     ByteRange m_byteRange;

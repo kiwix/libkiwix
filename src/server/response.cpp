@@ -51,8 +51,8 @@ Response::Response(const std::string& root, bool verbose, bool withTaskbar, bool
     m_withTaskbar(withTaskbar),
     m_withLibraryButton(withLibraryButton),
     m_blockExternalLinks(blockExternalLinks),
-    m_addTaskbar(false),
-    m_bookName("")
+    m_bookName(""),
+    m_bookTitle("")
 {
 }
 
@@ -127,9 +127,6 @@ std::string render_template(const std::string& template_str, kainjow::mustache::
 
 void Response::introduce_taskbar()
 {
-  if ( !m_withTaskbar || !contentDecorationAllowed() )
-    // Taskbar either globally disabled or not allowed for this type
-    return;
   kainjow::mustache::data data;
   data.set("root", m_root);
   data.set("content", m_bookName);
@@ -152,8 +149,6 @@ void Response::introduce_taskbar()
 
 void Response::inject_externallinks_blocker()
 {
-  if ( !contentDecorationAllowed() )
-    return;
   kainjow::mustache::data data;
   data.set("root", m_root);
   auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
@@ -174,7 +169,8 @@ Response::can_compress(const RequestContext& request) const
 bool
 Response::contentDecorationAllowed() const
 {
-    return m_mimeType.find(";raw=true") == std::string::npos;
+    return (startsWith(m_mimeType, "text/html")
+         && m_mimeType.find(";raw=true") == std::string::npos);
 }
 
 MHD_Response*
@@ -194,11 +190,13 @@ Response::create_error_response(const RequestContext& request) const
 MHD_Response*
 Response::create_raw_content_mhd_response(const RequestContext& request)
 {
-  if (m_addTaskbar) {
-    introduce_taskbar();
-  }
-  if ( m_blockExternalLinks && startsWith(m_mimeType, "text/html") ) {
-    inject_externallinks_blocker();
+  if (contentDecorationAllowed()) {
+    if (m_withTaskbar) {
+      introduce_taskbar();
+    }
+    if (m_blockExternalLinks) {
+      inject_externallinks_blocker();
+    }
   }
 
   bool shouldCompress = m_compress && can_compress(request);
@@ -360,7 +358,6 @@ void Response::set_entry(const Entry& entry, const RequestContext& request) {
 
 void Response::set_taskbar(const std::string& bookName, const std::string& bookTitle)
 {
-  m_addTaskbar = true;
   m_bookName = bookName;
   m_bookTitle = bookTitle;
 }
