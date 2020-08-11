@@ -138,9 +138,10 @@ unsigned int Reader::getArticleCount() const
   if (counterMap.empty()) {
     counter = this->nsACount;
   } else {
-    auto it = counterMap.find("text/html");
-    if (it != counterMap.end()) {
-      counter = it->second;
+    for(auto &pair:counterMap) {
+      if (startsWith(pair.first, "text/html")) {
+        counter += pair.second;
+      }
     }
   }
 
