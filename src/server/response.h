@@ -100,7 +100,6 @@ class ContentResponse : public Response {
     bool m_withTaskbar;
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
-    bool m_compress;
     std::string m_bookName;
     std::string m_bookTitle;
  };

@@ -247,7 +247,7 @@ ContentResponse::create_mhd_response(const RequestContext& request)
     }
   }
 
-  bool shouldCompress = m_compress && can_compress(request);
+  bool shouldCompress = can_compress(request);
   if (shouldCompress) {
     std::vector<Bytef> compr_buffer(compressBound(m_content.size()));
     uLongf comprLen = compr_buffer.capacity();
@@ -319,7 +319,6 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, bool wit
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
-  m_compress(is_compressible_mime_type(mimetype)),
   m_bookName(""),
   m_bookTitle("")
 {
