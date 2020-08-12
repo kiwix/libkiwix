@@ -708,33 +708,36 @@ Response InternalServer::handle_search(const RequestContext& request)
   try {
     start = request.get_argument<unsigned int>("start");
   } catch (const std::exception&) {}
-  auto end = 25;
-  try {
-    end = request.get_argument<unsigned int>("end");
-  } catch (const std::exception&) {}
-  if (start>end) {
-    auto tmp = start;
-    start = end;
-    end = tmp;
+  auto pageLength=25;
+  try{
+    pageLength=request.get_argument<unsigned int>("pageLength");
+  }catch(const std::exception&){}
+  if (pageLength > MAX_SEARCH_LEN) {
+    pageLength = MAX_SEARCH_LEN;
   }
-  if (end > start + MAX_SEARCH_LEN) {
-    end = start + MAX_SEARCH_LEN;
+
+  if(pageLength==0)
+  {
+    pageLength=25;
   }
+
+  auto end=start+pageLength;
 
   /* Get the results */
   try {
     if (patternString.empty()) {
       searcher.geo_search(latitude, longitude, distance,
-                           start, end, m_verbose.load());
+                           start, end , m_verbose.load());
     } else {
       searcher.search(patternString,
-                       start, end, m_verbose.load());
+                       start, end , m_verbose.load());
     }
     SearchRenderer renderer(&searcher, mp_nameMapper);
     renderer.setSearchPattern(patternString);
     renderer.setSearchContent(bookName);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
+    renderer.setPageLength(pageLength);
     response.set_content(renderer.getHtml());
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
