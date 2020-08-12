@@ -92,7 +92,9 @@ std::unique_ptr<Response> Response::build_404(const InternalServer& server, cons
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
 {
   auto response = Response::build(server);
-  response->set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
+// [FIXME] (compile with recent enough version of libmicrohttpd)
+//  response->set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
+  response->set_code(416);
   std::ostringstream oss;
   oss << "bytes */" << resourceLength;
   response->add_header(MHD_HTTP_HEADER_CONTENT_RANGE, oss.str());
