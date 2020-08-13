@@ -22,6 +22,7 @@
 #define KIWIXLIB_SERVER_RESPONSE_H
 
 #include <string>
+#include <map>
 
 #include <mustache.hpp>
 #include "byte_range.h"
@@ -34,68 +35,85 @@ extern "C" {
 
 namespace kiwix {
 
-enum class ResponseMode {
-  ERROR_RESPONSE,
-  RAW_CONTENT,
-  REDIRECTION,
-  ENTRY
-};
-
+class InternalServer;
 class RequestContext;
+
+class EntryResponse;
 
 class Response {
   public:
-    Response(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks);
-    ~Response() = default;
+    Response(bool verbose);
+    virtual ~Response() = default;
+
+    static std::unique_ptr<Response> build(const InternalServer& server);
+    static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
+    static std::unique_ptr<Response> build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName);
+    static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
+    static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
+    static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
 
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 
-    void set_template(const std::string& template_str, kainjow::mustache::data data);
-    void set_content(const std::string& content);
-    void set_redirection(const std::string& url);
-    void set_entry(const Entry& entry, const RequestContext& request);
-
-
-    void set_mimeType(const std::string& mimeType) { m_mimeType = mimeType; }
     void set_code(int code) { m_returnCode = code; }
     void set_cacheable() { m_etag.set_option(ETag::CACHEABLE_ENTITY); }
     void set_server_id(const std::string& id) { m_etag.set_server_id(id); }
-    void set_etag(const ETag& etag) { m_etag = etag; }
-    void set_compress(bool compress) { m_compress = compress; }
-    void set_taskbar(const std::string& bookName, const std::string& bookTitle);
+    void add_header(const std::string& name, const std::string& value) { m_customHeaders[name] = value; }
 
     int getReturnCode() const { return m_returnCode; }
-    std::string get_mimeType() const { return m_mimeType; }
+
+  private: // functions
+    virtual MHD_Response* create_mhd_response(const RequestContext& request);
+    MHD_Response* create_error_response(const RequestContext& request) const;
+
+  protected: // data
+    bool m_verbose;
+    int m_returnCode;
+    ByteRange m_byteRange;
+    ETag m_etag;
+    std::map<std::string, std::string> m_customHeaders;
+
+    friend class EntryResponse; // temporary to allow the builder to change m_mode
+};
+
+
+class ContentResponse : public Response {
+  public:
+    ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype);
+    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& content, const std::string& mimetype);
+    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype);
+
+    void set_taskbar(const std::string& bookName, const std::string& bookTitle);
+
+  private:
+    MHD_Response* create_mhd_response(const RequestContext& request);
 
     void introduce_taskbar();
     void inject_externallinks_blocker();
-
     bool can_compress(const RequestContext& request) const;
     bool contentDecorationAllowed() const;
 
-  private: // functions
-    MHD_Response* create_mhd_response(const RequestContext& request);
-    MHD_Response* create_error_response(const RequestContext& request) const;
-    MHD_Response* create_raw_content_mhd_response(const RequestContext& request);
-    MHD_Response* create_redirection_mhd_response() const;
-    MHD_Response* create_entry_mhd_response() const;
 
-  private: // data
-    bool m_verbose;
-    ResponseMode m_mode;
+  private:
     std::string m_root;
     std::string m_content;
-    Entry m_entry;
     std::string m_mimeType;
-    int m_returnCode;
     bool m_withTaskbar;
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
-    bool m_compress;
     std::string m_bookName;
     std::string m_bookTitle;
-    ByteRange m_byteRange;
-    ETag m_etag;
+ };
+
+class EntryResponse : public Response {
+  public:
+    EntryResponse(bool verbose, const Entry& entry, const std::string& mimetype, const ByteRange& byterange);
+    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const Entry& entry);
+
+  private:
+    MHD_Response* create_mhd_response(const RequestContext& request);
+
+    Entry m_entry;
+    std::string m_mimeType;
 };
 
 }

@@ -24,7 +24,8 @@ kiwix_sources = [
   'server/byte_range.cpp',
   'server/etag.cpp',
   'server/request_context.cpp',
-  'server/response.cpp'
+  'server/response.cpp',
+  'server/internalServer.cpp'
 ]
 kiwix_sources += lib_resources
 
