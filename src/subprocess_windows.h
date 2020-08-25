@@ -11,7 +11,8 @@ class WinImpl : public SubprocessImpl
   private:
     int m_pid;
     bool m_running;
-    HANDLE m_handle;
+    HANDLE m_subprocessHandle;
+    HANDLE  m_waitingThreadHandle;
     CRITICAL_SECTION m_criticalSection;
 
   public:
