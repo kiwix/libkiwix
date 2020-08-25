@@ -111,6 +111,9 @@ Aria2::Aria2():
     curl_easy_cleanup(mp_curl);
     throw std::runtime_error("Cannot connect to aria2c rpc. Aria2c launch cmd : " + launchCmd);
   }
+
+  // Resetting CURLOPT_ERRORBUFFER to the default value
+  curl_easy_setopt(mp_curl, CURLOPT_ERRORBUFFER, nullptr);
 }
 
 Aria2::~Aria2()
