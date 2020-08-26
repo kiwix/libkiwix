@@ -126,15 +126,15 @@ void Aria2::close()
 
 size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdata)
 {
-  auto str = static_cast<std::stringstream*>(userdata);
-  str->write(ptr, nmemb);
+  auto outStream = static_cast<std::stringstream*>(userdata);
+  outStream->write(ptr, nmemb);
   return nmemb;
 }
 
 std::string Aria2::doRequest(const MethodCall& methodCall)
 {
   auto requestContent = methodCall.toString();
-  std::stringstream stringstream;
+  std::stringstream outStream;
   CURLcode res;
   long response_code;
   {
@@ -142,7 +142,7 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
     curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
     curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
     curl_easy_setopt(mp_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
-    curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &stringstream);
+    curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &outStream);
     m_curlErrorBuffer[0] = 0;
     res = curl_easy_perform(mp_curl);
     if (res != CURLE_OK) {
@@ -152,7 +152,7 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
     curl_easy_getinfo(mp_curl, CURLINFO_RESPONSE_CODE, &response_code);
   }
 
-  auto responseContent = stringstream.str();
+  auto responseContent = outStream.str();
   if (response_code != 200) {
     std::cerr << "ERROR: Invalid return code (" << response_code << ") from aria :" << std::endl;
     std::cerr << responseContent << std::endl;
