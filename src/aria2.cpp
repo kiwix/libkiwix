@@ -19,6 +19,11 @@
 #endif
 
 
+#define LOG_ARIA_ERROR() \
+  { \
+    std::cerr << "ERROR: aria2 RPC request failed. (" << res << ")." << std::endl; \
+    std::cerr << (m_curlErrorBuffer[0] ? m_curlErrorBuffer.get() : curl_easy_strerror(res)) << std::endl; \
+  }
 
 namespace kiwix {
 
@@ -84,6 +89,7 @@ Aria2::Aria2():
   }
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
+
   curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");
   curl_easy_setopt(mp_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(mp_curl, CURLOPT_POST, 1L);
@@ -97,13 +103,7 @@ Aria2::Aria2():
     if (res == CURLE_OK) {
       break;
     } else if (watchdog == 1) {
-      std::cerr <<" curl_easy_perform() failed." << std::endl;
-      fprintf(stderr, "\nlibcurl: (%d) ", res);
-      if (m_curlErrorBuffer[0] != 0) {
-        std::cerr << m_curlErrorBuffer.get() << std::endl;
-      } else {
-        std::cerr << curl_easy_strerror(res) << std::endl;
-      }
+      LOG_ARIA_ERROR();
     }
   }
   if (!watchdog) {
@@ -143,17 +143,22 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
     curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
     curl_easy_setopt(mp_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
     curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &stringstream);
+    m_curlErrorBuffer[0] = 0;
     res = curl_easy_perform(mp_curl);
     if (res != CURLE_OK) {
+      LOG_ARIA_ERROR();
       throw std::runtime_error("Cannot perform request");
     }
     curl_easy_getinfo(mp_curl, CURLINFO_RESPONSE_CODE, &response_code);
   }
 
+  auto responseContent = stringstream.str();
   if (response_code != 200) {
+    std::cerr << "ERROR: Invalid return code (" << response_code << ") from aria :" << std::endl;
+    std::cerr << responseContent << std::endl;
     throw std::runtime_error("Invalid return code from aria");
   }
-  auto responseContent = stringstream.str();
+
   MethodResponse response(responseContent);
   if (response.isFault()) {
     throw AriaError(response.getFault().getFaultString());
