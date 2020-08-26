@@ -26,6 +26,7 @@ Aria2::Aria2():
   mp_aria(nullptr),
   m_port(42042),
   m_secret("kiwixariarpc"),
+  m_curlErrorBuffer(new char[CURL_ERROR_SIZE]),
   mp_curl(nullptr)
 {
   m_downloadDir = getDataDirectory();
@@ -83,24 +84,23 @@ Aria2::Aria2():
   }
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
-  char errbuf[CURL_ERROR_SIZE];
   curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");
   curl_easy_setopt(mp_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(mp_curl, CURLOPT_POST, 1L);
-  curl_easy_setopt(mp_curl, CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(mp_curl, CURLOPT_ERRORBUFFER, m_curlErrorBuffer.get());
 
   int watchdog = 50;
   while(--watchdog) {
     sleep(10);
-    errbuf[0] = 0;
+    m_curlErrorBuffer[0] = 0;
     auto res = curl_easy_perform(mp_curl);
     if (res == CURLE_OK) {
       break;
     } else if (watchdog == 1) {
       std::cerr <<" curl_easy_perform() failed." << std::endl;
       fprintf(stderr, "\nlibcurl: (%d) ", res);
-      if (errbuf[0] != 0) {
-        std::cerr << errbuf << std::endl;
+      if (m_curlErrorBuffer[0] != 0) {
+        std::cerr << m_curlErrorBuffer.get() << std::endl;
       } else {
         std::cerr << curl_easy_strerror(res) << std::endl;
       }

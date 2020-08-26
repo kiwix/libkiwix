@@ -24,6 +24,7 @@ class Aria2
     int m_port;
     std::string m_secret;
     std::string m_downloadDir;
+    std::unique_ptr<char[]> m_curlErrorBuffer;
     CURL* mp_curl;
     std::mutex m_lock;
 
