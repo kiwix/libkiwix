@@ -12,8 +12,8 @@
 #include "xmlrpc.h"
 
 #include <memory>
+#include <mutex>
 #include <curl/curl.h>
-#include <pthread.h>
 
 namespace kiwix {
 
@@ -25,7 +25,7 @@ class Aria2
     std::string m_secret;
     std::string m_downloadDir;
     CURL* mp_curl;
-    pthread_mutex_t m_lock;
+    std::mutex m_lock;
 
     std::string doRequest(const MethodCall& methodCall);
 

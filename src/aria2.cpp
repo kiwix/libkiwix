@@ -26,8 +26,7 @@ Aria2::Aria2():
   mp_aria(nullptr),
   m_port(42042),
   m_secret("kiwixariarpc"),
-  mp_curl(nullptr),
-  m_lock(PTHREAD_MUTEX_INITIALIZER)
+  mp_curl(nullptr)
 {
   m_downloadDir = getDataDirectory();
   makeDirectory(m_downloadDir);
@@ -115,6 +114,7 @@ Aria2::Aria2():
 
 Aria2::~Aria2()
 {
+  std::unique_lock<std::mutex> lock(m_lock);
   curl_easy_cleanup(mp_curl);
 }
 
@@ -133,31 +133,32 @@ size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdat
 
 std::string Aria2::doRequest(const MethodCall& methodCall)
 {
-  pthread_mutex_lock(&m_lock);
   auto requestContent = methodCall.toString();
   std::stringstream stringstream;
   CURLcode res;
-  curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
-  curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
-  curl_easy_setopt(mp_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
-  curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &stringstream);
-  res = curl_easy_perform(mp_curl);
-  if (res == CURLE_OK) {
-    long response_code;
+  long response_code;
+  {
+    std::unique_lock<std::mutex> lock(m_lock);
+    curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
+    curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
+    curl_easy_setopt(mp_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
+    curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &stringstream);
+    res = curl_easy_perform(mp_curl);
+    if (res != CURLE_OK) {
+      throw std::runtime_error("Cannot perform request");
+    }
     curl_easy_getinfo(mp_curl, CURLINFO_RESPONSE_CODE, &response_code);
-    pthread_mutex_unlock(&m_lock);
-    if (response_code != 200) {
-      throw std::runtime_error("Invalid return code from aria");
-    }
-    auto responseContent = stringstream.str();
-    MethodResponse response(responseContent);
-    if (response.isFault()) {
-      throw AriaError(response.getFault().getFaultString());
-    }
-    return responseContent;
   }
-  pthread_mutex_unlock(&m_lock);
-  throw std::runtime_error("Cannot perform request");
+
+  if (response_code != 200) {
+    throw std::runtime_error("Invalid return code from aria");
+  }
+  auto responseContent = stringstream.str();
+  MethodResponse response(responseContent);
+  if (response.isFault()) {
+    throw AriaError(response.getFault().getFaultString());
+  }
+  return responseContent;
 }
 
 std::string Aria2::addUri(const std::vector<std::string>& uris, const std::vector<std::pair<std::string, std::string>>& options)
