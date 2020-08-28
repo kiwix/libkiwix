@@ -1,3 +1,20 @@
+kiwix-lib 9.4.0
+===============
+
+ * [SERVER] Make the headers handling case insensitive.
+ * [SERVER] Make server answer 204 http status code for empty search
+ * [PACKAGING] Made CI build deb packages.
+ * [SERVER] Add a way to prevent taskbar and external link bloquer at article
+   level.
+ * Fix meson file to be compatible with meson 0.45
+ * [SERVER] Update search requests to use pageStart/pageLength instead of
+   pageStart/pageEnd arguments.
+ * [SERVER] Set a fixed favicon size in the main page.
+ * [SERVER] Refactor the response system code to better handling future new
+   libzim api.
+ * Fix segmentation fault around exchange with aria2 process making
+   kiwix-desktop crash at exit.
+
 kiwix-lib 9.3.1
 ===============
 
