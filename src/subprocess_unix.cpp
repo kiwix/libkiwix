@@ -26,6 +26,7 @@ UnixImpl::~UnixImpl()
 #else
   pthread_cancel(m_waitingThread);
 #endif
+  pthread_join(m_waitingThread, nullptr);
 }
 
 #ifdef __ANDROID__

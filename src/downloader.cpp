@@ -133,7 +133,7 @@ Downloader::Downloader() :
       m_knownDownloads[gid]->updateStatus();
     }
   } catch (std::exception& e) {
-    std::cerr << "aria2 tellActive failed : " << e.what();
+    std::cerr << "aria2 tellActive failed : " << e.what() << std::endl;
   }
   try {
     for (auto gid : mp_aria->tellWaiting()) {
@@ -141,7 +141,7 @@ Downloader::Downloader() :
       m_knownDownloads[gid]->updateStatus();
     }
   } catch (std::exception& e) {
-    std::cerr << "aria2 tellWaiting failed : " << e.what();
+    std::cerr << "aria2 tellWaiting failed : " << e.what() << std::endl;
   }
 }
 

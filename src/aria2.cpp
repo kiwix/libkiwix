@@ -19,6 +19,11 @@
 #endif
 
 
+#define LOG_ARIA_ERROR() \
+  { \
+    std::cerr << "ERROR: aria2 RPC request failed. (" << res << ")." << std::endl; \
+    std::cerr << (m_curlErrorBuffer[0] ? m_curlErrorBuffer.get() : curl_easy_strerror(res)) << std::endl; \
+  }
 
 namespace kiwix {
 
@@ -26,8 +31,8 @@ Aria2::Aria2():
   mp_aria(nullptr),
   m_port(42042),
   m_secret("kiwixariarpc"),
-  mp_curl(nullptr),
-  m_lock(PTHREAD_MUTEX_INITIALIZER)
+  m_curlErrorBuffer(new char[CURL_ERROR_SIZE]),
+  mp_curl(nullptr)
 {
   m_downloadDir = getDataDirectory();
   makeDirectory(m_downloadDir);
@@ -84,27 +89,21 @@ Aria2::Aria2():
   }
   mp_aria = Subprocess::run(callCmd);
   mp_curl = curl_easy_init();
-  char errbuf[CURL_ERROR_SIZE];
+
   curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");
   curl_easy_setopt(mp_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(mp_curl, CURLOPT_POST, 1L);
-  curl_easy_setopt(mp_curl, CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(mp_curl, CURLOPT_ERRORBUFFER, m_curlErrorBuffer.get());
 
   int watchdog = 50;
   while(--watchdog) {
     sleep(10);
-    errbuf[0] = 0;
+    m_curlErrorBuffer[0] = 0;
     auto res = curl_easy_perform(mp_curl);
     if (res == CURLE_OK) {
       break;
     } else if (watchdog == 1) {
-      std::cerr <<" curl_easy_perform() failed." << std::endl;
-      fprintf(stderr, "\nlibcurl: (%d) ", res);
-      if (errbuf[0] != 0) {
-        std::cerr << errbuf << std::endl;
-      } else {
-        std::cerr << curl_easy_strerror(res) << std::endl;
-      }
+      LOG_ARIA_ERROR();
     }
   }
   if (!watchdog) {
@@ -115,6 +114,7 @@ Aria2::Aria2():
 
 Aria2::~Aria2()
 {
+  std::unique_lock<std::mutex> lock(m_lock);
   curl_easy_cleanup(mp_curl);
 }
 
@@ -126,38 +126,44 @@ void Aria2::close()
 
 size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdata)
 {
-  auto str = static_cast<std::stringstream*>(userdata);
-  str->write(ptr, nmemb);
+  auto outStream = static_cast<std::stringstream*>(userdata);
+  outStream->write(ptr, nmemb);
   return nmemb;
 }
 
 std::string Aria2::doRequest(const MethodCall& methodCall)
 {
-  pthread_mutex_lock(&m_lock);
   auto requestContent = methodCall.toString();
-  std::stringstream stringstream;
+  std::stringstream outStream;
   CURLcode res;
-  curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
-  curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
-  curl_easy_setopt(mp_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
-  curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &stringstream);
-  res = curl_easy_perform(mp_curl);
-  if (res == CURLE_OK) {
-    long response_code;
+  long response_code;
+  {
+    std::unique_lock<std::mutex> lock(m_lock);
+    curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
+    curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
+    curl_easy_setopt(mp_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
+    curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &outStream);
+    m_curlErrorBuffer[0] = 0;
+    res = curl_easy_perform(mp_curl);
+    if (res != CURLE_OK) {
+      LOG_ARIA_ERROR();
+      throw std::runtime_error("Cannot perform request");
+    }
     curl_easy_getinfo(mp_curl, CURLINFO_RESPONSE_CODE, &response_code);
-    pthread_mutex_unlock(&m_lock);
-    if (response_code != 200) {
-      throw std::runtime_error("Invalid return code from aria");
-    }
-    auto responseContent = stringstream.str();
-    MethodResponse response(responseContent);
-    if (response.isFault()) {
-      throw AriaError(response.getFault().getFaultString());
-    }
-    return responseContent;
   }
-  pthread_mutex_unlock(&m_lock);
-  throw std::runtime_error("Cannot perform request");
+
+  auto responseContent = outStream.str();
+  if (response_code != 200) {
+    std::cerr << "ERROR: Invalid return code (" << response_code << ") from aria :" << std::endl;
+    std::cerr << responseContent << std::endl;
+    throw std::runtime_error("Invalid return code from aria");
+  }
+
+  MethodResponse response(responseContent);
+  if (response.isFault()) {
+    throw AriaError(response.getFault().getFaultString());
+  }
+  return responseContent;
 }
 
 std::string Aria2::addUri(const std::vector<std::string>& uris, const std::vector<std::pair<std::string, std::string>>& options)

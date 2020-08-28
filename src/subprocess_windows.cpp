@@ -11,7 +11,8 @@
 WinImpl::WinImpl():
   m_pid(0),
   m_running(false),
-  m_handle(INVALID_HANDLE_VALUE)
+  m_subprocessHandle(INVALID_HANDLE_VALUE),
+  m_waitingThreadHandle(INVALID_HANDLE_VALUE)
 {
   InitializeCriticalSection(&m_criticalSection);
 }
@@ -19,14 +20,15 @@ WinImpl::WinImpl():
 WinImpl::~WinImpl()
 {
   kill();
-  CloseHandle(m_handle);
+  WaitForSingleObject(m_waitingThreadHandle, INFINITE);
+  CloseHandle(m_subprocessHandle);
   DeleteCriticalSection(&m_criticalSection);
 }
 
 DWORD WINAPI WinImpl::waitForPID(void* _self)
 {
   WinImpl* self = static_cast<WinImpl*>(_self);
-  WaitForSingleObject(self->m_handle, INFINITE);
+  WaitForSingleObject(self->m_subprocessHandle, INFINITE);
 
   EnterCriticalSection(&self->m_criticalSection);
   self->m_running = false;
@@ -79,16 +81,16 @@ void WinImpl::run(commandLine_t& commandLine)
     &procInfo))
   {
     m_pid = procInfo.dwProcessId;
-    m_handle = procInfo.hProcess;
+    m_subprocessHandle = procInfo.hProcess;
     CloseHandle(procInfo.hThread);
     m_running = true;
-    CreateThread(NULL, 0, &waitForPID, this, 0, NULL	);
+    m_waitingThreadHandle = CreateThread(NULL, 0, &waitForPID, this, 0, NULL);
   }
 }
 
 bool WinImpl::kill()
 {
-  return TerminateProcess(m_handle, 0);
+  return TerminateProcess(m_subprocessHandle, 0);
 }
 
 bool WinImpl::isRunning()
