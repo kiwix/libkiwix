@@ -5,21 +5,13 @@ The Kiwix library provides the [Kiwix](https://kiwix.org) software
 suite core. It contains the code shared by all Kiwix ports (Windows,
 GNU/Linux, macOS, Android, iOS, ...).
 
+[![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
 [![Build Status](https://github.com/kiwix/kiwix-lib/workflows/CI/badge.svg?query=branch%3Amaster)](https://github.com/kiwix/kiwix-lib/actions?query=branch%3Amaster)
 [![CodeFactor](https://www.codefactor.io/repository/github/kiwix/kiwix-lib/badge)](https://www.codefactor.io/repository/github/kiwix/kiwix-lib)
 [![Codecov](https://codecov.io/gh/kiwix/kiwix-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/kiwix/kiwix-lib)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Distribution
-------------
-
-#### Official
-
-[![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
-
-#### Contribution
-
-[![Arch Linux package](https://img.shields.io/archlinux/v/community/x86_64/kiwix-lib)](https://www.archlinux.org/packages/community/x86_64/kiwix-lib/)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/kiwix-lib.svg)](https://repology.org/project/kiwix-lib/versions)
 
 Disclaimer
 ----------
