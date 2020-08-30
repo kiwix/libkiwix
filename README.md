@@ -6,7 +6,6 @@ suite core. It contains the code shared by all Kiwix ports (Windows,
 GNU/Linux, macOS, Android, iOS, ...).
 
 [![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
-[![AUR version](https://img.shields.io/aur/version/kiwix-lib)](https://aur.archlinux.org/packages/kiwix-lib/)
 [![Build Status](https://github.com/kiwix/kiwix-lib/workflows/CI/badge.svg?query=branch%3Amaster)](https://github.com/kiwix/kiwix-lib/actions?query=branch%3Amaster)
 [![CodeFactor](https://www.codefactor.io/repository/github/kiwix/kiwix-lib/badge)](https://www.codefactor.io/repository/github/kiwix/kiwix-lib)
 [![Codecov](https://codecov.io/gh/kiwix/kiwix-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/kiwix/kiwix-lib)
