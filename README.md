@@ -11,6 +11,8 @@ GNU/Linux, macOS, Android, iOS, ...).
 [![Codecov](https://codecov.io/gh/kiwix/kiwix-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/kiwix/kiwix-lib)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/kiwix-lib.svg)](https://repology.org/project/kiwix-lib/versions)
+
 Disclaimer
 ----------
 
