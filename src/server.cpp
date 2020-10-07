@@ -53,8 +53,10 @@ bool Server::start() {
 }
 
 void Server::stop() {
-  mp_server->stop();
-  mp_server.reset(nullptr);
+  if (mp_server) {
+    mp_server->stop();
+    mp_server.reset(nullptr);
+  }
 }
 
 void Server::setRoot(const std::string& root)
