@@ -63,7 +63,7 @@ subdir('static')
 subdir('src')
 subdir('test')
 
-pkg_requires = ['libzim', 'icu-i18n', 'pugixml', 'libcurl']
+pkg_requires = ['libzim', 'icu-i18n', 'pugixml', 'libcurl', 'libmicrohttpd']
 
 pkg_conf = configuration_data()
 pkg_conf.set('prefix', get_option('prefix'))
