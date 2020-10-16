@@ -3,6 +3,7 @@
 #ifndef KIWIX_XMLRPC_H_
 #define KIWIX_XMLRPC_H_
 
+#include <stdexcept>
 #include <tools/otherTools.h>
 #include <pugixml.hpp>
 
