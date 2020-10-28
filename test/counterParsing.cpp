@@ -51,30 +51,55 @@ TEST(ParseCounterTest, simpleMimeType)
     ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
   }
 }
-/*
+
 TEST(ParseCounterTest, paramMimeType)
 {
   {
     std::string counterStr = "text/html;raw=true=1";
-    CounterType counterMap = {{"foo", 1}};
-    ASSERT_EQ(parse(counterStr), counterMap);
+    CounterType counterMap = {{"text/html;raw=true", 1}};
+    ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
   }
   {
     std::string counterStr = "foo=1;text/html;raw=true=50;bar=2";
     CounterType counterMap = {{"foo", 1}, {"text/html;raw=true", 50}, {"bar", 2}};
-    ASSERT_EQ(parse(counterStr), counterMap);
+    ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
   }
   {
     std::string counterStr = "foo=1;text/html;raw=true;param=value=50;bar=2";
     CounterType counterMap = {{"foo", 1}, {"text/html;raw=true;param=value", 50}, {"bar", 2}};
-    ASSERT_EQ(parse(counterStr), counterMap);
+    ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
   }
   {
     std::string counterStr = "foo=1;text/html;raw=true=50;bar=2";
     CounterType counterMap = {{"foo", 1}, {"text/html;raw=true", 50}, {"bar", 2}};
-    ASSERT_EQ(parse(counterStr), counterMap);
+    ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
   }
-}*/
+  {
+    std::string counterStr = "application/javascript=8;text/html=3;application/warc-headers=28364;text/html;raw=true=6336;text/css=47;text/javascript=98;image/png=968;image/webp=24;application/json=3694;image/gif=10274;image/jpeg=1582;font/woff2=25;text/plain=284;application/atom+xml=247;application/x-www-form-urlencoded=9;video/mp4=9;application/x-javascript=7;application/xml=1;image/svg+xml=5";
+    CounterType counterMap = {
+      {"application/javascript", 8},
+      {"text/html", 3},
+      {"application/warc-headers", 28364},
+      {"text/html;raw=true", 6336},
+      {"text/css", 47},
+      {"text/javascript", 98},
+      {"image/png", 968},
+      {"image/webp", 24},
+      {"application/json", 3694},
+      {"image/gif", 10274},
+      {"image/jpeg", 1582},
+      {"font/woff2", 25},
+      {"text/plain", 284},
+      {"application/atom+xml", 247},
+      {"application/x-www-form-urlencoded", 9},
+      {"video/mp4", 9},
+      {"application/x-javascript", 7},
+      {"application/xml", 1},
+      {"image/svg+xml", 5}
+    };
+    ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
+  }
+}
 
 TEST(ParseCounterTest, wrongType)
 {
@@ -96,14 +121,14 @@ TEST(ParseCounterTest, wrongType)
     CounterType counterMap = {{"text/html", 50}};
     ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
   }
-  /*{
+  {
     std::string counterStr = "text/html;foo=20";
     ASSERT_EQ(parse(counterStr), empty) << counterStr;
   }
   {
     std::string counterStr = "text/html;foo=20;";
     ASSERT_EQ(parse(counterStr), empty) << counterStr;
-  }*/
+  }
   {
     std::string counterStr = "text/html=50;;foo";
     CounterType counterMap = {{"text/html", 50}};

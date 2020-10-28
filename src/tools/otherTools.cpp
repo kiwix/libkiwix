@@ -280,24 +280,52 @@ bool kiwix::convertStrToBool(const std::string& value)
   throw std::domain_error(ss.str());
 }
 
-
+#define get_token() if (currentIt==tokens.end()) {break;} else { token = *currentIt++; }
 kiwix::MimeCounterType kiwix::parseMimetypeCounter(const std::string& counterData)
 {
+  // The counter metadata format is a list of item separated by a `;` :
+  // item0;item1;item2
+  // Each item is a "tuple" mimetype=number.
+  // However, the mimetype may contains parameters:
+  // text/html;raw=true;foo=bar
+  // So the final format may be complex to parse:
+  // key0=value0;key1;foo=bar=value1;key2=value2
+
   kiwix::MimeCounterType counters;
-  std::string item;
-  unsigned int counter;
 
-  std::stringstream ssContent(counterData);
+  auto tokens = split(counterData, ";=", true, true);
+  auto currentIt = tokens.begin();
+  std::string token;
 
-  while (getline(ssContent, item, ';')) {
-    std::string mimeType, counterString;
-    std::stringstream ssItem(item);
-    getline(ssItem, mimeType, '=');
-    getline(ssItem, counterString, '=');
-    if (!counterString.empty() && !mimeType.empty()) {
-      if (sscanf(counterString.c_str(), "%u", &counter))
-        counters.insert(std::pair<std::string, int>(mimeType, counter));
+  while (true) {
+    get_token();
+    auto mimeType = token;
+    get_token();
+    while (token == ";") {
+      //read param
+      mimeType += ";";
+      get_token();
+      mimeType += token; //key
+      get_token();
+      if (token != "=")
+        break;
+      mimeType += "=";
+      get_token();
+      mimeType += token; //value
+      get_token();
     }
+    if (currentIt == tokens.end() || token != "=")
+      break;
+
+    //read count
+    zim::article_index_type count;
+    get_token();
+    if(!sscanf(token.c_str(), "%u", &count))
+      break;
+    counters.insert({mimeType, count});
+    get_token();
+    if (token != ";")
+      break;
   }
 
   return counters;
