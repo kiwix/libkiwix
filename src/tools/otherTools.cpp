@@ -280,3 +280,24 @@ bool kiwix::convertStrToBool(const std::string& value)
   throw std::domain_error(ss.str());
 }
 
+
+kiwix::MimeCounterType kiwix::parseMimetypeCounter(const std::string& counterData)
+{
+  kiwix::MimeCounterType counters;
+  std::string mimeType, item, counterString;
+  unsigned int counter;
+
+  std::stringstream ssContent(counterData);
+
+  while (getline(ssContent, item, ';')) {
+    std::stringstream ssItem(item);
+    getline(ssItem, mimeType, '=');
+    getline(ssItem, counterString, '=');
+    if (!counterString.empty() && !mimeType.empty()) {
+      sscanf(counterString.c_str(), "%u", &counter);
+      counters.insert(std::pair<std::string, int>(mimeType, counter));
+    }
+  }
+
+  return counters;
+}

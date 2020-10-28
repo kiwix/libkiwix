@@ -103,29 +103,16 @@ zim::File* Reader::getZimFileHandler() const
 {
   return this->zimFileHandler;
 }
-std::map<const std::string, unsigned int> Reader::parseCounterMetadata() const
-{
-  std::map<const std::string, unsigned int> counters;
-  string mimeType, item, counterString;
-  unsigned int counter;
 
+MimeCounterType Reader::parseCounterMetadata() const
+{
   zim::Article article = this->zimFileHandler->getArticle('M', "Counter");
 
   if (article.good()) {
-    stringstream ssContent(article.getData());
-
-    while (getline(ssContent, item, ';')) {
-      stringstream ssItem(item);
-      getline(ssItem, mimeType, '=');
-      getline(ssItem, counterString, '=');
-      if (!counterString.empty() && !mimeType.empty()) {
-        sscanf(counterString.c_str(), "%u", &counter);
-        counters.insert(pair<string, int>(mimeType, counter));
-      }
-    }
+    return parseMimetypeCounter(article.getData());
   }
 
-  return counters;
+  return MimeCounterType();
 }
 
 /* Get the count of articles which can be indexed/displayed */
