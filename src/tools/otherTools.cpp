@@ -18,6 +18,7 @@
  */
 
 #include "tools/otherTools.h"
+#include <algorithm>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -280,52 +281,62 @@ bool kiwix::convertStrToBool(const std::string& value)
   throw std::domain_error(ss.str());
 }
 
-#define get_token() if (currentIt==tokens.end()) {break;} else { token = *currentIt++; }
+namespace
+{
+// The counter metadata format is a list of item separated by a `;` :
+// item0;item1;item2
+// Each item is a "tuple" mimetype=number.
+// However, the mimetype may contains parameters:
+// text/html;raw=true;foo=bar
+// So the final format may be complex to parse:
+// key0=value0;key1;foo=bar=value1;key2=value2
+
+typedef kiwix::MimeCounterType::value_type MimetypeAndCounter;
+
+std::string readFullMimetypeAndCounterString(std::istream& in)
+{
+  std::string mtcStr, params;
+  getline(in, mtcStr, ';');
+  if ( mtcStr.find('=') == std::string::npos )
+  {
+    do
+    {
+      if ( !getline(in, params, ';' ) )
+        return std::string();
+      mtcStr += ";" + params;
+    }
+    while ( std::count(params.begin(), params.end(), '=') != 2 );
+  }
+  return mtcStr;
+}
+
+MimetypeAndCounter parseASingleMimetypeCounter(const std::string& s)
+{
+  const std::string::size_type k = s.find_last_of("=");
+  if ( k != std::string::npos )
+  {
+    const std::string mimeType = s.substr(0, k);
+    std::istringstream counterSS(s.substr(k+1));
+    unsigned int counter;
+    if (counterSS >> counter && counterSS.eof())
+      return MimetypeAndCounter{mimeType, counter};
+  }
+  return MimetypeAndCounter{"", 0};
+}
+
+} // unnamed namespace
+
 kiwix::MimeCounterType kiwix::parseMimetypeCounter(const std::string& counterData)
 {
-  // The counter metadata format is a list of item separated by a `;` :
-  // item0;item1;item2
-  // Each item is a "tuple" mimetype=number.
-  // However, the mimetype may contains parameters:
-  // text/html;raw=true;foo=bar
-  // So the final format may be complex to parse:
-  // key0=value0;key1;foo=bar=value1;key2=value2
-
   kiwix::MimeCounterType counters;
+  std::istringstream ss(counterData);
 
-  auto tokens = split(counterData, ";=", true, true);
-  auto currentIt = tokens.begin();
-  std::string token;
-
-  while (true) {
-    get_token();
-    auto mimeType = token;
-    get_token();
-    while (token == ";") {
-      //read param
-      mimeType += ";";
-      get_token();
-      mimeType += token; //key
-      get_token();
-      if (token != "=")
-        break;
-      mimeType += "=";
-      get_token();
-      mimeType += token; //value
-      get_token();
-    }
-    if (currentIt == tokens.end() || token != "=")
-      break;
-
-    //read count
-    zim::article_index_type count;
-    get_token();
-    if(!sscanf(token.c_str(), "%u", &count))
-      break;
-    counters.insert({mimeType, count});
-    get_token();
-    if (token != ";")
-      break;
+  while (ss)
+  {
+    const std::string mtcStr = readFullMimetypeAndCounterString(ss);
+    const MimetypeAndCounter mtc = parseASingleMimetypeCounter(mtcStr);
+    if ( !mtc.first.empty() )
+      counters.insert(mtc);
   }
 
   return counters;

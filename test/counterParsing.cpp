@@ -117,6 +117,10 @@ TEST(ParseCounterTest, wrongType)
     ASSERT_EQ(parse(counterStr), empty) << counterStr;
   }
   {
+    std::string counterStr = "text/html=123foo";
+    ASSERT_EQ(parse(counterStr), empty) << counterStr;
+  }
+  {
     std::string counterStr = "text/html=50;foo";
     CounterType counterMap = {{"text/html", 50}};
     ASSERT_EQ(parse(counterStr), counterMap) << counterStr;
