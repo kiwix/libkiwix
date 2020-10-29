@@ -26,7 +26,8 @@ Depends: libkiwix9 (= ${binary:Version}), ${misc:Depends}, python3,
  libzim-dev (>= 6.0.0),
  libicu-dev,
  libpugixml-dev,
- libcurl4-gnutls-dev
+ libcurl4-gnutls-dev,
+ libmicrohttpd-dev
 Description: library of common code for Kiwix (development)
  Kiwix is an offline Wikipedia reader. libkiwix provides the
  software core for Kiwix, and contains the code shared by all
