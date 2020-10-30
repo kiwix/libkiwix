@@ -22,6 +22,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <zim/zim.h>
 
 namespace pugi {
   class xml_node;
@@ -41,6 +43,8 @@ namespace kiwix
                                      const std::string& tagName);
   bool convertStrToBool(const std::string& value);
 
+  using MimeCounterType = std::map<const std::string, zim::article_index_type>;
+  MimeCounterType parseMimetypeCounter(const std::string& counterData);
 }
 
 #endif

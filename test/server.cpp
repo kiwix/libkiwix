@@ -77,7 +77,7 @@ private: // data
 ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
 : manager(&this->library)
 {
-  for ( const auto zimpath : zimpaths ) {
+  for ( const auto& zimpath : zimpaths ) {
     if (!manager.addBookFromPath(zimpath, zimpath, "", false))
       throw std::runtime_error("Unable to add the ZIM file '" + zimpath + "'");
   }

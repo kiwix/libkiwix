@@ -23,7 +23,7 @@
 
 namespace kiwix {
 std::string join(const std::vector<std::string>& list, const std::string& sep);
-std::vector<std::string> split(const std::string&  base, const std::string& sep, bool trimEmpty);
+std::vector<std::string> split(const std::string&  base, const std::string& sep, bool trimEmpty, bool keepDelim);
 };
 
 using namespace kiwix;
@@ -40,17 +40,22 @@ TEST(stringTools, join)
 TEST(stringTools, split)
 {
   std::vector<std::string> list1 = { "a", "b", "c" };
-  ASSERT_EQ(split("a;b;c", ";", false), list1);
-  ASSERT_EQ(split("a;b;c", ";", true), list1);
+  ASSERT_EQ(split("a;b;c", ";", false, false), list1);
+  ASSERT_EQ(split("a;b;c", ";", true, false), list1);
   std::vector<std::string> list2 = { "", "a", "b", "c" };
-  ASSERT_EQ(split(";a;b;c", ";", false), list2);
-  ASSERT_EQ(split(";a;b;c", ";", true), list1);
+  ASSERT_EQ(split(";a;b;c", ";", false, false), list2);
+  ASSERT_EQ(split(";a;b;c", ";", true, false), list1);
   std::vector<std::string> list3 = { "", "a", "b", "c", ""};
-  ASSERT_EQ(split(";a;b;c;", ";", false), list3);
-  ASSERT_EQ(split(";a;b;c;", ";", true), list1);
+  ASSERT_EQ(split(";a;b;c;", ";", false, false), list3);
+  ASSERT_EQ(split(";a;b;c;", ";", true, false), list1);
   std::vector<std::string> list4 = { "", "a", "b", "", "c", ""};
-  ASSERT_EQ(split(";a;b;;c;", ";", false), list4);
-  ASSERT_EQ(split(";a;b;;c;", ";", true), list1);
+  ASSERT_EQ(split(";a;b;;c;", ";", false, false), list4);
+  ASSERT_EQ(split(";a;b;;c;", ";", true, false), list1);
+
+  std::vector<std::string> list5 = { ";", "a", ";", "b", "=", ";", "c", "=", "d", ";"};
+  ASSERT_EQ(split(";a;b=;c=d;", ";=", true, true), list5);
+  std::vector<std::string> list6 = { "", ";", "a", ";", "b", "=", "", ";", "c", "=", "d", ";", ""};
+  ASSERT_EQ(split(";a;b=;c=d;", ";=", false, true), list6);
 }
 
 };
