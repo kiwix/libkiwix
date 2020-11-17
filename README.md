@@ -42,6 +42,9 @@ libraries need to be available:
 * [Mustache](https://github.com/kainjow/Mustache) (Just copy the
 header `mustache.hpp` somewhere it can be found by the compiler and/or
 set CPPFLAGS with correct `-I` option). Use Mustache version 3 only.
+* [libcurl](https://curl.se/libcurl) (`libcurl4-gnutls-dev`, `libcurl4-nss-dev` or `libcurl4-openssl-dev` on Ubuntu)
+* [microhttpd](https://www.gnu.org/software/libmicrohttpd) (package `libmicrohttpd-dev` on Ubuntu)
+* [zlib](https://zlib.net/) (package `zlib1g-dev` on Ubuntu)
 
 The following dependency needs to be available at runtime:
 * [Aria2](https://aria2.github.io/) (package `aria2` on Ubuntu)
