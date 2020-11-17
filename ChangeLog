@@ -1,3 +1,11 @@
+kiwix-lib 9.4.1
+===============
+
+ * Fix `M/Counter` parsing.
+ * [SERVER] Adjust body padding-top for taskbar
+ * Fix potential crash when stoping a server not started.
+ * Various fix in build system and the CI.
+
 kiwix-lib 9.4.0
 ===============
 

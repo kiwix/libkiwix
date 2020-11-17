@@ -1,5 +1,5 @@
 project('kiwix-lib', 'cpp',
-  version : '9.4.0', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
+  version : '9.4.1', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
   license : 'GPLv3+',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
 
@@ -25,7 +25,7 @@ endif
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
-libzim_dep = dependency('libzim', version : '>=6.1.8', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=6.3.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
 microhttpd_dep = dependency('libmicrohttpd', static:static_deps)
