@@ -161,6 +161,15 @@ public class JNIKiwixReader
     }
   }
 
+  public JNIKiwixReader(FileDescriptor fd, long offset, long size)
+      throws JNIKiwixException
+  {
+    nativeHandle = getNativeReaderEmbedded(fd, offset, size);
+    if (nativeHandle == 0) {
+        throw new JNIKiwixException(String.format("Cannot open embedded zimfile (fd=%s, offset=%d, size=%d)", fd, offset, size));
+    }
+  }
+
   public JNIKiwixReader() {
 
   }
@@ -168,5 +177,6 @@ public class JNIKiwixReader
 
   private native long getNativeReader(String filename);
   private native long getNativeReaderByFD(FileDescriptor fd);
+  private native long getNativeReaderEmbedded(FileDescriptor fd, long offset, long size);
   private long nativeHandle;
 }

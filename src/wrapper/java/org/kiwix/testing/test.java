@@ -60,6 +60,25 @@ throws JNIKiwixException, IOException
 }
 
 @Test
+public void testReaderWithAnEmbeddedArchive()
+throws JNIKiwixException, IOException
+{
+  File plainArchive = new File("small.zim");
+  FileInputStream fis = new FileInputStream("small.zim.embedded");
+  JNIKiwixReader reader = new JNIKiwixReader(fis.getFD(), 8, plainArchive.length());
+  assertEquals("Test ZIM file", reader.getTitle());
+  assertEquals(45, reader.getFileSize()); // The file size is in KiB
+  assertEquals("A/main.html", reader.getMainPage());
+  String s = getFileContent("small_zimfile_data/main.html");
+  byte[] c = reader.getContent(new JNIKiwixString("A/main.html"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertEquals(s, new String(c));
+
+}
+
+@Test
 public void testLibrary()
 throws IOException
 {

@@ -90,7 +90,14 @@ Reader::Reader(int fd)
   :  zimArchive(new zim::Archive(fd)),
      zimFilePath("")
 {
+  /* initialize random seed: */
+  srand(time(nullptr));
+}
 
+Reader::Reader(int fd, zim::offset_type offset, zim::size_type size)
+  :  zimArchive(new zim::Archive(fd, offset, size)),
+     zimFilePath("")
+{
   /* initialize random seed: */
   srand(time(nullptr));
 }

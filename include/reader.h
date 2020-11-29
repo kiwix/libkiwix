@@ -57,6 +57,7 @@ class Reader
    */
   explicit Reader(const string zimFilePath);
   explicit Reader(int fd);
+  Reader(int fd, zim::offset_type offset, zim::size_type size);
   ~Reader() = default;
 
   /**
