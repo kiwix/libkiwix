@@ -1,0 +1,19 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
+  <id>00000000-0000-0000-0000-000000000000</id>
+  <entry>
+    <title>Test ZIM file</title>
+    <id>urn:uuid:86c91e51-55bf-8882-464e-072aca37a3e8</id>
+    <icon>/meta?name=favicon&amp;content=small</icon>
+    <updated>2020-11-27:00::00:Z</updated>
+    <language>en</language>
+    <summary>This is a ZIM file used in libzim unit-tests</summary>
+    <tags>unit;test</tags>
+    <link type="text/html" href="/small" />
+    <author>
+      <name>Kiwix</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://localhost/small.zim" length="78982" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/png" href="/meta?name=favicon&amp;content=small" />
+  </entry>
+</feed>
+

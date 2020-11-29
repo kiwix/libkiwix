@@ -31,15 +31,15 @@ throws IOException
   Library lib = new Library();
   Manager manager = new Manager(lib);
   String content = getCatalogContent();
-  manager.readOpds(content, "https://library.kiwix.org");
-  assertEquals(lib.getBookCount(true, true), 10);
+  manager.readOpds(content, "http://localhost");
+  assertEquals(lib.getBookCount(true, true), 1);
   String[] bookIds = lib.getBooksIds();
-  assertEquals(bookIds.length, 10);
+  assertEquals(bookIds.length, 1);
   Book book = lib.getBookById(bookIds[0]);
-  assertEquals(book.getTitle(), "Wikisource");
-  assertEquals(book.getTags(), "wikisource;_category:wikisource;_pictures:no;_videos:no;_details:yes;_ftindex:yes");
-  assertEquals(book.getFaviconUrl(), "https://library.kiwix.org/meta?name=favicon&content=wikisource_fr_all_nopic_2020-01");
-  assertEquals(book.getUrl(), "http://download.kiwix.org/zim/wikisource/wikisource_fr_all_nopic_2020-01.zim.meta4");
+  assertEquals(book.getTitle(), "Test ZIM file");
+  assertEquals(book.getTags(), "unit;test");
+  assertEquals(book.getFaviconUrl(), "http://localhost/meta?name=favicon&content=small");
+  assertEquals(book.getUrl(), "http://localhost/small.zim");
 }
 
 static
