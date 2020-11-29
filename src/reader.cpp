@@ -86,6 +86,15 @@ Reader::Reader(const string zimFilePath)
   srand(time(nullptr));
 }
 
+Reader::Reader(int fd)
+  :  zimArchive(new zim::Archive(fd)),
+     zimFilePath("")
+{
+
+  /* initialize random seed: */
+  srand(time(nullptr));
+}
+
 zim::Archive* Reader::getZimArchive() const
 {
   return zimArchive.get();

@@ -25,6 +25,7 @@ import org.kiwix.kiwixlib.JNIKiwixString;
 import org.kiwix.kiwixlib.JNIKiwixInt;
 import org.kiwix.kiwixlib.JNIKiwixSearcher;
 import org.kiwix.kiwixlib.Pair;
+import java.io.FileDescriptor;
 
 public class JNIKiwixReader
 {
@@ -151,11 +152,21 @@ public class JNIKiwixReader
         throw new JNIKiwixException("Cannot open zimfile "+filename);
     }
   }
+
+  public JNIKiwixReader(FileDescriptor fd) throws JNIKiwixException
+  {
+    nativeHandle = getNativeReaderByFD(fd);
+    if (nativeHandle == 0) {
+        throw new JNIKiwixException("Cannot open zimfile by fd "+fd.toString());
+    }
+  }
+
   public JNIKiwixReader() {
 
   }
   public native void dispose();
 
   private native long getNativeReader(String filename);
+  private native long getNativeReaderByFD(FileDescriptor fd);
   private long nativeHandle;
 }

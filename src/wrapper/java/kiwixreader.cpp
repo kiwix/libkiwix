@@ -45,6 +45,35 @@ JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReader(
   }
 }
 
+namespace
+{
+
+int jni2fd(const jobject& fdObj, JNIEnv* env)
+{
+  jclass class_fdesc = env->FindClass("java/io/FileDescriptor");
+  jfieldID field_fd = env->GetFieldID(class_fdesc, "fd", "I");
+  return env->GetIntField(fdObj, field_fd);
+}
+
+} // unnamed namespace
+
+JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReaderByFD(
+    JNIEnv* env, jobject obj, jobject fdObj)
+{
+  int fd = jni2fd(fdObj, env);
+
+  LOG("Attempting to create reader with fd: %d", fd);
+  Lock l;
+  try {
+    kiwix::Reader* reader = new kiwix::Reader(fd);
+    return reinterpret_cast<jlong>(new Handle<kiwix::Reader>(reader));
+  } catch (std::exception& e) {
+    LOG("Error opening ZIM file");
+    LOG(e.what());
+    return 0;
+  }
+}
+
 JNIEXPORT void JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_dispose(JNIEnv* env, jobject obj)
 {

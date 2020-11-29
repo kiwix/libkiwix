@@ -55,7 +55,8 @@ class Reader
    *                    unsplitted path as if the file were not splitted
    *                    (.zim extesion).
    */
-  Reader(const string zimFilePath);
+  explicit Reader(const string zimFilePath);
+  explicit Reader(int fd);
   ~Reader() = default;
 
   /**
