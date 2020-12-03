@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Matthieu Gautier <mgautier@kymeria.fr>
+ * Copyright 2018-2020 Matthieu Gautier <mgautier@kymeria.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -21,7 +21,8 @@
 #define KIWIX_ENTRY_H
 
 #include <stdio.h>
-#include <zim/article.h>
+#include <zim/entry.h>
+#include <zim/item.h>
 #include <exception>
 #include <string>
 
@@ -42,18 +43,11 @@ class Entry
 {
   public:
     /**
-     * Default constructor.
-     *
-     * Construct an invalid entry.
-     */
-    Entry() = default;
-
-    /**
      * Construct an entry making reference to an zim article.
      *
      * @param article a zim::Article object
      */
-    Entry(zim::Article article);
+    Entry(zim::Entry entry);
     virtual ~Entry() = default;
 
     /**
@@ -63,14 +57,14 @@ class Entry
      *
      * @return the path of the entry.
      */
-    std::string getPath() const;
+    std::string getPath() const { return entry.getPath(); }
 
     /**
      * Get the title of the entry.
      *
      * @return the title of the entry.
      */
-    std::string getTitle() const;
+    std::string getTitle() const { return entry.getTitle(); }
 
     /**
      * Get the content of the entry.
@@ -80,7 +74,7 @@ class Entry
      *
      * @return the content of the entry.
      */
-    std::string getContent() const;
+    std::string getContent() const { return entry.getItem().getData(); }
 
     /**
      * Get the blob of the entry.
@@ -90,7 +84,7 @@ class Entry
      * @param offset The starting offset of the blob.
      * @return the blob of the entry.
      */
-    zim::Blob   getBlob(offset_type offset = 0) const;
+    zim::Blob   getBlob(offset_type offset = 0) const { return entry.getItem().getData(offset); }
 
     /**
      * Get the blob of the entry.
@@ -101,7 +95,7 @@ class Entry
      * @param size The size of the blob.
      * @return the blob of the entry.
      */
-    zim::Blob   getBlob(offset_type offset, size_type size) const;
+    zim::Blob   getBlob(offset_type offset, size_type size) const { return entry.getItem().getData(offset, size); }
 
     /**
      * Get the info for direct access to the content of the entry.
@@ -117,7 +111,7 @@ class Entry
      *         The offset is the offset to read in the file.
      *         Return <"",0> if is not possible to read directly.
      */
-    std::pair<std::string, offset_type> getDirectAccessInfo() const;
+    std::pair<std::string, offset_type> getDirectAccessInfo() const { return entry.getItem().getDirectAccessInformation(); }
 
     /**
      * Get the size of the entry.
@@ -174,17 +168,14 @@ class Entry
     Entry getFinalEntry() const;
 
     /**
-     * Convert the entry to a boolean value.
+     * Get the zim entry wrapped by this (kiwix) entry
      *
-     * @return True if the entry is valid.
+     * @return the zim entry
      */
-    explicit operator bool() const { return good(); }
+    const zim::Entry& getZimEntry() const { return entry; }
 
   private:
-    zim::Article article;
-    mutable zim::Article final_article;
-
-    bool good() const { return article.good(); }
+    zim::Entry entry;
 };
 
 }

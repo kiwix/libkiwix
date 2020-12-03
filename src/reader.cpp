@@ -21,6 +21,8 @@
 #include <time.h>
 
 #include <zim/search.h>
+#include <zim/item.h>
+#include <zim/error.h>
 
 #include "tools/otherTools.h"
 
@@ -65,7 +67,9 @@ std::string hexUUID(std::string in)
 namespace kiwix
 {
 /* Constructor */
-Reader::Reader(const string zimFilePath) : zimFileHandler(NULL)
+Reader::Reader(const string zimFilePath)
+  :  zimArchive(nullptr),
+     zimFilePath(zimFilePath)
 {
   string tmpZimFilePath = zimFilePath;
 
@@ -76,43 +80,21 @@ Reader::Reader(const string zimFilePath) : zimFileHandler(NULL)
     tmpZimFilePath.resize(tmpZimFilePath.size() - 2);
   }
 
-  this->zimFileHandler = new zim::File(tmpZimFilePath);
-
-  if (this->zimFileHandler != NULL) {
-    this->firstArticleOffset
-        = this->zimFileHandler->getNamespaceBeginOffset('A');
-    this->lastArticleOffset = this->zimFileHandler->getNamespaceEndOffset('A');
-    this->nsACount = this->zimFileHandler->getNamespaceCount('A');
-    this->nsICount = this->zimFileHandler->getNamespaceCount('I');
-    this->zimFilePath = zimFilePath;
-  }
+  zimArchive.reset(new zim::Archive(tmpZimFilePath));
 
   /* initialize random seed: */
-  srand(time(NULL));
+  srand(time(nullptr));
 }
 
-/* Destructor */
-Reader::~Reader()
+zim::Archive* Reader::getZimArchive() const
 {
-  if (this->zimFileHandler != NULL) {
-    delete this->zimFileHandler;
-  }
-}
-
-zim::File* Reader::getZimFileHandler() const
-{
-  return this->zimFileHandler;
+  return zimArchive.get();
 }
 
 MimeCounterType Reader::parseCounterMetadata() const
 {
-  zim::Article article = this->zimFileHandler->getArticle('M', "Counter");
-
-  if (article.good()) {
-    return parseMimetypeCounter(article.getData());
-  }
-
-  return MimeCounterType();
+  auto counterContent = zimArchive->getMetadata("Counter");
+  return parseMimetypeCounter(counterContent);
 }
 
 /* Get the count of articles which can be indexed/displayed */
@@ -122,13 +104,9 @@ unsigned int Reader::getArticleCount() const
       = this->parseCounterMetadata();
   unsigned int counter = 0;
 
-  if (counterMap.empty()) {
-    counter = this->nsACount;
-  } else {
-    for(auto &pair:counterMap) {
-      if (startsWith(pair.first, "text/html")) {
-        counter += pair.second;
-      }
+  for(auto &pair:counterMap) {
+    if (startsWith(pair.first, "text/html")) {
+      counter += pair.second;
     }
   }
 
@@ -142,23 +120,19 @@ unsigned int Reader::getMediaCount() const
       = this->parseCounterMetadata();
   unsigned int counter = 0;
 
-  if (counterMap.empty()) {
-    counter = this->nsICount;
-  } else {
-    auto it = counterMap.find("image/jpeg");
-    if (it != counterMap.end()) {
-      counter += it->second;
-    }
+  auto it = counterMap.find("image/jpeg");
+  if (it != counterMap.end()) {
+    counter += it->second;
+  }
 
-    it = counterMap.find("image/gif");
-    if (it != counterMap.end()) {
-      counter += it->second;
-    }
+  it = counterMap.find("image/gif");
+  if (it != counterMap.end()) {
+    counter += it->second;
+  }
 
-    it = counterMap.find("image/png");
-    if (it != counterMap.end()) {
-      counter += it->second;
-    }
+  it = counterMap.find("image/png");
+  if (it != counterMap.end()) {
+    counter += it->second;
   }
   return counter;
 }
@@ -166,84 +140,41 @@ unsigned int Reader::getMediaCount() const
 /* Get the total of all items of a ZIM file, redirects included */
 unsigned int Reader::getGlobalCount() const
 {
-  return this->zimFileHandler->getCountArticles();
+  return zimArchive->getEntryCount();
 }
 
 /* Return the UID of the ZIM file */
 string Reader::getId() const
 {
   std::ostringstream s;
-  s << this->zimFileHandler->getFileheader().getUuid();
+  s << zimArchive->getUuid();
   return s.str();
-}
-
-/* Return a page url from a title */
-bool Reader::getPageUrlFromTitle(const string& title, string& url) const
-{
-  try {
-    auto entry = getEntryFromTitle(title);
-    entry = entry.getFinalEntry();
-    url = entry.getPath();
-    return true;
-  } catch (NoEntry& e) {
-    return false;
-  }
-}
-
-/* Return an URL from a title */
-string Reader::getRandomPageUrl() const
-{
-  return getRandomPage().getPath();
 }
 
 Entry Reader::getRandomPage() const
 {
-  if (!this->zimFileHandler) {
-    throw NoEntry();
-  }
-
-  zim::Article article;
-  std::string mainPagePath = this->getMainPage().getPath();
+  auto mainPagePath = zimArchive->getMainEntry().getPath();
   int watchdog = 42;
 
-  do {
-    auto idx = this->firstArticleOffset
-          + (zim::size_type)((double)rand() / ((double)RAND_MAX + 1)
-                             * this->nsACount);
-    article = zimFileHandler->getArticle(idx);
-    if (!watchdog--) {
-      throw NoEntry();
+  while (--watchdog){
+    auto idx = (zim::size_type)((double)rand() / ((double)RAND_MAX + 1)
+                              * zimArchive->getEntryCount());
+    auto entry = zimArchive->getEntryByPath(idx);
+
+    if (entry.getPath()==mainPagePath) {
+      continue;
     }
-  } while (!article.good() && article.getLongUrl() == mainPagePath);
-
-  return article;
-}
-
-/* Return the welcome page URL */
-string Reader::getMainPageUrl() const
-{
-  return getMainPage().getPath();
+    auto item = entry.getItem(true);
+    if (item.getMimetype() == "text/html") {
+      return entry;
+    }
+  }
+  throw NoEntry();
 }
 
 Entry Reader::getMainPage() const
 {
-  if (!this->zimFileHandler) {
-    throw NoEntry();
-  }
-
-  zim::Article article;
-  if (this->zimFileHandler->getFileheader().hasMainPage())
-  {
-    article = zimFileHandler->getArticle(
-        this->zimFileHandler->getFileheader().getMainPage());
-  }
-
-  if (!article.good())
-  {
-    return getFirstPage();
-  }
-
-  return article;
+  return zimArchive->getMainEntry();
 }
 
 bool Reader::getFavicon(string& content, string& mimeType) const
@@ -252,12 +183,12 @@ bool Reader::getFavicon(string& content, string& mimeType) const
 
   for (auto &path: paths) {
     try {
-      auto entry = getEntryFromPath(path);
-      entry = entry.getFinalEntry();
-      content = entry.getContent();
-      mimeType = entry.getMimetype();
+      auto entry = zimArchive->getEntryByPath(path);
+      auto item = entry.getItem(true);
+      content = item.getData();
+      mimeType = item.getMimetype();
       return true;
-    } catch(NoEntry& e) {};
+    } catch(zim::EntryNotFound& e) {};
   }
 
   return false;
@@ -265,16 +196,15 @@ bool Reader::getFavicon(string& content, string& mimeType) const
 
 string Reader::getZimFilePath() const
 {
-  return this->zimFilePath;
+  return zimFilePath;
 }
 /* Return a metatag value */
 bool Reader::getMetadata(const string& name, string& value) const
 {
   try {
-    auto entry = getEntryFromPath("M/"+name);
-    value = entry.getContent();
+    value = zimArchive->getMetadata(name);
     return true;
-  } catch(NoEntry& e) {
+  } catch(zim::EntryNotFound& e) {
     return false;
   }
 }
@@ -288,10 +218,9 @@ string Reader::getName() const
 
 string Reader::getTitle() const
 {
-  string value;
-  this->getMetadata("Title", value);
+  string value = zimArchive->getMetadata("Title");
   if (value.empty()) {
-    value = getLastPathElement(zimFileHandler->getFilename());
+    value = getLastPathElement(zimFilePath);
     std::replace(value.begin(), value.end(), '_', ' ');
     size_t pos = value.find(".zim");
     value = value.substr(0, pos);
@@ -412,83 +341,21 @@ string Reader::getOrigId() const
   return origID;
 }
 
-/* Return the first page URL */
-string Reader::getFirstPageUrl() const
-{
-  return getFirstPage().getPath();
-}
-
-Entry Reader::getFirstPage() const
-{
-  if (!this->zimFileHandler) {
-    throw NoEntry();
-  }
-
-  auto firstPageOffset = zimFileHandler->getNamespaceBeginOffset('A');
-  auto article = zimFileHandler->getArticle(firstPageOffset);
-
-  if (! article.good()) {
-    throw NoEntry();
-  }
-
-  return article;
-}
-
-bool _parseUrl(const string& url, char* ns, string& title)
-{
-  /* Offset to visit the url */
-  unsigned int urlLength = url.size();
-  unsigned int offset = 0;
-
-  /* Ignore the first '/' */
-  if (url[offset] == '/')
-    offset++;
-
-  if (url[offset] == '/' || offset >= urlLength)
-    return false;
-
-  /* Get namespace */
-  *ns = url[offset++];
-
-  if (url[offset] != '/' || offset >= urlLength)
-    return false;
-
-  offset++;
-
-  if ( offset >= urlLength)
-    return false;
-
-  /* Get content title */
-  title = url.substr(offset, urlLength - offset);
-
-  return true;
-}
-
-bool Reader::parseUrl(const string& url, char* ns, string& title) const
-{
-  return _parseUrl(url, ns, title);
-}
-
 Entry Reader::getEntryFromPath(const std::string& path) const
 {
-  char ns = 0;
-  std::string short_url;
-
-  if (!this->zimFileHandler) {
+  if (!this->zimArchive) {
     throw NoEntry();
   }
-  _parseUrl(path, &ns, short_url);
 
-  if (short_url.empty() && ns == 0) {
+  if (path.empty() || path == "/") {
     return getMainPage();
   }
 
-  auto article = zimFileHandler->getArticle(ns, short_url);
-  if (!article.good()) {
+  try {
+    return zimArchive->getEntryByPath(path);
+  } catch (zim::EntryNotFound& e) {
     throw NoEntry();
   }
-
-  return article;
 }
 
 Entry Reader::getEntryFromEncodedPath(const std::string& path) const
@@ -498,202 +365,47 @@ Entry Reader::getEntryFromEncodedPath(const std::string& path) const
 
 Entry Reader::getEntryFromTitle(const std::string& title) const
 {
-  if (!this->zimFileHandler) {
+  if (!this->zimArchive) {
     throw NoEntry();
   }
 
-  auto article = this->zimFileHandler->getArticleByTitle('A', title);
-  if (!article.good()) {
+  try {
+    return zimArchive->getEntryByTitle(title);
+  } catch(zim::EntryNotFound& e) {
     throw NoEntry();
   }
-
-  return article;
-}
-
-/* Return article by url */
-bool Reader::getArticleObjectByDecodedUrl(const string& url,
-                                          zim::Article& article) const
-{
-  if (this->zimFileHandler == NULL) {
-    return false;
-  }
-
-  /* Parse the url */
-  char ns = 0;
-  string urlStr;
-  _parseUrl(url, &ns, urlStr);
-
-  /* Main page */
-  if (urlStr.empty() && ns == 0) {
-    _parseUrl(this->getMainPage().getPath(), &ns, urlStr);
-  }
-
-  /* Extract the content from the zim file */
-  article = zimFileHandler->getArticle(ns, urlStr);
-  return article.good();
-}
-
-/* Return the mimeType without the content */
-bool Reader::getMimeTypeByUrl(const string& url, string& mimeType) const
-{
-  try {
-    auto entry = getEntryFromPath(url);
-    mimeType = entry.getMimetype();
-    return true;
-  } catch (NoEntry& e) {
-    mimeType = "";
-    return false;
-  }
-}
-
-bool get_content_by_decoded_url(const Reader& reader,
-                                const string& url,
-                                string& content,
-                                string& title,
-                                unsigned int& contentLength,
-                                string& contentType,
-                                string& baseUrl)
-{
-  content = "";
-  contentType = "";
-  contentLength = 0;
-
-  try {
-    auto entry = reader.getEntryFromPath(url);
-    entry = entry.getFinalEntry();
-    baseUrl = entry.getPath();
-    contentType = entry.getMimetype();
-    content = entry.getContent();
-    contentLength = entry.getSize();
-    title = entry.getTitle();
-
-    /* Try to set a stub HTML header/footer if necesssary */
-    if (contentType.find("text/html") != string::npos
-      && content.find("<body") == std::string::npos
-      && content.find("<BODY") == std::string::npos) {
-      content = "<html><head><title>" + title +
-              "</title><meta http-equiv=\"Content-Type\" content=\"text/html; "
-              "charset=utf-8\" /></head><body>" +
-              content + "</body></html>";
-    }
-    return true;
-  } catch (NoEntry& e) {
-    return false;
-  }
-}
-
-
-/* Get a content from a zim file */
-bool Reader::getContentByUrl(const string& url,
-                             string& content,
-                             string& title,
-                             unsigned int& contentLength,
-                             string& contentType) const
-{
-  std::string stubRedirectUrl;
-  return get_content_by_decoded_url(*this,
-                                kiwix::urlDecode(url),
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                stubRedirectUrl);
-}
-
-bool Reader::getContentByEncodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType,
-                                    string& baseUrl) const
-{
-  return get_content_by_decoded_url(*this,
-                                kiwix::urlDecode(url),
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                baseUrl);
-}
-
-bool Reader::getContentByEncodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType) const
-{
-  std::string stubRedirectUrl;
-  return get_content_by_decoded_url(*this,
-                                kiwix::urlDecode(url),
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                stubRedirectUrl);
-}
-
-bool Reader::getContentByDecodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType) const
-{
-  std::string stubRedirectUrl;
-  return get_content_by_decoded_url(*this,
-                                url,
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                stubRedirectUrl);
-}
-
-bool Reader::getContentByDecodedUrl(const string& url,
-                                    string& content,
-                                    string& title,
-                                    unsigned int& contentLength,
-                                    string& contentType,
-                                    string& baseUrl) const
-{
-  return get_content_by_decoded_url(*this,
-                                url,
-                                content,
-                                title,
-                                contentLength,
-                                contentType,
-                                baseUrl);
-}
-
-/* Check if an article exists */
-bool Reader::urlExists(const string& url) const
-{
-  return pathExists(url);
 }
 
 bool Reader::pathExists(const string& path) const
 {
-  if (!zimFileHandler)
+  if (!zimArchive)
   {
     return false;
   }
 
-  char ns = 0;
-  string titleStr;
-  _parseUrl(path, &ns, titleStr);
-  zim::File::const_iterator findItr = zimFileHandler->find(ns, titleStr);
-  return findItr != zimFileHandler->end() && findItr->getUrl() == titleStr;
+  return zimArchive->hasEntryByPath(path);
 }
 
 /* Does the ZIM file has a fulltext index */
 bool Reader::hasFulltextIndex() const
 {
-  if (!zimFileHandler || zimFileHandler->is_multiPart() )
+  if (!zimArchive)
   {
     return false;
   }
 
-  return ( pathExists("Z//fulltextIndex/xapian")
-        || pathExists("X/fulltext/xapian"));
+  for(auto path: {"Z//fulltextIndex/xapian", "X/fulltext/xapian"}) {
+    try {
+      auto entry = zimArchive->getEntryByPath(path);
+      auto item = entry.getItem(true);
+      auto accessInfo = item.getDirectAccessInformation();
+      if (accessInfo.second) {
+        return true;
+      }
+    } catch(...) {}
+  }
+
+  return false;
 }
 
 /* Search titles by prefix */
@@ -733,23 +445,17 @@ bool Reader::searchSuggestions(const string& prefix,
     return false;
   }
 
-  for (auto articleItr = zimFileHandler->findByTitle('A', prefix);
-       articleItr != zimFileHandler->end()
-       && articleItr->getTitle().compare(0, prefix.size(), prefix) == 0
-       && results.size() < suggestionsCount;
-       ++articleItr) {
+  for (auto& entry: zimArchive->findByTitle(prefix)) {
+    if (results.size() >= suggestionsCount) {
+      break;
+    }
     /* Extract the interesting part of article title & url */
     std::string normalizedArticleTitle
-        = kiwix::normalize(articleItr->getTitle());
-    std::string articleFinalUrl = "/A/" + articleItr->getUrl();
-    if (articleItr->isRedirect()) {
-      zim::Article article = *articleItr;
-      unsigned int loopCounter = 0;
-      while (article.isRedirect() && loopCounter++ < 42) {
-        article = article.getRedirectArticle();
-      }
-      articleFinalUrl = "/A/" + article.getUrl();
-    }
+        = kiwix::normalize(entry.getTitle());
+
+    // Get the final path.
+    auto item = entry.getItem(true);
+    std::string articleFinalUrl = item.getPath();
 
     /* Go through all already found suggestions and skip if this
        article is already in the suggestions list (with an other
@@ -771,7 +477,7 @@ bool Reader::searchSuggestions(const string& prefix,
     /* Insert if possible */
     if (insert) {
       std::vector<std::string> suggestion;
-      suggestion.push_back(articleItr->getTitle());
+      suggestion.push_back(entry.getTitle());
       suggestion.push_back(articleFinalUrl);
       suggestion.push_back(normalizedArticleTitle);
       results.insert(suggestionItr, suggestion);
@@ -818,19 +524,18 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
   bool retVal = false;
 
   /* Try to search in the title using fulltext search database */
-  const auto suggestionSearch
-      = this->getZimFileHandler()->suggestions(prefix, 0, suggestionsCount);
+  auto suggestionSearch = zim::Search(*zimArchive);
+  suggestionSearch.set_query(prefix);
+  suggestionSearch.set_range(0, suggestionsCount);
+  suggestionSearch.set_suggestion_mode(true);
 
-  if (suggestionSearch->get_matches_estimated()) {
-    for (auto current = suggestionSearch->begin();
-         current != suggestionSearch->end();
+  if (suggestionSearch.get_matches_estimated()) {
+    for (auto current = suggestionSearch.begin();
+         current != suggestionSearch.end();
          current++) {
-      if (!current->good()) {
-          continue;
-      }
       std::vector<std::string> suggestion;
       suggestion.push_back(current->getTitle());
-      suggestion.push_back("/A/" + current->getUrl());
+      suggestion.push_back(current->getPath());
       suggestion.push_back(kiwix::normalize(current->getTitle()));
       results.push_back(suggestion);
     }
@@ -882,14 +587,14 @@ bool Reader::getNextSuggestion(string& title, string& url)
 /* Check if the file has as checksum */
 bool Reader::canCheckIntegrity() const
 {
-  return this->zimFileHandler->getChecksum() != "";
+  return zimArchive->hasChecksum();
 }
 
 /* Return true if corrupted, false otherwise */
 bool Reader::isCorrupted() const
 {
   try {
-    if (this->zimFileHandler->verify() == true) {
+    if (zimArchive->check() == true) {
       return false;
     }
   } catch (exception& e) {
@@ -903,13 +608,10 @@ bool Reader::isCorrupted() const
 /* Return the file size, works also for splitted files */
 unsigned int Reader::getFileSize() const
 {
-  zim::File* file = this->getZimFileHandler();
-  zim::size_type size = 0;
-
-  if (file != NULL) {
-    size = file->getFilesize();
+  if (!zimArchive) {
+    return 0;
   }
-
-  return (size / 1024);
+  return zimArchive->getFilesize() / 1024;
 }
+
 }

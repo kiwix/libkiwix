@@ -33,10 +33,10 @@ std::string render_template(const std::string& template_str, kainjow::mustache::
   return ss.str();
 }
 
-std::string get_mime_type(const kiwix::Entry& entry)
+std::string get_mime_type(const zim::Item& item)
 {
   try {
-    return entry.getMimetype();
+    return item.getMimetype();
   } catch (exception& e) {
     return "application/octet-stream";
   }
@@ -131,17 +131,17 @@ static MHD_Result print_key_value (void *cls, enum MHD_ValueKind kind,
 
 
 struct RunningResponse {
-   kiwix::Entry entry;
+   zim::Item item;
    int range_start;
 
-   RunningResponse(kiwix::Entry entry,
+   RunningResponse(zim::Item item,
                    int range_start) :
-     entry(entry),
+     item(item),
      range_start(range_start)
    {}
 };
 
-static ssize_t callback_reader_from_entry(void* cls,
+static ssize_t callback_reader_from_item(void* cls,
                                   uint64_t pos,
                                   char* buf,
                                   size_t max)
@@ -150,13 +150,13 @@ static ssize_t callback_reader_from_entry(void* cls,
 
   size_t max_size_to_set = min<size_t>(
     max,
-    response->entry.getSize() - pos - response->range_start);
+    response->item.getSize() - pos - response->range_start);
 
   if (max_size_to_set <= 0) {
     return MHD_CONTENT_READER_END_WITH_ERROR;
   }
 
-  zim::Blob blob = response->entry.getBlob(response->range_start+pos, max_size_to_set);
+  zim::Blob blob = response->item.getData(response->range_start+pos, max_size_to_set);
   memcpy(buf, blob.data(), max_size_to_set);
   return max_size_to_set;
 }
@@ -176,8 +176,6 @@ void print_response_info(int retCode, MHD_Response* response)
   printf("headers :\n");
   MHD_get_response_headers(response, print_key_value, nullptr);
 }
-
-
 
 
 void ContentResponse::introduce_taskbar()
@@ -342,9 +340,9 @@ std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& se
   return ContentResponse::build(server, content, mimetype);
 }
 
-EntryResponse::EntryResponse(bool verbose, const Entry& entry, const std::string& mimetype, const ByteRange& byterange) :
+ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
   Response(verbose),
-  m_entry(entry),
+  m_item(item),
   m_mimeType(mimetype)
 {
   m_byteRange = byterange;
@@ -352,48 +350,46 @@ EntryResponse::EntryResponse(bool verbose, const Entry& entry, const std::string
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<Response> EntryResponse::build(const InternalServer& server, const RequestContext& request, const Entry& entry)
+std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item)
 {
-  const std::string mimetype = get_mime_type(entry);
-  auto byteRange = request.get_range().resolve(entry.getSize());
+  const std::string mimetype = get_mime_type(item);
+  auto byteRange = request.get_range().resolve(item.getSize());
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    zim::Blob raw_content = entry.getBlob();
-    const std::string content = string(raw_content.data(), raw_content.size());
-    auto response = ContentResponse::build(server, content, mimetype);
+    auto response = ContentResponse::build(server, item.getData(), mimetype);
     response->set_cacheable();
     response->m_byteRange = byteRange;
     return std::move(response);
   }
 
   if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
-    auto response = Response::build_416(server, entry.getSize());
+    auto response = Response::build_416(server, item.getSize());
     response->set_cacheable();
     return response;
   }
 
-  return std::unique_ptr<Response>(new EntryResponse(
+  return std::unique_ptr<Response>(new ItemResponse(
         server.m_verbose.load(),
-        entry,
+        item,
         mimetype,
         byteRange));
 }
 
 MHD_Response*
-EntryResponse::create_mhd_response(const RequestContext& request)
+ItemResponse::create_mhd_response(const RequestContext& request)
 {
   const auto content_length = m_byteRange.length();
   MHD_Response* response = MHD_create_response_from_callback(content_length,
                                                16384,
-                                               callback_reader_from_entry,
-                                               new RunningResponse(m_entry, m_byteRange.first()),
+                                               callback_reader_from_item,
+                                               new RunningResponse(m_item, m_byteRange.first()),
                                                callback_free_response);
   MHD_add_response_header(response, MHD_HTTP_HEADER_ACCEPT_RANGES, "bytes");
   if ( m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT ) {
     std::ostringstream oss;
     oss << "bytes " << m_byteRange.first() << "-" << m_byteRange.last()
-        << "/" << m_entry.getSize();
+        << "/" << m_item.getSize();
 
     MHD_add_response_header(response,
       MHD_HTTP_HEADER_CONTENT_RANGE, oss.str().c_str());

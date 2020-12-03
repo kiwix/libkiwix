@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Emmanuel Engelhart <kelson@kiwix.org>
+ * Copyright 2018-2020 Matthieu Gautier <mgautier@kymeria.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -25,116 +25,51 @@
 namespace kiwix
 {
 
-Entry::Entry(zim::Article article)
-  : article(article)
+Entry::Entry(zim::Entry entry)
+  : entry(entry)
 {
-}
-
-#define RETURN_IF_INVALID(WHAT) if(!good()) { return (WHAT); }
-
-std::string Entry::getPath() const
-{
-  RETURN_IF_INVALID("");
-  return article.getLongUrl();
-}
-
-std::string Entry::getTitle() const
-{
-  RETURN_IF_INVALID("");
-  return article.getTitle();
-}
-
-std::string Entry::getContent() const
-{
-  RETURN_IF_INVALID("");
-  return article.getData();
-}
-
-zim::Blob Entry::getBlob(offset_type offset) const
-{
-  RETURN_IF_INVALID(zim::Blob());
-  return article.getData(offset);
-}
-
-zim::Blob Entry::getBlob(offset_type offset, size_type size) const
-{
-  RETURN_IF_INVALID(zim::Blob());
-  return article.getData(offset, size);
-}
-
-std::pair<std::string, offset_type> Entry::getDirectAccessInfo() const
-{
-  RETURN_IF_INVALID(std::make_pair("", 0));
-  return article.getDirectAccessInformation();
 }
 
 size_type Entry::getSize() const
 {
-  RETURN_IF_INVALID(0);
-  return article.getArticleSize();
+  if (entry.isRedirect()) {
+    return 0;
+  } else {
+    return entry.getItem().getSize();
+  }
 }
 
 std::string Entry::getMimetype() const
 {
-  RETURN_IF_INVALID("");
-  try {
-    return article.getMimeType();
-  } catch (exception& e) {
-    return "application/octet-stream";
-  }
+  return entry.getItem(true).getMimetype();
 }
 
 bool Entry::isRedirect() const
 {
-  RETURN_IF_INVALID(false);
-  return article.isRedirect();
-}
-
-bool Entry::isLinkTarget() const
-{
-  RETURN_IF_INVALID(false);
-  return article.isLinktarget();
-}
-
-bool Entry::isDeleted() const
-{
-  RETURN_IF_INVALID(false);
-  return article.isDeleted();
+  return entry.isRedirect();
 }
 
 Entry Entry::getRedirectEntry() const
 {
-  RETURN_IF_INVALID(Entry());
-  if ( !article.isRedirect() ) {
+  if ( !entry.isRedirect() ) {
     throw NoEntry();
   }
 
-  auto targeted_article = article.getRedirectArticle();
-  if ( !targeted_article.good()) {
-    throw NoEntry();
-  }
-  return targeted_article;
+  return entry.getRedirectEntry();
 }
 
 Entry Entry::getFinalEntry() const
 {
-  RETURN_IF_INVALID(Entry());
-  if (final_article.good()) {
-    return final_article;
-  }
   int loopCounter = 42;
-  final_article = article;
-  while (final_article.isRedirect() && loopCounter--) {
-    final_article = final_article.getRedirectArticle();
-    if ( !final_article.good()) {
-      throw NoEntry();
-    }
+  auto final_entry = entry;
+  while (final_entry.isRedirect() && loopCounter--) {
+    final_entry = final_entry.getRedirectEntry();
   }
   // Prevent infinite loops.
-  if (final_article.isRedirect()) {
+  if (final_entry.isRedirect()) {
     throw NoEntry();
   }
-  return final_article;
+  return final_entry;
 }
 
 }

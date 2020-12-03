@@ -21,10 +21,8 @@
 #define KIWIX_READER_H
 
 #include <stdio.h>
-#include <zim/article.h>
-#include <zim/file.h>
-#include <zim/fileiterator.h>
 #include <zim/zim.h>
+#include <zim/archive.h>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -58,7 +56,7 @@ class Reader
    *                    (.zim extesion).
    */
   Reader(const string zimFilePath);
-  ~Reader();
+  ~Reader() = default;
 
   /**
    * Get the number of "displayable" entries in the zim file.
@@ -102,17 +100,6 @@ class Reader
   string getId() const;
 
   /**
-   * Get the url of a random page.
-   *
-   * Deprecated : Use `getRandomPage` instead.
-   *
-   * @return Url of a random page. The page is picked from all entries in
-   *         the 'A' namespace.
-   *         The main page is excluded from the potential results.
-   */
-  DEPRECATED string getRandomPageUrl() const;
-
-  /**
    * Get a random page.
    *
    * @return A random Entry. The entry is picked from all entries in
@@ -120,31 +107,6 @@ class Reader
    *         The main entry is excluded from the potential results.
    */
   Entry getRandomPage() const;
-
-  /**
-   * Get the url of the first page.
-   *
-   * Deprecated : Use `getFirstPage` instead.
-   *
-   * @return Url of the first entry in the 'A' namespace.
-   */
-  DEPRECATED string getFirstPageUrl() const;
-
-  /**
-   * Get the entry of the first page.
-   *
-   * @return The first entry in the 'A' namespace.
-   */
-  Entry getFirstPage() const;
-
-  /**
-   * Get the url of the main page.
-   *
-   * Deprecated : Use `getMainPage` instead.
-   *
-   * @return Url of the main page as specified in the zim file.
-   */
-  DEPRECATED string getMainPageUrl() const;
 
   /**
    * Get the entry of the main page.
@@ -335,88 +297,6 @@ class Reader
   Entry getEntryFromTitle(const std::string& title) const;
 
   /**
-   * Get the url of a page specified by a title.
-   *
-   * @param[in] title the title of the page.
-   * @param[out] url the url of the page.
-   * @return True if the page can be found.
-   */
-  DEPRECATED bool getPageUrlFromTitle(const string& title, string& url) const;
-
-  /**
-   * Get the mimetype of a entry specified by a url.
-   *
-   * @param[in] url the url of the entry.
-   * @param[out] mimeType the mimeType of the entry.
-   * @return True if the mimeType has been found.
-   */
-  DEPRECATED bool getMimeTypeByUrl(const string& url, string& mimeType) const;
-
-  /**
-   * Get the content of an entry specifed by a url.
-   *
-   * Alias to `getContentByEncodedUrl`
-   */
-  DEPRECATED bool getContentByUrl(const string& url,
-                       string& content,
-                       string& title,
-                       unsigned int& contentLength,
-                       string& contentType) const;
-
-  /**
-   * Get the content of an entry specified by a url encoded url.
-   *
-   * Equivalent to getContentByDecodedUrl(urlDecode(url), ...).
-   */
-  DEPRECATED bool getContentByEncodedUrl(const string& url,
-                              string& content,
-                              string& title,
-                              unsigned int& contentLength,
-                              string& contentType,
-                              string& baseUrl) const;
-
-  /**
-   * Get the content of an entry specified by an url encoded url.
-   *
-   * Equivalent to getContentByEncodedUrl but without baseUrl.
-   */
-  DEPRECATED bool getContentByEncodedUrl(const string& url,
-                              string& content,
-                              string& title,
-                              unsigned int& contentLength,
-                              string& contentType) const;
-
-  /**
-   * Get the content of an entry specified by a url.
-   *
-   * @param[in] url The url of the entry.
-   * @param[out] content The content of the entry.
-   * @param[out] title the title of the entry.
-   * @param[out] contentLength The size of the entry (size of content).
-   * @param[out] contentType The mimeType of the entry.
-   * @param[out] baseUrl Return the true url of the entry.
-   *                     If the specified entry is a redirection, contains
-   *                     the url of the targeted entry.
-   * @return True if the entry has been found.
-   */
-  DEPRECATED bool getContentByDecodedUrl(const string& url,
-                              string& content,
-                              string& title,
-                              unsigned int& contentLength,
-                              string& contentType,
-                              string& baseUrl) const;
-  /**
-   * Get the content of an entry specified by a url.
-   *
-   * Equivalent to getContentByDecodedUrl but withou the baseUrl.
-   */
-  DEPRECATED bool getContentByDecodedUrl(const string& url,
-                              string& content,
-                              string& title,
-                              unsigned int& contentLength,
-                              string& contentType) const;
-
-  /**
    * Search for entries with title starting with prefix (case sensitive).
    *
    * Suggestions are stored in an internal vector and can be retrieved using
@@ -498,16 +378,6 @@ class Reader
 
 
   /**
-   * Check if the url exists in the zim file.
-   *
-   * Deprecated : Use `pathExists` instead.
-   *
-   * @param url the url to check.
-   * @return True if the url exits in the zim file.
-   */
-  DEPRECATED bool urlExists(const string& url) const;
-
-  /**
    * Check if the path exists in the zim file.
    *
    * @param path the path to check.
@@ -563,16 +433,6 @@ class Reader
   bool isCorrupted() const;
 
   /**
-   * Parse a full url into a namespace and url.
-   *
-   * @param[in] url The full url ("/N/url").
-   * @param[out] ns The namespace (N).
-   * @param[out] title The url (url).
-   * @return True
-   */
-  DEPRECATED bool parseUrl(const string& url, char* ns, string& title) const;
-
-  /**
    * Return the total size of the zim file.
    *
    * If zim file is split, return the sum of all parts' size.
@@ -586,24 +446,10 @@ class Reader
    *
    * @return The libzim file handler.
    */
-  zim::File* getZimFileHandler() const;
-
-  /**
-   * Get the zim article object associated to a url.
-   *
-   * @param[in] url The url of the article.
-   * @param[out] article The libzim article object.
-   * @return True if the url is good (article.good()).
-   */
-  DEPRECATED bool getArticleObjectByDecodedUrl(const string& url,
-                                    zim::Article& article) const;
+  zim::Archive* getZimArchive() const;
 
  protected:
-  zim::File* zimFileHandler;
-  zim::size_type firstArticleOffset;
-  zim::size_type lastArticleOffset;
-  zim::size_type nsACount;
-  zim::size_type nsICount;
+  std::unique_ptr<zim::Archive> zimArchive;
   std::string zimFilePath;
 
   SuggestionsList_t suggestions;

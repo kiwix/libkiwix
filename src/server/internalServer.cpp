@@ -766,33 +766,30 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     urlStr = urlStr.substr(1);
   }
 
-  kiwix::Entry entry;
-
   try {
-    entry = reader->getEntryFromPath(urlStr);
+    auto entry = reader->getEntryFromPath(urlStr);
     if (entry.isRedirect() || urlStr.empty()) {
       // If urlStr is empty, we want to mainPage.
       // We must do a redirection to the real page.
       return build_redirect(bookName, entry.getFinalEntry());
     }
+    auto response = ItemResponse::build(*this, request, entry.getZimEntry().getItem());
+    try {
+      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, reader->getTitle());
+    } catch (std::bad_cast& e) {}
+
+    if (m_verbose.load()) {
+      printf("Found %s\n", entry.getPath().c_str());
+      printf("mimeType: %s\n", entry.getMimetype().c_str());
+    }
+
+    return response;
   } catch(kiwix::NoEntry& e) {
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
     return Response::build_404(*this, request, bookName);
   }
-
-  auto response = EntryResponse::build(*this, request, entry);
-  try {
-    dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, reader->getTitle());
-  } catch (std::bad_cast& e) {}
-
-  if (m_verbose.load()) {
-    printf("Found %s\n", entry.getPath().c_str());
-    printf("mimeType: %s\n", entry.getMimetype().c_str());
-  }
-
-  return response;
 }
 
 }

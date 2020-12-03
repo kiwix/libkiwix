@@ -1,5 +1,4 @@
 tests = [
-    'parseUrl',
     'library',
     'regex',
     'tagParsing',

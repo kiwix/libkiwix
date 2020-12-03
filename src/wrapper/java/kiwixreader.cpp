@@ -20,7 +20,6 @@
 
 
 #include <jni.h>
-#include <zim/file.h>
 #include <exception>
 #include "org_kiwix_kiwixlib_JNIKiwixReader.h"
 
