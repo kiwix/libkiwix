@@ -52,6 +52,14 @@ int jni2fd(const jobject& fdObj, JNIEnv* env)
 {
   jclass class_fdesc = env->FindClass("java/io/FileDescriptor");
   jfieldID field_fd = env->GetFieldID(class_fdesc, "fd", "I");
+  if ( field_fd == NULL )
+  {
+    env->ExceptionClear();
+    // Under Android the (private) 'fd' field of java.io.FileDescriptor has been
+    // renamed to 'descriptor'. See, for example,
+    // https://android.googlesource.com/platform/libcore/+/refs/tags/android-8.1.0_r1/ojluni/src/main/java/java/io/FileDescriptor.java#55
+    field_fd = env->GetFieldID(class_fdesc, "descriptor", "I");
+  }
   return env->GetIntField(fdObj, field_fd);
 }
 
