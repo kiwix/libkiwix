@@ -22,6 +22,19 @@ throws IOException
   return data;
 }
 
+private static byte[] getFileContentPartial(String path, int offset, int size)
+throws IOException
+{
+  File file = new File(path);
+  DataInputStream in = new DataInputStream(
+                         new BufferedInputStream(
+                           new FileInputStream(file)));
+  byte[] data = new byte[size];
+  in.skipBytes(offset);
+  in.read(data, 0, size);
+  return data;
+}
+
 private static String getTextFileContent(String path)
 throws IOException
 {
@@ -50,6 +63,11 @@ throws JNIKiwixException, IOException
                                 new JNIKiwixString(),
                                 new JNIKiwixInt());
   assertTrue(Arrays.equals(faviconData, c));
+
+  DirectAccessInfo dai = reader.getDirectAccessInformation("I/favicon.png");
+  assertNotEquals("", dai.filename);
+  c = getFileContentPartial(dai.filename, (int)dai.offset, faviconData.length);
+  assertTrue(Arrays.equals(faviconData, c));
 }
 
 @Test
@@ -74,6 +92,11 @@ throws JNIKiwixException, IOException
                                 new JNIKiwixString(),
                                 new JNIKiwixString(),
                                 new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
+
+  DirectAccessInfo dai = reader.getDirectAccessInformation("I/favicon.png");
+  assertNotEquals("", dai.filename);
+  c = getFileContentPartial(dai.filename, (int)dai.offset, faviconData.length);
   assertTrue(Arrays.equals(faviconData, c));
 }
 
@@ -100,6 +123,11 @@ throws JNIKiwixException, IOException
                                 new JNIKiwixString(),
                                 new JNIKiwixString(),
                                 new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
+
+  DirectAccessInfo dai = reader.getDirectAccessInformation("I/favicon.png");
+  assertNotEquals("", dai.filename);
+  c = getFileContentPartial(dai.filename, (int)dai.offset, faviconData.length);
   assertTrue(Arrays.equals(faviconData, c));
 }
 

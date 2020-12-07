@@ -111,7 +111,7 @@ class Entry
      *         The offset is the offset to read in the file.
      *         Return <"",0> if is not possible to read directly.
      */
-    std::pair<std::string, offset_type> getDirectAccessInfo() const { return entry.getItem().getDirectAccessInformation(); }
+    zim::Item::DirectAccessInfo getDirectAccessInfo() const { return entry.getItem().getDirectAccessInformation(); }
 
     /**
      * Get the size of the entry.
