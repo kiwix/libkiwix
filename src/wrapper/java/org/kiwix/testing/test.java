@@ -10,18 +10,22 @@ static {
   System.loadLibrary("kiwix");
 }
 
-private static String getFileContent(String path)
+private static byte[] getFileContent(String path)
 throws IOException
 {
-  BufferedReader reader = new BufferedReader(new FileReader(path));
-  String line;
-  StringBuilder sb = new StringBuilder();
-  while ((line = reader.readLine()) != null)
-  {
-    sb.append(line + "\n");
-  }
-  reader.close();
-  return sb.toString();
+  File file = new File(path);
+  DataInputStream in = new DataInputStream(
+                         new BufferedInputStream(
+                           new FileInputStream(file)));
+  byte[] data = new byte[(int)file.length()];
+  in.read(data);
+  return data;
+}
+
+private static String getTextFileContent(String path)
+throws IOException
+{
+  return new String(getFileContent(path));
 }
 
 @Test
@@ -32,13 +36,20 @@ throws JNIKiwixException, IOException
   assertEquals("Test ZIM file", reader.getTitle());
   assertEquals(45, reader.getFileSize()); // The file size is in KiB
   assertEquals("A/main.html", reader.getMainPage());
-  String s = getFileContent("small_zimfile_data/main.html");
+  String s = getTextFileContent("small_zimfile_data/main.html");
   byte[] c = reader.getContent(new JNIKiwixString("A/main.html"),
                                 new JNIKiwixString(),
                                 new JNIKiwixString(),
                                 new JNIKiwixInt());
   assertEquals(s, new String(c));
 
+  byte[] faviconData = getFileContent("small_zimfile_data/favicon.png");
+  assertEquals(faviconData.length, reader.getArticleSize("I/favicon.png"));
+  c = reader.getContent(new JNIKiwixString("I/favicon.png"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
 }
 
 @Test
@@ -50,13 +61,20 @@ throws JNIKiwixException, IOException
   assertEquals("Test ZIM file", reader.getTitle());
   assertEquals(45, reader.getFileSize()); // The file size is in KiB
   assertEquals("A/main.html", reader.getMainPage());
-  String s = getFileContent("small_zimfile_data/main.html");
+  String s = getTextFileContent("small_zimfile_data/main.html");
   byte[] c = reader.getContent(new JNIKiwixString("A/main.html"),
                                 new JNIKiwixString(),
                                 new JNIKiwixString(),
                                 new JNIKiwixInt());
   assertEquals(s, new String(c));
 
+  byte[] faviconData = getFileContent("small_zimfile_data/favicon.png");
+  assertEquals(faviconData.length, reader.getArticleSize("I/favicon.png"));
+  c = reader.getContent(new JNIKiwixString("I/favicon.png"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
 }
 
 @Test
@@ -69,13 +87,20 @@ throws JNIKiwixException, IOException
   assertEquals("Test ZIM file", reader.getTitle());
   assertEquals(45, reader.getFileSize()); // The file size is in KiB
   assertEquals("A/main.html", reader.getMainPage());
-  String s = getFileContent("small_zimfile_data/main.html");
+  String s = getTextFileContent("small_zimfile_data/main.html");
   byte[] c = reader.getContent(new JNIKiwixString("A/main.html"),
                                 new JNIKiwixString(),
                                 new JNIKiwixString(),
                                 new JNIKiwixInt());
   assertEquals(s, new String(c));
 
+  byte[] faviconData = getFileContent("small_zimfile_data/favicon.png");
+  assertEquals(faviconData.length, reader.getArticleSize("I/favicon.png"));
+  c = reader.getContent(new JNIKiwixString("I/favicon.png"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
 }
 
 @Test
@@ -84,7 +109,7 @@ throws IOException
 {
   Library lib = new Library();
   Manager manager = new Manager(lib);
-  String content = getFileContent("catalog.xml");
+  String content = getTextFileContent("catalog.xml");
   manager.readOpds(content, "http://localhost");
   assertEquals(lib.getBookCount(true, true), 1);
   String[] bookIds = lib.getBooksIds();
