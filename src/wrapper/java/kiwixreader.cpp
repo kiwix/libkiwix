@@ -379,22 +379,22 @@ JNIEXPORT jobject JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_getDirectAccessInformation(
     JNIEnv* env, jobject obj, jstring url)
 {
-   jclass classPair = env->FindClass("org/kiwix/kiwixlib/Pair");
-   jmethodID midPairinit = env->GetMethodID(classPair, "<init>", "()V");
-   jobject pair = env->NewObject(classPair, midPairinit);
-   setPairObjValue("", 0, pair, env);
+   jclass daiClass = env->FindClass("org/kiwix/kiwixlib/DirectAccessInfo");
+   jmethodID daiInitMethod = env->GetMethodID(daiClass, "<init>", "()V");
+   jobject dai = env->NewObject(daiClass, daiInitMethod);
+   setDaiObjValue("", 0, dai, env);
 
    std::string cUrl = jni2c(url, env);
    try {
     auto entry = READER->getEntryFromEncodedPath(cUrl);
     entry = entry.getFinalEntry();
     auto part_info = entry.getDirectAccessInfo();
-    setPairObjValue(part_info.first, part_info.second, pair, env);
+    setDaiObjValue(part_info.first, part_info.second, dai, env);
   } catch (std::exception& e) {
     LOG("Unable to get direct access info for url: %s", cUrl.c_str());
     LOG(e.what());
   }
-  return pair;
+  return dai;
 }
 
 JNIEXPORT jboolean JNICALL

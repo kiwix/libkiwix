@@ -19,7 +19,7 @@
 
 package org.kiwix.kiwixlib;
 
-public class Pair
+public class DirectAccessInfo
 {
   public String filename;
   public long offset;

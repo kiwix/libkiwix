@@ -246,7 +246,7 @@ inline void setBoolObjValue(const bool value, const jobject obj, JNIEnv* env)
   env->SetIntField(obj, objFid, c2jni(value, env));
 }
 
-inline void setPairObjValue(const std::string& filename, const long offset,
+inline void setDaiObjValue(const std::string& filename, const long offset,
                             const jobject obj, JNIEnv* env)
 {
   jclass objClass = env->GetObjectClass(obj);
