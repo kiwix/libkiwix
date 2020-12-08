@@ -179,17 +179,13 @@ Entry Reader::getMainPage() const
 
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
-  static const char* const paths[] = {"-/favicon", "-/favicon.png", "I/favicon.png", "I/favicon"};
-
-  for (auto &path: paths) {
-    try {
-      auto entry = zimArchive->getEntryByPath(path);
-      auto item = entry.getItem(true);
-      content = item.getData();
-      mimeType = item.getMimetype();
-      return true;
-    } catch(zim::EntryNotFound& e) {};
-  }
+  try {
+    auto entry = zimArchive->getFaviconEntry();
+    auto item = entry.getItem(true);
+    content = item.getData();
+    mimeType = item.getMimetype();
+    return true;
+  } catch(zim::EntryNotFound& e) {};
 
   return false;
 }
