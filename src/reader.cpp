@@ -390,18 +390,7 @@ bool Reader::hasFulltextIndex() const
     return false;
   }
 
-  for(auto path: {"Z//fulltextIndex/xapian", "X/fulltext/xapian"}) {
-    try {
-      auto entry = zimArchive->getEntryByPath(path);
-      auto item = entry.getItem(true);
-      auto accessInfo = item.getDirectAccessInformation();
-      if (accessInfo.second) {
-        return true;
-      }
-    } catch(...) {}
-  }
-
-  return false;
+  return zimArchive->hasFulltextIndex();
 }
 
 /* Search titles by prefix */
