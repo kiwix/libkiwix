@@ -19,6 +19,10 @@
 
 #include "internalServer.h"
 
+#ifdef __FreeBSD__
+#include <netinet/in.h>
+#endif
+
 #ifdef _WIN32
 # if !defined(__MINGW32__) && (_MSC_VER < 1600)
 #   include "stdint4win.h"
