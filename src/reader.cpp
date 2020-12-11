@@ -179,17 +179,13 @@ Entry Reader::getMainPage() const
 
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
-  static const char* const paths[] = {"-/favicon", "-/favicon.png", "I/favicon.png", "I/favicon"};
-
-  for (auto &path: paths) {
-    try {
-      auto entry = zimArchive->getEntryByPath(path);
-      auto item = entry.getItem(true);
-      content = item.getData();
-      mimeType = item.getMimetype();
-      return true;
-    } catch(zim::EntryNotFound& e) {};
-  }
+  try {
+    auto entry = zimArchive->getFaviconEntry();
+    auto item = entry.getItem(true);
+    content = item.getData();
+    mimeType = item.getMimetype();
+    return true;
+  } catch(zim::EntryNotFound& e) {};
 
   return false;
 }
@@ -343,10 +339,6 @@ string Reader::getOrigId() const
 
 Entry Reader::getEntryFromPath(const std::string& path) const
 {
-  if (!this->zimArchive) {
-    throw NoEntry();
-  }
-
   if (path.empty() || path == "/") {
     return getMainPage();
   }
@@ -365,10 +357,6 @@ Entry Reader::getEntryFromEncodedPath(const std::string& path) const
 
 Entry Reader::getEntryFromTitle(const std::string& title) const
 {
-  if (!this->zimArchive) {
-    throw NoEntry();
-  }
-
   try {
     return zimArchive->getEntryByTitle(title);
   } catch(zim::EntryNotFound& e) {
@@ -378,34 +366,13 @@ Entry Reader::getEntryFromTitle(const std::string& title) const
 
 bool Reader::pathExists(const string& path) const
 {
-  if (!zimArchive)
-  {
-    return false;
-  }
-
   return zimArchive->hasEntryByPath(path);
 }
 
 /* Does the ZIM file has a fulltext index */
 bool Reader::hasFulltextIndex() const
 {
-  if (!zimArchive)
-  {
-    return false;
-  }
-
-  for(auto path: {"Z//fulltextIndex/xapian", "X/fulltext/xapian"}) {
-    try {
-      auto entry = zimArchive->getEntryByPath(path);
-      auto item = entry.getItem(true);
-      auto accessInfo = item.getDirectAccessInformation();
-      if (accessInfo.second) {
-        return true;
-      }
-    } catch(...) {}
-  }
-
-  return false;
+  return zimArchive->hasFulltextIndex();
 }
 
 /* Search titles by prefix */
@@ -608,9 +575,6 @@ bool Reader::isCorrupted() const
 /* Return the file size, works also for splitted files */
 unsigned int Reader::getFileSize() const
 {
-  if (!zimArchive) {
-    return 0;
-  }
   return zimArchive->getFilesize() / 1024;
 }
 
