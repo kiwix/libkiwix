@@ -120,20 +120,12 @@ unsigned int Reader::getMediaCount() const
       = this->parseCounterMetadata();
   unsigned int counter = 0;
 
-  auto it = counterMap.find("image/jpeg");
-  if (it != counterMap.end()) {
-    counter += it->second;
+  for (auto &pair:counterMap) {
+    if (startsWith(pair.first, "image/")) {
+      counter += pair.second;
+    }
   }
 
-  it = counterMap.find("image/gif");
-  if (it != counterMap.end()) {
-    counter += it->second;
-  }
-
-  it = counterMap.find("image/png");
-  if (it != counterMap.end()) {
-    counter += it->second;
-  }
   return counter;
 }
 
