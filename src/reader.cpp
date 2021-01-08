@@ -121,7 +121,9 @@ unsigned int Reader::getMediaCount() const
   unsigned int counter = 0;
 
   for (auto &pair:counterMap) {
-    if (startsWith(pair.first, "image/")) {
+    if (startsWith(pair.first, "image/") ||
+        startsWith(pair.first, "video/") ||
+        startsWith(pair.first, "audio/")) {
       counter += pair.second;
     }
   }
