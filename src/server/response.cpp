@@ -189,7 +189,7 @@ void ContentResponse::introduce_taskbar()
   auto head_content = render_template(RESOURCE::templates::head_part_html, data);
   m_content = appendToFirstOccurence(
     m_content,
-    "<head>",
+    "<head[^>]*>",
     head_content);
 
   auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
