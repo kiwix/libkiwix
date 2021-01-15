@@ -25,7 +25,6 @@ endif
 
 thread_dep = dependency('threads')
 libicu_dep = dependency('icu-i18n', static:static_deps)
-libzim_dep = dependency('libzim', version : '>=6.3.0', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
 microhttpd_dep = dependency('libmicrohttpd', static:static_deps)
@@ -38,6 +37,12 @@ elif compiler.has_header('mustache.hpp', args: '-I/usr/include/kainjow')
 else
   error('Cannot found header mustache.hpp')
 endif
+
+libzim_dep = dependency('libzim', version : '>=6.3.0', static:static_deps)
+if not compiler.has_header_symbol('zim/zim.h', 'LIBZIM_WITH_XAPIAN')
+  error('Libzim seems to be compiled without xapian. Xapian support is mandatory.')
+endif
+
 
 extra_cflags = ''
 if target_machine.system() == 'windows' and static_deps
