@@ -95,3 +95,22 @@ std::string appendToFirstOccurence(const std::string& content,
 
   return content;
 }
+
+std::string prependToFirstOccurence(const std::string& content,
+                                   const std::string& regex,
+                                   const std::string& replacement)
+{
+  ucnv_setDefaultName("UTF-8");
+  icu::UnicodeString ucontent(content.c_str());
+  icu::UnicodeString ureplacement(replacement.c_str());
+  auto matcher = buildMatcher(regex, ucontent);
+  if (matcher->find()) {
+    UErrorCode status = U_ZERO_ERROR;
+    ucontent.insert(matcher->start(status), ureplacement);
+    std::string tmp;
+    ucontent.toUTF8String(tmp);
+    return tmp;
+  }
+
+  return content;
+}

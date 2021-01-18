@@ -203,9 +203,9 @@ void ContentResponse::introduce_taskbar()
   data.set("title", m_bookTitle);
   data.set("withlibrarybutton", m_withLibraryButton);
   auto head_content = render_template(RESOURCE::templates::head_part_html, data);
-  m_content = appendToFirstOccurence(
+  m_content = prependToFirstOccurence(
     m_content,
-    "<head[^>]*>",
+    "</head[^>]*>",
     head_content);
 
   auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
