@@ -1,5 +1,21 @@
-
-
+/*
+ * Copyright 2019 Matthieu Gautier <mgautier@kymeria.fr>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU  General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 
 #include "response.h"
 #include "request_context.h"
@@ -187,9 +203,9 @@ void ContentResponse::introduce_taskbar()
   data.set("title", m_bookTitle);
   data.set("withlibrarybutton", m_withLibraryButton);
   auto head_content = render_template(RESOURCE::templates::head_part_html, data);
-  m_content = appendToFirstOccurence(
+  m_content = prependToFirstOccurence(
     m_content,
-    "<head[^>]*>",
+    "</head[ \\t]*>",
     head_content);
 
   auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
