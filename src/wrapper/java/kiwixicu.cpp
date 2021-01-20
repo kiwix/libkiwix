@@ -28,11 +28,7 @@
 
 #include "utils.h"
 
-#if __ANDROID__
-pthread_mutex_t globalLock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-#else
-pthread_mutex_t globalLock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-#endif
+std::mutex globalLock;
 
 JNIEXPORT void JNICALL Java_org_kiwix_kiwixlib_JNIICU_setDataDirectory(
     JNIEnv* env, jclass kclass, jstring dirStr)

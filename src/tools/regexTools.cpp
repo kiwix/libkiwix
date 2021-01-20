@@ -18,7 +18,6 @@
  */
 
 #include <tools/regexTools.h>
-#include <tools/lock.h>
 
 #include <unicode/regex.h>
 #include <unicode/ucnv.h>
@@ -26,10 +25,10 @@
 #include <memory>
 #include <map>
 #include <stdexcept>
-#include <pthread.h>
+#include <mutex>
 
 std::map<std::string, std::shared_ptr<icu::RegexPattern>> regexCache;
-static pthread_mutex_t regexLock = PTHREAD_MUTEX_INITIALIZER;
+static std::mutex regexLock;
 
 std::unique_ptr<icu::RegexMatcher> buildMatcher(const std::string& regex, icu::UnicodeString& content)
 {
@@ -39,7 +38,7 @@ std::unique_ptr<icu::RegexMatcher> buildMatcher(const std::string& regex, icu::U
     pattern = regexCache.at(regex);
   } catch (std::out_of_range&) {
     // Redo the search with a lock to avoid race condition.
-    kiwix::Lock l(&regexLock);
+    std::lock_guard<std::mutex> l(regexLock);
     try {
       pattern = regexCache.at(regex);
     } catch (std::out_of_range&) {
