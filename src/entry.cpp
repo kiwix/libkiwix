@@ -20,8 +20,6 @@
 #include "reader.h"
 #include <time.h>
 
-#include <zim/search.h>
-
 namespace kiwix
 {
 
