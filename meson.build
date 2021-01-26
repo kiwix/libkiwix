@@ -23,7 +23,12 @@ if ['arm', 'mips', 'm68k', 'ppc', 'sh4'].contains(target_machine.cpu_family())
   extra_libs += '-latomic'
 endif
 
-thread_dep = dependency('threads')
+if (compiler.get_id() == 'gcc' and build_machine.system() == 'linux') or target_machine.system() == 'freebsd'
+  # C++ std::thread is implemented using pthread on linux by gcc
+  thread_dep = dependency('threads')
+else
+  thread_dep = dependency('', required:false)
+endif
 libicu_dep = dependency('icu-i18n', static:static_deps)
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)

@@ -58,7 +58,6 @@ extern "C" {
 
 #include <mustache.hpp>
 
-#include <pthread.h>
 #include <atomic>
 #include <string>
 #include <vector>

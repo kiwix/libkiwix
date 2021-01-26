@@ -3,16 +3,16 @@
 
 #include "subprocess.h"
 
-#include <pthread.h>
-
+#include <atomic>
+#include <thread>
 
 class UnixImpl : public SubprocessImpl
 {
   private:
     int m_pid;
-    bool m_running;
-    pthread_mutex_t m_mutex;
-    pthread_t m_waitingThread;
+    std::atomic<bool> m_running;
+    std::atomic<bool> m_shouldQuit;
+    std::thread m_waitingThread;
 
   public:
     UnixImpl();
