@@ -93,8 +93,12 @@ zim::Archive* Reader::getZimArchive() const
 
 MimeCounterType Reader::parseCounterMetadata() const
 {
-  auto counterContent = zimArchive->getMetadata("Counter");
-  return parseMimetypeCounter(counterContent);
+  try {
+    auto counterContent = zimArchive->getMetadata("Counter");
+    return parseMimetypeCounter(counterContent);
+  } catch (zim::EntryNotFound& e) {
+    return {};
+  }
 }
 
 /* Get the count of articles which can be indexed/displayed */
