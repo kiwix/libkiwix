@@ -22,7 +22,7 @@ Package: libkiwix-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: libkiwix9 (= ${binary:Version}), ${misc:Depends}, python3,
+Depends: libkiwix10 (= ${binary:Version}), ${misc:Depends}, python3,
  libzim-dev (>= 6.0.0),
  libicu-dev,
  libpugixml-dev,
@@ -35,11 +35,11 @@ Description: library of common code for Kiwix (development)
  .
  This package contains development files.
 
-Package: libkiwix9
+Package: libkiwix10
 Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}, aria2
-Conflicts: libkiwix0, libkiwix3
+Conflicts: libkiwix0, libkiwix3, libkiwix9
 Description: library of common code for Kiwix
  Kiwix is an offline Wikipedia reader. libkiwix provides the
  software core for Kiwix, and contains the code shared by all

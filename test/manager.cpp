@@ -11,7 +11,7 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     kiwix::Manager manager = kiwix::Manager(&lib);
 
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim");
-    EXPECT_NE(bookId, "");
+    ASSERT_NE(bookId, "");
     kiwix::Book book = lib.getBookById(bookId);
     EXPECT_EQ(book.getPath(), computeAbsolutePath("", "./test/example.zim"));
     

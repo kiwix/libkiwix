@@ -24,7 +24,7 @@
 
 #include <jni.h>
 
-#include <pthread.h>
+#include <mutex>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -36,7 +36,7 @@
  #define LOG(...)
 #endif
 
-extern pthread_mutex_t globalLock;
+extern std::mutex globalLock;
 
 template<typename T>
 void setPtr(JNIEnv* env, jobject thisObj, T* ptr)
@@ -88,22 +88,10 @@ inline jobjectArray createArray(JNIEnv* env, size_t length, const std::string& t
   return env->NewObjectArray(length, c, NULL);
 }
 
-class Lock
+class Lock : public std::unique_lock<std::mutex>
 {
- protected:
-  pthread_mutex_t* lock;
-
  public:
-  Lock() : lock(&globalLock) { pthread_mutex_lock(lock); }
-  Lock(const Lock&) = delete;
-  Lock& operator=(const Lock&) = delete;
-  Lock(Lock&& other) : lock(&globalLock) { other.lock = nullptr; }
-  virtual ~Lock()
-  {
-    if (lock) {
-      pthread_mutex_unlock(lock);
-    }
-  }
+  Lock() : std::unique_lock<std::mutex>(globalLock) { }
 };
 
 template <class T>
