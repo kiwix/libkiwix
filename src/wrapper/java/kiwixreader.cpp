@@ -68,6 +68,7 @@ int jni2fd(const jobject& fdObj, JNIEnv* env)
 JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReaderByFD(
     JNIEnv* env, jobject obj, jobject fdObj)
 {
+#ifndef _WIN32
   int fd = jni2fd(fdObj, env);
 
   LOG("Attempting to create reader with fd: %d", fd);
@@ -80,11 +81,17 @@ JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReaderBy
     LOG(e.what());
     return 0;
   }
+#else
+  jclass exception = env->FindClass("java/lang/UnsupportedOperationException");
+  env->ThrowNew(exception, "org.kiwix.kiwixlib.JNIKiwixReader.getNativeReaderByFD() is not supported under Windows");
+  return 0;
+#endif
 }
 
 JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReaderEmbedded(
     JNIEnv* env, jobject obj, jobject fdObj, jlong offset, jlong size)
 {
+#ifndef _WIN32
   int fd = jni2fd(fdObj, env);
 
   LOG("Attempting to create reader with fd: %d", fd);
@@ -97,6 +104,11 @@ JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReaderEm
     LOG(e.what());
     return 0;
   }
+#else
+  jclass exception = env->FindClass("java/lang/UnsupportedOperationException");
+  env->ThrowNew(exception, "org.kiwix.kiwixlib.JNIKiwixReader.getNativeReaderEmbedded() is not supported under Windows");
+  return 0;
+#endif
 }
 
 JNIEXPORT void JNICALL

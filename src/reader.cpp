@@ -86,6 +86,7 @@ Reader::Reader(const string zimFilePath)
   srand(time(nullptr));
 }
 
+#ifndef _WIN32
 Reader::Reader(int fd)
   :  zimArchive(new zim::Archive(fd)),
      zimFilePath("")
@@ -101,6 +102,7 @@ Reader::Reader(int fd, zim::offset_type offset, zim::size_type size)
   /* initialize random seed: */
   srand(time(nullptr));
 }
+#endif // #ifndef _WIN32
 
 zim::Archive* Reader::getZimArchive() const
 {

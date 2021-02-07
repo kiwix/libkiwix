@@ -56,8 +56,10 @@ class Reader
    *                    (.zim extesion).
    */
   explicit Reader(const string zimFilePath);
+#ifndef _WIN32
   explicit Reader(int fd);
   Reader(int fd, zim::offset_type offset, zim::size_type size);
+#endif
   ~Reader() = default;
 
   /**
