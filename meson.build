@@ -1,5 +1,5 @@
 project('kiwix-lib', 'cpp',
-  version : '9.4.1', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
+  version : '9.5.0', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
   license : 'GPLv3+',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
 
@@ -43,7 +43,7 @@ else
   error('Cannot found header mustache.hpp')
 endif
 
-libzim_dep = dependency('libzim', version : '>=6.3.0', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=7.0.0', static:static_deps)
 if not compiler.has_header_symbol('zim/zim.h', 'LIBZIM_WITH_XAPIAN')
   error('Libzim seems to be compiled without xapian. Xapian support is mandatory.')
 endif
