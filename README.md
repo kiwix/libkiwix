@@ -18,15 +18,15 @@ Disclaimer
 
 This document assumes you have a little knowledge about software
 compilation. If you experience difficulties with the dependencies or
-with the Kiwix libary compilation itself, we recommend to have a look
+with the Kiwix library compilation itself, we recommend to have a look
 to [kiwix-build](https://github.com/kiwix/kiwix-build).
 
 Preamble
 --------
 
 Although the Kiwix library can be (cross-)compiled on/for many
-sytems, the following documentation explains how to do it on POSIX
-ones. It is primarly thought for GNU/Linux systems and has been tested
+systems, the following documentation explains how to do it on POSIX
+ones. It is primarily thought for GNU/Linux systems and has been tested
 on recent releases of Ubuntu and Fedora.
 
 Dependencies
