@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ahmad252",
+			"Alirezaaa",
+			"Amire80",
+			"Namo",
+			"Reza1615"
+		]
+	},
+	"uls-region-WW": "در سراسر جهان",
+	"uls-region-SP": "ویژه",
+	"uls-region-AM": "آمریکا",
+	"uls-region-AF": "آفریقا",
+	"uls-region-EU": "اروپا",
+	"uls-region-AS": "آسیا",
+	"uls-region-ME": "خاورمیانه",
+	"uls-region-PA": "اقیانوس آرام",
+	"uls-region-all": "همهٔ زبان‌ها",
+	"uls-no-results-found": "نتیجه‌ای یافت نشد",
+	"uls-common-languages": "زبان‌های پیشنهادشده",
+	"uls-no-results-suggestion-title": "ممکن است علاقه‌مند باشید:",
+	"uls-search-help": "شما می‌توانید بر پایه نام زبان، نام اسکریپت، کد استاندارد زبان یا بر پایه منطقه جستجو کنید.",
+	"uls-search-placeholder": "جستجوی زبان"
+}

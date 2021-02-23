@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Armando-Martin",
+			"Fitoschido",
+			"Macofe",
+			"McDutchie",
+			"Pginer",
+			"Santhosh.thottingal",
+			"Vivaelcelta"
+		]
+	},
+	"uls-region-WW": "Mundial",
+	"uls-region-SP": "Especial",
+	"uls-region-AM": "América",
+	"uls-region-AF": "África",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Medio Oriente",
+	"uls-region-PA": "Pacífico",
+	"uls-region-all": "Todos los idiomas",
+	"uls-no-results-found": "No se encontraron resultados",
+	"uls-common-languages": "Idiomas sugeridos",
+	"uls-no-results-suggestion-title": "Puedes estar interesado en:",
+	"uls-search-help": "Puedes buscar por el nombre del idioma, su tipo de escritura, el código ISO del idioma o buscar por región.",
+	"uls-search-placeholder": "Buscar un idioma"
+}

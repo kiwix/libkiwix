@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Biggs ZA",
+			"Fwolff",
+			"Joris Darlington Quarshie",
+			"Naudefj",
+			"Puvircho"
+		]
+	},
+	"uls-region-WW": "Wêreldwyd",
+	"uls-region-SP": "Spesiaal",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asië",
+	"uls-region-ME": "Midde-Ooste",
+	"uls-region-PA": "Stille Oseaan",
+	"uls-region-all": "Alle tale",
+	"uls-no-results-found": "Geen resultate gevind nie",
+	"uls-common-languages": "Voorgestelde tale",
+	"uls-no-results-suggestion-title": "U mag geïnteresseerd wees in:",
+	"uls-search-help": "Soek gerus volgens taalnaam, skrifnaam of ISO-kode, of blaai volgens streek.",
+	"uls-search-placeholder": "Soek na ’n taal"
+}

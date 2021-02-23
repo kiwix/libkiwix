@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Cyklopas",
+			"Eitvys200",
+			"Mantak111",
+			"Manvydasz",
+			"Zygimantus"
+		]
+	},
+	"uls-region-WW": "Visame pasaulyje",
+	"uls-region-SP": "Specialios",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Azija",
+	"uls-region-ME": "Artimieji Rytai",
+	"uls-region-PA": "Ramiojo vandenyno zona",
+	"uls-region-all": "Visos kalbos",
+	"uls-no-results-found": "Rezultatų nerasta",
+	"uls-common-languages": "Siūlomos kalbos",
+	"uls-no-results-suggestion-title": "Galbūt domina:",
+	"uls-search-help": "Galite ieškoti pagal kalbos pavadinimą, scenarijaus pavadinimą, ISO kalbos kodą arba galite naršyti pagal regioną.",
+	"uls-search-placeholder": "Ieškoti kalbos"
+}

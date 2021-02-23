@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"uls-region-WW": "Дерригдуьненан",
+	"uls-region-SP": "Леррина",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Ази",
+	"uls-region-ME": "Гергара Малхбале",
+	"uls-region-PA": "Океани",
+	"uls-region-all": "Берриге меттанаш",
+	"uls-no-results-found": "Цакарийна",
+	"uls-common-languages": "Ша дӀанисбелла меттанаш",
+	"uls-no-results-suggestion-title": "Хьуна хӀара меттанаш хьашта хила мега:",
+	"uls-search-help": "Хьа таро ю меттан я йозанан цӀарца лаха, меттан ISO-кодаца я регионаца хьажа.",
+	"uls-search-placeholder": "Лаха мотт"
+}

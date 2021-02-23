@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Girmitya"
+		]
+	},
+	"uls-region-WW": "Duniya bhar",
+	"uls-region-SP": "Khaas",
+	"uls-region-AM": "America",
+	"uls-region-AF": "Africa",
+	"uls-region-EU": "Europe",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Middle East",
+	"uls-region-PA": "Pacific",
+	"uls-region-all": "Sab bhaasa",
+	"uls-no-results-found": "Koi result nai milaa",
+	"uls-common-languages": "Suggested bhaasa",
+	"uls-no-results-suggestion-title": "Aap saait interested interested rahegaa:",
+	"uls-search-help": "Aap khoje saktaa hae bhaasa ke naam, script ke name, bhaasa ke ISO code, nai to, aap region se browse kare saktaa hai.",
+	"uls-search-placeholder": "Bhasa ke khojo"
+}

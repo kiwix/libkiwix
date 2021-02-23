@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Athena in Wonderland",
+			"MokaAkashiyaPT"
+		]
+	},
+	"uls-region-WW": "Global",
+	"uls-region-SP": "Special",
+	"uls-region-AM": "América",
+	"uls-region-AF": "África",
+	"uls-region-EU": "Ouropa",
+	"uls-region-AS": "Ásia",
+	"uls-region-ME": "Médio Ouriente",
+	"uls-region-PA": "Pacífico",
+	"uls-region-all": "Todas las lhénguas",
+	"uls-no-results-found": "Nó fúrun ancontrados resultados",
+	"uls-common-languages": "Lhénguas sugeridas",
+	"uls-no-results-suggestion-title": "Puode star antressado an:",
+	"uls-search-help": "Puode percurar pul nome de la lhéngua, pul tipo de abc, código ISO de la lhéngua, ó puode nabegar por region.",
+	"uls-search-placeholder": "Percurar por lhéngua"
+}

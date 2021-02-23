@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fitoschido",
+			"P. S. F. Freitas"
+		]
+	},
+	"uls-region-WW": "Yvóra",
+	"uls-region-SP": "Mba'echĩchĩ",
+	"uls-region-AM": "Amérika",
+	"uls-region-AF": "Áfrika",
+	"uls-region-EU": "Európa",
+	"uls-region-AS": "Ásia",
+	"uls-region-ME": "Mbyte Kuarahyresẽ",
+	"uls-region-PA": "Paraguasu Py'aguapy",
+	"uls-region-all": "Opa ñe'ẽ",
+	"uls-no-results-found": "Ndojuhu mba'e",
+	"uls-common-languages": "Ñe'ẽ ojeipuruvéva",
+	"uls-no-results-suggestion-title": "Nde ikatu reipotaː",
+	"uls-search-help": "Nde ikatu reheka ñe'ẽ héra rupi, tai ysaja rupi, ISO ñe'ẽ héra térã ñe'ẽ renda rupi.",
+	"uls-search-placeholder": "Ñe'ẽ jeheka"
+}

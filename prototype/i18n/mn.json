@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Saihanaaaa",
+			"Wisdom"
+		]
+	},
+	"uls-region-WW": "Дэлхий даяар",
+	"uls-region-SP": "Тусгай",
+	"uls-region-AM": "Америк",
+	"uls-region-AF": "Африк",
+	"uls-region-EU": "Европ",
+	"uls-region-AS": "Ази",
+	"uls-region-ME": "Дундад Ази",
+	"uls-region-PA": "Номхон далай",
+	"uls-region-all": "Бүх хэл",
+	"uls-no-results-found": "Үр дүн олдсонгүй",
+	"uls-common-languages": "Санал болгож буй хэл",
+	"uls-no-results-suggestion-title": "Санал болгох:",
+	"uls-search-help": "Та хэлээр, скриптийн нэрээр, хэлний ISO кодоор хайж болно, эсвэл газар нутгаар нь харж болно.",
+	"uls-search-placeholder": "Хэлний хайлт"
+}

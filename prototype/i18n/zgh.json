@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aslmad mohamed belarhzali",
+			"Hakim1bal"
+		]
+	},
+	"uls-region-WW": "ⴳ ⵓⵎⴰⴹⴰⵍ ⴰⴽⴽ",
+	"uls-region-SP": "ⴰⵎⵥⵍⵉ",
+	"uls-region-AM": "ⵜⴰⵎⵔⵉⴽⵜ",
+	"uls-region-AF": "ⵜⴰⴼⵔⵉⴽⵜ",
+	"uls-region-EU": "ⵜⵓⵔⵓⴼⵜ",
+	"uls-region-AS": "ⵜⴰⵣⵉⵜ",
+	"uls-region-ME": "ⴰⴳⵎⵓⴹ ⴰⵏⴰⵎⵎⴰⵙ",
+	"uls-region-PA": "ⴰⴳⴰⵔⴰⵡ ⵉⵎⵣⴳⵉ",
+	"uls-region-all": "ⵜⵓⵜⵍⴰⵢⵉⵏ ⵎⴰⵕⵕⴰ",
+	"uls-no-results-found": "ⵓⵔ ⵜⵜⵢⴰⴼⴰⵏⵜ ⵜⵢⴰⴼⵓⵜⵉⵏ",
+	"uls-common-languages": "ⵜⵓⵜⵍⴰⵢⵉⵏ ⵉⵜⵜⵙⵓⵎⵔⵏ",
+	"uls-search-placeholder": "ⵔⵣⵓ ⵖⴼ ⴽⵔⴰ ⵏ ⵜⵓⵜⵍⴰⵢⵜ"
+}

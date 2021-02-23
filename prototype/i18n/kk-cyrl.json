@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Arystanbek",
+			"Fontan 030"
+		]
+	},
+	"uls-region-WW": "Әлемдік тілдер",
+	"uls-region-SP": "Арнайы",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Еуропа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Таяу шығыс",
+	"uls-region-PA": "Тынық мұхит",
+	"uls-region-all": "Барлық тілдер",
+	"uls-no-results-found": "Ешбір нәтиже табылмады",
+	"uls-common-languages": "Ортақ тілдер",
+	"uls-no-results-suggestion-title": "Сіз қызықтауыңыз мүмкін:",
+	"uls-search-help": "Тіл атауы бойынша, скрипт аты, тілдің ISO коды бойынша ізей аласыз немесе аумағы бойынша шола аласыз.",
+	"uls-search-placeholder": "Тілді іздеу"
+}

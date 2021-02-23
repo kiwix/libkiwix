@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Liuxinyu970226",
+			"Xiaomingyan",
+			"Yfdyh000"
+		]
+	},
+	"uls-region-WW": "世界各地",
+	"uls-region-SP": "特别",
+	"uls-region-AM": "美洲",
+	"uls-region-AF": "非洲",
+	"uls-region-EU": "欧洲",
+	"uls-region-AS": "亚洲",
+	"uls-region-ME": "中东",
+	"uls-region-PA": "太平洋",
+	"uls-region-all": "所有语言",
+	"uls-no-results-found": "无搜索结果",
+	"uls-common-languages": "建议的语言",
+	"uls-no-results-suggestion-title": "您可能感兴趣：",
+	"uls-search-help": "您可以按语言名称、文字名称、语言的ISO代码搜索，或按地区浏览。",
+	"uls-search-placeholder": "搜索一种语言"
+}

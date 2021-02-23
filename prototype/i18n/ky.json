@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Growingup",
+			"Maksat",
+			"Викиней"
+		]
+	},
+	"uls-region-WW": "Бүткүл дүйнөлүк",
+	"uls-region-SP": "Атайын",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Жакынкы Чыгыш",
+	"uls-region-PA": "Океания",
+	"uls-no-results-found": "Жыйынтыктар табылган жок",
+	"uls-common-languages": "Жалпы тилдер",
+	"uls-no-results-suggestion-title": "Балким бул тилдер сизди кызыктырат:",
+	"uls-search-help": "Сиз тилдердин аталыштары, скрипта, тилдердин ISO коддору же болбосо аймагы боюнча издесеңиз болот",
+	"uls-search-placeholder": "Издөө тили"
+}

@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"KuboF",
+			"Objectivesea",
+			"Orikrin1998"
+		]
+	},
+	"uls-region-WW": "Tutmonda",
+	"uls-region-SP": "Speciala",
+	"uls-region-AM": "Ameriko",
+	"uls-region-AF": "Afriko",
+	"uls-region-EU": "Eŭropo",
+	"uls-region-AS": "Azio",
+	"uls-region-ME": "Mezoriento",
+	"uls-region-PA": "Pacifiko",
+	"uls-region-all": "Ĉiuj lingvoj",
+	"uls-no-results-found": "Neniu rezulto estis trovita",
+	"uls-common-languages": "Sugestataj lingvoj",
+	"uls-no-results-suggestion-title": "Vi eble interesiĝas pri:",
+	"uls-search-help": "Vi povas serĉi laŭ la lingvonomo, la skriptnomo aŭ la lingva ISO-kodo, aŭ vi povas foliumi laŭ regiono.",
+	"uls-search-placeholder": "Serĉi lingvon"
+}

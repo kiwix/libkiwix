@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"JVRKPRASAD",
+			"Veeven",
+			"WP MANIKHANTA"
+		]
+	},
+	"uls-region-WW": "ప్రపంచవ్యాప్తం",
+	"uls-region-SP": "ప్రత్యేకం",
+	"uls-region-AM": "అమెరికా",
+	"uls-region-AF": "ఆఫ్రికా",
+	"uls-region-EU": "ఐరోపా",
+	"uls-region-AS": "ఆసియా",
+	"uls-region-ME": "మధ్య తూర్పు",
+	"uls-region-PA": "పసిఫిక్",
+	"uls-region-all": "అన్ని భాషలు",
+	"uls-no-results-found": "ఫలితాలేమీ దొరకలేదు",
+	"uls-common-languages": "సూచించిన భాషలు",
+	"uls-no-results-suggestion-title": "మీకు దీనిలో ఆసక్తి ఉండవచ్చు:",
+	"uls-search-help": "మీరు భాష పేరు, లిపి పేరు, భాష ISO కోడు ద్వారా వెతకవచ్చు లేదా మీరు ప్రాంతం ద్వారా విహరింవచ్చు.",
+	"uls-search-placeholder": "భాష కొరకు వెతకండి"
+}

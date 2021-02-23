@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Paul Beppler"
+		]
+	},
+	"uls-region-WW": "Weltweit",
+	"uls-region-SP": "Spezial",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asie",
+	"uls-region-ME": "Mittlrer Ost",
+	"uls-region-PA": "Pazifik",
+	"uls-no-results-found": "Do woard ken Ergebniss gefund.",
+	"uls-common-languages": "Voargeschloohte Sproche",
+	"uls-no-results-suggestion-title": "Das könnt dich interssiere:",
+	"uls-search-help": "Du kannst nooh der Sproch ehr Noome suche, dem Schrift sein Noome, dem ISO-Code von der Sproch orrer awer die Such üwer en Reschion dorrichführe:",
+	"uls-search-placeholder": "Sprochesuch"
+}

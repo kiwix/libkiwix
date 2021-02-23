@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Aquilax",
+			"DCLXVI",
+			"StanProg",
+			"Vodnokon4e"
+		]
+	},
+	"uls-region-WW": "Световни",
+	"uls-region-SP": "Специални",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Близкия изток",
+	"uls-region-PA": "Тихия океан",
+	"uls-region-all": "Всички езици",
+	"uls-no-results-found": "Не бяха открити резултати",
+	"uls-common-languages": "Предложени езици",
+	"uls-no-results-suggestion-title": "Може би се интересувате от:",
+	"uls-search-help": "Можете да търсите по име на език, име на скрипт, ISO кода на език или да разглеждате по региони.",
+	"uls-search-placeholder": "Търсене на език"
+}

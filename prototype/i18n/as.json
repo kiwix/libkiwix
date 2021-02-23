@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dibya Dutta",
+			"Mohsin Ali",
+			"Nilamdyuti"
+		]
+	},
+	"uls-region-WW": "বিশ্বব্যাপী",
+	"uls-region-SP": "বিশেষ",
+	"uls-region-AM": "আমেৰিকা",
+	"uls-region-AF": "আফ্ৰিকা",
+	"uls-region-EU": "ইউৰোপ",
+	"uls-region-AS": "এছিয়া",
+	"uls-region-ME": "মধ্যপ্রাচ্য",
+	"uls-region-PA": "পেচিফিক",
+	"uls-region-all": "সকলো ভাষা",
+	"uls-no-results-found": "কোনো ফলাফল পোৱা নগ'ল",
+	"uls-common-languages": "পৰামৰ্শমূলক ভাষাসমূহ",
+	"uls-no-results-suggestion-title": "আপুনি আগ্ৰহী হ'ব পাৰে:",
+	"uls-search-help": "আপুনি ভাষাৰ নাম, লিপিৰ নাম, ভাষাৰ ISO ক'ড সাপেক্ষে সন্ধান কৰিব পাৰে অথবা অঞ্চল সাপেক্ষে ব্ৰাউজ কৰিব পাৰে।",
+	"uls-search-placeholder": "ভাষা এটাৰ সন্ধান কৰক"
+}

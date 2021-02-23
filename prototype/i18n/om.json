@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Oromoo",
+			"Tumsaa"
+		]
+	},
+	"uls-region-WW": "Addunyaalessa",
+	"uls-region-SP": "Addayaa",
+	"uls-region-AM": "Ameerikaa",
+	"uls-region-AF": "Aafrikaa",
+	"uls-region-EU": "Yuurooppi",
+	"uls-region-AS": "Eeshiyaa",
+	"uls-region-ME": "Giddu-galeessa Bahaa",
+	"uls-region-PA": "Paasifiik",
+	"uls-region-all": "Afaan hunda",
+	"uls-no-results-found": "Homtuu hin argamane",
+	"uls-common-languages": "Afaan filannoo",
+	"uls-no-results-suggestion-title": "Kana barbaaduu dandeessa:",
+	"uls-search-help": "Maqaa afaaniin, maqaa iskiriptiin, ykn ISO koodii afaaniin barbaaduu ykn naannodhaan sakatta'uu dandeessa.",
+	"uls-search-placeholder": "Barbaacha Afaanii"
+}

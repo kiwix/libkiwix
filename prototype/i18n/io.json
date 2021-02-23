@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Algentem",
+			"Joao Xavier",
+			"Robin van der Vliet"
+		]
+	},
+	"uls-region-WW": "Tota mondo",
+	"uls-region-SP": "Specala",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Azia",
+	"uls-region-ME": "Mez-Esto",
+	"uls-region-PA": "Pacifiko",
+	"uls-region-all": "Omna lingui",
+	"uls-no-results-found": "Ne trovis ulo",
+	"uls-common-languages": "Sugestanta lingui",
+	"uls-search-help": "Vu povas serchar segun linguala kodexo, nomo dil 'script', kodexo ISO por la linguo, o vu povas serchar segun la regiono.",
+	"uls-search-placeholder": "Serchar linguo"
+}

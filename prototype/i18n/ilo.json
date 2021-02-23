@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lam-ang"
+		]
+	},
+	"uls-region-WW": "Sangalubongan",
+	"uls-region-SP": "Espesial",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Aprika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Tengnga a Daya",
+	"uls-region-PA": "Pasipiko",
+	"uls-no-results-found": "Awan dagiti nabirukan a resulta",
+	"uls-common-languages": "Dagiti kadawyan a pagsasao",
+	"uls-no-results-suggestion-title": "Mabalin nga interesadoka iti:",
+	"uls-search-help": "Mabalinmo ti agbiruk babaen ti nagan ti pagsasao, nagan ti eskritu, ISO a kodigo ti pagsasao wenno agbasabasaka babaen ti rehion:",
+	"uls-search-placeholder": "Panagbiruk ti pagsasao"
+}

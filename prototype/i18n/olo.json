@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ilja.mos"
+		]
+	},
+	"uls-region-WW": "Muailman lajuine",
+	"uls-region-SP": "Erikoine",
+	"uls-region-AM": "Amerikku",
+	"uls-region-AF": "Afriekku",
+	"uls-region-EU": "Jevrouppu",
+	"uls-region-AS": "Aazii",
+	"uls-region-ME": "Lähi-idä",
+	"uls-region-PA": "Okeanii",
+	"uls-region-all": "Kai kielet",
+	"uls-no-results-found": "Ei löydynyh tuloksii",
+	"uls-common-languages": "Automuattizesti vallitut kielet",
+	"uls-no-results-suggestion-title": "Voit olla kiinnostunnuh nämmis kielis:",
+	"uls-search-help": "Voit eččie kielen nimen libo kirjutustavan mugah, kielen ISO-koudan mugah libo kaččuo alovehen kielii.",
+	"uls-search-placeholder": "Eči kieli"
+}

@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gazimagomedov"
+		]
+	},
+	"uls-region-WW": "ГӀаламиял",
+	"uls-region-SP": "Хассал",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "АскӀосаб Магъриб",
+	"uls-region-PA": "Океания",
+	"uls-no-results-found": "Щибниги жо батинчӀо",
+	"uls-common-languages": "Жалго жедедаго рищарал мацӀал",
+	"uls-no-results-suggestion-title": "Дур интерес гьал мацӀазда ккезе батила:",
+	"uls-search-help": "МацӀалъул яги хъвай-хъваялъул цӀаразда рекъон цӀехезе бегьула, яги мацӀалъул ISO-кодалда рекъон. Гьединго бегьула регион бищун балагьизе:",
+	"uls-search-placeholder": "МацӀ цӀехей"
+}

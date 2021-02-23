@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Erdemaslancan",
+			"Patriot Kur",
+			"Гусейн"
+		]
+	},
+	"uls-region-WW": "Həmədınyo",
+	"uls-region-SP": "Xısusi",
+	"uls-region-AM": "Əmerikə",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Avropə",
+	"uls-region-AS": "Asiyə",
+	"uls-region-ME": "Miyonə Şərğ",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Həmə zıvonon",
+	"uls-no-results-found": "Hiçi pəydo bıəni",
+	"uls-common-languages": "Tovsiyə kardə bıə zıvonon",
+	"uls-no-results-suggestion-title": "Bəzne bə ki bo şımə marağinin ın zıvonon:",
+	"uls-search-help": "Шымә бәзнејон де зывони номи ја нывыштәј нәве, де зывони ISO-коди ја де вилојәти дијә карде.",
+	"uls-search-placeholder": "Bınəv zıvoni"
+}

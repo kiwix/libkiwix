@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"C.R.",
+			"Chelin",
+			"Ruthven"
+		]
+	},
+	"uls-region-WW": "Munno intero",
+	"uls-region-SP": "Speciale",
+	"uls-region-AM": "Amereca",
+	"uls-region-AF": "Afreca",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Medio oriente",
+	"uls-region-PA": "Pacifico",
+	"uls-region-all": "Tuttuquante 'e llengue",
+	"uls-no-results-found": "Nisciuno risultato",
+	"uls-common-languages": "Llèngue suggerite",
+	"uls-no-results-suggestion-title": "Puo essere interessato a:",
+	"uls-search-help": "Puo cercà pe nomme, nomme dd’’o script, codece ISO dd’’a lengua o naviggà nfra ’e reggiune.",
+	"uls-search-placeholder": "Tròva na lengua"
+}

@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Bouron",
+			"Eleferen",
+			"Kaganer",
+			"Kopcap94",
+			"Okras"
+		]
+	},
+	"uls-region-WW": "Всемирные",
+	"uls-region-SP": "Специальные",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Ближний Восток",
+	"uls-region-PA": "Океания",
+	"uls-region-all": "Все языки",
+	"uls-no-results-found": "Не найдено",
+	"uls-common-languages": "Предложенные языки",
+	"uls-no-results-suggestion-title": "Может быть вас заинтересуют эти языки:",
+	"uls-search-help": "Вы можете искать по названию языка или письменности, по ISO-коду языка или просмотреть по региону.",
+	"uls-search-placeholder": "Поиск языка"
+}

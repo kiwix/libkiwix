@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Dvorapa",
+			"Mormegil"
+		]
+	},
+	"uls-region-WW": "Celosvětové",
+	"uls-region-SP": "Speciální",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Evropa",
+	"uls-region-AS": "Asie",
+	"uls-region-ME": "Blízký východ",
+	"uls-region-PA": "Tichomoří",
+	"uls-region-all": "Všechny jazyky",
+	"uls-no-results-found": "Nenalezeny žádné výsledky",
+	"uls-common-languages": "Doporučené jazyky",
+	"uls-no-results-suggestion-title": "Mohlo by vás zajímat:",
+	"uls-search-help": "Můžete vyhledávat podle názvu jazyka, názvu písma, ISO kódu jazyka nebo můžete procházet po regionech.",
+	"uls-search-placeholder": "Hledat jazyk"
+}

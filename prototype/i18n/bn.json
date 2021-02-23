@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aftabuzzaman",
+			"Bellayet",
+			"Nasir8891",
+			"Sankarshan",
+			"Sayak Sarkar",
+			"আফতাবুজ্জামান"
+		]
+	},
+	"uls-region-WW": "বিশ্বব্যাপী",
+	"uls-region-SP": "বিশেষ",
+	"uls-region-AM": "আমেরিকা",
+	"uls-region-AF": "আফ্রিকা",
+	"uls-region-EU": "ইউরোপ",
+	"uls-region-AS": "এশিয়া",
+	"uls-region-ME": "মধ্যপ্রাচ্য",
+	"uls-region-PA": "প্রশান্ত মহাসাগরীয়",
+	"uls-region-all": "সকল ভাষা",
+	"uls-no-results-found": "কোনো ফলাফল পাওয়া যায়নি",
+	"uls-common-languages": "প্রস্তাবিত ভাষাসমূহ",
+	"uls-no-results-suggestion-title": "আপনি হয়তো আগ্রহী হতে পারেন:",
+	"uls-search-help": "আপনি ভাষার নাম, স্ক্রিপ্টের নাম, ভাষার আইএসও কোড অথবা এলাকার ভিত্তিক অনুসন্ধান করতে পারবেন।",
+	"uls-search-placeholder": "একটি ভাষার জন্য অনুসন্ধান করুন"
+}

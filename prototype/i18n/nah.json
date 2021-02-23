@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Akapochtli",
+			"Ricardo gs",
+			"Taresi",
+			"Teòtlalili"
+		]
+	},
+	"uls-region-WW": "Nohuiyanyoh",
+	"uls-region-SP": "Noncuahquizqui",
+	"uls-region-AM": "America",
+	"uls-region-AF": "Africa",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Ihuic Tlahuiztlampa",
+	"uls-region-PA": "Pacifico",
+	"uls-region-all": "Ipan mochi tlahtolli",
+	"uls-no-results-found": "Ahmo omahcic tlen motemoa",
+	"uls-common-languages": "Mitzhuelittaz inin tlahtolli",
+	"uls-no-results-suggestion-title": "Ahzo timoyolehuaz ica inin:",
+	"uls-search-help": "Huel tictemoz in tlahtolli ipal tlahtolli itoca, nozo itlahcuilol, nozo ipal ISO imachiyonecaquiliz, nozo huel tictemoz zan iuh itlalpan.",
+	"uls-search-placeholder": "Tlatemoliztli itech ce tlahtolli"
+}

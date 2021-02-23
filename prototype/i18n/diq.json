@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Asmen",
+			"Erdemaslancan",
+			"Gorizon",
+			"Gırd",
+			"Kumkumuk",
+			"Marmase",
+			"Mirzali"
+		]
+	},
+	"uls-region-WW": "Dınyayi",
+	"uls-region-SP": "Xısusi",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Ewropa",
+	"uls-region-AS": "Asya",
+	"uls-region-ME": "Rocvetışê Miyani",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Zıwani pêro",
+	"uls-no-results-found": "Neticeyi nêvêniyayi",
+	"uls-common-languages": "Zıwanê ke estê.",
+	"uls-no-results-suggestion-title": "Belki şıma cıya eleqederi:",
+	"uls-search-help": "Şıma şenê name dê zıwaniya, skript kodiya, ISO qodiya yana mıntıqa heta cıgeyrayış bıkerê.",
+	"uls-search-placeholder": "Yew zıwani cı geyre"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"NehalDaveND"
+		]
+	},
+	"uls-region-WW": "विश्वव्यापी",
+	"uls-region-SP": "महत्त्वपूर्णम्",
+	"uls-region-AM": "अमेरिका",
+	"uls-region-AF": "कालद्वीपः",
+	"uls-region-EU": "यूरोप",
+	"uls-region-AS": "जम्बुमहाद्वीपः",
+	"uls-region-ME": "मध्यभूभागे",
+	"uls-region-PA": "पॅसिफिक्",
+	"uls-region-all": "सर्वाः भाषाः",
+	"uls-no-results-found": "परिणामाः न लब्धाः",
+	"uls-common-languages": "परामर्षिताः भाषाः",
+	"uls-no-results-suggestion-title": "एतत् भवते/भवत्यै रोचेत :",
+	"uls-search-help": "भाषाधारेण, लिप्याधारेण, भाषायाः ISO कूटाधारेण, क्षेत्रानुसारं वा भवान्/भवती अन्वेष्टुं शक्नोति ।",
+	"uls-search-placeholder": "भाषा अन्विष्यताम्"
+}

@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Jaroslav.micek",
+			"Rudko"
+		]
+	},
+	"uls-region-WW": "Po celom svete",
+	"uls-region-SP": "Špeciálne",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Európa",
+	"uls-region-AS": "Ázia",
+	"uls-region-ME": "Blízky východ",
+	"uls-region-PA": "Pacifik",
+	"uls-region-all": "Všetky jazyky",
+	"uls-no-results-found": "Neboli nájdené žiadne výsledky",
+	"uls-common-languages": "Jazyky",
+	"uls-no-results-suggestion-title": "Mohlo by Vás zaujímať:",
+	"uls-search-help": "Môžete vyhľadávať podľa názvu jazyka, názvu písma, ISO kódu jazyka alebo môžete prechádzať po regiónoch:",
+	"uls-search-placeholder": "Vyhľadávanie jazyka"
+}

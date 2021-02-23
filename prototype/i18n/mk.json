@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"uls-region-WW": "Светски",
+	"uls-region-SP": "Посебни",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азија",
+	"uls-region-ME": "Близок Исток",
+	"uls-region-PA": "Океанија",
+	"uls-region-all": "Сите јазици",
+	"uls-no-results-found": "Не пронајдов ништо",
+	"uls-common-languages": "Предложени јазици",
+	"uls-no-results-suggestion-title": "Може да ве интересираат:",
+	"uls-search-help": "Можете да пребарувате по име на јазикот или писмото, по ISO-код на јазикот или пак да разгледате по региони.",
+	"uls-search-placeholder": "Пребарување на јазик"
+}

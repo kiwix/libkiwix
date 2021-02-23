@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adam-Yourist",
+			"Sapral Mikail"
+		]
+	},
+	"uls-region-WW": "Дерригача дунен",
+	"uls-region-SP": "ЛаьрххIа дараш",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Ази",
+	"uls-region-ME": "Гаргара Малхбоале",
+	"uls-region-PA": "Океани",
+	"uls-region-all": "Деррига метташ",
+	"uls-no-results-found": "Корадаьдац",
+	"uls-common-languages": "Харжа оттадаь дола метташ",
+	"uls-no-results-suggestion-title": "Ер метташ шун теркдар т|алаца мега:",
+	"uls-search-help": "Меттай ц|ераца е йоазувдарца лаха тарло, иззамо ISO-меттач|егаца е купаца тахка а.",
+	"uls-search-placeholder": "Мотт лахар"
+}

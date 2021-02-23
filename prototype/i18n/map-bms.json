@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"StefanusRA"
+		]
+	},
+	"uls-region-WW": "Sak ndonya",
+	"uls-region-SP": "Khusus",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Eropa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Timur Tengah",
+	"uls-region-PA": "Pasifik",
+	"uls-no-results-found": "Ora nemokna hasile",
+	"uls-common-languages": "Basa-basa sing umum",
+	"uls-no-results-suggestion-title": "Rika ndeyane seneng:",
+	"uls-search-help": "Rika teyeng nggoleti nganggo jeneng basa, jeneng skrip, kode ISO ne basa utawa Rika teyeng nggoleti per wilayaeh:",
+	"uls-search-placeholder": "Ngoleti basa"
+}

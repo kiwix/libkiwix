@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nirajan pant",
+			"रमेश सिंह बोहरा"
+		]
+	},
+	"uls-region-WW": "विश्वभर",
+	"uls-region-SP": "खास",
+	"uls-region-AM": "अमेरिका",
+	"uls-region-AF": "अफ्रिका",
+	"uls-region-EU": "युरोप",
+	"uls-region-AS": "एसिया",
+	"uls-region-ME": "मध्य पूर्व",
+	"uls-region-PA": "प्रशान्त",
+	"uls-region-all": "जम्माइ भाषान",
+	"uls-no-results-found": "कोइ पन नतिजाहरू नाइभेटिया",
+	"uls-common-languages": "सुझावित भाषाअन",
+	"uls-no-results-suggestion-title": "तमलाई यैमी मन लाग्गसकन्छ:",
+	"uls-search-help": "तम भषा: नाउँले, लिपिया नाउँले, भषा: ISO कोड खोजिसकन्छ: या क्षेत्रा आधारमी ब्राउज अरिसकन्छ:।",
+	"uls-search-placeholder": "भाषा खिलाइ खोजी अरऽ"
+}

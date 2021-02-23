@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Servien"
+		]
+	},
+	"uls-region-WW": "Wereldwied",
+	"uls-region-SP": "Spesiaal",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Azië",
+	"uls-region-ME": "Midden-Oosten",
+	"uls-region-PA": "Stille Zeegebied",
+	"uls-no-results-found": "Gien resultaoten evunnen",
+	"uls-common-languages": "Taalsuggesties",
+	"uls-no-results-suggestion-title": "Misschien wi'j een van de volgende talen kiezen:",
+	"uls-search-help": "Je kunnen zeuken op taalnaam, schriftnaam, ISO-kode van de taal of je kunnen per regio deurblaojen:",
+	"uls-search-placeholder": "Taal zeuken"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"uls-region-WW": "Mundial",
+	"uls-region-SP": "Special",
+	"uls-region-AM": "America",
+	"uls-region-AF": "Africa",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Medio oriente",
+	"uls-region-PA": "Pacific",
+	"uls-region-all": "Tote le linguas",
+	"uls-no-results-found": "Nulle resultato trovate",
+	"uls-common-languages": "Linguas suggerite",
+	"uls-no-results-suggestion-title": "Tu pote esser interessate in:",
+	"uls-search-help": "Tu pote cercar per nomine de lingua, nomine de scriptura o codice ISO de lingua, o tu pote foliar per le regiones.",
+	"uls-search-placeholder": "Cercar un lingua"
+}

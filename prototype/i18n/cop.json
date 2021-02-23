@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bloomaround",
+			"ⲁϩⲙⲉⲧ"
+		]
+	},
+	"uls-region-WW": "ⲡⲓⲑⲟ ⲧⲏⲣϥ",
+	"uls-region-AM": "ⲁⲙⲉⲣⲓⲕⲏ",
+	"uls-region-AF": "ⲁⲫⲣⲓⲕⲏ",
+	"uls-region-EU": "ⲉⲩⲣⲱⲡⲏ",
+	"uls-region-AS": "ⲁⲥⲓⲁ",
+	"uls-region-ME": "ⲡⲓⲉⲃⲧ `ⲛⲑⲙⲏϯ",
+	"uls-region-PA": "ⲱⲕⲉⲁⲛⲓⲁ",
+	"uls-region-all": "ⲁⲥⲡⲓ ⲛⲓⲃⲉⲛ",
+	"uls-no-results-found": "ⲁⲩϫⲓⲙⲓ ⲁⲛ ⲛⲓⲁⲡⲟⲧⲉⲗⲉⲥⲙⲁ",
+	"uls-common-languages": "ⲛⲓⲁⲥⲡⲓ ⲁⲩϯⲙⲉⲩⲓ",
+	"uls-search-help": "ⲧⲉⲧⲉⲛϫⲉⲙϫⲟⲙ ⲉϫⲉⲙⲣⲁⲧ ϩⲉⲛ ⲡⲓⲣⲁⲛ ⲛⲧⲉ ⲟⲩⲁⲥⲡⲓ, ⲡⲓⲣⲁⲛ ⲛⲧⲉ ⲟⲩⲙⲉⲧⲥϦⲁⲓ, ⲟⲩϣⲓϥⲣ `ⲛISO ⲛⲧⲉ ⲁⲥⲡⲓ ⲓⲉ ⲧⲉⲧⲉⲛϫⲉⲙϫⲟⲙ ⲉⲥⲓⲛⲓ ϧⲁⲧⲉⲛⲟⲩⲭⲱⲣⲁ",
+	"uls-search-placeholder": "ϫⲉⲙⲣⲁⲧⲕ `ⲛⲟⲩⲁⲥⲡⲓ"
+}

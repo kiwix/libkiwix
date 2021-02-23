@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"HalanTul"
+		]
+	},
+	"uls-region-WW": "Аан дойду",
+	"uls-region-SP": "Аналлаах",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Чугас Илин",
+	"uls-region-PA": "Океания",
+	"uls-region-all": "Бары тыллар",
+	"uls-no-results-found": "Туох да көстүбэтэ",
+	"uls-common-languages": "Сүбэлэнэр тыллар",
+	"uls-no-results-suggestion-title": "Баҕар бу тыллары сэргиэҥ:",
+	"uls-search-help": "Тыл биитэр сурук-бичик аатынан, ISO-куодунан биитэр сиринэн көрдүөххүн сөп.",
+	"uls-search-placeholder": "Тылы көрдөөһүн"
+}

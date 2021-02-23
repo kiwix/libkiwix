@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dr Lotus Black",
+			"Ninjastrikers"
+		]
+	},
+	"uls-region-WW": "တစ်ကမ္ဘာလုံး",
+	"uls-region-SP": "အထူး",
+	"uls-region-AM": "အမေရိက",
+	"uls-region-AF": "အာဖရိက",
+	"uls-region-EU": "ဥရောပ",
+	"uls-region-AS": "အာရှ",
+	"uls-region-ME": "အရှေ့အလယ်ပိုင်း",
+	"uls-region-PA": "ပစိဖိတ်",
+	"uls-region-all": "ဘာသာစကားများ အားလုံး",
+	"uls-no-results-found": "မည်သည့်ရလဒ်မျှ မရပါ",
+	"uls-common-languages": "အကြံပေးသော ဘာသာစကားများ",
+	"uls-search-placeholder": "ဘာသာစကားတစ်ခုအတွက် ရှာဖွေရန်"
+}

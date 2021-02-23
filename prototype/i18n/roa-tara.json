@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joetaras"
+		]
+	},
+	"uls-region-WW": "Tutte 'u munne",
+	"uls-region-SP": "Speciale",
+	"uls-region-AM": "Americhe",
+	"uls-region-AF": "Afriche",
+	"uls-region-EU": "Europe",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Medie oriende",
+	"uls-region-PA": "Pacifeche",
+	"uls-region-all": "Tutte le lènghe",
+	"uls-no-results-found": "Nisciune resultate acchiate",
+	"uls-common-languages": "Lènghe suggerite",
+	"uls-no-results-suggestion-title": "Puè essere 'nderessate a:",
+	"uls-search-help": "Puè cercà pe nome d'a lènghe, nome d'u script, codece ISO d'a lènghe o puè navegà passanne pa reggione.",
+	"uls-search-placeholder": "Cirche 'na lènghe"
+}

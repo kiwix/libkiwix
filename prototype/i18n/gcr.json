@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"LeGuyanaisPure"
+		]
+	},
+	"uls-region-WW": "Annan monn antché",
+	"uls-region-SP": "Èspésyal",
+	"uls-region-AM": "Lanmérik",
+	"uls-region-AF": "Lafrik",
+	"uls-region-EU": "Léròp",
+	"uls-region-AS": "Lazi",
+	"uls-region-ME": "Mwayen-Loryan",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Tout lanng-yan",
+	"uls-no-results-found": "Pyès rézilta trouvé",
+	"uls-common-languages": "Lanng sigjéré",
+	"uls-no-results-suggestion-title": "Ou pouvé fika entérésé pa :",
+	"uls-search-help": "Ou pouvé sasé pa non di lanng, pa non di lékritir-a, pa kod ISO di lanng-an, oben ou pouvé navigé pa réjyon.",
+	"uls-search-placeholder": "Sasé roun lanng"
+}

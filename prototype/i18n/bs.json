@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"DzWiki",
+			"Edinwiki",
+			"Srdjan m",
+			"Srđan"
+		]
+	},
+	"uls-region-WW": "Svjetski",
+	"uls-region-SP": "Posebno",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Evropa",
+	"uls-region-AS": "Azija",
+	"uls-region-ME": "Bliski istok",
+	"uls-region-PA": "Pacifik",
+	"uls-region-all": "Svi jezici",
+	"uls-no-results-found": "Nema pronađenih rezultata",
+	"uls-common-languages": "Predloženi jezici",
+	"uls-no-results-suggestion-title": "Možda vas interesuje:",
+	"uls-search-help": "Možete da tražite po imenu jezika ili pisma, po ISO kodu jezika ili po regionu.",
+	"uls-search-placeholder": "Pronađi jezik"
+}

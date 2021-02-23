@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Guycn2",
+			"Inkbug"
+		]
+	},
+	"uls-region-WW": "עולמי",
+	"uls-region-SP": "מיוחדות",
+	"uls-region-AM": "אמריקה",
+	"uls-region-AF": "אפריקה",
+	"uls-region-EU": "אירופה",
+	"uls-region-AS": "אסיה",
+	"uls-region-ME": "המזרח התיכון",
+	"uls-region-PA": "האוקיינוס השקט",
+	"uls-region-all": "כל השפות",
+	"uls-no-results-found": "לא נמצאו תוצאות",
+	"uls-common-languages": "שפות מוצעות",
+	"uls-no-results-suggestion-title": "אולי זה יעניין אותך:",
+	"uls-search-help": "אפשר לחפש לפי שם שפה, שם שיטת הכתב, קוד ISO של השפה, או ניתן לעיין לפי אזור.",
+	"uls-search-placeholder": "חיפוש שפה"
+}

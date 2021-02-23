@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Muhammad Shuaib",
+			"Obaid Raza"
+		]
+	},
+	"uls-region-WW": "دنیا بھر میں",
+	"uls-region-SP": "خاص",
+	"uls-region-AM": "امریکا",
+	"uls-region-AF": "افریقہ",
+	"uls-region-EU": "یورپ",
+	"uls-region-AS": "ایشیا",
+	"uls-region-ME": "مشرق وسطی",
+	"uls-region-PA": "بحر الکاہل",
+	"uls-region-all": "تمام زبانیں",
+	"uls-no-results-found": "مطلوبہ نتائج نہیں ملے",
+	"uls-common-languages": "تجویز کردہ زبانیں",
+	"uls-no-results-suggestion-title": "شاید آپ ان میں دلچسپی لیں:",
+	"uls-search-help": "آپ زبان کے نام، اسکرپٹ، زبان کے آئی ایس او رمز کے ذریعہ تلاش کر سکتے ہیں، یا خطہ وار بھی ڈھونڈ سکتے ہیں۔",
+	"uls-search-placeholder": "زبان تلاش کریں"
+}

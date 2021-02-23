@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"PiefPafPier",
+			"Robin van der Vliet",
+			"Robin0van0der0vliet"
+		]
+	},
+	"uls-region-WW": "Wrâldwiid",
+	"uls-region-SP": "Spesjaal",
+	"uls-region-AM": "Amearika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Jeropa",
+	"uls-region-AS": "Aazje",
+	"uls-region-ME": "Midden-Easten",
+	"uls-region-PA": "Pasifysk gebiet",
+	"uls-region-all": "Alle talen",
+	"uls-no-results-found": "Gjin resultaten fûn",
+	"uls-common-languages": "Taalsuggestjes",
+	"uls-no-results-suggestion-title": "Faaks stelle jo belang yn:",
+	"uls-search-help": "Jo kinne op taalnamme, skriftnamme, ISO-koade fan 'e taal sykje of it op gebiet trochsjen.",
+	"uls-search-placeholder": "Taal sykje"
+}

@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alex Khimich",
+			"Amire80",
+			"Andriykopanytsia",
+			"Base",
+			"Piramidion"
+		]
+	},
+	"uls-region-WW": "Всесвітні",
+	"uls-region-SP": "Спеціальні",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Європа",
+	"uls-region-AS": "Азія",
+	"uls-region-ME": "Близький Схід",
+	"uls-region-PA": "Океанія",
+	"uls-region-all": "Усі мови",
+	"uls-no-results-found": "Не знайдено результатів",
+	"uls-common-languages": "Пропоновані мови",
+	"uls-no-results-suggestion-title": "Ви можете бути зацікавленими у:",
+	"uls-search-help": "Ви можете шукати за назвою мови або писемності, ISO-коду мови, або можете вказати регіон.",
+	"uls-search-placeholder": "Пошук мови"
+}

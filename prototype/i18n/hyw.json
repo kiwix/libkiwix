@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Armeniki"
+		]
+	},
+	"uls-region-WW": "Համաշխարհային",
+	"uls-region-SP": "Յատուկ",
+	"uls-region-AM": "Ամերիկա",
+	"uls-region-AF": "Ափրիկէ",
+	"uls-region-EU": "Եւրոպա",
+	"uls-region-AS": "Ասիա",
+	"uls-region-ME": "Միջին Արեւելք",
+	"uls-region-PA": "Խաղաղական",
+	"uls-region-all": "Ամէն լեզուները",
+	"uls-no-results-found": "Հետեւանք չը գտնուեձաւ",
+	"uls-common-languages": "Թելադրուած լեզուներ",
+	"uls-no-results-suggestion-title": "Կարելի է ձեզ հետաքրքրական ըլլայ․",
+	"uls-search-help": "Կրնաք որոնել լեզուի անունով, տարերու անունով, լեզուի ISO-ի օրինագիրով կամ կրնաք նայիլ շրջանով:",
+	"uls-search-placeholder": "Որոնել լեզու մը"
+}

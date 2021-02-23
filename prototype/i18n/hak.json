@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jetlag"
+		]
+	},
+	"uls-region-WW": "全世界",
+	"uls-region-SP": "特別",
+	"uls-region-AM": "美洲",
+	"uls-region-AF": "非洲",
+	"uls-region-EU": "歐洲",
+	"uls-region-AS": "亞洲",
+	"uls-region-ME": "中東",
+	"uls-region-PA": "太平洋",
+	"uls-no-results-found": "尋毋到任何結果",
+	"uls-common-languages": "常用語言",
+	"uls-no-results-suggestion-title": "爾可能感興趣：",
+	"uls-search-help": "爾可以按語言名稱、程式碼名稱、語言ISO代碼搜索，也可以按區域瀏覽：",
+	"uls-search-placeholder": "語言搜索"
+}

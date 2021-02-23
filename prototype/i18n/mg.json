@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jagwar"
+		]
+	},
+	"uls-region-WW": "Erak'izao tontolo izao",
+	"uls-region-SP": "Manokana",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Eoropa",
+	"uls-region-AS": "Azia",
+	"uls-region-ME": "Afovoany Atsinanana",
+	"uls-region-PA": "Pasifika",
+	"uls-region-all": "Fiteny rehetra",
+	"uls-no-results-found": "Tsy nahitana valiny",
+	"uls-common-languages": "Fiteny atao soson-kevitra",
+	"uls-no-results-suggestion-title": "Mety ahitanao tombon-tsoa:",
+	"uls-search-help": "Afaka mikaroka araka ny anaran'ny tenim-pirena, anaran-tsoratra, kaody ISO-n'ny teny na afaka mifidy araky ny faritra.",
+	"uls-search-placeholder": "Hitady fiteny"
+}

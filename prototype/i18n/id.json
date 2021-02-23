@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bennylin",
+			"Farras",
+			"Iwan Novirion",
+			"J Nia30",
+			"NoiX180"
+		]
+	},
+	"uls-region-WW": "Seluruh dunia",
+	"uls-region-SP": "Khusus",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Eropa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Timur Tengah",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Semua bahasa",
+	"uls-no-results-found": "Tidak ada hasil yang ditemukan",
+	"uls-common-languages": "Bahasa yang disarankan",
+	"uls-no-results-suggestion-title": "Anda mungkin tertarik pada:",
+	"uls-search-help": "Anda dapat mencari dengan nama bahasa, nama skrip, kode ISO bahasa atau Anda dapat menelusuri menurut wilayahnya.",
+	"uls-search-placeholder": "Pencarian bahasa"
+}

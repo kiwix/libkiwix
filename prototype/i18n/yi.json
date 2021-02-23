@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"פוילישער"
+		]
+	},
+	"uls-region-WW": "וועלטווייט",
+	"uls-region-SP": "באזונדער",
+	"uls-region-AM": "אמעריקע",
+	"uls-region-AF": "אפֿריקע",
+	"uls-region-EU": "אייראפע",
+	"uls-region-AS": "אזיע",
+	"uls-region-ME": "מיטל מזרח",
+	"uls-region-PA": "פאציפֿיק",
+	"uls-region-all": "אלע שפראַכן",
+	"uls-no-results-found": "קיין רעזולטאטן נישט געטראפֿן.",
+	"uls-common-languages": "פֿארגעשלאַָגענע שפראַכן",
+	"uls-no-results-suggestion-title": "עס וועט אייך אפשר אינטרעסירן:",
+	"uls-search-help": "איר קענט זוכן לויט שפראך־נאמען, שריפֿט־נאמען, שפראך ISO־קאד אדער קענט איר בלעטערן לויט ראיאן.",
+	"uls-search-placeholder": "זוכן א שפראך"
+}

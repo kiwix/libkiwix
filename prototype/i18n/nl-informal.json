@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Carsrac",
+			"Robin van der Vliet",
+			"Robin0van0der0vliet"
+		]
+	},
+	"uls-region-WW": "Wereldwijd",
+	"uls-region-SP": "Speciaal",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Azië",
+	"uls-region-ME": "Midden-Oosten",
+	"uls-region-PA": "Pacifisch gebied",
+	"uls-no-results-found": "Geen resultaten gevonden",
+	"uls-common-languages": "Taalsuggesties",
+	"uls-no-results-suggestion-title": "Wellicht wil je een van de volgende talen kiezen:",
+	"uls-search-help": "Je kan zoeken op taalnaam, schriftnaam, ISO-code van de taal of je kunt bladeren per regio.",
+	"uls-search-placeholder": "Taal zoeken"
+}

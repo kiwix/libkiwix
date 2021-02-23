@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Angpradesh"
+		]
+	},
+	"uls-region-WW": "वैश्विक",
+	"uls-region-SP": "खास",
+	"uls-region-AM": "अमरीका",
+	"uls-region-AF": "अफ़्रीका",
+	"uls-region-EU": "यूरोप",
+	"uls-region-AS": "एशिया",
+	"uls-region-ME": "मध्य पूर्व",
+	"uls-region-PA": "प्रशांत",
+	"uls-region-all": "सब्भे भाषा",
+	"uls-no-results-found": "कोय परिणाम नै मिललै",
+	"uls-common-languages": "आम भाषा सिनी",
+	"uls-no-results-suggestion-title": "आपन॑ लेली संभवतः उपयोगी:",
+	"uls-search-help": "आपन॑ भाषा केरऽ नाम , स्क्रिप्ट केरऽ नाम , भाषा केरऽ आईएसओ कोड सं॑ खोज॑ सकै छहो या आपन॑ क्षेत्र के नाम सं॑ ब्राउज़ कर॑ सकै छहऽ.",
+	"uls-search-placeholder": "भाषा लेली खोजऽ"
+}

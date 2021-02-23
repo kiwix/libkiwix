@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Minisarm",
+			"Silviu200530"
+		]
+	},
+	"uls-region-WW": "La nivel mondial",
+	"uls-region-SP": "Speciale",
+	"uls-region-AM": "America",
+	"uls-region-AF": "Africa",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Orientul Mijlociu",
+	"uls-region-PA": "Oceania",
+	"uls-region-all": "Toate limbile",
+	"uls-no-results-found": "Niciun rezultat găsit",
+	"uls-common-languages": "Limbi sugerate",
+	"uls-no-results-suggestion-title": "Ați putea fi interesat de:",
+	"uls-search-help": "Puteți căuta după numele limbii, numele scrierii, codul ISO al limbii sau puteți răsfoi în funcție de regiune.",
+	"uls-search-placeholder": "Căutare pentru o limbă"
+}

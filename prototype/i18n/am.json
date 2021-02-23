@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Andemta",
+			"Elfalem"
+		]
+	},
+	"uls-region-WW": "ዓለም አቀፍ",
+	"uls-region-SP": "ልዩ",
+	"uls-region-AM": "አሜሪካ",
+	"uls-region-AF": "አፍሪካ",
+	"uls-region-EU": "አውሮጳ",
+	"uls-region-AS": "እስያ",
+	"uls-region-ME": "መካከለኛው ምሥራቅ",
+	"uls-region-PA": "ፓሲፊክ",
+	"uls-region-all": "ሁሉ ቋንቋ",
+	"uls-no-results-found": "ውጤት አልተገኘም",
+	"uls-common-languages": "ተመራጭ ቋንቋዎች",
+	"uls-no-results-suggestion-title": "ይህ ሊመስጦት ይችላል:",
+	"uls-search-help": "በቋንቋ ስም፣ የአፃፃፍ ሥርዓት ስም፣ አይ.ኤስ.ኦ. (ISO) ኮድ መፈለግ ወይም በአካባቢ መቃኘት ይቻላል::",
+	"uls-search-placeholder": "ቋንቋ ለመፈለግ"
+}

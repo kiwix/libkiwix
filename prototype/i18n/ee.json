@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aguve"
+		]
+	},
+	"uls-region-WW": "Xexeme Godoo",
+	"uls-region-SP": "Tɔxɛ",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Titina Ɣedzeƒe",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Gbewo Katã",
+	"uls-no-results-found": "Mekpɔ naneke o",
+	"uls-common-languages": "Kpɔ gbe siawo ɖa",
+	"uls-no-results-suggestion-title": "Ɖewohĩ esiwo gbɔna adzɔ dzi na wò:",
+	"uls-search-help": "Àte ŋu aŋlɔ gbea ŋkɔ atsɔ adii, azã woƒe skript ƒe ŋkɔ, gbea ƒe ISO dzesi adii alo àdii le nutonutowo nu.",
+	"uls-search-placeholder": "Di gbe aɖe"
+}

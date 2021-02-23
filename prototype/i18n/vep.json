@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Игорь Бродский"
+		]
+	},
+	"uls-region-WW": "Kaikjal",
+	"uls-region-SP": "Specialine",
+	"uls-region-AM": "Amerik",
+	"uls-region-AF": "Afrik",
+	"uls-region-EU": "Evrop",
+	"uls-region-AS": "Azii",
+	"uls-region-ME": "Keskmäine Päivnouzmpol'",
+	"uls-region-PA": "Okeanii",
+	"uls-no-results-found": "Ei ole rezul'tatoid",
+	"uls-common-languages": "Ühthižed keled",
+	"uls-no-results-suggestion-title": "Teile voiži tartta mel'he:",
+	"uls-search-help": "Tö voit ecmäha kelen, skriptannimen, kelen ISO-kodan mödhe, vai valita regioniden mödhe:",
+	"uls-search-placeholder": "Kelenecmine"
+}

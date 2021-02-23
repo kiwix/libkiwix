@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Dj",
+			"Tacsipacsi"
+		]
+	},
+	"uls-region-WW": "Világszerte",
+	"uls-region-SP": "Speciális",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Európa",
+	"uls-region-AS": "Ázsia",
+	"uls-region-ME": "Közel-Kelet",
+	"uls-region-PA": "Csendes-óceáni",
+	"uls-region-all": "Minden nyelv",
+	"uls-no-results-found": "Nincs találat",
+	"uls-common-languages": "Javasolt nyelvek",
+	"uls-no-results-suggestion-title": "Lehet, hogy érdekel:",
+	"uls-search-help": "Kereshetsz a nyelv neve, ábécé neve, a nyelv ISO kódja alapján vagy böngészhetsz régiók szerint.",
+	"uls-search-placeholder": "Nyelv keresése"
+}

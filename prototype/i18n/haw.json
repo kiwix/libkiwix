@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kolonahe"
+		]
+	},
+	"uls-region-WW": "ʻŌlelo puni hōnua",
+	"uls-region-SP": "Kūikawā",
+	"uls-region-AM": "ʻAmelika",
+	"uls-region-AF": "ʻApelika",
+	"uls-region-EU": "ʻEulopa",
+	"uls-region-AS": "ʻĀkia",
+	"uls-region-ME": "Hikina Waena",
+	"uls-region-PA": "Pakipika",
+	"uls-region-all": "Nā ʻōlelo a pau",
+	"uls-no-results-found": "ʻAʻohe hualoaʻa",
+	"uls-common-languages": "Nā ʻōlelo lawelawe paha",
+	"uls-no-results-suggestion-title": "Makemake paha ʻoe iā:",
+	"uls-search-help": "Hiki iā ʻoe ke huli i ka inoa ʻōlelo, inoa kikokikona, pāʻālua ISO ʻōlelo a i ʻole huli i ka ʻāina.",
+	"uls-search-placeholder": "Huli ʻŌlelo"
+}

@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Als-Holder",
+			"Terfili"
+		]
+	},
+	"uls-region-WW": "Wältwyt",
+	"uls-region-SP": "Spezial",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asie",
+	"uls-region-ME": "Mittlere Oschte",
+	"uls-region-PA": "Pazifik",
+	"uls-region-all": "Alli Sprooche",
+	"uls-no-results-found": "Kei Ergebnis gfunde",
+	"uls-common-languages": "Sprooche, wo vorgschlo sin",
+	"uls-no-results-suggestion-title": "Des chennt Di interessiere:",
+	"uls-search-help": "Du chasch noch em Name vu dr Sproch sueche, em ISO-Code vu dr Sproch oder Du gohsch iber e Region fir d Suechi.",
+	"uls-search-placeholder": "Nooch ere Sproch sueche"
+}

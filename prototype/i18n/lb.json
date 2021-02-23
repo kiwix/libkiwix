@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby"
+		]
+	},
+	"uls-region-WW": "Weltwäit",
+	"uls-region-SP": "Spezial",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asien",
+	"uls-region-ME": "Mëttleren Osten",
+	"uls-region-PA": "Pazifik",
+	"uls-region-all": "All Sproochen",
+	"uls-no-results-found": "Näischt fonnt",
+	"uls-common-languages": "Proposéiert Sproochen",
+	"uls-no-results-suggestion-title": "Dir kënnt interesséiert sinn un:",
+	"uls-search-help": "Dir kënnt mam Numm vun der Sprooch, Numm vun der Schrëft, ISO-Code vun der Sprooch oder iwwer eng Regioun sichen.",
+	"uls-search-placeholder": "No enger Sprooch sichen"
+}

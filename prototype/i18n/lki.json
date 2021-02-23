@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hosseinblue",
+			"Lakzon"
+		]
+	},
+	"uls-region-WW": "کؤل(گشت)جەهان",
+	"uls-region-SP": "ویژە",
+	"uls-region-AM": "ئآمریکا",
+	"uls-region-AF": "ئآفریقا",
+	"uls-region-EU": "اؤرووپا",
+	"uls-region-AS": "ئاسیا",
+	"uls-region-ME": "(غرب نامِن(خاوورمیانۀ",
+	"uls-region-PA": "ئآرؤم",
+	"uls-no-results-found": "نتیجه أدی نؤی(پئا نؤی)",
+	"uls-common-languages": "زوونەل رایج",
+	"uls-no-results-suggestion-title": ":هائر خووۀشته یۀ بآئ",
+	"uls-search-help": "، مةتۆنین ئۀ وسیلة نؤم زوون مِنی کِین\n  نؤم اسکریپت،کد ISO زوونۀ یا مةتۆنین ناحیة(تؤئة) بگئردینو",
+	"uls-search-placeholder": "مِنِی کردن زوون"
+}

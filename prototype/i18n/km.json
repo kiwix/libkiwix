@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sovichet",
+			"គីមស៊្រុន"
+		]
+	},
+	"uls-region-WW": "ទូទាំង​ពិភពលោក",
+	"uls-region-SP": "ពិសេស",
+	"uls-region-AM": "អាមេរិក",
+	"uls-region-AF": "អាហ្វ្រិក",
+	"uls-region-EU": "អឺរ៉ុប",
+	"uls-region-AS": "អាស៊ី",
+	"uls-region-ME": "មជ្ឈិមបូព៌ា",
+	"uls-region-PA": "ប៉ាស៊ីភិច",
+	"uls-region-all": "ភាសាទាំងអស់",
+	"uls-no-results-found": "រកមិនឃើញលទ្ធផល",
+	"uls-common-languages": "ភាសាបេក្ខភាព",
+	"uls-no-results-suggestion-title": "អ្នក​អាច​នឹង​ចាប់​អារម្មណ៍​លើ៖",
+	"uls-search-help": "អ្នក​អាច​ស្វែង​រក​តាម​ឈ្មោះ​ភាសា, ឈ្មោះ​ស្គ្រីប, កូដ ISO នៃ​ភាសា ឬ​អ្នក​អាច​រុករក​តាម​តំបន់។",
+	"uls-search-placeholder": "ស្វែងរកភាសា"
+}

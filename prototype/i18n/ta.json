@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"ElangoRamanujam",
+			"Kanags",
+			"Logicwiki",
+			"Rakeshonwiki",
+			"Santhosh.thottingal"
+		]
+	},
+	"uls-region-WW": "உலகளாவிய",
+	"uls-region-SP": "சிறப்பு",
+	"uls-region-AM": "அமெரிக்கா",
+	"uls-region-AF": "ஆப்பிரிக்கா",
+	"uls-region-EU": "ஐரோப்பா",
+	"uls-region-AS": "ஆசியா",
+	"uls-region-ME": "மத்திய கிழக்கு",
+	"uls-region-PA": "பசிபிக்",
+	"uls-region-all": "அனைத்து மொழிகள்",
+	"uls-no-results-found": "முடிவுகள் எதுவும் காணப்படவில்லை",
+	"uls-common-languages": "பரிந்துரைக்கப்பட்ட மொழிகள்",
+	"uls-no-results-suggestion-title": "நீங்கள் இவற்றில் ஆர்வமாக இருக்கலாம்:",
+	"uls-search-help": "மொழியின் பெயர், எழுத்து வடிவம், ISO குறியீடு முலம் தேடலாம் அல்லது பகுதிவாரியாக உலவலாம்:",
+	"uls-search-placeholder": "மொழி தேடல்"
+}

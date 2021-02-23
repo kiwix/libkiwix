@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"D'AroemenenZullenNiVergaan"
+		]
+	},
+	"uls-region-WW": "Tu tutâ lumea",
+	"uls-region-SP": "Alepțâ",
+	"uls-region-AM": "Americhie",
+	"uls-region-AF": "Africa",
+	"uls-region-EU": "Evropa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Apreasa Mulgicanâ (di ńioldzuc)",
+	"uls-region-PA": "Pacificu",
+	"uls-no-results-found": "S-aflarâ țiva rezultati",
+	"uls-common-languages": "Limbi comuni",
+	"uls-no-results-suggestion-title": "S-poati s-ai sinferu (s-hii ntirisatu) trâ:",
+	"uls-search-help": "Poți s-lu cafțâ dupu numa limbâľei, numa scriariľei, codul ISO a limbâľei icâ poți s-li vedz dupu regiuni:",
+	"uls-search-placeholder": "Câftari limbâ"
+}

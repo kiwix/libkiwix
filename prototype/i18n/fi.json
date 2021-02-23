@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alluk.",
+			"Nedergard",
+			"Nike",
+			"VezonThunder"
+		]
+	},
+	"uls-region-WW": "Maailmankielet",
+	"uls-region-SP": "Erikoiskielet",
+	"uls-region-AM": "Pohjois- ja Etelä-Amerikka",
+	"uls-region-AF": "Afrikka",
+	"uls-region-EU": "Eurooppa",
+	"uls-region-AS": "Aasia",
+	"uls-region-ME": "Lähi-itä",
+	"uls-region-PA": "Tyynenmeren alue",
+	"uls-region-all": "Kaikki kielet",
+	"uls-no-results-found": "Ei hakutuloksia",
+	"uls-common-languages": "Ehdotetut kielet",
+	"uls-no-results-suggestion-title": "Lähimmät hakutulokset:",
+	"uls-search-help": "Hae kielen tai kirjoitusjärjestelmän nimellä, kielen ISO-koodilla tai selaa kieliä alueluettelosta:",
+	"uls-search-placeholder": "Etsi kieltä"
+}

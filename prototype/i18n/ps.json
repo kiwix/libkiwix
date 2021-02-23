@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ahmed-Najib-Biabani-Ibrahimkhel",
+			"Amjad Khan",
+			"Baloch Khan"
+		]
+	},
+	"uls-region-WW": "نړېوال",
+	"uls-region-SP": "ځانگړی",
+	"uls-region-AM": "امريکا",
+	"uls-region-AF": "افريقا",
+	"uls-region-EU": "اروپا",
+	"uls-region-AS": "آسيا",
+	"uls-region-ME": "منځنی ختيځ",
+	"uls-region-PA": "غلی سمندر",
+	"uls-region-all": "ټولې ژبې",
+	"uls-no-results-found": "پايلې و  نه موندل شوې",
+	"uls-common-languages": "وړانديز کړي ژبې",
+	"uls-no-results-suggestion-title": "کېدای شي تاسې يې لېواله اوسئ:",
+	"uls-search-help": "تاسې د  ژبې د نوم له مخې، د سکرېپټ نوم، د ژبې د ISO کوډ له مخې او يا هم د سيمې له مخې پلټنې کولی شئ:",
+	"uls-search-placeholder": "د يوې ژبې پلټنه"
+}

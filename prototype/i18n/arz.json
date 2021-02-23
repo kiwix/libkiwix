@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Meno25",
+			"UpDownUp"
+		]
+	},
+	"uls-region-WW": "لغات عالمية",
+	"uls-region-SP": "لغات خاصّة",
+	"uls-region-AM": "أمريكا",
+	"uls-region-AF": "إفريقيا",
+	"uls-region-EU": "أوروپّا",
+	"uls-region-AS": "آسيا",
+	"uls-region-ME": "الشرق الأوسط",
+	"uls-region-PA": "المحيط الهادي",
+	"uls-region-all": "كل اللغات",
+	"uls-no-results-found": "مفيش أي نتايج",
+	"uls-common-languages": "اللغات المقترحة",
+	"uls-no-results-suggestion-title": "يمكن تكون مهتم بـ:",
+	"uls-search-help": "ممكن تدور حسب اسم اللغه، اسم نظام الكتابه\\الخط، كود الـ ISO بتاع اللغه أو ممكن تتصفح حسب المنطقه.",
+	"uls-search-placeholder": "دوّر على لغة"
+}

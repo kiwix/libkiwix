@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Santhosh.thottingal",
+			"The Discoverer",
+			"Vaishali Parab"
+		]
+	},
+	"uls-region-AM": "अमेरिका",
+	"uls-region-AF": "अफ़्रीका",
+	"uls-region-EU": "यूरोप",
+	"uls-region-AS": "एशिया",
+	"uls-region-ME": "मदलें उदेंत",
+	"uls-region-PA": "पॅसिफीक",
+	"uls-no-results-found": "परिणाम मेळूंक ना",
+	"uls-common-languages": "सामान्य भासो",
+	"uls-no-results-suggestion-title": "Tuka avdot:",
+	"uls-search-help": "तुज्यान भाशेचें नांव, लिपीचें नांव, भाशेचो ISO‍‌‍‌ कोड वा जाग्यावरवीं सोदूंक जाता.",
+	"uls-search-placeholder": "भास सोदात"
+}

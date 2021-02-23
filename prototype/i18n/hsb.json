@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Michawiki"
+		]
+	},
+	"uls-region-WW": "Na cyłym swěće",
+	"uls-region-SP": "Specialne",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Azija",
+	"uls-region-ME": "Srjedźny wuchod:",
+	"uls-region-PA": "Pacifik",
+	"uls-no-results-found": "Žane wuslědki namakane",
+	"uls-common-languages": "Namjetowane rěče",
+	"uls-no-results-suggestion-title": "To móhło će zajimować:",
+	"uls-search-help": "Móžeš po mjenje rěče, mjenje pisma, ISO-kodźe rěče pytać abo pytanje přez region přewjesć.",
+	"uls-search-placeholder": "Rěčne pytanje"
+}

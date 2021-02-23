@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"author": "Santhosh Thottingal <santhosh.thottingal@gmail.com>",
+		"last-updated": "2012-09-21",
+		"locale": "en",
+		"message-documentation": "qqq"
+	},
+	"uls-region-WW": "Worldwide",
+	"uls-region-SP": "Special",
+	"uls-region-AM": "America",
+	"uls-region-AF": "Africa",
+	"uls-region-EU": "Europe",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Middle East",
+	"uls-region-PA": "Pacific",
+	"uls-region-all": "All languages",
+	"uls-no-results-found": "No results found",
+	"uls-common-languages": "Suggested languages",
+	"uls-no-results-suggestion-title": "You may be interested in:",
+	"uls-search-help": "You can search by language name, script name, ISO code of language or you can browse by region.",
+	"uls-search-placeholder": "Search for a language"
+}

@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Papuass",
+			"Ttdnet"
+		]
+	},
+	"uls-region-WW": "Visā pasaulē",
+	"uls-region-SP": "Īpašās",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Āfrika",
+	"uls-region-EU": "Eiropa",
+	"uls-region-AS": "Āzija",
+	"uls-region-ME": "Vidējie Austrumi",
+	"uls-region-PA": "Klusā okeāna",
+	"uls-region-all": "Visas valodas",
+	"uls-no-results-found": "Nav atrasts neviens rezultāts",
+	"uls-common-languages": "Ieteiktās valodas",
+	"uls-no-results-suggestion-title": "Jums var būt interesē:",
+	"uls-search-help": "Var meklēt pēc valodas, skripta nosaukuma, valodas ISO koda, vai jūs tos varat pārlūkot pēc reģiona.",
+	"uls-search-placeholder": "Meklēt valodu"
+}

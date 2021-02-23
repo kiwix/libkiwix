@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fryed-peach",
+			"Otokoume",
+			"Santhosh.thottingal",
+			"Shirayuki"
+		]
+	},
+	"uls-region-WW": "全世界",
+	"uls-region-SP": "特殊",
+	"uls-region-AM": "アメリカ",
+	"uls-region-AF": "アフリカ",
+	"uls-region-EU": "ヨーロッパ",
+	"uls-region-AS": "アジア",
+	"uls-region-ME": "中東",
+	"uls-region-PA": "太平洋地域",
+	"uls-region-all": "すべての言語",
+	"uls-no-results-found": "見つかりませんでした",
+	"uls-common-languages": "提案された言語",
+	"uls-no-results-suggestion-title": "もしかして:",
+	"uls-search-help": "言語名、文字体系名、言語の ISO コードで検索できます。地域別の一覧から選択することもできます。",
+	"uls-search-placeholder": "言語を検索"
+}

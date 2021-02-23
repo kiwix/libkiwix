@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Milicevic01",
+			"Rancher"
+		]
+	},
+	"uls-region-WW": "Светски",
+	"uls-region-SP": "Посебно",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азија",
+	"uls-region-ME": "Блиски исток",
+	"uls-region-PA": "Пацифик",
+	"uls-region-all": "Сви језици",
+	"uls-no-results-found": "Нема резултата",
+	"uls-common-languages": "Предложени јeзици",
+	"uls-no-results-suggestion-title": "Можда вас интересује:",
+	"uls-search-help": "Можете да тражите по имену језика или писма, по ISO коду језика или пак по региону.",
+	"uls-search-placeholder": "Претрага језика"
+}

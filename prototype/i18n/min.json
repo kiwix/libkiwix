@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Iwan Novirion"
+		]
+	},
+	"uls-region-WW": "Saluruah dunia",
+	"uls-region-SP": "Khusuih",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Eropa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Timua Tangah",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Sado bahaso",
+	"uls-no-results-found": "Hasil indak basobok",
+	"uls-common-languages": "Bahaso nan disarankan",
+	"uls-no-results-suggestion-title": "Sanak mungkin tatarik pado:",
+	"uls-search-help": "Sanak dapek mancari jo namo bahaso, namo skrip, kode ISO bahaso atau dapek pulo manalusuri manuruik wilayahnyo.",
+	"uls-search-placeholder": "Pancarian bahaso"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Xuacu"
+		]
+	},
+	"uls-region-WW": "Mundial",
+	"uls-region-SP": "Especiales",
+	"uls-region-AM": "América",
+	"uls-region-AF": "África",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Oriente mediu",
+	"uls-region-PA": "Pacíficu",
+	"uls-region-all": "Toles llingües",
+	"uls-no-results-found": "Nun s'alcontraron resultaos",
+	"uls-common-languages": "Llingües suxeríes",
+	"uls-no-results-suggestion-title": "Seique t'interese:",
+	"uls-search-help": "Pues buscar pol nome de la llingua, nome del alfabetu, códigu ISO de la llingua o ver un área xeográfica.",
+	"uls-search-placeholder": "Buscar una llingua"
+}

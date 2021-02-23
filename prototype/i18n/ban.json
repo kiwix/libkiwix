@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Chinamoonroll",
+			"Joseagush"
+		]
+	},
+	"uls-region-WW": "Gumi makejang",
+	"uls-region-SP": "Rahina",
+	"uls-region-AM": "Amérika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Éropa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Timur Tengah",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Basa makejang",
+	"uls-no-results-found": "Tusing ade hasil",
+	"uls-common-languages": "Basa sane mapiteket",
+	"uls-no-results-suggestion-title": "Ida dane dumadak rimang:",
+	"uls-search-help": "Ida dane dados ngerereh anggen adan basa, adan script, kode basa ISO, utawi ida dane dados ngalih anggen wewengkon.",
+	"uls-search-placeholder": "Basa sane kererehin"
+}

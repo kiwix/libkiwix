@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sarvaturi"
+		]
+	},
+	"uls-region-WW": "Tuttu lu munnu",
+	"uls-region-SP": "Spiciali",
+	"uls-region-AM": "Amèrica",
+	"uls-region-AF": "Àfrica",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Mediu orienti",
+	"uls-region-PA": "Pacìficu",
+	"uls-no-results-found": "Nuddu risurtatu attruvatu",
+	"uls-common-languages": "Lingui cchiù scigghiuti",
+	"uls-no-results-suggestion-title": "Poi èssiri ntirissatu a:",
+	"uls-search-help": "È pussìbbili arricircari pi nomu, nomu dô script, còdice ISO dâ lingua o si pò navigari tràmiti riggiuni.",
+	"uls-search-placeholder": "Arricerca lingua"
+}

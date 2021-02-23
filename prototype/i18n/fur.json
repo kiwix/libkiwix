@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Klenje"
+		]
+	},
+	"uls-region-WW": "Dut il mont",
+	"uls-region-SP": "Speciâl",
+	"uls-region-AM": "Americhe",
+	"uls-region-AF": "Afriche",
+	"uls-region-EU": "Europe",
+	"uls-region-AS": "Asie",
+	"uls-region-ME": "Medi Orient",
+	"uls-region-PA": "Pacjific",
+	"uls-no-results-found": "Nissun risultât",
+	"uls-common-languages": "Lenghis comunis",
+	"uls-no-results-suggestion-title": "Tu puedis jessi interessât a:",
+	"uls-search-help": "Tu pues cirî par non de lenghe, non dal alfabet, codis ISO de lenghe o tu puedis cirî intune regjon:",
+	"uls-search-placeholder": "Ricercje de lenghe"
+}

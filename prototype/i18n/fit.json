@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pyscowicz"
+		]
+	},
+	"uls-region-WW": "Maailmankielet",
+	"uls-region-SP": "Spesiaalikielet",
+	"uls-region-AM": "Pohjois- ja Etelä-Ameriika",
+	"uls-region-AF": "Aafriikka",
+	"uls-region-EU": "Euruuppa",
+	"uls-region-AS": "Aasia",
+	"uls-region-ME": "Lähi-itä",
+	"uls-region-PA": "Tyynenmeren alue",
+	"uls-region-all": "Kaikki kielet",
+	"uls-no-results-found": "Ei hakuresyltaatteja",
+	"uls-common-languages": "Ehotetut kielet",
+	"uls-no-results-suggestion-title": "Lähimmät hakuresyltaatit:",
+	"uls-search-help": "Hae kielen tai kirjoitussysteemin nimelä, kielen ISO-kootila eli selaa kieliä aluelistasta:",
+	"uls-search-placeholder": "Eti kieltä"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kjeanclaude"
+		]
+	},
+	"uls-region-WW": "Mein oumouan nou",
+	"uls-region-SP": "Koungou liké",
+	"uls-region-AM": "Amériki",
+	"uls-region-AF": "Afriki",
+	"uls-region-EU": "Abloki",
+	"uls-region-AS": "Azi",
+	"uls-region-ME": "Wia afiliè lô mein i atôliè",
+	"uls-region-PA": "Pacifiki",
+	"uls-region-all": "Anien mou bé ngba",
+	"uls-no-results-found": "Ya woun man liké fi",
+	"uls-common-languages": "Anien nga bé fa klé mou",
+	"uls-no-results-suggestion-title": "Amoun kwla klo",
+	"uls-search-help": "Amoun kwla kounndè i anien douman sou, klèlè douman sou, anien ISO codi sou, anzè amoun kwla kounndè i akpassoua sou.",
+	"uls-search-placeholder": "Kounndè anien koun"
+}

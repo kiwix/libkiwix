@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alp Er Tunqa",
+			"Arjanizary",
+			"Mousa"
+		]
+	},
+	"uls-region-WW": "دونیا بویو",
+	"uls-region-SP": "مخصوص",
+	"uls-region-AM": "آمریکا",
+	"uls-region-AF": "آفریقا",
+	"uls-region-EU": "اوروپا",
+	"uls-region-AS": "آسیا",
+	"uls-region-ME": "اورتادوغو",
+	"uls-region-PA": "بؤیوک اوقیانوس",
+	"uls-region-all": "بۆتون دیللر",
+	"uls-no-results-found": "هئچ نتیجه تاپیلمادی",
+	"uls-common-languages": "یایغین دیل‌لر",
+	"uls-no-results-suggestion-title": "بونلارا ماراقلی اولابیلرسینیز:",
+	"uls-search-help": "سیز دیل آدی، یازی آدی، دیلین ISO کودو، یوخسا بؤلگه ایله آختارا بیلرسینیز.",
+	"uls-search-placeholder": "بیر دیلی آختار"
+}

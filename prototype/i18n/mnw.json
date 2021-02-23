@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aue Nai"
+		]
+	},
+	"uls-region-WW": "ဇမၞော်ဂၠး",
+	"uls-region-SP": "တၟေၚ်",
+	"uls-region-AM": "အမေရိက",
+	"uls-region-AF": "အာဖရိက",
+	"uls-region-EU": "ဥရောပ",
+	"uls-region-AS": "အာယှ",
+	"uls-region-ME": "လဒေါဝ် ဗၟံက်",
+	"uls-region-PA": "ပသဳဖှေတ်",
+	"uls-region-all": "အရေဝ်ဘာသာ သီုဖအိုတ်",
+	"uls-no-results-found": "အရာမဂၠာဲဂှ် မုဟွံဂွံ ဆဵု",
+	"uls-common-languages": "အရေဝ်ဘာသာ မကဵုလဝ်ကသပ်ဂမၠိုၚ်",
+	"uls-no-results-suggestion-title": "မၞး စိုတ်လုပ်စမာန် :",
+	"uls-search-help": "မၞးဂၠာဲကေတ်နကဵု ယၟုအရေဝ်ဘာသာမာန်၊ ယၟုအက္ခရ်, မခတ် ISO ဒဒှ်အရေဝ်ဘာသာ ဟွံသေၚ် မၞးတြးပၠးပတိတ် နကဵု ဒေသမာန်.",
+	"uls-search-placeholder": "ဂၠာဲ သွက် အရေဝ်ဘာသာ မွဲ"
+}

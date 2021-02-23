@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"පසිඳු කාවින්ද",
+			"හරිත"
+		]
+	},
+	"uls-region-WW": "ලෝක ව්‍යාප්ත",
+	"uls-region-SP": "විශේෂ",
+	"uls-region-AM": "ඇමෙරිකාව",
+	"uls-region-AF": "අප්‍රිකාව",
+	"uls-region-EU": "යුරෝපය",
+	"uls-region-AS": "ආසියාව",
+	"uls-region-ME": "මැද පෙරදිග",
+	"uls-region-PA": "පැසිෆික්",
+	"uls-no-results-found": "ප්‍රතිඑල හමු නොවුණි",
+	"uls-common-languages": "පොදු භාෂා",
+	"uls-no-results-suggestion-title": "ඔබ සමහර විට කැමති වේවි:",
+	"uls-search-help": "ඔබට භාෂා නාමය, ස්ක්‍රිප්ට නාමය, භාෂාවේ ISO කේතය මගින් සෙවිය හැක නැතහොත් ඔබට ප්‍රදේශය අනුව බ්‍රවුස් කළ හැක.",
+	"uls-search-placeholder": "බස සෙවීම"
+}

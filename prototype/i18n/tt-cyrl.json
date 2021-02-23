@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajdar",
+			"Ерней",
+			"Ильнар"
+		]
+	},
+	"uls-region-WW": "Бөтендөнья",
+	"uls-region-SP": "Махсус",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Аурупа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Якын Көнчыгыш",
+	"uls-region-PA": "Океания",
+	"uls-region-all": "Барлык телләр",
+	"uls-no-results-found": "Берни дә табылмаган",
+	"uls-common-languages": "Тәкъдим ителгән телләр",
+	"uls-no-results-suggestion-title": "Бәлки сезне бу телләр кызыксындырыр:",
+	"uls-search-help": "Сез телнең яки әлифбаның исеме, телнең ISO коды буенча эзли аласыз яки төбәк буенча карый аласыз.",
+	"uls-search-placeholder": "Тел буенча эзләү"
+}

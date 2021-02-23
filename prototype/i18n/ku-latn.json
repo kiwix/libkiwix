@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bikarhêner",
+			"Cûndûllah el-Kurdî",
+			"George Animal",
+			"Ghybu",
+			"Velg"
+		]
+	},
+	"uls-region-WW": "Li hemû cîhanê",
+	"uls-region-SP": "Taybet",
+	"uls-region-AM": "Amerîka",
+	"uls-region-AF": "Afrîka",
+	"uls-region-EU": "Ewropa",
+	"uls-region-AS": "Asya",
+	"uls-region-ME": "Rojhilata Navîn",
+	"uls-region-PA": "Pasîfîk",
+	"uls-region-all": "Hemû ziman",
+	"uls-no-results-found": "Tu encam nehatin dîtin",
+	"uls-common-languages": "Zimanên pêşniyarkirî",
+	"uls-no-results-suggestion-title": "Pêwendîya we dikara bikişîne:",
+	"uls-search-help": "Hûn lêgerîna xwe li gor nava zimanê, koda ISOyê an jî li gor herêmê dikarin bikin.",
+	"uls-search-placeholder": "Li zimanekî bigere"
+}

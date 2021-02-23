@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"1AnuraagPandey",
+			"1PandeyAnurag",
+			"Ajeetsinghawadh"
+		]
+	},
+	"uls-region-WW": "वैश्विक",
+	"uls-region-SP": "विशेष",
+	"uls-region-AM": "अमेरिका",
+	"uls-region-AF": "अफ्रिका",
+	"uls-region-EU": "यूरोप",
+	"uls-region-AS": "एशिया",
+	"uls-region-ME": "मध्य पुरुब",
+	"uls-region-PA": "प्रशांत",
+	"uls-region-all": "कुल भाषा",
+	"uls-no-results-found": "कवनो नतिजा नाई मिला",
+	"uls-common-languages": "सुझाई गय भाषा",
+	"uls-no-results-suggestion-title": "आप कय लिये संभवतः उपयोगी:",
+	"uls-search-help": "आप भाषा कय नाँव,लिपि नाँव,भाषा कय आई.एस.ओ कोड अव क्षेत्र कय नाँव से खोज सका जात अहै ।",
+	"uls-search-placeholder": "भाषा खोज"
+}

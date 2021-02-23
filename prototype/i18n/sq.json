@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Ammartivari",
+			"Kosovastar",
+			"Liridon"
+		]
+	},
+	"uls-region-WW": "Në mbarë botën",
+	"uls-region-SP": "Të veçanta",
+	"uls-region-AM": "Amerikë",
+	"uls-region-AF": "Afrikë",
+	"uls-region-EU": "Evropë",
+	"uls-region-AS": "Azi",
+	"uls-region-ME": "Lindje e Mesme",
+	"uls-region-PA": "Paqësor",
+	"uls-region-all": "Të gjitha gjuhët",
+	"uls-no-results-found": "Nuk është gjetur asnjë rezultat",
+	"uls-common-languages": "Gjuhë të sugjeruara",
+	"uls-no-results-suggestion-title": "Ju mund të jeni të interesuar në:",
+	"uls-search-help": "Ju mund të kërkoni sipas emrit të gjuhës, emrit të skriptës, kodit ISO të gjuhës ose ju mund të shfletoni sipa rajonit.",
+	"uls-search-placeholder": "Kërkimi i gjuhës"
+}

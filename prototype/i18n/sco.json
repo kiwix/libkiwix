@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"AmaryllisGardener",
+			"John Reid"
+		]
+	},
+	"uls-region-WW": "Worldwide",
+	"uls-region-SP": "Speecial",
+	"uls-region-AM": "Americae",
+	"uls-region-AF": "Afreeca",
+	"uls-region-EU": "Europ",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Middle Eist",
+	"uls-region-PA": "Paceefic",
+	"uls-region-all": "Aw leids",
+	"uls-no-results-found": "Nae results foond",
+	"uls-common-languages": "Suggestit leids",
+	"uls-no-results-suggestion-title": "Ye micht hae aen intrest in:",
+	"uls-search-help": "Ye can sairch bi leid name, script name, ISO code o leid or ye can brouse bi region.",
+	"uls-search-placeholder": "Sairch for a leid"
+}

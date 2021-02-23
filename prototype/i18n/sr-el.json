@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Milicevic01",
+			"Rancher"
+		]
+	},
+	"uls-region-WW": "Svetski",
+	"uls-region-SP": "Posebno",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Evropa",
+	"uls-region-AS": "Azija",
+	"uls-region-ME": "Bliski istok",
+	"uls-region-PA": "Pacifik",
+	"uls-region-all": "Svi jezici",
+	"uls-no-results-found": "Nema rezultata",
+	"uls-common-languages": "Predloženi jezici",
+	"uls-no-results-suggestion-title": "Možda vas interesuje:",
+	"uls-search-help": "Možete da tražite po imenu jezika ili pisma, po ISO kodu jezika ili pak po regionu.",
+	"uls-search-placeholder": "Pretraga jezika"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Snævar"
+		]
+	},
+	"uls-region-WW": "Á heimsvísu",
+	"uls-region-SP": "Sérstök",
+	"uls-region-AM": "Ameríka",
+	"uls-region-AF": "Afríka",
+	"uls-region-EU": "Evrópa",
+	"uls-region-AS": "Asía",
+	"uls-region-ME": "Mið-Austurlönd",
+	"uls-region-PA": "Kyrrahaf",
+	"uls-region-all": "Öll tungumál",
+	"uls-no-results-found": "Ekkert fannst",
+	"uls-common-languages": "Uppástungur að tungumálum",
+	"uls-no-results-suggestion-title": "Þú gætir haft áhuga á:",
+	"uls-search-help": "Þú getur leitað eftir nafni tungumáls, nafni skriftunar, ISO kóða tungumálsins eða þú getur leitað eftir svæði.",
+	"uls-search-placeholder": "Leita eftir tungumáli"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pikne"
+		]
+	},
+	"uls-region-WW": "Kogu maailm",
+	"uls-region-SP": "Erijuhud",
+	"uls-region-AM": "Ameerika",
+	"uls-region-AF": "Aafrika",
+	"uls-region-EU": "Euroopa",
+	"uls-region-AS": "Aasia",
+	"uls-region-ME": "Lähis-Ida",
+	"uls-region-PA": "Vaikne ookean",
+	"uls-region-all": "Kõik keeled",
+	"uls-no-results-found": "Tulemusi ei leitud.",
+	"uls-common-languages": "Soovitatavad keeled",
+	"uls-no-results-suggestion-title": "Võid eelistada neid:",
+	"uls-search-help": "Saad otsida keeli keelenimetuse, kirjanimetuse või keele ISO-koodi järgi või sirvida keeli piirkonna järgi.",
+	"uls-search-placeholder": "Keeleotsing"
+}

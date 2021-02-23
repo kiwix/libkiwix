@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saimawnkham"
+		]
+	},
+	"uls-region-WW": "တင်းၵမ်ႇၽႃႇ",
+	"uls-region-SP": "ၶိုၵ်ႉတွၼ်း",
+	"uls-region-AM": "ဢမေႇရိၵ",
+	"uls-region-AF": "ဢႃႇၽရိၵ",
+	"uls-region-EU": "ရူးရူပ်ႉ",
+	"uls-region-AS": "ဢေးသျႃး",
+	"uls-region-ME": "ပွတ်းၵၢင်တၢင်းဢွၵ်ႇ",
+	"uls-region-PA": "ပသိၽိၵ်ႉ",
+	"uls-region-all": "ၽႃႇသႃႇၵႂၢမ်း တင်းသဵင်ႈ",
+	"uls-no-results-found": "ဢမ်ႇႁၼ်ၽွၼ်းလႆႈ",
+	"uls-common-languages": "ၽႃႇသႃႇဢၼ်ၸႂ်ႉၼမ်",
+	"uls-no-results-suggestion-title": "ၸဝ်ႈၵဝ်ႇၸၢင်ႈၶဝ်ႈၸႂ်ပႃး",
+	"uls-search-help": "ၸဝ်ႈၵဝ်ႇ ၸၢင်ႈသွၵ်ႈႁႃတင်း ၸိုဝ်ႈၽႃႇသႃႇၵႂၢမ်း၊ ၸိုဝ်ႈ Script, မၢႆ ISO တွၼ်ႈတႃႇ ၽႃႇသႃႇၵႂၢမ်း ဢၼ်ၼၼ် ၸဝ်ႈၵဝ်ႇ ၸၢင်ႈပိုတ်ႇႁႃ တင်း လႅၼ်မိူင်း region",
+	"uls-search-placeholder": "ၶူၼ်ႉႁႃ တႃႇၽႃႇသႃႇၵႂၢမ်း"
+}

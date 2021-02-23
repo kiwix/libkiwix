@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"SawJaemin"
+		]
+	},
+	"uls-region-WW": "ဟီခိၣ်ဒီဖျၢၣ်",
+	"uls-region-SP": "လီၤဆီ",
+	"uls-region-AM": "အမဲရကၤ",
+	"uls-region-AF": "အၤဖြံၤကၤ",
+	"uls-region-EU": "ယူရပၤ",
+	"uls-region-AS": "အ့ၡၢၣ်",
+	"uls-region-ME": "မုၢ်ထီၣ်တၢ်ခၢၣ်သးလီၢ်ကဝီၤ",
+	"uls-region-PA": "ပဝံးဖံး",
+	"uls-region-all": "ကျိာ်တဖၣ်ခဲလၢာ်",
+	"uls-no-results-found": "တၢ်စံးဆၢတအိၣ်ဘၣ်",
+	"uls-common-languages": "မၤကွၢ်ကျိာ်တဖၣ်အံၤ",
+	"uls-no-results-suggestion-title": "ဘၣ်သ့ၣ်သ့ၣ်နကအိၣ်ဒီးတၢ်သးစဲလၢ:",
+	"uls-search-help": "နဃုကွၢ်လၢကျိာ်အမံၤသ့ မ့ၢ်တမ့ၢ် လၢလံာ်မိၢ်ပှၢ်အမံၤသ့ မ့ၢ်တမ့ၢ် လၢအ ISO မံၤသ့ မ့ၢ်တမ့ၢ် နကွၢ်ဃုလၢ တၢ်လီၢ်သ့စ့ၢ်ကီးလီၤ.",
+	"uls-search-placeholder": "ကွၢ်ဃုကျိာ်တကျိာ်"
+}

@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hibm98",
+			"IRTC1015",
+			"Ykhwong",
+			"아라"
+		]
+	},
+	"uls-region-WW": "전 세계",
+	"uls-region-SP": "특수",
+	"uls-region-AM": "아메리카",
+	"uls-region-AF": "아프리카",
+	"uls-region-EU": "유럽",
+	"uls-region-AS": "아시아",
+	"uls-region-ME": "중동",
+	"uls-region-PA": "태평양",
+	"uls-region-all": "모든 언어",
+	"uls-no-results-found": "결과가 없습니다",
+	"uls-common-languages": "제안 언어",
+	"uls-no-results-suggestion-title": "이것을 찾으셨나요:",
+	"uls-search-help": "언어 이름, 문자 체계 이름, 언어의 ISO 코드로 검색할 수 있으며 지역별로 찾아볼 수 있습니다.",
+	"uls-search-placeholder": "언어 검색"
+}

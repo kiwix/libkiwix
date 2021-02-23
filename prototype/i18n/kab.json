@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amazigh84",
+			"Belkacem77",
+			"Mezgoug",
+			"Mmistmurt",
+			"Sayem AtVkm",
+			"SlimaneAmiri",
+			"YouvaDjouadi"
+		]
+	},
+	"uls-region-WW": "Deg umaḍal meṛṛa",
+	"uls-region-SP": "Uzzig",
+	"uls-region-AM": "Tamrikt",
+	"uls-region-AF": "Tafriqt",
+	"uls-region-EU": "Turuft",
+	"uls-region-AS": "Asya",
+	"uls-region-ME": "Asammar Alemmas",
+	"uls-region-PA": "Amelwi",
+	"uls-region-all": "Akk tutlayin",
+	"uls-no-results-found": "Ur d-yufi kra seg unadi",
+	"uls-common-languages": "Tutlayin i d-yettwasumren",
+	"uls-no-results-suggestion-title": "Ahat ad tebɣuḍ:",
+	"uls-search-help": "Tzemreḍ ad tnadiḍ s yisem n tutlayt, s yisem n tira, s tengalt ISO n tutlayt neɣ tzemreḍ ad tinigeḍ tamnaḍt tamnaḍt.",
+	"uls-search-placeholder": "Nadi ɣef tutlayt"
+}

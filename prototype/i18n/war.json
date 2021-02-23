@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Harvzsf",
+			"JinJian",
+			"Wiki indio"
+		]
+	},
+	"uls-region-WW": "ha Kalibutan",
+	"uls-region-SP": "Pinaurog",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asya",
+	"uls-region-ME": "Butnga nga Sinirangan / Katundan nga Asya",
+	"uls-region-PA": "Pasipiko",
+	"uls-no-results-found": "Waray mga resulta nga nabilngan",
+	"uls-common-languages": "Mga komun o ginsasaroan nga mga pinulongan",
+	"uls-no-results-suggestion-title": "Bangin ka ma-intersado hin:",
+	"uls-search-help": "Puyde ka magbiling ha kanan ngaran han pinulongan, ngaran han paagi hin pagsurat, ISO nga kodigo han pinulongan o puyde ka magdalikyat ha kanan rehiyon",
+	"uls-search-placeholder": "Pagbiling hin yinaknan"
+}

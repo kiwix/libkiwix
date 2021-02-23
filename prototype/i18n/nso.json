@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mohau"
+		]
+	},
+	"uls-region-WW": "Lefasekabophara",
+	"uls-region-SP": "Kgethegilego",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Uropa",
+	"uls-region-all": "Malelme ka moka",
+	"uls-no-results-suggestion-title": "O ka ba le kgatlego go:",
+	"uls-search-placeholder": "Fetleka leleme"
+}

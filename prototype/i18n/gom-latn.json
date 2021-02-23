@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"The Discoverer"
+		]
+	},
+	"uls-region-WW": "Akhea sonvsarant",
+	"uls-region-SP": "Khashelem",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Erop",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Modlem Udent",
+	"uls-region-PA": "Pacifik",
+	"uls-region-all": "Soglleo bhaso",
+	"uls-no-results-found": "Porinam mellunk nam",
+	"uls-common-languages": "Suchoiloeo bhaso",
+	"uls-no-results-suggestion-title": "Tuka avdot:",
+	"uls-search-help": "Tujean bhase, lipie, bhaseche ISO code vo zagea vorvim sodunk zata.",
+	"uls-search-placeholder": "Eke bhase khatir sod"
+}

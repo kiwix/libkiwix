@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Borichèt",
+			"Dragonòt"
+		]
+	},
+	"uls-region-WW": "Tut ël mond",
+	"uls-region-SP": "Special",
+	"uls-region-AM": "América",
+	"uls-region-AF": "Àfrica",
+	"uls-region-EU": "Euròpa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Vzin Orient",
+	"uls-region-PA": "Passìfich",
+	"uls-region-all": "Tute le lenghe",
+	"uls-no-results-found": "Gnun arzultà trovà",
+	"uls-common-languages": "Lenghe sugerìe",
+	"uls-no-results-suggestion-title": "It peule esse anteressà a:",
+	"uls-search-help": "A peul sërché për nòm ëd lenga, nòm dl'alfabet, còdes ISO dla lenga o a peul navighé për region.",
+	"uls-search-placeholder": "Serca na lenga"
+}

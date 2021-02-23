@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fierodelveneto",
+			"GatoSelvadego"
+		]
+	},
+	"uls-region-WW": "Tuto el mondo",
+	"uls-region-SP": "Speçiałe",
+	"uls-region-AM": "Mèrica",
+	"uls-region-AF": "Àfrica",
+	"uls-region-EU": "Eoropa",
+	"uls-region-AS": "Axia",
+	"uls-region-ME": "Levante mexan",
+	"uls-region-PA": "Pasifego",
+	"uls-region-all": "Tute ƚe ƚengue",
+	"uls-no-results-found": "Nisun rixultà",
+	"uls-common-languages": "Lengue sujerìe",
+	"uls-no-results-suggestion-title": "Te pol èsar interesà a:",
+	"uls-search-help": "Xe posibiƚe sercar par nòme, nòme del script, còdexe ISO de ƚa lengua o se połe navegar par rejon.",
+	"uls-search-placeholder": "Serca na lengua"
+}

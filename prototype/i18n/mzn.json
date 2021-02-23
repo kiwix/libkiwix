@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"محک"
+		]
+	},
+	"uls-region-WW": "جهون میون",
+	"uls-region-SP": "ویژه",
+	"uls-region-AM": "آمریکا",
+	"uls-region-AF": "آفریقا",
+	"uls-region-EU": "اروپا",
+	"uls-region-AS": "آسیا",
+	"uls-region-ME": "خاورمیونه",
+	"uls-region-PA": "آروم اقیانوس",
+	"uls-no-results-found": "هچّی پیدا نیّه",
+	"uls-common-languages": "رایج زوونون",
+	"uls-no-results-suggestion-title": "شاید دوست دارین:",
+	"uls-search-help": "شما بتونّی زوون نوم، اسکریپ نوم، زوونِ استانداردِ کد یا ونه منطقه جه شه دِلِوستِ زوون ره پیدا هاکنین.",
+	"uls-search-placeholder": "زوونِ جستجو"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"NoiX180"
+		]
+	},
+	"uls-region-WW": "Saindenging donya",
+	"uls-region-SP": "Mirunggan",
+	"uls-region-AM": "Amérikah",
+	"uls-region-AF": "Afrikah",
+	"uls-region-EU": "Éropah",
+	"uls-region-AS": "Asiah",
+	"uls-region-ME": "Wétan Tengah",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Kabèh basa",
+	"uls-no-results-found": "Wohing golèk ora ana",
+	"uls-common-languages": "Basa sing kaprayogakaké",
+	"uls-no-results-suggestion-title": "Panjenengan bokmanawa suka ing:",
+	"uls-search-help": "Panjenengan bisa golèk lumantar jeneng basa, jeneng aksara, kodhe ISO basa, utawa panjengan bisa luru miturut wewengkon.",
+	"uls-search-placeholder": "Golèk basa"
+}

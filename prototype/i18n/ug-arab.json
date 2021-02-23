@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sahran",
+			"Tel'et",
+			"Uzdil"
+		]
+	},
+	"uls-region-WW": "دۇنيادا",
+	"uls-region-SP": "ئالاھىدە",
+	"uls-region-AM": "ئامېرىكا",
+	"uls-region-AF": "ئافرىقا",
+	"uls-region-EU": "ياۋروپا",
+	"uls-region-AS": "ئاسىيا",
+	"uls-region-ME": "ئوتتۇرا شەرق",
+	"uls-region-PA": "ئاتلانتىك",
+	"uls-region-all": "بارلىق تىللار",
+	"uls-no-results-found": "نەتىجە تېپىلمىدى",
+	"uls-common-languages": "تەۋسىيە تىللار",
+	"uls-no-results-suggestion-title": "قىزىقىشىڭىز مۇمكىن:",
+	"uls-search-help": "سىز تىل نامى، يېزىق شەكلى نامى، تىلنىڭ ISO كودى بويىچە ئىزدىيەلەيسىز ياكى رايون بويىچە كۆرەلەيسىز:",
+	"uls-search-placeholder": "تىل ئىزدەش"
+}

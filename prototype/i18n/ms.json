@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Anakmalaysia",
+			"Tofeiku"
+		]
+	},
+	"uls-region-WW": "Seluruh Dunia",
+	"uls-region-SP": "Khas",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Eropah",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Timur Tengah",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Semua bahasa",
+	"uls-no-results-found": "Tiada hasil carian",
+	"uls-common-languages": "Bahasa yang dicadangkan",
+	"uls-no-results-suggestion-title": "Mungkin anda ingin mencari:",
+	"uls-search-help": "Anda boleh mencari mengikut nama bahasa, nama tulisan, kod bahasa ISO ataupun menyemak seimbas mengikut kawasan.",
+	"uls-search-placeholder": "Cari bahasa"
+}

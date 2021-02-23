@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Namik",
+			"Soul Train"
+		]
+	},
+	"uls-region-WW": "Вири дуьньядин",
+	"uls-region-SP": "Махсус",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Юкьван РагъэкъечӀдай пад",
+	"uls-region-PA": "Океания",
+	"uls-region-all": "Вири чӀалар",
+	"uls-common-languages": "Теклифнавай чӀалар",
+	"uls-search-help": "Вавай чӀалан дахьайтӀа кхьинвилин тӀварунай къекъвез жеда, чӀалан ISO-коддай дахьайтӀа региондай килигиз жеда.",
+	"uls-search-placeholder": "ЧӀал жагъурун"
+}

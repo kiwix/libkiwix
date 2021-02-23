@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Nike",
+			"Shirayuki"
+		]
+	},
+	"uls-region-WW": "Label for worldwide languages. They are languages spoken in multiple countries. Eg: English, French, Spanish etc. This label is used in the map region of ULS and as the title of section showing worldwide languages. Translation should not be descriptive.",
+	"uls-region-SP": "Label for the special languages section. This section may include special custom languages that can be added in run time. It's shown after the Worldwide section.\n\nThe special language is everything that isn't a real language. Like code qqq or qqx.\n{{Identical|Special}}",
+	"uls-region-AM": "Label for America",
+	"uls-region-AF": "Label for Africa",
+	"uls-region-EU": "Label for Europe",
+	"uls-region-AS": "Label for Asia",
+	"uls-region-ME": "Label for Middle East",
+	"uls-region-PA": "Label for Pacific",
+	"uls-region-all": "Label for all languages in narrow mode, where languages are not split by region.",
+	"uls-no-results-found": "Title text for 'No results found' section",
+	"uls-common-languages": "The ULS tries to guess the langugages that the user is most likely to pick. They are taken from geolocation (languages of the current country according to the IP address), previously selected languages, and the browser's accept-language. The list of these languages appears at the top of the ULS languages list, above the geographical regions. This is the title of that list.\n\nSee also {{msg-mw|Mobile-frontend-languages-structured-overlay-suggested-languages-header}}",
+	"uls-no-results-suggestion-title": "Title for language suggestion in 'no results found' screen",
+	"uls-search-help": "Help text for searching.\n\n\"Script name\" is a name of a writing system, such as \"Latin\", \"Cyrillic\", \"Arabic\" etc.",
+	"uls-search-placeholder": "Placeholder text in search box"
+}

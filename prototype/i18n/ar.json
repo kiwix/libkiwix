@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"DRIHEM",
+			"Hhaboh162002",
+			"Meno25",
+			"ترجمان05",
+			"ديفيد"
+		]
+	},
+	"uls-region-WW": "في جميع أنحاء العالم",
+	"uls-region-SP": "الخاصة",
+	"uls-region-AM": "أمريكا",
+	"uls-region-AF": "أفريقيا",
+	"uls-region-EU": "أوروبا",
+	"uls-region-AS": "آسيا",
+	"uls-region-ME": "الشرق الأوسط",
+	"uls-region-PA": "المحيط الهادئ",
+	"uls-region-all": "جميع اللغات",
+	"uls-no-results-found": "لم يتم العثور على نتائج",
+	"uls-common-languages": "اللغات المقترحة",
+	"uls-no-results-suggestion-title": "قد تكون مهتما بما يلي:",
+	"uls-search-help": "يمكنك البحث مستخدما اسم اللغة، أو اسم السكريبت، أو رمز اللغة القياسي أو يمكنك التصفح حسب المنطقة.",
+	"uls-search-placeholder": "بحث عن لغة"
+}

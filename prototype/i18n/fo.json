@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"EileenSanda"
+		]
+	},
+	"uls-region-WW": "Alheims",
+	"uls-region-SP": "Serstakt",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Evropa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Miðeystur",
+	"uls-region-PA": "Stillahavið",
+	"uls-no-results-found": "Ongi úrslit funnin",
+	"uls-common-languages": "Vanlig mál",
+	"uls-no-results-suggestion-title": "Tú ert kanska áhugað/ur í:",
+	"uls-search-help": "Tú kanst leita eftir navni á máli, skrifttýpu á máli, ISO kotu av máli ella kanst tú leita eftir øki:",
+	"uls-search-placeholder": "Leita eftir máli"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Андрей Саг."
+		]
+	},
+	"uls-region-WW": "Прай чирдеге",
+	"uls-region-SP": "Ӧнетін",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Чағынғы Іскер",
+	"uls-region-PA": "Амыр",
+	"uls-region-all": "Прай тіллер",
+	"uls-no-results-found": "Салтарларын табалполбан",
+	"uls-common-languages": "Чӧпха пирелген тіллер",
+	"uls-no-results-suggestion-title": "Пасха тіллер пирелче",
+	"uls-search-help": "Сілерге пирелче тілдіӊ адыныӊ, пічіктіӊ, ISO-кодтыӊ тілирге алай регионныӊ кӧрерге",
+	"uls-search-placeholder": "Тілде тілирге"
+}

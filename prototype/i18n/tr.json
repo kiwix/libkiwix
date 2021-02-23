@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"1917 Ekim Devrimi",
+			"BaRaN6161 TURK",
+			"Emperyan",
+			"Erdemaslancan",
+			"Kumkumuk",
+			"Marmase",
+			"MrSchipunov",
+			"Sadrettin"
+		]
+	},
+	"uls-region-WW": "Dünya çapında",
+	"uls-region-SP": "Özel",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Avrupa",
+	"uls-region-AS": "Asya",
+	"uls-region-ME": "Orta Doğu",
+	"uls-region-PA": "Pasifik",
+	"uls-region-all": "Tüm diller",
+	"uls-no-results-found": "Sonuç bulunamadı",
+	"uls-common-languages": "Önerilen diller",
+	"uls-no-results-suggestion-title": "İlginizi çekebilir:",
+	"uls-search-help": "Dil adına, betik adına, dilin ISO koduna göre arama yapabilirsiniz ya da bölgeye göre tarayabilirsiniz.",
+	"uls-search-placeholder": "Bir dil arayın"
+}

@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"AZISS",
+			"Khan27",
+			"Wertuose",
+			"Şeyx Şamil"
+		]
+	},
+	"uls-region-WW": "Dünya üzrə",
+	"uls-region-SP": "Xüsusi",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Avropa",
+	"uls-region-AS": "Asiya",
+	"uls-region-ME": "Yaxın Şərq",
+	"uls-region-PA": "Okeaniya",
+	"uls-region-all": "Bütün dillər",
+	"uls-no-results-found": "Nəticələr tapılmadı",
+	"uls-common-languages": "Təklif edilən dillər",
+	"uls-no-results-suggestion-title": "Sizin üçün maraqlı ola bilər:",
+	"uls-search-help": "Siz dilin adı, yazısı və ISO-kodu üzrə və ya region üzrə axtarış edə bilərsiz.",
+	"uls-search-placeholder": "Dili axtar"
+}

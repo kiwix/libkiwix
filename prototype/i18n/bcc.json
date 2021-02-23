@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Baloch Afghanistan",
+			"Sultanselim baloch"
+		]
+	},
+	"uls-region-WW": "بی سراسری دونیا",
+	"uls-region-SP": "ویژه",
+	"uls-region-AM": "آمریکا",
+	"uls-region-AF": "آفریقا",
+	"uls-region-EU": "اروپا",
+	"uls-region-AS": "آسیا",
+	"uls-region-ME": "خاورمیانه",
+	"uls-region-PA": "اقیانوس آرام",
+	"uls-no-results-found": "نتیجه‌ای یافت نشد",
+	"uls-common-languages": "زبان‌های رایج",
+	"uls-no-results-suggestion-title": "ممکن است علاقه‌مند باشید:",
+	"uls-search-help": "شما می‌توانید بر پایه نام زبان، نام اسکریپت، کد استاندارد زبان یا بر پایه منطقه جستجو کنید:",
+	"uls-search-placeholder": "زبانء شۏھاز"
+}

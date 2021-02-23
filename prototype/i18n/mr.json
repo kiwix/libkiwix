@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kaajawa",
+			"Mahitgar",
+			"Sureshkhole",
+			"V.narsikar"
+		]
+	},
+	"uls-region-WW": "वैश्विक",
+	"uls-region-SP": "विशेष",
+	"uls-region-AM": "अमेरीका",
+	"uls-region-AF": "आफ्रीका",
+	"uls-region-EU": "युरोप",
+	"uls-region-AS": "आशिया",
+	"uls-region-ME": "मध्यपूर्व (मिडल इस्ट)",
+	"uls-region-PA": "पॅसिफीक",
+	"uls-region-all": "सर्व भाषा",
+	"uls-no-results-found": "परिणाम सापडले नाही",
+	"uls-common-languages": "सुचविलेल्या भाषा",
+	"uls-no-results-suggestion-title": "तुम्हाला कदाचित यात रुची असेल:",
+	"uls-search-help": "आपण भाषेनुसार, लिपीनुसार, भाषेच्या आयएसओ कोडनुसार शोध घेऊ शकता अथवा प्रदेशानुसार शोधु शकता:",
+	"uls-search-placeholder": "भाषेचा शोध घ्या"
+}

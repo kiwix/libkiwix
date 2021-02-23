@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fulup",
+			"Gwenn-Ael"
+		]
+	},
+	"uls-region-WW": "Bed a-bezh",
+	"uls-region-SP": "Dibar",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Azia",
+	"uls-region-ME": "Reter-Kreiz",
+	"uls-region-PA": "Habask",
+	"uls-region-all": "An holl yezhoù",
+	"uls-no-results-found": "N'eus bet kavet disoc'h ebet",
+	"uls-common-languages": "Yezhoù aliet",
+	"uls-no-results-suggestion-title": "Gallout a reot bezañ dedennet gant :",
+	"uls-search-help": "Gallout a reot klask dre anv yezh, anv skript, kod yezh ISO pe gallout a reot klask dre rannvro.",
+	"uls-search-placeholder": "Klask ur yezh"
+}

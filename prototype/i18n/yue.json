@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hello903hello",
+			"Moon0319",
+			"Roy17"
+		]
+	},
+	"uls-region-WW": "全世界",
+	"uls-region-AF": "非洲",
+	"uls-region-EU": "歐洲",
+	"uls-region-AS": "亞洲",
+	"uls-region-ME": "中東",
+	"uls-region-PA": "太平洋",
+	"uls-region-all": "全部嘅話",
+	"uls-no-results-found": "搵唔到結果",
+	"uls-common-languages": "建議嘅話",
+	"uls-search-placeholder": "搵一種話"
+}

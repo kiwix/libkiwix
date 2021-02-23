@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lloffiwr",
+			"Muddyb",
+			"Muddyb Blast Producer"
+		]
+	},
+	"uls-region-WW": "Dunia nzima",
+	"uls-region-SP": "Maalumu",
+	"uls-region-AM": "Marekani",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Ulaya",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Mashariki ya Kati",
+	"uls-region-PA": "Pasifiki",
+	"uls-no-results-found": "Hakuna matokeo",
+	"uls-common-languages": "Lugha za kawaida",
+	"uls-no-results-suggestion-title": "Pengine unaweza kuvutiwa na:",
+	"uls-search-help": "Unaweza kutafuta kwa jina la lugha, jina la maandishi, msimbo wa ISO wa lugha, ama unaweza kutafuta kwa eneo.",
+	"uls-search-placeholder": "Tafuta lugha"
+}

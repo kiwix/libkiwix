@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Evropi",
+			"Geraki"
+		]
+	},
+	"uls-region-WW": "Παγκόσμιες",
+	"uls-region-SP": "Ειδικές",
+	"uls-region-AM": "Αμερική",
+	"uls-region-AF": "Αφρική",
+	"uls-region-EU": "Ευρώπη",
+	"uls-region-AS": "Ασία",
+	"uls-region-ME": "Μέση Ανατολή",
+	"uls-region-PA": "Ειρηνικός",
+	"uls-region-all": "Όλες οι γλώσσες",
+	"uls-no-results-found": "Δε βρέθηκαν αποτελέσματα",
+	"uls-common-languages": "Προτεινόμενες γλώσσες",
+	"uls-no-results-suggestion-title": "Μπορεί να σας ενδιαφέρουν:",
+	"uls-search-help": "Μπορείτε να ψάξετε κατά το όνομα της γλώσσας, τρόπο γραφής, κωδικό ISO της γλώσσας, ή να περιηγηθείτε ανά περιοχή.",
+	"uls-search-placeholder": "Αναζήτηση για γλώσσα"
+}

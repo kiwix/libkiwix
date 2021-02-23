@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nona",
+			"Xelgen"
+		]
+	},
+	"uls-region-WW": "Միջազգային",
+	"uls-region-SP": "Հատուկ",
+	"uls-region-AM": "Ամերիկա",
+	"uls-region-AF": "Աֆրիկա",
+	"uls-region-EU": "Եվրոպա",
+	"uls-region-AS": "Ասիա",
+	"uls-region-ME": "Միջին արևելք",
+	"uls-region-PA": "Օվկիանիա",
+	"uls-region-all": "Բոլոր լեզուները",
+	"uls-no-results-found": "Ոչինչ չի գտնվել",
+	"uls-common-languages": "Առաջարկվող լեզուներ",
+	"uls-no-results-suggestion-title": "Ձեզ գուցե հետաքրքրեն․",
+	"uls-search-help": "Դուք կարող եք որոնել լեզուն իր անվամբ, գրի անունով, ԻՍՈ կոդով կամ կարող եք ընտրել ըստ տարածաշրջանի։",
+	"uls-search-placeholder": "Որոնել լեզուները"
+}

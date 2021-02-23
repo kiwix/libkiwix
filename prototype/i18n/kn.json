@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ashay vb",
+			"Omshivaprakash",
+			"Shankar"
+		]
+	},
+	"uls-region-WW": "ಪ್ರಪಂಚದಾದ್ಯಂತ",
+	"uls-region-SP": "ವಿಶೇಷ",
+	"uls-region-AM": "ಅಮೇರಿಕ",
+	"uls-region-AF": "ಆಫ್ರಿಕ",
+	"uls-region-EU": "ಯುರೋಪ್",
+	"uls-region-AS": "ಏಷ್ಯಾ",
+	"uls-region-ME": "ಮಿಡಲ್ ಈಸ್ಟ್",
+	"uls-region-PA": "ಫೆಸಿಫಿಕ್",
+	"uls-region-all": "ಎಲ್ಲಾ ಭಾಷೆಗಳು",
+	"uls-no-results-found": "ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ",
+	"uls-common-languages": "ಸೂಚಿಸಿದ ಭಾಷೆಗಳು",
+	"uls-no-results-suggestion-title": "ನಿಮಗೆ ಇದರಲ್ಲಿ ಆಸಕ್ತಿ ಇರಬಹುದು:",
+	"uls-search-help": "ನೀವು ಭಾಷೆಯ ಹೆಸರು, ಸ್ಕ್ರಿಪ್ಟ್ ಹೆಸರು, ಐಎಸ್ಒ ಭಾಷೆಯ ಕೋಡ್ ಮೂಲಕ ಹುಡುಕಬಹುದು ಅಥವಾ ನೀವು ಪ್ರದೇಶದ ಪ್ರಕಾರ ಬ್ರೌಸ್ ಮಾಡಬಹುದು.",
+	"uls-search-placeholder": "ಭಾಷೆಗಾಗಿ ಹುಡುಕಿ"
+}

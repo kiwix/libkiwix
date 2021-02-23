@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kscanne"
+		]
+	},
+	"uls-region-WW": "Ar fud an Domhain",
+	"uls-region-SP": "Speisialta",
+	"uls-region-AM": "Meiriceá",
+	"uls-region-AF": "An Afraic",
+	"uls-region-EU": "An Eoraip",
+	"uls-region-AS": "An Áise",
+	"uls-region-ME": "An Meánoirthear",
+	"uls-region-PA": "An tAigéan Ciúin",
+	"uls-no-results-found": "Gan torthaí",
+	"uls-common-languages": "Teangacha coitianta",
+	"uls-no-results-suggestion-title": "Seans go mbeadh suim agat i:",
+	"uls-search-help": "Is féidir cuardach de réir ainm na teanga, ainm na scripte, cód ISO 639, nó brabhsáil de réir réigiúin:",
+	"uls-search-placeholder": "Cuardaigh teangacha"
+}

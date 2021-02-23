@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gomoko",
+			"Pols12",
+			"Ultimate",
+			"Verdy p",
+			"Wladek92"
+		]
+	},
+	"uls-region-WW": "Dans le monde entier",
+	"uls-region-SP": "Spéciales",
+	"uls-region-AM": "Amérique",
+	"uls-region-AF": "Afrique",
+	"uls-region-EU": "Europe",
+	"uls-region-AS": "Asie",
+	"uls-region-ME": "Moyen-Orient",
+	"uls-region-PA": "Pacifique",
+	"uls-region-all": "Toutes les langues",
+	"uls-no-results-found": "Aucun résultat trouvé",
+	"uls-common-languages": "Langues suggérées",
+	"uls-no-results-suggestion-title": "Vous pouvez être intéressé par :",
+	"uls-search-help": "Vous pouvez rechercher par nom de langue, par nom de l’écriture, par code ISO de langue, ou vous pouvez naviguer par région.",
+	"uls-search-placeholder": "Rechercher une langue"
+}

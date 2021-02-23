@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Christian List",
+			"Jubber",
+			"Peter Alberti"
+		]
+	},
+	"uls-region-WW": "Verdensomspændende",
+	"uls-region-SP": "Specielle",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asien",
+	"uls-region-ME": "Mellemøsten",
+	"uls-region-PA": "Stillehavet",
+	"uls-region-all": "Alle sprog",
+	"uls-no-results-found": "Ingen resultater fundet",
+	"uls-common-languages": "Foreslåede sprog",
+	"uls-no-results-suggestion-title": "Du er måske interesseret i:",
+	"uls-search-help": "Du kan søge på sprogets navn, skriftens navn eller sprogets ISO-kode, eller du kan bladre hen til sproget efter regionen.",
+	"uls-search-placeholder": "Søg efter et sprog"
+}

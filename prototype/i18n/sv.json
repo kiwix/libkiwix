@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cybjit",
+			"Johan",
+			"Jopparn",
+			"WikiPhoenix"
+		]
+	},
+	"uls-region-WW": "Världsomfattande",
+	"uls-region-SP": "Speciella",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asien",
+	"uls-region-ME": "Mellanöstern",
+	"uls-region-PA": "Stilla havet",
+	"uls-region-all": "Alla språk",
+	"uls-no-results-found": "Inga resultat hittades",
+	"uls-common-languages": "Föreslagna språk",
+	"uls-no-results-suggestion-title": "Du kan vara intresserad av:",
+	"uls-search-help": "Du kan söka efter språkets namn, skriptnamn, ISO-kod för språket eller bläddra efter region.",
+	"uls-search-placeholder": "Sök efter ett språk"
+}

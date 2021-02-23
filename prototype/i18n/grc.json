@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"PastelKos"
+		]
+	},
+	"uls-region-WW": "Οἰκουμενικῶς",
+	"uls-region-AM": "Ἀμερική",
+	"uls-region-AF": "Λιβύη",
+	"uls-region-EU": "Εὐρώπη",
+	"uls-region-AS": "Ἀσία",
+	"uls-region-ME": "Ἐγγὺς Ἀνατολή",
+	"uls-region-PA": "Εἰρηνικός",
+	"uls-region-all": "Ἅπασαι αἱ γλῶσσαι",
+	"uls-no-results-found": "Οὐδὲν Ἀποτέλεσμα",
+	"uls-common-languages": "Εἰσηγούμεναι γλῶσσαι",
+	"uls-search-placeholder": "Ζητεῖν γλῶσσαν"
+}

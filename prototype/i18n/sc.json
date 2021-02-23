@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"L2212"
+		]
+	},
+	"uls-region-WW": "Totu su mundu",
+	"uls-region-SP": "Ispetziales",
+	"uls-region-AM": "Amèrica",
+	"uls-region-AF": "Àfrica",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Àsia",
+	"uls-region-ME": "Oriènte de mesu.",
+	"uls-region-PA": "Patzìficu",
+	"uls-region-all": "Totu sas limbas",
+	"uls-no-results-found": "Perunu resurtadu agatadu",
+	"uls-common-languages": "Limbas impositadas",
+	"uls-no-results-suggestion-title": "Podes essere interessadu in:",
+	"uls-search-help": "Podes chircare pro mèdiu de su nùmene de sa limba, su nùmene de su script, su còdighe ISO de sa limba o navigare pro mèdiu de sa regione:",
+	"uls-search-placeholder": "Chirca una limba:"
+}

@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Makuba",
+			"Stavanger7"
+		]
+	},
+	"uls-region-WW": "Global",
+	"uls-region-SP": "Special",
+	"uls-region-AM": "America",
+	"uls-region-AF": "Africa",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Medial Ost",
+	"uls-region-PA": "Pacific",
+	"uls-region-all": "Omni lingues",
+	"uls-no-results-found": "Null resultates ha esset trovat.",
+	"uls-common-languages": "Proposit lingues",
+	"uls-no-results-suggestion-title": "Forsan tu es interessat in:",
+	"uls-search-help": "Tu posse serchar li nómin del lingue, del scritura, li ISO-code del lingue o serchar secun un region.",
+	"uls-search-placeholder": "Serchar un lingue"
+}

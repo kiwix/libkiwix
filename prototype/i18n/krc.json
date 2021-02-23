@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ernác",
+			"Iltever"
+		]
+	},
+	"uls-region-WW": "Бютеудуниялы",
+	"uls-region-SP": "Айырмалы",
+	"uls-region-AM": "Америка",
+	"uls-region-AF": "Африка",
+	"uls-region-EU": "Европа",
+	"uls-region-AS": "Азия",
+	"uls-region-ME": "Джууукъ Кюнчыгъыш",
+	"uls-region-PA": "Океания",
+	"uls-no-results-found": "Джукъ да табылмады",
+	"uls-common-languages": "Автомат халда айырылгъан тилле",
+	"uls-no-results-suggestion-title": "Бу теллеге талпый болурмусуз:",
+	"uls-search-help": "Тилни неда джазманы атына кёре излерге боллукъсуз, тилни ISO-кодуна кёре неда регионнга кёре къараргъа:",
+	"uls-search-placeholder": "Тил излеу"
+}

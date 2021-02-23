@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"MaGa",
+			"Teoo3"
+		]
+	},
+	"uls-region-WW": "Svjetski jezici",
+	"uls-region-SP": "Posebno",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Azija",
+	"uls-region-ME": "Bliski istok",
+	"uls-region-PA": "Pacifik",
+	"uls-region-all": "Svi jezici",
+	"uls-no-results-found": "Nema rezultata",
+	"uls-common-languages": "Predloženi jezici",
+	"uls-no-results-suggestion-title": "Možda ste zainteresirani za:",
+	"uls-search-help": "Možete tražiti prema nazivu jezika, pisma, ISO kôdu jezika ili možete pretražiti po regiji.",
+	"uls-search-placeholder": "Pretraga jezika"
+}

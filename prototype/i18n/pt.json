@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Cainamarques",
+			"Hamilton Abreu",
+			"Sarilho1",
+			"Ti4goc",
+			"Vitorvicentevalente",
+			"Waldir",
+			"Waldyrious"
+		]
+	},
+	"uls-region-WW": "Global",
+	"uls-region-SP": "Especiais",
+	"uls-region-AM": "América",
+	"uls-region-AF": "África",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Ásia",
+	"uls-region-ME": "Médio Oriente",
+	"uls-region-PA": "Pacífico",
+	"uls-region-all": "Todos os idiomas",
+	"uls-no-results-found": "Não foram encontrados resultados",
+	"uls-common-languages": "Idiomas sugeridos",
+	"uls-no-results-suggestion-title": "Você pode estar interessado em:",
+	"uls-search-help": "Pode pesquisar pelo nome da língua, pelo tipo de alfabeto, pelo código ISO da língua, ou pode navegar por região.",
+	"uls-search-placeholder": "Pesquisar uma língua"
+}

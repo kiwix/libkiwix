@@ -1,14 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="UTF-8">
         <meta name="viewport" content="width=1200, initial-scale=1.0">
         <title>Kiwix Library</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="../prototype/css/style.css">     
         <link rel="icon" href="./images/image/kiwix.png" sizes="any" type="image/svg+xml">
-    </head>
-    <body>
-        <div id="main">
+		<meta name="author" content="Santhosh Thottingal">
+		<link href="../prototype/css/jquery.uls.css" rel="stylesheet">
+		<link href="../prototype/css/jquery.uls.grid.css" rel="stylesheet">
+		<link href="../prototype/css/jquery.uls.lcd.css" rel="stylesheet">
+
+		<!-- Libs -->
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<!-- Source -->
+		<script src="../prototype/src/jquery.uls.data.js"></script>
+		<script src="../prototype/src/jquery.uls.data.utils.js"></script>
+		<script src="../prototype/src/jquery.uls.lcd.js"></script>
+		<script src="../prototype/src/jquery.uls.languagefilter.js"></script>
+		<script src="../prototype/src/jquery.uls.core.js"></script>
+		<script>
+			$( document ).ready( function() {
+				$( '.uls-trigger' ).uls( {
+					onSelect: function( language ) {
+						var languageName = $.uls.data.getAutonym( language );
+						$( '.uls-trigger' ).text( languageName );
+					},
+					quickList: ['en', 'hi', 'he', 'ml', 'ta', 'fr'] //FIXME
+				} );
+			} );
+		</script>
+	</head>
+
+	<body>
+		<div id="main" class="navbar navbar-fixed-top">
             <nav>
                 <img src="./images/image/kiwix-logo.png" class="kiwix-logo" alt="logo">
                 <ul>
@@ -21,10 +46,8 @@
                 <form id="content">
                     <input type="text" name="input" class="input" id="search-input">
                     <button type="reset" class="search" id="search-btn"></button>
+					<span class="active uls-trigger">Select language</span>
                 </form>
-                <div id="lang-switcher" class="ui-dropdown-list">
-					<p class="ui-dropdown-list-trigger de"><strong>English</strong></p>
-				</div>
             </nav>
             
             <div class="boxes">
@@ -46,8 +69,7 @@
                         <p><span class="gras">15</span></p>
                         <p><span class="grey">medias</span></p>
                     </div>
-                </div>
-                
+                </div>                
             </div>
         </div>
         
@@ -319,8 +341,7 @@
 	</div>
 
 </footer>
-<script src="script.js"></script>
-</body>
+<script src="../prototype/src/script.js"></script>
+
+	</body>
 </html>
-
-

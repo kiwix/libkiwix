@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Njardarlogar"
+		]
+	},
+	"uls-region-WW": "Verdsfemnande",
+	"uls-region-SP": "Spesielle",
+	"uls-region-AM": "Amerika",
+	"uls-region-AF": "Afrika",
+	"uls-region-EU": "Europa",
+	"uls-region-AS": "Asia",
+	"uls-region-ME": "Midtausten",
+	"uls-region-PA": "Stillehavsområdet",
+	"uls-region-all": "Alle språk",
+	"uls-no-results-found": "Ingen resultat funne",
+	"uls-common-languages": "Vanlege språk",
+	"uls-no-results-suggestion-title": "Kan henda er du interessert i:",
+	"uls-search-help": "Du kan søkja etter språknamn, namn på skriftsystem, ISO-kode eller du kan bla gjennom etter region.",
+	"uls-search-placeholder": "Språksøk"
+}

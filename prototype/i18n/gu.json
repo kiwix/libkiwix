@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ashok modhvadia",
+			"Harsh4101991",
+			"KartikMistry",
+			"Santhosh.thottingal"
+		]
+	},
+	"uls-region-WW": "વિશ્વભરમાં",
+	"uls-region-SP": "ખાસ",
+	"uls-region-AM": "અમેરિકા",
+	"uls-region-AF": "આફ્રિકા",
+	"uls-region-EU": "યુરોપ",
+	"uls-region-AS": "એશિયા",
+	"uls-region-ME": "મધ્ય પૂર્વ",
+	"uls-region-PA": "પૅસિફિક",
+	"uls-region-all": "બધી ભાષાઓ",
+	"uls-no-results-found": "કોઈ પરિણામ મળ્યા નહી",
+	"uls-common-languages": "સૂચિત ભાષાઓ",
+	"uls-no-results-suggestion-title": "તમને આમાં રસ હોઈ શકે છે:",
+	"uls-search-help": "તમે ભાષા નામ, સ્ક્રિપ્ટ નામ, ભાષા ISO કોડ દ્વારા શોધ કરી શકો છે અથવા તમે પ્રદેશ દ્વારા શોધ કરી શકો છો.",
+	"uls-search-placeholder": "ભાષા માટે શોધો"
+}

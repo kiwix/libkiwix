@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bouron"
+		]
+	},
+	"uls-region-WW": "Æппæтдунеон",
+	"uls-region-SP": "Сӕрмагонд",
+	"uls-region-AM": "Америкæ",
+	"uls-region-AF": "Африкæ",
+	"uls-region-EU": "Европæ",
+	"uls-region-AS": "Ази",
+	"uls-region-ME": "Æввахс Скæсæн",
+	"uls-region-PA": "Океани",
+	"uls-no-results-found": "Ницы разындис",
+	"uls-common-languages": "Æввахс æвзæгтæ",
+	"uls-no-results-suggestion-title": "Чизоны дæ ацы æвзæгтæ бахъæуой:",
+	"uls-search-help": "Дæ бон у агурын æвзаджы номмæ гæсгæ, фыссынадмæ гæсгæ, ISO кодмæ гæсгæ кæнæ бынатмæ гæсгæ:",
+	"uls-search-placeholder": "Æвзаг агурын"
+}
