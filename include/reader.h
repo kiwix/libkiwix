@@ -55,7 +55,11 @@ class Reader
    *                    unsplitted path as if the file were not splitted
    *                    (.zim extesion).
    */
-  Reader(const string zimFilePath);
+  explicit Reader(const string zimFilePath);
+#ifndef _WIN32
+  explicit Reader(int fd);
+  Reader(int fd, zim::offset_type offset, zim::size_type size);
+#endif
   ~Reader() = default;
 
   /**

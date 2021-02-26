@@ -10,36 +10,143 @@ static {
   System.loadLibrary("kiwix");
 }
 
-private static String getCatalogContent()
+private static byte[] getFileContent(String path)
 throws IOException
 {
-  BufferedReader reader = new BufferedReader(new FileReader("catalog.xml"));
-  String line;
-  StringBuilder sb = new StringBuilder();
-  while ((line = reader.readLine()) != null)
-  {
-    sb.append(line + "\n");
-  }
-  reader.close();
-  return sb.toString();
+  File file = new File(path);
+  DataInputStream in = new DataInputStream(
+                         new BufferedInputStream(
+                           new FileInputStream(file)));
+  byte[] data = new byte[(int)file.length()];
+  in.read(data);
+  return data;
+}
+
+private static byte[] getFileContentPartial(String path, int offset, int size)
+throws IOException
+{
+  File file = new File(path);
+  DataInputStream in = new DataInputStream(
+                         new BufferedInputStream(
+                           new FileInputStream(file)));
+  byte[] data = new byte[size];
+  in.skipBytes(offset);
+  in.read(data, 0, size);
+  return data;
+}
+
+private static String getTextFileContent(String path)
+throws IOException
+{
+  return new String(getFileContent(path));
 }
 
 @Test
-public void testSome()
+public void testReader()
+throws JNIKiwixException, IOException
+{
+  JNIKiwixReader reader = new JNIKiwixReader("small.zim");
+  assertEquals("Test ZIM file", reader.getTitle());
+  assertEquals(45, reader.getFileSize()); // The file size is in KiB
+  assertEquals("A/main.html", reader.getMainPage());
+  String s = getTextFileContent("small_zimfile_data/main.html");
+  byte[] c = reader.getContent(new JNIKiwixString("A/main.html"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertEquals(s, new String(c));
+
+  byte[] faviconData = getFileContent("small_zimfile_data/favicon.png");
+  assertEquals(faviconData.length, reader.getArticleSize("I/favicon.png"));
+  c = reader.getContent(new JNIKiwixString("I/favicon.png"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
+
+  DirectAccessInfo dai = reader.getDirectAccessInformation("I/favicon.png");
+  assertNotEquals("", dai.filename);
+  c = getFileContentPartial(dai.filename, (int)dai.offset, faviconData.length);
+  assertTrue(Arrays.equals(faviconData, c));
+}
+
+@Test
+public void testReaderByFd()
+throws JNIKiwixException, IOException
+{
+  FileInputStream fis = new FileInputStream("small.zim");
+  JNIKiwixReader reader = new JNIKiwixReader(fis.getFD());
+  assertEquals("Test ZIM file", reader.getTitle());
+  assertEquals(45, reader.getFileSize()); // The file size is in KiB
+  assertEquals("A/main.html", reader.getMainPage());
+  String s = getTextFileContent("small_zimfile_data/main.html");
+  byte[] c = reader.getContent(new JNIKiwixString("A/main.html"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertEquals(s, new String(c));
+
+  byte[] faviconData = getFileContent("small_zimfile_data/favicon.png");
+  assertEquals(faviconData.length, reader.getArticleSize("I/favicon.png"));
+  c = reader.getContent(new JNIKiwixString("I/favicon.png"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
+
+  DirectAccessInfo dai = reader.getDirectAccessInformation("I/favicon.png");
+  assertNotEquals("", dai.filename);
+  c = getFileContentPartial(dai.filename, (int)dai.offset, faviconData.length);
+  assertTrue(Arrays.equals(faviconData, c));
+}
+
+@Test
+public void testReaderWithAnEmbeddedArchive()
+throws JNIKiwixException, IOException
+{
+  File plainArchive = new File("small.zim");
+  FileInputStream fis = new FileInputStream("small.zim.embedded");
+  JNIKiwixReader reader = new JNIKiwixReader(fis.getFD(), 8, plainArchive.length());
+  assertEquals("Test ZIM file", reader.getTitle());
+  assertEquals(45, reader.getFileSize()); // The file size is in KiB
+  assertEquals("A/main.html", reader.getMainPage());
+  String s = getTextFileContent("small_zimfile_data/main.html");
+  byte[] c = reader.getContent(new JNIKiwixString("A/main.html"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertEquals(s, new String(c));
+
+  byte[] faviconData = getFileContent("small_zimfile_data/favicon.png");
+  assertEquals(faviconData.length, reader.getArticleSize("I/favicon.png"));
+  c = reader.getContent(new JNIKiwixString("I/favicon.png"),
+                                new JNIKiwixString(),
+                                new JNIKiwixString(),
+                                new JNIKiwixInt());
+  assertTrue(Arrays.equals(faviconData, c));
+
+  DirectAccessInfo dai = reader.getDirectAccessInformation("I/favicon.png");
+  assertNotEquals("", dai.filename);
+  c = getFileContentPartial(dai.filename, (int)dai.offset, faviconData.length);
+  assertTrue(Arrays.equals(faviconData, c));
+}
+
+@Test
+public void testLibrary()
 throws IOException
 {
   Library lib = new Library();
   Manager manager = new Manager(lib);
-  String content = getCatalogContent();
-  manager.readOpds(content, "https://library.kiwix.org");
-  assertEquals(lib.getBookCount(true, true), 10);
+  String content = getTextFileContent("catalog.xml");
+  manager.readOpds(content, "http://localhost");
+  assertEquals(lib.getBookCount(true, true), 1);
   String[] bookIds = lib.getBooksIds();
-  assertEquals(bookIds.length, 10);
+  assertEquals(bookIds.length, 1);
   Book book = lib.getBookById(bookIds[0]);
-  assertEquals(book.getTitle(), "Wikisource");
-  assertEquals(book.getTags(), "wikisource;_category:wikisource;_pictures:no;_videos:no;_details:yes;_ftindex:yes");
-  assertEquals(book.getFaviconUrl(), "https://library.kiwix.org/meta?name=favicon&content=wikisource_fr_all_nopic_2020-01");
-  assertEquals(book.getUrl(), "http://download.kiwix.org/zim/wikisource/wikisource_fr_all_nopic_2020-01.zim.meta4");
+  assertEquals(book.getTitle(), "Test ZIM file");
+  assertEquals(book.getTags(), "unit;test");
+  assertEquals(book.getFaviconUrl(), "http://localhost/meta?name=favicon&content=small");
+  assertEquals(book.getUrl(), "http://localhost/small.zim");
 }
 
 static

@@ -45,6 +45,72 @@ JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReader(
   }
 }
 
+namespace
+{
+
+int jni2fd(const jobject& fdObj, JNIEnv* env)
+{
+  jclass class_fdesc = env->FindClass("java/io/FileDescriptor");
+  jfieldID field_fd = env->GetFieldID(class_fdesc, "fd", "I");
+  if ( field_fd == NULL )
+  {
+    env->ExceptionClear();
+    // Under Android the (private) 'fd' field of java.io.FileDescriptor has been
+    // renamed to 'descriptor'. See, for example,
+    // https://android.googlesource.com/platform/libcore/+/refs/tags/android-8.1.0_r1/ojluni/src/main/java/java/io/FileDescriptor.java#55
+    field_fd = env->GetFieldID(class_fdesc, "descriptor", "I");
+  }
+  return env->GetIntField(fdObj, field_fd);
+}
+
+} // unnamed namespace
+
+JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReaderByFD(
+    JNIEnv* env, jobject obj, jobject fdObj)
+{
+#ifndef _WIN32
+  int fd = jni2fd(fdObj, env);
+
+  LOG("Attempting to create reader with fd: %d", fd);
+  Lock l;
+  try {
+    kiwix::Reader* reader = new kiwix::Reader(fd);
+    return reinterpret_cast<jlong>(new Handle<kiwix::Reader>(reader));
+  } catch (std::exception& e) {
+    LOG("Error opening ZIM file");
+    LOG(e.what());
+    return 0;
+  }
+#else
+  jclass exception = env->FindClass("java/lang/UnsupportedOperationException");
+  env->ThrowNew(exception, "org.kiwix.kiwixlib.JNIKiwixReader.getNativeReaderByFD() is not supported under Windows");
+  return 0;
+#endif
+}
+
+JNIEXPORT jlong JNICALL Java_org_kiwix_kiwixlib_JNIKiwixReader_getNativeReaderEmbedded(
+    JNIEnv* env, jobject obj, jobject fdObj, jlong offset, jlong size)
+{
+#ifndef _WIN32
+  int fd = jni2fd(fdObj, env);
+
+  LOG("Attempting to create reader with fd: %d", fd);
+  Lock l;
+  try {
+    kiwix::Reader* reader = new kiwix::Reader(fd, offset, size);
+    return reinterpret_cast<jlong>(new Handle<kiwix::Reader>(reader));
+  } catch (std::exception& e) {
+    LOG("Error opening ZIM file");
+    LOG(e.what());
+    return 0;
+  }
+#else
+  jclass exception = env->FindClass("java/lang/UnsupportedOperationException");
+  env->ThrowNew(exception, "org.kiwix.kiwixlib.JNIKiwixReader.getNativeReaderEmbedded() is not supported under Windows");
+  return 0;
+#endif
+}
+
 JNIEXPORT void JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_dispose(JNIEnv* env, jobject obj)
 {
@@ -325,22 +391,22 @@ JNIEXPORT jobject JNICALL
 Java_org_kiwix_kiwixlib_JNIKiwixReader_getDirectAccessInformation(
     JNIEnv* env, jobject obj, jstring url)
 {
-   jclass classPair = env->FindClass("org/kiwix/kiwixlib/Pair");
-   jmethodID midPairinit = env->GetMethodID(classPair, "<init>", "()V");
-   jobject pair = env->NewObject(classPair, midPairinit);
-   setPairObjValue("", 0, pair, env);
+   jclass daiClass = env->FindClass("org/kiwix/kiwixlib/DirectAccessInfo");
+   jmethodID daiInitMethod = env->GetMethodID(daiClass, "<init>", "()V");
+   jobject dai = env->NewObject(daiClass, daiInitMethod);
+   setDaiObjValue("", 0, dai, env);
 
    std::string cUrl = jni2c(url, env);
    try {
     auto entry = READER->getEntryFromEncodedPath(cUrl);
     entry = entry.getFinalEntry();
     auto part_info = entry.getDirectAccessInfo();
-    setPairObjValue(part_info.first, part_info.second, pair, env);
+    setDaiObjValue(part_info.first, part_info.second, dai, env);
   } catch (std::exception& e) {
     LOG("Unable to get direct access info for url: %s", cUrl.c_str());
     LOG(e.what());
   }
-  return pair;
+  return dai;
 }
 
 JNIEXPORT jboolean JNICALL

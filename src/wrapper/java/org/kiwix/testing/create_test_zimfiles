@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+die()
+{
+  echo >&2 "!!! ERROR: $*"
+  exit 1
+}
+
+cd "$(dirname "$0")"
+rm -f small.zim
+zimwriterfs --withoutFTIndex \
+            -w main.html \
+            -f favicon.png \
+            -l en \
+            -t "Test ZIM file" \
+            -d "N/A" \
+            -c "N/A" \
+            -p "N/A" \
+            small_zimfile_data \
+            small.zim \
+&& echo 'small.zim was successfully created' \
+|| die 'Failed to create small.zim'
+
+printf "BEGINZIM" > small.zim.embedded \
+&& cat small.zim >> small.zim.embedded \
+&& printf "ENDZIM" >> small.zim.embedded \
+&& echo 'small.zim.embedded was successfully created' \
+|| die 'Failed to create small.zim.embedded'

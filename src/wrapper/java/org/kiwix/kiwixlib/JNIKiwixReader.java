@@ -24,7 +24,8 @@ import org.kiwix.kiwixlib.JNIKiwixException;
 import org.kiwix.kiwixlib.JNIKiwixString;
 import org.kiwix.kiwixlib.JNIKiwixInt;
 import org.kiwix.kiwixlib.JNIKiwixSearcher;
-import org.kiwix.kiwixlib.Pair;
+import org.kiwix.kiwixlib.DirectAccessInfo;
+import java.io.FileDescriptor;
 
 public class JNIKiwixReader
 {
@@ -102,13 +103,13 @@ public class JNIKiwixReader
    * the zim file (or zim part) and directly read the content from it (and so
    * bypassing the libzim).
    *
-   * Return a `Pair` (filename, offset) where the content is located.
+   * Return a `DirectAccessInfo` (filename, offset) where the content is located.
    *
    * If the content cannot be directly accessed (content is compressed or zim
    * file is cut in the middle of the content), the filename is an empty string
    * and offset is zero.
    */
-  public native Pair getDirectAccessInformation(String url);
+  public native DirectAccessInfo getDirectAccessInformation(String url);
 
   public native boolean searchSuggestions(String prefix, int count);
 
@@ -151,11 +152,31 @@ public class JNIKiwixReader
         throw new JNIKiwixException("Cannot open zimfile "+filename);
     }
   }
+
+  public JNIKiwixReader(FileDescriptor fd) throws JNIKiwixException
+  {
+    nativeHandle = getNativeReaderByFD(fd);
+    if (nativeHandle == 0) {
+        throw new JNIKiwixException("Cannot open zimfile by fd "+fd.toString());
+    }
+  }
+
+  public JNIKiwixReader(FileDescriptor fd, long offset, long size)
+      throws JNIKiwixException
+  {
+    nativeHandle = getNativeReaderEmbedded(fd, offset, size);
+    if (nativeHandle == 0) {
+        throw new JNIKiwixException(String.format("Cannot open embedded zimfile (fd=%s, offset=%d, size=%d)", fd, offset, size));
+    }
+  }
+
   public JNIKiwixReader() {
 
   }
   public native void dispose();
 
   private native long getNativeReader(String filename);
+  private native long getNativeReaderByFD(FileDescriptor fd);
+  private native long getNativeReaderEmbedded(FileDescriptor fd, long offset, long size);
   private long nativeHandle;
 }
