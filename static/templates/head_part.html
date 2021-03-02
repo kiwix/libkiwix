@@ -18,6 +18,7 @@
 
   response: function( event, ui ) {
         for(const item of ui.content) {
+            item.label = htmlDecode(item.label);
             item.value = htmlDecode(item.value);
         }
   },

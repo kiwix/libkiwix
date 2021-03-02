@@ -2,6 +2,6 @@
   {{#suggestions}}{{^first}},{{/first}}
   {
     "value" : "{{value}}",
-    "label" : "{{& label}}"
+    "label" : "{{label}}"
   }{{/suggestions}}
 ]
