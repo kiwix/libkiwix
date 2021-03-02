@@ -4,6 +4,10 @@
 <script type="text/javascript" src="{{root}}/skin/jquery-ui/external/jquery/jquery.js"></script>
 <script type="text/javascript" src="{{root}}/skin/jquery-ui/jquery-ui.min.js"></script>
 <script>
+  function htmlDecode(input) {
+        var doc = new DOMParser().parseFromString(input, "text/html");
+        return doc.documentElement.textContent;
+  }
   var jk = jQuery.noConflict();
   jk(function() {
   jk( "#kiwixsearchbox" ).autocomplete({
@@ -11,6 +15,12 @@
   source: "{{root}}/suggest?content={{#urlencoded}}{{{content}}}{{/urlencoded}}",
   dataType: "json",
   cache: false,
+
+  response: function( event, ui ) {
+        for(const item of ui.content) {
+            item.value = htmlDecode(item.value);
+        }
+  },
 
   select: function(event, ui) {
   jk( "#kiwixsearchbox" ).val(ui.item.value);
