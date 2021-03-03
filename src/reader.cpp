@@ -169,23 +169,11 @@ string Reader::getId() const
 
 Entry Reader::getRandomPage() const
 {
-  auto mainPagePath = zimArchive->getMainEntry().getPath();
-  int watchdog = 42;
-
-  while (--watchdog){
-    auto idx = (zim::size_type)((double)rand() / ((double)RAND_MAX + 1)
-                              * zimArchive->getEntryCount());
-    auto entry = zimArchive->getEntryByPath(idx);
-
-    if (entry.getPath()==mainPagePath) {
-      continue;
-    }
-    auto item = entry.getItem(true);
-    if (item.getMimetype() == "text/html") {
-      return entry;
-    }
+  try {
+    return zimArchive->getRandomEntry();
+  } catch(...) {
+    throw NoEntry();
   }
-  throw NoEntry();
 }
 
 Entry Reader::getMainPage() const
