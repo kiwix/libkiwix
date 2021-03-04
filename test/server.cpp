@@ -53,6 +53,7 @@ public: // types
   typedef std::vector<std::string> FilePathCollection;
 
 public: // functions
+  ZimFileServer(int serverPort, std::string libraryFilePath);
   ZimFileServer(int serverPort, const FilePathCollection& zimpaths);
   ~ZimFileServer();
 
@@ -66,6 +67,9 @@ public: // functions
     return client->Head(path, headers);
   }
 
+private:
+  void run(int serverPort);
+
 private: // data
   kiwix::Library library;
   kiwix::Manager manager;
@@ -73,6 +77,16 @@ private: // data
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
 };
+
+ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
+: manager(&this->library)
+{
+  if ( isRelativePath(libraryFilePath) )
+    libraryFilePath = computeAbsolutePath(getCurrentDirectory(), libraryFilePath);
+  manager.readFile(libraryFilePath, true, true);
+
+  run(serverPort);
+}
 
 ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
 : manager(&this->library)
@@ -82,6 +96,11 @@ ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
       throw std::runtime_error("Unable to add the ZIM file '" + zimpath + "'");
   }
 
+  run(serverPort);
+}
+
+void ZimFileServer::run(int serverPort)
+{
   const std::string address = "127.0.0.1";
   nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   server.reset(new kiwix::Server(&library, nameMapper.get()));
@@ -545,4 +564,89 @@ TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
     EXPECT_EQ("bytes 100-200/20077", r->get_header_value("Content-Range"));
     EXPECT_EQ(r0->body, r->body);
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Testing of the library-related functionality of the server
+////////////////////////////////////////////////////////////////////////////////
+
+class LibraryServerTest : public ::testing::Test
+{
+protected:
+  std::unique_ptr<ZimFileServer>   zfs1_;
+
+  const int PORT = 8002;
+
+protected:
+  void SetUp() override {
+    zfs1_.reset(new ZimFileServer(PORT, "./test/library.xml"));
+  }
+
+  void TearDown() override {
+    zfs1_.reset();
+  }
+};
+
+std::string maskVariableOPDSFeedData(const std::string& s)
+{
+  const auto p = s.find("<updated>");
+  const std::string u("<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
+  return s.substr(0, p) + u + s.substr(p + u.size());
+}
+
+TEST_F(LibraryServerTest, catalog_root_xml)
+{
+  const auto r = zfs1_->GET("/catalog/root.xml");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+    "  <id>5e2e6fa3-14d5-f2c2-6c16-8ceaedd82237</id>\n"
+    "  <title>All zims</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
+    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
+    "  <entry>\n"
+    "    <id>urn:uuid:charlesray</id>\n"
+    "    <title>Charles, Ray</title>\n"
+    "    <summary>Wikipedia articles about Charles, Ray</summary>\n"
+    "    <language>eng</language>\n"
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"
+    "    <name>wikipedia_en_ray_charles</name>\n"
+    "    <flavour></flavour>\n"
+    "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n"
+    "    <articleCount>284</articleCount>\n"
+    "    <mediaCount>2</mediaCount>\n"
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"
+    "    <author>\n"
+    "      <name>Wikipedia</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Kiwix</name>\n"
+    "    </publisher>\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n"
+    "  </entry>\n"
+    "  <entry>\n"
+    "    <id>urn:uuid:raycharles</id>\n"
+    "    <title>Ray Charles</title>\n"
+    "    <summary>Wikipedia articles about Ray Charles</summary>\n"
+    "    <language>eng</language>\n"
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"
+    "    <name>wikipedia_en_ray_charles</name>\n"
+    "    <flavour></flavour>\n"
+    "    <tags>unittest;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n"
+    "    <articleCount>284</articleCount>\n"
+    "    <mediaCount>2</mediaCount>\n"
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"
+    "    <author>\n"
+    "      <name>Wikipedia</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Kiwix</name>\n"
+    "    </publisher>\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n"
+    "  </entry>\n"
+    "</feed>\n"
+  );
 }
