@@ -616,6 +616,16 @@ std::string maskVariableOPDSFeedData(std::string s)
   return s;
 }
 
+#define OPDS_FEED_TAG \
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"" \
+         " xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+
+#define CATALOG_LINK_TAGS \
+    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n" \
+    "  <link rel=\"search\""                                            \
+           " type=\"application/opensearchdescription+xml\""            \
+           " href=\"catalog/searchdescription.xml\" />\n"
+
 #define CHARLES_RAY_CATALOG_ENTRY \
     "  <entry>\n"                                                       \
     "    <id>urn:uuid:charlesray</id>\n"                                \
@@ -667,12 +677,11 @@ TEST_F(LibraryServerTest, catalog_root_xml)
   const auto r = zfs1_->GET("/catalog/root.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    "<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+    OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>All zims</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
-    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
+    CATALOG_LINK_TAGS
     CHARLES_RAY_CATALOG_ENTRY
     RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
@@ -702,15 +711,14 @@ TEST_F(LibraryServerTest, catalog_search_by_text)
   const auto r = zfs1_->GET("/catalog/search?q=ray%20charles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    "<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+    OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Search result for ray charles</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
-    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
+    CATALOG_LINK_TAGS
     RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
@@ -721,15 +729,14 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
   const auto r = zfs1_->GET("/catalog/search?tag=_category:jazz");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    "<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+    OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Search result for &lt;Empty query&gt;</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
-    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
+    CATALOG_LINK_TAGS
     CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
   );
