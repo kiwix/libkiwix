@@ -616,6 +616,52 @@ std::string maskVariableOPDSFeedData(std::string s)
   return s;
 }
 
+#define CHARLES_RAY_CATALOG_ENTRY \
+    "  <entry>\n"                                                       \
+    "    <id>urn:uuid:charlesray</id>\n"                                \
+    "    <title>Charles, Ray</title>\n"                                 \
+    "    <summary>Wikipedia articles about Charles, Ray</summary>\n"    \
+    "    <language>eng</language>\n"                                    \
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <name>wikipedia_en_ray_charles</name>\n"                       \
+    "    <flavour></flavour>\n"                                         \
+    "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <articleCount>284</articleCount>\n"                            \
+    "    <mediaCount>2</mediaCount>\n"                                  \
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"         \
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"               \
+    "    <author>\n"                                                    \
+    "      <name>Wikipedia</name>\n"                                    \
+    "    </author>\n"                                                   \
+    "    <publisher>\n"                                                 \
+    "      <name>Kiwix</name>\n"                                        \
+    "    </publisher>\n"                                                \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "  </entry>\n"
+
+#define RAY_CHARLES_CATALOG_ENTRY \
+    "  <entry>\n"                                                       \
+    "    <id>urn:uuid:raycharles</id>\n"                                \
+    "    <title>Ray Charles</title>\n"                                  \
+    "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
+    "    <language>eng</language>\n"                                    \
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <name>wikipedia_en_ray_charles</name>\n"                       \
+    "    <flavour></flavour>\n"                                         \
+    "    <tags>unittest;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <articleCount>284</articleCount>\n"                            \
+    "    <mediaCount>2</mediaCount>\n"                                  \
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"         \
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"               \
+    "    <author>\n"                                                    \
+    "      <name>Wikipedia</name>\n"                                    \
+    "    </author>\n"                                                   \
+    "    <publisher>\n"                                                 \
+    "      <name>Kiwix</name>\n"                                        \
+    "    </publisher>\n"                                                \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "  </entry>\n"
+
 TEST_F(LibraryServerTest, catalog_root_xml)
 {
   const auto r = zfs1_->GET("/catalog/root.xml");
@@ -627,48 +673,8 @@ TEST_F(LibraryServerTest, catalog_root_xml)
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
     "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
-    "  <entry>\n"
-    "    <id>urn:uuid:charlesray</id>\n"
-    "    <title>Charles, Ray</title>\n"
-    "    <summary>Wikipedia articles about Charles, Ray</summary>\n"
-    "    <language>eng</language>\n"
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"
-    "    <name>wikipedia_en_ray_charles</name>\n"
-    "    <flavour></flavour>\n"
-    "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n"
-    "    <articleCount>284</articleCount>\n"
-    "    <mediaCount>2</mediaCount>\n"
-    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"
-    "    <link type=\"text/html\" href=\"/zimfile\" />\n"
-    "    <author>\n"
-    "      <name>Wikipedia</name>\n"
-    "    </author>\n"
-    "    <publisher>\n"
-    "      <name>Kiwix</name>\n"
-    "    </publisher>\n"
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n"
-    "  </entry>\n"
-    "  <entry>\n"
-    "    <id>urn:uuid:raycharles</id>\n"
-    "    <title>Ray Charles</title>\n"
-    "    <summary>Wikipedia articles about Ray Charles</summary>\n"
-    "    <language>eng</language>\n"
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"
-    "    <name>wikipedia_en_ray_charles</name>\n"
-    "    <flavour></flavour>\n"
-    "    <tags>unittest;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n"
-    "    <articleCount>284</articleCount>\n"
-    "    <mediaCount>2</mediaCount>\n"
-    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"
-    "    <link type=\"text/html\" href=\"/zimfile\" />\n"
-    "    <author>\n"
-    "      <name>Wikipedia</name>\n"
-    "    </author>\n"
-    "    <publisher>\n"
-    "      <name>Kiwix</name>\n"
-    "    </publisher>\n"
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n"
-    "  </entry>\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
 }
@@ -691,6 +697,25 @@ TEST_F(LibraryServerTest, catalog_searchdescription_xml)
   );
 }
 
+TEST_F(LibraryServerTest, catalog_search_by_text)
+{
+  const auto r = zfs1_->GET("/catalog/search?q=ray%20charles");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for ray charles</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
+    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
+    RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
 TEST_F(LibraryServerTest, catalog_search_by_tag)
 {
   const auto r = zfs1_->GET("/catalog/search?tag=_category:jazz");
@@ -705,27 +730,7 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
     "  <itemsPerPage>1</itemsPerPage>\n"
     "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
     "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
-    "  <entry>\n"
-    "    <id>urn:uuid:charlesray</id>\n"
-    "    <title>Charles, Ray</title>\n"
-    "    <summary>Wikipedia articles about Charles, Ray</summary>\n"
-    "    <language>eng</language>\n"
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"
-    "    <name>wikipedia_en_ray_charles</name>\n"
-    "    <flavour></flavour>\n"
-    "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n"
-    "    <articleCount>284</articleCount>\n"
-    "    <mediaCount>2</mediaCount>\n"
-    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"
-    "    <link type=\"text/html\" href=\"/zimfile\" />\n"
-    "    <author>\n"
-    "      <name>Wikipedia</name>\n"
-    "    </author>\n"
-    "    <publisher>\n"
-    "      <name>Kiwix</name>\n"
-    "    </publisher>\n"
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n"
-    "  </entry>\n"
+    CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
   );
 }
