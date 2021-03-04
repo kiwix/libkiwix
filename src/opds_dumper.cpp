@@ -54,7 +54,7 @@ std::string gen_date_str()
 static std::string gen_date_from_yyyy_mm_dd(const std::string& date)
 {
   std::stringstream is;
-  is << date << "T00:00::00:Z";
+  is << date << "T00:00::00Z";
   return is.str();
 }
 
