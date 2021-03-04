@@ -587,11 +587,33 @@ protected:
   }
 };
 
-std::string maskVariableOPDSFeedData(const std::string& s)
+// Returns a copy of 'text' with every line that fully matches 'pattern'
+// replaced with the fixed string 'replacement'
+std::string replaceLines(const std::string& text,
+                         const std::string& pattern,
+                         const std::string& replacement)
 {
-  const auto p = s.find("<updated>");
-  const std::string u("<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
-  return s.substr(0, p) + u + s.substr(p + u.size());
+  std::regex regex("^" + pattern + "$");
+  std::ostringstream oss;
+  std::istringstream iss(text);
+  std::string line;
+  while ( std::getline(iss, line) ) {
+    if ( std::regex_match(line, regex) ) {
+      oss << replacement << "\n";
+    } else {
+      oss << line << "\n";
+    }
+  }
+  return oss.str();
+}
+
+std::string maskVariableOPDSFeedData(std::string s)
+{
+  s = replaceLines(s, "  <updated>.+</updated>",
+                      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>");
+  s = replaceLines(s, "  <id>.+</id>",
+                      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>");
+  return s;
 }
 
 TEST_F(LibraryServerTest, catalog_root_xml)
@@ -600,7 +622,7 @@ TEST_F(LibraryServerTest, catalog_root_xml)
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     "<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
-    "  <id>5e2e6fa3-14d5-f2c2-6c16-8ceaedd82237</id>\n"
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>All zims</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
@@ -666,5 +688,44 @@ TEST_F(LibraryServerTest, catalog_searchdescription_xml)
     "       indexOffset=\"0\"\n"
     "       template=\"//catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
     "</OpenSearchDescription>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_search_by_tag)
+{
+  const auto r = zfs1_->GET("/catalog/search?tag=_category:jazz");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
+    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"catalog/searchdescription.xml\" />\n"
+    "  <entry>\n"
+    "    <id>urn:uuid:charlesray</id>\n"
+    "    <title>Charles, Ray</title>\n"
+    "    <summary>Wikipedia articles about Charles, Ray</summary>\n"
+    "    <language>eng</language>\n"
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"
+    "    <name>wikipedia_en_ray_charles</name>\n"
+    "    <flavour></flavour>\n"
+    "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n"
+    "    <articleCount>284</articleCount>\n"
+    "    <mediaCount>2</mediaCount>\n"
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"
+    "    <author>\n"
+    "      <name>Wikipedia</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Kiwix</name>\n"
+    "    </publisher>\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n"
+    "  </entry>\n"
+    "</feed>\n"
   );
 }
