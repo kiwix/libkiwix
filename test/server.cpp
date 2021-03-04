@@ -650,3 +650,21 @@ TEST_F(LibraryServerTest, catalog_root_xml)
     "</feed>\n"
   );
 }
+
+TEST_F(LibraryServerTest, catalog_searchdescription_xml)
+{
+  const auto r = zfs1_->GET("/catalog/searchdescription.xml");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<OpenSearchDescription xmlns=\"http://a9.com/-/spec/opensearch/1.1/\">\n"
+    "  <ShortName>Zim catalog search</ShortName>\n"
+    "  <Description>Search zim files in the catalog.</Description>\n"
+    "  <Url type=\"application/atom+xml;profile=opds-catalog\"\n"
+    "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
+    "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
+    "       indexOffset=\"0\"\n"
+    "       template=\"//catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "</OpenSearchDescription>\n"
+  );
+}
