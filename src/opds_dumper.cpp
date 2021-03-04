@@ -43,7 +43,7 @@ std::string gen_date_str()
   std::stringstream is;
   is << std::setw(2) << std::setfill('0')
      << 1900+tm->tm_year << "-"
-     << std::setw(2) << std::setfill('0') << tm->tm_mon << "-"
+     << std::setw(2) << std::setfill('0') << tm->tm_mon+1 << "-"
      << std::setw(2) << std::setfill('0') << tm->tm_mday << "T"
      << std::setw(2) << std::setfill('0') << tm->tm_hour << ":"
      << std::setw(2) << std::setfill('0') << tm->tm_min << ":"
