@@ -16,6 +16,22 @@
         size="556"
       ></book>
   <book
+        id="raycharles_uncategorized"
+        path="./zimfile.zim"
+        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
+        title="Ray Charles"
+        description="Wikipedia articles about Ray Charles"
+        language="eng"
+        creator="Wikipedia"
+        publisher="Kiwix"
+        date="2020-03-31"
+        name="wikipedia_en_ray_charles"
+        tags="unittest;wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes"
+        articleCount="284"
+        mediaCount="2"
+        size="556"
+      ></book>
+  <book
         id="charlesray"
         path="./zimfile.zim"
         url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
