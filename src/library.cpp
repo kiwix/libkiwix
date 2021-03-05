@@ -391,6 +391,7 @@ enum filterTypes {
   MAXSIZE = FLAG(11),
   QUERY = FLAG(12),
   NAME = FLAG(13),
+  CATEGORY = FLAG(14),
 };
 
 Filter& Filter::local(bool accept)
@@ -440,6 +441,13 @@ Filter& Filter::rejectTags(std::vector<std::string> tags)
 {
   _rejectTags = tags;
   activeFilters |= REJECTTAGS;
+  return *this;
+}
+
+Filter& Filter::category(std::string category)
+{
+  _category = category;
+  activeFilters |= CATEGORY;
   return *this;
 }
 
@@ -502,6 +510,7 @@ bool Filter::accept(const Book& book) const
   FILTER(_NOREMOTE, !remote)
 
   FILTER(MAXSIZE, book.getSize() <= _maxSize)
+  FILTER(CATEGORY, book.getCategory() == _category)
   FILTER(LANG, book.getLanguage() == _lang)
   FILTER(_PUBLISHER, book.getPublisher() == _publisher)
   FILTER(_CREATOR, book.getCreator() == _creator)

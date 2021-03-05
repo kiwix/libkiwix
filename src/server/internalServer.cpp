@@ -699,6 +699,9 @@ InternalServer::search_catalog(const RequestContext& request,
       filter.name(request.get_argument("name"));
     } catch (const std::out_of_range&) {}
     try {
+      filter.category(request.get_argument("category"));
+    } catch (const std::out_of_range&) {}
+    try {
       filter.lang(request.get_argument("lang"));
     } catch (const std::out_of_range&) {}
     try {

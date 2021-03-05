@@ -769,3 +769,21 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
     "</feed>\n"
   );
 }
+
+TEST_F(LibraryServerTest, catalog_search_by_category)
+{
+  const auto r = zfs1_->GET("/catalog/search?category=jazz");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}

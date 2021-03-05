@@ -52,6 +52,7 @@ class Filter {
     uint64_t activeFilters;
     std::vector<std::string> _acceptTags;
     std::vector<std::string> _rejectTags;
+    std::string _category;
     std::string _lang;
     std::string _publisher;
     std::string _creator;
@@ -96,6 +97,7 @@ class Filter {
     Filter& acceptTags(std::vector<std::string> tags);
     Filter& rejectTags(std::vector<std::string> tags);
 
+    Filter& category(std::string category);
     Filter& lang(std::string lang);
     Filter& publisher(std::string publisher);
     Filter& creator(std::string creator);
