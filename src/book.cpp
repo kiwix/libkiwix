@@ -220,4 +220,16 @@ bool Book::getTagBool(const std::string& tagName) const {
   return convertStrToBool(getTagStr(tagName));
 }
 
+std::string Book::getCategory() const
+{
+  try
+  {
+    return getTagStr("category");
+  }
+  catch ( const std::out_of_range& )
+  {
+    return "";
+  }
+}
+
 }

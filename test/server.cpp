@@ -635,6 +635,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
+    "    <category>jazz</category>\n"                                   \
     "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
@@ -658,6 +659,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
+    "    <category>wikipedia</category>\n"                              \
     "    <tags>unittest;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \

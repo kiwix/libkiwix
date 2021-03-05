@@ -77,6 +77,7 @@ pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
   ADD_TEXT_ENTRY(entry_node, "updated", gen_date_from_yyyy_mm_dd(book.getDate()));
   ADD_TEXT_ENTRY(entry_node, "name", book.getName());
   ADD_TEXT_ENTRY(entry_node, "flavour", book.getFlavour());
+  ADD_TEXT_ENTRY(entry_node, "category", book.getCategory());
   ADD_TEXT_ENTRY(entry_node, "tags", book.getTags());
   ADD_TEXT_ENTRY(entry_node, "articleCount", to_string(book.getArticleCount()));
   ADD_TEXT_ENTRY(entry_node, "mediaCount", to_string(book.getMediaCount()));

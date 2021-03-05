@@ -59,6 +59,7 @@ class Book
   const std::string& getDate() const { return m_date; }
   const std::string& getUrl() const { return m_url; }
   const std::string& getName() const { return m_name; }
+  std::string getCategory() const;
   const std::string& getTags() const { return m_tags; }
   std::string getTagStr(const std::string& tagName) const;
   bool getTagBool(const std::string& tagName) const;
