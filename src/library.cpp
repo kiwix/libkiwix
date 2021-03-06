@@ -236,12 +236,18 @@ std::vector<std::string> Library::filter(const Filter& filter)
 {
   std::vector<std::string> bookIds;
   for(auto& pair:m_books) {
-    auto book = pair.second;
-    if(filter.accept(book)) {
+    if(filter.acceptByQueryOnly(pair.second)) {
       bookIds.push_back(pair.first);
     }
   }
-  return bookIds;
+
+  std::vector<std::string> result;
+  for(auto id : bookIds) {
+    if(filter.acceptByNonQueryCriteria(m_books[id])) {
+      result.push_back(id);
+    }
+  }
+  return result;
 }
 
 template<supportedListSortBy SORT>
@@ -495,7 +501,17 @@ Filter& Filter::name(std::string name)
 
 #define ACTIVE(X) (activeFilters & (X))
 #define FILTER(TAG, TEST) if (ACTIVE(TAG) && !(TEST)) { return false; }
+bool Filter::hasQuery() const
+{
+  return ACTIVE(QUERY);
+}
+
 bool Filter::accept(const Book& book) const
+{
+  return acceptByNonQueryCriteria(book) && acceptByQueryOnly(book);
+}
+
+bool Filter::acceptByNonQueryCriteria(const Book& book) const
 {
   auto local = !book.getPath().empty();
   FILTER(_LOCAL, local)
@@ -538,6 +554,11 @@ bool Filter::accept(const Book& book) const
       }
     }
   }
+  return true;
+}
+
+bool Filter::acceptByQueryOnly(const Book& book) const
+{
   if ( ACTIVE(QUERY)
     && !(matchRegex(book.getTitle(), "\\Q" + _query + "\\E")
         || matchRegex(book.getDescription(), "\\Q" + _query + "\\E")))

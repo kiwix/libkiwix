@@ -105,7 +105,11 @@ class Filter {
     Filter& query(std::string query);
     Filter& name(std::string name);
 
+    bool hasQuery() const;
+
     bool accept(const Book& book) const;
+    bool acceptByQueryOnly(const Book& book) const;
+    bool acceptByNonQueryCriteria(const Book& book) const;
 };
 
 
