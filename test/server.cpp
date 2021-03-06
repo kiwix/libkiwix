@@ -733,7 +733,26 @@ TEST_F(LibraryServerTest, catalog_searchdescription_xml)
   );
 }
 
-TEST_F(LibraryServerTest, catalog_search_by_text)
+TEST_F(LibraryServerTest, catalog_search_by_phrase)
+{
+  const auto r = zfs1_->GET("/catalog/search?q=\"ray%20charles\"");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for \"ray charles\"</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>2</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>2</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    RAY_CHARLES_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_search_by_words)
 {
   const auto r = zfs1_->GET("/catalog/search?q=ray%20charles");
   EXPECT_EQ(r->status, 200);
@@ -742,12 +761,13 @@ TEST_F(LibraryServerTest, catalog_search_by_text)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Search result for ray charles</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <totalResults>2</totalResults>\n"
+    "  <totalResults>3</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
-    "  <itemsPerPage>2</itemsPerPage>\n"
+    "  <itemsPerPage>3</itemsPerPage>\n"
     CATALOG_LINK_TAGS
     RAY_CHARLES_CATALOG_ENTRY
     UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
   );
 }

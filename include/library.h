@@ -28,6 +28,7 @@
 #include "book.h"
 #include "bookmark.h"
 #include "common.h"
+#include <xapian.h>
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
@@ -106,6 +107,7 @@ class Filter {
     Filter& name(std::string name);
 
     bool hasQuery() const;
+    const std::string& getQuery() const { return _query; }
 
     bool accept(const Book& book) const;
     bool acceptByQueryOnly(const Book& book) const;
@@ -121,6 +123,7 @@ class Library
   std::map<std::string, kiwix::Book> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::vector<kiwix::Bookmark> m_bookmarks;
+  Xapian::WritableDatabase m_bookDB;
 
  public:
   typedef std::vector<std::string> BookIdCollection;
@@ -295,6 +298,7 @@ class Library
 
 private: // functions
   BookIdCollection getBooksByTitleOrDescription(const Filter& filter);
+  void updateBookDB(const Book& book);
 };
 
 }

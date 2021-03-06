@@ -34,10 +34,31 @@
 namespace kiwix
 {
 
+namespace
+{
+
+const std::map<std::string, std::string> iso639_3ToXapian {
+  {"deu", "german"  },
+  {"eng", "english" },
+  {"fra", "french"  },
+  {"hye", "armenian"},
+  {"rus", "russian" },
+  {"spa", "spanish" },
+};
+
+std::string normalizeText(const std::string& text, const std::string& language)
+{
+  return removeAccents(text);
+}
+
+} // unnamed namespace
+
 /* Constructor */
 Library::Library()
+  : m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
 {
 }
+
 /* Destructor */
 Library::~Library()
 {
@@ -47,6 +68,7 @@ Library::~Library()
 bool Library::addBook(const Book& book)
 {
   /* Try to find it */
+  updateBookDB(book);
   try {
     auto& oldbook = m_books.at(book.getId());
     oldbook.update(book);
@@ -232,14 +254,64 @@ Library::BookIdCollection Library::filter(const std::string& search)
 }
 
 
+void Library::updateBookDB(const Book& book)
+{
+  Xapian::Stem stemmer;
+  Xapian::TermGenerator indexer;
+  const std::string lang = book.getLanguage();
+  try {
+    stemmer = Xapian::Stem(iso639_3ToXapian.at(lang));
+    indexer.set_stemmer(stemmer);
+    indexer.set_stemming_strategy(Xapian::TermGenerator::STEM_SOME);
+  } catch (...) {}
+  Xapian::Document doc;
+  indexer.set_document(doc);
+
+  const std::string title = normalizeText(book.getTitle(), lang);
+  const std::string desc = normalizeText(book.getDescription(), lang);
+  doc.add_value(0, title);
+  doc.add_value(1, desc);
+  doc.set_data(book.getId());
+
+  indexer.index_text(title, 1, "S");
+  indexer.index_text(desc, 1, "XD");
+
+  // Index fields without prefixes for general search
+  indexer.index_text(title);
+  indexer.increase_termpos();
+  indexer.index_text(desc);
+
+  const std::string idterm = "Q" + book.getId();
+  doc.add_boolean_term(idterm);
+  m_bookDB.replace_document(idterm, doc);
+}
+
 Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& filter)
 {
+  if ( !filter.hasQuery() )
+    return getBooksIds();
+
   BookIdCollection bookIds;
-  for(auto& pair:m_books) {
-    if(filter.acceptByQueryOnly(pair.second)) {
-      bookIds.push_back(pair.first);
-    }
+  Xapian::QueryParser queryParser;
+  queryParser.set_default_op(Xapian::Query::OP_AND);
+  queryParser.add_prefix("title", "S");
+  queryParser.add_prefix("description", "XD");
+  // Language assumed for the query is not known for sure so stemming
+  // is not applied
+  //queryParser.set_stemmer(Xapian::Stem(iso639_3ToXapian.at(???)));
+  //queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_SOME);
+  const auto flags = Xapian::QueryParser::FLAG_PHRASE
+                   | Xapian::QueryParser::FLAG_BOOLEAN
+                   | Xapian::QueryParser::FLAG_LOVEHATE
+                   | Xapian::QueryParser::FLAG_WILDCARD;
+  const auto query = queryParser.parse_query(filter.getQuery(), flags);
+  Xapian::Enquire enquire(m_bookDB);
+  enquire.set_query(query);
+  const auto results = enquire.get_mset(0, m_books.size());
+  for ( auto it = results.begin(); it != results.end(); ++it  ) {
+    bookIds.push_back(it.get_document().get_data());
   }
+
   return bookIds;
 }
 
