@@ -292,7 +292,11 @@ class Library
 
   friend class OPDSDumper;
   friend class libXMLDumper;
+
+private: // functions
+  BookIdCollection getBooksByTitleOrDescription(const Filter& filter);
 };
+
 }
 
 #endif

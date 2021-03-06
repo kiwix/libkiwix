@@ -232,7 +232,7 @@ Library::BookIdCollection Library::filter(const std::string& search)
 }
 
 
-Library::BookIdCollection Library::filter(const Filter& filter)
+Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& filter)
 {
   BookIdCollection bookIds;
   for(auto& pair:m_books) {
@@ -240,9 +240,13 @@ Library::BookIdCollection Library::filter(const Filter& filter)
       bookIds.push_back(pair.first);
     }
   }
+  return bookIds;
+}
 
+Library::BookIdCollection Library::filter(const Filter& filter)
+{
   BookIdCollection result;
-  for(auto id : bookIds) {
+  for(auto id : getBooksByTitleOrDescription(filter)) {
     if(filter.acceptByNonQueryCriteria(m_books[id])) {
       result.push_back(id);
     }
