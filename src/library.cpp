@@ -211,9 +211,9 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
   return validBookmarks;
 }
 
-std::vector<std::string> Library::getBooksIds()
+Library::BookIdCollection Library::getBooksIds()
 {
-  std::vector<std::string> bookIds;
+  BookIdCollection bookIds;
 
   for (auto& pair: m_books) {
     bookIds.push_back(pair.first);
@@ -222,7 +222,7 @@ std::vector<std::string> Library::getBooksIds()
   return bookIds;
 }
 
-std::vector<std::string> Library::filter(const std::string& search)
+Library::BookIdCollection Library::filter(const std::string& search)
 {
   if (search.empty()) {
     return getBooksIds();
@@ -232,16 +232,16 @@ std::vector<std::string> Library::filter(const std::string& search)
 }
 
 
-std::vector<std::string> Library::filter(const Filter& filter)
+Library::BookIdCollection Library::filter(const Filter& filter)
 {
-  std::vector<std::string> bookIds;
+  BookIdCollection bookIds;
   for(auto& pair:m_books) {
     if(filter.acceptByQueryOnly(pair.second)) {
       bookIds.push_back(pair.first);
     }
   }
 
-  std::vector<std::string> result;
+  BookIdCollection result;
   for(auto id : bookIds) {
     if(filter.acceptByNonQueryCriteria(m_books[id])) {
       result.push_back(id);
@@ -309,7 +309,7 @@ std::string Comparator<PUBLISHER>::get_key(const std::string& id)
   return lib->getBookById(id).getPublisher();
 }
 
-void Library::sort(std::vector<std::string>& bookIds, supportedListSortBy sort, bool ascending)
+void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending)
 {
   switch(sort) {
     case TITLE:
@@ -333,7 +333,7 @@ void Library::sort(std::vector<std::string>& bookIds, supportedListSortBy sort, 
 }
 
 
-std::vector<std::string> Library::listBooksIds(
+Library::BookIdCollection Library::listBooksIds(
     int mode,
     supportedListSortBy sortBy,
     const std::string& search,

@@ -123,6 +123,9 @@ class Library
   std::vector<kiwix::Bookmark> m_bookmarks;
 
  public:
+  typedef std::vector<std::string> BookIdCollection;
+
+ public:
   Library();
   ~Library();
 
@@ -224,7 +227,7 @@ class Library
    *
    * @return A list of book ids.
    */
-  std::vector<std::string> getBooksIds();
+  BookIdCollection getBooksIds();
 
   /**
    * Filter the library and generate a new one with the keep elements.
@@ -234,7 +237,7 @@ class Library
    * @param search List only books with search in the title or description.
    * @return The list of bookIds corresponding to the query.
    */
-  DEPRECATED std::vector<std::string> filter(const std::string& search);
+  DEPRECATED BookIdCollection filter(const std::string& search);
 
 
   /**
@@ -243,7 +246,7 @@ class Library
    * @param filter The filter to use.
    * @return The list of bookIds corresponding to the filter.
    */
-  std::vector<std::string> filter(const Filter& filter);
+  BookIdCollection filter(const Filter& filter);
 
 
   /**
@@ -253,7 +256,7 @@ class Library
    * @param comparator how to sort the books
    * @return The sorted list of books
    */
-  void sort(std::vector<std::string>& bookIds, supportedListSortBy sortBy, bool ascending);
+  void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending);
 
   /**
    * List books in the library.
@@ -277,7 +280,7 @@ class Library
    *                Set to 0 to cancel this filter.
    * @return The list of bookIds corresponding to the query.
    */
-  DEPRECATED std::vector<std::string> listBooksIds(
+  DEPRECATED BookIdCollection listBooksIds(
     int supportedListMode = ALL,
     supportedListSortBy sortBy = UNSORTED,
     const std::string& search = "",
