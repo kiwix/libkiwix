@@ -809,6 +809,25 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
   }
 }
 
+TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
+{
+  const auto r = zfs1_->GET("/catalog/search?q=ray%20-uncategorized");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for ray -uncategorized</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>2</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>2</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    RAY_CHARLES_CATALOG_ENTRY
+    CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
 TEST_F(LibraryServerTest, catalog_search_by_tag)
 {
   const auto r = zfs1_->GET("/catalog/search?tag=_category:jazz");
