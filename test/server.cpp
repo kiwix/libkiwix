@@ -772,6 +772,43 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
   );
 }
 
+TEST_F(LibraryServerTest, catalog_prefix_search)
+{
+  {
+    const auto r = zfs1_->GET("/catalog/search?q=description:ray%20description:charles");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Search result for description:ray description:charles</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>2</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      RAY_CHARLES_CATALOG_ENTRY
+      CHARLES_RAY_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+  {
+    const auto r = zfs1_->GET("/catalog/search?q=title:\"ray%20charles\"");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Search result for title:\"ray charles\"</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>1</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+}
+
 TEST_F(LibraryServerTest, catalog_search_by_tag)
 {
   const auto r = zfs1_->GET("/catalog/search?tag=_category:jazz");
