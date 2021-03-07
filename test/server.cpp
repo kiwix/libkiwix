@@ -630,7 +630,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  <entry>\n"                                                       \
     "    <id>urn:uuid:charlesray</id>\n"                                \
     "    <title>Charles, Ray</title>\n"                                 \
-    "    <summary>Wikipedia articles about Charles, Ray</summary>\n"    \
+    "    <summary>Wikipedia articles about Ray Charles</summary>\n"    \
     "    <language>eng</language>\n"                                    \
     "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
@@ -677,14 +677,14 @@ std::string maskVariableOPDSFeedData(std::string s)
 #define UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY \
     "  <entry>\n"                                                       \
     "    <id>urn:uuid:raycharles_uncategorized</id>\n"                  \
-    "    <title>Ray Charles</title>\n"                                  \
-    "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
+    "    <title>Ray (uncategorized) Charles</title>\n"                  \
+    "    <summary>No category is assigned to this library entry.</summary>\n" \
     "    <language>eng</language>\n"                                    \
     "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category></category>\n"                                \
-    "    <tags>unittest;wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <tags>unittest;wikipedia;_pictures:no;_videos:no;_details:no</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
     "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"         \
@@ -695,7 +695,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <publisher>\n"                                                 \
     "      <name>Kiwix</name>\n"                                        \
     "    </publisher>\n"                                                \
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"125952\" />\n" \
     "  </entry>\n"
 
 TEST_F(LibraryServerTest, catalog_root_xml)
@@ -747,7 +747,7 @@ TEST_F(LibraryServerTest, catalog_search_by_phrase)
     "  <itemsPerPage>2</itemsPerPage>\n"
     CATALOG_LINK_TAGS
     RAY_CHARLES_CATALOG_ENTRY
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
   );
 }
@@ -766,8 +766,8 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
     "  <itemsPerPage>3</itemsPerPage>\n"
     CATALOG_LINK_TAGS
     RAY_CHARLES_CATALOG_ENTRY
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
     CHARLES_RAY_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
 }
