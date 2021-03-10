@@ -46,7 +46,7 @@ const char * sampleOpdsStream = R"(
     <updated>2018-06-23T00:00::00:Z</updated>
     <language>fra</language>
     <summary>Tania Louis videos</summary>
-    <tags>youtube</tags>
+    <tags>youtube;_category:category_defined_via_tags_only</tags>
     <link type="text/html" href="/biologie-tout-compris_fr_all_2018-06" />
     <author>
       <name>Tania Louis</name>
@@ -61,6 +61,7 @@ const char * sampleOpdsStream = R"(
     <updated>2019-06-05T00:00::00:Z</updated>
     <language>fra</language>
     <summary>Une page de Wikiquote, le recueil des citations libres.</summary>
+    <category>category_defined_via_category_element_only</category>
     <tags>wikiquote;nopic</tags>
     <link type="text/html" href="/wikiquote_fr_all_nopic_2019-06" />
     <author>
@@ -76,7 +77,8 @@ const char * sampleOpdsStream = R"(
     <updated>2019-06-02T00:00::00:Z</updated>
     <summary>Une sélection d'articles de Wikipédia sur la géographie</summary>
     <language>fra</language>
-    <tags>wikipedia;nopic</tags>
+    <category>category_element_overrides_tags</category>
+    <tags>wikipedia;nopic;_category:tags_override_category_element</tags>
     <link type="text/html" href="/wikipedia_fr_geography_nopic_2019-06" />
     <author>
       <name>Wikipedia</name>
@@ -91,7 +93,8 @@ const char * sampleOpdsStream = R"(
     <updated>2019-05-13T00:00::00:Z</updated>
     <language>fra</language>
     <summary>Une</summary>
-    <tags>wikipedia;nopic</tags>
+    <tags>wikipedia;nopic;_category:tags_override_category_element</tags>
+    <category>category_element_overrides_tags</category>
     <link type="text/html" href="/wikipedia_fr_mathematics_nopic_2019-05" />
     <author>
       <name>Wikipedia</name>
@@ -226,6 +229,15 @@ TEST_F(LibraryTest, sanityCheck)
   EXPECT_EQ(lib.getBooksLanguages().size(), 2U);
   EXPECT_EQ(lib.getBooksCreators().size(), 8U);
   EXPECT_EQ(lib.getBooksPublishers().size(), 1U);
+}
+
+TEST_F(LibraryTest, categoryHandling)
+{
+  EXPECT_EQ("", lib.getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd").getCategory());
+  EXPECT_EQ("category_defined_via_tags_only", lib.getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2").getCategory());
+  EXPECT_EQ("category_defined_via_category_element_only", lib.getBookById("0ea1cde6-441d-6c58-f2c7-21c2838e659f").getCategory());
+  EXPECT_EQ("category_element_overrides_tags", lib.getBookById("1123e574-6eef-6d54-28fc-13e4caeae474").getCategory());
+  EXPECT_EQ("category_element_overrides_tags", lib.getBookById("14829621-c490-c376-0792-9de558b57efa").getCategory());
 }
 
 TEST_F(LibraryTest, filterCheck)

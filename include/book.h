@@ -95,6 +95,9 @@ class Book
   void setFaviconMimeType(const std::string& faviconMimeType) { m_faviconMimeType = faviconMimeType; }
   void setDownloadId(const std::string& downloadId) { m_downloadId = downloadId; }
 
+ private:
+  std::string getCategoryFromTags() const;
+
  protected:
   std::string m_id;
   std::string m_downloadId;
@@ -102,6 +105,7 @@ class Book
   bool m_pathValid = false;
   std::string m_title;
   std::string m_description;
+  std::string m_category;
   std::string m_language;
   std::string m_creator;
   std::string m_publisher;

@@ -127,6 +127,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   try {
     m_downloadId = ATTR("downloadId");
   } catch(...) {}
+  m_category = getCategoryFromTags();
 }
 #undef ATTR
 
@@ -156,6 +157,8 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_name = VALUE("name");
   m_flavour = VALUE("flavour");
   m_tags = VALUE("tags");
+  const auto catnode = node.child("category");
+  m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   for(auto linkNode = node.child("link"); linkNode;
@@ -221,6 +224,11 @@ bool Book::getTagBool(const std::string& tagName) const {
 }
 
 std::string Book::getCategory() const
+{
+  return m_category;
+}
+
+std::string Book::getCategoryFromTags() const
 {
   try
   {
