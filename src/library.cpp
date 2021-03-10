@@ -30,6 +30,7 @@
 #include <pugixml.hpp>
 #include <algorithm>
 #include <set>
+#include <unicode/locid.h>
 
 namespace kiwix
 {
@@ -37,13 +38,8 @@ namespace kiwix
 namespace
 {
 
-const std::map<std::string, std::string> iso639_3ToXapian {
-  {"deu", "german"  },
-  {"eng", "english" },
-  {"fra", "french"  },
-  {"hye", "armenian"},
-  {"rus", "russian" },
-  {"spa", "spanish" },
+std::string iso639_3ToXapian(const std::string& lang) {
+  return icu::Locale(lang.c_str()).getLanguage();
 };
 
 std::string normalizeText(const std::string& text, const std::string& language)
@@ -260,7 +256,7 @@ void Library::updateBookDB(const Book& book)
   Xapian::TermGenerator indexer;
   const std::string lang = book.getLanguage();
   try {
-    stemmer = Xapian::Stem(iso639_3ToXapian.at(lang));
+    stemmer = Xapian::Stem(iso639_3ToXapian(lang));
     indexer.set_stemmer(stemmer);
     indexer.set_stemming_strategy(Xapian::TermGenerator::STEM_SOME);
   } catch (...) {}
@@ -301,7 +297,7 @@ Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& fi
                               : 0;
   // Language assumed for the query is not known for sure so stemming
   // is not applied
-  //queryParser.set_stemmer(Xapian::Stem(iso639_3ToXapian.at(???)));
+  //queryParser.set_stemmer(Xapian::Stem(iso639_3ToXapian(???)));
   //queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_SOME);
   const auto flags = Xapian::QueryParser::FLAG_PHRASE
                    | Xapian::QueryParser::FLAG_BOOLEAN
