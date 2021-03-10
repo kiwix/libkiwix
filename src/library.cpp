@@ -296,6 +296,9 @@ Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& fi
   queryParser.set_default_op(Xapian::Query::OP_AND);
   queryParser.add_prefix("title", "S");
   queryParser.add_prefix("description", "XD");
+  const auto partialQueryFlag = filter.queryIsPartial()
+                              ? Xapian::QueryParser::FLAG_PARTIAL
+                              : 0;
   // Language assumed for the query is not known for sure so stemming
   // is not applied
   //queryParser.set_stemmer(Xapian::Stem(iso639_3ToXapian.at(???)));
@@ -303,7 +306,8 @@ Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& fi
   const auto flags = Xapian::QueryParser::FLAG_PHRASE
                    | Xapian::QueryParser::FLAG_BOOLEAN
                    | Xapian::QueryParser::FLAG_LOVEHATE
-                   | Xapian::QueryParser::FLAG_WILDCARD;
+                   | Xapian::QueryParser::FLAG_WILDCARD
+                   | partialQueryFlag;
   const auto query = queryParser.parse_query(filter.getQuery(), flags);
   Xapian::Enquire enquire(m_bookDB);
   enquire.set_query(query);
@@ -561,9 +565,10 @@ Filter& Filter::maxSize(size_t maxSize)
   return *this;
 }
 
-Filter& Filter::query(std::string query)
+Filter& Filter::query(std::string query, bool partial)
 {
   _query = query;
+  _queryIsPartial = partial;
   activeFilters |= QUERY;
   return *this;
 }

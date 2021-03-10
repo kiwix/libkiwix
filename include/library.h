@@ -59,6 +59,7 @@ class Filter {
     std::string _creator;
     size_t _maxSize;
     std::string _query;
+    bool _queryIsPartial;
     std::string _name;
 
   public:
@@ -103,11 +104,12 @@ class Filter {
     Filter& publisher(std::string publisher);
     Filter& creator(std::string creator);
     Filter& maxSize(size_t size);
-    Filter& query(std::string query);
+    Filter& query(std::string query, bool partial=true);
     Filter& name(std::string name);
 
     bool hasQuery() const;
     const std::string& getQuery() const { return _query; }
+    bool queryIsPartial() const { return _queryIsPartial; }
 
     bool accept(const Book& book) const;
     bool acceptByQueryOnly(const Book& book) const;
