@@ -1,5 +1,37 @@
+function htmlDecode(input) {
+    var doc = new DOMParser().parseFromString(input, "text/html");
+    return doc.documentElement.textContent;
+}
 
 (function ($) {
+    const root = $( `link[type='root']` ).attr("href");
+
+    $( "#kiwixsearchbox" ).autocomplete({
+
+        source: `${root}/suggest?content=${window.location.pathname.split(`${root}/`)[1].split('/')[0]}`,
+        dataType: "json",
+        cache: false,
+
+        response: function( event, ui ) {
+
+              for(const item of ui.content) {
+                  item.label = htmlDecode(item.label);
+                  item.value = htmlDecode(item.value);
+              }
+        },
+
+        select: function(event, ui) {
+        $( "#kiwixsearchbox" ).val(ui.item.value);
+        $( "#kiwixsearchform" ).submit();
+        },
+
+    });
+
+    /* cybook hack */
+    if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
+        $("html").addClass("cybook");
+    }
+
     if ($(window).width() < 520) {
         var didScroll;
         var lastScrollTop = 0;
