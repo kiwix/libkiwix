@@ -127,7 +127,8 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   try {
     m_downloadId = ATTR("downloadId");
   } catch(...) {}
-  m_category = getCategoryFromTags();
+  const auto catattr = node.attribute("category");
+  m_category = catattr.empty() ? getCategoryFromTags() : catattr.value();
 }
 #undef ATTR
 
