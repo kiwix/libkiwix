@@ -41,7 +41,7 @@ libraries need to be available:
 * [Pugixml](https://pugixml.org/) (package `libpugixml-dev` on Ubuntu)
 * [Mustache](https://github.com/kainjow/Mustache) (Just copy the
 header `mustache.hpp` somewhere it can be found by the compiler and/or
-set CPPFLAGS with correct `-I` option). Use Mustache version 3 only.
+set CPPFLAGS with correct `-I` option). Use Mustache version 4.1 or above.
 * [libcurl](https://curl.se/libcurl) (`libcurl4-gnutls-dev`, `libcurl4-nss-dev` or `libcurl4-openssl-dev` on Ubuntu)
 * [microhttpd](https://www.gnu.org/software/libmicrohttpd) (package `libmicrohttpd-dev` on Ubuntu)
 * [zlib](https://zlib.net/) (package `zlib1g-dev` on Ubuntu)
