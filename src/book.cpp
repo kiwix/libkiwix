@@ -61,6 +61,7 @@ bool Book::update(const kiwix::Book& other)
   m_name = other.m_name;
   m_flavour = other.m_flavour;
   m_tags = other.m_tags;
+  m_category = other.m_category;
   m_origId = other.m_origId;
   m_articleCount = other.m_articleCount;
   m_mediaCount = other.m_mediaCount;
@@ -88,6 +89,7 @@ void Book::update(const kiwix::Reader& reader)
   m_name = reader.getName();
   m_flavour = reader.getFlavour();
   m_tags = reader.getTags();
+  m_category = getCategoryFromTags();
   m_origId = reader.getOrigId();
   m_articleCount = reader.getArticleCount();
   m_mediaCount = reader.getMediaCount();

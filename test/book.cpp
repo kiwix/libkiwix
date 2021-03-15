@@ -144,3 +144,25 @@ TEST(BookTest, updateFromXMLCategoryHandlingTest)
     EXPECT_EQ(book.getCategory(), "category_attribute_overrides_tags");
   }
 }
+
+TEST(BookTest, setTagsDoesntAffectCategory)
+{
+    kiwix::Book book;
+
+    book.setTags("_category:youtube");
+    ASSERT_EQ("", book.getCategory());
+}
+
+TEST(BookTest, updateCopiesCategory)
+{
+    const XMLDoc xml(R"(<book id="abcd" category="ted"></book>)");
+
+    kiwix::Book book;
+    book.updateFromXml(xml.child("book"), "");
+
+    kiwix::Book newBook;
+    newBook.setId("abcd");
+    EXPECT_EQ(newBook.getCategory(), "");
+    newBook.update(book);
+    EXPECT_EQ(newBook.getCategory(), "ted");
+}
