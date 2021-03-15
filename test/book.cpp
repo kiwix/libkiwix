@@ -6,6 +6,7 @@ TEST(BookTest, updateTest)
 {
     kiwix::Book book;
 
+    book.setId("xyz");
     book.setReadOnly(false);
     book.setPath("/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim");
     book.setPathValid(true);
@@ -21,6 +22,9 @@ TEST(BookTest, updateTest)
     EXPECT_FALSE(newBook.update(book));
 
     newBook.setReadOnly(false);
+    EXPECT_FALSE(newBook.update(book));
+
+    newBook.setId("xyz");
     EXPECT_TRUE(newBook.update(book));
 
     EXPECT_EQ(newBook.readOnly(), book.readOnly());
@@ -28,6 +32,7 @@ TEST(BookTest, updateTest)
     EXPECT_EQ(newBook.isPathValid(), book.isPathValid());
     EXPECT_EQ(newBook.getUrl(), book.getUrl());
     EXPECT_EQ(newBook.getTags(), book.getTags());
+    EXPECT_EQ(newBook.getCategory(), book.getCategory());
     EXPECT_EQ(newBook.getName(), book.getName());
     EXPECT_EQ(newBook.getFavicon(), book.getFavicon());
     EXPECT_EQ(newBook.getFaviconMimeType(), book.getFaviconMimeType());
