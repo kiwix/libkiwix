@@ -30,14 +30,31 @@
 #include <pugixml.hpp>
 #include <algorithm>
 #include <set>
+#include <unicode/locid.h>
 
 namespace kiwix
 {
 
+namespace
+{
+
+std::string iso639_3ToXapian(const std::string& lang) {
+  return icu::Locale(lang.c_str()).getLanguage();
+};
+
+std::string normalizeText(const std::string& text, const std::string& language)
+{
+  return removeAccents(text);
+}
+
+} // unnamed namespace
+
 /* Constructor */
 Library::Library()
+  : m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
 {
 }
+
 /* Destructor */
 Library::~Library()
 {
@@ -47,6 +64,7 @@ Library::~Library()
 bool Library::addBook(const Book& book)
 {
   /* Try to find it */
+  updateBookDB(book);
   try {
     auto& oldbook = m_books.at(book.getId());
     oldbook.update(book);
@@ -211,9 +229,9 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
   return validBookmarks;
 }
 
-std::vector<std::string> Library::getBooksIds()
+Library::BookIdCollection Library::getBooksIds()
 {
-  std::vector<std::string> bookIds;
+  BookIdCollection bookIds;
 
   for (auto& pair: m_books) {
     bookIds.push_back(pair.first);
@@ -222,7 +240,7 @@ std::vector<std::string> Library::getBooksIds()
   return bookIds;
 }
 
-std::vector<std::string> Library::filter(const std::string& search)
+Library::BookIdCollection Library::filter(const std::string& search)
 {
   if (search.empty()) {
     return getBooksIds();
@@ -232,16 +250,80 @@ std::vector<std::string> Library::filter(const std::string& search)
 }
 
 
-std::vector<std::string> Library::filter(const Filter& filter)
+void Library::updateBookDB(const Book& book)
 {
-  std::vector<std::string> bookIds;
-  for(auto& pair:m_books) {
-    auto book = pair.second;
-    if(filter.accept(book)) {
-      bookIds.push_back(pair.first);
+  Xapian::Stem stemmer;
+  Xapian::TermGenerator indexer;
+  const std::string lang = book.getLanguage();
+  try {
+    stemmer = Xapian::Stem(iso639_3ToXapian(lang));
+    indexer.set_stemmer(stemmer);
+    indexer.set_stemming_strategy(Xapian::TermGenerator::STEM_SOME);
+  } catch (...) {}
+  Xapian::Document doc;
+  indexer.set_document(doc);
+
+  const std::string title = normalizeText(book.getTitle(), lang);
+  const std::string desc = normalizeText(book.getDescription(), lang);
+  doc.add_value(0, title);
+  doc.add_value(1, desc);
+  doc.set_data(book.getId());
+
+  indexer.index_text(title, 1, "S");
+  indexer.index_text(desc, 1, "XD");
+
+  // Index fields without prefixes for general search
+  indexer.index_text(title);
+  indexer.increase_termpos();
+  indexer.index_text(desc);
+
+  const std::string idterm = "Q" + book.getId();
+  doc.add_boolean_term(idterm);
+  m_bookDB.replace_document(idterm, doc);
+}
+
+Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& filter)
+{
+  if ( !filter.hasQuery() )
+    return getBooksIds();
+
+  BookIdCollection bookIds;
+  Xapian::QueryParser queryParser;
+  queryParser.set_default_op(Xapian::Query::OP_AND);
+  queryParser.add_prefix("title", "S");
+  queryParser.add_prefix("description", "XD");
+  const auto partialQueryFlag = filter.queryIsPartial()
+                              ? Xapian::QueryParser::FLAG_PARTIAL
+                              : 0;
+  // Language assumed for the query is not known for sure so stemming
+  // is not applied
+  //queryParser.set_stemmer(Xapian::Stem(iso639_3ToXapian(???)));
+  //queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_SOME);
+  const auto flags = Xapian::QueryParser::FLAG_PHRASE
+                   | Xapian::QueryParser::FLAG_BOOLEAN
+                   | Xapian::QueryParser::FLAG_LOVEHATE
+                   | Xapian::QueryParser::FLAG_WILDCARD
+                   | partialQueryFlag;
+  const auto query = queryParser.parse_query(filter.getQuery(), flags);
+  Xapian::Enquire enquire(m_bookDB);
+  enquire.set_query(query);
+  const auto results = enquire.get_mset(0, m_books.size());
+  for ( auto it = results.begin(); it != results.end(); ++it  ) {
+    bookIds.push_back(it.get_document().get_data());
+  }
+
+  return bookIds;
+}
+
+Library::BookIdCollection Library::filter(const Filter& filter)
+{
+  BookIdCollection result;
+  for(auto id : getBooksByTitleOrDescription(filter)) {
+    if(filter.acceptByNonQueryCriteria(m_books[id])) {
+      result.push_back(id);
     }
   }
-  return bookIds;
+  return result;
 }
 
 template<supportedListSortBy SORT>
@@ -303,7 +385,7 @@ std::string Comparator<PUBLISHER>::get_key(const std::string& id)
   return lib->getBookById(id).getPublisher();
 }
 
-void Library::sort(std::vector<std::string>& bookIds, supportedListSortBy sort, bool ascending)
+void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending)
 {
   switch(sort) {
     case TITLE:
@@ -327,7 +409,7 @@ void Library::sort(std::vector<std::string>& bookIds, supportedListSortBy sort, 
 }
 
 
-std::vector<std::string> Library::listBooksIds(
+Library::BookIdCollection Library::listBooksIds(
     int mode,
     supportedListSortBy sortBy,
     const std::string& search,
@@ -479,9 +561,10 @@ Filter& Filter::maxSize(size_t maxSize)
   return *this;
 }
 
-Filter& Filter::query(std::string query)
+Filter& Filter::query(std::string query, bool partial)
 {
   _query = query;
+  _queryIsPartial = partial;
   activeFilters |= QUERY;
   return *this;
 }
@@ -495,7 +578,17 @@ Filter& Filter::name(std::string name)
 
 #define ACTIVE(X) (activeFilters & (X))
 #define FILTER(TAG, TEST) if (ACTIVE(TAG) && !(TEST)) { return false; }
+bool Filter::hasQuery() const
+{
+  return ACTIVE(QUERY);
+}
+
 bool Filter::accept(const Book& book) const
+{
+  return acceptByNonQueryCriteria(book) && acceptByQueryOnly(book);
+}
+
+bool Filter::acceptByNonQueryCriteria(const Book& book) const
 {
   auto local = !book.getPath().empty();
   FILTER(_LOCAL, local)
@@ -538,6 +631,11 @@ bool Filter::accept(const Book& book) const
       }
     }
   }
+  return true;
+}
+
+bool Filter::acceptByQueryOnly(const Book& book) const
+{
   if ( ACTIVE(QUERY)
     && !(matchRegex(book.getTitle(), "\\Q" + _query + "\\E")
         || matchRegex(book.getDescription(), "\\Q" + _query + "\\E")))

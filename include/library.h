@@ -28,6 +28,7 @@
 #include "book.h"
 #include "bookmark.h"
 #include "common.h"
+#include <xapian.h>
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
@@ -58,6 +59,7 @@ class Filter {
     std::string _creator;
     size_t _maxSize;
     std::string _query;
+    bool _queryIsPartial;
     std::string _name;
 
   public:
@@ -102,10 +104,16 @@ class Filter {
     Filter& publisher(std::string publisher);
     Filter& creator(std::string creator);
     Filter& maxSize(size_t size);
-    Filter& query(std::string query);
+    Filter& query(std::string query, bool partial=true);
     Filter& name(std::string name);
 
+    bool hasQuery() const;
+    const std::string& getQuery() const { return _query; }
+    bool queryIsPartial() const { return _queryIsPartial; }
+
     bool accept(const Book& book) const;
+    bool acceptByQueryOnly(const Book& book) const;
+    bool acceptByNonQueryCriteria(const Book& book) const;
 };
 
 
@@ -117,6 +125,10 @@ class Library
   std::map<std::string, kiwix::Book> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::vector<kiwix::Bookmark> m_bookmarks;
+  Xapian::WritableDatabase m_bookDB;
+
+ public:
+  typedef std::vector<std::string> BookIdCollection;
 
  public:
   Library();
@@ -220,7 +232,7 @@ class Library
    *
    * @return A list of book ids.
    */
-  std::vector<std::string> getBooksIds();
+  BookIdCollection getBooksIds();
 
   /**
    * Filter the library and generate a new one with the keep elements.
@@ -230,7 +242,7 @@ class Library
    * @param search List only books with search in the title or description.
    * @return The list of bookIds corresponding to the query.
    */
-  DEPRECATED std::vector<std::string> filter(const std::string& search);
+  DEPRECATED BookIdCollection filter(const std::string& search);
 
 
   /**
@@ -239,7 +251,7 @@ class Library
    * @param filter The filter to use.
    * @return The list of bookIds corresponding to the filter.
    */
-  std::vector<std::string> filter(const Filter& filter);
+  BookIdCollection filter(const Filter& filter);
 
 
   /**
@@ -249,7 +261,7 @@ class Library
    * @param comparator how to sort the books
    * @return The sorted list of books
    */
-  void sort(std::vector<std::string>& bookIds, supportedListSortBy sortBy, bool ascending);
+  void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending);
 
   /**
    * List books in the library.
@@ -273,7 +285,7 @@ class Library
    *                Set to 0 to cancel this filter.
    * @return The list of bookIds corresponding to the query.
    */
-  DEPRECATED std::vector<std::string> listBooksIds(
+  DEPRECATED BookIdCollection listBooksIds(
     int supportedListMode = ALL,
     supportedListSortBy sortBy = UNSORTED,
     const std::string& search = "",
@@ -285,7 +297,12 @@ class Library
 
   friend class OPDSDumper;
   friend class libXMLDumper;
+
+private: // functions
+  BookIdCollection getBooksByTitleOrDescription(const Filter& filter);
+  void updateBookDB(const Book& book);
 };
+
 }
 
 #endif
