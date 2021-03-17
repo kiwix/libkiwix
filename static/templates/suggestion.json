@@ -2,6 +2,10 @@
   {{#suggestions}}{{^first}},{{/first}}
   {
     "value" : "{{value}}",
-    "label" : "{{label}}"
+    "label" : "{{label}}",
+    "kind" : "{{kind}}"
+    {{#path}}
+      , "path" : "{{path}}"
+    {{/path}}
   }{{/suggestions}}
 ]

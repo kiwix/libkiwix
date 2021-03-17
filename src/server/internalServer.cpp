@@ -416,6 +416,8 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
       MustacheData result;
       result.set("label", suggestion[0]);
       result.set("value", suggestion[0]);
+      result.set("kind", "path");
+      result.set("path", suggestion[1]);
       result.set("first", first);
       first = false;
       results.push_back(result);
@@ -428,6 +430,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     MustacheData result;
     result.set("label", "containing '" + term + "'...");
     result.set("value", term + " ");
+    result.set("kind", "pattern");
     result.set("first", first);
     results.push_back(result);
   }
