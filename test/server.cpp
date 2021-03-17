@@ -53,6 +53,7 @@ public: // types
   typedef std::vector<std::string> FilePathCollection;
 
 public: // functions
+  ZimFileServer(int serverPort, std::string libraryFilePath);
   ZimFileServer(int serverPort, const FilePathCollection& zimpaths);
   ~ZimFileServer();
 
@@ -66,6 +67,9 @@ public: // functions
     return client->Head(path, headers);
   }
 
+private:
+  void run(int serverPort);
+
 private: // data
   kiwix::Library library;
   kiwix::Manager manager;
@@ -73,6 +77,16 @@ private: // data
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
 };
+
+ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
+: manager(&this->library)
+{
+  if ( isRelativePath(libraryFilePath) )
+    libraryFilePath = computeAbsolutePath(getCurrentDirectory(), libraryFilePath);
+  manager.readFile(libraryFilePath, true, true);
+
+  run(serverPort);
+}
 
 ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
 : manager(&this->library)
@@ -82,6 +96,11 @@ ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
       throw std::runtime_error("Unable to add the ZIM file '" + zimpath + "'");
   }
 
+  run(serverPort);
+}
+
+void ZimFileServer::run(int serverPort)
+{
   const std::string address = "127.0.0.1";
   nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   server.reset(new kiwix::Server(&library, nameMapper.get()));
@@ -545,4 +564,226 @@ TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
     EXPECT_EQ("bytes 100-200/20077", r->get_header_value("Content-Range"));
     EXPECT_EQ(r0->body, r->body);
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Testing of the library-related functionality of the server
+////////////////////////////////////////////////////////////////////////////////
+
+class LibraryServerTest : public ::testing::Test
+{
+protected:
+  std::unique_ptr<ZimFileServer>   zfs1_;
+
+  const int PORT = 8002;
+
+protected:
+  void SetUp() override {
+    zfs1_.reset(new ZimFileServer(PORT, "./test/library.xml"));
+  }
+
+  void TearDown() override {
+    zfs1_.reset();
+  }
+};
+
+// Returns a copy of 'text' with every line that fully matches 'pattern'
+// replaced with the fixed string 'replacement'
+std::string replaceLines(const std::string& text,
+                         const std::string& pattern,
+                         const std::string& replacement)
+{
+  std::regex regex("^" + pattern + "$");
+  std::ostringstream oss;
+  std::istringstream iss(text);
+  std::string line;
+  while ( std::getline(iss, line) ) {
+    if ( std::regex_match(line, regex) ) {
+      oss << replacement << "\n";
+    } else {
+      oss << line << "\n";
+    }
+  }
+  return oss.str();
+}
+
+std::string maskVariableOPDSFeedData(std::string s)
+{
+  s = replaceLines(s, "  <updated>.+</updated>",
+                      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>");
+  s = replaceLines(s, "  <id>.+</id>",
+                      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>");
+  return s;
+}
+
+#define OPDS_FEED_TAG \
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"" \
+         " xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+
+#define CATALOG_LINK_TAGS \
+    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n" \
+    "  <link rel=\"search\""                                            \
+           " type=\"application/opensearchdescription+xml\""            \
+           " href=\"catalog/searchdescription.xml\" />\n"
+
+#define CHARLES_RAY_CATALOG_ENTRY \
+    "  <entry>\n"                                                       \
+    "    <id>urn:uuid:charlesray</id>\n"                                \
+    "    <title>Charles, Ray</title>\n"                                 \
+    "    <summary>Wikipedia articles about Charles, Ray</summary>\n"    \
+    "    <language>eng</language>\n"                                    \
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <name>wikipedia_en_ray_charles</name>\n"                       \
+    "    <flavour></flavour>\n"                                         \
+    "    <category>jazz</category>\n"                                   \
+    "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <articleCount>284</articleCount>\n"                            \
+    "    <mediaCount>2</mediaCount>\n"                                  \
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"         \
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"               \
+    "    <author>\n"                                                    \
+    "      <name>Wikipedia</name>\n"                                    \
+    "    </author>\n"                                                   \
+    "    <publisher>\n"                                                 \
+    "      <name>Kiwix</name>\n"                                        \
+    "    </publisher>\n"                                                \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "  </entry>\n"
+
+#define RAY_CHARLES_CATALOG_ENTRY \
+    "  <entry>\n"                                                       \
+    "    <id>urn:uuid:raycharles</id>\n"                                \
+    "    <title>Ray Charles</title>\n"                                  \
+    "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
+    "    <language>eng</language>\n"                                    \
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <name>wikipedia_en_ray_charles</name>\n"                       \
+    "    <flavour></flavour>\n"                                         \
+    "    <category>wikipedia</category>\n"                              \
+    "    <tags>unittest;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <articleCount>284</articleCount>\n"                            \
+    "    <mediaCount>2</mediaCount>\n"                                  \
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"         \
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"               \
+    "    <author>\n"                                                    \
+    "      <name>Wikipedia</name>\n"                                    \
+    "    </author>\n"                                                   \
+    "    <publisher>\n"                                                 \
+    "      <name>Kiwix</name>\n"                                        \
+    "    </publisher>\n"                                                \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "  </entry>\n"
+
+#define UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY \
+    "  <entry>\n"                                                       \
+    "    <id>urn:uuid:raycharles_uncategorized</id>\n"                  \
+    "    <title>Ray Charles</title>\n"                                  \
+    "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
+    "    <language>eng</language>\n"                                    \
+    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <name>wikipedia_en_ray_charles</name>\n"                       \
+    "    <flavour></flavour>\n"                                         \
+    "    <category></category>\n"                                \
+    "    <tags>unittest;wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <articleCount>284</articleCount>\n"                            \
+    "    <mediaCount>2</mediaCount>\n"                                  \
+    "    <icon>/meta?name=favicon&amp;content=zimfile</icon>\n"         \
+    "    <link type=\"text/html\" href=\"/zimfile\" />\n"               \
+    "    <author>\n"                                                    \
+    "      <name>Wikipedia</name>\n"                                    \
+    "    </author>\n"                                                   \
+    "    <publisher>\n"                                                 \
+    "      <name>Kiwix</name>\n"                                        \
+    "    </publisher>\n"                                                \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "  </entry>\n"
+
+TEST_F(LibraryServerTest, catalog_root_xml)
+{
+  const auto r = zfs1_->GET("/catalog/root.xml");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>All zims</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    CATALOG_LINK_TAGS
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_searchdescription_xml)
+{
+  const auto r = zfs1_->GET("/catalog/searchdescription.xml");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<OpenSearchDescription xmlns=\"http://a9.com/-/spec/opensearch/1.1/\">\n"
+    "  <ShortName>Zim catalog search</ShortName>\n"
+    "  <Description>Search zim files in the catalog.</Description>\n"
+    "  <Url type=\"application/atom+xml;profile=opds-catalog\"\n"
+    "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
+    "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
+    "       indexOffset=\"0\"\n"
+    "       template=\"//catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "</OpenSearchDescription>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_search_by_text)
+{
+  const auto r = zfs1_->GET("/catalog/search?q=ray%20charles");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for ray charles</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>2</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>2</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    RAY_CHARLES_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_search_by_tag)
+{
+  const auto r = zfs1_->GET("/catalog/search?tag=_category:jazz");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_search_by_category)
+{
+  const auto r = zfs1_->GET("/catalog/search?category=jazz");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
 }

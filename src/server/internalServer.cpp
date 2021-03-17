@@ -668,6 +668,22 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     uuid = zim::Uuid::generate(host);
     bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
   } else if (url == "search") {
+    bookIdsToDump = search_catalog(request, opdsDumper);
+    uuid = zim::Uuid::generate();
+  }
+
+  opdsDumper.setId(kiwix::to_string(uuid));
+  auto response = ContentResponse::build(
+      *this,
+      opdsDumper.dumpOPDSFeed(bookIdsToDump),
+      "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
+  return std::move(response);
+}
+
+std::vector<std::string>
+InternalServer::search_catalog(const RequestContext& request,
+                               kiwix::OPDSDumper& opdsDumper)
+{
     auto filter = kiwix::Filter().valid(true).local(true).remote(true);
     string query("<Empty query>");
     size_t count(10);
@@ -681,6 +697,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     } catch (...) {}
     try {
       filter.name(request.get_argument("name"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.category(request.get_argument("category"));
     } catch (const std::out_of_range&) {}
     try {
       filter.lang(request.get_argument("lang"));
@@ -698,22 +717,14 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
       filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
     } catch (...) {}
     opdsDumper.setTitle("Search result for " + query);
-    uuid = zim::Uuid::generate();
-    bookIdsToDump = mp_library->filter(filter);
+    std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     auto totalResults = bookIdsToDump.size();
     bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+startIndex);
     if (count>0 && bookIdsToDump.size() > count) {
       bookIdsToDump.resize(count);
     }
     opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
-  }
-
-  opdsDumper.setId(kiwix::to_string(uuid));
-  auto response = ContentResponse::build(
-      *this,
-      opdsDumper.dumpOPDSFeed(bookIdsToDump),
-      "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
-  return std::move(response);
+    return bookIdsToDump;
 }
 
 namespace

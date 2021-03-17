@@ -61,6 +61,7 @@ bool Book::update(const kiwix::Book& other)
   m_name = other.m_name;
   m_flavour = other.m_flavour;
   m_tags = other.m_tags;
+  m_category = other.m_category;
   m_origId = other.m_origId;
   m_articleCount = other.m_articleCount;
   m_mediaCount = other.m_mediaCount;
@@ -88,6 +89,7 @@ void Book::update(const kiwix::Reader& reader)
   m_name = reader.getName();
   m_flavour = reader.getFlavour();
   m_tags = reader.getTags();
+  m_category = getCategoryFromTags();
   m_origId = reader.getOrigId();
   m_articleCount = reader.getArticleCount();
   m_mediaCount = reader.getMediaCount();
@@ -127,6 +129,8 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   try {
     m_downloadId = ATTR("downloadId");
   } catch(...) {}
+  const auto catattr = node.attribute("category");
+  m_category = catattr.empty() ? getCategoryFromTags() : catattr.value();
 }
 #undef ATTR
 
@@ -156,6 +160,8 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_name = VALUE("name");
   m_flavour = VALUE("flavour");
   m_tags = VALUE("tags");
+  const auto catnode = node.child("category");
+  m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   for(auto linkNode = node.child("link"); linkNode;
@@ -218,6 +224,23 @@ std::string Book::getTagStr(const std::string& tagName) const {
 
 bool Book::getTagBool(const std::string& tagName) const {
   return convertStrToBool(getTagStr(tagName));
+}
+
+std::string Book::getCategory() const
+{
+  return m_category;
+}
+
+std::string Book::getCategoryFromTags() const
+{
+  try
+  {
+    return getTagStr("category");
+  }
+  catch ( const std::out_of_range& )
+  {
+    return "";
+  }
 }
 
 }

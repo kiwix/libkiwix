@@ -24,6 +24,7 @@ public class Book
   public native String getUrl();
   public native String getName();
   public native String getFlavour();
+  public native String getCategory();
   public native String getTags();
   /**
    * Return the value associated to the tag tagName
