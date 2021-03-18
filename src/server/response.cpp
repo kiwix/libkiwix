@@ -93,17 +93,15 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName)
+std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName, const std::string& details)
 {
   MustacheData results;
   results.set("url", request.get_full_url());
-  // Get URL slug and Name of the book and pass to results
-  std::string url_slug=request.get_full_url().substr((request.get_full_url().find_last_of('/'))+1);
-  results.set("url_slug", url_slug);
-  results.set("bookName", bookName);
+  results.set("details", details);
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
   response->set_taskbar(bookName, "");
+
   return std::move(response);
 }
 
