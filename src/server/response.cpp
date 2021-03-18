@@ -97,7 +97,8 @@ std::unique_ptr<Response> Response::build_404(const InternalServer& server, cons
 {
   MustacheData results;
   results.set("url", request.get_full_url());
-  results.set("details", details);
+  if(details != "")
+    results.set("details", details);
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
   response->set_taskbar(bookName, "");

@@ -761,7 +761,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   const std::shared_ptr<Reader> reader = get_reader(bookName);
   if (reader == nullptr) {
-    return Response::build_404(*this, request, bookName, bookName); // Passing the bookName to 404 as details since the bookName could not be found.
+    return Response::build_404(*this, request, bookName, ""); // Passing the bookName to 404 as details since the bookName could not be found.
   }
 
   auto urlStr = request.get_url().substr(bookName.size()+1);
@@ -791,7 +791,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
-    return Response::build_404(*this, request, bookName, urlStr); // Passing the URL slug to 404 as details since the article wasnt found.
+    return Response::build_404(*this, request, bookName, urlStr.substr((urlStr.find_last_of('/'))+1)); // Passing the URL slug to 404 as details since the article wasnt found.
   }
 }
 
