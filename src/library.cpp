@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <set>
 #include <unicode/locid.h>
+#include <xapian.h>
 
 namespace kiwix
 {
@@ -49,11 +50,21 @@ std::string normalizeText(const std::string& text, const std::string& language)
 
 } // unnamed namespace
 
+class Library::BookDB : public Xapian::WritableDatabase
+{
+public:
+  BookDB() : Xapian::WritableDatabase("", Xapian::DB_BACKEND_INMEMORY) {}
+};
+
 /* Constructor */
 Library::Library()
-  : m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
+  : m_bookDB(new BookDB)
 {
 }
+
+Library::Library(Library&& ) = default;
+
+Library& Library::operator=(Library&& ) = default;
 
 /* Destructor */
 Library::~Library()
@@ -279,7 +290,7 @@ void Library::updateBookDB(const Book& book)
 
   const std::string idterm = "Q" + book.getId();
   doc.add_boolean_term(idterm);
-  m_bookDB.replace_document(idterm, doc);
+  m_bookDB->replace_document(idterm, doc);
 }
 
 Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& filter)
@@ -305,7 +316,7 @@ Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& fi
                    | Xapian::QueryParser::FLAG_WILDCARD
                    | partialQueryFlag;
   const auto query = queryParser.parse_query(filter.getQuery(), flags);
-  Xapian::Enquire enquire(m_bookDB);
+  Xapian::Enquire enquire(*m_bookDB);
   enquire.set_query(query);
   const auto results = enquire.get_mset(0, m_books.size());
   for ( auto it = results.begin(); it != results.end(); ++it  ) {

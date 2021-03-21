@@ -28,7 +28,6 @@
 #include "book.h"
 #include "bookmark.h"
 #include "common.h"
-#include <xapian.h>
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
@@ -125,7 +124,8 @@ class Library
   std::map<std::string, kiwix::Book> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::vector<kiwix::Bookmark> m_bookmarks;
-  Xapian::WritableDatabase m_bookDB;
+  class BookDB;
+  std::unique_ptr<BookDB> m_bookDB;
 
  public:
   typedef std::vector<std::string> BookIdCollection;
@@ -133,6 +133,14 @@ class Library
  public:
   Library();
   ~Library();
+
+  /**
+   * Library is not a copiable object. However it can be moved.
+   */
+  Library(const Library& ) = delete;
+  Library(Library&& );
+  void operator=(const Library& ) = delete;
+  Library& operator=(Library&& );
 
   /**
    * Add a book to the library.
