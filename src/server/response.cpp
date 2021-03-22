@@ -221,9 +221,9 @@ void ContentResponse::inject_externallinks_blocker()
   kainjow::mustache::data data;
   data.set("root", m_root);
   auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
-  m_content = appendToFirstOccurence(
+  m_content = prependToFirstOccurence(
     m_content,
-    "<head>",
+    "</head[ \\t]*>",
     script_tag);
 }
 
