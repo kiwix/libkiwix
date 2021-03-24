@@ -27,7 +27,7 @@ templates/404.html
 templates/500.html
 templates/index.html
 templates/suggestion.json
-templates/head_part.html
+templates/head_taskbar.html
 templates/taskbar_part.html
 templates/external_blocker_part.html
 templates/captured_external.html

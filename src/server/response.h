@@ -89,6 +89,7 @@ class ContentResponse : public Response {
 
     void introduce_taskbar();
     void inject_externallinks_blocker();
+    void inject_root_link();
     bool can_compress(const RequestContext& request) const;
     bool contentDecorationAllowed() const;
 
