@@ -202,7 +202,7 @@ void ContentResponse::introduce_taskbar()
   data.set("hascontent", !m_bookName.empty());
   data.set("title", m_bookTitle);
   data.set("withlibrarybutton", m_withLibraryButton);
-  auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
+  auto head_content = render_template(RESOURCE::templates::head_part_html, data);
   m_content = prependToFirstOccurence(
     m_content,
     "</head[ \\t]*>",
@@ -225,13 +225,6 @@ void ContentResponse::inject_externallinks_blocker()
     m_content,
     "</head[ \\t]*>",
     script_tag);
-}
-
-void ContentResponse::inject_root_link(){
-  m_content = prependToFirstOccurence(
-    m_content,
-    "<head[ \\t]*>",
-    "<link type=\"root\" href=\"" + m_root + "\">");
 }
 
 bool
@@ -259,8 +252,6 @@ Response::create_mhd_response(const RequestContext& request)
 MHD_Response*
 ContentResponse::create_mhd_response(const RequestContext& request)
 {
-  inject_root_link();
-
   if (contentDecorationAllowed()) {
     if (m_withTaskbar) {
       introduce_taskbar();
