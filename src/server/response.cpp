@@ -230,7 +230,7 @@ void ContentResponse::inject_externallinks_blocker()
 void ContentResponse::inject_root_link(){
   m_content = prependToFirstOccurence(
     m_content,
-    "<head[ \\t]*>",
+    "</head[ \\t]*>",
     "<link type=\"root\" href=\"" + m_root + "\">");
 }
 
