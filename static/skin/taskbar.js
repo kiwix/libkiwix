@@ -5,26 +5,30 @@ function htmlDecode(input) {
 
 (function ($) {
     const root = $( `link[type='root']` ).attr("href");
+    const bookName = window.location.pathname.split(`${root}/`)[1].split('/')[0];
 
     $( "#kiwixsearchbox" ).autocomplete({
 
-        source: `${root}/suggest?content=${window.location.pathname.split(`${root}/`)[1].split('/')[0]}`,
+        source: `${root}/suggest?content=${bookName}`,
         dataType: "json",
         cache: false,
 
         response: function( event, ui ) {
-
               for(const item of ui.content) {
                   item.label = htmlDecode(item.label);
                   item.value = htmlDecode(item.value);
+                  if (item.path) item.path = htmlDecode(item.path);
               }
         },
 
         select: function(event, ui) {
-        $( "#kiwixsearchbox" ).val(ui.item.value);
-        $( "#kiwixsearchform" ).submit();
+            if (ui.item.kind === 'path') {
+                window.location.href = `${root}/${bookName}/${encodeURI(ui.item.path)}`;
+            } else {
+                $( "#kiwixsearchbox" ).val(ui.item.value);
+                $( "#kiwixsearchform" ).submit();
+            }
         },
-
     });
 
     /* cybook hack */
