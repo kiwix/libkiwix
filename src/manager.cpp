@@ -124,7 +124,7 @@ bool Manager::readOpds(const std::string& content, const std::string& urlHost)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
-      = doc.load_buffer_inplace((void*)content.data(), content.size());
+      = doc.load_buffer((void*)content.data(), content.size());
 
   if (result) {
     this->parseOpdsDom(doc, urlHost);
