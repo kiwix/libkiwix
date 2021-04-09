@@ -331,7 +331,7 @@ Library::BookIdCollection Library::filter(const Filter& filter)
 {
   BookIdCollection result;
   for(auto id : getBooksByTitleOrDescription(filter)) {
-    if(filter.acceptByNonQueryCriteria(m_books[id])) {
+    if(filter.acceptByNonQueryCriteria(m_books.at(id))) {
       result.push_back(id);
     }
   }
