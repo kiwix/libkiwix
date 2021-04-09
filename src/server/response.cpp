@@ -204,9 +204,9 @@ void ContentResponse::introduce_taskbar()
   data.set("title", m_bookTitle);
   data.set("withlibrarybutton", m_withLibraryButton);
   auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
-  m_content = prependToFirstOccurence(
+  m_content = appendToFirstOccurence(
     m_content,
-    "</head[ \\t]*>",
+    "<head[^>]*>",
     head_content);
 
   auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
@@ -229,9 +229,9 @@ void ContentResponse::inject_externallinks_blocker()
 }
 
 void ContentResponse::inject_root_link(){
-  m_content = prependToFirstOccurence(
+  m_content = appendToFirstOccurence(
     m_content,
-    "</head[ \\t]*>",
+    "<head[^>]*>",
     "<link type=\"root\" href=\"" + m_root + "\">");
 }
 
@@ -260,8 +260,6 @@ Response::create_mhd_response(const RequestContext& request)
 MHD_Response*
 ContentResponse::create_mhd_response(const RequestContext& request)
 {
-  inject_root_link();
-
   if (contentDecorationAllowed()) {
     if (m_withTaskbar) {
       introduce_taskbar();
@@ -270,6 +268,8 @@ ContentResponse::create_mhd_response(const RequestContext& request)
       inject_externallinks_blocker();
     }
   }
+
+  inject_root_link();
 
   bool shouldCompress = can_compress(request);
   if (shouldCompress) {
