@@ -310,4 +310,22 @@ TEST_F(XmlLibraryTest, removeBookByIdDropsTheReader)
   EXPECT_THROW(lib.getReaderById("raycharles"), std::out_of_range);
 };
 
+TEST_F(XmlLibraryTest, removeBookByIdUpdatesTheSearchDB)
+{
+  kiwix::Filter f;
+  f.local(true).valid(true).query(R"(title:"ray charles")", false);
+
+  EXPECT_NO_THROW(lib.getBookById("raycharles"));
+  EXPECT_EQ(1U, lib.filter(f).size());
+
+  lib.removeBookById("raycharles");
+
+  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+  EXPECT_EQ(0U, lib.filter(f).size());
+
+  // make sure that Library::filter() doesn't add an empty book with
+  // an id surviving in the search DB
+  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+};
+
 };
