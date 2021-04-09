@@ -190,6 +190,9 @@ namespace
 
 class LibraryTest : public ::testing::Test {
  protected:
+  typedef kiwix::Library::BookIdCollection BookIdCollection;
+  typedef std::vector<std::string> TitleCollection;
+
   void SetUp() override {
      kiwix::Manager manager(&lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
@@ -200,6 +203,15 @@ class LibraryTest : public ::testing::Test {
         bookmark.setBookId(id);
         return bookmark;
     };
+
+  TitleCollection ids2Titles(const BookIdCollection& ids) {
+    TitleCollection titles;
+    for ( const auto& bookId : ids ) {
+      titles.push_back(lib.getBookById(bookId).getTitle());
+    }
+    std::sort(titles.begin(), titles.end());
+    return titles;
+  }
 
   kiwix::Library lib;
 };
@@ -246,28 +258,74 @@ TEST_F(LibraryTest, filterCheck)
   EXPECT_EQ(bookIds, lib.getBooksIds());
 
   bookIds = lib.filter(kiwix::Filter().lang("eng"));
-  EXPECT_EQ(bookIds.size(), 5U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Granblue Fantasy Wiki",
+              "Islam Stack Exchange",
+              "Movies & TV Stack Exchange",
+              "Mythology & Folklore Stack Exchange",
+              "TED talks - Business"
+            })
+  );
 
   bookIds = lib.filter(kiwix::Filter().acceptTags({"stackexchange"}));
-  EXPECT_EQ(bookIds.size(), 3U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Islam Stack Exchange",
+              "Movies & TV Stack Exchange",
+              "Mythology & Folklore Stack Exchange"
+            })
+  );
 
   bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia"}));
-  EXPECT_EQ(bookIds.size(), 3U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Encyclopédie de la Tunisie",
+              "Géographie par Wikipédia",
+              "Mathématiques"
+            })
+  );
 
   bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia", "nopic"}));
-  EXPECT_EQ(bookIds.size(), 2U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Géographie par Wikipédia",
+              "Mathématiques"
+            })
+  );
 
   bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia"}).rejectTags({"nopic"}));
-  EXPECT_EQ(bookIds.size(), 1U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Encyclopédie de la Tunisie"
+            })
+  );
 
   bookIds = lib.filter(kiwix::Filter().query("folklore"));
-  EXPECT_EQ(bookIds.size(), 1U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Mythology & Folklore Stack Exchange"
+            })
+  );
+
 
   bookIds = lib.filter(kiwix::Filter().query("Wiki"));
-  EXPECT_EQ(bookIds.size(), 4U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Encyclopédie de la Tunisie",
+              "Granblue Fantasy Wiki",
+              "Géographie par Wikipédia",
+              "Wikiquote"
+            })
+  );
+
 
   bookIds = lib.filter(kiwix::Filter().query("Wiki").creator("Wiki"));
-  EXPECT_EQ(bookIds.size(), 1U);
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Granblue Fantasy Wiki"
+            })
+  );
 
 }
 
