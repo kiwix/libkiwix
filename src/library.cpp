@@ -106,6 +106,7 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 
 bool Library::removeBookById(const std::string& id)
 {
+  m_bookDB->delete_document("Q" + id);
   m_readers.erase(id);
   return m_books.erase(id) == 1;
 }
