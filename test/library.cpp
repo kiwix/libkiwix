@@ -283,6 +283,27 @@ TEST_F(LibraryTest, filterByTags)
             })
   );
 
+  // filtering by tags is case sensitive
+  bookIds = lib.filter(kiwix::Filter().acceptTags({"stackEXChange"}));
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({})
+  );
+
+  // filtering by tags requires full match of the search term
+  bookIds = lib.filter(kiwix::Filter().acceptTags({"stackexch"}));
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({})
+  );
+
+  // in tags with values (tag:value form) the value is an inseparable
+  // part of the tag
+  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().acceptTags({"_category"}))),
+            TitleCollection({})
+  );
+  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().acceptTags({"_category:category_defined_via_tags_only"}))),
+            TitleCollection({"Tania Louis"})
+  );
+
   bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia"}));
   EXPECT_EQ(ids2Titles(bookIds),
             TitleCollection({
