@@ -311,14 +311,45 @@ TEST_F(LibraryTest, filterByTags)
 
 TEST_F(LibraryTest, filterByQuery)
 {
-  auto bookIds = lib.filter(kiwix::Filter().query("folklore"));
+  // filtering by query checks the title
+  auto bookIds = lib.filter(kiwix::Filter().query("Exchange"));
   EXPECT_EQ(ids2Titles(bookIds),
             TitleCollection({
+              "Islam Stack Exchange",
+              "Movies & TV Stack Exchange",
               "Mythology & Folklore Stack Exchange"
             })
   );
 
+  // filtering by query checks the description/summary
+  bookIds = lib.filter(kiwix::Filter().query("enthusiasts"));
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Movies & TV Stack Exchange",
+              "Mythology & Folklore Stack Exchange"
+            })
+  );
 
+  // filtering by query is case insensitive on titles
+  bookIds = lib.filter(kiwix::Filter().query("ExcHANge"));
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Islam Stack Exchange",
+              "Movies & TV Stack Exchange",
+              "Mythology & Folklore Stack Exchange"
+            })
+  );
+
+  // filtering by query is case insensitive on description/summary
+  bookIds = lib.filter(kiwix::Filter().query("enTHUSiaSTS"));
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Movies & TV Stack Exchange",
+              "Mythology & Folklore Stack Exchange"
+            })
+  );
+
+  // by default, filtering by query assumes partial query
   bookIds = lib.filter(kiwix::Filter().query("Wiki"));
   EXPECT_EQ(ids2Titles(bookIds),
             TitleCollection({
@@ -326,6 +357,14 @@ TEST_F(LibraryTest, filterByQuery)
               "Granblue Fantasy Wiki",
               "Géographie par Wikipédia",
               "Wikiquote"
+            })
+  );
+
+  // partial query can be disabled
+  bookIds = lib.filter(kiwix::Filter().query("Wiki", false));
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Granblue Fantasy Wiki"
             })
   );
 }
