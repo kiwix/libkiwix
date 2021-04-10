@@ -252,12 +252,15 @@ TEST_F(LibraryTest, categoryHandling)
   EXPECT_EQ("category_element_overrides_tags", lib.getBookById("14829621-c490-c376-0792-9de558b57efa").getCategory());
 }
 
-TEST_F(LibraryTest, filterCheck)
+TEST_F(LibraryTest, emptyFilter)
 {
-  auto bookIds = lib.filter(kiwix::Filter());
+  const auto bookIds = lib.filter(kiwix::Filter());
   EXPECT_EQ(bookIds, lib.getBooksIds());
+}
 
-  bookIds = lib.filter(kiwix::Filter().lang("eng"));
+TEST_F(LibraryTest, filterByLanguage)
+{
+  const auto bookIds = lib.filter(kiwix::Filter().lang("eng"));
   EXPECT_EQ(ids2Titles(bookIds),
             TitleCollection({
               "Granblue Fantasy Wiki",
@@ -267,8 +270,11 @@ TEST_F(LibraryTest, filterCheck)
               "TED talks - Business"
             })
   );
+}
 
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"stackexchange"}));
+TEST_F(LibraryTest, filterByTags)
+{
+  auto bookIds = lib.filter(kiwix::Filter().acceptTags({"stackexchange"}));
   EXPECT_EQ(ids2Titles(bookIds),
             TitleCollection({
               "Islam Stack Exchange",
@@ -300,8 +306,12 @@ TEST_F(LibraryTest, filterCheck)
               "Encyclopédie de la Tunisie"
             })
   );
+}
 
-  bookIds = lib.filter(kiwix::Filter().query("folklore"));
+
+TEST_F(LibraryTest, filterByQuery)
+{
+  auto bookIds = lib.filter(kiwix::Filter().query("folklore"));
   EXPECT_EQ(ids2Titles(bookIds),
             TitleCollection({
               "Mythology & Folklore Stack Exchange"
@@ -318,9 +328,12 @@ TEST_F(LibraryTest, filterCheck)
               "Wikiquote"
             })
   );
+}
 
 
-  bookIds = lib.filter(kiwix::Filter().query("Wiki").creator("Wiki"));
+TEST_F(LibraryTest, filterByMultipleCriteria)
+{
+  auto bookIds = lib.filter(kiwix::Filter().query("Wiki").creator("Wiki"));
   EXPECT_EQ(ids2Titles(bookIds),
             TitleCollection({
               "Granblue Fantasy Wiki"
