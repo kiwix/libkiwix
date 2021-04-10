@@ -370,6 +370,37 @@ TEST_F(LibraryTest, filterByQuery)
 }
 
 
+TEST_F(LibraryTest, filterByCreator)
+{
+  auto bookIds = lib.filter(kiwix::Filter().creator("Wikipedia"));
+  EXPECT_EQ(ids2Titles(bookIds),
+            TitleCollection({
+              "Encyclopédie de la Tunisie",
+              "Géographie par Wikipédia",
+              "Mathématiques"
+            })
+  );
+
+  // filtering by creator requires full match of the search term
+  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("Wiki"))),
+            TitleCollection({"Granblue Fantasy Wiki"})
+  );
+
+  // filtering by creator is case sensitive
+  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("wiki"))),
+            TitleCollection({})
+  );
+
+  // filtering by creator requires full match of the full author/creator name
+  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("Stack"))),
+            TitleCollection({})
+  );
+  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("Movies & TV Stack Exchange"))),
+            TitleCollection({"Movies & TV Stack Exchange"})
+  );
+}
+
+
 TEST_F(LibraryTest, filterByMultipleCriteria)
 {
   auto bookIds = lib.filter(kiwix::Filter().query("Wiki").creator("Wiki"));
