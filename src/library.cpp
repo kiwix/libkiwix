@@ -295,12 +295,11 @@ void Library::updateBookDB(const Book& book)
   m_bookDB->replace_document(idterm, doc);
 }
 
-Library::BookIdCollection Library::filterViaBookDB(const Filter& filter)
+namespace
 {
-  if ( !filter.hasQuery() )
-    return getBooksIds();
 
-  BookIdCollection bookIds;
+Xapian::Query buildXapianQuery(const Filter& filter)
+{
   Xapian::QueryParser queryParser;
   queryParser.set_default_op(Xapian::Query::OP_AND);
   queryParser.add_prefix("title", "S");
@@ -317,7 +316,19 @@ Library::BookIdCollection Library::filterViaBookDB(const Filter& filter)
                    | Xapian::QueryParser::FLAG_LOVEHATE
                    | Xapian::QueryParser::FLAG_WILDCARD
                    | partialQueryFlag;
-  const auto query = queryParser.parse_query(filter.getQuery(), flags);
+  return queryParser.parse_query(filter.getQuery(), flags);
+}
+
+} // unnamed namespace
+
+Library::BookIdCollection Library::filterViaBookDB(const Filter& filter)
+{
+  if ( !filter.hasQuery() )
+    return getBooksIds();
+
+  BookIdCollection bookIds;
+
+  const auto query = buildXapianQuery(filter);
   Xapian::Enquire enquire(*m_bookDB);
   enquire.set_query(query);
   const auto results = enquire.get_mset(0, m_books.size());
