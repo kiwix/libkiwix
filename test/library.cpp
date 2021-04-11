@@ -505,10 +505,20 @@ TEST_F(LibraryTest, filterByMaxSize)
 
 TEST_F(LibraryTest, filterByMultipleCriteria)
 {
-  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wiki"),
-    "Granblue Fantasy Wiki"
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Ray Charles"
   );
 
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL),
+    "Encyclopédie de la Tunisie",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL).local(false),
+    "Encyclopédie de la Tunisie"
+  );
 }
 
 TEST_F(LibraryTest, getBookByPath)
