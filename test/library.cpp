@@ -481,6 +481,13 @@ TEST_F(LibraryTest, filterByPublisher)
   );
 }
 
+TEST_F(LibraryTest, filterByName)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().name("wikibooks_de"),
+    "An example ZIM archive"
+  );
+}
+
 TEST_F(LibraryTest, filterByMultipleCriteria)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wiki"),
