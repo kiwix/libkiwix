@@ -496,6 +496,13 @@ TEST_F(LibraryTest, filterByCategory)
   );
 }
 
+TEST_F(LibraryTest, filterByMaxSize)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().maxSize(200000),
+    "An example ZIM archive"
+  );
+}
+
 TEST_F(LibraryTest, filterByMultipleCriteria)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wiki"),
