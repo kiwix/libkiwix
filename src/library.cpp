@@ -596,11 +596,6 @@ bool Filter::hasQuery() const
   return ACTIVE(QUERY);
 }
 
-bool Filter::accept(const Book& book) const
-{
-  return acceptByNonQueryCriteria(book) && acceptByQueryOnly(book);
-}
-
 bool Filter::acceptByNonQueryCriteria(const Book& book) const
 {
   auto local = !book.getPath().empty();
@@ -645,17 +640,6 @@ bool Filter::acceptByNonQueryCriteria(const Book& book) const
     }
   }
   return true;
-}
-
-bool Filter::acceptByQueryOnly(const Book& book) const
-{
-  if ( ACTIVE(QUERY)
-    && !(matchRegex(book.getTitle(), "\\Q" + _query + "\\E")
-        || matchRegex(book.getDescription(), "\\Q" + _query + "\\E")))
-    return false;
-
-  return true;
-
 }
 
 }

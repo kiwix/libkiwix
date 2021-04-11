@@ -114,8 +114,6 @@ class Filter {
 private:
     friend class Library;
 
-    bool accept(const Book& book) const;
-    bool acceptByQueryOnly(const Book& book) const;
     bool acceptByNonQueryCriteria(const Book& book) const;
 };
 
