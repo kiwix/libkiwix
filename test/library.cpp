@@ -202,7 +202,6 @@ const char sampleLibraryXML[] = R"(
   <book
         id="example"
         path="./example.zim"
-        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/example.zim"
         title="An example ZIM archive"
         description="An eXaMpLe book added to the catalog via XML"
         language="deu"
@@ -301,6 +300,48 @@ TEST_F(LibraryTest, emptyFilter)
           ids2Titles(lib.filter(f)),         \
           TitleCollection({ __VA_ARGS__ })   \
         )
+
+TEST_F(LibraryTest, filterLocal)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().local(true),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().local(false),
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Islam Stack Exchange",
+    "Mathématiques",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "TED talks - Business",
+    "Tania Louis",
+    "Wikiquote"
+  );
+}
+
+TEST_F(LibraryTest, filterRemote)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().remote(true),
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Islam Stack Exchange",
+    "Mathématiques",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business",
+    "Tania Louis",
+    "Wikiquote"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().remote(false),
+    "An example ZIM archive"
+  );
+}
 
 TEST_F(LibraryTest, filterByLanguage)
 {
