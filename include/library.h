@@ -35,6 +35,7 @@ namespace kiwix
 {
 
 class OPDSDumper;
+class Library;
 
 enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 enum supportedListMode {
@@ -109,6 +110,9 @@ class Filter {
     bool hasQuery() const;
     const std::string& getQuery() const { return _query; }
     bool queryIsPartial() const { return _queryIsPartial; }
+
+private:
+    friend class Library;
 
     bool accept(const Book& book) const;
     bool acceptByQueryOnly(const Book& book) const;
