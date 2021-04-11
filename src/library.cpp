@@ -295,7 +295,7 @@ void Library::updateBookDB(const Book& book)
   m_bookDB->replace_document(idterm, doc);
 }
 
-Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& filter)
+Library::BookIdCollection Library::filterViaBookDB(const Filter& filter)
 {
   if ( !filter.hasQuery() )
     return getBooksIds();
@@ -331,8 +331,8 @@ Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& fi
 Library::BookIdCollection Library::filter(const Filter& filter)
 {
   BookIdCollection result;
-  for(auto id : getBooksByTitleOrDescription(filter)) {
-    if(filter.acceptByNonQueryCriteria(m_books.at(id))) {
+  for(auto id : filterViaBookDB(filter)) {
+    if(filter.accept(m_books.at(id))) {
       result.push_back(id);
     }
   }
@@ -596,7 +596,7 @@ bool Filter::hasQuery() const
   return ACTIVE(QUERY);
 }
 
-bool Filter::acceptByNonQueryCriteria(const Book& book) const
+bool Filter::accept(const Book& book) const
 {
   auto local = !book.getPath().empty();
   FILTER(_LOCAL, local)

@@ -114,7 +114,7 @@ class Filter {
 private:
     friend class Library;
 
-    bool acceptByNonQueryCriteria(const Book& book) const;
+    bool accept(const Book& book) const;
 };
 
 
@@ -309,7 +309,7 @@ class Library
   friend class libXMLDumper;
 
 private: // functions
-  BookIdCollection getBooksByTitleOrDescription(const Filter& filter);
+  BookIdCollection filterViaBookDB(const Filter& filter);
   void updateBookDB(const Book& book);
 };
 
