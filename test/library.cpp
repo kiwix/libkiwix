@@ -181,6 +181,43 @@ const char * sampleOpdsStream = R"(
 
 )";
 
+const char sampleLibraryXML[] = R"(
+<library version="1.0">
+  <book
+        id="raycharles"
+        path="./zimfile.zim"
+        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
+        title="Ray Charles"
+        description="Wikipedia articles about Ray Charles"
+        language="eng"
+        creator="Wikipedia"
+        publisher="Kiwix"
+        date="2020-03-31"
+        name="wikipedia_en_ray_charles"
+        tags="wikipedia;_category:wikipedia;_pictures:no"
+        articleCount="284"
+        mediaCount="2"
+        size="556"
+      ></book>
+  <book
+        id="example"
+        path="./example.zim"
+        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/example.zim"
+        title="An example ZIM archive"
+        description="An eXaMpLe book added to the catalog via XML"
+        language="deu"
+        creator="Wikibooks"
+        publisher="Kiwix"
+        date="2021-04-11"
+        name="wikibooks_de"
+        tags="unittest;wikibooks;_category:wikibooks"
+        articleCount="12"
+        mediaCount="0"
+        size="126"
+      ></book>
+</library>
+)";
+
 #include "../include/library.h"
 #include "../include/manager.h"
 #include "../include/bookmark.h"
@@ -196,6 +233,7 @@ class LibraryTest : public ::testing::Test {
   void SetUp() override {
      kiwix::Manager manager(&lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
+     manager.readXml(sampleLibraryXML, true, "/data/library.xml", true);
   }
 
     kiwix::Bookmark createBookmark(const std::string &id) {
@@ -237,10 +275,10 @@ TEST_F(LibraryTest, getBookMarksTest)
 
 TEST_F(LibraryTest, sanityCheck)
 {
-  EXPECT_EQ(lib.getBookCount(true, true), 10U);
-  EXPECT_EQ(lib.getBooksLanguages().size(), 2U);
-  EXPECT_EQ(lib.getBooksCreators().size(), 8U);
-  EXPECT_EQ(lib.getBooksPublishers().size(), 1U);
+  EXPECT_EQ(lib.getBookCount(true, true), 12U);
+  EXPECT_EQ(lib.getBooksLanguages().size(), 3U);
+  EXPECT_EQ(lib.getBooksCreators().size(), 9U);
+  EXPECT_EQ(lib.getBooksPublishers().size(), 2U);
 }
 
 TEST_F(LibraryTest, categoryHandling)
@@ -271,6 +309,7 @@ TEST_F(LibraryTest, filterByLanguage)
     "Islam Stack Exchange",
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
     "TED talks - Business"
   );
 }
@@ -305,7 +344,8 @@ TEST_F(LibraryTest, filterByTags)
   EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia"}),
     "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
-    "Mathématiques"
+    "Mathématiques",
+    "Ray Charles"
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia", "nopic"}),
@@ -314,7 +354,8 @@ TEST_F(LibraryTest, filterByTags)
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia"}).rejectTags({"nopic"}),
-    "Encyclopédie de la Tunisie"
+    "Encyclopédie de la Tunisie",
+    "Ray Charles"
   );
 }
 
@@ -352,6 +393,7 @@ TEST_F(LibraryTest, filterByQuery)
     "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
+    "Ray Charles",
     "Wikiquote"
   );
 
@@ -367,7 +409,8 @@ TEST_F(LibraryTest, filterByCreator)
   EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wikipedia"),
     "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
-    "Mathématiques"
+    "Mathématiques",
+    "Ray Charles"
   );
 
   // filtering by creator requires full match of the search term
