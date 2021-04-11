@@ -258,74 +258,63 @@ TEST_F(LibraryTest, emptyFilter)
   EXPECT_EQ(bookIds, lib.getBooksIds());
 }
 
+#define EXPECT_FILTER_RESULTS(f, ...)        \
+        EXPECT_EQ(                           \
+          ids2Titles(lib.filter(f)),         \
+          TitleCollection({ __VA_ARGS__ })   \
+        )
+
 TEST_F(LibraryTest, filterByLanguage)
 {
-  const auto bookIds = lib.filter(kiwix::Filter().lang("eng"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Granblue Fantasy Wiki",
-              "Islam Stack Exchange",
-              "Movies & TV Stack Exchange",
-              "Mythology & Folklore Stack Exchange",
-              "TED talks - Business"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().lang("eng"),
+    "Granblue Fantasy Wiki",
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "TED talks - Business"
   );
 }
 
 TEST_F(LibraryTest, filterByTags)
 {
-  auto bookIds = lib.filter(kiwix::Filter().acceptTags({"stackexchange"}));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Islam Stack Exchange",
-              "Movies & TV Stack Exchange",
-              "Mythology & Folklore Stack Exchange"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackexchange"}),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
   );
 
   // filtering by tags is case sensitive
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"stackEXChange"}));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({})
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackEXChange"}),
+    /* no results */
   );
 
   // filtering by tags requires full match of the search term
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"stackexch"}));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({})
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackexch"}),
+    /* no results */
   );
 
   // in tags with values (tag:value form) the value is an inseparable
   // part of the tag
-  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().acceptTags({"_category"}))),
-            TitleCollection({})
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"_category"}),
+    /* no results */
   );
-  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().acceptTags({"_category:category_defined_via_tags_only"}))),
-            TitleCollection({"Tania Louis"})
-  );
-
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia"}));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Encyclopédie de la Tunisie",
-              "Géographie par Wikipédia",
-              "Mathématiques"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"_category:category_defined_via_tags_only"}),
+    "Tania Louis"
   );
 
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia", "nopic"}));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Géographie par Wikipédia",
-              "Mathématiques"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia"}),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Mathématiques"
   );
 
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia"}).rejectTags({"nopic"}));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Encyclopédie de la Tunisie"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia", "nopic"}),
+    "Géographie par Wikipédia",
+    "Mathématiques"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia"}).rejectTags({"nopic"}),
+    "Encyclopédie de la Tunisie"
   );
 }
 
@@ -333,102 +322,78 @@ TEST_F(LibraryTest, filterByTags)
 TEST_F(LibraryTest, filterByQuery)
 {
   // filtering by query checks the title
-  auto bookIds = lib.filter(kiwix::Filter().query("Exchange"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Islam Stack Exchange",
-              "Movies & TV Stack Exchange",
-              "Mythology & Folklore Stack Exchange"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Exchange"),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
   );
 
   // filtering by query checks the description/summary
-  bookIds = lib.filter(kiwix::Filter().query("enthusiasts"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Movies & TV Stack Exchange",
-              "Mythology & Folklore Stack Exchange"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("enthusiasts"),
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
   );
 
   // filtering by query is case insensitive on titles
-  bookIds = lib.filter(kiwix::Filter().query("ExcHANge"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Islam Stack Exchange",
-              "Movies & TV Stack Exchange",
-              "Mythology & Folklore Stack Exchange"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("ExcHANge"),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
   );
 
   // filtering by query is case insensitive on description/summary
-  bookIds = lib.filter(kiwix::Filter().query("enTHUSiaSTS"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Movies & TV Stack Exchange",
-              "Mythology & Folklore Stack Exchange"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("enTHUSiaSTS"),
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
   );
 
   // by default, filtering by query assumes partial query
-  bookIds = lib.filter(kiwix::Filter().query("Wiki"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Encyclopédie de la Tunisie",
-              "Granblue Fantasy Wiki",
-              "Géographie par Wikipédia",
-              "Wikiquote"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki"),
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Wikiquote"
   );
 
   // partial query can be disabled
-  bookIds = lib.filter(kiwix::Filter().query("Wiki", false));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Granblue Fantasy Wiki"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki", false),
+    "Granblue Fantasy Wiki"
   );
 }
 
 
 TEST_F(LibraryTest, filterByCreator)
 {
-  auto bookIds = lib.filter(kiwix::Filter().creator("Wikipedia"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Encyclopédie de la Tunisie",
-              "Géographie par Wikipédia",
-              "Mathématiques"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Mathématiques"
   );
 
   // filtering by creator requires full match of the search term
-  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("Wiki"))),
-            TitleCollection({"Granblue Fantasy Wiki"})
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wiki"),
+    "Granblue Fantasy Wiki"
   );
 
   // filtering by creator is case sensitive
-  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("wiki"))),
-            TitleCollection({})
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("wiki"),
+    /* no results */
   );
 
   // filtering by creator requires full match of the full author/creator name
-  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("Stack"))),
-            TitleCollection({})
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Stack"),
+    /* no results */
   );
-  EXPECT_EQ(ids2Titles(lib.filter(kiwix::Filter().creator("Movies & TV Stack Exchange"))),
-            TitleCollection({"Movies & TV Stack Exchange"})
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Movies & TV Stack Exchange"),
+    "Movies & TV Stack Exchange"
   );
 }
 
 
 TEST_F(LibraryTest, filterByMultipleCriteria)
 {
-  auto bookIds = lib.filter(kiwix::Filter().query("Wiki").creator("Wiki"));
-  EXPECT_EQ(ids2Titles(bookIds),
-            TitleCollection({
-              "Granblue Fantasy Wiki"
-            })
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wiki"),
+    "Granblue Fantasy Wiki"
   );
 
 }
