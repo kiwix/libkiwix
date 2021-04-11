@@ -488,6 +488,14 @@ TEST_F(LibraryTest, filterByName)
   );
 }
 
+TEST_F(LibraryTest, filterByCategory)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().category("category_element_overrides_tags"),
+    "Géographie par Wikipédia",
+    "Mathématiques"
+  );
+}
+
 TEST_F(LibraryTest, filterByMultipleCriteria)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wiki"),
