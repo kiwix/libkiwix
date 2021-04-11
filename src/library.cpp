@@ -298,8 +298,19 @@ void Library::updateBookDB(const Book& book)
 namespace
 {
 
+bool willSelectEverything(const Xapian::Query& query)
+{
+  return query.get_type() == Xapian::Query::LEAF_MATCH_ALL;
+}
+
 Xapian::Query buildXapianQuery(const Filter& filter)
 {
+  if ( !filter.hasQuery() ) {
+    // This is a thread-safe way to construct an equivalent of
+    // a Xapian::Query::MatchAll query
+    return Xapian::Query(std::string());
+  }
+
   Xapian::QueryParser queryParser;
   queryParser.set_default_op(Xapian::Query::OP_AND);
   queryParser.add_prefix("title", "S");
@@ -323,12 +334,13 @@ Xapian::Query buildXapianQuery(const Filter& filter)
 
 Library::BookIdCollection Library::filterViaBookDB(const Filter& filter)
 {
-  if ( !filter.hasQuery() )
+  const auto query = buildXapianQuery(filter);
+
+  if ( willSelectEverything(query) )
     return getBooksIds();
 
   BookIdCollection bookIds;
 
-  const auto query = buildXapianQuery(filter);
   Xapian::Enquire enquire(*m_bookDB);
   enquire.set_query(query);
   const auto results = enquire.get_mset(0, m_books.size());
