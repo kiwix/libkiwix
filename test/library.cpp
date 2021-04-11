@@ -473,6 +473,13 @@ TEST_F(LibraryTest, filterByCreator)
   );
 }
 
+TEST_F(LibraryTest, filterByPublisher)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix"),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
+}
 
 TEST_F(LibraryTest, filterByMultipleCriteria)
 {
