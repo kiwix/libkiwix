@@ -278,12 +278,15 @@ void Library::updateBookDB(const Book& book)
 
   const std::string title = normalizeText(book.getTitle(), lang);
   const std::string desc = normalizeText(book.getDescription(), lang);
+  const std::string name = book.getName(); // this is supposed to be normalized
   doc.add_value(0, title);
   doc.add_value(1, desc);
+  doc.add_value(2, name);
   doc.set_data(book.getId());
 
   indexer.index_text(title, 1, "S");
   indexer.index_text(desc, 1, "XD");
+  indexer.index_text(name, 1, "XN");
 
   // Index fields without prefixes for general search
   indexer.index_text(title);
@@ -303,7 +306,8 @@ bool willSelectEverything(const Xapian::Query& query)
   return query.get_type() == Xapian::Query::LEAF_MATCH_ALL;
 }
 
-Xapian::Query buildXapianQuery(const Filter& filter)
+
+Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
 {
   if ( !filter.hasQuery() ) {
     // This is a thread-safe way to construct an equivalent of
@@ -315,6 +319,7 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   queryParser.set_default_op(Xapian::Query::OP_AND);
   queryParser.add_prefix("title", "S");
   queryParser.add_prefix("description", "XD");
+  queryParser.add_prefix("name", "XN");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -328,6 +333,20 @@ Xapian::Query buildXapianQuery(const Filter& filter)
                    | Xapian::QueryParser::FLAG_WILDCARD
                    | partialQueryFlag;
   return queryParser.parse_query(filter.getQuery(), flags);
+}
+
+Xapian::Query nameQuery(const std::string& name)
+{
+  return Xapian::Query("XN" + name);
+}
+
+Xapian::Query buildXapianQuery(const Filter& filter)
+{
+  auto q = buildXapianQueryFromFilterQuery(filter);
+  if ( filter.hasName() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, nameQuery(filter.getName()));
+  }
+  return q;
 }
 
 } // unnamed namespace
@@ -619,6 +638,11 @@ bool Filter::hasQuery() const
   return ACTIVE(QUERY);
 }
 
+bool Filter::hasName() const
+{
+  return ACTIVE(NAME);
+}
+
 bool Filter::accept(const Book& book) const
 {
   auto local = !book.getPath().empty();
@@ -638,7 +662,6 @@ bool Filter::accept(const Book& book) const
   FILTER(LANG, book.getLanguage() == _lang)
   FILTER(_PUBLISHER, book.getPublisher() == _publisher)
   FILTER(_CREATOR, book.getCreator() == _creator)
-  FILTER(NAME, book.getName() == _name)
 
   if (ACTIVE(ACCEPTTAGS)) {
     if (!_acceptTags.empty()) {

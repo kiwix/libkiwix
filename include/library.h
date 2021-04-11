@@ -111,6 +111,9 @@ class Filter {
     const std::string& getQuery() const { return _query; }
     bool queryIsPartial() const { return _queryIsPartial; }
 
+    bool hasName() const;
+    const std::string& getName() const { return _name; }
+
 private:
     friend class Library;
 
