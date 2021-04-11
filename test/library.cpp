@@ -502,6 +502,15 @@ TEST_F(LibraryTest, filterByCategory)
     "Géographie par Wikipédia",
     "Mathématiques"
   );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("category:category_element_overrides_tags"),
+    "Géographie par Wikipédia",
+    "Mathématiques"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("category_element_overrides_tags"),
+    /* no results */
+  );
 }
 
 TEST_F(LibraryTest, filterByMaxSize)

@@ -279,14 +279,17 @@ void Library::updateBookDB(const Book& book)
   const std::string title = normalizeText(book.getTitle(), lang);
   const std::string desc = normalizeText(book.getDescription(), lang);
   const std::string name = book.getName(); // this is supposed to be normalized
+  const std::string category = book.getCategory(); // this is supposed to be normalized
   doc.add_value(0, title);
   doc.add_value(1, desc);
   doc.add_value(2, name);
+  doc.add_value(3, category);
   doc.set_data(book.getId());
 
   indexer.index_text(title, 1, "S");
   indexer.index_text(desc, 1, "XD");
   indexer.index_text(name, 1, "XN");
+  indexer.index_text(category, 1, "XC");
 
   // Index fields without prefixes for general search
   indexer.index_text(title);
@@ -320,6 +323,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("title", "S");
   queryParser.add_prefix("description", "XD");
   queryParser.add_prefix("name", "XN");
+  queryParser.add_prefix("category", "XC");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -340,11 +344,19 @@ Xapian::Query nameQuery(const std::string& name)
   return Xapian::Query("XN" + name);
 }
 
+Xapian::Query categoryQuery(const std::string& category)
+{
+  return Xapian::Query("XC" + category);
+}
+
 Xapian::Query buildXapianQuery(const Filter& filter)
 {
   auto q = buildXapianQueryFromFilterQuery(filter);
   if ( filter.hasName() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, nameQuery(filter.getName()));
+  }
+  if ( filter.hasCategory() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, categoryQuery(filter.getCategory()));
   }
   return q;
 }
@@ -643,6 +655,11 @@ bool Filter::hasName() const
   return ACTIVE(NAME);
 }
 
+bool Filter::hasCategory() const
+{
+  return ACTIVE(CATEGORY);
+}
+
 bool Filter::accept(const Book& book) const
 {
   auto local = !book.getPath().empty();
@@ -658,7 +675,6 @@ bool Filter::accept(const Book& book) const
   FILTER(_NOREMOTE, !remote)
 
   FILTER(MAXSIZE, book.getSize() <= _maxSize)
-  FILTER(CATEGORY, book.getCategory() == _category)
   FILTER(LANG, book.getLanguage() == _lang)
   FILTER(_PUBLISHER, book.getPublisher() == _publisher)
   FILTER(_CREATOR, book.getCreator() == _creator)

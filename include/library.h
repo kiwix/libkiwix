@@ -114,6 +114,9 @@ class Filter {
     bool hasName() const;
     const std::string& getName() const { return _name; }
 
+    bool hasCategory() const;
+    const std::string& getCategory() const { return _category; }
+
 private:
     friend class Library;
 
