@@ -117,6 +117,9 @@ class Filter {
     bool hasCategory() const;
     const std::string& getCategory() const { return _category; }
 
+    bool hasLang() const;
+    const std::string& getLang() const { return _lang; }
+
 private:
     friend class Library;
 

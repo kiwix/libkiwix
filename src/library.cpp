@@ -284,12 +284,14 @@ void Library::updateBookDB(const Book& book)
   doc.add_value(1, desc);
   doc.add_value(2, name);
   doc.add_value(3, category);
+  doc.add_value(4, lang);
   doc.set_data(book.getId());
 
   indexer.index_text(title, 1, "S");
   indexer.index_text(desc, 1, "XD");
   indexer.index_text(name, 1, "XN");
   indexer.index_text(category, 1, "XC");
+  indexer.index_text(lang, 1, "L");
 
   // Index fields without prefixes for general search
   indexer.index_text(title);
@@ -324,6 +326,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("description", "XD");
   queryParser.add_prefix("name", "XN");
   queryParser.add_prefix("category", "XC");
+  queryParser.add_prefix("lang", "L");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -349,6 +352,11 @@ Xapian::Query categoryQuery(const std::string& category)
   return Xapian::Query("XC" + category);
 }
 
+Xapian::Query langQuery(const std::string& lang)
+{
+  return Xapian::Query("L" + lang);
+}
+
 Xapian::Query buildXapianQuery(const Filter& filter)
 {
   auto q = buildXapianQueryFromFilterQuery(filter);
@@ -357,6 +365,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   }
   if ( filter.hasCategory() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, categoryQuery(filter.getCategory()));
+  }
+  if ( filter.hasLang() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, langQuery(filter.getLang()));
   }
   return q;
 }
@@ -660,6 +671,11 @@ bool Filter::hasCategory() const
   return ACTIVE(CATEGORY);
 }
 
+bool Filter::hasLang() const
+{
+  return ACTIVE(LANG);
+}
+
 bool Filter::accept(const Book& book) const
 {
   auto local = !book.getPath().empty();
@@ -675,7 +691,6 @@ bool Filter::accept(const Book& book) const
   FILTER(_NOREMOTE, !remote)
 
   FILTER(MAXSIZE, book.getSize() <= _maxSize)
-  FILTER(LANG, book.getLanguage() == _lang)
   FILTER(_PUBLISHER, book.getPublisher() == _publisher)
   FILTER(_CREATOR, book.getCreator() == _creator)
 

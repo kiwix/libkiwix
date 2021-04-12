@@ -353,6 +353,19 @@ TEST_F(LibraryTest, filterByLanguage)
     "Ray Charles",
     "TED talks - Business"
   );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("lang:eng"),
+    "Granblue Fantasy Wiki",
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("eng"),
+    /* no results */
+  );
 }
 
 TEST_F(LibraryTest, filterByTags)
