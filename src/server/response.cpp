@@ -83,7 +83,7 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName, const std::string& details)
+std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName, const std::string& bookTitle, const std::string& details)
 {
   MustacheData results;
   results.set("url", request.get_full_url());
@@ -91,7 +91,7 @@ std::unique_ptr<Response> Response::build_404(const InternalServer& server, cons
 
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
-  response->set_taskbar(bookName, "");
+  response->set_taskbar(bookName, bookTitle);
 
   return std::move(response);
 }
@@ -190,7 +190,7 @@ void ContentResponse::introduce_taskbar()
   kainjow::mustache::data data;
   data.set("root", m_root);
   data.set("content", m_bookName);
-  data.set("hascontent", !m_bookName.empty());
+  data.set("hascontent", (!m_bookName.empty() && !m_bookTitle.empty()));
   data.set("title", m_bookTitle);
   data.set("withlibrarybutton", m_withLibraryButton);
   auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);

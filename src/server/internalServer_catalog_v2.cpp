@@ -43,7 +43,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   try {
     url  = request.get_url_part(2);
   } catch (const std::out_of_range&) {
-    return Response::build_404(*this, request, "");
+    return Response::build_404(*this, request, "", "");
   }
 
   if (url == "root.xml") {
@@ -60,7 +60,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   } else if (url == "categories") {
     return handle_catalog_v2_categories(request);
   } else {
-    return Response::build_404(*this, request, "");
+    return Response::build_404(*this, request, "", "");
   }
 }
 
