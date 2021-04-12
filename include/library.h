@@ -123,6 +123,9 @@ class Filter {
     bool hasPublisher() const;
     const std::string& getPublisher() const { return _publisher; }
 
+    bool hasCreator() const;
+    const std::string& getCreator() const { return _creator; }
+
 private:
     friend class Library;
 

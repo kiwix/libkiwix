@@ -472,18 +472,42 @@ TEST_F(LibraryTest, filterByCreator)
     "Granblue Fantasy Wiki"
   );
 
-  // filtering by creator is case sensitive
-  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("wiki"),
-    /* no results */
+  // filtering by creator is case and diacritics insensitive
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("wIkï"),
+    "Granblue Fantasy Wiki"
   );
 
-  // filtering by creator requires full match of the full author/creator name
+  // filtering by creator doesn't requires full match of the full creator name
   EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Stack"),
-    /* no results */
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
   );
+
+  // filtering by creator requires a full phrase match (ignoring some non-word terms)
   EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Movies & TV Stack Exchange"),
     "Movies & TV Stack Exchange"
   );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Movies & TV"),
+    "Movies & TV Stack Exchange"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Movies TV"),
+    "Movies & TV Stack Exchange"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("TV & Movies"),
+    /* no results */
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("TV Movies"),
+    /* no results */
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("creator:Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Mathématiques",
+    "Ray Charles"
+  );
+
 }
 
 TEST_F(LibraryTest, filterByPublisher)
