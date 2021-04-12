@@ -106,6 +106,8 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 
 bool Library::removeBookById(const std::string& id)
 {
+  m_bookDB->delete_document("Q" + id);
+  m_readers.erase(id);
   return m_books.erase(id) == 1;
 }
 
@@ -330,7 +332,7 @@ Library::BookIdCollection Library::filter(const Filter& filter)
 {
   BookIdCollection result;
   for(auto id : getBooksByTitleOrDescription(filter)) {
-    if(filter.acceptByNonQueryCriteria(m_books[id])) {
+    if(filter.acceptByNonQueryCriteria(m_books.at(id))) {
       result.push_back(id);
     }
   }

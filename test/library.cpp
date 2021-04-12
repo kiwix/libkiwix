@@ -283,4 +283,49 @@ TEST_F(LibraryTest, getBookByPath)
   EXPECT_EQ(lib.getBookByPath(path).getId(), book.getId());
   EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
 }
+
+class XmlLibraryTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+     kiwix::Manager manager(&lib);
+     manager.readFile( "./test/library.xml", true, true);
+  }
+
+  kiwix::Library lib;
+};
+
+TEST_F(XmlLibraryTest, removeBookByIdRemovesTheBook)
+{
+  EXPECT_EQ(3U, lib.getBookCount(true, true));
+  EXPECT_NO_THROW(lib.getBookById("raycharles"));
+  lib.removeBookById("raycharles");
+  EXPECT_EQ(2U, lib.getBookCount(true, true));
+  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+};
+
+TEST_F(XmlLibraryTest, removeBookByIdDropsTheReader)
+{
+  EXPECT_NE(nullptr, lib.getReaderById("raycharles"));
+  lib.removeBookById("raycharles");
+  EXPECT_THROW(lib.getReaderById("raycharles"), std::out_of_range);
+};
+
+TEST_F(XmlLibraryTest, removeBookByIdUpdatesTheSearchDB)
+{
+  kiwix::Filter f;
+  f.local(true).valid(true).query(R"(title:"ray charles")", false);
+
+  EXPECT_NO_THROW(lib.getBookById("raycharles"));
+  EXPECT_EQ(1U, lib.filter(f).size());
+
+  lib.removeBookById("raycharles");
+
+  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+  EXPECT_EQ(0U, lib.filter(f).size());
+
+  // make sure that Library::filter() doesn't add an empty book with
+  // an id surviving in the search DB
+  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+};
+
 };
