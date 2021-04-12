@@ -742,6 +742,15 @@ std::string get_book_name(const RequestContext& request)
   }
 }
 
+std::string searchSuggestionHTML(const std::string& searchURL, const std::string& pattern)
+{
+  kainjow::mustache::mustache tmpl("Make a full text search for <a href=\"{{{searchURL}}}\">{{pattern}}</a>");
+  MustacheData data;
+  data.set("pattern", pattern);
+  data.set("searchURL", searchURL);
+  return (tmpl.render(data));
+}
+
 } // unnamed namespace
 
 std::shared_ptr<Reader>
@@ -765,6 +774,8 @@ InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& 
 
 std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& request)
 {
+  const std::string url = request.get_url();
+  const std::string pattern = url.substr((url.find_last_of('/'))+1);
   if (m_verbose.load()) {
     printf("** running handle_content\n");
   }
@@ -775,7 +786,10 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   const std::shared_ptr<Reader> reader = get_reader(bookName);
   if (reader == nullptr) {
-    return Response::build_404(*this, request, bookName);
+    std::string searchURL = m_root+"/search?pattern="+pattern; // Make a full search on the entire library.
+    const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
+
+    return Response::build_404(*this, request, bookName, details); 
   }
 
   auto urlStr = request.get_url().substr(bookName.size()+1);
@@ -805,7 +819,10 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
-    return Response::build_404(*this, request, bookName);
+    std::string searchURL = m_root+"/search?content="+bookName+"&pattern="+pattern; // Make a search on this specific book only.
+    const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
+
+    return Response::build_404(*this, request, bookName, details);
   }
 }
 
