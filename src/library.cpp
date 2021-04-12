@@ -43,7 +43,7 @@ std::string iso639_3ToXapian(const std::string& lang) {
   return icu::Locale(lang.c_str()).getLanguage();
 };
 
-std::string normalizeText(const std::string& text, const std::string& language)
+std::string normalizeText(const std::string& text)
 {
   return removeAccents(text);
 }
@@ -276,15 +276,17 @@ void Library::updateBookDB(const Book& book)
   Xapian::Document doc;
   indexer.set_document(doc);
 
-  const std::string title = normalizeText(book.getTitle(), lang);
-  const std::string desc = normalizeText(book.getDescription(), lang);
+  const std::string title = normalizeText(book.getTitle());
+  const std::string desc = normalizeText(book.getDescription());
   const std::string name = book.getName(); // this is supposed to be normalized
   const std::string category = book.getCategory(); // this is supposed to be normalized
+  const std::string publisher = normalizeText(book.getPublisher());
   doc.add_value(0, title);
   doc.add_value(1, desc);
   doc.add_value(2, name);
   doc.add_value(3, category);
   doc.add_value(4, lang);
+  doc.add_value(5, publisher);
   doc.set_data(book.getId());
 
   indexer.index_text(title, 1, "S");
@@ -292,6 +294,7 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(name, 1, "XN");
   indexer.index_text(category, 1, "XC");
   indexer.index_text(lang, 1, "L");
+  indexer.index_text(publisher, 1, "XP");
 
   // Index fields without prefixes for general search
   indexer.index_text(title);
@@ -327,6 +330,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("name", "XN");
   queryParser.add_prefix("category", "XC");
   queryParser.add_prefix("lang", "L");
+  queryParser.add_prefix("publisher", "XP");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -357,6 +361,14 @@ Xapian::Query langQuery(const std::string& lang)
   return Xapian::Query("L" + lang);
 }
 
+Xapian::Query publisherQuery(const std::string& publisher)
+{
+  Xapian::QueryParser queryParser;
+  queryParser.set_default_op(Xapian::Query::OP_PHRASE);
+  const auto flags = 0;
+  return queryParser.parse_query(normalizeText(publisher), flags, "XP");
+}
+
 Xapian::Query buildXapianQuery(const Filter& filter)
 {
   auto q = buildXapianQueryFromFilterQuery(filter);
@@ -368,6 +380,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   }
   if ( filter.hasLang() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, langQuery(filter.getLang()));
+  }
+  if ( filter.hasPublisher() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, publisherQuery(filter.getPublisher()));
   }
   return q;
 }
@@ -676,6 +691,11 @@ bool Filter::hasLang() const
   return ACTIVE(LANG);
 }
 
+bool Filter::hasPublisher() const
+{
+  return ACTIVE(_PUBLISHER);
+}
+
 bool Filter::accept(const Book& book) const
 {
   auto local = !book.getPath().empty();
@@ -691,7 +711,6 @@ bool Filter::accept(const Book& book) const
   FILTER(_NOREMOTE, !remote)
 
   FILTER(MAXSIZE, book.getSize() <= _maxSize)
-  FILTER(_PUBLISHER, book.getPublisher() == _publisher)
   FILTER(_CREATOR, book.getCreator() == _creator)
 
   if (ACTIVE(ACCEPTTAGS)) {

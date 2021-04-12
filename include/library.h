@@ -120,6 +120,9 @@ class Filter {
     bool hasLang() const;
     const std::string& getLang() const { return _lang; }
 
+    bool hasPublisher() const;
+    const std::string& getPublisher() const { return _publisher; }
+
 private:
     friend class Library;
 

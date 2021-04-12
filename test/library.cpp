@@ -206,7 +206,7 @@ const char sampleLibraryXML[] = R"(
         description="An eXaMpLe book added to the catalog via XML"
         language="deu"
         creator="Wikibooks"
-        publisher="Kiwix"
+        publisher="Kiwix Enthusiasts"
         date="2021-04-11"
         name="wikibooks_de"
         tags="unittest;wikibooks;_category:wikibooks"
@@ -277,7 +277,7 @@ TEST_F(LibraryTest, sanityCheck)
   EXPECT_EQ(lib.getBookCount(true, true), 12U);
   EXPECT_EQ(lib.getBooksLanguages().size(), 3U);
   EXPECT_EQ(lib.getBooksCreators().size(), 9U);
-  EXPECT_EQ(lib.getBooksPublishers().size(), 2U);
+  EXPECT_EQ(lib.getBooksPublishers().size(), 3U);
 }
 
 TEST_F(LibraryTest, categoryHandling)
@@ -491,6 +491,34 @@ TEST_F(LibraryTest, filterByPublisher)
   EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix"),
     "An example ZIM archive",
     "Ray Charles"
+  );
+
+  // filtering by publisher requires full match of the search term
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwi"),
+    /* no results */
+  );
+
+  // filtering by publisher requires a full phrase match
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix Enthusiasts"),
+    "An example ZIM archive"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Enthusiasts Kiwix"),
+    /* no results */
+  );
+
+  // filtering by publisher is case and diacritics insensitive
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("kîWIx"),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("publisher:kiwix"),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("kiwix"),
+    /* no results */
   );
 }
 
