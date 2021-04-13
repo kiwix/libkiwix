@@ -624,14 +624,14 @@ Filter& Filter::valid(bool accept)
   return *this;
 }
 
-Filter& Filter::acceptTags(std::vector<std::string> tags)
+Filter& Filter::acceptTags(const Tags& tags)
 {
   _acceptTags = tags;
   activeFilters |= ACCEPTTAGS;
   return *this;
 }
 
-Filter& Filter::rejectTags(std::vector<std::string> tags)
+Filter& Filter::rejectTags(const Tags& tags)
 {
   _rejectTags = tags;
   activeFilters |= REJECTTAGS;

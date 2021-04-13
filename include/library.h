@@ -49,10 +49,13 @@ enum supportedListMode {
 };
 
 class Filter {
-  private:
+  public: // types
+    using Tags = std::vector<std::string>;
+
+  private: // data
     uint64_t activeFilters;
-    std::vector<std::string> _acceptTags;
-    std::vector<std::string> _rejectTags;
+    Tags _acceptTags;
+    Tags _rejectTags;
     std::string _category;
     std::string _lang;
     std::string _publisher;
@@ -62,7 +65,7 @@ class Filter {
     bool _queryIsPartial;
     std::string _name;
 
-  public:
+  public: // functions
     Filter();
     ~Filter() = default;
 
@@ -96,8 +99,8 @@ class Filter {
     /**
      * Set the filter to only accept book with corresponding tag.
      */
-    Filter& acceptTags(std::vector<std::string> tags);
-    Filter& rejectTags(std::vector<std::string> tags);
+    Filter& acceptTags(const Tags& tags);
+    Filter& rejectTags(const Tags& tags);
 
     Filter& category(std::string category);
     Filter& lang(std::string lang);
@@ -126,7 +129,7 @@ class Filter {
     bool hasCreator() const;
     const std::string& getCreator() const { return _creator; }
 
-private:
+private: // functions
     friend class Library;
 
     bool accept(const Book& book) const;
