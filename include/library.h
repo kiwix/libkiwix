@@ -129,6 +129,9 @@ class Filter {
     bool hasCreator() const;
     const std::string& getCreator() const { return _creator; }
 
+    const Tags& getAcceptTags() const { return _acceptTags; }
+    const Tags& getRejectTags() const { return _rejectTags; }
+
 private: // functions
     friend class Library;
 

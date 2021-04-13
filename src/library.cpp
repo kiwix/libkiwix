@@ -282,6 +282,7 @@ void Library::updateBookDB(const Book& book)
   const std::string category = book.getCategory(); // this is supposed to be normalized
   const std::string publisher = normalizeText(book.getPublisher());
   const std::string creator = normalizeText(book.getCreator());
+  const std::string tags = book.getTags(); // normalization not needed
   doc.add_value(0, title);
   doc.add_value(1, desc);
   doc.add_value(2, name);
@@ -289,6 +290,7 @@ void Library::updateBookDB(const Book& book)
   doc.add_value(4, lang);
   doc.add_value(5, publisher);
   doc.add_value(6, creator);
+  doc.add_value(7, tags);
   doc.set_data(book.getId());
 
   indexer.index_text(title, 1, "S");
@@ -298,6 +300,9 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(lang, 1, "L");
   indexer.index_text(publisher, 1, "XP");
   indexer.index_text(creator, 1, "A");
+
+  for ( const auto& tag : split(tags, ";") )
+    doc.add_boolean_term("XT" + tag);
 
   // Index fields without prefixes for general search
   indexer.index_text(title);
@@ -335,6 +340,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("lang", "L");
   queryParser.add_prefix("publisher", "XP");
   queryParser.add_prefix("creator", "A");
+  queryParser.add_prefix("tag", "XT");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -385,6 +391,21 @@ Xapian::Query creatorQuery(const std::string& creator)
   return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
 }
 
+Xapian::Query tagsQuery(const Filter::Tags& acceptTags, const Filter::Tags& rejectTags)
+{
+  Xapian::Query q = Xapian::Query(std::string());
+  if (!acceptTags.empty()) {
+    for ( const auto& tag : acceptTags )
+      q &= Xapian::Query("XT" + tag);
+  }
+
+  if (!rejectTags.empty()) {
+    for ( const auto& tag : rejectTags )
+      q = Xapian::Query(Xapian::Query::OP_AND_NOT, q, "XT" + tag);
+  }
+  return q;
+}
+
 Xapian::Query buildXapianQuery(const Filter& filter)
 {
   auto q = buildXapianQueryFromFilterQuery(filter);
@@ -402,6 +423,10 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   }
   if ( filter.hasCreator() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, creatorQuery(filter.getCreator()));
+  }
+  if ( !filter.getAcceptTags().empty() || !filter.getRejectTags().empty() ) {
+    const auto tq = tagsQuery(filter.getAcceptTags(), filter.getRejectTags());
+    q = Xapian::Query(Xapian::Query::OP_AND, q, tq);;
   }
   return q;
 }
@@ -736,28 +761,6 @@ bool Filter::accept(const Book& book) const
 
   FILTER(MAXSIZE, book.getSize() <= _maxSize)
 
-  if (ACTIVE(ACCEPTTAGS)) {
-    if (!_acceptTags.empty()) {
-      auto vBookTags = split(book.getTags(), ";");
-      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
-      for (auto& t: _acceptTags) {
-        if (sBookTags.find(t) == sBookTags.end()) {
-          return false;
-        }
-      }
-    }
-  }
-  if (ACTIVE(REJECTTAGS)) {
-    if (!_rejectTags.empty()) {
-      auto vBookTags = split(book.getTags(), ";");
-      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
-      for (auto& t: _rejectTags) {
-        if (sBookTags.find(t) != sBookTags.end()) {
-          return false;
-        }
-      }
-    }
-  }
   return true;
 }
 
