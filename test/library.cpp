@@ -232,7 +232,7 @@ class LibraryTest : public ::testing::Test {
   void SetUp() override {
      kiwix::Manager manager(&lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
-     manager.readXml(sampleLibraryXML, true, "/data/library.xml", true);
+     manager.readXml(sampleLibraryXML, true, "./test/library.xml", true);
   }
 
     kiwix::Bookmark createBookmark(const std::string &id) {
@@ -637,33 +637,24 @@ TEST_F(LibraryTest, getBookByPath)
   EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
 }
 
-class XmlLibraryTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-     kiwix::Manager manager(&lib);
-     manager.readFile( "./test/library.xml", true, true);
-  }
-
-  kiwix::Library lib;
-};
-
-TEST_F(XmlLibraryTest, removeBookByIdRemovesTheBook)
+TEST_F(LibraryTest, removeBookByIdRemovesTheBook)
 {
-  EXPECT_EQ(3U, lib.getBookCount(true, true));
+  const auto initialBookCount = lib.getBookCount(true, true);
+  ASSERT_GT(initialBookCount, 0U);
   EXPECT_NO_THROW(lib.getBookById("raycharles"));
   lib.removeBookById("raycharles");
-  EXPECT_EQ(2U, lib.getBookCount(true, true));
+  EXPECT_EQ(initialBookCount - 1, lib.getBookCount(true, true));
   EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
 };
 
-TEST_F(XmlLibraryTest, removeBookByIdDropsTheReader)
+TEST_F(LibraryTest, removeBookByIdDropsTheReader)
 {
   EXPECT_NE(nullptr, lib.getReaderById("raycharles"));
   lib.removeBookById("raycharles");
   EXPECT_THROW(lib.getReaderById("raycharles"), std::out_of_range);
 };
 
-TEST_F(XmlLibraryTest, removeBookByIdUpdatesTheSearchDB)
+TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
 {
   kiwix::Filter f;
   f.local(true).valid(true).query(R"(title:"ray charles")", false);
