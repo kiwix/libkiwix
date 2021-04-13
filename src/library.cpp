@@ -350,10 +350,11 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   //queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_SOME);
   const auto flags = Xapian::QueryParser::FLAG_PHRASE
                    | Xapian::QueryParser::FLAG_BOOLEAN
+                   | Xapian::QueryParser::FLAG_BOOLEAN_ANY_CASE
                    | Xapian::QueryParser::FLAG_LOVEHATE
                    | Xapian::QueryParser::FLAG_WILDCARD
                    | partialQueryFlag;
-  return queryParser.parse_query(filter.getQuery(), flags);
+  return queryParser.parse_query(normalizeText(filter.getQuery()), flags);
 }
 
 Xapian::Query nameQuery(const std::string& name)

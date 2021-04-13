@@ -436,8 +436,27 @@ TEST_F(LibraryTest, filterByQuery)
     "Mythology & Folklore Stack Exchange"
   );
 
+  // filtering by query is diacritics insensitive on titles
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("mathematiques"),
+    "Mathématiques",
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("èxchângé"),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
   // filtering by query is case insensitive on description/summary
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("enTHUSiaSTS"),
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by query is diacritics insensitive on description/summary
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("selection"),
+    "Géographie par Wikipédia"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("enthúsïåsts"),
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange"
   );
