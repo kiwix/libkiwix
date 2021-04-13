@@ -376,9 +376,11 @@ TEST_F(LibraryTest, filterByTags)
     "Mythology & Folklore Stack Exchange"
   );
 
-  // filtering by tags is case sensitive
-  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackEXChange"}),
-    /* no results */
+  // filtering by tags is case and diacritics insensitive
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"ståckEXÇhange"}),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
   );
 
   // filtering by tags requires full match of the search term

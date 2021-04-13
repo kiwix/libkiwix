@@ -278,11 +278,11 @@ void Library::updateBookDB(const Book& book)
 
   const std::string title = normalizeText(book.getTitle());
   const std::string desc = normalizeText(book.getDescription());
-  const std::string name = book.getName(); // this is supposed to be normalized
-  const std::string category = book.getCategory(); // this is supposed to be normalized
+  const std::string name = normalizeText(book.getName());
+  const std::string category = normalizeText(book.getCategory());
   const std::string publisher = normalizeText(book.getPublisher());
   const std::string creator = normalizeText(book.getCreator());
-  const std::string tags = book.getTags(); // normalization not needed
+  const std::string tags = normalizeText(book.getTags());
   doc.add_value(0, title);
   doc.add_value(1, desc);
   doc.add_value(2, name);
@@ -359,17 +359,17 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
 
 Xapian::Query nameQuery(const std::string& name)
 {
-  return Xapian::Query("XN" + name);
+  return Xapian::Query("XN" + normalizeText(name));
 }
 
 Xapian::Query categoryQuery(const std::string& category)
 {
-  return Xapian::Query("XC" + category);
+  return Xapian::Query("XC" + normalizeText(category));
 }
 
 Xapian::Query langQuery(const std::string& lang)
 {
-  return Xapian::Query("L" + lang);
+  return Xapian::Query("L" + normalizeText(lang));
 }
 
 Xapian::Query publisherQuery(const std::string& publisher)
@@ -397,12 +397,12 @@ Xapian::Query tagsQuery(const Filter::Tags& acceptTags, const Filter::Tags& reje
   Xapian::Query q = Xapian::Query(std::string());
   if (!acceptTags.empty()) {
     for ( const auto& tag : acceptTags )
-      q &= Xapian::Query("XT" + tag);
+      q &= Xapian::Query("XT" + normalizeText(tag));
   }
 
   if (!rejectTags.empty()) {
     for ( const auto& tag : rejectTags )
-      q = Xapian::Query(Xapian::Query::OP_AND_NOT, q, "XT" + tag);
+      q = Xapian::Query(Xapian::Query::OP_AND_NOT, q, "XT" + normalizeText(tag));
   }
   return q;
 }
