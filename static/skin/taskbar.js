@@ -84,5 +84,5 @@ jq(document).ready(() => {
                 $('label[for="kiwix_button_show_toggle"], .kiwix_button_cont').removeClass('searching');
             }
         });
-    })(jq);
+    })(jq.fn.jquery === '1.10.2' ? jq : $);
 })
