@@ -243,10 +243,10 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if ( etag )
       return Response::build_304(*this, etag);
 
-    if (kiwix::startsWith(request.get_url(), "/skin/"))
+    if (startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
 
-    if (startsWith(request.get_url(), "/catalog"))
+    if (startsWith(request.get_url(), "/catalog/"))
       return handle_catalog(request);
 
     if (request.get_url() == "/meta")
