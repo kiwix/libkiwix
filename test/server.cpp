@@ -240,6 +240,7 @@ const char* urls404[] = {
   "/skin/non-existent-skin-resource",
   "/catalog",
   "/catalog/non-existent-item",
+  "/catalogBLABLABLA/root.xml",
   "/meta",
   "/meta?content=zimfile",
   "/meta?content=zimfile&name=non-existent-item",
