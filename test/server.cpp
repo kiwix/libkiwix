@@ -571,18 +571,21 @@ protected:
   }
 };
 
-// Returns a copy of 'text' with every line that fully matches 'pattern'
-// replaced with the fixed string 'replacement'
+// Returns a copy of 'text' where every line that fully matches 'pattern'
+// preceded by optional whitespace is replaced with the fixed string
+// 'replacement' preserving the leading whitespace
 std::string replaceLines(const std::string& text,
                          const std::string& pattern,
                          const std::string& replacement)
 {
-  std::regex regex("^" + pattern + "$");
+  std::regex regex("^ *" + pattern + "$");
   std::ostringstream oss;
   std::istringstream iss(text);
   std::string line;
   while ( std::getline(iss, line) ) {
     if ( std::regex_match(line, regex) ) {
+      for ( size_t i = 0; i < line.size() && line[i] == ' '; ++i )
+        oss << ' ';
       oss << replacement << "\n";
     } else {
       oss << line << "\n";
@@ -593,10 +596,10 @@ std::string replaceLines(const std::string& text,
 
 std::string maskVariableOPDSFeedData(std::string s)
 {
-  s = replaceLines(s, "  <updated>.+</updated>",
-                      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>");
-  s = replaceLines(s, "  <id>.+</id>",
-                      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>");
+  s = replaceLines(s, R"(<updated>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ</updated>)",
+                      "<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
+  s = replaceLines(s, "<id>[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}</id>",
+                      "<id>12345678-90ab-cdef-1234-567890abcdef</id>");
   return s;
 }
 
@@ -616,7 +619,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Charles, Ray</title>\n"                                 \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"    \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00:00Z</updated>\n"                    \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>jazz</category>\n"                                   \
@@ -640,7 +643,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Ray Charles</title>\n"                                  \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00:00Z</updated>\n"                    \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>wikipedia</category>\n"                              \
@@ -664,7 +667,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Ray (uncategorized) Charles</title>\n"                  \
     "    <summary>No category is assigned to this library entry.</summary>\n" \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00:00Z</updated>\n"                    \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category></category>\n"                                \
@@ -897,4 +900,44 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "</feed>\n"
     );
   }
+}
+
+TEST_F(LibraryServerTest, catalog_v2_root)
+{
+  const auto r = zfs1_->GET("/catalog/v2/root.xml");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+R"(<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>12345678-90ab-cdef-1234-567890abcdef</id>
+  <link rel="self"
+        href="/catalog/v2/root.xml"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="start"
+        href="/catalog/v2/root.xml"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <title>OPDS Catalog Root</title>
+  <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+
+  <entry>
+    <title>All entries</title>
+    <link rel="subsection"
+          href="/catalog/v2/entries"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries from this catalog.</content>
+  </entry>
+  <entry>
+    <title>List of categories</title>
+    <link rel="subsection"
+          href="/catalog/v2/categories"
+          type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">List of all categories in this catalog.</content>
+  </entry>
+</feed>
+)"
+  );
 }

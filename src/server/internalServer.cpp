@@ -76,6 +76,23 @@ extern "C" {
 
 namespace kiwix {
 
+namespace
+{
+
+inline std::string gen_uuid(const std::string& s)
+{
+  return to_string(zim::Uuid::generate(s));
+}
+
+inline std::string normalizeRootUrl(const std::string& rootUrl)
+{
+  return (rootUrl.empty() || rootUrl[0] == '/')
+       ? rootUrl
+       : "/" + rootUrl;
+}
+
+} // unnamed namespace
+
 static IdNameMapper defaultNameMapper;
 
 static MHD_Result staticHandlerCallback(void* cls,
@@ -606,6 +623,10 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     return Response::build_404(*this, request, "");
   }
 
+  if (url == "v2") {
+    return handle_catalog_v2(request);
+  }
+
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
     return Response::build_404(*this, request, "");
   }
@@ -684,6 +705,43 @@ InternalServer::search_catalog(const RequestContext& request,
     }
     opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
     return bookIdsToDump;
+}
+
+std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_catalog_v2");
+  }
+
+  std::string url;
+  try {
+    url  = request.get_url_part(2);
+  } catch (const std::out_of_range&) {
+    return Response::build_404(*this, request, "");
+  }
+
+  if (url == "root.xml") {
+    return handle_catalog_v2_root(request);
+  } else {
+    return Response::build_404(*this, request, "");
+  }
+}
+
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestContext& request)
+{
+  const std::string root_url = normalizeRootUrl(m_root);
+  return ContentResponse::build(
+             *this,
+             RESOURCE::catalog_v2_root_xml,
+             kainjow::mustache::object{
+               {"date", gen_date_str()},
+               {"endpoint_root", root_url + "/catalog/v2"},
+               {"feed_id", gen_uuid(m_server_id)},
+               {"all_entries_feed_id", gen_uuid(m_server_id + "/entries")},
+               {"category_list_feed_id", gen_uuid(m_server_id + "/categories")}
+             },
+             "application/atom+xml;profile=opds-catalog;kind=navigation"
+  );
 }
 
 namespace
