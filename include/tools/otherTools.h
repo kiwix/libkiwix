@@ -45,6 +45,8 @@ namespace kiwix
 
   using MimeCounterType = std::map<const std::string, zim::entry_index_type>;
   MimeCounterType parseMimetypeCounter(const std::string& counterData);
+
+  std::string gen_date_str();
 }
 
 #endif
