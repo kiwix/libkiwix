@@ -241,7 +241,7 @@ _Result::_Result(zim::Search::iterator& iterator)
 
 std::string _Result::get_url()
 {
-  return iterator.get_url();
+  return iterator.get_path();
 }
 std::string _Result::get_title()
 {
