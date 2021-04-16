@@ -38,3 +38,4 @@ templates/external_blocker_part.html
 templates/captured_external.html
 opensearchdescription.xml
 catalog_v2_root.xml
+catalog_v2_categories.xml

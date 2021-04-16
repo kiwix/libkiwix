@@ -722,6 +722,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
 
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
+  } else if (url == "categories") {
+    return handle_catalog_v2_categories(request);
   } else {
     return Response::build_404(*this, request, "");
   }
@@ -739,6 +741,34 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
                {"feed_id", gen_uuid(m_server_id)},
                {"all_entries_feed_id", gen_uuid(m_server_id + "/entries")},
                {"category_list_feed_id", gen_uuid(m_server_id + "/categories")}
+             },
+             "application/atom+xml;profile=opds-catalog;kind=navigation"
+  );
+}
+
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
+{
+  const std::string root_url = normalizeRootUrl(m_root);
+  const auto now = gen_date_str();
+  kainjow::mustache::list categoryData;
+  for ( const auto& category : mp_library->getBooksCategories() ) {
+    const auto urlencodedCategoryName = urlEncode(category);
+    categoryData.push_back(kainjow::mustache::object{
+      {"name", category},
+      {"urlencoded_name",  urlencodedCategoryName},
+      {"updated", now},
+      {"id", gen_uuid(m_server_id + "/categories/" + urlencodedCategoryName)}
+    });
+  }
+
+  return ContentResponse::build(
+             *this,
+             RESOURCE::catalog_v2_categories_xml,
+             kainjow::mustache::object{
+               {"date", now},
+               {"endpoint_root", root_url + "/catalog/v2"},
+               {"feed_id", gen_uuid(m_server_id + "/categories")},
+               {"categories", categoryData }
              },
              "application/atom+xml;profile=opds-catalog;kind=navigation"
   );

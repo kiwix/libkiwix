@@ -941,3 +941,43 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
 )"
   );
 }
+
+TEST_F(LibraryServerTest, catalog_v2_categories)
+{
+  const auto r = zfs1_->GET("/catalog/v2/categories");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+R"(<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>12345678-90ab-cdef-1234-567890abcdef</id>
+  <link rel="self"
+        href="/catalog/v2/categories"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="start"
+        href="/catalog/v2/root.xml"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <title>List of categories</title>
+  <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+
+  <entry>
+    <title>jazz</title>
+    <link rel="subsection"
+          href="/catalog/v2/entries?category=jazz"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries with category of 'jazz'.</content>
+  </entry>
+  <entry>
+    <title>wikipedia</title>
+    <link rel="subsection"
+          href="/catalog/v2/entries?category=wikipedia"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries with category of 'wikipedia'.</content>
+  </entry>
+</feed>
+)"
+  );
+}
