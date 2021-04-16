@@ -616,7 +616,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Charles, Ray</title>\n"                                 \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"    \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <updated>2020-03-31T00:00:00Z</updated>\n"                    \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>jazz</category>\n"                                   \
@@ -640,7 +640,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Ray Charles</title>\n"                                  \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <updated>2020-03-31T00:00:00Z</updated>\n"                    \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>wikipedia</category>\n"                              \
@@ -664,7 +664,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Ray (uncategorized) Charles</title>\n"                  \
     "    <summary>No category is assigned to this library entry.</summary>\n" \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <updated>2020-03-31T00:00:00Z</updated>\n"                    \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category></category>\n"                                \
