@@ -233,11 +233,18 @@ class Library
   unsigned int getBookCount(const bool localBooks, const bool remoteBooks) const;
 
   /**
-   * Get all langagues of the books in the library.
+   * Get all languagues of the books in the library.
    *
    * @return A list of languages.
    */
   std::vector<std::string> getBooksLanguages() const;
+
+  /**
+   * Get all categories of the books in the library.
+   *
+   * @return A list of categories.
+   */
+  std::vector<std::string> getBooksCategories() const;
 
   /**
    * Get all book creators of the books in the library.

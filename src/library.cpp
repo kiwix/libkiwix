@@ -201,6 +201,21 @@ std::vector<std::string> Library::getBooksLanguages() const
   return booksLanguages;
 }
 
+std::vector<std::string> Library::getBooksCategories() const
+{
+  std::set<std::string> categories;
+
+  for (const auto& pair: m_books) {
+    const auto& book = pair.second;
+    const auto& c = book.getCategory();
+    if ( !c.empty() ) {
+      categories.insert(c);
+    }
+  }
+
+  return std::vector<std::string>(categories.begin(), categories.end());
+}
+
 std::vector<std::string> Library::getBooksCreators() const
 {
   std::vector<std::string> booksCreators;
