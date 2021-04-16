@@ -206,7 +206,7 @@ const char sampleLibraryXML[] = R"(
         description="An eXaMpLe book added to the catalog via XML"
         language="deu"
         creator="Wikibooks"
-        publisher="Kiwix Enthusiasts"
+        publisher="Kiwix & Some Enthusiasts"
         date="2021-04-11"
         name="wikibooks_de"
         tags="unittest;wikibooks;_category:wikibooks"
@@ -499,10 +499,10 @@ TEST_F(LibraryTest, filterByPublisher)
   );
 
   // filtering by publisher requires a full phrase match
-  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix Enthusiasts"),
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix & Some Enthusiasts"),
     "An example ZIM archive"
   );
-  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Enthusiasts Kiwix"),
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Some Enthusiasts & Kiwix"),
     /* no results */
   );
 
