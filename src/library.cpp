@@ -364,9 +364,11 @@ Xapian::Query langQuery(const std::string& lang)
 Xapian::Query publisherQuery(const std::string& publisher)
 {
   Xapian::QueryParser queryParser;
-  queryParser.set_default_op(Xapian::Query::OP_PHRASE);
+  queryParser.set_default_op(Xapian::Query::OP_OR);
+  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
   const auto flags = 0;
-  return queryParser.parse_query(normalizeText(publisher), flags, "XP");
+  const auto q = queryParser.parse_query(normalizeText(publisher), flags, "XP");
+  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
 }
 
 Xapian::Query buildXapianQuery(const Filter& filter)
