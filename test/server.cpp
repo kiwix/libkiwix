@@ -906,8 +906,7 @@ TEST_F(LibraryServerTest, catalog_v2_root)
 {
   const auto r = zfs1_->GET("/catalog/v2/root.xml");
   EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-R"(<?xml version="1.0" encoding="UTF-8"?>
+  const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
@@ -938,16 +937,15 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <content type="text">List of all categories in this catalog.</content>
   </entry>
 </feed>
-)"
-  );
+)";
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_categories)
 {
   const auto r = zfs1_->GET("/catalog/v2/categories");
   EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-R"(<?xml version="1.0" encoding="UTF-8"?>
+  const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
@@ -978,6 +976,6 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <content type="text">All entries with category of 'wikipedia'.</content>
   </entry>
 </feed>
-)"
-  );
+)";
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
 }
