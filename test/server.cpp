@@ -907,7 +907,8 @@ TEST_F(LibraryServerTest, catalog_v2_root)
   const auto r = zfs1_->GET("/catalog/v2/root.xml");
   EXPECT_EQ(r->status, 200);
   const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
         href="/catalog/v2/root.xml"
@@ -946,7 +947,8 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
   const auto r = zfs1_->GET("/catalog/v2/categories");
   EXPECT_EQ(r->status, 200);
   const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
         href="/catalog/v2/categories"
