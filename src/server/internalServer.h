@@ -107,6 +107,7 @@ class InternalServer {
     NameMapper* mp_nameMapper;
 
     std::string m_server_id;
+    std::string m_library_id;
 
     friend std::unique_ptr<Response> Response::build(const InternalServer& server);
     friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage);

@@ -170,6 +170,7 @@ bool InternalServer::start() {
   }
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
   m_server_id = kiwix::to_string(server_start_time.count());
+  m_library_id = m_server_id;
   return true;
 }
 
@@ -738,9 +739,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
              kainjow::mustache::object{
                {"date", gen_date_str()},
                {"endpoint_root", root_url + "/catalog/v2"},
-               {"feed_id", gen_uuid(m_server_id)},
-               {"all_entries_feed_id", gen_uuid(m_server_id + "/entries")},
-               {"category_list_feed_id", gen_uuid(m_server_id + "/categories")}
+               {"feed_id", gen_uuid(m_library_id)},
+               {"all_entries_feed_id", gen_uuid(m_library_id + "/entries")},
+               {"category_list_feed_id", gen_uuid(m_library_id + "/categories")}
              },
              "application/atom+xml;profile=opds-catalog;kind=navigation"
   );
@@ -757,7 +758,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
       {"name", category},
       {"urlencoded_name",  urlencodedCategoryName},
       {"updated", now},
-      {"id", gen_uuid(m_server_id + "/categories/" + urlencodedCategoryName)}
+      {"id", gen_uuid(m_library_id + "/categories/" + urlencodedCategoryName)}
     });
   }
 
@@ -767,7 +768,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
              kainjow::mustache::object{
                {"date", now},
                {"endpoint_root", root_url + "/catalog/v2"},
-               {"feed_id", gen_uuid(m_server_id + "/categories")},
+               {"feed_id", gen_uuid(m_library_id + "/categories")},
                {"categories", categoryData }
              },
              "application/atom+xml;profile=opds-catalog;kind=navigation"
