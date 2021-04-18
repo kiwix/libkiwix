@@ -981,3 +981,33 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
 )";
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
 }
+
+TEST_F(LibraryServerTest, catalog_v2_entries)
+{
+  const auto r = zfs1_->GET("/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
+    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\">\n"
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "\n"
+    "  <link rel=\"self\"\n"
+    "        href=\"/catalog/v2/entries\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n"
+    "  <link rel=\"start\"\n"
+    "        href=\"/catalog/v2/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
+    "  <link rel=\"up\"\n"
+    "        href=\"/catalog/v2/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
+    "\n"
+    "  <title>All Entries</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}

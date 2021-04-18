@@ -723,6 +723,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
 
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
+  } else if (url == "entries") {
+    return handle_catalog_v2_entries(request);
   } else if (url == "categories") {
     return handle_catalog_v2_categories(request);
   } else {
@@ -744,6 +746,50 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
                {"category_list_feed_id", gen_uuid(m_library_id + "/categories")}
              },
              "application/atom+xml;profile=opds-catalog;kind=navigation"
+  );
+}
+
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request)
+{
+  const std::string root_url = normalizeRootUrl(m_root);
+
+  const auto now = gen_date_str();
+  kainjow::mustache::list bookData;
+  for ( const auto& bookId : mp_library->getBooksIds() ) {
+    const Book& book = mp_library->getBookById(bookId);
+    const MustacheData bookUrl = book.getUrl().empty()
+                               ? MustacheData(false)
+                               : MustacheData(book.getUrl());
+    bookData.push_back(kainjow::mustache::object{
+      {"id", "urn:uuid:"+book.getId()},
+      {"name", book.getName()},
+      {"title", book.getTitle()},
+      {"description", book.getDescription()},
+      {"language", book.getLanguage()},
+      {"content_id",  book.getHumanReadableIdFromPath()},
+      {"updated", book.getDate() + "T00:00:00Z"},
+      {"category", book.getCategory()},
+      {"flavour", book.getFlavour()},
+      {"tags", book.getTags()},
+      {"article_count", to_string(book.getArticleCount())},
+      {"media_count", to_string(book.getMediaCount())},
+      {"author_name", book.getCreator()},
+      {"publisher_name", book.getPublisher()},
+      {"url", bookUrl},
+      {"size", to_string(book.getSize())},
+    });
+  }
+
+  return ContentResponse::build(
+             *this,
+             RESOURCE::catalog_v2_entries_xml,
+             kainjow::mustache::object{
+               {"date", now},
+               {"endpoint_root", root_url + "/catalog/v2"},
+               {"feed_id", gen_uuid(m_library_id + "/entries")},
+               {"books", bookData }
+             },
+             "application/atom+xml;profile=opds-catalog;kind=acquisition"
   );
 }
 
