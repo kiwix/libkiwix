@@ -269,14 +269,6 @@ TEST_F(ServerTest, 404)
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
 }
 
-TEST_F(ServerTest, SuccessfulSearchForAnArticleTitleRedirectsToTheArticle)
-{
-  auto g = zfs1_->GET("/search?content=zimfile&pattern=ray%20charles" );
-  ASSERT_EQ(302, g->status);
-  ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ("/zimfile/A/Ray_Charles", g->get_header_value("Location"));
-}
-
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
 {
   auto g = zfs1_->GET("/random?content=zimfile");
