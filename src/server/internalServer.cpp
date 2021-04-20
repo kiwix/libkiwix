@@ -497,30 +497,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     reader = mp_library->getReaderById(bookId);
   } catch (const std::out_of_range&) {}
 
-  /* Try first to load directly the article */
-  if (reader != nullptr && !patternString.empty()) {
-    std::string patternCorrespondingUrl;
-    auto variants = reader->getTitleVariants(patternString);
-    auto variantsItr = variants.begin();
-
-    while (patternCorrespondingUrl.empty() && variantsItr != variants.end()) {
-      try {
-        auto entry = reader->getEntryFromTitle(*variantsItr);
-        entry = entry.getFinalEntry();
-        patternCorrespondingUrl = entry.getPath();
-        break;
-      } catch(kiwix::NoEntry& e) {
-        variantsItr++;
-      }
-    }
-
-    /* If article found then redirect directly to it */
-    if (!patternCorrespondingUrl.empty()) {
-      auto redirectUrl = m_root + "/" + bookName + "/" + patternCorrespondingUrl;
-      return Response::build_redirect(*this, redirectUrl);
-    }
-  }
-
   /* Make the search */
   if ( (!reader && !bookName.empty())
     || (patternString.empty() && ! has_geo_query) ) {
