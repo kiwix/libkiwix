@@ -666,8 +666,6 @@ InternalServer::search_catalog(const RequestContext& request,
 {
     auto filter = kiwix::Filter().valid(true).local(true);
     string query("<Empty query>");
-    size_t count(10);
-    size_t startIndex(0);
     try {
       query = request.get_argument("q");
       filter.query(query);
@@ -685,12 +683,6 @@ InternalServer::search_catalog(const RequestContext& request,
       filter.lang(request.get_argument("lang"));
     } catch (const std::out_of_range&) {}
     try {
-      count = extractFromString<unsigned long>(request.get_argument("count"));
-    } catch (...) {}
-    try {
-      startIndex = extractFromString<unsigned long>(request.get_argument("start"));
-    } catch (...) {}
-    try {
       filter.acceptTags(kiwix::split(request.get_argument("tag"), ";"));
     } catch (...) {}
     try {
@@ -699,6 +691,14 @@ InternalServer::search_catalog(const RequestContext& request,
     opdsDumper.setTitle("Search result for " + query);
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
+    size_t count(10);
+    size_t startIndex(0);
+    try {
+      count = extractFromString<unsigned long>(request.get_argument("count"));
+    } catch (...) {}
+    try {
+      startIndex = extractFromString<unsigned long>(request.get_argument("start"));
+    } catch (...) {}
     const auto s = std::min(startIndex, totalResults);
     bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+s);
     if (count>0 && bookIdsToDump.size() > count) {
