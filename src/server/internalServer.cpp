@@ -670,7 +670,7 @@ Filter get_search_filter(const RequestContext& request)
       filter.query(request.get_argument("q"));
     } catch (const std::out_of_range&) {}
     try {
-      filter.maxSize(extractFromString<unsigned long>(request.get_argument("maxsize")));
+      filter.maxSize(request.get_argument<unsigned long>("maxsize"));
     } catch (...) {}
     try {
       filter.name(request.get_argument("name"));
