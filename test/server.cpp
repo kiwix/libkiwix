@@ -982,32 +982,95 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
 }
 
+#define CATALOG_V2_ENTRIES_PREAMBLE                           \
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"           \
+    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\">\n"  \
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"       \
+    "\n"                                                      \
+    "  <link rel=\"self\"\n"                                  \
+    "        href=\"/catalog/v2/entries\"\n"               \
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n" \
+    "  <link rel=\"start\"\n"                                 \
+    "        href=\"/catalog/v2/root.xml\"\n"              \
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n" \
+    "  <link rel=\"up\"\n"                                    \
+    "        href=\"/catalog/v2/root.xml\"\n"              \
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n" \
+    "\n"                                                      \
+
+
 TEST_F(LibraryServerTest, catalog_v2_entries)
 {
   const auto r = zfs1_->GET("/catalog/v2/entries");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
-    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\">\n"
-    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "\n"
-    "  <link rel=\"self\"\n"
-    "        href=\"/catalog/v2/entries\"\n"
-    "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n"
-    "  <link rel=\"start\"\n"
-    "        href=\"/catalog/v2/root.xml\"\n"
-    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
-    "  <link rel=\"up\"\n"
-    "        href=\"/catalog/v2/root.xml\"\n"
-    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
-    "\n"
+    CATALOG_V2_ENTRIES_PREAMBLE
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "\n"
     CHARLES_RAY_CATALOG_ENTRY
     RAY_CHARLES_CATALOG_ENTRY
     UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
+{
+  {
+    const auto r = zfs1_->GET("/catalog/v2/entries?start=1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE
+      "  <title>Filtered Entries (start=1)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "\n"
+      RAY_CHARLES_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
+    const auto r = zfs1_->GET("/catalog/v2/entries?count=2");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE
+      "  <title>Filtered Entries (count=2)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "\n"
+      CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
+    const auto r = zfs1_->GET("/catalog/v2/entries?start=1&count=1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE
+      "  <title>Filtered Entries (count=1&amp;start=1)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "\n"
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
+{
+  const auto r = zfs1_->GET("/catalog/v2/entries?q=\"ray%20charles\"");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE
+    "  <title>Filtered Entries (q=&quot;ray charles&quot;)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
+    RAY_CHARLES_CATALOG_ENTRY
+    CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
   );
 }

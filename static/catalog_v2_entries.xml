@@ -13,7 +13,7 @@
         href="{{endpoint_root}}/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
 
-  <title>All Entries</title>
+  <title>{{^filter}}All Entries{{/filter}}{{#filter}}Filtered Entries ({{filter}}){{/filter}}</title>
   <updated>{{date}}</updated>
 
   {{#books}}

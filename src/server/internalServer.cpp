@@ -690,6 +690,13 @@ Filter get_search_filter(const RequestContext& request)
     return filter;
 }
 
+template<class T>
+std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
+{
+  const size_t e = std::min(v.size(), s+n);
+  return std::vector<T>(v.begin()+std::min(v.size(), s), v.begin()+e);
+}
+
 } // unnamed namespace
 
 std::vector<std::string>
@@ -705,11 +712,7 @@ InternalServer::search_catalog(const RequestContext& request,
     const auto totalResults = bookIdsToDump.size();
     const size_t count = request.get_optional_param("count", 10UL);
     const size_t startIndex = request.get_optional_param("start", 0UL);
-    const auto s = std::min(startIndex, totalResults);
-    bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+s);
-    if (count>0 && bookIdsToDump.size() > count) {
-      bookIdsToDump.resize(count);
-    }
+    bookIdsToDump = subrange(bookIdsToDump, startIndex, count);
     opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
     return bookIdsToDump;
 }
@@ -761,7 +764,11 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
 
   const auto now = gen_date_str();
   kainjow::mustache::list bookData;
-  for ( const auto& bookId : mp_library->getBooksIds() ) {
+  const auto filter = get_search_filter(request);
+  const auto allMatchingEntries = mp_library->filter(filter);
+  const size_t count = request.get_optional_param("count", 10UL);
+  const size_t start = request.get_optional_param("start", 0UL);
+  for ( const auto& bookId : subrange(allMatchingEntries, start, count) ) {
     const Book& book = mp_library->getBookById(bookId);
     const MustacheData bookUrl = book.getUrl().empty()
                                ? MustacheData(false)
@@ -786,13 +793,18 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
     });
   }
 
+  const auto query = request.get_query().empty()
+                   ? MustacheData(false)
+                   : MustacheData(request.get_query());
+
   return ContentResponse::build(
              *this,
              RESOURCE::catalog_v2_entries_xml,
              kainjow::mustache::object{
                {"date", now},
                {"endpoint_root", root_url + "/catalog/v2"},
-               {"feed_id", gen_uuid(m_library_id + "/entries")},
+               {"feed_id", gen_uuid(m_library_id + "/entries?"+request.get_query())},
+               {"filter", query},
                {"books", bookData }
              },
              "application/atom+xml;profile=opds-catalog;kind=acquisition"
