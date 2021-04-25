@@ -916,6 +916,9 @@ TEST_F(LibraryServerTest, catalog_v2_root)
   <link rel="start"
         href="/catalog/v2/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="search"
+        href="/catalog/v2/searchdescription.xml"
+        type="application/opensearchdescription+xml"/>
   <title>OPDS Catalog Root</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
 
@@ -940,6 +943,24 @@ TEST_F(LibraryServerTest, catalog_v2_root)
 </feed>
 )";
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
+}
+
+TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
+{
+  const auto r = zfs1_->GET("/catalog/v2/searchdescription.xml");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<OpenSearchDescription xmlns=\"http://a9.com/-/spec/opensearch/1.1/\">\n"
+    "  <ShortName>Zim catalog search</ShortName>\n"
+    "  <Description>Search zim files in the catalog.</Description>\n"
+    "  <Url type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"\n"
+    "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
+    "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
+    "       indexOffset=\"0\"\n"
+    "       template=\"/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "</OpenSearchDescription>\n"
+  );
 }
 
 TEST_F(LibraryServerTest, catalog_v2_categories)

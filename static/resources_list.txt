@@ -40,3 +40,4 @@ opensearchdescription.xml
 catalog_v2_root.xml
 catalog_v2_entries.xml
 catalog_v2_categories.xml
+catalog_v2_searchdescription.xml

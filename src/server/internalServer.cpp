@@ -732,6 +732,13 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
 
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
+  } else if (url == "searchdescription.xml") {
+    const std::string endpoint_root = normalizeRootUrl(m_root) + "/catalog/v2";
+    return ContentResponse::build(*this,
+        RESOURCE::catalog_v2_searchdescription_xml,
+        kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
+        "application/opensearchdescription+xml"
+    );
   } else if (url == "entries") {
     return handle_catalog_v2_entries(request);
   } else if (url == "categories") {

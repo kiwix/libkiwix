@@ -8,6 +8,9 @@
   <link rel="start"
         href="{{endpoint_root}}/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="search"
+        href="{{endpoint_root}}/searchdescription.xml"
+        type="application/opensearchdescription+xml"/>
   <title>OPDS Catalog Root</title>
   <updated>{{date}}</updated>
 
