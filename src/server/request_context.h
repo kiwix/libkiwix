@@ -74,6 +74,15 @@ class RequestContext {
         return v;
     }
 
+    template<class T>
+    T get_optional_param(const std::string& name, T default_value) const
+    {
+      try {
+        return get_argument<T>(name);
+      } catch (...) {}
+      return default_value;
+    }
+
 
     RequestMethod get_method() const;
     std::string get_url() const;

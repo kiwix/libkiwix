@@ -703,14 +703,8 @@ InternalServer::search_catalog(const RequestContext& request,
     opdsDumper.setTitle("Search result for " + q);
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
-    size_t count(10);
-    size_t startIndex(0);
-    try {
-      count = extractFromString<unsigned long>(request.get_argument("count"));
-    } catch (...) {}
-    try {
-      startIndex = extractFromString<unsigned long>(request.get_argument("start"));
-    } catch (...) {}
+    const size_t count = request.get_optional_param("count", 10UL);
+    const size_t startIndex = request.get_optional_param("start", 0UL);
     const auto s = std::min(startIndex, totalResults);
     bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+s);
     if (count>0 && bookIdsToDump.size() > count) {
