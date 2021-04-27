@@ -278,31 +278,29 @@ void Library::updateBookDB(const Book& book)
 
   const std::string title = normalizeText(book.getTitle());
   const std::string desc = normalizeText(book.getDescription());
-  const std::string name = normalizeText(book.getName());
-  const std::string category = normalizeText(book.getCategory());
-  const std::string publisher = normalizeText(book.getPublisher());
-  const std::string creator = normalizeText(book.getCreator());
-  const std::string tags = normalizeText(book.getTags());
-  doc.set_data(book.getId());
 
-  indexer.index_text(title, 1, "S");
-  indexer.index_text(desc, 1, "XD");
-  indexer.index_text(name, 1, "XN");
-  indexer.index_text(category, 1, "XC");
-  indexer.index_text(lang, 1, "L");
-  indexer.index_text(publisher, 1, "XP");
-  indexer.index_text(creator, 1, "A");
-
-  for ( const auto& tag : split(tags, ";") )
-    doc.add_boolean_term("XT" + tag);
-
-  // Index fields without prefixes for general search
+  // Index title and description without prefixes for general search
   indexer.index_text(title);
   indexer.increase_termpos();
   indexer.index_text(desc);
 
+  // Index all fields for field-based search
+  indexer.index_text(title, 1, "S");
+  indexer.index_text(desc,  1, "XD");
+  indexer.index_text(lang,  1, "L");
+  indexer.index_text(normalizeText(book.getCreator()),   1, "A");
+  indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
+  indexer.index_text(normalizeText(book.getName()),      1, "XN");
+  indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
+
+  for ( const auto& tag : split(normalizeText(book.getTags()), ";") )
+    doc.add_boolean_term("XT" + tag);
+
   const std::string idterm = "Q" + book.getId();
   doc.add_boolean_term(idterm);
+
+  doc.set_data(book.getId());
+
   m_bookDB->replace_document(idterm, doc);
 }
 
