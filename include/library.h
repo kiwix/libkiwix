@@ -35,6 +35,7 @@ namespace kiwix
 {
 
 class OPDSDumper;
+class Library;
 
 enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 enum supportedListMode {
@@ -48,10 +49,13 @@ enum supportedListMode {
 };
 
 class Filter {
-  private:
+  public: // types
+    using Tags = std::vector<std::string>;
+
+  private: // data
     uint64_t activeFilters;
-    std::vector<std::string> _acceptTags;
-    std::vector<std::string> _rejectTags;
+    Tags _acceptTags;
+    Tags _rejectTags;
     std::string _category;
     std::string _lang;
     std::string _publisher;
@@ -61,7 +65,7 @@ class Filter {
     bool _queryIsPartial;
     std::string _name;
 
-  public:
+  public: // functions
     Filter();
     ~Filter() = default;
 
@@ -95,8 +99,8 @@ class Filter {
     /**
      * Set the filter to only accept book with corresponding tag.
      */
-    Filter& acceptTags(std::vector<std::string> tags);
-    Filter& rejectTags(std::vector<std::string> tags);
+    Filter& acceptTags(const Tags& tags);
+    Filter& rejectTags(const Tags& tags);
 
     Filter& category(std::string category);
     Filter& lang(std::string lang);
@@ -110,9 +114,28 @@ class Filter {
     const std::string& getQuery() const { return _query; }
     bool queryIsPartial() const { return _queryIsPartial; }
 
+    bool hasName() const;
+    const std::string& getName() const { return _name; }
+
+    bool hasCategory() const;
+    const std::string& getCategory() const { return _category; }
+
+    bool hasLang() const;
+    const std::string& getLang() const { return _lang; }
+
+    bool hasPublisher() const;
+    const std::string& getPublisher() const { return _publisher; }
+
+    bool hasCreator() const;
+    const std::string& getCreator() const { return _creator; }
+
+    const Tags& getAcceptTags() const { return _acceptTags; }
+    const Tags& getRejectTags() const { return _rejectTags; }
+
+private: // functions
+    friend class Library;
+
     bool accept(const Book& book) const;
-    bool acceptByQueryOnly(const Book& book) const;
-    bool acceptByNonQueryCriteria(const Book& book) const;
 };
 
 
@@ -307,7 +330,7 @@ class Library
   friend class libXMLDumper;
 
 private: // functions
-  BookIdCollection getBooksByTitleOrDescription(const Filter& filter);
+  BookIdCollection filterViaBookDB(const Filter& filter);
   void updateBookDB(const Book& book);
 };
 

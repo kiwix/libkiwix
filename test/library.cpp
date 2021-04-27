@@ -181,6 +181,42 @@ const char * sampleOpdsStream = R"(
 
 )";
 
+const char sampleLibraryXML[] = R"(
+<library version="1.0">
+  <book
+        id="raycharles"
+        path="./zimfile.zim"
+        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
+        title="Ray Charles"
+        description="Wikipedia articles about Ray Charles"
+        language="eng"
+        creator="Wikipedia"
+        publisher="Kiwix"
+        date="2020-03-31"
+        name="wikipedia_en_ray_charles"
+        tags="wikipedia;_category:wikipedia;_pictures:no"
+        articleCount="284"
+        mediaCount="2"
+        size="556"
+      ></book>
+  <book
+        id="example"
+        path="./example.zim"
+        title="An example ZIM archive"
+        description="An eXaMpLe book added to the catalog via XML"
+        language="deu"
+        creator="Wikibooks"
+        publisher="Kiwix & Some Enthusiasts"
+        date="2021-04-11"
+        name="wikibooks_de"
+        tags="unittest;wikibooks;_category:wikibooks"
+        articleCount="12"
+        mediaCount="0"
+        size="126"
+      ></book>
+</library>
+)";
+
 #include "../include/library.h"
 #include "../include/manager.h"
 #include "../include/bookmark.h"
@@ -190,9 +226,13 @@ namespace
 
 class LibraryTest : public ::testing::Test {
  protected:
+  typedef kiwix::Library::BookIdCollection BookIdCollection;
+  typedef std::vector<std::string> TitleCollection;
+
   void SetUp() override {
      kiwix::Manager manager(&lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
+     manager.readXml(sampleLibraryXML, true, "./test/library.xml", true);
   }
 
     kiwix::Bookmark createBookmark(const std::string &id) {
@@ -200,6 +240,15 @@ class LibraryTest : public ::testing::Test {
         bookmark.setBookId(id);
         return bookmark;
     };
+
+  TitleCollection ids2Titles(const BookIdCollection& ids) {
+    TitleCollection titles;
+    for ( const auto& bookId : ids ) {
+      titles.push_back(lib.getBookById(bookId).getTitle());
+    }
+    std::sort(titles.begin(), titles.end());
+    return titles;
+  }
 
   kiwix::Library lib;
 };
@@ -225,10 +274,10 @@ TEST_F(LibraryTest, getBookMarksTest)
 
 TEST_F(LibraryTest, sanityCheck)
 {
-  EXPECT_EQ(lib.getBookCount(true, true), 10U);
-  EXPECT_EQ(lib.getBooksLanguages().size(), 2U);
-  EXPECT_EQ(lib.getBooksCreators().size(), 8U);
-  EXPECT_EQ(lib.getBooksPublishers().size(), 1U);
+  EXPECT_EQ(lib.getBookCount(true, true), 12U);
+  EXPECT_EQ(lib.getBooksLanguages().size(), 3U);
+  EXPECT_EQ(lib.getBooksCreators().size(), 9U);
+  EXPECT_EQ(lib.getBooksPublishers().size(), 3U);
 }
 
 TEST_F(LibraryTest, categoryHandling)
@@ -240,35 +289,339 @@ TEST_F(LibraryTest, categoryHandling)
   EXPECT_EQ("category_element_overrides_tags", lib.getBookById("14829621-c490-c376-0792-9de558b57efa").getCategory());
 }
 
-TEST_F(LibraryTest, filterCheck)
+TEST_F(LibraryTest, emptyFilter)
 {
-  auto bookIds = lib.filter(kiwix::Filter());
+  const auto bookIds = lib.filter(kiwix::Filter());
   EXPECT_EQ(bookIds, lib.getBooksIds());
+}
 
-  bookIds = lib.filter(kiwix::Filter().lang("eng"));
-  EXPECT_EQ(bookIds.size(), 5U);
+#define EXPECT_FILTER_RESULTS(f, ...)        \
+        EXPECT_EQ(                           \
+          ids2Titles(lib.filter(f)),         \
+          TitleCollection({ __VA_ARGS__ })   \
+        )
 
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"stackexchange"}));
-  EXPECT_EQ(bookIds.size(), 3U);
+TEST_F(LibraryTest, filterLocal)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().local(true),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
 
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia"}));
-  EXPECT_EQ(bookIds.size(), 3U);
+  EXPECT_FILTER_RESULTS(kiwix::Filter().local(false),
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Islam Stack Exchange",
+    "Mathématiques",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "TED talks - Business",
+    "Tania Louis",
+    "Wikiquote"
+  );
+}
 
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia", "nopic"}));
-  EXPECT_EQ(bookIds.size(), 2U);
+TEST_F(LibraryTest, filterRemote)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().remote(true),
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Islam Stack Exchange",
+    "Mathématiques",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business",
+    "Tania Louis",
+    "Wikiquote"
+  );
 
-  bookIds = lib.filter(kiwix::Filter().acceptTags({"wikipedia"}).rejectTags({"nopic"}));
-  EXPECT_EQ(bookIds.size(), 1U);
+  EXPECT_FILTER_RESULTS(kiwix::Filter().remote(false),
+    "An example ZIM archive"
+  );
+}
 
-  bookIds = lib.filter(kiwix::Filter().query("folklore"));
-  EXPECT_EQ(bookIds.size(), 1U);
+TEST_F(LibraryTest, filterByLanguage)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().lang("eng"),
+    "Granblue Fantasy Wiki",
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business"
+  );
 
-  bookIds = lib.filter(kiwix::Filter().query("Wiki"));
-  EXPECT_EQ(bookIds.size(), 4U);
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("lang:eng"),
+    "Granblue Fantasy Wiki",
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business"
+  );
 
-  bookIds = lib.filter(kiwix::Filter().query("Wiki").creator("Wiki"));
-  EXPECT_EQ(bookIds.size(), 1U);
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("eng"),
+    /* no results */
+  );
+}
 
+TEST_F(LibraryTest, filterByTags)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackexchange"}),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by tags is case and diacritics insensitive
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"ståckEXÇhange"}),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by tags requires full match of the search term
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackexch"}),
+    /* no results */
+  );
+
+  // in tags with values (tag:value form) the value is an inseparable
+  // part of the tag
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"_category"}),
+    /* no results */
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"_category:category_defined_via_tags_only"}),
+    "Tania Louis"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia"}),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Mathématiques",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia", "nopic"}),
+    "Géographie par Wikipédia",
+    "Mathématiques"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"wikipedia"}).rejectTags({"nopic"}),
+    "Encyclopédie de la Tunisie",
+    "Ray Charles"
+  );
+}
+
+
+TEST_F(LibraryTest, filterByQuery)
+{
+  // filtering by query checks the title
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Exchange"),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by query checks the description/summary
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("enthusiasts"),
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by query is case insensitive on titles
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("ExcHANge"),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by query is diacritics insensitive on titles
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("mathematiques"),
+    "Mathématiques",
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("èxchângé"),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by query is case insensitive on description/summary
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("enTHUSiaSTS"),
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by query is diacritics insensitive on description/summary
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("selection"),
+    "Géographie par Wikipédia"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("enthúsïåsts"),
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // by default, filtering by query assumes partial query
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki"),
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Ray Charles",
+    "Wikiquote"
+  );
+
+  // partial query can be disabled
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki", false),
+    "Granblue Fantasy Wiki"
+  );
+}
+
+
+TEST_F(LibraryTest, filterByCreator)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Mathématiques",
+    "Ray Charles"
+  );
+
+  // filtering by creator requires full match of the search term
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wiki"),
+    "Granblue Fantasy Wiki"
+  );
+
+  // filtering by creator is case and diacritics insensitive
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("wIkï"),
+    "Granblue Fantasy Wiki"
+  );
+
+  // filtering by creator doesn't requires full match of the full creator name
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Stack"),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange"
+  );
+
+  // filtering by creator requires a full phrase match (ignoring some non-word terms)
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Movies & TV Stack Exchange"),
+    "Movies & TV Stack Exchange"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Movies & TV"),
+    "Movies & TV Stack Exchange"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Movies TV"),
+    "Movies & TV Stack Exchange"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("TV & Movies"),
+    /* no results */
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().creator("TV Movies"),
+    /* no results */
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("creator:Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Mathématiques",
+    "Ray Charles"
+  );
+
+}
+
+TEST_F(LibraryTest, filterByPublisher)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix"),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
+
+  // filtering by publisher requires full match of the search term
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwi"),
+    /* no results */
+  );
+
+  // filtering by publisher requires a full phrase match
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix & Some Enthusiasts"),
+    "An example ZIM archive"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Some Enthusiasts & Kiwix"),
+    /* no results */
+  );
+
+  // filtering by publisher is case and diacritics insensitive
+  EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("kîWIx"),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("publisher:kiwix"),
+    "An example ZIM archive",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("kiwix"),
+    /* no results */
+  );
+}
+
+TEST_F(LibraryTest, filterByName)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().name("wikibooks_de"),
+    "An example ZIM archive"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("name:wikibooks_de"),
+    "An example ZIM archive"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("wikibooks_de"),
+    /* no results */
+  );
+}
+
+TEST_F(LibraryTest, filterByCategory)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().category("category_element_overrides_tags"),
+    "Géographie par Wikipédia",
+    "Mathématiques"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("category:category_element_overrides_tags"),
+    "Géographie par Wikipédia",
+    "Mathématiques"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("category_element_overrides_tags"),
+    /* no results */
+  );
+}
+
+TEST_F(LibraryTest, filterByMaxSize)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().maxSize(200000),
+    "An example ZIM archive"
+  );
+}
+
+TEST_F(LibraryTest, filterByMultipleCriteria)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Géographie par Wikipédia",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL),
+    "Encyclopédie de la Tunisie",
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL).local(false),
+    "Encyclopédie de la Tunisie"
+  );
 }
 
 TEST_F(LibraryTest, getBookByPath)
@@ -284,33 +637,24 @@ TEST_F(LibraryTest, getBookByPath)
   EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
 }
 
-class XmlLibraryTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-     kiwix::Manager manager(&lib);
-     manager.readFile( "./test/library.xml", true, true);
-  }
-
-  kiwix::Library lib;
-};
-
-TEST_F(XmlLibraryTest, removeBookByIdRemovesTheBook)
+TEST_F(LibraryTest, removeBookByIdRemovesTheBook)
 {
-  EXPECT_EQ(3U, lib.getBookCount(true, true));
+  const auto initialBookCount = lib.getBookCount(true, true);
+  ASSERT_GT(initialBookCount, 0U);
   EXPECT_NO_THROW(lib.getBookById("raycharles"));
   lib.removeBookById("raycharles");
-  EXPECT_EQ(2U, lib.getBookCount(true, true));
+  EXPECT_EQ(initialBookCount - 1, lib.getBookCount(true, true));
   EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
 };
 
-TEST_F(XmlLibraryTest, removeBookByIdDropsTheReader)
+TEST_F(LibraryTest, removeBookByIdDropsTheReader)
 {
   EXPECT_NE(nullptr, lib.getReaderById("raycharles"));
   lib.removeBookById("raycharles");
   EXPECT_THROW(lib.getReaderById("raycharles"), std::out_of_range);
 };
 
-TEST_F(XmlLibraryTest, removeBookByIdUpdatesTheSearchDB)
+TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
 {
   kiwix::Filter f;
   f.local(true).valid(true).query(R"(title:"ray charles")", false);
