@@ -283,14 +283,6 @@ void Library::updateBookDB(const Book& book)
   const std::string publisher = normalizeText(book.getPublisher());
   const std::string creator = normalizeText(book.getCreator());
   const std::string tags = normalizeText(book.getTags());
-  doc.add_value(0, title);
-  doc.add_value(1, desc);
-  doc.add_value(2, name);
-  doc.add_value(3, category);
-  doc.add_value(4, lang);
-  doc.add_value(5, publisher);
-  doc.add_value(6, creator);
-  doc.add_value(7, tags);
   doc.set_data(book.getId());
 
   indexer.index_text(title, 1, "S");
