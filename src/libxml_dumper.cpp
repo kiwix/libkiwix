@@ -28,7 +28,7 @@
 namespace kiwix
 {
 /* Constructor */
-LibXMLDumper::LibXMLDumper(Library* library)
+LibXMLDumper::LibXMLDumper(const Library* library)
   : library(library)
 {
 }

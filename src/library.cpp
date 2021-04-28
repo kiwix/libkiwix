@@ -111,12 +111,18 @@ bool Library::removeBookById(const std::string& id)
   return m_books.erase(id) == 1;
 }
 
-Book& Library::getBookById(const std::string& id)
+const Book& Library::getBookById(const std::string& id) const
 {
   return m_books.at(id);
 }
 
-Book& Library::getBookByPath(const std::string& path)
+Book& Library::getBookById(const std::string& id)
+{
+  const Library& const_self = *this;
+  return const_cast<Book&>(const_self.getBookById(id));
+}
+
+const Book& Library::getBookByPath(const std::string& path) const
 {
   for(auto& it: m_books) {
     auto& book = it.second;
@@ -126,6 +132,12 @@ Book& Library::getBookByPath(const std::string& path)
   std::ostringstream ss;
   ss << "No book with path " << path << " in the library." << std::endl;
   throw std::out_of_range(ss.str());
+}
+
+Book& Library::getBookByPath(const std::string& path)
+{
+  const Library& const_self = *this;
+  return const_cast<Book&>(const_self.getBookByPath(path));
 }
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
@@ -143,7 +155,7 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
-                                   const bool remoteBooks)
+                                   const bool remoteBooks) const
 {
   unsigned int result = 0;
   for (auto& pair: m_books) {
@@ -156,7 +168,7 @@ unsigned int Library::getBookCount(const bool localBooks,
   return result;
 }
 
-bool Library::writeToFile(const std::string& path)
+bool Library::writeToFile(const std::string& path) const
 {
   auto baseDir = removeLastPathElement(path);
   LibXMLDumper dumper(this);
@@ -164,13 +176,13 @@ bool Library::writeToFile(const std::string& path)
   return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
 }
 
-bool Library::writeBookmarksToFile(const std::string& path)
+bool Library::writeBookmarksToFile(const std::string& path) const
 {
   LibXMLDumper dumper(this);
   return writeTextFile(path, dumper.dumpLibXMLBookmark());
 }
 
-std::vector<std::string> Library::getBooksLanguages()
+std::vector<std::string> Library::getBooksLanguages() const
 {
   std::vector<std::string> booksLanguages;
   std::map<std::string, bool> booksLanguagesMap;
@@ -189,7 +201,7 @@ std::vector<std::string> Library::getBooksLanguages()
   return booksLanguages;
 }
 
-std::vector<std::string> Library::getBooksCreators()
+std::vector<std::string> Library::getBooksCreators() const
 {
   std::vector<std::string> booksCreators;
   std::map<std::string, bool> booksCreatorsMap;
@@ -208,7 +220,7 @@ std::vector<std::string> Library::getBooksCreators()
   return booksCreators;
 }
 
-std::vector<std::string> Library::getBooksPublishers()
+std::vector<std::string> Library::getBooksPublishers() const
 {
   std::vector<std::string> booksPublishers;
   std::map<std::string, bool> booksPublishersMap;
@@ -227,7 +239,7 @@ std::vector<std::string> Library::getBooksPublishers()
   return booksPublishers;
 }
 
-const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks)
+const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks) const
 {
   if (!onlyValidBookmarks) {
     return m_bookmarks;
@@ -242,7 +254,7 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
   return validBookmarks;
 }
 
-Library::BookIdCollection Library::getBooksIds()
+Library::BookIdCollection Library::getBooksIds() const
 {
   BookIdCollection bookIds;
 
@@ -253,7 +265,7 @@ Library::BookIdCollection Library::getBooksIds()
   return bookIds;
 }
 
-Library::BookIdCollection Library::filter(const std::string& search)
+Library::BookIdCollection Library::filter(const std::string& search) const
 {
   if (search.empty()) {
     return getBooksIds();
@@ -424,7 +436,7 @@ Xapian::Query buildXapianQuery(const Filter& filter)
 
 } // unnamed namespace
 
-Library::BookIdCollection Library::filterViaBookDB(const Filter& filter)
+Library::BookIdCollection Library::filterViaBookDB(const Filter& filter) const
 {
   const auto query = buildXapianQuery(filter);
 
@@ -443,7 +455,7 @@ Library::BookIdCollection Library::filterViaBookDB(const Filter& filter)
   return bookIds;
 }
 
-Library::BookIdCollection Library::filter(const Filter& filter)
+Library::BookIdCollection Library::filter(const Filter& filter) const
 {
   BookIdCollection result;
   for(auto id : filterViaBookDB(filter)) {
@@ -467,13 +479,13 @@ struct KEY_TYPE<SIZE> {
 template<supportedListSortBy sort>
 class Comparator {
   private:
-    Library* lib;
-    bool     ascending;
+    const Library* const lib;
+    const bool     ascending;
 
     inline typename KEY_TYPE<sort>::TYPE get_key(const std::string& id);
 
   public:
-    Comparator(Library* lib, bool ascending) : lib(lib), ascending(ascending) {}
+    Comparator(const Library* lib, bool ascending) : lib(lib), ascending(ascending) {}
     inline bool operator() (const std::string& id1, const std::string& id2) {
       if (ascending) {
         return get_key(id1) < get_key(id2);
@@ -513,7 +525,7 @@ std::string Comparator<PUBLISHER>::get_key(const std::string& id)
   return lib->getBookById(id).getPublisher();
 }
 
-void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending)
+void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending) const
 {
   switch(sort) {
     case TITLE:
@@ -545,7 +557,7 @@ Library::BookIdCollection Library::listBooksIds(
     const std::string& creator,
     const std::string& publisher,
     const std::vector<std::string>& tags,
-    size_t maxSize) {
+    size_t maxSize) const {
 
   Filter _filter;
   if (mode & LOCAL)
