@@ -193,7 +193,9 @@ class Library
    */
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
+  const Book& getBookById(const std::string& id) const;
   Book& getBookById(const std::string& id);
+  const Book& getBookByPath(const std::string& path) const;
   Book& getBookByPath(const std::string& path);
   std::shared_ptr<Reader> getReaderById(const std::string& id);
 
@@ -211,7 +213,7 @@ class Library
    * @param path the path of the file to write to.
    * @return True if the library has been correctly saved.
    */
-  bool writeToFile(const std::string& path);
+  bool writeToFile(const std::string& path) const;
 
   /**
    * Write the library bookmarks to a file.
@@ -219,7 +221,7 @@ class Library
    * @param path the path of the file to write to.
    * @return True if the library has been correctly saved.
    */
-  bool writeBookmarksToFile(const std::string& path);
+  bool writeBookmarksToFile(const std::string& path) const;
 
   /**
    * Get the number of book in the library.
@@ -228,42 +230,42 @@ class Library
    * @param remoteBooks If we must count remote books (books with an url)
    * @return The number of books.
    */
-  unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
+  unsigned int getBookCount(const bool localBooks, const bool remoteBooks) const;
 
   /**
    * Get all langagues of the books in the library.
    *
    * @return A list of languages.
    */
-  std::vector<std::string> getBooksLanguages();
+  std::vector<std::string> getBooksLanguages() const;
 
   /**
    * Get all book creators of the books in the library.
    *
    * @return A list of book creators.
    */
-  std::vector<std::string> getBooksCreators();
+  std::vector<std::string> getBooksCreators() const;
 
   /**
    * Get all book publishers of the books in the library.
    *
    * @return A list of book publishers.
    */
-  std::vector<std::string> getBooksPublishers();
+  std::vector<std::string> getBooksPublishers() const;
 
   /**
    * Get all bookmarks.
    *
    * @return A list of bookmarks
    */
-  const std::vector<kiwix::Bookmark> getBookmarks(bool onlyValidBookmarks = true);
+  const std::vector<kiwix::Bookmark> getBookmarks(bool onlyValidBookmarks = true) const;
 
   /**
    * Get all book ids of the books in the library.
    *
    * @return A list of book ids.
    */
-  BookIdCollection getBooksIds();
+  BookIdCollection getBooksIds() const;
 
   /**
    * Filter the library and generate a new one with the keep elements.
@@ -273,7 +275,7 @@ class Library
    * @param search List only books with search in the title or description.
    * @return The list of bookIds corresponding to the query.
    */
-  DEPRECATED BookIdCollection filter(const std::string& search);
+  DEPRECATED BookIdCollection filter(const std::string& search) const;
 
 
   /**
@@ -282,7 +284,7 @@ class Library
    * @param filter The filter to use.
    * @return The list of bookIds corresponding to the filter.
    */
-  BookIdCollection filter(const Filter& filter);
+  BookIdCollection filter(const Filter& filter) const;
 
 
   /**
@@ -292,7 +294,7 @@ class Library
    * @param comparator how to sort the books
    * @return The sorted list of books
    */
-  void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending);
+  void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending) const;
 
   /**
    * List books in the library.
@@ -324,13 +326,13 @@ class Library
     const std::string& creator = "",
     const std::string& publisher = "",
     const std::vector<std::string>& tags = {},
-    size_t maxSize = 0);
+    size_t maxSize = 0) const;
 
   friend class OPDSDumper;
   friend class libXMLDumper;
 
 private: // functions
-  BookIdCollection filterViaBookDB(const Filter& filter);
+  BookIdCollection filterViaBookDB(const Filter& filter) const;
   void updateBookDB(const Book& book);
 };
 

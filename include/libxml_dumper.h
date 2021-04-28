@@ -38,7 +38,7 @@ class LibXMLDumper
 {
  public:
   LibXMLDumper() = default;
-  LibXMLDumper(Library* library);
+  LibXMLDumper(const Library* library);
   ~LibXMLDumper();
 
   /**
@@ -69,10 +69,10 @@ class LibXMLDumper
    *
    * @param library The library to dump.
    */
-  void setLibrary(Library* library) { this->library = library; }
+  void setLibrary(const Library* library) { this->library = library; }
 
  protected:
-  kiwix::Library* library;
+  const kiwix::Library* library;
   std::string baseDir;
  private:
   void handleBook(Book book, pugi::xml_node root_node);
