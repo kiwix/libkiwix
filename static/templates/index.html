@@ -40,22 +40,12 @@
         }
         .book__info { color: #777; font-weight: bold; font-size: 13px; line-height: 1em; }
   </style>
-  <script type="text/javascript" src="{{root}}/skin/taskbar.js" async></script>
+  <script type="text/javascript" src="{{root}}/skin/index.js" defer></script>
 </head>
 <body class="kiwix">
 
 <div class="kiwix">
-  <div class='book__list'>
-    {{#books}}
-    <a href="{{root}}/{{name}}"><div class='book'>
-        <div class='book__background' style="background-image: url('{{root}}/meta?content={{#urlencoded}}{{{name}}}{{/urlencoded}}&name=favicon');">
-          <div class='book__title' title='{{title}}'>{{title}}</div>
-          <div class='book__description' title='{{description}}'>{{description}}</div>
-          <div class='book__info'>{{articleCount}} articles, {{mediaCount}} medias</div>
-        </div>
-    </div></a>
-    {{/books}}
-  </div>
+  <div class='book__list'></div>
 </div>
 
 <div id="kiwixfooter">
