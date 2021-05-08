@@ -510,6 +510,7 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
       suggestion.push_back(current.getTitle());
       suggestion.push_back(current.getPath());
       suggestion.push_back(kiwix::normalize(current.getTitle()));
+      suggestion.push_back(current.getSnippet());
       results.push_back(suggestion);
     }
     retVal = true;

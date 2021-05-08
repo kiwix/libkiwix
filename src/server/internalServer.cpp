@@ -415,6 +415,11 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     for(auto& suggestion:suggestions) {
       MustacheData result;
       result.set("label", suggestion[0]);
+
+      if (!suggestion[3].empty()) {
+        result.set("label", suggestion[3]);
+      }
+
       result.set("value", suggestion[0]);
       result.set("kind", "path");
       result.set("path", suggestion[1]);
