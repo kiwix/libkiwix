@@ -216,15 +216,6 @@ TEST_F(ServerTest, 200)
     EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
 }
 
-// seperate test for 204 code
-
-TEST_F(ServerTest, EmptySearchReturnsA204StatusCode)
-{
-  const char* url="/search?content=zimfile&pattern=abcd";
-  auto res=zfs1_->GET(url);
-  EXPECT_EQ(204, res->status) << "res.url: " << url;
-}
-
 TEST_F(ServerTest, CompressibleContentIsCompressedIfAcceptable)
 {
   for ( const Resource& res : resources200Compressible ) {
