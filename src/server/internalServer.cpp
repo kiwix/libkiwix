@@ -555,11 +555,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     response->set_taskbar(bookName, reader ? reader->getTitle() : "");
-    //changing status code if no result obtained
-    if(searcher.getEstimatedResultCount() == 0)
-    {
-      response->set_code(MHD_HTTP_NO_CONTENT);
-    }
 
     return std::move(response);
   } catch (const std::exception& e) {
@@ -765,7 +760,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root+"/search?pattern="+pattern; // Make a full search on the entire library.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request, bookName, details); 
+    return Response::build_404(*this, request, bookName, details);
   }
 
   auto urlStr = request.get_url().substr(bookName.size()+1);
