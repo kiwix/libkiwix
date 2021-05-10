@@ -846,3 +846,54 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
     "</feed>\n"
   );
 }
+
+TEST_F(LibraryServerTest, catalog_search_results_pagination)
+{
+  {
+    const auto r = zfs1_->GET("/catalog/search?count=1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      CHARLES_RAY_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+  {
+    const auto r = zfs1_->GET("/catalog/search?start=1&count=1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>1</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+  {
+    const auto r = zfs1_->GET("/catalog/search?start=100&count=10");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>100</startIndex>\n"
+      "  <itemsPerPage>0</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      "</feed>\n"
+    );
+  }
+}
