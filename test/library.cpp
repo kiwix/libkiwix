@@ -479,6 +479,24 @@ TEST_F(LibraryTest, filterByQuery)
 }
 
 
+TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query(""),
+    "An example ZIM archive",
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Islam Stack Exchange",
+    "Mathématiques",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business",
+    "Tania Louis",
+    "Wikiquote"
+  );
+}
+
 TEST_F(LibraryTest, filterByCreator)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wikipedia"),

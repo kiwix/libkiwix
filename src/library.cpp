@@ -327,7 +327,7 @@ bool willSelectEverything(const Xapian::Query& query)
 
 Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
 {
-  if ( !filter.hasQuery() ) {
+  if ( !filter.hasQuery() || filter.getQuery().empty() ) {
     // This is a thread-safe way to construct an equivalent of
     // a Xapian::Query::MatchAll query
     return Xapian::Query(std::string());
