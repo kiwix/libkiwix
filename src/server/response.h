@@ -79,8 +79,8 @@ class Response {
 class ContentResponse : public Response {
   public:
     ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype);
-    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& content, const std::string& mimetype);
-    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype);
+    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage = false);
+    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype, bool isHomePage = false);
 
     void set_taskbar(const std::string& bookName, const std::string& bookTitle);
 
