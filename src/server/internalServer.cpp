@@ -414,15 +414,15 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     reader->searchSuggestionsSmart(term, maxSuggestionCount, suggestions);
     for(auto& suggestion:suggestions) {
       MustacheData result;
-      result.set("label", suggestion[0]);
+      result.set("label", suggestion.getTitle());
 
-      if (!suggestion[3].empty()) {
-        result.set("label", suggestion[3]);
+      if (suggestion.hasSnippet()) {
+        result.set("label", suggestion.getSnippet());
       }
 
-      result.set("value", suggestion[0]);
+      result.set("value", suggestion.getTitle());
       result.set("kind", "path");
-      result.set("path", suggestion[1]);
+      result.set("path", suggestion.getPath());
       result.set("first", first);
       first = false;
       results.push_back(result);

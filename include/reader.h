@@ -77,7 +77,7 @@ class SuggestionItem
  * file.
  */
 
-using SuggestionsList_t = std::vector<std::vector<std::string>>;
+using SuggestionsList_t = std::vector<SuggestionItem>;
 class Reader
 {
  public:
