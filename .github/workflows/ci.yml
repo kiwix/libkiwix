@@ -134,7 +134,7 @@ jobs:
         if [[ "${{matrix.target}}" =~ android_.* ]]; then
           MESON_OPTION="$MESON_OPTION -Dandroid=true"
         fi
-        cd $HOME/kiwix-lib
+        cd $HOME/libkiwix
         meson . build ${MESON_OPTION}
         cd build
         ninja
@@ -145,7 +145,7 @@ jobs:
       if: startsWith(matrix.target, 'native_')
       shell: bash
       run: |
-        cd $HOME/kiwix-lib/build
+        cd $HOME/libkiwix/build
         meson test --verbose
         ninja coverage
       env:
@@ -154,7 +154,7 @@ jobs:
     - name: Publish coverage
       shell: bash
       run: |
-        cd $HOME/kiwix-lib
+        cd $HOME/libkiwix
         curl https://codecov.io/bash -o codecov.sh
         bash codecov.sh -n "${OS_NAME}_${{matrix.target}}" -Z
         rm codecov.sh
