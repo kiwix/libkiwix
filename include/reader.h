@@ -38,6 +38,41 @@ namespace kiwix
 {
 
 /**
+ * The SuggestionItem is a helper class that contains the info about a single
+ * suggestion item.
+ */
+
+class SuggestionItem
+{
+  // Functions
+  private:
+    // Create a sugggestion item.
+    explicit SuggestionItem(std::string title, std::string normalizedTitle,
+                            std::string path, std::string snippet = "") :
+      title(title),
+      normalizedTitle(normalizedTitle),
+      path(path),
+      snippet(snippet) {}
+
+  public:
+    const std::string getTitle()           {return title;}
+    const std::string getNormalizedTitle() {return normalizedTitle;}
+    const std::string getPath()            {return path;}
+    const std::string getSnippet()         {return snippet;}
+
+    const bool hasSnippet()                {return !snippet.empty();}
+
+  // Data
+  private:
+    std::string title;
+    std::string normalizedTitle;
+    std::string path;
+    std::string snippet;
+
+  friend class Reader;
+};
+
+/**
  * The Reader class is the class who allow to get an entry content from a zim
  * file.
  */
