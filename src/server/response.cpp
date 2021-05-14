@@ -260,9 +260,9 @@ Response::create_mhd_response(const RequestContext& request)
 MHD_Response*
 ContentResponse::create_mhd_response(const RequestContext& request)
 {
-  inject_root_link();
-
   if (contentDecorationAllowed()) {
+    inject_root_link();
+
     if (m_withTaskbar) {
       introduce_taskbar();
     }
