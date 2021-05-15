@@ -495,14 +495,16 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
   bool retVal = false;
 
   /* Try to search in the title using fulltext search database */
-  auto suggestionSearch = zim::Search(*zimArchive);
-  suggestionSearch.set_query(prefix);
-  suggestionSearch.set_range(0, suggestionsCount);
-  suggestionSearch.set_suggestion_mode(true);
 
-  if (suggestionSearch.get_matches_estimated()) {
-    for (auto current = suggestionSearch.begin();
-         current != suggestionSearch.end();
+  auto suggestionSearcher = zim::Searcher(*zimArchive);
+  zim::Query suggestionQuery;
+  suggestionQuery.setQuery(prefix, true);
+  auto suggestionSearch = suggestionSearcher.search(suggestionQuery);
+
+  if (suggestionSearch.getEstimatedMatches()) {
+    const auto suggestions = suggestionSearch.getResults(0, suggestionsCount);
+    for (auto current = suggestions.begin();
+         current != suggestions.end();
          current++) {
       std::vector<std::string> suggestion;
       suggestion.push_back(current->getTitle());
