@@ -7,7 +7,10 @@ const jq = jQuery.noConflict(true);
 jq(document).ready(() => {
     (function ($) {
         const root = $( `link[type='root']` ).attr("href");
-        const bookName = window.location.pathname.split(`${root}/`)[1].split('/')[0];
+
+        const bookName = (window.location.pathname == `${root}/search`)
+               ? (new URLSearchParams(window.location.search)).get('content') 
+               : window.location.pathname.split(`${root}/`)[1].split('/')[0];
     
         $( "#kiwixsearchbox" ).autocomplete({
     
