@@ -45,7 +45,6 @@ class _Result : public Result
   virtual std::string get_content();
   virtual int get_wordCount();
   virtual int get_size();
-  virtual int get_readerIndex();
   virtual std::string get_zimId();
 
  private:
@@ -261,10 +260,6 @@ int _Result::get_size()
 int _Result::get_wordCount()
 {
   return iterator.getWordCount();
-}
-int _Result::get_readerIndex()
-{
-  return iterator.getFileIndex();
 }
 std::string _Result::get_zimId()
 {

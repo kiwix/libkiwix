@@ -48,7 +48,6 @@ class Result
   virtual std::string get_content() = 0;
   virtual int get_wordCount() = 0;
   virtual int get_size() = 0;
-  virtual int get_readerIndex() = 0;
   virtual std::string get_zimId() = 0;
 };
 
