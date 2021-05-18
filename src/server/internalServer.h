@@ -106,7 +106,7 @@ class InternalServer {
     std::string m_server_id;
 
     friend std::unique_ptr<Response> Response::build(const InternalServer& server);
-    friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype);
+    friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage);
     friend std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
     friend std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg);
 

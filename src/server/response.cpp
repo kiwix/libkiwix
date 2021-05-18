@@ -349,21 +349,21 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, bool wit
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype)
+std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
         server.m_verbose.load(),
-        server.m_withTaskbar,
+        server.m_withTaskbar && !isHomePage,
         server.m_withLibraryButton,
         server.m_blockExternalLinks,
         content,
         mimetype));
 }
 
-std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype) {
+std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype, bool isHomePage) {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype);
+  return ContentResponse::build(server, content, mimetype, isHomePage);
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :

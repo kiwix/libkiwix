@@ -49,7 +49,27 @@
         font-family: sans-serif;
         font-size: 13px;
         background-color: #f1f1f1;
-        box-shadow: 2px 2px 5px 0px #ccc;
+        box-shadow: 2px 2px 5px 0 #ccc;
+      }
+      #kiwixfooter {
+        text-align: center;
+        margin-top: 1em;
+      }
+      .kiwixHomeNavbar {
+        display: flex;
+        justify-content: center;
+      }
+      .kiwixFilter {
+        margin: 8px 10px;
+      }
+      .kiwixSearchForm {
+        margin: 8px 10px;
+        float: right;
+      }
+      @media (max-width: 1100px) {
+        .kiwixHomeBody {
+          padding: 0 125px;
+        }
       }
       .book:hover {
         background-color: #f9f9f9;
@@ -70,7 +90,7 @@
         line-height: 1em;
       }
       .book__description {
-        padding: 5px 55px 5px 0px;
+        padding: 5px 55px 5px 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -83,14 +103,32 @@
         font-size: 13px;
         line-height: 1em;
       }
+      a:link {
+        text-decoration: none;
+      }
+      a:visited {
+        text-decoration: none;
+      }
     </style>
-    <script type="text/javascript" src="{{root}}/skin/index.js" async></script>
+    <script src="{{root}}/skin/isotope.pkgd.min.js" defer></script>
+    <script type="text/javascript" src="{{root}}/skin/index.js" defer></script>
   </head>
   <body class="kiwix">
-    <div class="kiwix">
+    <div class='kiwixHomeNavbar'>
+      <select name="lang" id="languageFilter" class='kiwixFilter'>
+        <option value="" selected>All languages</option>
+      </select>
+      <select name="category" id="categoryFilter" class='kiwixFilter'>
+        <option value="" selected>ALl categories</option>
+      </select>
+      <form id='kiwixSearchForm' class='kiwixSearchForm'>
+        <input type="text" name="q" id="searchFilter" class='kiwixSearch'>
+        <input type="submit" value="Submit"/>
+      </form>
+    </div>
+    <div class="kiwixHomeBody">
       <div class="book__list"></div>
     </div>
-
     <div id="kiwixfooter">Powered by <a href="https://kiwix.org">Kiwix</a></div>
   </body>
 </html>
