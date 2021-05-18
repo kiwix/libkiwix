@@ -18,7 +18,7 @@ if wrapper.contains('java')
   add_languages('java')
 endif
 
-# See https://github.com/kiwix/kiwix-lib/issues/371
+# See https://github.com/kiwix/libkiwix/issues/371
 if ['arm', 'mips', 'm68k', 'ppc', 'sh4'].contains(target_machine.cpu_family())
   extra_libs += '-latomic'
 endif

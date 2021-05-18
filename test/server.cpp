@@ -630,7 +630,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <publisher>\n"                                                 \
     "      <name>Kiwix</name>\n"                                        \
     "    </publisher>\n"                                                \
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
     "  </entry>\n"
 
 #define RAY_CHARLES_CATALOG_ENTRY \
@@ -654,7 +654,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <publisher>\n"                                                 \
     "      <name>Kiwix</name>\n"                                        \
     "    </publisher>\n"                                                \
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
     "  </entry>\n"
 
 #define UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY \
@@ -678,7 +678,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <publisher>\n"                                                 \
     "      <name>Kiwix</name>\n"                                        \
     "    </publisher>\n"                                                \
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim\" length=\"125952\" />\n" \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim\" length=\"125952\" />\n" \
     "  </entry>\n"
 
 TEST_F(LibraryServerTest, catalog_root_xml)
