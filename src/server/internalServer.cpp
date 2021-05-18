@@ -281,27 +281,6 @@ MustacheData InternalServer::get_default_data() const
   return data;
 }
 
-MustacheData InternalServer::homepage_data() const
-{
-  auto data = get_default_data();
-
-  MustacheData books{MustacheData::type::list};
-  for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-    auto& currentBook = mp_library->getBookById(bookId);
-
-    MustacheData book;
-    book.set("name", mp_nameMapper->getNameForId(bookId));
-    book.set("title", currentBook.getTitle());
-    book.set("description", currentBook.getDescription());
-    book.set("articleCount", beautifyInteger(currentBook.getArticleCount()));
-    book.set("mediaCount", beautifyInteger(currentBook.getMediaCount()));
-    books.push_back(book);
-  }
-
-  data.set("books", books);
-  return data;
-}
-
 bool InternalServer::etag_not_needed(const RequestContext& request) const
 {
   const std::string url = request.get_url();
@@ -325,7 +304,7 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(*this, RESOURCE::templates::index_html, homepage_data(), "text/html; charset=utf-8");
+  return ContentResponse::build(*this, RESOURCE::templates::index_html, get_default_data(), "text/html; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
@@ -663,7 +642,7 @@ std::vector<std::string>
 InternalServer::search_catalog(const RequestContext& request,
                                kiwix::OPDSDumper& opdsDumper)
 {
-    auto filter = kiwix::Filter().valid(true).local(true).remote(true);
+    auto filter = kiwix::Filter().valid(true).local(true);
     string query("<Empty query>");
     size_t count(10);
     size_t startIndex(0);

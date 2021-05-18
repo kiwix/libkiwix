@@ -84,7 +84,6 @@ class InternalServer {
                                             kiwix::OPDSDumper& opdsDumper);
 
     MustacheData get_default_data() const;
-    MustacheData homepage_data() const;
 
     std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
     bool etag_not_needed(const RequestContext& r) const;

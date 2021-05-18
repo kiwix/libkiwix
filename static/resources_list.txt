@@ -19,6 +19,7 @@ skin/jquery-ui/jquery-ui.theme.min.css
 skin/jquery-ui/jquery-ui.min.css
 skin/caret.png
 skin/taskbar.js
+skin/index.js
 skin/taskbar.css
 skin/block_external.js
 templates/search_result.html
