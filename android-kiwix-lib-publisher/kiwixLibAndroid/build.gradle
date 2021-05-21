@@ -29,7 +29,7 @@ task writePom {
         version '10.0.0' + (System.env.KIWIXLIB_BUILDVERSION == null ? '' : '-'+System.env.KIWIXLIB_BUILDVERSION)
         packaging 'aar'
         name 'kiwixlib'
-        url 'https://github.com/kiwix/kiwix-lib'
+        url 'https://github.com/kiwix/libkiwix'
         licenses {
             license {
                 name 'GPLv3'
@@ -44,9 +44,9 @@ task writePom {
           }
       }
       scm {
-          connection 'https://github.com/kiwix/kiwix-lib.git'
-          developerConnection 'https://github.com/kiwix/kiwix-lib.git'
-          url 'https://github.com/kiwix/kiwix-lib'
+          connection 'https://github.com/kiwix/libkiwix.git'
+          developerConnection 'https://github.com/kiwix/libkiwix.git'
+          url 'https://github.com/kiwix/libkiwix'
       }
     }
   }.withXml {

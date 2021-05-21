@@ -186,7 +186,7 @@ const char sampleLibraryXML[] = R"(
   <book
         id="raycharles"
         path="./zimfile.zim"
-        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Ray Charles"
         description="Wikipedia articles about Ray Charles"
         language="eng"
