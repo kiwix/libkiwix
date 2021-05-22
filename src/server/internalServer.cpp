@@ -55,6 +55,7 @@ extern "C" {
 #include "opds_dumper.h"
 
 #include <zim/uuid.h>
+#include <zim/error.h>
 
 #include <mustache.hpp>
 
@@ -323,22 +324,95 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
   return ContentResponse::build(*this, RESOURCE::templates::index_html, get_default_data(), "text/html; charset=utf-8", true);
 }
 
+/**
+ * Archive and Zim handlers begin
+ **/
+
+std::string getArchiveTitle(const zim::Archive* const archive) {
+   return (! archive->getMetadata("Title").empty())
+          ? archive->getMetadata("Title")
+          : archive->getFilename();
+}
+
+std::string getMetaDescription(const zim::Archive* const archive) {
+  return (! archive->getMetadata("Description").empty())
+         ? archive->getMetadata("Description")
+         : archive->getMetadata("Subtitle");
+}
+
+std::string getMetaTags(const zim::Archive* const archive, bool original = false) {
+  string tags_str = archive->getMetadata("Tags");
+  if (original) {
+    return tags_str;
+  }
+  return join(convertTags(tags_str), ";");
+}
+
+bool getArchiveFavicon(const zim::Archive* const archive, string& content, string& mimeType)
+{
+  try {
+    auto entry = archive->getFaviconEntry();
+    auto item = entry.getItem(true);
+    content = item.getData();
+    mimeType = item.getMimetype();
+    return true;
+  } catch(zim::EntryNotFound& e) {};
+
+  return false;
+}
+
+bool getMetadata(const zim::Archive* const archive, const string& name, string& value)
+{
+  try {
+    value = archive->getMetadata(name);
+    return true;
+  } catch(zim::EntryNotFound& e) {
+    return false;
+  }
+}
+
+#define METADATA(archive, name) std::string v; getMetadata(archive, name, v); return v;
+
+std::string getMetaLanguage(const zim::Archive* const archive) {
+  METADATA(archive, "Language")
+}
+
+std::string getMetaName(const zim::Archive* const archive) {
+  METADATA(archive, "Name")
+}
+
+std::string getMetaDate(const zim::Archive* const archive) {
+  METADATA(archive, "Date")
+}
+
+std::string getMetaCreator(const zim::Archive* const archive) {
+  METADATA(archive, "Creator")
+}
+
+std::string getMetaPublisher(const zim::Archive* const archive) {
+  METADATA(archive, "Publisher")
+}
+
+/**
+ * Archive and Zim handlers end
+ **/
+
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
 {
   std::string bookName;
   std::string bookId;
   std::string meta_name;
-  std::shared_ptr<Reader> reader;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
     meta_name = request.get_argument("name");
-    reader = mp_library->getReaderById(bookId);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {
     return Response::build_404(*this, request, bookName, "");
   }
 
-  if (reader == nullptr) {
+  if (archive == nullptr) {
     return Response::build_404(*this, request, bookName, "");
   }
 
@@ -346,23 +420,23 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   std::string mimeType = "text";
 
   if (meta_name == "title") {
-    content = reader->getTitle();
+    content = getArchiveTitle(archive.get());
   } else if (meta_name == "description") {
-    content = reader->getDescription();
+    content = getMetaDescription(archive.get());
   } else if (meta_name == "language") {
-    content = reader->getLanguage();
+    content = getMetaLanguage(archive.get());
   } else if (meta_name == "name") {
-    content = reader->getName();
+    content = getMetaName(archive.get());
   } else if (meta_name == "tags") {
-    content = reader->getTags();
+    content = getMetaTags(archive.get());
   } else if (meta_name == "date") {
-    content = reader->getDate();
+    content = getMetaDate(archive.get());
   } else if (meta_name == "creator") {
-    content = reader->getCreator();
+    content = getMetaCreator(archive.get());
   } else if (meta_name == "publisher") {
-    content = reader->getPublisher();
+    content = getMetaPublisher(archive.get());
   } else if (meta_name == "favicon") {
-    reader->getFavicon(content, mimeType);
+    getArchiveFavicon(archive.get(), content, mimeType);
   } else {
     return Response::build_404(*this, request, bookName, "");
   }
