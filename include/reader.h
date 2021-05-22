@@ -91,6 +91,13 @@ class Reader
    *                    (.zim extesion).
    */
   explicit Reader(const string zimFilePath);
+
+   /**
+   * Create a Reader to read a zim file given by the Archive.
+   *
+   * @param archive The shared pointer to the Archive object.
+   */
+  explicit Reader(const std::shared_ptr<zim::Archive> archive);
 #ifndef _WIN32
   explicit Reader(int fd);
   Reader(int fd, zim::offset_type offset, zim::size_type size);
@@ -488,7 +495,7 @@ class Reader
   zim::Archive* getZimArchive() const;
 
  protected:
-  std::unique_ptr<zim::Archive> zimArchive;
+  std::shared_ptr<zim::Archive> zimArchive;
   std::string zimFilePath;
 
   SuggestionsList_t suggestions;

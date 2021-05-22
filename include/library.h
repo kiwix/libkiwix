@@ -24,6 +24,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <zim/archive.h>
 
 #include "book.h"
 #include "bookmark.h"
@@ -146,6 +147,7 @@ class Library
 {
   std::map<std::string, kiwix::Book> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
+  std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
   std::vector<kiwix::Bookmark> m_bookmarks;
   class BookDB;
   std::unique_ptr<BookDB> m_bookDB;
@@ -198,6 +200,7 @@ class Library
   const Book& getBookByPath(const std::string& path) const;
   Book& getBookByPath(const std::string& path);
   std::shared_ptr<Reader> getReaderById(const std::string& id);
+  std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
 
   /**
    * Remove a book from the library.
