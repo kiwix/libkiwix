@@ -47,6 +47,7 @@ extern "C" {
 #include "tools/pathTools.h"
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
+#include "tools/archiveTools.h"
 #include "library.h"
 #include "name_mapper.h"
 #include "entry.h"
@@ -55,6 +56,7 @@ extern "C" {
 #include "opds_dumper.h"
 
 #include <zim/uuid.h>
+#include <zim/error.h>
 
 #include <mustache.hpp>
 
@@ -323,22 +325,95 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
   return ContentResponse::build(*this, RESOURCE::templates::index_html, get_default_data(), "text/html; charset=utf-8", true);
 }
 
+/**
+ * Archive and Zim handlers begin
+ **/
+
+std::vector<std::string> getTitleVariants(const std::string& title)
+{
+  std::vector<std::string> variants;
+  variants.push_back(title);
+  variants.push_back(kiwix::ucFirst(title));
+  variants.push_back(kiwix::lcFirst(title));
+  variants.push_back(kiwix::toTitle(title));
+  return variants;
+}
+
+// TODO: retrieve searcher from caching mechanism
+SuggestionsList_t getSuggestions(const zim::Archive* const archive,
+                  const std::string& queryString, int suggestionCount)
+{
+  SuggestionsList_t suggestions;
+  if (archive->hasTitleIndex()) {
+    auto searcher = zim::Searcher(*archive);
+    zim::Query suggestionQuery;
+    suggestionQuery.setQuery(queryString, true);
+    auto suggestionSearch = searcher.search(suggestionQuery);
+    auto suggestionResult = suggestionSearch.getResults(0, suggestionCount);
+
+    for (auto it = suggestionResult.begin(); it != suggestionResult.end(); it++) {
+      SuggestionItem suggestion(it.getTitle(), it.getPath(),
+                                kiwix::normalize(it.getTitle()), it.getSnippet());
+      suggestions.push_back(suggestion);
+    }
+  } else {
+    // TODO: This case should be handled by libzim
+    std::vector<std::string> variants = getTitleVariants(queryString);
+    int currCount = 0;
+    for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
+      for (auto& entry: archive->findByTitle(*it)) {
+        SuggestionItem suggestion(entry.getTitle(), entry.getPath(),
+                                kiwix::normalize(entry.getTitle()));
+        suggestions.push_back(suggestion);
+        currCount++;
+      }
+    }
+  }
+  return suggestions;
+}
+
+zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
+{
+  int loopCounter = 42;
+  auto final_entry = entry;
+  while (final_entry.isRedirect() && loopCounter--) {
+    final_entry = final_entry.getRedirectEntry();
+  }
+  // Prevent infinite loops.
+  if (final_entry.isRedirect()) {
+    throw zim::EntryNotFound("Unable to resolve entry redirects.");
+  }
+  return final_entry;
+}
+
+zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
+{
+  if (path.empty() || path == "/") {
+    return archive->getMainEntry();
+  }
+  return archive->getEntryByPath(path);
+}
+
+/**
+ * Archive and Zim handlers end
+ **/
+
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
 {
   std::string bookName;
   std::string bookId;
   std::string meta_name;
-  std::shared_ptr<Reader> reader;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
     meta_name = request.get_argument("name");
-    reader = mp_library->getReaderById(bookId);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {
     return Response::build_404(*this, request, bookName, "");
   }
 
-  if (reader == nullptr) {
+  if (archive == nullptr) {
     return Response::build_404(*this, request, bookName, "");
   }
 
@@ -346,23 +421,23 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   std::string mimeType = "text";
 
   if (meta_name == "title") {
-    content = reader->getTitle();
+    content = getArchiveTitle(archive.get());
   } else if (meta_name == "description") {
-    content = reader->getDescription();
+    content = getMetaDescription(archive.get());
   } else if (meta_name == "language") {
-    content = reader->getLanguage();
+    content = getMetaLanguage(archive.get());
   } else if (meta_name == "name") {
-    content = reader->getName();
+    content = getMetaName(archive.get());
   } else if (meta_name == "tags") {
-    content = reader->getTags();
+    content = getMetaTags(archive.get());
   } else if (meta_name == "date") {
-    content = reader->getDate();
+    content = getMetaDate(archive.get());
   } else if (meta_name == "creator") {
-    content = reader->getCreator();
+    content = getMetaCreator(archive.get());
   } else if (meta_name == "publisher") {
-    content = reader->getPublisher();
+    content = getMetaPublisher(archive.get());
   } else if (meta_name == "favicon") {
-    reader->getFavicon(content, mimeType);
+    getArchiveFavicon(archive.get(), content, mimeType);
   } else {
     return Response::build_404(*this, request, bookName, "");
   }
