@@ -103,7 +103,7 @@ class Entry
      * Some entry (ie binary ones) have their content plain stored
      * in the zim file. Knowing the offset where the content is stored
      * an user can directly read the content in the zim file bypassing the
-     * kiwix-lib/libzim.
+     * libkiwix/libzim.
      *
      * @return A pair specifying where to read the content.
      *         The string is the real file to read (may be different that .zim

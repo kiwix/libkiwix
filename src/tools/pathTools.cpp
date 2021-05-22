@@ -339,7 +339,7 @@ std::string makeTmpDirectory()
   _wmkdir(ctmp);
   return WideToUtf8(ctmp);
 #else
-  char _template_array[] = {"/tmp/kiwix-lib_XXXXXX"};
+  char _template_array[] = {"/tmp/libkiwix_XXXXXX"};
   std::string dir = mkdtemp(_template_array);
   return dir;
 #endif
