@@ -56,6 +56,7 @@ extern "C" {
 
 #include <zim/uuid.h>
 #include <zim/error.h>
+#include <zim/search.h>
 
 #include <mustache.hpp>
 
@@ -393,6 +394,49 @@ std::string getMetaPublisher(const zim::Archive* const archive) {
   METADATA(archive, "Publisher")
 }
 
+std::vector<std::string> getTitleVariants(const std::string& title)
+{
+  std::vector<std::string> variants;
+  variants.push_back(title);
+  variants.push_back(kiwix::ucFirst(title));
+  variants.push_back(kiwix::lcFirst(title));
+  variants.push_back(kiwix::toTitle(title));
+  return variants;
+}
+
+// TODO: retrieve searcher from caching mechanism
+SuggestionsList_t getSuggestions(const zim::Archive* const archive,
+                  const std::string& queryString, int suggestionCount)
+{
+  SuggestionsList_t suggestions;
+  if (archive->hasTitleIndex()) {
+    auto searcher = zim::Searcher(*archive);
+    zim::Query suggestionQuery;
+    suggestionQuery.setQuery(queryString, true);
+    auto suggestionSearch = searcher.search(suggestionQuery);
+    auto suggestionResult = suggestionSearch.getResults(0, suggestionCount);
+
+    for (auto it = suggestionResult.begin(); it != suggestionResult.end(); it++) {
+      SuggestionItem suggestion(it.getTitle(), it.getPath(),
+                                kiwix::normalize(it.getTitle()), it.getSnippet());
+      suggestions.push_back(suggestion);
+    }
+  } else {
+    // TODO: This case should be handled by libzim
+    std::vector<std::string> variants = getTitleVariants(queryString);
+    int currCount = 0;
+    for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
+      for (auto& entry: archive->findByTitle(*it)) {
+        SuggestionItem suggestion(entry.getTitle(), entry.getPath(),
+                                kiwix::normalize(entry.getTitle()));
+        suggestions.push_back(suggestion);
+        currCount++;
+      }
+    }
+  }
+  return suggestions;
+}
+
 /**
  * Archive and Zim handlers end
  **/
@@ -459,28 +503,27 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   std::string bookName;
   std::string bookId;
-  std::string term;
-  std::shared_ptr<Reader> reader;
+  std::string queryString;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
-    term = request.get_argument("term");
-    reader = mp_library->getReaderById(bookId);
+    queryString = request.get_argument("term");
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     return Response::build_404(*this, request, bookName, "");
   }
 
   if (m_verbose.load()) {
-    printf("Searching suggestions for: \"%s\"\n", term.c_str());
+    printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
 
   MustacheData results{MustacheData::type::list};
 
   bool first = true;
-  if (reader != nullptr) {
+  if (archive != nullptr) {
     /* Get the suggestions */
-    SuggestionsList_t suggestions;
-    reader->searchSuggestionsSmart(term, maxSuggestionCount, suggestions);
+    SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, maxSuggestionCount);
     for(auto& suggestion:suggestions) {
       MustacheData result;
       result.set("label", suggestion.getTitle());
@@ -500,10 +543,10 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   /* Propose the fulltext search if possible */
-  if (reader->hasFulltextIndex()) {
+  if (archive->hasFulltextIndex()) {
     MustacheData result;
-    result.set("label", "containing '" + term + "'...");
-    result.set("value", term + " ");
+    result.set("label", "containing '" + queryString + "'...");
+    result.set("value", queryString + " ");
     result.set("kind", "pattern");
     result.set("first", first);
     results.push_back(result);

@@ -41,11 +41,11 @@ namespace kiwix
  * The SuggestionItem is a helper class that contains the info about a single
  * suggestion item.
  */
-
 class SuggestionItem
 {
   // Functions
-  private:
+  // Temporarily making the constructor public until the code move is complete
+  public:
     // Create a sugggestion item.
     explicit SuggestionItem(std::string title, std::string normalizedTitle,
                             std::string path, std::string snippet = "") :
