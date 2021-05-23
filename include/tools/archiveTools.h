@@ -40,6 +40,7 @@ namespace kiwix
     std::string getMetaDate(const zim::Archive* const archive);
     std::string getMetaCreator(const zim::Archive* const archive);
     std::string getMetaPublisher(const zim::Archive* const archive);
+    zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry);
 }
 
 #endif

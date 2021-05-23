@@ -100,4 +100,9 @@ std::string getMetaPublisher(const zim::Archive* const archive) {
   return getMetadata(archive, "Publisher");
 }
 
+zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
+{
+  return archive->getEntryByPath(entry.getItem(true).getPath());
+}
+
 } // kiwix
