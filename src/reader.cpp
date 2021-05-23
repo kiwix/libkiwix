@@ -438,12 +438,7 @@ bool Reader::searchSuggestions(const string& prefix,
 std::vector<std::string> Reader::getTitleVariants(
     const std::string& title) const
 {
-  std::vector<std::string> variants;
-  variants.push_back(title);
-  variants.push_back(kiwix::ucFirst(title));
-  variants.push_back(kiwix::lcFirst(title));
-  variants.push_back(kiwix::toTitle(title));
-  return variants;
+  return kiwix::getTitleVariants(title);
 }
 
 

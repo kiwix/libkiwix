@@ -70,5 +70,7 @@ T extractFromString(const std::string& str) {
 }
 
 bool startsWith(const std::string& base, const std::string& start);
+
+std::vector<std::string> getTitleVariants(const std::string& title);
 } //namespace kiwix
 #endif

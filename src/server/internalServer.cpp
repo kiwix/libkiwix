@@ -57,6 +57,7 @@ extern "C" {
 
 #include <zim/uuid.h>
 #include <zim/error.h>
+#include <zim/search.h>
 
 #include <mustache.hpp>
 
@@ -329,6 +330,61 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
  * Archive and Zim handlers begin
  **/
 
+// TODO: retrieve searcher from caching mechanism
+SuggestionsList_t getSuggestions(const zim::Archive* const archive,
+                  const std::string& queryString, int suggestionCount)
+{
+  SuggestionsList_t suggestions;
+  if (archive->hasTitleIndex()) {
+    auto searcher = zim::Searcher(*archive);
+    zim::Query suggestionQuery;
+    suggestionQuery.setQuery(queryString, true);
+    auto suggestionSearch = searcher.search(suggestionQuery);
+    auto suggestionResult = suggestionSearch.getResults(0, suggestionCount);
+
+    for (auto it = suggestionResult.begin(); it != suggestionResult.end(); it++) {
+      SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
+                                it.getPath(), it.getSnippet());
+      suggestions.push_back(suggestion);
+    }
+  } else {
+    // TODO: This case should be handled by libzim
+    std::vector<std::string> variants = getTitleVariants(queryString);
+    int currCount = 0;
+    for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
+      for (auto& entry: archive->findByTitle(*it)) {
+        SuggestionItem suggestion(entry.getTitle(), kiwix::normalize(entry.getTitle()),
+                                  entry.getPath());
+        suggestions.push_back(suggestion);
+        currCount++;
+      }
+    }
+  }
+  return suggestions;
+}
+
+zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
+{
+  int loopCounter = 42;
+  auto final_entry = entry;
+  while (final_entry.isRedirect() && loopCounter--) {
+    final_entry = final_entry.getRedirectEntry();
+  }
+  // Prevent infinite loops.
+  if (final_entry.isRedirect()) {
+    throw zim::EntryNotFound("Unable to resolve entry redirects.");
+  }
+  return final_entry;
+}
+
+zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
+{
+  if (path.empty() || path == "/") {
+    return archive->getMainEntry();
+  }
+  return archive->getEntryByPath(path);
+}
+
 std::vector<std::string> getTitleVariants(const std::string& title)
 {
   std::vector<std::string> variants;
@@ -370,28 +426,6 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
     }
   }
   return suggestions;
-}
-
-zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
-{
-  int loopCounter = 42;
-  auto final_entry = entry;
-  while (final_entry.isRedirect() && loopCounter--) {
-    final_entry = final_entry.getRedirectEntry();
-  }
-  // Prevent infinite loops.
-  if (final_entry.isRedirect()) {
-    throw zim::EntryNotFound("Unable to resolve entry redirects.");
-  }
-  return final_entry;
-}
-
-zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
-{
-  if (path.empty() || path == "/") {
-    return archive->getMainEntry();
-  }
-  return archive->getEntryByPath(path);
 }
 
 /**
@@ -460,51 +494,54 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   std::string bookName;
   std::string bookId;
-  std::string term;
-  std::shared_ptr<Reader> reader;
+  std::string queryString;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
-    term = request.get_argument("term");
-    reader = mp_library->getReaderById(bookId);
+    queryString = request.get_argument("term");
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     return Response::build_404(*this, request, bookName, "");
   }
 
+  if (archive == nullptr) {
+    return Response::build_404(*this, request, bookName, "");
+  }
+
   if (m_verbose.load()) {
-    printf("Searching suggestions for: \"%s\"\n", term.c_str());
+    printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
 
   MustacheData results{MustacheData::type::list};
 
   bool first = true;
-  if (reader != nullptr) {
-    /* Get the suggestions */
-    SuggestionsList_t suggestions;
-    reader->searchSuggestionsSmart(term, maxSuggestionCount, suggestions);
-    for(auto& suggestion:suggestions) {
-      MustacheData result;
-      result.set("label", suggestion.getTitle());
 
-      if (suggestion.hasSnippet()) {
-        result.set("label", suggestion.getSnippet());
-      }
+  /* Get the suggestions */
+  SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, maxSuggestionCount);
+  for(auto& suggestion:suggestions) {
+    MustacheData result;
+    result.set("label", suggestion.getTitle());
 
-      result.set("value", suggestion.getTitle());
-      result.set("kind", "path");
-      result.set("path", suggestion.getPath());
-      result.set("first", first);
-      first = false;
-      results.push_back(result);
-      suggestionCount++;
+    if (suggestion.hasSnippet()) {
+      result.set("label", suggestion.getSnippet());
     }
+
+    result.set("value", suggestion.getTitle());
+    result.set("kind", "path");
+    result.set("path", suggestion.getPath());
+    result.set("first", first);
+    first = false;
+    results.push_back(result);
+    suggestionCount++;
   }
 
+
   /* Propose the fulltext search if possible */
-  if (reader->hasFulltextIndex()) {
+  if (archive->hasFulltextIndex()) {
     MustacheData result;
-    result.set("label", "containing '" + term + "'...");
-    result.set("value", term + " ");
+    result.set("label", "containing '" + queryString + "'...");
+    result.set("value", queryString + " ");
     result.set("kind", "pattern");
     result.set("first", first);
     results.push_back(result);
