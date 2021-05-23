@@ -57,6 +57,8 @@ extern "C" {
 #include <zim/uuid.h>
 #include <zim/error.h>
 #include <zim/search.h>
+#include <zim/entry.h>
+#include <zim/item.h>
 
 #include <mustache.hpp>
 
@@ -437,6 +439,20 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
   return suggestions;
 }
 
+zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
+{
+  int loopCounter = 42;
+  auto final_entry = entry;
+  while (final_entry.isRedirect() && loopCounter--) {
+    final_entry = final_entry.getRedirectEntry();
+  }
+  // Prevent infinite loops.
+  if (final_entry.isRedirect()) {
+    throw zim::EntryNotFound("Unable to resolve entry redirects.");
+  }
+  return final_entry;
+}
+
 /**
  * Archive and Zim handlers end
  **/
@@ -688,23 +704,23 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
 
   std::string bookName;
   std::string bookId;
-  std::shared_ptr<Reader> reader;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
-    reader = mp_library->getReaderById(bookId);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     return Response::build_404(*this, request, bookName, "");
   }
 
-  if (reader == nullptr) {
+  if (archive == nullptr) {
     return Response::build_404(*this, request, bookName, "");
   }
 
   try {
-    auto entry = reader->getRandomPage();
-    return build_redirect(bookName, entry.getFinalEntry());
-  } catch(kiwix::NoEntry& e) {
+    auto entry = archive->getRandomEntry();
+    return build_redirect(bookName, getFinalEntry(archive.get(), entry));
+  } catch(zim::EntryNotFound& e) {
     return Response::build_404(*this, request, bookName, "");
   }
 }
