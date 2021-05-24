@@ -179,4 +179,29 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
   return render_template(RESOURCE::catalog_v2_entries_xml, template_data);
 }
 
+std::string OPDSDumper::categoriesOPDSFeed(const std::vector<std::string>& categories) const
+{
+  const auto now = gen_date_str();
+  kainjow::mustache::list categoryData;
+  for ( const auto& category : categories ) {
+    const auto urlencodedCategoryName = urlEncode(category);
+    categoryData.push_back(kainjow::mustache::object{
+      {"name", category},
+      {"urlencoded_name",  urlencodedCategoryName},
+      {"updated", now},
+      {"id", gen_uuid(libraryId + "/categories/" + urlencodedCategoryName)}
+    });
+  }
+
+  return render_template(
+             RESOURCE::catalog_v2_categories_xml,
+             kainjow::mustache::object{
+               {"date", now},
+               {"endpoint_root", rootLocation + "/catalog/v2"},
+               {"feed_id", gen_uuid(libraryId + "/categories")},
+               {"categories", categoryData }
+             }
+  );
+}
+
 }

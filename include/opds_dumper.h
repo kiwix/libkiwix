@@ -65,6 +65,14 @@ class OPDSDumper
   std::string dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const;
 
   /**
+   * Dump the categories OPDS feed.
+   *
+   * @param categories list of category names
+   * @return The OPDS feed.
+   */
+  std::string categoriesOPDSFeed(const std::vector<std::string>& categories) const;
+
+  /**
    * Set the id of the library.
    *
    * @param id the id to use.

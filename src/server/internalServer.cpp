@@ -779,28 +779,12 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
 {
-  const std::string root_url = normalizeRootUrl(m_root);
-  const auto now = gen_date_str();
-  kainjow::mustache::list categoryData;
-  for ( const auto& category : mp_library->getBooksCategories() ) {
-    const auto urlencodedCategoryName = urlEncode(category);
-    categoryData.push_back(kainjow::mustache::object{
-      {"name", category},
-      {"urlencoded_name",  urlencodedCategoryName},
-      {"updated", now},
-      {"id", gen_uuid(m_library_id + "/categories/" + urlencodedCategoryName)}
-    });
-  }
-
+  OPDSDumper opdsDumper(mp_library);
+  opdsDumper.setRootLocation(normalizeRootUrl(m_root));
+  opdsDumper.setLibraryId(m_library_id);
   return ContentResponse::build(
              *this,
-             RESOURCE::catalog_v2_categories_xml,
-             kainjow::mustache::object{
-               {"date", now},
-               {"endpoint_root", root_url + "/catalog/v2"},
-               {"feed_id", gen_uuid(m_library_id + "/categories")},
-               {"categories", categoryData }
-             },
+             opdsDumper.categoriesOPDSFeed(mp_library->getBooksCategories()),
              "application/atom+xml;profile=opds-catalog;kind=navigation"
   );
 }
