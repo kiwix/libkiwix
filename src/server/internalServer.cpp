@@ -764,13 +764,10 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request)
 {
-  const auto filter = get_search_filter(request);
-  const size_t count = request.get_optional_param("count", 10UL);
-  const size_t start = request.get_optional_param("start", 0UL);
-  const auto bookIds = subrange(mp_library->filter(filter), start, count);
   OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
+  const auto bookIds = search_catalog(request, opdsDumper);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query());
   return ContentResponse::build(
              *this,
