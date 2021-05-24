@@ -51,10 +51,25 @@ class OPDSDumper
   /**
    * Dump the OPDS feed.
    *
-   * @param id The id of the library.
+   * @param bookIds the ids of the books to include in the feed
    * @return The OPDS feed.
    */
   std::string dumpOPDSFeed(const std::vector<std::string>& bookIds);
+
+  /**
+   * Dump the OPDS feed.
+   *
+   * @param bookIds the ids of the books to include in the feed
+   * @return The OPDS feed.
+   */
+  std::string dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const;
+
+  /**
+   * Set the id of the library.
+   *
+   * @param id the id to use.
+   */
+  void setLibraryId(const std::string& id) { this->libraryId = id;}
 
   /**
    * Set the id of the opds stream.
@@ -103,6 +118,7 @@ class OPDSDumper
  protected:
   kiwix::Library* library;
   std::string id;
+  std::string libraryId;
   std::string title;
   std::string date;
   std::string rootLocation;

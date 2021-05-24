@@ -79,11 +79,6 @@ namespace kiwix {
 namespace
 {
 
-inline std::string gen_uuid(const std::string& s)
-{
-  return to_string(zim::Uuid::generate(s));
-}
-
 inline std::string normalizeRootUrl(const std::string& rootUrl)
 {
   return (rootUrl.empty() || rootUrl[0] == '/')
@@ -767,53 +762,17 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request)
 {
-  const std::string root_url = normalizeRootUrl(m_root);
-
-  const auto now = gen_date_str();
-  kainjow::mustache::list bookData;
   const auto filter = get_search_filter(request);
-  const auto allMatchingEntries = mp_library->filter(filter);
   const size_t count = request.get_optional_param("count", 10UL);
   const size_t start = request.get_optional_param("start", 0UL);
-  for ( const auto& bookId : subrange(allMatchingEntries, start, count) ) {
-    const Book& book = mp_library->getBookById(bookId);
-    const MustacheData bookUrl = book.getUrl().empty()
-                               ? MustacheData(false)
-                               : MustacheData(book.getUrl());
-    bookData.push_back(kainjow::mustache::object{
-      {"id", "urn:uuid:"+book.getId()},
-      {"name", book.getName()},
-      {"title", book.getTitle()},
-      {"description", book.getDescription()},
-      {"language", book.getLanguage()},
-      {"content_id",  book.getHumanReadableIdFromPath()},
-      {"updated", book.getDate() + "T00:00:00Z"},
-      {"category", book.getCategory()},
-      {"flavour", book.getFlavour()},
-      {"tags", book.getTags()},
-      {"article_count", to_string(book.getArticleCount())},
-      {"media_count", to_string(book.getMediaCount())},
-      {"author_name", book.getCreator()},
-      {"publisher_name", book.getPublisher()},
-      {"url", bookUrl},
-      {"size", to_string(book.getSize())},
-    });
-  }
-
-  const auto query = request.get_query().empty()
-                   ? MustacheData(false)
-                   : MustacheData(request.get_query());
-
+  const auto bookIds = subrange(mp_library->filter(filter), start, count);
+  OPDSDumper opdsDumper(mp_library);
+  opdsDumper.setRootLocation(normalizeRootUrl(m_root));
+  opdsDumper.setLibraryId(m_library_id);
+  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query());
   return ContentResponse::build(
              *this,
-             RESOURCE::catalog_v2_entries_xml,
-             kainjow::mustache::object{
-               {"date", now},
-               {"endpoint_root", root_url + "/catalog/v2"},
-               {"feed_id", gen_uuid(m_library_id + "/entries?"+request.get_query())},
-               {"filter", query},
-               {"books", bookData }
-             },
+             opdsFeed,
              "application/atom+xml;profile=opds-catalog;kind=acquisition"
   );
 }

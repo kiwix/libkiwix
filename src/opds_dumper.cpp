@@ -22,6 +22,9 @@
 
 #include "tools/otherTools.h"
 
+#include "kiwixlib-resources.h"
+#include <mustache.hpp>
+
 namespace kiwix
 {
 /* Constructor */
@@ -133,6 +136,47 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds)
   }
 
   return nodeToString(root_node);
+}
+
+typedef kainjow::mustache::data MustacheData;
+
+string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const
+{
+  kainjow::mustache::list bookData;
+  for ( const auto& bookId : bookIds ) {
+    const Book& book = library->getBookById(bookId);
+    const MustacheData bookUrl = book.getUrl().empty()
+                               ? MustacheData(false)
+                               : MustacheData(book.getUrl());
+    bookData.push_back(kainjow::mustache::object{
+      {"id", "urn:uuid:"+book.getId()},
+      {"name", book.getName()},
+      {"title", book.getTitle()},
+      {"description", book.getDescription()},
+      {"language", book.getLanguage()},
+      {"content_id",  book.getHumanReadableIdFromPath()},
+      {"updated", book.getDate() + "T00:00:00Z"},
+      {"category", book.getCategory()},
+      {"flavour", book.getFlavour()},
+      {"tags", book.getTags()},
+      {"article_count", to_string(book.getArticleCount())},
+      {"media_count", to_string(book.getMediaCount())},
+      {"author_name", book.getCreator()},
+      {"publisher_name", book.getPublisher()},
+      {"url", bookUrl},
+      {"size", to_string(book.getSize())},
+    });
+  }
+
+  const kainjow::mustache::object template_data{
+     {"date", gen_date_str()},
+     {"endpoint_root", rootLocation + "/catalog/v2"},
+     {"feed_id", gen_uuid(libraryId + "/entries?"+query)},
+     {"filter", query.empty() ? MustacheData(false) : MustacheData(query)},
+     {"books", bookData }
+  };
+
+  return render_template(RESOURCE::catalog_v2_entries_xml, template_data);
 }
 
 }

@@ -24,6 +24,7 @@
 
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
+#include "tools/otherTools.h"
 
 #include "string.h"
 #include <mustache.hpp>
@@ -37,17 +38,6 @@ namespace kiwix {
 namespace
 {
 // some utilities
-
-std::string render_template(const std::string& template_str, kainjow::mustache::data data)
-{
-  kainjow::mustache::mustache tmpl(template_str);
-  kainjow::mustache::data urlencode{kainjow::mustache::lambda2{
-                               [](const std::string& str,const kainjow::mustache::renderer& r) { return urlEncode(r(str), true); }}};
-  data.set("urlencoded", urlencode);
-  std::stringstream ss;
-  tmpl.render(data, [&ss](const std::string& str) { ss << str; });
-  return ss.str();
-}
 
 std::string get_mime_type(const zim::Item& item)
 {
