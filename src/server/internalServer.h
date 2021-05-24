@@ -69,7 +69,7 @@ class InternalServer {
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
-    std::unique_ptr<Response> build_redirect(const std::string& bookName, const kiwix::Entry& entry) const;
+    std::unique_ptr<Response> build_redirect(const std::string& bookName, const zim::Item& item) const;
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
     std::unique_ptr<Response> handle_skin(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog(const RequestContext& request);

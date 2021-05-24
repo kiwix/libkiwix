@@ -365,71 +365,6 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
   return suggestions;
 }
 
-zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
-{
-  if (path.empty() || path == "/") {
-    return archive->getMainEntry();
-  }
-  return archive->getEntryByPath(path);
-}
-
-std::vector<std::string> getTitleVariants(const std::string& title)
-{
-  std::vector<std::string> variants;
-  variants.push_back(title);
-  variants.push_back(kiwix::ucFirst(title));
-  variants.push_back(kiwix::lcFirst(title));
-  variants.push_back(kiwix::toTitle(title));
-  return variants;
-}
-
-// TODO: retrieve searcher from caching mechanism
-SuggestionsList_t getSuggestions(const zim::Archive* const archive,
-                  const std::string& queryString, int suggestionCount)
-{
-  SuggestionsList_t suggestions;
-  if (archive->hasTitleIndex()) {
-    auto searcher = zim::Searcher(*archive);
-    zim::Query suggestionQuery;
-    suggestionQuery.setQuery(queryString, true);
-    auto suggestionSearch = searcher.search(suggestionQuery);
-    auto suggestionResult = suggestionSearch.getResults(0, suggestionCount);
-
-    for (auto it = suggestionResult.begin(); it != suggestionResult.end(); it++) {
-      SuggestionItem suggestion(it.getTitle(), it.getPath(),
-                                kiwix::normalize(it.getTitle()), it.getSnippet());
-      suggestions.push_back(suggestion);
-    }
-  } else {
-    // TODO: This case should be handled by libzim
-    std::vector<std::string> variants = getTitleVariants(queryString);
-    int currCount = 0;
-    for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
-      for (auto& entry: archive->findByTitle(*it)) {
-        SuggestionItem suggestion(entry.getTitle(), entry.getPath(),
-                                kiwix::normalize(entry.getTitle()));
-        suggestions.push_back(suggestion);
-        currCount++;
-      }
-    }
-  }
-  return suggestions;
-}
-
-zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
-{
-  int loopCounter = 42;
-  auto final_entry = entry;
-  while (final_entry.isRedirect() && loopCounter--) {
-    final_entry = final_entry.getRedirectEntry();
-  }
-  // Prevent infinite loops.
-  if (final_entry.isRedirect()) {
-    throw zim::EntryNotFound("Unable to resolve entry redirects.");
-  }
-  return final_entry;
-}
-
 /**
  * Archive and Zim handlers end
  **/
@@ -457,23 +392,23 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   std::string mimeType = "text";
 
   if (meta_name == "title") {
-    content = getArchiveTitle(archive.get());
+    content = getArchiveTitle(*archive);
   } else if (meta_name == "description") {
-    content = getMetaDescription(archive.get());
+    content = getMetaDescription(*archive);
   } else if (meta_name == "language") {
-    content = getMetaLanguage(archive.get());
+    content = getMetaLanguage(*archive);
   } else if (meta_name == "name") {
-    content = getMetaName(archive.get());
+    content = getMetaName(*archive);
   } else if (meta_name == "tags") {
-    content = getMetaTags(archive.get());
+    content = getMetaTags(*archive);
   } else if (meta_name == "date") {
-    content = getMetaDate(archive.get());
+    content = getMetaDate(*archive);
   } else if (meta_name == "creator") {
-    content = getMetaCreator(archive.get());
+    content = getMetaCreator(*archive);
   } else if (meta_name == "publisher") {
-    content = getMetaPublisher(archive.get());
+    content = getMetaPublisher(*archive);
   } else if (meta_name == "favicon") {
-    getArchiveFavicon(archive.get(), content, mimeType);
+    getArchiveFavicon(*archive, content, mimeType);
   } else {
     return Response::build_404(*this, request, bookName, "");
   }
@@ -617,7 +552,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     auto data = get_default_data();
     data.set("pattern", encodeDiples(patternString));
     auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
     response->set_code(MHD_HTTP_NOT_FOUND);
     return std::move(response);
   }
@@ -668,7 +603,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
 
     return std::move(response);
   } catch (const std::exception& e) {
@@ -700,7 +635,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
 
   try {
     auto entry = archive->getRandomEntry();
-    return build_redirect(bookName, getFinalEntry(archive.get(), entry));
+    return build_redirect(bookName, getFinalItem(*archive, entry));
   } catch(zim::EntryNotFound& e) {
     return Response::build_404(*this, request, bookName, "");
   }
@@ -861,9 +796,9 @@ InternalServer::get_reader(const std::string& bookName) const
 }
 
 std::unique_ptr<Response>
-InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
+InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(entry.getPath());
+  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(item.getPath());
   return Response::build_redirect(*this, redirectUrl);
 }
 
@@ -879,8 +814,13 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   if (bookName.empty())
     return build_homepage(request);
 
-  const std::shared_ptr<Reader> reader = get_reader(bookName);
-  if (reader == nullptr) {
+  std::shared_ptr<zim::Archive> archive;
+  try {
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
+  } catch (const std::out_of_range& e) {}
+
+  if (archive == nullptr) {
     std::string searchURL = m_root+"/search?pattern="+pattern; // Make a full search on the entire library.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
@@ -893,31 +833,31 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   try {
-    auto entry = reader->getEntryFromPath(urlStr);
+    auto entry = getEntryFromPath(*archive, urlStr);
     if (entry.isRedirect() || urlStr.empty()) {
       // If urlStr is empty, we want to mainPage.
       // We must do a redirection to the real page.
-      return build_redirect(bookName, entry.getFinalEntry());
+      return build_redirect(bookName, getFinalItem(*archive, entry));
     }
-    auto response = ItemResponse::build(*this, request, entry.getZimEntry().getItem());
+    auto response = ItemResponse::build(*this, request, entry.getItem());
     try {
-      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, reader->getTitle());
+      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, getArchiveTitle(*archive));
     } catch (std::bad_cast& e) {}
 
     if (m_verbose.load()) {
       printf("Found %s\n", entry.getPath().c_str());
-      printf("mimeType: %s\n", entry.getMimetype().c_str());
+      printf("mimeType: %s\n", entry.getItem(true).getMimetype().c_str());
     }
 
     return response;
-  } catch(kiwix::NoEntry& e) {
+  } catch(zim::EntryNotFound& e) {
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
     std::string searchURL = m_root+"/search?content="+bookName+"&pattern="+pattern; // Make a search on this specific book only.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request, bookName, reader->getTitle(), details);
+    return Response::build_404(*this, request, bookName, getArchiveTitle(*archive), details);
   }
 }
 

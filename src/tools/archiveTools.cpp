@@ -27,18 +27,18 @@
 
 namespace kiwix
 {
-std::string getMetadata(const zim::Archive* const archive, const std::string& name) {
+std::string getMetadata(const zim::Archive& archive, const std::string& name) {
     try {
-        return archive->getMetadata(name);
+        return archive.getMetadata(name);
     } catch (zim::EntryNotFound& e) {
         return "";
     }
 }
 
-std::string getArchiveTitle(const zim::Archive* const archive) {
+std::string getArchiveTitle(const zim::Archive& archive) {
   std::string value = getMetadata(archive, "Title");
   if (value.empty()) {
-    value = getLastPathElement(archive->getFilename());
+    value = getLastPathElement(archive.getFilename());
     std::replace(value.begin(), value.end(), '_', ' ');
     size_t pos = value.find(".zim");
     value = value.substr(0, pos);
@@ -46,7 +46,7 @@ std::string getArchiveTitle(const zim::Archive* const archive) {
   return value;
 }
 
-std::string getMetaDescription(const zim::Archive* const archive) {
+std::string getMetaDescription(const zim::Archive& archive) {
   std::string value;
   value = getMetadata(archive, "Description");
 
@@ -58,7 +58,7 @@ std::string getMetaDescription(const zim::Archive* const archive) {
   return value;
 }
 
-std::string getMetaTags(const zim::Archive* const archive, bool original) {
+std::string getMetaTags(const zim::Archive& archive, bool original) {
   std::string tags_str = getMetadata(archive, "Tags");
   if (original) {
     return tags_str;
@@ -67,11 +67,10 @@ std::string getMetaTags(const zim::Archive* const archive, bool original) {
   return join(tags, ";");
 }
 
-bool getArchiveFavicon(const zim::Archive* const archive,
+bool getArchiveFavicon(const zim::Archive& archive,
                            std::string& content, std::string& mimeType){
   try {
-    auto entry = archive->getFaviconEntry();
-    auto item = entry.getItem(true);
+    auto item = archive.getIllustrationItem();
     content = item.getData();
     mimeType = item.getMimetype();
     return true;
@@ -80,29 +79,41 @@ bool getArchiveFavicon(const zim::Archive* const archive,
   return false;
 }
 
-std::string getMetaLanguage(const zim::Archive* const archive) {
+std::string getMetaLanguage(const zim::Archive& archive) {
   return getMetadata(archive, "Language");
 }
 
-std::string getMetaName(const zim::Archive* const archive) {
+std::string getMetaName(const zim::Archive& archive) {
   return getMetadata(archive, "Name");
 }
 
-std::string getMetaDate(const zim::Archive* const archive) {
+std::string getMetaDate(const zim::Archive& archive) {
   return getMetadata(archive, "Date");
 }
 
-std::string getMetaCreator(const zim::Archive* const archive) {
+std::string getMetaCreator(const zim::Archive& archive) {
   return getMetadata(archive, "Creator");
 }
 
-std::string getMetaPublisher(const zim::Archive* const archive) {
+std::string getMetaPublisher(const zim::Archive& archive) {
   return getMetadata(archive, "Publisher");
 }
 
-zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
+zim::Item getFinalItem(const zim::Archive& archive, const zim::Entry& entry)
 {
-  return archive->getEntryByPath(entry.getItem(true).getPath());
+  return entry.getItem(true);
+}
+
+zim::Entry getEntryFromPath(const zim::Archive& archive, const std::string& path)
+{
+  try {
+    return archive.getEntryByPath(path);
+  } catch (zim::EntryNotFound& e) {
+    if (path.empty() || path == "/") {
+      return archive.getMainEntry();
+    }
+  }
+  throw zim::EntryNotFound("Cannot find entry for non empty path");
 }
 
 } // kiwix
