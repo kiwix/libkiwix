@@ -453,6 +453,14 @@ zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& en
   return final_entry;
 }
 
+zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
+{
+  if (path.empty() || path == "/") {
+    return archive->getMainEntry();
+  }
+  return archive->getEntryByPath(path);
+}
+
 /**
  * Archive and Zim handlers end
  **/
@@ -898,8 +906,13 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   if (bookName.empty())
     return build_homepage(request);
 
-  const std::shared_ptr<Reader> reader = get_reader(bookName);
-  if (reader == nullptr) {
+  std::shared_ptr<zim::Archive> archive;
+  try {
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
+  } catch (const std::out_of_range& e) {}
+
+  if (archive == nullptr) {
     std::string searchURL = m_root+"/search?pattern="+pattern; // Make a full search on the entire library.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
@@ -912,24 +925,24 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   try {
-    auto entry = reader->getEntryFromPath(urlStr);
+    auto entry = getEntryFromPath(archive.get(), urlStr);
     if (entry.isRedirect() || urlStr.empty()) {
       // If urlStr is empty, we want to mainPage.
       // We must do a redirection to the real page.
-      return build_redirect(bookName, entry.getFinalEntry());
+      return build_redirect(bookName, getFinalEntry(archive.get(), entry));
     }
-    auto response = ItemResponse::build(*this, request, entry.getZimEntry().getItem());
+    auto response = ItemResponse::build(*this, request, entry.getItem());
     try {
-      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, reader->getTitle());
+      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, getArchiveTitle(archive.get()));
     } catch (std::bad_cast& e) {}
 
     if (m_verbose.load()) {
       printf("Found %s\n", entry.getPath().c_str());
-      printf("mimeType: %s\n", entry.getMimetype().c_str());
+      printf("mimeType: %s\n", entry.getItem(true).getMimetype().c_str());
     }
 
     return response;
-  } catch(kiwix::NoEntry& e) {
+  } catch(zim::EntryNotFound& e) {
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
