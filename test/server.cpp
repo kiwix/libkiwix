@@ -1006,7 +1006,8 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
 #define CATALOG_V2_ENTRIES_PREAMBLE                           \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"           \
-    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\">\n"  \
+    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\"\n"   \
+    "      xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\">\n"  \
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"       \
     "\n"                                                      \
     "  <link rel=\"self\"\n"                                  \
@@ -1046,7 +1047,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE
       "  <title>Filtered Entries (start=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndx>1</startIndx>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
       RAY_CHARLES_CATALOG_ENTRY
       UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
@@ -1060,7 +1063,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE
       "  <title>Filtered Entries (count=2)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndx>0</startIndx>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
       CHARLES_RAY_CATALOG_ENTRY
       RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
@@ -1074,7 +1079,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE
       "  <title>Filtered Entries (count=1&amp;start=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndx>1</startIndx>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
       RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
@@ -1089,7 +1096,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
     CATALOG_V2_ENTRIES_PREAMBLE
     "  <title>Filtered Entries (q=&quot;ray charles&quot;)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "\n"
+    "  <totalResults>2</totalResults>\n"
+    "  <startIndx>0</startIndx>\n"
+    "  <itemsPerPage>2</itemsPerPage>\n"
     RAY_CHARLES_CATALOG_ENTRY
     CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
