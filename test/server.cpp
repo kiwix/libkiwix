@@ -715,7 +715,7 @@ TEST_F(LibraryServerTest, catalog_searchdescription_xml)
     "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
     "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
     "       indexOffset=\"0\"\n"
-    "       template=\"//catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "       template=\"/catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
     "</OpenSearchDescription>\n"
   );
 }

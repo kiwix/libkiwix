@@ -79,11 +79,14 @@ namespace kiwix {
 namespace
 {
 
-inline std::string normalizeRootUrl(const std::string& rootUrl)
+inline std::string normalizeRootUrl(std::string rootUrl)
 {
-  return (rootUrl.empty() || rootUrl[0] == '/')
-       ? rootUrl
-       : "/" + rootUrl;
+  while ( !rootUrl.empty() && rootUrl.back() == '/' )
+    rootUrl.pop_back();
+
+  while ( !rootUrl.empty() && rootUrl.front() == '/' )
+    rootUrl = rootUrl.substr(1);
+  return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
 } // unnamed namespace
@@ -112,7 +115,7 @@ InternalServer::InternalServer(Library* library,
                                bool blockExternalLinks) :
   m_addr(addr),
   m_port(port),
-  m_root(root),
+  m_root(normalizeRootUrl(root)),
   m_nbThreads(nbThreads),
   m_verbose(verbose),
   m_withTaskbar(withTaskbar),
@@ -728,7 +731,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
   } else if (url == "searchdescription.xml") {
-    const std::string endpoint_root = normalizeRootUrl(m_root) + "/catalog/v2";
+    const std::string endpoint_root = m_root + "/catalog/v2";
     return ContentResponse::build(*this,
         RESOURCE::catalog_v2_searchdescription_xml,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
@@ -745,13 +748,12 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestContext& request)
 {
-  const std::string root_url = normalizeRootUrl(m_root);
   return ContentResponse::build(
              *this,
              RESOURCE::catalog_v2_root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
-               {"endpoint_root", root_url + "/catalog/v2"},
+               {"endpoint_root", m_root + "/catalog/v2"},
                {"feed_id", gen_uuid(m_library_id)},
                {"all_entries_feed_id", gen_uuid(m_library_id + "/entries")},
                {"category_list_feed_id", gen_uuid(m_library_id + "/categories")}
@@ -767,7 +769,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
   const size_t start = request.get_optional_param("start", 0UL);
   const auto bookIds = subrange(mp_library->filter(filter), start, count);
   OPDSDumper opdsDumper(mp_library);
-  opdsDumper.setRootLocation(normalizeRootUrl(m_root));
+  opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query());
   return ContentResponse::build(
@@ -780,7 +782,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
 {
   OPDSDumper opdsDumper(mp_library);
-  opdsDumper.setRootLocation(normalizeRootUrl(m_root));
+  opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   return ContentResponse::build(
              *this,
