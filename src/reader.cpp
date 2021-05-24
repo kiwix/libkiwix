@@ -507,9 +507,9 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
          current != suggestions.end();
          current++) {
       std::vector<std::string> suggestion;
-      suggestion.push_back(current->getTitle());
-      suggestion.push_back(current->getPath());
-      suggestion.push_back(kiwix::normalize(current->getTitle()));
+      suggestion.push_back(current.getTitle());
+      suggestion.push_back(current.getPath());
+      suggestion.push_back(kiwix::normalize(current.getTitle()));
       results.push_back(suggestion);
     }
     retVal = true;

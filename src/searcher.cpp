@@ -235,19 +235,19 @@ _Result::_Result(zim::SearchResultSet::iterator iterator)
 
 std::string _Result::get_url()
 {
-  return iterator.get_path();
+  return iterator.getPath();
 }
 std::string _Result::get_title()
 {
-  return iterator.get_title();
+  return iterator.getTitle();
 }
 int _Result::get_score()
 {
-  return iterator.get_score();
+  return iterator.getScore();
 }
 std::string _Result::get_snippet()
 {
-  return iterator.get_snippet();
+  return iterator.getSnippet();
 }
 std::string _Result::get_content()
 {
@@ -255,15 +255,15 @@ std::string _Result::get_content()
 }
 int _Result::get_size()
 {
-  return iterator.get_size();
+  return iterator.getSize();
 }
 int _Result::get_wordCount()
 {
-  return iterator.get_wordCount();
+  return iterator.getWordCount();
 }
 int _Result::get_readerIndex()
 {
-  return iterator.get_fileIndex();
+  return iterator.getFileIndex();
 }
 
 
