@@ -658,7 +658,7 @@ std::vector<std::string>
 InternalServer::search_catalog(const RequestContext& request,
                                kiwix::OPDSDumper& opdsDumper)
 {
-    auto filter = kiwix::Filter().valid(true).local(true);
+    auto filter = kiwix::Filter().valid(true).local(true).remote(true);
     string query("<Empty query>");
     size_t count(10);
     size_t startIndex(0);
