@@ -56,6 +56,10 @@ if target_machine.system() == 'windows' and static_deps
   extra_cflags += '-DCURL_STATICLIB'
 endif
 
+if target_machine.system() == 'windows'
+  add_project_arguments('-DNOMINMAX', language: 'cpp')
+endif
+
 all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep]
 
 inc = include_directories('include', extra_include)
