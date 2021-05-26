@@ -34,7 +34,12 @@ jq(document).ready(() => {
                     $( "#kiwixsearchform" ).submit();
                 }
             },
-        });
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+            return $( "<li>" )
+              .data( "ui-autocomplete-item", item )
+              .append( item.label )
+              .appendTo( ul );
+        };
     
         /* cybook hack */
         if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
