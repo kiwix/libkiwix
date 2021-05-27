@@ -110,6 +110,7 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"endpoint_root", rootLocation + "/catalog/v2"},
      {"feed_id", gen_uuid(libraryId + "/entries?"+query)},
      {"filter", query.empty() ? MustacheData(false) : MustacheData(query)},
+     {"query", query.empty() ? "" : "?" + urlEncode(query)},
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
