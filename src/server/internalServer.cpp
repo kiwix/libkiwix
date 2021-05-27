@@ -636,13 +636,11 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper;
+  kiwix::OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
-  opdsDumper.setLibrary(mp_library);
+  opdsDumper.setLibraryId(m_library_id);
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
-    opdsDumper.setTitle("All zims");
     uuid = zim::Uuid::generate(host);
     bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
   } else if (url == "search") {
@@ -650,10 +648,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     uuid = zim::Uuid::generate();
   }
 
-  opdsDumper.setId(kiwix::to_string(uuid));
   auto response = ContentResponse::build(
       *this,
-      opdsDumper.dumpOPDSFeed(bookIdsToDump),
+      opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
       "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
   return std::move(response);
 }
@@ -705,7 +702,6 @@ InternalServer::search_catalog(const RequestContext& request,
     const std::string q = filter.hasQuery()
                         ? filter.getQuery()
                         : "<Empty query>";
-    opdsDumper.setTitle("Search result for " + q);
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
     const size_t count = request.get_optional_param("count", 10UL);

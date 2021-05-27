@@ -27,6 +27,7 @@
 
 namespace kiwix
 {
+
 /* Constructor */
 OPDSDumper::OPDSDumper(Library* library)
   : library(library)
@@ -37,112 +38,22 @@ OPDSDumper::~OPDSDumper()
 {
 }
 
-static std::string gen_date_from_yyyy_mm_dd(const std::string& date)
-{
-  std::stringstream is;
-  is << date << "T00:00:00Z";
-  return is.str();
-}
-
 void OPDSDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
 {
   m_totalResults = totalResults;
   m_startIndex = startIndex,
   m_count = count;
-  m_isSearchResult = true;
 }
 
-#define ADD_TEXT_ENTRY(node, child, value) (node).append_child((child)).append_child(pugi::node_pcdata).set_value((value).c_str())
-
-pugi::xml_node OPDSDumper::handleBook(Book book, pugi::xml_node root_node) {
-  auto entry_node = root_node.append_child("entry");
-  ADD_TEXT_ENTRY(entry_node, "id", "urn:uuid:"+book.getId());
-  ADD_TEXT_ENTRY(entry_node, "title", book.getTitle());
-  ADD_TEXT_ENTRY(entry_node, "summary", book.getDescription());
-  ADD_TEXT_ENTRY(entry_node, "language", book.getLanguage());
-  ADD_TEXT_ENTRY(entry_node, "updated", gen_date_from_yyyy_mm_dd(book.getDate()));
-  ADD_TEXT_ENTRY(entry_node, "name", book.getName());
-  ADD_TEXT_ENTRY(entry_node, "flavour", book.getFlavour());
-  ADD_TEXT_ENTRY(entry_node, "category", book.getCategory());
-  ADD_TEXT_ENTRY(entry_node, "tags", book.getTags());
-  ADD_TEXT_ENTRY(entry_node, "articleCount", to_string(book.getArticleCount()));
-  ADD_TEXT_ENTRY(entry_node, "mediaCount", to_string(book.getMediaCount()));
-  ADD_TEXT_ENTRY(entry_node, "icon", rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath());
-
-  auto content_node = entry_node.append_child("link");
-  content_node.append_attribute("type") = "text/html";
-  content_node.append_attribute("href") = (rootLocation + "/" + book.getHumanReadableIdFromPath()).c_str();
-
-  auto author_node = entry_node.append_child("author");
-  ADD_TEXT_ENTRY(author_node, "name", book.getCreator());
-
-  auto publisher_node = entry_node.append_child("publisher");
-  ADD_TEXT_ENTRY(publisher_node, "name", book.getPublisher());
-
-  if (! book.getUrl().empty()) {
-    auto acquisition_link = entry_node.append_child("link");
-    acquisition_link.append_attribute("rel") = "http://opds-spec.org/acquisition/open-access";
-    acquisition_link.append_attribute("type") = "application/x-zim";
-    acquisition_link.append_attribute("href") = book.getUrl().c_str();
-    acquisition_link.append_attribute("length") = to_string(book.getSize()).c_str();
-  }
-
-  if (! book.getFaviconMimeType().empty() ) {
-    auto image_link = entry_node.append_child("link");
-    image_link.append_attribute("rel") = "http://opds-spec.org/image/thumbnail";
-    image_link.append_attribute("type") = book.getFaviconMimeType().c_str();
-    image_link.append_attribute("href") = (rootLocation + "/meta?name=favicon&content=" + book.getHumanReadableIdFromPath()).c_str();
-  }
-  return entry_node;
-}
-
-string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds)
+namespace
 {
-  date = gen_date_str();
-  pugi::xml_document doc;
-
-  auto root_node = doc.append_child("feed");
-  root_node.append_attribute("xmlns") = "http://www.w3.org/2005/Atom";
-  root_node.append_attribute("xmlns:opds") = "http://opds-spec.org/2010/catalog";
-
-  ADD_TEXT_ENTRY(root_node, "id", id);
-
-  ADD_TEXT_ENTRY(root_node, "title", title);
-  ADD_TEXT_ENTRY(root_node, "updated", date);
-
-  if (m_isSearchResult) {
-    ADD_TEXT_ENTRY(root_node, "totalResults", to_string(m_totalResults));
-    ADD_TEXT_ENTRY(root_node, "startIndex", to_string(m_startIndex));
-    ADD_TEXT_ENTRY(root_node, "itemsPerPage", to_string(m_count));
-  }
-
-  auto self_link_node = root_node.append_child("link");
-  self_link_node.append_attribute("rel") = "self";
-  self_link_node.append_attribute("href") = "";
-  self_link_node.append_attribute("type") = "application/atom+xml";
-
-
-  if (!searchDescriptionUrl.empty() ) {
-    auto search_link = root_node.append_child("link");
-    search_link.append_attribute("rel") = "search";
-    search_link.append_attribute("type") = "application/opensearchdescription+xml";
-    search_link.append_attribute("href") = searchDescriptionUrl.c_str();
-  }
-
-  if (library) {
-    for (auto& bookId: bookIds) {
-      handleBook(library->getBookById(bookId), root_node);
-    }
-  }
-
-  return nodeToString(root_node);
-}
 
 typedef kainjow::mustache::data MustacheData;
+typedef kainjow::mustache::list BookData;
 
-string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const
+BookData getBookData(const Library* library, const std::vector<std::string>& bookIds)
 {
-  kainjow::mustache::list bookData;
+  BookData bookData;
   for ( const auto& bookId : bookIds ) {
     const Book& book = library->getBookById(bookId);
     const MustacheData bookUrl = book.getUrl().empty()
@@ -167,6 +78,32 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
       {"size", to_string(book.getSize())},
     });
   }
+
+  return bookData;
+}
+
+} // unnamed namespace
+
+string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
+{
+  const auto bookData = getBookData(library, bookIds);
+  const kainjow::mustache::object template_data{
+     {"date", gen_date_str()},
+     {"root", rootLocation},
+     {"feed_id", gen_uuid(libraryId + "/catalog/search?"+query)},
+     {"filter", query.empty() ? MustacheData(false) : MustacheData(query)},
+     {"totalResults", to_string(m_totalResults)},
+     {"startIndex", to_string(m_startIndex)},
+     {"itemsPerPage", to_string(m_count)},
+     {"books", bookData }
+  };
+
+  return render_template(RESOURCE::catalog_entries_xml, template_data);
+}
+
+string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const
+{
+  const auto bookData = getBookData(library, bookIds);
 
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},

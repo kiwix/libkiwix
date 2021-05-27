@@ -611,7 +611,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n" \
     "  <link rel=\"search\""                                            \
            " type=\"application/opensearchdescription+xml\""            \
-           " href=\"catalog/searchdescription.xml\" />\n"
+           " href=\"/catalog/searchdescription.xml\" />\n"
 
 #define CHARLES_RAY_CATALOG_ENTRY \
     "  <entry>\n"                                                       \
@@ -694,6 +694,7 @@ TEST_F(LibraryServerTest, catalog_root_xml)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>All zims</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
     CATALOG_LINK_TAGS
     CHARLES_RAY_CATALOG_ENTRY
     RAY_CHARLES_CATALOG_ENTRY
@@ -727,7 +728,7 @@ TEST_F(LibraryServerTest, catalog_search_by_phrase)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for \"ray charles\"</title>\n"
+    "  <title>Filtered zims (q=&quot;ray charles&quot;)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -746,7 +747,7 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for ray charles</title>\n"
+    "  <title>Filtered zims (q=ray charles)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>3</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -767,7 +768,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for description:ray description:charles</title>\n"
+      "  <title>Filtered zims (q=description:ray description:charles)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -784,7 +785,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for title:\"ray charles\"</title>\n"
+      "  <title>Filtered zims (q=title:&quot;ray charles&quot;)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -803,7 +804,7 @@ TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for ray -uncategorized</title>\n"
+    "  <title>Filtered zims (q=ray -uncategorized)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -822,7 +823,7 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <title>Filtered zims (tag=_category:jazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -840,7 +841,7 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <title>Filtered zims (category=jazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -859,7 +860,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <title>Filtered zims (count=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -875,7 +876,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <title>Filtered zims (count=1&amp;start=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
@@ -891,12 +892,13 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <title>Filtered zims (count=10&amp;start=100)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>100</startIndex>\n"
       "  <itemsPerPage>0</itemsPerPage>\n"
       CATALOG_LINK_TAGS
+      "  \n"
       "</feed>\n"
     );
   }
@@ -1048,7 +1050,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <title>Filtered Entries (start=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
-      "  <startIndx>1</startIndx>\n"
+      "  <startIndex>1</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
       RAY_CHARLES_CATALOG_ENTRY
       UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
@@ -1064,7 +1066,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <title>Filtered Entries (count=2)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
-      "  <startIndx>0</startIndx>\n"
+      "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
       CHARLES_RAY_CATALOG_ENTRY
       RAY_CHARLES_CATALOG_ENTRY
@@ -1080,7 +1082,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <title>Filtered Entries (count=1&amp;start=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
-      "  <startIndx>1</startIndx>\n"
+      "  <startIndex>1</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
       RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
@@ -1097,7 +1099,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
     "  <title>Filtered Entries (q=&quot;ray charles&quot;)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
-    "  <startIndx>0</startIndx>\n"
+    "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
     RAY_CHARLES_CATALOG_ENTRY
     CHARLES_RAY_CATALOG_ENTRY

@@ -1,26 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"
-      xmlns:opds="https://specs.opds.io/opds-1.2"
-      xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
   <id>{{feed_id}}</id>
-
-  <link rel="self"
-        href="{{endpoint_root}}/entries"
-        type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-  <link rel="start"
-        href="{{endpoint_root}}/root.xml"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-  <link rel="up"
-        href="{{endpoint_root}}/root.xml"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-
-  <title>{{^filter}}All Entries{{/filter}}{{#filter}}Filtered Entries ({{filter}}){{/filter}}</title>
+  <title>{{^filter}}All zims{{/filter}}{{#filter}}Filtered zims ({{filter}}){{/filter}}</title>
   <updated>{{date}}</updated>
 {{#filter}}
   <totalResults>{{totalResults}}</totalResults>
   <startIndex>{{startIndex}}</startIndex>
   <itemsPerPage>{{itemsPerPage}}</itemsPerPage>
 {{/filter}}
+  <link rel="self" href="" type="application/atom+xml" />
+  <link rel="search" type="application/opensearchdescription+xml" href="{{root}}/catalog/searchdescription.xml" />
   {{#books}}
   <entry>
     <id>{{id}}</id>
