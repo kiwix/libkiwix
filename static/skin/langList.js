@@ -1,4 +1,5 @@
-{
+/* exported langList */
+const langList = {
   "aar": "Afar",
   "afr": "Afrikaans",
   "aka": "Akan",

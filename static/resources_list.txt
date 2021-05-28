@@ -19,8 +19,9 @@ skin/jquery-ui/jquery-ui.theme.min.css
 skin/jquery-ui/jquery-ui.min.css
 skin/caret.png
 skin/taskbar.js
-skin/langList.json
-skin/categoryList.json
+skin/langList.js
+skin/categoryList.js
+skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
 skin/taskbar.css

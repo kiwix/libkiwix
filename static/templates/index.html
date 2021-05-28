@@ -36,6 +36,10 @@
       .book__list {
         text-align: center;
       }
+      .kiwixHomeBody {
+        padding: 30px 0;
+        text-align: center;
+      }
       .book {
         display: inline-block;
         vertical-align: bottom;
@@ -111,6 +115,9 @@
       }
     </style>
     <script src="{{root}}/skin/isotope.pkgd.min.js" defer></script>
+    <script src="{{root}}/skin/categoryList.js"></script>
+    <script src="{{root}}/skin/langList.js"></script>
+    <script src="{{root}}/skin/iso6391To3.js"></script>
     <script type="text/javascript" src="{{root}}/skin/index.js" defer></script>
   </head>
   <body class="kiwix">
@@ -119,7 +126,7 @@
         <option value="" selected>All languages</option>
       </select>
       <select name="category" id="categoryFilter" class='kiwixFilter'>
-        <option value="" selected>ALl categories</option>
+        <option value="" selected>All categories</option>
       </select>
       <form id='kiwixSearchForm' class='kiwixSearchForm'>
         <input type="text" name="q" id="searchFilter" class='kiwixSearch'>

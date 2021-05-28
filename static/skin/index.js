@@ -1,14 +1,15 @@
 (function() {
     const root = $(`link[type='root']`).attr('href');
-    let isFetching = false;
-    let iso;
-    let bookMap = {};
     const incrementalLoadingParams = {
         start: 0,
         count: viewPortToCount()
     };
-    let params = new URLSearchParams(window.location.search);
     const filterTypes = ['lang', 'category', 'q'];
+    let iso;
+    let isFetching = false;
+    let noResultInjected = false;
+    let params = new URLSearchParams(window.location.search);
+    let bookMap = {};
 
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
@@ -58,26 +59,50 @@
             incrementalLoadingParams.start += books.length;
             if (books.length < incrementalLoadingParams.count) {
                 incrementalLoadingParams.count = 0;
-    }
+            }
             return books;
         });
     }
 
     async function loadAndDisplayOptions(nodeQuery, query) {
-        // currently taking an array in place of query, will replace it with query while fetching data from backend later on.
-        await fetch(query)
-        .then(async (resp) => {
-            const data = await resp.json();
-            Object.keys(data).forEach((option) => {
-                document.querySelector(nodeQuery).innerHTML += `<option value='${option}'>${data[option]}</option>`;
-            });
-        });
+        // currently taking an object in place of query, will replace it with query while fetching data from backend later on.
+        document.querySelector(nodeQuery).innerHTML += Object.keys(query)
+            .map((option) => {return `<option value='${option}'>${query[option]}</option>`})
+        .join('');
+    }
+
+    function checkAndInjectEmptyMessage() {
+        const kiwixBodyDiv = document.getElementsByClassName('kiwixHomeBody')[0];
+        if (!Object.keys(bookMap).length) {
+            noResultInjected = true;
+            iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('a'));
+            iso.layout();
+            const spanTag = document.createElement('span');
+            spanTag.setAttribute('class', 'noResults');
+            spanTag.innerHTML = `No result. Would you like to <a href="">reset filter?</a>`;
+            kiwixBodyDiv.append(spanTag);
+            spanTag.getElementsByTagName('a')[0].onclick = (event) => {
+                event.preventDefault();
+                window.history.pushState({}, null, `${window.location.href.split('?')[0]}`);
+                resetAndFilter();
+                filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
+            };
+            return true;
+        } else if (noResultInjected) {
+            noResultInjected = false;
+            kiwixBodyDiv.getElementsByClassName('noResults')[0].remove();
+        }
+        return false;
     }
 
     async function loadAndDisplayBooks(sort = false) {
         if (isFetching) return;
         isFetching = true;
         let books = await loadBooks();
+        if (checkAndInjectEmptyMessage()) {
+            isFetching = false;
+            return;
+        }
         const booksToFilter = new Set();
         const booksToDelete = new Set();
         iso.arrange({
@@ -102,29 +127,26 @@
         isFetching = false;
     }
 
-    async function filterBooks(filterType, filterValue) {
+    async function resetAndFilter(filterType = '', filterValue = '') {
         isFetching = false;
         incrementalLoadingParams.start = 0;
         incrementalLoadingParams.count = viewPortToCount();
         bookMap = {};
         params = new URLSearchParams(window.location.search);
-        if (!filterValue) {
-            params.delete(filterType);
-        } else {
-            params.set(filterType, filterValue);
+        if (filterType) {
+            if (!filterValue) {
+                params.delete(filterType);
+            } else {
+                params.set(filterType, filterValue);
+            }
+            window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
         }
-        window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
         await loadAndDisplayBooks(true);
     }
 
     window.addEventListener('popstate', async () => {
-        bookMap = {};
-        isFetching = false;
-        incrementalLoadingParams.start = 0;
-        incrementalLoadingParams.count = viewPortToCount();
-        params = new URLSearchParams(window.location.search);
+        await resetAndFilter();
         filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
-        loadAndDisplayBooks(true);
     });
 
     async function loadSubset() {
@@ -154,16 +176,24 @@
                 },
                 sortBy: 'weight'
         });
-        loadAndDisplayBooks();
-        loadAndDisplayOptions('#languageFilter', `${root}/skin/langList.json`);
-        loadAndDisplayOptions('#categoryFilter', `${root}/skin/categoryList.json`);
-        for (const key of params.keys()) {
-            document.getElementsByName(key)[0].value = params.get(key);
-        }
+        await loadAndDisplayBooks();
+        await loadAndDisplayOptions('#languageFilter', langList);
+        await loadAndDisplayOptions('#categoryFilter', categoryList);
         filterTypes.forEach((filter) => {
             const filterTag = document.getElementsByName(filter)[0];
-            filterTag.addEventListener('change', () => {filterBooks(filterTag.name, filterTag.value)});
+            filterTag.addEventListener('change', () => {resetAndFilter(filterTag.name, filterTag.value)});
         });
-        document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()}
+        params.forEach((value, key) => {document.getElementsByName(key)[0].value = value});
+        document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
+        if (!window.location.search) {
+            const browserLang = navigator.language.split('-')[0];
+            if (browserLang.length === 3) {
+                document.getElementById('languageFilter').value = browserLang;
+            } else {
+                const langFilter = document.getElementById('languageFilter');
+                langFilter.value = iso6391To3[browserLang];
+                langFilter.dispatchEvent(new Event('change'));
+            }
+        }
     }
 })();

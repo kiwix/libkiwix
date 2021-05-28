@@ -1,4 +1,5 @@
-{
+/* exported categoryList */
+const categoryList = {
   "other": "Other",
   "gutenberg": "Gutenberg",
   "mooc": "Mooc",
