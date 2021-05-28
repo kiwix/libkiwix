@@ -633,30 +633,34 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   } catch(const std::out_of_range&) {}
     catch(const std::invalid_argument&) {}
 
-  std::shared_ptr<Reader> reader(nullptr);
+  std::shared_ptr<zim::Archive> archive;
   try {
-    reader = mp_library->getReaderById(bookId);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {}
 
   /* Make the search */
-  if ( (!reader && !bookName.empty())
+  if ( (!archive && !bookName.empty())
     || (patternString.empty() && ! has_geo_query) ) {
     auto data = get_default_data();
     data.set("pattern", encodeDiples(patternString));
     auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(archive.get()) : "");
     response->set_code(MHD_HTTP_NOT_FOUND);
     return std::move(response);
   }
 
-  Searcher searcher;
-  if (reader) {
-    searcher.add_reader(reader.get());
+  std::shared_ptr<zim::Searcher> searcher;
+  if (archive) {
+    searcher = std::make_shared<zim::Searcher>(*archive);
   } else {
     for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-      auto currentReader = mp_library->getReaderById(bookId);
-      if (currentReader) {
-        searcher.add_reader(currentReader.get());
+      auto currentArchive = mp_library->getArchiveById(bookId);
+      if (currentArchive) {
+        if (! searcher) {
+          searcher = std::make_shared<zim::Searcher>(*currentArchive);
+        } else {
+          searcher->add_archive(*currentArchive);
+        }
       }
     }
   }
@@ -681,21 +685,36 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
   /* Get the results */
   try {
+    zim::Query query;
     if (patternString.empty()) {
-      searcher.geo_search(latitude, longitude, distance,
-                           start, end, m_verbose.load());
+      // Execute geo-search
+      if (m_verbose.load()) {
+        cout << "Performing geo query `" << distance << "&(" << latitude << ";" << longitude << ")'" << endl;
+      }
+
+      query.setVerbose(m_verbose.load());
+      query.setQuery("", false);
+      query.setGeorange(latitude, longitude, distance);
     } else {
-      searcher.search(patternString,
-                       start, end, m_verbose.load());
+      // Execute Ft search
+      if (m_verbose.load()) {
+          cout << "Performing query `" << patternString << "'" << endl;
+      }
+
+      std::string queryString = removeAccents(patternString);
+      query.setQuery(queryString, false);
+      query.setVerbose(m_verbose.load());
     }
-    SearchRenderer renderer(&searcher, mp_nameMapper);
+
+    zim::Search search = searcher->search(query);
+    SearchRenderer renderer(&search, mp_nameMapper);
     renderer.setSearchPattern(patternString);
     renderer.setSearchContent(bookName);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
-    auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    auto response = ContentResponse::build(*this, renderer.getHtml(start, end), "text/html; charset=utf-8");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(archive.get()) : "");
 
     return std::move(response);
   } catch (const std::exception& e) {
