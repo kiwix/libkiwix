@@ -21,6 +21,7 @@
 #define KIWIX_SEARCH_RENDERER_H
 
 #include <string>
+#include <zim/search.h>
 
 namespace kiwix
 {
@@ -40,6 +41,7 @@ class SearchRenderer
    *                          Used to generate pagination links.
    */
   SearchRenderer(Searcher* searcher, NameMapper* mapper);
+  SearchRenderer(zim::Search* search, NameMapper* mapper);
 
   ~SearchRenderer();
 
@@ -72,9 +74,15 @@ class SearchRenderer
    */
   std::string getHtml();
 
+  /**
+   * Generate the html page with the resutls of the search.
+   */
+  std::string getHtml(int start, int end);
+
  protected:
   std::string beautifyInteger(const unsigned int number);
   Searcher* mp_searcher;
+  zim::Search* mp_search;
   NameMapper* mp_nameMapper;
   std::string searchContent;
   std::string searchPattern;

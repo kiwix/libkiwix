@@ -38,6 +38,15 @@ namespace kiwix
 /* Constructor */
 SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
     : mp_searcher(searcher),
+      mp_search(nullptr),
+      mp_nameMapper(mapper),
+      protocolPrefix("zim://"),
+      searchProtocolPrefix("search://?")
+{}
+
+SearchRenderer::SearchRenderer(zim::Search* search, NameMapper* mapper)
+    : mp_searcher(nullptr),
+      mp_search(search),
       mp_nameMapper(mapper),
       protocolPrefix("zim://"),
       searchProtocolPrefix("search://?")
@@ -93,6 +102,87 @@ std::string SearchRenderer::getHtml()
   auto resultStart = mp_searcher->getResultStart();
   auto resultEnd = 0U;
   auto estimatedResultCount = mp_searcher->getEstimatedResultCount();
+  auto currentPage = 0U;
+  auto pageStart = 0U;
+  auto pageEnd = 0U;
+  auto lastPageStart = 0U;
+  if (pageLength) {
+    currentPage = resultStart/pageLength;
+    pageStart = currentPage > 4 ? currentPage-4 : 0;
+    pageEnd = currentPage + 5;
+    if (pageEnd > estimatedResultCount / pageLength) {
+      pageEnd = (estimatedResultCount + pageLength - 1) / pageLength;
+    }
+    if (estimatedResultCount > pageLength) {
+      lastPageStart = ((estimatedResultCount-1)/pageLength)*pageLength;
+    }
+  }
+
+  resultEnd = resultStart+pageLength; //setting result end
+
+  for (unsigned int i = pageStart; i < pageEnd; i++) {
+    kainjow::mustache::data page;
+    page.set("label", to_string(i + 1));
+    page.set("start", to_string(i * pageLength));
+
+    if (i == currentPage) {
+      page.set("selected", true);
+    }
+    pages.push_back(page);
+  }
+
+  std::string template_str = RESOURCE::templates::search_result_html;
+  kainjow::mustache::mustache tmpl(template_str);
+
+  kainjow::mustache::data allData;
+  allData.set("results", results);
+  allData.set("pages", pages);
+  allData.set("hasResults", estimatedResultCount != 0);
+  allData.set("hasPages", pageStart != pageEnd);
+  allData.set("count", kiwix::beautifyInteger(estimatedResultCount));
+  allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
+  allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
+  allData.set("resultStart", to_string(resultStart + 1));
+  allData.set("resultEnd", to_string(min(resultEnd, estimatedResultCount)));
+  allData.set("pageLength", to_string(pageLength));
+  allData.set("resultLastPageStart", to_string(lastPageStart));
+  allData.set("protocolPrefix", this->protocolPrefix);
+  allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
+  allData.set("contentId", this->searchContent);
+
+  std::stringstream ss;
+  tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
+  return ss.str();
+}
+
+std::string SearchRenderer::getHtml(int start, int end)
+{
+  kainjow::mustache::data results{kainjow::mustache::data::type::list};
+
+  zim::SearchResultSet srs = mp_search->getResults(start, end);
+
+  for (auto it = srs.begin(); it != srs.end(); it++) {
+    kainjow::mustache::data result;
+    result.set("title", it.getTitle());
+    result.set("url", it.getPath());
+    result.set("snippet", it.getSnippet());
+    std::ostringstream s;
+    s << it.getZimId();
+    result.set("resultContentId", mp_nameMapper->getNameForId(s.str()));
+
+    if (it.getWordCount() >= 0) {
+      result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
+    }
+
+    results.push_back(result);
+  }
+
+  // pages
+  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
+
+  auto resultStart = start;
+  auto resultEnd = 0U;
+  unsigned int estimatedResultCount = mp_search->getEstimatedMatches();
   auto currentPage = 0U;
   auto pageStart = 0U;
   auto pageEnd = 0U;
