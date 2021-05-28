@@ -37,10 +37,22 @@ namespace kiwix
 
 /* Constructor */
 SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
-    : mp_searcher(searcher),
+    : m_srs(searcher->getSearchResultSet()),
       mp_nameMapper(mapper),
       protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?")
+      searchProtocolPrefix("search://?"),
+      estimatedResultCount(searcher->getEstimatedResultCount()),
+      resultStart(searcher->getResultStart())
+{}
+
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+                      unsigned int start, unsigned int estimatedResultCount)
+    : m_srs(srs),
+      mp_nameMapper(mapper),
+      protocolPrefix("zim://"),
+      searchProtocolPrefix("search://?"),
+      estimatedResultCount(estimatedResultCount),
+      resultStart(start)
 {}
 
 /* Destructor */
@@ -70,29 +82,26 @@ std::string SearchRenderer::getHtml()
 {
   kainjow::mustache::data results{kainjow::mustache::data::type::list};
 
-  mp_searcher->restart_search();
-  Result* p_result = NULL;
-  while ((p_result = mp_searcher->getNextResult())) {
+  for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
     kainjow::mustache::data result;
-    result.set("title", p_result->get_title());
-    result.set("url", p_result->get_url());
-    result.set("snippet", p_result->get_snippet());
-    result.set("resultContentId", mp_nameMapper->getNameForId(p_result->get_zimId()));
+    result.set("title", it.getTitle());
+    result.set("url", it.getPath());
+    result.set("snippet", it.getSnippet());
+    std::ostringstream s;
+    s << it.getZimId();
+    result.set("resultContentId", mp_nameMapper->getNameForId(s.str()));
 
-    if (p_result->get_wordCount() >= 0) {
-      result.set("wordCount", kiwix::beautifyInteger(p_result->get_wordCount()));
+    if (it.getWordCount() >= 0) {
+      result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
     }
 
     results.push_back(result);
-    delete p_result;
   }
 
   // pages
   kainjow::mustache::data pages{kainjow::mustache::data::type::list};
 
-  auto resultStart = mp_searcher->getResultStart();
   auto resultEnd = 0U;
-  auto estimatedResultCount = mp_searcher->getEstimatedResultCount();
   auto currentPage = 0U;
   auto pageStart = 0U;
   auto pageEnd = 0U;
