@@ -894,18 +894,6 @@ std::string searchSuggestionHTML(const std::string& searchURL, const std::string
 
 } // unnamed namespace
 
-std::shared_ptr<Reader>
-InternalServer::get_reader(const std::string& bookName) const
-{
-  std::shared_ptr<Reader> reader;
-  try {
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
-    reader = mp_library->getReaderById(bookId);
-  } catch (const std::out_of_range& e) {
-  }
-  return reader;
-}
-
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
 {
