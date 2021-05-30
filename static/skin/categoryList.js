@@ -1,4 +1,4 @@
-/* exported categoryList */
+// eslint-disable-next-line no-unused-vars
 const categoryList = {
   "other": "Other",
   "gutenberg": "Gutenberg",

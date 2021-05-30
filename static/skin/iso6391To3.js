@@ -1,4 +1,4 @@
-/* exported iso6391To3 */
+// eslint-disable-next-line no-unused-vars
 const iso6391To3 = {
     "aa": "aar",
     "af": "afr",

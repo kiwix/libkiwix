@@ -14,7 +14,12 @@
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
-        return (url + (params.toString() ? `&${params.toString()}` : ''));
+        params.forEach((value, key) => {url+= value ? `&${key}=${value}` : ''});
+        return (url);
+    }
+
+    function htmlEncode(str) {
+        return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => `&#${i.charCodeAt(0)};`);
     }
 
     function viewPortToCount(){
@@ -67,26 +72,28 @@
     async function loadAndDisplayOptions(nodeQuery, query) {
         // currently taking an object in place of query, will replace it with query while fetching data from backend later on.
         document.querySelector(nodeQuery).innerHTML += Object.keys(query)
-            .map((option) => {return `<option value='${option}'>${query[option]}</option>`})
+            .map((option) => {return `<option value='${option}'>${htmlEncode(query[option])}</option>`})
         .join('');
     }
 
     function checkAndInjectEmptyMessage() {
         const kiwixBodyDiv = document.getElementsByClassName('kiwixHomeBody')[0];
         if (!Object.keys(bookMap).length) {
-            noResultInjected = true;
-            iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('a'));
-            iso.layout();
-            const spanTag = document.createElement('span');
-            spanTag.setAttribute('class', 'noResults');
-            spanTag.innerHTML = `No result. Would you like to <a href="">reset filter?</a>`;
-            kiwixBodyDiv.append(spanTag);
-            spanTag.getElementsByTagName('a')[0].onclick = (event) => {
-                event.preventDefault();
-                window.history.pushState({}, null, `${window.location.href.split('?')[0]}`);
-                resetAndFilter();
-                filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
-            };
+            if (!noResultInjected) {
+                noResultInjected = true;
+                iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('a'));
+                iso.layout();
+                const spanTag = document.createElement('span');
+                spanTag.setAttribute('class', 'noResults');
+                spanTag.innerHTML = `No result. Would you like to <a href="/?lang=">reset filter?</a>`;
+                kiwixBodyDiv.append(spanTag);
+                spanTag.getElementsByTagName('a')[0].onclick = (event) => {
+                    event.preventDefault();
+                    window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
+                    resetAndFilter();
+                    filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
+                };
+            }
             return true;
         } else if (noResultInjected) {
             noResultInjected = false;
@@ -189,6 +196,7 @@
             const browserLang = navigator.language.split('-')[0];
             if (browserLang.length === 3) {
                 document.getElementById('languageFilter').value = browserLang;
+                langFilter.dispatchEvent(new Event('change'));
             } else {
                 const langFilter = document.getElementById('languageFilter');
                 langFilter.value = iso6391To3[browserLang];

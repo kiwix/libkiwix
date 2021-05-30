@@ -22,6 +22,10 @@
       rel="Stylesheet"
     />
     <style>
+      html {
+        min-height: 100%;
+        position: relative;
+      }
       body {
         background: radial-gradient(#eeeeee 15%, transparent 16%) 0 0,
           radial-gradient(#eeeeee 15%, transparent 16%) 8px 8px,
@@ -32,13 +36,15 @@
         margin-left: auto;
         margin-right: auto;
         max-width: 1100px;
+        min-height: 100%;
       }
       .book__list {
         text-align: center;
       }
       .kiwixHomeBody {
-        padding: 30px 0;
         text-align: center;
+        min-height: 100%;
+        margin: 30px 0;
       }
       .book {
         display: inline-block;
@@ -57,7 +63,10 @@
       }
       #kiwixfooter {
         text-align: center;
-        margin-top: 1em;
+        margin: 0.5em;
+        position: absolute;
+        bottom: 0;
+        left: 46%;
       }
       .kiwixHomeNavbar {
         display: flex;
@@ -112,6 +121,11 @@
       }
       a:visited {
         text-decoration: none;
+      }
+      .noResults {
+        position: absolute;
+        top: 48%;
+        left: 42%;
       }
     </style>
     <script src="{{root}}/skin/isotope.pkgd.min.js" defer></script>
