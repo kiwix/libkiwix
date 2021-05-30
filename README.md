@@ -6,12 +6,11 @@ core. It contains the code shared by all Kiwix ports (Windows,
 GNU/Linux, macOS, Android, iOS, ...).
 
 [![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
+[![Repositories](https://img.shields.io/repology/repositories/libkiwix?label=repositories)](https://github.com/kiwix/libkiwix/wiki/Repology)
 [![Build Status](https://github.com/kiwix/libkiwix/workflows/CI/badge.svg?query=branch%3Amaster)](https://github.com/kiwix/libkiwix/actions?query=branch%3Amaster)
 [![CodeFactor](https://www.codefactor.io/repository/github/kiwix/libkiwix/badge)](https://www.codefactor.io/repository/github/kiwix/libkiwix)
 [![Codecov](https://codecov.io/gh/kiwix/libkiwix/branch/master/graph/badge.svg)](https://codecov.io/gh/kiwix/libkiwix)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/libkiwix.svg)](https://repology.org/project/libkiwix/versions)
 
 Disclaimer
 ----------
