@@ -1,8 +1,8 @@
-Kiwix library
-=============
+Libkiwix
+========
 
-The Kiwix library provides the [Kiwix](https://kiwix.org) software
-suite core. It contains the code shared by all Kiwix ports (Windows,
+The Libkiwix provides the [Kiwix](https://kiwix.org) software suite
+core. It contains the code shared by all Kiwix ports (Windows,
 GNU/Linux, macOS, Android, iOS, ...).
 
 [![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
@@ -18,23 +18,23 @@ Disclaimer
 
 This document assumes you have a little knowledge about software
 compilation. If you experience difficulties with the dependencies or
-with the Kiwix libary compilation itself, we recommend to have a look
-to [kiwix-build](https://github.com/kiwix/kiwix-build).
+with the Libkiwix compilation itself, we recommend to have a look to
+[kiwix-build](https://github.com/kiwix/kiwix-build).
 
 Preamble
 --------
 
-Although the Kiwix library can be (cross-)compiled on/for many
-sytems, the following documentation explains how to do it on POSIX
-ones. It is primarly thought for GNU/Linux systems and has been tested
-on recent releases of Ubuntu and Fedora.
+Although the Libkiwix can be (cross-)compiled on/for many sytems, the
+following documentation explains how to do it on POSIX ones. It is
+primarly thought for GNU/Linux systems and has been tested on recent
+releases of Ubuntu and Fedora.
 
 Dependencies
 ------------
 
-The Kiwix library relies on many third parts software libraries. They
-are prerequisites to the Kiwix library compilation. Following
-libraries need to be available:
+The Libkiwix relies on many third party software libraries. They are
+prerequisites to the Libkiwix compilation. Following libraries need to
+be available:
 
 * [ICU](https://site.icu-project.org/) (package `libicu-dev` on Ubuntu)
 * [ZIM](https://openzim.org/) (package `libzim-dev` on Ubuntu)
@@ -42,9 +42,9 @@ libraries need to be available:
 * [Mustache](https://github.com/kainjow/Mustache) (Just copy the
 header `mustache.hpp` somewhere it can be found by the compiler and/or
 set CPPFLAGS with correct `-I` option). Use Mustache version 4.1 or above.
-* [libcurl](https://curl.se/libcurl) (`libcurl4-gnutls-dev`, `libcurl4-nss-dev` or `libcurl4-openssl-dev` on Ubuntu)
-* [microhttpd](https://www.gnu.org/software/libmicrohttpd) (package `libmicrohttpd-dev` on Ubuntu)
-* [zlib](https://zlib.net/) (package `zlib1g-dev` on Ubuntu)
+* [Libcurl](https://curl.se/libcurl) (`libcurl4-gnutls-dev`, `libcurl4-nss-dev` or `libcurl4-openssl-dev` on Ubuntu)
+* [Microhttpd](https://www.gnu.org/software/libmicrohttpd) (package `libmicrohttpd-dev` on Ubuntu)
+* [Zlib](https://zlib.net/) (package `zlib1g-dev` on Ubuntu)
 
 The following dependency needs to be available at runtime:
 * [Aria2](https://aria2.github.io/) (package `aria2` on Ubuntu)
@@ -61,7 +61,7 @@ If you want to install these dependencies locally, then use the
 Environment
 -------------
 
-The Kiwix library builds using [Meson](https://mesonbuild.com/) version
+The Libkiwix builds using [Meson](https://mesonbuild.com/) version
 0.45 or higher. Meson relies itself on Ninja, pkg-config and few other
 compilation tools.
 
@@ -77,7 +77,7 @@ section.
 Compilation
 -----------
 
-Once all dependencies are installed, you can compile the Kiwix library
+Once all dependencies are installed, you can compile the Libkiwix
 with:
 ```bash
 meson . build
@@ -85,7 +85,7 @@ ninja -C build
 ```
 
 By default, it will compile dynamic linked libraries. All binary files
-will be created in the "build" directory created automatically by
+will be created in the `build` directory created automatically by
 Meson. If you want statically linked libraries, you can add
 `--default-library=static` option to the Meson command.
 
@@ -103,7 +103,7 @@ meson test
 Installation
 ------------
 
-If you want to install the Kiwix library and the headers you just have
+If you want to install the Libkiwix and the headers you just have
 compiled on your system, here we go:
 ```bash
 ninja -C build install
@@ -147,8 +147,8 @@ cd ..
 ```
 
 If you compile manually Libmicrohttpd, you might need to compile it
-without GNU TLS, a bug here will empeach further compilation of Kiwix
-tools otherwise.
+without GNU TLS, a bug here will empeach further compilation
+otherwise.
 
 If the compilation still fails, you might need to get a more recent
 version of a dependency than the one packaged by your Linux
