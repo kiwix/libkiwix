@@ -35,7 +35,6 @@ Dependencies
 The Libkiwix relies on many third party software libraries. They are
 prerequisites to the Libkiwix compilation. Following libraries need to
 be available:
-
 * [ICU](https://site.icu-project.org/) (package `libicu-dev` on Ubuntu)
 * [ZIM](https://openzim.org/) (package `libzim-dev` on Ubuntu)
 * [Pugixml](https://pugixml.org/) (package `libpugixml-dev` on Ubuntu)
@@ -45,6 +44,9 @@ set CPPFLAGS with correct `-I` option). Use Mustache version 4.1 or above.
 * [Libcurl](https://curl.se/libcurl) (`libcurl4-gnutls-dev`, `libcurl4-nss-dev` or `libcurl4-openssl-dev` on Ubuntu)
 * [Microhttpd](https://www.gnu.org/software/libmicrohttpd) (package `libmicrohttpd-dev` on Ubuntu)
 * [Zlib](https://zlib.net/) (package `zlib1g-dev` on Ubuntu)
+
+To test the code:
+* [Google Test](https://github.com/google/googletest) (package `googletest` on Ubuntu)
 
 The following dependency needs to be available at runtime:
 * [Aria2](https://aria2.github.io/) (package `aria2` on Ubuntu)
