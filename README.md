@@ -146,6 +146,10 @@ cp ninja ../bin
 cd ..
 ```
 
+If you compile manually Libmicrohttpd, you might need to compile it
+without GNU TLS, a bug here will empeach further compilation of Kiwix
+tools otherwise.
+
 If the compilation still fails, you might need to get a more recent
 version of a dependency than the one packaged by your Linux
 distribution. Try then with a source tarball distributed by the
