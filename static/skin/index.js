@@ -5,11 +5,12 @@
         count: viewPortToCount()
     };
     const filterTypes = ['lang', 'category', 'q'];
+    const bookMap = new Map();
     let iso;
     let isFetching = false;
     let noResultInjected = false;
     let params = new URLSearchParams(window.location.search);
-    let bookMap = {};
+    let timer;
 
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
@@ -34,18 +35,18 @@
         const link = book.querySelector('link').getAttribute('href');
         const title =  getInnerHtml(book, 'title');
         const description = getInnerHtml(book, 'summary');
-        const linkTag = document.createElement('a');
         const id = getInnerHtml(book, 'id');
         const iconUrl = getInnerHtml(book, 'icon');
         const articleCount = getInnerHtml(book, 'articleCount');
         const mediaCount = getInnerHtml(book, 'mediaCount');
+
+        const linkTag = document.createElement('a');
         linkTag.setAttribute('class', 'book');
         linkTag.setAttribute('data-id', id);
         linkTag.setAttribute('href', link);
         if (sort) {
             linkTag.setAttribute('data-idx', bookMap[id]);
         }
-
         linkTag.innerHTML = `<div class='book__background' style="background-image: url('${iconUrl}');">
             <div class='book__title' title='${title}'>${title}</div>
             <div class='book__description' title='${description}'>${description}</div>
@@ -54,17 +55,32 @@
         return linkTag;
     }
 
+    function toggleFooter(show=false) {
+        const footer = document.getElementById('kiwixfooter');
+        if (footer.style.display === 'none' && show) {
+            footer.style.display = 'block';
+        } else if (footer.style.display !== 'none' && !show) {
+            footer.style.display = 'none';
+        }
+    }
+
     async function loadBooks() {
+        const loader = document.querySelector('.loader');
+        loader.style.display = 'block';
         return await fetch(queryUrlBuilder()).then(async (resp) => {
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
             const books = data.querySelectorAll('entry');
             books.forEach((book, idx) => {
-                bookMap[getInnerHtml(book, 'id')] = idx;
+                bookMap.set(getInnerHtml(book, 'id'), idx);
             });
             incrementalLoadingParams.start += books.length;
-            if (books.length < incrementalLoadingParams.count) {
+            if (parseInt(data.querySelector('totalResults').innerHTML) === bookMap.size) {
                 incrementalLoadingParams.count = 0;
+                toggleFooter(true);
+            } else {
+                toggleFooter();
             }
+            loader.style.display = 'none';
             return books;
         });
     }
@@ -78,7 +94,7 @@
 
     function checkAndInjectEmptyMessage() {
         const kiwixBodyDiv = document.getElementsByClassName('kiwixHomeBody')[0];
-        if (!Object.keys(bookMap).length) {
+        if (!bookMap.size) {
             if (!noResultInjected) {
                 noResultInjected = true;
                 iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('a'));
@@ -105,17 +121,19 @@
     async function loadAndDisplayBooks(sort = false) {
         if (isFetching) return;
         isFetching = true;
+        await loadAndDisplayBooksUnguarded(sort);
+        isFetching = false;
+    }
+
+    async function loadAndDisplayBooksUnguarded(sort) {
         let books = await loadBooks();
-        if (checkAndInjectEmptyMessage()) {
-            isFetching = false;
-            return;
-        }
+        if (checkAndInjectEmptyMessage()) {return}
         const booksToFilter = new Set();
         const booksToDelete = new Set();
         iso.arrange({
             filter: function (idx, elem) {
                 const id = elem.getAttribute('data-id');
-                const retVal = bookMap.hasOwnProperty(id);
+                const retVal = bookMap.has(id);
                 if (retVal) {
                     booksToFilter.add(id);
                     if (sort) {
@@ -131,14 +149,13 @@
         books = [...books].filter((book) => {return !booksToFilter.has(getInnerHtml(book, 'id'))});
         booksToDelete.forEach(book => {iso.remove(book);});
         books.forEach((book) => {iso.insert(generateBookHtml(book, sort))});
-        isFetching = false;
     }
 
     async function resetAndFilter(filterType = '', filterValue = '') {
         isFetching = false;
         incrementalLoadingParams.start = 0;
         incrementalLoadingParams.count = viewPortToCount();
-        bookMap = {};
+        bookMap.clear();
         params = new URLSearchParams(window.location.search);
         if (filterType) {
             if (!filterValue) {
