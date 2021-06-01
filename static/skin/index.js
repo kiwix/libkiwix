@@ -57,10 +57,13 @@
 
     function toggleFooter(show=false) {
         const footer = document.getElementById('kiwixfooter');
+        const fadeOutDiv = document.getElementsByClassName('fadeOut')[0];
         if (footer.style.display === 'none' && show) {
             footer.style.display = 'block';
+            fadeOutDiv.style.display = 'none';
         } else if (footer.style.display !== 'none' && !show) {
             footer.style.display = 'none';
+            fadeOutDiv.style.display = 'block';
         }
     }
 
