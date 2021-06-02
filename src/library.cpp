@@ -143,27 +143,35 @@ Book& Library::getBookByPath(const std::string& path)
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
-  try {
-    return m_readers.at(id);
-  } catch (std::out_of_range& e) {}
+  if (m_readers.count(id)) {
+    return m_readers[id];
+  } else if (m_archives.count(id)) {
+    auto reader = make_shared<Reader>(m_archives[id]);
+    m_readers[id] = reader;
+    return reader;
+  }
 
   auto book = getBookById(id);
   if (!book.isPathValid())
     return nullptr;
-  auto sptr = make_shared<Reader>(book.getPath());
-  m_readers[id] = sptr;
-  return sptr;
+
+  auto archive = make_shared<zim::Archive>(book.getPath());
+  m_archives[id] = archive;
+  auto reader = make_shared<Reader>(archive);
+  m_readers[id] = reader;
+  return reader;
 }
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
-  try {
-    return m_archives.at(id);
-  } catch (std::out_of_range& e) {}
+  if (m_archives.count(id)) {
+    return m_archives[id];
+  }
 
   auto book = getBookById(id);
   if (!book.isPathValid())
     return nullptr;
+
   auto sptr = make_shared<zim::Archive>(book.getPath());
   m_archives[id] = sptr;
   return sptr;
