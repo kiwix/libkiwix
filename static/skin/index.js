@@ -57,11 +57,11 @@
 
     function toggleFooter(show=false) {
         const footer = document.getElementById('kiwixfooter');
-        const fadeOutDiv = document.getElementsByClassName('fadeOut')[0];
-        if (footer.style.display === 'none' && show) {
+        const fadeOutDiv = document.getElementById('fadeOut');
+        if (show) {
             footer.style.display = 'block';
             fadeOutDiv.style.display = 'none';
-        } else if (footer.style.display !== 'none' && !show) {
+        } else {
             footer.style.display = 'none';
             fadeOutDiv.style.display = 'block';
         }
@@ -105,7 +105,7 @@
                 const spanTag = document.createElement('span');
                 spanTag.setAttribute('class', 'noResults');
                 spanTag.innerHTML = `No result. Would you like to <a href="/?lang=">reset filter?</a>`;
-                kiwixBodyDiv.append(spanTag);
+                document.querySelector('body').append(spanTag);
                 spanTag.getElementsByTagName('a')[0].onclick = (event) => {
                     event.preventDefault();
                     window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
@@ -116,7 +116,7 @@
             return true;
         } else if (noResultInjected) {
             noResultInjected = false;
-            kiwixBodyDiv.getElementsByClassName('noResults')[0].remove();
+            document.getElementsByClassName('noResults')[0].remove();
         }
         return false;
     }
@@ -161,11 +161,7 @@
         bookMap.clear();
         params = new URLSearchParams(window.location.search);
         if (filterType) {
-            if (!filterValue) {
-                params.delete(filterType);
-            } else {
-                params.set(filterType, filterValue);
-            }
+            params.set(filterType, filterValue);
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
         }
         await loadAndDisplayBooks(true);
