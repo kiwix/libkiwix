@@ -365,20 +365,6 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
   return suggestions;
 }
 
-zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry)
-{
-  int loopCounter = 42;
-  auto final_entry = entry;
-  while (final_entry.isRedirect() && loopCounter--) {
-    final_entry = final_entry.getRedirectEntry();
-  }
-  // Prevent infinite loops.
-  if (final_entry.isRedirect()) {
-    throw zim::EntryNotFound("Unable to resolve entry redirects.");
-  }
-  return final_entry;
-}
-
 zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
 {
   if (path.empty() || path == "/") {
