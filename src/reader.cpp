@@ -320,12 +320,8 @@ string Reader::getOrigId() const
 
 Entry Reader::getEntryFromPath(const std::string& path) const
 {
-  if (path.empty() || path == "/") {
-    return getMainPage();
-  }
-
   try {
-    return zimArchive->getEntryByPath(path);
+    return kiwix::getEntryFromPath(zimArchive.get(), path);
   } catch (zim::EntryNotFound& e) {
     throw NoEntry();
   }

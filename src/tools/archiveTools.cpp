@@ -105,4 +105,12 @@ zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& en
   return archive->getEntryByPath(entry.getItem(true).getPath());
 }
 
+zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
+{
+  if (path.empty() || path == "/") {
+    return archive->getMainEntry();
+  }
+  return archive->getEntryByPath(path);
+}
+
 } // kiwix

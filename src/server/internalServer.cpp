@@ -365,14 +365,6 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
   return suggestions;
 }
 
-zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path)
-{
-  if (path.empty() || path == "/") {
-    return archive->getMainEntry();
-  }
-  return archive->getEntryByPath(path);
-}
-
 /**
  * Archive and Zim handlers end
  **/
