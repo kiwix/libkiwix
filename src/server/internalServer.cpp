@@ -615,13 +615,14 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     }
 
     zim::Search search = searcher->search(query);
-    SearchRenderer renderer(&search, mp_nameMapper);
+    SearchRenderer renderer(search.getResults(start, end), mp_nameMapper, start,
+                            search.getEstimatedMatches());
     renderer.setSearchPattern(patternString);
     renderer.setSearchContent(bookName);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
-    auto response = ContentResponse::build(*this, renderer.getHtml(start, end), "text/html; charset=utf-8");
+    auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     response->set_taskbar(bookName, archive ? getArchiveTitle(archive.get()) : "");
 
     return std::move(response);
