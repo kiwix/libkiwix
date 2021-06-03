@@ -45,7 +45,7 @@
         position: relative;
         text-align: center;
         min-height: 100%;
-        margin: 30px 0;
+        margin: 0 0 15px;
       }
       .book {
         display: inline-block;
@@ -75,6 +75,9 @@
       }
       .kiwixFilter {
         margin: 8px 10px;
+      }
+      .kiwixSearch, .searchButton {
+        margin: 0 13px 0 0;
       }
       .kiwixSearchForm {
         margin: 8px 10px;
@@ -128,9 +131,6 @@
         top: 48%;
         left: 42%;
       }
-      .shadow {
-        box-shadow: 0 6px 2px -3px grey;
-      }
       .loader-spinner {
         position: absolute;
         top: -50%;
@@ -145,6 +145,7 @@
         animation: spin 1s linear infinite;
         margin-top: 35px;
         margin-bottom: -35px;
+        z-index: 2;
       }
       /* Safari */
       @-webkit-keyframes spin {
@@ -161,13 +162,18 @@
         width: 100%;
       }
       .fadeOut {
-        position: absolute;
+        position: fixed;
+        display: none;
         bottom: 0;
         left: 0;
         z-index: 1;
         background: linear-gradient(180deg, rgba(232, 232, 232, 0) 0%, rgb(232, 232, 232) 100%);
         height: 80px;
         width: 100%;
+      }
+      .spacer {
+        height: 20px;
+        background: transparent;
       }
     </style>
     <script src="{{root}}/skin/isotope.pkgd.min.js" defer></script>
@@ -186,7 +192,7 @@
       </select>
       <form id='kiwixSearchForm' class='kiwixSearchForm'>
         <input type="text" name="q" id="searchFilter" class='kiwixSearch'>
-        <input type="submit" value="Submit"/>
+        <input type="submit" class="searchButton" value="Search"/>
       </form>
     </div>
     <div class="kiwixHomeBody">
@@ -194,6 +200,7 @@
       <div id="fadeOut" class="fadeOut"></div>
     </div>
     <div class="loader"><div class="loader-spinner"></div></div>
+    <div class="spacer"></div>
     <div id="kiwixfooter">Powered by <a href="https://kiwix.org">Kiwix</a></div>
   </body>
 </html>

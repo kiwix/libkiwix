@@ -6,6 +6,8 @@
     };
     const filterTypes = ['lang', 'category', 'q'];
     const bookMap = new Map();
+    let footer;
+    let fadeOutDiv;
     let iso;
     let isFetching = false;
     let noResultInjected = false;
@@ -56,11 +58,8 @@
     }
 
     function toggleFooter(show=false) {
-        const footer = document.getElementById('kiwixfooter');
-        const fadeOutDiv = document.getElementById('fadeOut');
         if (show) {
             footer.style.display = 'block';
-            fadeOutDiv.style.display = 'none';
         } else {
             footer.style.display = 'none';
             fadeOutDiv.style.display = 'block';
@@ -96,7 +95,6 @@
     }
 
     function checkAndInjectEmptyMessage() {
-        const kiwixBodyDiv = document.getElementsByClassName('kiwixHomeBody')[0];
         if (!bookMap.size) {
             if (!noResultInjected) {
                 noResultInjected = true;
@@ -158,6 +156,7 @@
         isFetching = false;
         incrementalLoadingParams.start = 0;
         incrementalLoadingParams.count = viewPortToCount();
+        fadeOutDiv.style.display = 'none';
         bookMap.clear();
         params = new URLSearchParams(window.location.search);
         if (filterType) {
@@ -173,8 +172,13 @@
     });
 
     async function loadSubset() {
-        if (incrementalLoadingParams.count && window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            loadAndDisplayBooks();
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+            if (incrementalLoadingParams.count) {
+                loadAndDisplayBooks();
+            }
+            else {
+                fadeOutDiv.style.display = 'none';
+            }
         }
     }
 
@@ -189,16 +193,18 @@
     window.addEventListener('scroll', loadSubset);
 
     window.onload = async () => {
-            iso = new Isotope( '.book__list', {
-                itemSelector: '.book',
-                getSortData:{
-                    weight: function( itemElem ) {
-                        const index = itemElem.getAttribute('data-idx');
-                        return index ? parseInt(index) : Infinity;
-                    }
-                },
-                sortBy: 'weight'
+        iso = new Isotope( '.book__list', {
+            itemSelector: '.book',
+            getSortData:{
+                weight: function( itemElem ) {
+                    const index = itemElem.getAttribute('data-idx');
+                    return index ? parseInt(index) : Infinity;
+                }
+            },
+            sortBy: 'weight'
         });
+        footer = document.getElementById('kiwixfooter');
+        fadeOutDiv = document.getElementById('fadeOut');
         await loadAndDisplayBooks();
         await loadAndDisplayOptions('#languageFilter', langList);
         await loadAndDisplayOptions('#categoryFilter', categoryList);
