@@ -47,6 +47,7 @@ extern "C" {
 #include "tools/pathTools.h"
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
+#include "tools/archiveTools.h"
 #include "library.h"
 #include "name_mapper.h"
 #include "entry.h"
@@ -330,71 +331,6 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
 /**
  * Archive and Zim handlers begin
  **/
-
-std::string getArchiveTitle(const zim::Archive* const archive) {
-   return (! archive->getMetadata("Title").empty())
-          ? archive->getMetadata("Title")
-          : archive->getFilename();
-}
-
-std::string getMetaDescription(const zim::Archive* const archive) {
-  return (! archive->getMetadata("Description").empty())
-         ? archive->getMetadata("Description")
-         : archive->getMetadata("Subtitle");
-}
-
-std::string getMetaTags(const zim::Archive* const archive, bool original = false) {
-  string tags_str = archive->getMetadata("Tags");
-  if (original) {
-    return tags_str;
-  }
-  return join(convertTags(tags_str), ";");
-}
-
-bool getArchiveFavicon(const zim::Archive* const archive, string& content, string& mimeType)
-{
-  try {
-    auto entry = archive->getFaviconEntry();
-    auto item = entry.getItem(true);
-    content = item.getData();
-    mimeType = item.getMimetype();
-    return true;
-  } catch(zim::EntryNotFound& e) {};
-
-  return false;
-}
-
-bool getMetadata(const zim::Archive* const archive, const string& name, string& value)
-{
-  try {
-    value = archive->getMetadata(name);
-    return true;
-  } catch(zim::EntryNotFound& e) {
-    return false;
-  }
-}
-
-#define METADATA(archive, name) std::string v; getMetadata(archive, name, v); return v;
-
-std::string getMetaLanguage(const zim::Archive* const archive) {
-  METADATA(archive, "Language")
-}
-
-std::string getMetaName(const zim::Archive* const archive) {
-  METADATA(archive, "Name")
-}
-
-std::string getMetaDate(const zim::Archive* const archive) {
-  METADATA(archive, "Date")
-}
-
-std::string getMetaCreator(const zim::Archive* const archive) {
-  METADATA(archive, "Creator")
-}
-
-std::string getMetaPublisher(const zim::Archive* const archive) {
-  METADATA(archive, "Publisher")
-}
 
 std::vector<std::string> getTitleVariants(const std::string& title)
 {
