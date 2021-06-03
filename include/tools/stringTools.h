@@ -41,6 +41,7 @@ std::string removeAccents(const std::string& text);
 void loadICUExternalTables();
 
 std::string urlEncode(const std::string& value, bool encodeReserved = false);
+std::vector<std::string> getTitleVariants(const std::string& title);
 std::string urlDecode(const std::string& value, bool component = false);
 
 std::vector<std::string> split(const std::string& str, const std::string& delims, bool trimEmpty = true, bool keepDelim = false);

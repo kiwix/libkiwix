@@ -332,16 +332,6 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
  * Archive and Zim handlers begin
  **/
 
-std::vector<std::string> getTitleVariants(const std::string& title)
-{
-  std::vector<std::string> variants;
-  variants.push_back(title);
-  variants.push_back(kiwix::ucFirst(title));
-  variants.push_back(kiwix::lcFirst(title));
-  variants.push_back(kiwix::toTitle(title));
-  return variants;
-}
-
 // TODO: retrieve searcher from caching mechanism
 SuggestionsList_t getSuggestions(const zim::Archive* const archive,
                   const std::string& queryString, int suggestionCount)
@@ -355,8 +345,8 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
     auto suggestionResult = suggestionSearch.getResults(0, suggestionCount);
 
     for (auto it = suggestionResult.begin(); it != suggestionResult.end(); it++) {
-      SuggestionItem suggestion(it.getTitle(), it.getPath(),
-                                kiwix::normalize(it.getTitle()), it.getSnippet());
+      SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
+                                it.getPath(), it.getSnippet());
       suggestions.push_back(suggestion);
     }
   } else {
@@ -365,8 +355,8 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
     int currCount = 0;
     for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
       for (auto& entry: archive->findByTitle(*it)) {
-        SuggestionItem suggestion(entry.getTitle(), entry.getPath(),
-                                kiwix::normalize(entry.getTitle()));
+        SuggestionItem suggestion(entry.getTitle(), kiwix::normalize(entry.getTitle()),
+                                  entry.getPath());
         suggestions.push_back(suggestion);
         currCount++;
       }
@@ -474,6 +464,10 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     return Response::build_404(*this, request, bookName, "");
   }
 
+  if (archive == nullptr) {
+    return Response::build_404(*this, request, bookName);
+  }
+
   if (m_verbose.load()) {
     printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
@@ -481,26 +475,26 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   MustacheData results{MustacheData::type::list};
 
   bool first = true;
-  if (archive != nullptr) {
-    /* Get the suggestions */
-    SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, maxSuggestionCount);
-    for(auto& suggestion:suggestions) {
-      MustacheData result;
-      result.set("label", suggestion.getTitle());
 
-      if (suggestion.hasSnippet()) {
-        result.set("label", suggestion.getSnippet());
-      }
+  /* Get the suggestions */
+  SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, maxSuggestionCount);
+  for(auto& suggestion:suggestions) {
+    MustacheData result;
+    result.set("label", suggestion.getTitle());
 
-      result.set("value", suggestion.getTitle());
-      result.set("kind", "path");
-      result.set("path", suggestion.getPath());
-      result.set("first", first);
-      first = false;
-      results.push_back(result);
-      suggestionCount++;
+    if (suggestion.hasSnippet()) {
+      result.set("label", suggestion.getSnippet());
     }
+
+    result.set("value", suggestion.getTitle());
+    result.set("kind", "path");
+    result.set("path", suggestion.getPath());
+    result.set("first", first);
+    first = false;
+    results.push_back(result);
+    suggestionCount++;
   }
+
 
   /* Propose the fulltext search if possible */
   if (archive->hasFulltextIndex()) {

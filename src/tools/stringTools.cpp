@@ -395,3 +395,11 @@ bool kiwix::startsWith(const std::string& base, const std::string& start)
         && std::equal(start.begin(), start.end(), base.begin());
 }
 
+std::vector<std::string> kiwix::getTitleVariants(const std::string& title) {
+  std::vector<std::string> variants;
+  variants.push_back(title);
+  variants.push_back(kiwix::ucFirst(title));
+  variants.push_back(kiwix::lcFirst(title));
+  variants.push_back(kiwix::toTitle(title));
+  return variants;
+}
