@@ -41,7 +41,8 @@ class SearchRenderer
    *                          Used to generate pagination links.
    */
   SearchRenderer(Searcher* searcher, NameMapper* mapper);
-  SearchRenderer(zim::Search* search, NameMapper* mapper);
+  SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+                 unsigned int start, unsigned int estimatedResultCount);
 
   ~SearchRenderer();
 
@@ -74,15 +75,9 @@ class SearchRenderer
    */
   std::string getHtml();
 
-  /**
-   * Generate the html page with the resutls of the search.
-   */
-  std::string getHtml(int start, int end);
-
  protected:
   std::string beautifyInteger(const unsigned int number);
-  Searcher* mp_searcher;
-  zim::Search* mp_search;
+  zim::SearchResultSet m_srs;
   NameMapper* mp_nameMapper;
   std::string searchContent;
   std::string searchPattern;

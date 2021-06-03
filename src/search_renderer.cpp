@@ -37,19 +37,22 @@ namespace kiwix
 
 /* Constructor */
 SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
-    : mp_searcher(searcher),
-      mp_search(nullptr),
+    : m_srs(searcher->getSearchResultSet()),
       mp_nameMapper(mapper),
       protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?")
+      searchProtocolPrefix("search://?"),
+      estimatedResultCount(searcher->getEstimatedResultCount()),
+      resultStart(searcher->getResultStart())
 {}
 
-SearchRenderer::SearchRenderer(zim::Search* search, NameMapper* mapper)
-    : mp_searcher(nullptr),
-      mp_search(search),
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+                      unsigned int start, unsigned int estimatedResultCount)
+    : m_srs(srs),
       mp_nameMapper(mapper),
       protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?")
+      searchProtocolPrefix("search://?"),
+      estimatedResultCount(estimatedResultCount),
+      resultStart(start)
 {}
 
 /* Destructor */
@@ -79,89 +82,7 @@ std::string SearchRenderer::getHtml()
 {
   kainjow::mustache::data results{kainjow::mustache::data::type::list};
 
-  mp_searcher->restart_search();
-  Result* p_result = NULL;
-  while ((p_result = mp_searcher->getNextResult())) {
-    kainjow::mustache::data result;
-    result.set("title", p_result->get_title());
-    result.set("url", p_result->get_url());
-    result.set("snippet", p_result->get_snippet());
-    result.set("resultContentId", mp_nameMapper->getNameForId(p_result->get_zimId()));
-
-    if (p_result->get_wordCount() >= 0) {
-      result.set("wordCount", kiwix::beautifyInteger(p_result->get_wordCount()));
-    }
-
-    results.push_back(result);
-    delete p_result;
-  }
-
-  // pages
-  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
-
-  auto resultStart = mp_searcher->getResultStart();
-  auto resultEnd = 0U;
-  auto estimatedResultCount = mp_searcher->getEstimatedResultCount();
-  auto currentPage = 0U;
-  auto pageStart = 0U;
-  auto pageEnd = 0U;
-  auto lastPageStart = 0U;
-  if (pageLength) {
-    currentPage = resultStart/pageLength;
-    pageStart = currentPage > 4 ? currentPage-4 : 0;
-    pageEnd = currentPage + 5;
-    if (pageEnd > estimatedResultCount / pageLength) {
-      pageEnd = (estimatedResultCount + pageLength - 1) / pageLength;
-    }
-    if (estimatedResultCount > pageLength) {
-      lastPageStart = ((estimatedResultCount-1)/pageLength)*pageLength;
-    }
-  }
-
-  resultEnd = resultStart+pageLength; //setting result end
-
-  for (unsigned int i = pageStart; i < pageEnd; i++) {
-    kainjow::mustache::data page;
-    page.set("label", to_string(i + 1));
-    page.set("start", to_string(i * pageLength));
-
-    if (i == currentPage) {
-      page.set("selected", true);
-    }
-    pages.push_back(page);
-  }
-
-  std::string template_str = RESOURCE::templates::search_result_html;
-  kainjow::mustache::mustache tmpl(template_str);
-
-  kainjow::mustache::data allData;
-  allData.set("results", results);
-  allData.set("pages", pages);
-  allData.set("hasResults", estimatedResultCount != 0);
-  allData.set("hasPages", pageStart != pageEnd);
-  allData.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
-  allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
-  allData.set("resultStart", to_string(resultStart + 1));
-  allData.set("resultEnd", to_string(min(resultEnd, estimatedResultCount)));
-  allData.set("pageLength", to_string(pageLength));
-  allData.set("resultLastPageStart", to_string(lastPageStart));
-  allData.set("protocolPrefix", this->protocolPrefix);
-  allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
-  allData.set("contentId", this->searchContent);
-
-  std::stringstream ss;
-  tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
-  return ss.str();
-}
-
-std::string SearchRenderer::getHtml(int start, int end)
-{
-  kainjow::mustache::data results{kainjow::mustache::data::type::list};
-
-  zim::SearchResultSet srs = mp_search->getResults(start, end);
-
-  for (auto it = srs.begin(); it != srs.end(); it++) {
+  for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
     kainjow::mustache::data result;
     result.set("title", it.getTitle());
     result.set("url", it.getPath());
@@ -180,9 +101,7 @@ std::string SearchRenderer::getHtml(int start, int end)
   // pages
   kainjow::mustache::data pages{kainjow::mustache::data::type::list};
 
-  auto resultStart = start;
   auto resultEnd = 0U;
-  unsigned int estimatedResultCount = mp_search->getEstimatedMatches();
   auto currentPage = 0U;
   auto pageStart = 0U;
   auto pageEnd = 0U;

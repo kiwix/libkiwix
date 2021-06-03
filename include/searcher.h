@@ -32,6 +32,8 @@
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
 
+#include <zim/search.h>
+
 using namespace std;
 
 namespace kiwix
@@ -141,6 +143,11 @@ class Searcher
    * Get a estimation of the result count.
    */
   unsigned int getEstimatedResultCount();
+
+  /**
+   * Get a SearchResultSet object for current search
+   */
+  zim::SearchResultSet getSearchResultSet();
 
   unsigned int getResultStart() { return resultStart; }
   unsigned int getResultEnd() { return resultEnd; }

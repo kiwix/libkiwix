@@ -228,6 +228,11 @@ unsigned int Searcher::getEstimatedResultCount()
   return this->estimatedResultCount;
 }
 
+zim::SearchResultSet Searcher::getSearchResultSet()
+{
+  return *(this->internal);
+}
+
 _Result::_Result(zim::SearchResultSet::iterator iterator)
     : iterator(iterator)
 {
