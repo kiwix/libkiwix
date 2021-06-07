@@ -304,7 +304,7 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(*this, RESOURCE::templates::index_html, get_default_data(), "text/html; charset=utf-8");
+  return ContentResponse::build(*this, RESOURCE::templates::index_html, get_default_data(), "text/html; charset=utf-8", true);
 }
 
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
