@@ -5,7 +5,6 @@ The Libkiwix provides the [Kiwix](https://kiwix.org) software suite
 core. It contains the code shared by all Kiwix ports (Windows,
 GNU/Linux, macOS, Android, iOS, ...).
 
-[![Download](https://api.bintray.com/packages/kiwix/kiwix/kiwixlib/images/download.svg)](https://bintray.com/kiwix/kiwix/kiwixlib/_latestVersion)
 [![Repositories](https://img.shields.io/repology/repositories/libkiwix?label=repositories)](https://github.com/kiwix/libkiwix/wiki/Repology)
 [![Build Status](https://github.com/kiwix/libkiwix/workflows/CI/badge.svg?query=branch%3Amaster)](https://github.com/kiwix/libkiwix/actions?query=branch%3Amaster)
 [![CodeFactor](https://www.codefactor.io/repository/github/kiwix/libkiwix/badge)](https://www.codefactor.io/repository/github/kiwix/libkiwix)
