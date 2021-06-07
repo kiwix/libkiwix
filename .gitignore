@@ -4,3 +4,4 @@ subprojects/googletest-release*
 *.class
 build/
 .vscode/
+builddir/
