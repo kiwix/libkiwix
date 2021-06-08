@@ -660,15 +660,14 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   return std::move(response);
 }
 
-std::vector<std::string>
-InternalServer::search_catalog(const RequestContext& request,
-                               kiwix::OPDSDumper& opdsDumper)
+namespace
+{
+
+Filter get_search_filter(const RequestContext& request)
 {
     auto filter = kiwix::Filter().valid(true).local(true);
-    string query("<Empty query>");
     try {
-      query = request.get_argument("q");
-      filter.query(query);
+      filter.query(request.get_argument("q"));
     } catch (const std::out_of_range&) {}
     try {
       filter.maxSize(extractFromString<unsigned long>(request.get_argument("maxsize")));
@@ -688,7 +687,20 @@ InternalServer::search_catalog(const RequestContext& request,
     try {
       filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
     } catch (...) {}
-    opdsDumper.setTitle("Search result for " + query);
+    return filter;
+}
+
+} // unnamed namespace
+
+std::vector<std::string>
+InternalServer::search_catalog(const RequestContext& request,
+                               kiwix::OPDSDumper& opdsDumper)
+{
+    const auto filter = get_search_filter(request);
+    const std::string q = filter.hasQuery()
+                        ? filter.getQuery()
+                        : "<Empty query>";
+    opdsDumper.setTitle("Search result for " + q);
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
     size_t count(10);
