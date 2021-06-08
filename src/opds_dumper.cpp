@@ -98,7 +98,7 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
      {"books", bookData }
   };
 
-  return render_template(RESOURCE::catalog_entries_xml, template_data);
+  return render_template(RESOURCE::templates::catalog_entries_xml, template_data);
 }
 
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const
@@ -117,7 +117,7 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"books", bookData }
   };
 
-  return render_template(RESOURCE::catalog_v2_entries_xml, template_data);
+  return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed(const std::vector<std::string>& categories) const
@@ -135,7 +135,7 @@ std::string OPDSDumper::categoriesOPDSFeed(const std::vector<std::string>& categ
   }
 
   return render_template(
-             RESOURCE::catalog_v2_categories_xml,
+             RESOURCE::templates::catalog_v2_categories_xml,
              kainjow::mustache::object{
                {"date", now},
                {"endpoint_root", rootLocation + "/catalog/v2"},

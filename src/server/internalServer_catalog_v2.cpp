@@ -68,7 +68,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 {
   return ContentResponse::build(
              *this,
-             RESOURCE::catalog_v2_root_xml,
+             RESOURCE::templates::catalog_v2_root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
                {"endpoint_root", m_root + "/catalog/v2"},
