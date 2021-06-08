@@ -240,6 +240,7 @@ const char* urls404[] = {
   "/skin/non-existent-skin-resource",
   "/catalog",
   "/catalog/non-existent-item",
+  "/catalogBLABLABLA/root.xml",
   "/meta",
   "/meta?content=zimfile",
   "/meta?content=zimfile&name=non-existent-item",
@@ -570,18 +571,21 @@ protected:
   }
 };
 
-// Returns a copy of 'text' with every line that fully matches 'pattern'
-// replaced with the fixed string 'replacement'
+// Returns a copy of 'text' where every line that fully matches 'pattern'
+// preceded by optional whitespace is replaced with the fixed string
+// 'replacement' preserving the leading whitespace
 std::string replaceLines(const std::string& text,
                          const std::string& pattern,
                          const std::string& replacement)
 {
-  std::regex regex("^" + pattern + "$");
+  std::regex regex("^ *" + pattern + "$");
   std::ostringstream oss;
   std::istringstream iss(text);
   std::string line;
   while ( std::getline(iss, line) ) {
     if ( std::regex_match(line, regex) ) {
+      for ( size_t i = 0; i < line.size() && line[i] == ' '; ++i )
+        oss << ' ';
       oss << replacement << "\n";
     } else {
       oss << line << "\n";
@@ -592,10 +596,10 @@ std::string replaceLines(const std::string& text,
 
 std::string maskVariableOPDSFeedData(std::string s)
 {
-  s = replaceLines(s, "  <updated>.+</updated>",
-                      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>");
-  s = replaceLines(s, "  <id>.+</id>",
-                      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>");
+  s = replaceLines(s, R"(<updated>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ</updated>)",
+                      "<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
+  s = replaceLines(s, "<id>[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}</id>",
+                      "<id>12345678-90ab-cdef-1234-567890abcdef</id>");
   return s;
 }
 
@@ -607,7 +611,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n" \
     "  <link rel=\"search\""                                            \
            " type=\"application/opensearchdescription+xml\""            \
-           " href=\"catalog/searchdescription.xml\" />\n"
+           " href=\"/catalog/searchdescription.xml\" />\n"
 
 #define CHARLES_RAY_CATALOG_ENTRY \
     "  <entry>\n"                                                       \
@@ -615,7 +619,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Charles, Ray</title>\n"                                 \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"    \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>jazz</category>\n"                                   \
@@ -639,7 +643,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Ray Charles</title>\n"                                  \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>wikipedia</category>\n"                              \
@@ -663,7 +667,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <title>Ray (uncategorized) Charles</title>\n"                  \
     "    <summary>No category is assigned to this library entry.</summary>\n" \
     "    <language>eng</language>\n"                                    \
-    "    <updated>2020-03-31T00:00::00Z</updated>\n"                    \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category></category>\n"                                \
@@ -690,6 +694,7 @@ TEST_F(LibraryServerTest, catalog_root_xml)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>All zims</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
     CATALOG_LINK_TAGS
     CHARLES_RAY_CATALOG_ENTRY
     RAY_CHARLES_CATALOG_ENTRY
@@ -711,7 +716,7 @@ TEST_F(LibraryServerTest, catalog_searchdescription_xml)
     "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
     "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
     "       indexOffset=\"0\"\n"
-    "       template=\"//catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "       template=\"/catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
     "</OpenSearchDescription>\n"
   );
 }
@@ -723,7 +728,7 @@ TEST_F(LibraryServerTest, catalog_search_by_phrase)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for \"ray charles\"</title>\n"
+    "  <title>Filtered zims (q=&quot;ray charles&quot;)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -742,7 +747,7 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for ray charles</title>\n"
+    "  <title>Filtered zims (q=ray charles)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>3</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -763,7 +768,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for description:ray description:charles</title>\n"
+      "  <title>Filtered zims (q=description:ray description:charles)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -780,7 +785,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for title:\"ray charles\"</title>\n"
+      "  <title>Filtered zims (q=title:&quot;ray charles&quot;)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -799,7 +804,7 @@ TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for ray -uncategorized</title>\n"
+    "  <title>Filtered zims (q=ray -uncategorized)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -818,7 +823,7 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <title>Filtered zims (tag=_category:jazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -836,7 +841,7 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Search result for &lt;Empty query&gt;</title>\n"
+    "  <title>Filtered zims (category=jazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -855,7 +860,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <title>Filtered zims (count=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -871,7 +876,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <title>Filtered zims (count=1&amp;start=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
@@ -887,13 +892,217 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Search result for &lt;Empty query&gt;</title>\n"
+      "  <title>Filtered zims (count=10&amp;start=100)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>100</startIndex>\n"
       "  <itemsPerPage>0</itemsPerPage>\n"
       CATALOG_LINK_TAGS
+      "  \n"
       "</feed>\n"
     );
   }
+}
+
+TEST_F(LibraryServerTest, catalog_v2_root)
+{
+  const auto r = zfs1_->GET("/catalog/v2/root.xml");
+  EXPECT_EQ(r->status, 200);
+  const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
+  <id>12345678-90ab-cdef-1234-567890abcdef</id>
+  <link rel="self"
+        href="/catalog/v2/root.xml"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="start"
+        href="/catalog/v2/root.xml"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="search"
+        href="/catalog/v2/searchdescription.xml"
+        type="application/opensearchdescription+xml"/>
+  <title>OPDS Catalog Root</title>
+  <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+
+  <entry>
+    <title>All entries</title>
+    <link rel="subsection"
+          href="/catalog/v2/entries"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries from this catalog.</content>
+  </entry>
+  <entry>
+    <title>List of categories</title>
+    <link rel="subsection"
+          href="/catalog/v2/categories"
+          type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">List of all categories in this catalog.</content>
+  </entry>
+</feed>
+)";
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
+}
+
+TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
+{
+  const auto r = zfs1_->GET("/catalog/v2/searchdescription.xml");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<OpenSearchDescription xmlns=\"http://a9.com/-/spec/opensearch/1.1/\">\n"
+    "  <ShortName>Zim catalog search</ShortName>\n"
+    "  <Description>Search zim files in the catalog.</Description>\n"
+    "  <Url type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"\n"
+    "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
+    "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
+    "       indexOffset=\"0\"\n"
+    "       template=\"/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "</OpenSearchDescription>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_v2_categories)
+{
+  const auto r = zfs1_->GET("/catalog/v2/categories");
+  EXPECT_EQ(r->status, 200);
+  const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
+  <id>12345678-90ab-cdef-1234-567890abcdef</id>
+  <link rel="self"
+        href="/catalog/v2/categories"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="start"
+        href="/catalog/v2/root.xml"
+        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <title>List of categories</title>
+  <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+
+  <entry>
+    <title>jazz</title>
+    <link rel="subsection"
+          href="/catalog/v2/entries?category=jazz"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries with category of 'jazz'.</content>
+  </entry>
+  <entry>
+    <title>wikipedia</title>
+    <link rel="subsection"
+          href="/catalog/v2/entries?category=wikipedia"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries with category of 'wikipedia'.</content>
+  </entry>
+</feed>
+)";
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
+}
+
+#define CATALOG_V2_ENTRIES_PREAMBLE(q)                        \
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"           \
+    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\"\n"   \
+    "      xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\">\n"  \
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"       \
+    "\n"                                                      \
+    "  <link rel=\"self\"\n"                                  \
+    "        href=\"/catalog/v2/entries" q "\"\n"             \
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n" \
+    "  <link rel=\"start\"\n"                                 \
+    "        href=\"/catalog/v2/root.xml\"\n"              \
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n" \
+    "  <link rel=\"up\"\n"                                    \
+    "        href=\"/catalog/v2/root.xml\"\n"              \
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n" \
+    "\n"                                                      \
+
+
+TEST_F(LibraryServerTest, catalog_v2_entries)
+{
+  const auto r = zfs1_->GET("/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("")
+    "  <title>All Entries</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
+{
+  {
+    const auto r = zfs1_->GET("/catalog/v2/entries?start=1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?start=1")
+      "  <title>Filtered Entries (start=1)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>1</startIndex>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
+      RAY_CHARLES_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
+    const auto r = zfs1_->GET("/catalog/v2/entries?count=2");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?count=2")
+      "  <title>Filtered Entries (count=2)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
+      CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
+    const auto r = zfs1_->GET("/catalog/v2/entries?start=1&count=1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?count=1&start=1")
+      "  <title>Filtered Entries (count=1&amp;start=1)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>1</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
+{
+  const auto r = zfs1_->GET("/catalog/v2/entries?q=\"ray%20charles\"");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
+    "  <title>Filtered Entries (q=&quot;ray charles&quot;)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>2</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>2</itemsPerPage>\n"
+    RAY_CHARLES_CATALOG_ENTRY
+    CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
 }

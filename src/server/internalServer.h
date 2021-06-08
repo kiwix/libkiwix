@@ -73,6 +73,10 @@ class InternalServer {
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
     std::unique_ptr<Response> handle_skin(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog(const RequestContext& request);
+    std::unique_ptr<Response> handle_catalog_v2(const RequestContext& request);
+    std::unique_ptr<Response> handle_catalog_v2_root(const RequestContext& request);
+    std::unique_ptr<Response> handle_catalog_v2_entries(const RequestContext& request);
+    std::unique_ptr<Response> handle_catalog_v2_categories(const RequestContext& request);
     std::unique_ptr<Response> handle_meta(const RequestContext& request);
     std::unique_ptr<Response> handle_search(const RequestContext& request);
     std::unique_ptr<Response> handle_suggest(const RequestContext& request);
@@ -104,6 +108,7 @@ class InternalServer {
     NameMapper* mp_nameMapper;
 
     std::string m_server_id;
+    std::string m_library_id;
 
     friend std::unique_ptr<Response> Response::build(const InternalServer& server);
     friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage);

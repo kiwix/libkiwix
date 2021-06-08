@@ -76,6 +76,21 @@ extern "C" {
 
 namespace kiwix {
 
+namespace
+{
+
+inline std::string normalizeRootUrl(std::string rootUrl)
+{
+  while ( !rootUrl.empty() && rootUrl.back() == '/' )
+    rootUrl.pop_back();
+
+  while ( !rootUrl.empty() && rootUrl.front() == '/' )
+    rootUrl = rootUrl.substr(1);
+  return rootUrl.empty() ? rootUrl : "/" + rootUrl;
+}
+
+} // unnamed namespace
+
 static IdNameMapper defaultNameMapper;
 
 static MHD_Result staticHandlerCallback(void* cls,
@@ -100,7 +115,7 @@ InternalServer::InternalServer(Library* library,
                                bool blockExternalLinks) :
   m_addr(addr),
   m_port(port),
-  m_root(root),
+  m_root(normalizeRootUrl(root)),
   m_nbThreads(nbThreads),
   m_verbose(verbose),
   m_withTaskbar(withTaskbar),
@@ -153,6 +168,7 @@ bool InternalServer::start() {
   }
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
   m_server_id = kiwix::to_string(server_start_time.count());
+  m_library_id = m_server_id;
   return true;
 }
 
@@ -243,10 +259,10 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if ( etag )
       return Response::build_304(*this, etag);
 
-    if (kiwix::startsWith(request.get_url(), "/skin/"))
+    if (startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
 
-    if (startsWith(request.get_url(), "/catalog"))
+    if (startsWith(request.get_url(), "/catalog/"))
       return handle_catalog(request);
 
     if (request.get_url() == "/meta")
@@ -606,6 +622,10 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     return Response::build_404(*this, request, "");
   }
 
+  if (url == "v2") {
+    return handle_catalog_v2(request);
+  }
+
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
     return Response::build_404(*this, request, "");
   }
@@ -616,13 +636,11 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper;
+  kiwix::OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setSearchDescriptionUrl("catalog/searchdescription.xml");
-  opdsDumper.setLibrary(mp_library);
+  opdsDumper.setLibraryId(m_library_id);
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
-    opdsDumper.setTitle("All zims");
     uuid = zim::Uuid::generate(host);
     bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
   } else if (url == "search") {
@@ -630,28 +648,24 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     uuid = zim::Uuid::generate();
   }
 
-  opdsDumper.setId(kiwix::to_string(uuid));
   auto response = ContentResponse::build(
       *this,
-      opdsDumper.dumpOPDSFeed(bookIdsToDump),
+      opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
       "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
   return std::move(response);
 }
 
-std::vector<std::string>
-InternalServer::search_catalog(const RequestContext& request,
-                               kiwix::OPDSDumper& opdsDumper)
+namespace
+{
+
+Filter get_search_filter(const RequestContext& request)
 {
     auto filter = kiwix::Filter().valid(true).local(true);
-    string query("<Empty query>");
-    size_t count(10);
-    size_t startIndex(0);
     try {
-      query = request.get_argument("q");
-      filter.query(query);
+      filter.query(request.get_argument("q"));
     } catch (const std::out_of_range&) {}
     try {
-      filter.maxSize(extractFromString<unsigned long>(request.get_argument("maxsize")));
+      filter.maxSize(request.get_argument<unsigned long>("maxsize"));
     } catch (...) {}
     try {
       filter.name(request.get_argument("name"));
@@ -663,25 +677,36 @@ InternalServer::search_catalog(const RequestContext& request,
       filter.lang(request.get_argument("lang"));
     } catch (const std::out_of_range&) {}
     try {
-      count = extractFromString<unsigned long>(request.get_argument("count"));
-    } catch (...) {}
-    try {
-      startIndex = extractFromString<unsigned long>(request.get_argument("start"));
-    } catch (...) {}
-    try {
       filter.acceptTags(kiwix::split(request.get_argument("tag"), ";"));
     } catch (...) {}
     try {
       filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
     } catch (...) {}
-    opdsDumper.setTitle("Search result for " + query);
+    return filter;
+}
+
+template<class T>
+std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
+{
+  const size_t e = std::min(v.size(), s+n);
+  return std::vector<T>(v.begin()+std::min(v.size(), s), v.begin()+e);
+}
+
+} // unnamed namespace
+
+std::vector<std::string>
+InternalServer::search_catalog(const RequestContext& request,
+                               kiwix::OPDSDumper& opdsDumper)
+{
+    const auto filter = get_search_filter(request);
+    const std::string q = filter.hasQuery()
+                        ? filter.getQuery()
+                        : "<Empty query>";
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
-    const auto s = std::min(startIndex, totalResults);
-    bookIdsToDump.erase(bookIdsToDump.begin(), bookIdsToDump.begin()+s);
-    if (count>0 && bookIdsToDump.size() > count) {
-      bookIdsToDump.resize(count);
-    }
+    const size_t count = request.get_optional_param("count", 10UL);
+    const size_t startIndex = request.get_optional_param("start", 0UL);
+    bookIdsToDump = subrange(bookIdsToDump, startIndex, count);
     opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
     return bookIdsToDump;
 }

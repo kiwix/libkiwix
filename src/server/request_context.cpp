@@ -183,4 +183,14 @@ std::string RequestContext::get_header(const std::string& name) const {
   return headers.at(lcAll(name));
 }
 
+std::string RequestContext::get_query() const {
+  std::string q;
+  const char* sep = "";
+  for ( const auto& a : arguments ) {
+    q += sep + a.first + '=' + a.second;
+    sep = "&";
+  }
+  return q;
+}
+
 }

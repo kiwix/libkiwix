@@ -24,6 +24,7 @@
 #include <vector>
 #include <map>
 #include <zim/zim.h>
+#include <mustache.hpp>
 
 namespace pugi {
   class xml_node;
@@ -45,6 +46,11 @@ namespace kiwix
 
   using MimeCounterType = std::map<const std::string, zim::entry_index_type>;
   MimeCounterType parseMimetypeCounter(const std::string& counterData);
+
+  std::string gen_date_str();
+  std::string gen_uuid(const std::string& s);
+
+  std::string render_template(const std::string& template_str, kainjow::mustache::data data);
 }
 
 #endif

@@ -51,24 +51,35 @@ class OPDSDumper
   /**
    * Dump the OPDS feed.
    *
-   * @param id The id of the library.
+   * @param bookIds the ids of the books to include in the feed
+   * @param query the query used to obtain the list of book ids
    * @return The OPDS feed.
    */
-  std::string dumpOPDSFeed(const std::vector<std::string>& bookIds);
+  std::string dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const;
 
   /**
-   * Set the id of the opds stream.
+   * Dump the OPDS feed.
+   *
+   * @param bookIds the ids of the books to include in the feed
+   * @param query the query used to obtain the list of book ids
+   * @return The OPDS feed.
+   */
+  std::string dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const;
+
+  /**
+   * Dump the categories OPDS feed.
+   *
+   * @param categories list of category names
+   * @return The OPDS feed.
+   */
+  std::string categoriesOPDSFeed(const std::vector<std::string>& categories) const;
+
+  /**
+   * Set the id of the library.
    *
    * @param id the id to use.
    */
-  void setId(const std::string& id) { this->id = id;}
-
-  /**
-   * Set the title oft the opds stream.
-   *
-   * @param title the title to use.
-   */
-  void setTitle(const std::string& title) { this->title = title; }
+  void setLibraryId(const std::string& id) { this->libraryId = id;}
 
   /**
    * Set the root location used when generating url.
@@ -76,13 +87,6 @@ class OPDSDumper
    * @param rootLocation the root location to use.
    */
   void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
-
-  /**
-   * Set the search url.
-   *
-   * @param searchUrl the search url to use.
-   */
-  void setSearchDescriptionUrl(const std::string& searchDescriptionUrl) { this->searchDescriptionUrl = searchDescriptionUrl; }
 
   /**
    * Set some informations about the search results.
@@ -93,27 +97,13 @@ class OPDSDumper
    */
   void setOpenSearchInfo(int totalResult, int startIndex, int count);
 
-  /**
-   * Set the library to dump.
-   *
-   * @param library The library to dump.
-   */
-  void setLibrary(Library* library) { this->library = library; }
-
  protected:
   kiwix::Library* library;
-  std::string id;
-  std::string title;
-  std::string date;
+  std::string libraryId;
   std::string rootLocation;
-  std::string searchDescriptionUrl;
   int m_totalResults;
   int m_startIndex;
   int m_count;
-  bool m_isSearchResult = false;
-
- private:
-  pugi::xml_node handleBook(Book book, pugi::xml_node root_node);
 };
 }
 
