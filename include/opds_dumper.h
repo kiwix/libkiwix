@@ -72,6 +72,13 @@ class OPDSDumper
   std::string categoriesOPDSFeed(const std::vector<std::string>& categories) const;
 
   /**
+   * Dump the languages OPDS feed.
+   *
+   * @return The OPDS feed.
+   */
+  std::string languagesOPDSFeed() const;
+
+  /**
    * Set the id of the library.
    *
    * @param id the id to use.
