@@ -143,13 +143,15 @@ Book& Library::getBookByPath(const std::string& path)
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
-  if (m_readers.count(id)) {
-    return m_readers[id];
-  } else if (m_archives.count(id)) {
-    auto reader = make_shared<Reader>(m_archives[id]);
+  try {
+    return m_readers.at(id);
+  } catch (std::out_of_range& e) {}
+
+  try {
+    auto reader = make_shared<Reader>(m_archives.at(id));
     m_readers[id] = reader;
     return reader;
-  }
+  } catch (std::out_of_range& e) {}
 
   auto book = getBookById(id);
   if (!book.isPathValid())
@@ -164,9 +166,9 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
-  if (m_archives.count(id)) {
-    return m_archives[id];
-  }
+  try {
+    return m_archives.at(id);
+  } catch (std::out_of_range& e) {}
 
   auto book = getBookById(id);
   if (!book.isPathValid())
