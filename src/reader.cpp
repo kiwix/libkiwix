@@ -189,7 +189,7 @@ Entry Reader::getMainPage() const
 
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
-  return kiwix::getArchiveFavicon(zimArchive.get(), content, mimeType);
+  return kiwix::getArchiveFavicon(*zimArchive, content, mimeType);
 }
 
 string Reader::getZimFilePath() const
@@ -211,32 +211,32 @@ bool Reader::getMetadata(const string& name, string& value) const
 
 string Reader::getName() const
 {
-  return kiwix::getMetaName(zimArchive.get());
+  return kiwix::getMetaName(*zimArchive);
 }
 
 string Reader::getTitle() const
 {
-  return kiwix::getArchiveTitle(zimArchive.get());
+  return kiwix::getArchiveTitle(*zimArchive);
 }
 
 string Reader::getCreator() const
 {
-  return kiwix::getMetaCreator(zimArchive.get());
+  return kiwix::getMetaCreator(*zimArchive);
 }
 
 string Reader::getPublisher() const
 {
-  return kiwix::getMetaPublisher(zimArchive.get());
+  return kiwix::getMetaPublisher(*zimArchive);
 }
 
 string Reader::getDate() const
 {
-  return kiwix::getMetaDate(zimArchive.get());
+  return kiwix::getMetaDate(*zimArchive);
 }
 
 string Reader::getDescription() const
 {
-  return kiwix::getMetaDescription(zimArchive.get());
+  return kiwix::getMetaDescription(*zimArchive);
 }
 
 string Reader::getLongDescription() const
@@ -246,7 +246,7 @@ string Reader::getLongDescription() const
 
 string Reader::getLanguage() const
 {
-  return kiwix::getMetaLanguage(zimArchive.get());
+  return kiwix::getMetaLanguage(*zimArchive);
 }
 
 string Reader::getLicense() const
@@ -256,7 +256,7 @@ string Reader::getLicense() const
 
 string Reader::getTags(bool original) const
 {
-  return kiwix::getMetaTags(zimArchive.get(), original);
+  return kiwix::getMetaTags(*zimArchive, original);
 }
 
 
@@ -321,7 +321,7 @@ string Reader::getOrigId() const
 Entry Reader::getEntryFromPath(const std::string& path) const
 {
   try {
-    return kiwix::getEntryFromPath(zimArchive.get(), path);
+    return kiwix::getEntryFromPath(*zimArchive, path);
   } catch (zim::EntryNotFound& e) {
     throw NoEntry();
   }

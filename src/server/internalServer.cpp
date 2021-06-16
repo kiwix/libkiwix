@@ -392,23 +392,23 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   std::string mimeType = "text";
 
   if (meta_name == "title") {
-    content = getArchiveTitle(archive.get());
+    content = getArchiveTitle(*archive);
   } else if (meta_name == "description") {
-    content = getMetaDescription(archive.get());
+    content = getMetaDescription(*archive);
   } else if (meta_name == "language") {
-    content = getMetaLanguage(archive.get());
+    content = getMetaLanguage(*archive);
   } else if (meta_name == "name") {
-    content = getMetaName(archive.get());
+    content = getMetaName(*archive);
   } else if (meta_name == "tags") {
-    content = getMetaTags(archive.get());
+    content = getMetaTags(*archive);
   } else if (meta_name == "date") {
-    content = getMetaDate(archive.get());
+    content = getMetaDate(*archive);
   } else if (meta_name == "creator") {
-    content = getMetaCreator(archive.get());
+    content = getMetaCreator(*archive);
   } else if (meta_name == "publisher") {
-    content = getMetaPublisher(archive.get());
+    content = getMetaPublisher(*archive);
   } else if (meta_name == "favicon") {
-    getArchiveFavicon(archive.get(), content, mimeType);
+    getArchiveFavicon(*archive, content, mimeType);
   } else {
     return Response::build_404(*this, request, bookName, "");
   }
@@ -552,7 +552,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     auto data = get_default_data();
     data.set("pattern", encodeDiples(patternString));
     auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-    response->set_taskbar(bookName, archive ? getArchiveTitle(archive.get()) : "");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
     response->set_code(MHD_HTTP_NOT_FOUND);
     return std::move(response);
   }
@@ -623,7 +623,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(bookName, archive ? getArchiveTitle(archive.get()) : "");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
 
     return std::move(response);
   } catch (const std::exception& e) {
@@ -655,7 +655,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
 
   try {
     auto entry = archive->getRandomEntry();
-    return build_redirect(bookName, getFinalEntry(archive.get(), entry));
+    return build_redirect(bookName, getFinalItem(*archive, entry));
   } catch(zim::EntryNotFound& e) {
     return Response::build_404(*this, request, bookName, "");
   }
@@ -804,9 +804,9 @@ std::string searchSuggestionHTML(const std::string& searchURL, const std::string
 } // unnamed namespace
 
 std::unique_ptr<Response>
-InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
+InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(entry.getPath());
+  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(item.getPath());
   return Response::build_redirect(*this, redirectUrl);
 }
 
@@ -841,15 +841,15 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   try {
-    auto entry = getEntryFromPath(archive.get(), urlStr);
+    auto entry = getEntryFromPath(*archive, urlStr);
     if (entry.isRedirect() || urlStr.empty()) {
       // If urlStr is empty, we want to mainPage.
       // We must do a redirection to the real page.
-      return build_redirect(bookName, getFinalEntry(archive.get(), entry));
+      return build_redirect(bookName, getFinalItem(*archive, entry));
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
     try {
-      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, getArchiveTitle(archive.get()));
+      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, getArchiveTitle(*archive));
     } catch (std::bad_cast& e) {}
 
     if (m_verbose.load()) {

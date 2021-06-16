@@ -29,19 +29,19 @@
 
 namespace kiwix
 {
-    std::string getMetadata(const zim::Archive* const archive, const std::string& name);
-    std::string getArchiveTitle(const zim::Archive* const archive);
-    std::string getMetaDescription(const zim::Archive* const archive);
-    std::string getMetaTags(const zim::Archive* const archive, bool original = false);
-    bool getArchiveFavicon(const zim::Archive* const archive,
+    std::string getMetadata(const zim::Archive& archive, const std::string& name);
+    std::string getArchiveTitle(const zim::Archive& archive);
+    std::string getMetaDescription(const zim::Archive& archive);
+    std::string getMetaTags(const zim::Archive& archive, bool original = false);
+    bool getArchiveFavicon(const zim::Archive& archive,
                            std::string& content, std::string& mimeType);
-    std::string getMetaLanguage(const zim::Archive* const archive);
-    std::string getMetaName(const zim::Archive* const archive);
-    std::string getMetaDate(const zim::Archive* const archive);
-    std::string getMetaCreator(const zim::Archive* const archive);
-    std::string getMetaPublisher(const zim::Archive* const archive);
-    zim::Entry getFinalEntry(const zim::Archive* const archive, const zim::Entry& entry);
-    zim::Entry getEntryFromPath(const zim::Archive* const archive, const std::string& path);
+    std::string getMetaLanguage(const zim::Archive& archive);
+    std::string getMetaName(const zim::Archive& archive);
+    std::string getMetaDate(const zim::Archive& archive);
+    std::string getMetaCreator(const zim::Archive& archive);
+    std::string getMetaPublisher(const zim::Archive& archive);
+    zim::Item getFinalItem(const zim::Archive& archive, const zim::Entry& entry);
+    zim::Entry getEntryFromPath(const zim::Archive& archive, const std::string& path);
 }
 
 #endif
