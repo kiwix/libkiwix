@@ -8,6 +8,7 @@
     const bookOrderMap = new Map();
     const filterCookieName = 'filters';
     const oneDayDelta = 86400000;
+    let loader;
     let footer;
     let fadeOutDiv;
     let iso;
@@ -75,7 +76,7 @@
             .filter((tag, index, tags) => tags.indexOf(tag) === index).join(' | ');
         let downloadLink;
         try {
-            downloadLink = book.querySelector('link[type="application/x-zim"]').getAttribute('href');
+            downloadLink = book.querySelector('link[type="application/x-zim"]').getAttribute('href').split('.meta4')[0];
         } catch {
             downloadLink = '';
         }
@@ -135,16 +136,18 @@
     }
 
     function checkAndInjectEmptyMessage() {
+        const kiwixHomeBody = document.querySelector('.kiwixHomeBody');
         if (!bookOrderMap.size) {
             if (!noResultInjected) {
                 noResultInjected = true;
                 iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('a'));
                 iso.layout();
-                const spanTag = document.createElement('span');
-                spanTag.setAttribute('class', 'noResults');
-                spanTag.innerHTML = `No result. Would you like to <a href="/?lang=">reset filter?</a>`;
-                document.querySelector('body').append(spanTag);
-                spanTag.getElementsByTagName('a')[0].onclick = (event) => {
+                const divTag = document.createElement('div');
+                divTag.setAttribute('class', 'noResults');
+                divTag.innerHTML = `No result. Would you like to<a href="/?lang="> reset filter?</a>`;
+                kiwixHomeBody.append(divTag);
+                kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
+                divTag.getElementsByTagName('a')[0].onclick = (event) => {
                     event.preventDefault();
                     window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
                     setCookie(filterCookieName, 'lang=');
@@ -157,6 +160,7 @@
         } else if (noResultInjected) {
             noResultInjected = false;
             document.getElementsByClassName('noResults')[0].remove();
+            kiwixHomeBody.removeAttribute('style');
         }
         loader.removeAttribute('style');
         return false;
@@ -254,6 +258,7 @@
         });
         footer = document.getElementById('kiwixfooter');
         fadeOutDiv = document.getElementById('fadeOut');
+        loader = document.querySelector('.loader');
         await loadAndDisplayBooks();
         await loadAndDisplayOptions('#languageFilter', langList);
         await loadAndDisplayOptions('#categoryFilter', categoryList);
