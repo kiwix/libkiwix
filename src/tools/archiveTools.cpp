@@ -110,7 +110,7 @@ zim::Entry getEntryFromPath(const zim::Archive& archive, const std::string& path
   try {
     return archive.getEntryByPath(path);
   } catch (zim::EntryNotFound& e) {
-    if (path.empty()) {
+    if (path.empty() || path == "/") {
       return archive.getMainEntry();
     }
   }
