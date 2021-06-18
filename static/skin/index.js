@@ -46,7 +46,7 @@
     }
 
     function viewPortToCount(){
-        return Math.floor(window.innerHeight/100 + 1)*(window.innerWidth>1000 ? 3 : 2);
+        return Math.floor(window.innerHeight/300 + 1)*(window.innerWidth>1000 ? 4 : 3);
     }
 
     function getInnerHtml(node, query) {
@@ -59,8 +59,26 @@
         const description = getInnerHtml(book, 'summary');
         const id = getInnerHtml(book, 'id');
         const iconUrl = getInnerHtml(book, 'icon');
-        const articleCount = getInnerHtml(book, 'articleCount');
-        const mediaCount = getInnerHtml(book, 'mediaCount');
+        const language = getInnerHtml(book, 'language');
+        const tags = getInnerHtml(book, 'tags');
+        let tagHtml = tags.split(';').filter(tag => { return !(tag.split(':')[1] && tag.split(':')[1] == 'no')})
+            .map((tag) => {
+                tag = tag.split(':');
+                if (tag.length === 1) {
+                    return tag[0].replace(/_/, ' ');
+                } else if (tag[1] !== 'yes') {
+                    return tag[1].replace(/_/, ' ');
+                } else {
+                    return (tag[0].indexOf('_') === 0 ? tag[0].replace('_', '') : tag[0]).replace(/_/, ' ');
+                }
+            })
+            .filter((tag, index, tags) => tags.indexOf(tag) === index).join(' | ');
+        let downloadLink;
+        try {
+            downloadLink = book.querySelector('link[type="application/x-zim"]').getAttribute('href');
+        } catch {
+            downloadLink = '';
+        }
 
         const linkTag = document.createElement('a');
         linkTag.setAttribute('class', 'book');
@@ -69,11 +87,12 @@
         if (sort) {
             linkTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
-        linkTag.innerHTML = `<div class='book__background' style="background-image: url('${iconUrl}');">
+        linkTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img src='${iconUrl}'></div>
             <div class='book__title' title='${title}'>${title}</div>
             <div class='book__description' title='${description}'>${description}</div>
-            <div class='book__info'>${articleCount} articles, ${mediaCount} medias</div>
-        </div>`;
+            <div class='book__languageTag'>${language.substr(0, 2).toUpperCase()}</div>
+            <div class='book__tags'>${tagHtml}</div>
+            <div class='book__links'> ${downloadLink ? `<a href="${downloadLink}" download>Download</a>` : `<span>Download</span>`} </div></div>`;
         return linkTag;
     }
 
@@ -87,7 +106,6 @@
     }
 
     async function loadBooks() {
-        const loader = document.querySelector('.loader');
         loader.style.display = 'block';
         return await fetch(queryUrlBuilder()).then(async (resp) => {
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
@@ -96,12 +114,14 @@
                 bookOrderMap.set(getInnerHtml(book, 'id'), idx);
             });
             incrementalLoadingParams.start += books.length;
-            if (parseInt(data.querySelector('totalResults').innerHTML) === bookOrderMap.size) {
+            const results = parseInt(data.querySelector('totalResults').innerHTML)
+            if (results === bookOrderMap.size) {
                 incrementalLoadingParams.count = 0;
                 toggleFooter(true);
             } else {
                 toggleFooter();
             }
+            document.querySelector('.kiwixNav__results').innerHTML = `Results: ${results} items`
             loader.style.display = 'none';
             return books;
         });
@@ -131,12 +151,14 @@
                     resetAndFilter();
                     filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
                 };
+                loader.setAttribute('style', 'position: absolute; top: 50%');
             }
             return true;
         } else if (noResultInjected) {
             noResultInjected = false;
             document.getElementsByClassName('noResults')[0].remove();
         }
+        loader.removeAttribute('style');
         return false;
     }
 
@@ -223,7 +245,12 @@
                     return index ? parseInt(index) : Infinity;
                 }
             },
-            sortBy: 'weight'
+            sortBy: 'weight',
+            layoutMode: 'cellsByRow',
+            cellsByRow: {
+                columnWidth: '.book',
+                rowHeight: '.book'
+            }
         });
         footer = document.getElementById('kiwixfooter');
         fadeOutDiv = document.getElementById('fadeOut');

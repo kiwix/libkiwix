@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Welcome to Kiwix Server</title>
     <script
       type="text/javascript"
@@ -21,177 +22,30 @@
       href="{{root}}/skin/jquery-ui/jquery-ui.theme.min.css"
       rel="Stylesheet"
     />
-    <style>
-      html {
-        min-height: 100%;
-        position: relative;
-      }
-      body {
-        background: radial-gradient(#eeeeee 15%, transparent 16%) 0 0,
-          radial-gradient(#eeeeee 15%, transparent 16%) 8px 8px,
-          radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px,
-          radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
-        background-color: #e8e8e8;
-        background-size: 16px 16px;
-        margin-left: auto;
-        margin-right: auto;
-        max-width: 1100px;
-        min-height: 100%;
-      }
-      .book__list {
-        text-align: center;
-      }
-      .kiwixHomeBody {
-        position: relative;
-        text-align: center;
-        min-height: 100%;
-        margin: 0 0 15px;
-      }
-      .book {
-        display: inline-block;
-        vertical-align: bottom;
-        margin: 8px;
-        padding: 12px 15px;
-        width: 300px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        text-align: left;
-        color: #000;
-        font-family: sans-serif;
-        font-size: 13px;
-        background-color: #f1f1f1;
-        box-shadow: 2px 2px 5px 0 #ccc;
-      }
-      #kiwixfooter {
-        text-align: center;
-        margin: 0.5em;
-        position: absolute;
-        bottom: 0;
-        left: 46%;
-      }
-      .kiwixHomeNavbar {
-        display: flex;
-        justify-content: center;
-      }
-      .kiwixFilter {
-        margin: 8px 10px;
-      }
-      .kiwixSearch, .searchButton {
-        margin: 0 13px 0 0;
-      }
-      .kiwixSearchForm {
-        margin: 8px 10px;
-        float: right;
-      }
-      @media (max-width: 1100px) {
-        .kiwixHomeBody {
-          padding: 0 125px;
-        }
-      }
-      .book:hover {
-        background-color: #f9f9f9;
-        box-shadow: none;
-      }
-      .book__background {
-        background-repeat: no-repeat;
-        background-size: 48px 48px;
-        background-position: top right;
-      }
-      .book__title {
-        padding: 0 55px 0 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 18px;
-        color: #0645ad;
-        line-height: 1em;
-      }
-      .book__description {
-        padding: 5px 55px 5px 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 15px;
-        line-height: 1em;
-      }
-      .book__info {
-        color: #777;
-        font-weight: bold;
-        font-size: 13px;
-        line-height: 1em;
-      }
-      a:link {
-        text-decoration: none;
-      }
-      a:visited {
-        text-decoration: none;
-      }
-      .noResults {
-        position: absolute;
-        top: 48%;
-        left: 42%;
-      }
-      .loader-spinner {
-        position: absolute;
-        top: -50%;
-        left: 50%;
-        border: 5px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 5px solid #3498db;
-        width: 40px;
-        height: 40px;
-        margin: auto;
-        -webkit-animation: spin 1s linear infinite; /* Safari */
-        animation: spin 1s linear infinite;
-        margin-top: 35px;
-        margin-bottom: -35px;
-        z-index: 2;
-      }
-      /* Safari */
-      @-webkit-keyframes spin {
-        0% { -webkit-transform: rotate(0deg); }
-        100% { -webkit-transform: rotate(360deg); }
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      .loader {
-        position: relative;
-        height: 70px;
-        width: 100%;
-      }
-      .fadeOut {
-        position: fixed;
-        display: none;
-        bottom: 0;
-        left: 0;
-        z-index: 1;
-        background: linear-gradient(180deg, rgba(232, 232, 232, 0) 0%, rgb(232, 232, 232) 100%);
-        height: 80px;
-        width: 100%;
-      }
-      .spacer {
-        height: 20px;
-        background: transparent;
-      }
-    </style>
+    <link
+      type="text/css"
+      href="{{root}}/skin/home.css"
+      rel="Stylesheet"
+    />
     <script src="{{root}}/skin/isotope.pkgd.min.js" defer></script>
     <script src="{{root}}/skin/categoryList.js"></script>
     <script src="{{root}}/skin/langList.js"></script>
     <script src="{{root}}/skin/iso6391To3.js"></script>
     <script type="text/javascript" src="{{root}}/skin/index.js" defer></script>
   </head>
-  <body class="kiwix">
-    <div class='kiwixHomeNavbar'>
-      <select name="lang" id="languageFilter" class='kiwixFilter'>
-        <option value="" selected>All languages</option>
-      </select>
-      <select name="category" id="categoryFilter" class='kiwixFilter'>
-        <option value="" selected>All categories</option>
-      </select>
-      <form id='kiwixSearchForm' class='kiwixSearchForm'>
-        <input type="text" name="q" id="searchFilter" class='kiwixSearch'>
+  <body>
+    <div class='kiwixNav'>
+      <h3 class="kiwixNav__results"></h3>
+      <div class="kiwixNav__filters">
+        <select name="lang" id="languageFilter" class='kiwixNav__kiwixFilter'>
+          <option value="" selected>All languages</option>
+        </select>
+        <select name="category" id="categoryFilter" class='kiwixNav__kiwixFilter'>
+          <option value="" selected>All categories</option>
+        </select>
+      </div>
+      <form id='kiwixSearchForm' class='kiwixNav__SearchForm'>
+        <input type="text" name="q" placeholder="Search" id="searchFilter" class='kiwixSearch'>
         <input type="submit" class="searchButton" value="Search"/>
       </form>
     </div>
@@ -199,8 +53,7 @@
       <div class="book__list"></div>
       <div id="fadeOut" class="fadeOut"></div>
     </div>
-    <div class="loader"><div class="loader-spinner"></div></div>
-    <div class="spacer"></div>
-    <div id="kiwixfooter">Powered by <a href="https://kiwix.org">Kiwix</a></div>
+    <div class="loader" style="position: absolute; top: 50%"><div class="loader-spinner"></div></div>
+    <div id="kiwixfooter" class="kiwixfooter">Powered by <a href="https://kiwix.org"> Kiwix</a></div>
   </body>
 </html>
