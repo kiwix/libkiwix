@@ -184,8 +184,7 @@ Entry Reader::getMainPage() const
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
   try {
-    auto entry = zimArchive->getFaviconEntry();
-    auto item = entry.getItem(true);
+    auto item = zimArchive->getIllustrationItem();
     content = item.getData();
     mimeType = item.getMimetype();
     return true;
