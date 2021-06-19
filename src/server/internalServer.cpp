@@ -443,7 +443,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   if (archive == nullptr) {
-    return Response::build_404(*this, request, bookName);
+    return Response::build_404(*this, request, bookName, "");
   }
 
   if (m_verbose.load()) {
