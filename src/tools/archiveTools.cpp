@@ -70,8 +70,7 @@ std::string getMetaTags(const zim::Archive& archive, bool original) {
 bool getArchiveFavicon(const zim::Archive& archive,
                            std::string& content, std::string& mimeType){
   try {
-    auto entry = archive.getFaviconEntry();
-    auto item = entry.getItem(true);
+    auto item = archive.getIllustrationItem();
     content = item.getData();
     mimeType = item.getMimetype();
     return true;

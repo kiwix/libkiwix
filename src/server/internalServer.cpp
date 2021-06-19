@@ -865,7 +865,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root+"/search?content="+bookName+"&pattern="+pattern; // Make a search on this specific book only.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request, bookName, reader->getTitle(), details);
+    return Response::build_404(*this, request, bookName, getArchiveTitle(*archive), details);
   }
 }
 
