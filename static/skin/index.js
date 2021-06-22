@@ -6,13 +6,14 @@
     };
     const filterTypes = ['lang', 'category', 'q'];
     const bookOrderMap = new Map();
+    const filterCookieName = 'filters'
     let footer;
     let fadeOutDiv;
     let iso;
     let isFetching = false;
     let noResultInjected = false;
-    let filters = getCookie('filters');
-    let params = new URLSearchParams(filters || '');
+    let filters = getCookie(filterCookieName);
+    let params = new URLSearchParams(window.location.search || filters || '');
     let timer;
 
     function queryUrlBuilder() {
@@ -180,7 +181,7 @@
         if (filterType) {
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
-            setCookie('filters', params.toString());
+            setCookie(filterCookieName, params.toString());
         }
         await loadAndDisplayBooks(true);
     }
@@ -242,5 +243,6 @@
             langFilter.value = browserLang.length === 3 ? browserLang : iso6391To3[browserLang];
             langFilter.dispatchEvent(new Event('change'));
         }
+        setCookie(filterCookieName, params.toString());
     }
 })();
