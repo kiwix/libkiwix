@@ -126,6 +126,7 @@
                 spanTag.getElementsByTagName('a')[0].onclick = (event) => {
                     event.preventDefault();
                     window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
+                    setCookie(filterCookieName, 'lang=');
                     resetAndFilter();
                     filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
                 };
