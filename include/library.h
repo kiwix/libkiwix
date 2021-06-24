@@ -28,7 +28,6 @@
 #include "book.h"
 #include "bookmark.h"
 #include "common.h"
-#include <xapian.h>
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
@@ -36,6 +35,7 @@ namespace kiwix
 {
 
 class OPDSDumper;
+class Library;
 
 enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
 enum supportedListMode {
@@ -49,10 +49,13 @@ enum supportedListMode {
 };
 
 class Filter {
-  private:
+  public: // types
+    using Tags = std::vector<std::string>;
+
+  private: // data
     uint64_t activeFilters;
-    std::vector<std::string> _acceptTags;
-    std::vector<std::string> _rejectTags;
+    Tags _acceptTags;
+    Tags _rejectTags;
     std::string _category;
     std::string _lang;
     std::string _publisher;
@@ -62,7 +65,7 @@ class Filter {
     bool _queryIsPartial;
     std::string _name;
 
-  public:
+  public: // functions
     Filter();
     ~Filter() = default;
 
@@ -96,8 +99,8 @@ class Filter {
     /**
      * Set the filter to only accept book with corresponding tag.
      */
-    Filter& acceptTags(std::vector<std::string> tags);
-    Filter& rejectTags(std::vector<std::string> tags);
+    Filter& acceptTags(const Tags& tags);
+    Filter& rejectTags(const Tags& tags);
 
     Filter& category(std::string category);
     Filter& lang(std::string lang);
@@ -111,9 +114,28 @@ class Filter {
     const std::string& getQuery() const { return _query; }
     bool queryIsPartial() const { return _queryIsPartial; }
 
+    bool hasName() const;
+    const std::string& getName() const { return _name; }
+
+    bool hasCategory() const;
+    const std::string& getCategory() const { return _category; }
+
+    bool hasLang() const;
+    const std::string& getLang() const { return _lang; }
+
+    bool hasPublisher() const;
+    const std::string& getPublisher() const { return _publisher; }
+
+    bool hasCreator() const;
+    const std::string& getCreator() const { return _creator; }
+
+    const Tags& getAcceptTags() const { return _acceptTags; }
+    const Tags& getRejectTags() const { return _rejectTags; }
+
+private: // functions
+    friend class Library;
+
     bool accept(const Book& book) const;
-    bool acceptByQueryOnly(const Book& book) const;
-    bool acceptByNonQueryCriteria(const Book& book) const;
 };
 
 
@@ -125,7 +147,8 @@ class Library
   std::map<std::string, kiwix::Book> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::vector<kiwix::Bookmark> m_bookmarks;
-  Xapian::WritableDatabase m_bookDB;
+  class BookDB;
+  std::unique_ptr<BookDB> m_bookDB;
 
  public:
   typedef std::vector<std::string> BookIdCollection;
@@ -133,6 +156,14 @@ class Library
  public:
   Library();
   ~Library();
+
+  /**
+   * Library is not a copiable object. However it can be moved.
+   */
+  Library(const Library& ) = delete;
+  Library(Library&& );
+  void operator=(const Library& ) = delete;
+  Library& operator=(Library&& );
 
   /**
    * Add a book to the library.
@@ -162,7 +193,9 @@ class Library
    */
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
+  const Book& getBookById(const std::string& id) const;
   Book& getBookById(const std::string& id);
+  const Book& getBookByPath(const std::string& path) const;
   Book& getBookByPath(const std::string& path);
   std::shared_ptr<Reader> getReaderById(const std::string& id);
 
@@ -180,7 +213,7 @@ class Library
    * @param path the path of the file to write to.
    * @return True if the library has been correctly saved.
    */
-  bool writeToFile(const std::string& path);
+  bool writeToFile(const std::string& path) const;
 
   /**
    * Write the library bookmarks to a file.
@@ -188,7 +221,7 @@ class Library
    * @param path the path of the file to write to.
    * @return True if the library has been correctly saved.
    */
-  bool writeBookmarksToFile(const std::string& path);
+  bool writeBookmarksToFile(const std::string& path) const;
 
   /**
    * Get the number of book in the library.
@@ -197,42 +230,49 @@ class Library
    * @param remoteBooks If we must count remote books (books with an url)
    * @return The number of books.
    */
-  unsigned int getBookCount(const bool localBooks, const bool remoteBooks);
+  unsigned int getBookCount(const bool localBooks, const bool remoteBooks) const;
 
   /**
-   * Get all langagues of the books in the library.
+   * Get all languagues of the books in the library.
    *
    * @return A list of languages.
    */
-  std::vector<std::string> getBooksLanguages();
+  std::vector<std::string> getBooksLanguages() const;
+
+  /**
+   * Get all categories of the books in the library.
+   *
+   * @return A list of categories.
+   */
+  std::vector<std::string> getBooksCategories() const;
 
   /**
    * Get all book creators of the books in the library.
    *
    * @return A list of book creators.
    */
-  std::vector<std::string> getBooksCreators();
+  std::vector<std::string> getBooksCreators() const;
 
   /**
    * Get all book publishers of the books in the library.
    *
    * @return A list of book publishers.
    */
-  std::vector<std::string> getBooksPublishers();
+  std::vector<std::string> getBooksPublishers() const;
 
   /**
    * Get all bookmarks.
    *
    * @return A list of bookmarks
    */
-  const std::vector<kiwix::Bookmark> getBookmarks(bool onlyValidBookmarks = true);
+  const std::vector<kiwix::Bookmark> getBookmarks(bool onlyValidBookmarks = true) const;
 
   /**
    * Get all book ids of the books in the library.
    *
    * @return A list of book ids.
    */
-  BookIdCollection getBooksIds();
+  BookIdCollection getBooksIds() const;
 
   /**
    * Filter the library and generate a new one with the keep elements.
@@ -242,7 +282,7 @@ class Library
    * @param search List only books with search in the title or description.
    * @return The list of bookIds corresponding to the query.
    */
-  DEPRECATED BookIdCollection filter(const std::string& search);
+  DEPRECATED BookIdCollection filter(const std::string& search) const;
 
 
   /**
@@ -251,7 +291,7 @@ class Library
    * @param filter The filter to use.
    * @return The list of bookIds corresponding to the filter.
    */
-  BookIdCollection filter(const Filter& filter);
+  BookIdCollection filter(const Filter& filter) const;
 
 
   /**
@@ -261,7 +301,7 @@ class Library
    * @param comparator how to sort the books
    * @return The sorted list of books
    */
-  void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending);
+  void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending) const;
 
   /**
    * List books in the library.
@@ -293,13 +333,13 @@ class Library
     const std::string& creator = "",
     const std::string& publisher = "",
     const std::vector<std::string>& tags = {},
-    size_t maxSize = 0);
+    size_t maxSize = 0) const;
 
   friend class OPDSDumper;
   friend class libXMLDumper;
 
 private: // functions
-  BookIdCollection getBooksByTitleOrDescription(const Filter& filter);
+  BookIdCollection filterViaBookDB(const Filter& filter) const;
   void updateBookDB(const Book& book);
 };
 

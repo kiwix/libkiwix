@@ -2,7 +2,7 @@
   <book
         id="raycharles"
         path="./zimfile.zim"
-        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Ray Charles"
         description="Wikipedia articles about Ray Charles"
         language="eng"
@@ -18,7 +18,7 @@
   <book
         id="raycharles_uncategorized"
         path="./zimfile.zim"
-        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Ray (uncategorized) Charles"
         description="No category is assigned to this library entry."
         language="eng"
@@ -34,7 +34,7 @@
   <book
         id="charlesray"
         path="./zimfile.zim"
-        url="https://github.com/kiwix/kiwix-lib/raw/master/test/data/zimfile.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Charles, Ray"
         description="Wikipedia articles about Ray Charles"
         language="eng"

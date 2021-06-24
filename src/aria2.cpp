@@ -63,6 +63,7 @@ Aria2::Aria2():
     // Try to use a potential installed aria2c.
     callCmd.push_back(ARIA2_CMD);
   }
+  callCmd.push_back("--follow-metalink=mem");
   callCmd.push_back("--enable-rpc");
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());

@@ -1,4 +1,4 @@
-project('kiwix-lib', 'cpp',
+project('libkiwix', 'cpp',
   version : '10.0.0', # Also change this in android-kiwix-lib-publisher/kiwixLibAndroid/build.gradle
   license : 'GPLv3+',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
@@ -18,7 +18,7 @@ if wrapper.contains('java')
   add_languages('java')
 endif
 
-# See https://github.com/kiwix/kiwix-lib/issues/371
+# See https://github.com/kiwix/libkiwix/issues/371
 if ['arm', 'mips', 'm68k', 'ppc', 'sh4'].contains(target_machine.cpu_family())
   extra_libs += '-latomic'
 endif
@@ -54,6 +54,10 @@ extra_cflags = ''
 if target_machine.system() == 'windows' and static_deps
   add_project_arguments('-DCURL_STATICLIB', language : 'cpp')
   extra_cflags += '-DCURL_STATICLIB'
+endif
+
+if target_machine.system() == 'windows'
+  add_project_arguments('-DNOMINMAX', language: 'cpp')
 endif
 
 all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep]

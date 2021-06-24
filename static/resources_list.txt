@@ -19,6 +19,11 @@ skin/jquery-ui/jquery-ui.theme.min.css
 skin/jquery-ui/jquery-ui.min.css
 skin/caret.png
 skin/taskbar.js
+skin/langList.js
+skin/categoryList.js
+skin/iso6391To3.js
+skin/isotope.pkgd.min.js
+skin/index.js
 skin/taskbar.css
 skin/block_external.js
 templates/search_result.html
@@ -31,4 +36,9 @@ templates/head_taskbar.html
 templates/taskbar_part.html
 templates/external_blocker_part.html
 templates/captured_external.html
+templates/catalog_entries.xml
+templates/catalog_v2_root.xml
+templates/catalog_v2_entries.xml
+templates/catalog_v2_categories.xml
 opensearchdescription.xml
+catalog_v2_searchdescription.xml

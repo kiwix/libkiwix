@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <set>
 #include <unicode/locid.h>
+#include <xapian.h>
 
 namespace kiwix
 {
@@ -42,18 +43,28 @@ std::string iso639_3ToXapian(const std::string& lang) {
   return icu::Locale(lang.c_str()).getLanguage();
 };
 
-std::string normalizeText(const std::string& text, const std::string& language)
+std::string normalizeText(const std::string& text)
 {
   return removeAccents(text);
 }
 
 } // unnamed namespace
 
+class Library::BookDB : public Xapian::WritableDatabase
+{
+public:
+  BookDB() : Xapian::WritableDatabase("", Xapian::DB_BACKEND_INMEMORY) {}
+};
+
 /* Constructor */
 Library::Library()
-  : m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
+  : m_bookDB(new BookDB)
 {
 }
+
+Library::Library(Library&& ) = default;
+
+Library& Library::operator=(Library&& ) = default;
 
 /* Destructor */
 Library::~Library()
@@ -95,15 +106,23 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 
 bool Library::removeBookById(const std::string& id)
 {
+  m_bookDB->delete_document("Q" + id);
+  m_readers.erase(id);
   return m_books.erase(id) == 1;
 }
 
-Book& Library::getBookById(const std::string& id)
+const Book& Library::getBookById(const std::string& id) const
 {
   return m_books.at(id);
 }
 
-Book& Library::getBookByPath(const std::string& path)
+Book& Library::getBookById(const std::string& id)
+{
+  const Library& const_self = *this;
+  return const_cast<Book&>(const_self.getBookById(id));
+}
+
+const Book& Library::getBookByPath(const std::string& path) const
 {
   for(auto& it: m_books) {
     auto& book = it.second;
@@ -113,6 +132,12 @@ Book& Library::getBookByPath(const std::string& path)
   std::ostringstream ss;
   ss << "No book with path " << path << " in the library." << std::endl;
   throw std::out_of_range(ss.str());
+}
+
+Book& Library::getBookByPath(const std::string& path)
+{
+  const Library& const_self = *this;
+  return const_cast<Book&>(const_self.getBookByPath(path));
 }
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
@@ -130,7 +155,7 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
-                                   const bool remoteBooks)
+                                   const bool remoteBooks) const
 {
   unsigned int result = 0;
   for (auto& pair: m_books) {
@@ -143,7 +168,7 @@ unsigned int Library::getBookCount(const bool localBooks,
   return result;
 }
 
-bool Library::writeToFile(const std::string& path)
+bool Library::writeToFile(const std::string& path) const
 {
   auto baseDir = removeLastPathElement(path);
   LibXMLDumper dumper(this);
@@ -151,13 +176,13 @@ bool Library::writeToFile(const std::string& path)
   return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
 }
 
-bool Library::writeBookmarksToFile(const std::string& path)
+bool Library::writeBookmarksToFile(const std::string& path) const
 {
   LibXMLDumper dumper(this);
   return writeTextFile(path, dumper.dumpLibXMLBookmark());
 }
 
-std::vector<std::string> Library::getBooksLanguages()
+std::vector<std::string> Library::getBooksLanguages() const
 {
   std::vector<std::string> booksLanguages;
   std::map<std::string, bool> booksLanguagesMap;
@@ -176,7 +201,22 @@ std::vector<std::string> Library::getBooksLanguages()
   return booksLanguages;
 }
 
-std::vector<std::string> Library::getBooksCreators()
+std::vector<std::string> Library::getBooksCategories() const
+{
+  std::set<std::string> categories;
+
+  for (const auto& pair: m_books) {
+    const auto& book = pair.second;
+    const auto& c = book.getCategory();
+    if ( !c.empty() ) {
+      categories.insert(c);
+    }
+  }
+
+  return std::vector<std::string>(categories.begin(), categories.end());
+}
+
+std::vector<std::string> Library::getBooksCreators() const
 {
   std::vector<std::string> booksCreators;
   std::map<std::string, bool> booksCreatorsMap;
@@ -195,7 +235,7 @@ std::vector<std::string> Library::getBooksCreators()
   return booksCreators;
 }
 
-std::vector<std::string> Library::getBooksPublishers()
+std::vector<std::string> Library::getBooksPublishers() const
 {
   std::vector<std::string> booksPublishers;
   std::map<std::string, bool> booksPublishersMap;
@@ -214,7 +254,7 @@ std::vector<std::string> Library::getBooksPublishers()
   return booksPublishers;
 }
 
-const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks)
+const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks) const
 {
   if (!onlyValidBookmarks) {
     return m_bookmarks;
@@ -229,7 +269,7 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
   return validBookmarks;
 }
 
-Library::BookIdCollection Library::getBooksIds()
+Library::BookIdCollection Library::getBooksIds() const
 {
   BookIdCollection bookIds;
 
@@ -240,7 +280,7 @@ Library::BookIdCollection Library::getBooksIds()
   return bookIds;
 }
 
-Library::BookIdCollection Library::filter(const std::string& search)
+Library::BookIdCollection Library::filter(const std::string& search) const
 {
   if (search.empty()) {
     return getBooksIds();
@@ -263,35 +303,61 @@ void Library::updateBookDB(const Book& book)
   Xapian::Document doc;
   indexer.set_document(doc);
 
-  const std::string title = normalizeText(book.getTitle(), lang);
-  const std::string desc = normalizeText(book.getDescription(), lang);
-  doc.add_value(0, title);
-  doc.add_value(1, desc);
-  doc.set_data(book.getId());
+  const std::string title = normalizeText(book.getTitle());
+  const std::string desc = normalizeText(book.getDescription());
 
-  indexer.index_text(title, 1, "S");
-  indexer.index_text(desc, 1, "XD");
-
-  // Index fields without prefixes for general search
+  // Index title and description without prefixes for general search
   indexer.index_text(title);
   indexer.increase_termpos();
   indexer.index_text(desc);
 
+  // Index all fields for field-based search
+  indexer.index_text(title, 1, "S");
+  indexer.index_text(desc,  1, "XD");
+  indexer.index_text(lang,  1, "L");
+  indexer.index_text(normalizeText(book.getCreator()),   1, "A");
+  indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
+  indexer.index_text(normalizeText(book.getName()),      1, "XN");
+  indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
+
+  for ( const auto& tag : split(normalizeText(book.getTags()), ";") )
+    doc.add_boolean_term("XT" + tag);
+
   const std::string idterm = "Q" + book.getId();
   doc.add_boolean_term(idterm);
-  m_bookDB.replace_document(idterm, doc);
+
+  doc.set_data(book.getId());
+
+  m_bookDB->replace_document(idterm, doc);
 }
 
-Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& filter)
+namespace
 {
-  if ( !filter.hasQuery() )
-    return getBooksIds();
 
-  BookIdCollection bookIds;
+bool willSelectEverything(const Xapian::Query& query)
+{
+  return query.get_type() == Xapian::Query::LEAF_MATCH_ALL;
+}
+
+
+Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
+{
+  if ( !filter.hasQuery() || filter.getQuery().empty() ) {
+    // This is a thread-safe way to construct an equivalent of
+    // a Xapian::Query::MatchAll query
+    return Xapian::Query(std::string());
+  }
+
   Xapian::QueryParser queryParser;
   queryParser.set_default_op(Xapian::Query::OP_AND);
   queryParser.add_prefix("title", "S");
   queryParser.add_prefix("description", "XD");
+  queryParser.add_prefix("name", "XN");
+  queryParser.add_prefix("category", "XC");
+  queryParser.add_prefix("lang", "L");
+  queryParser.add_prefix("publisher", "XP");
+  queryParser.add_prefix("creator", "A");
+  queryParser.add_prefix("tag", "XT");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -301,11 +367,100 @@ Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& fi
   //queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_SOME);
   const auto flags = Xapian::QueryParser::FLAG_PHRASE
                    | Xapian::QueryParser::FLAG_BOOLEAN
+                   | Xapian::QueryParser::FLAG_BOOLEAN_ANY_CASE
                    | Xapian::QueryParser::FLAG_LOVEHATE
                    | Xapian::QueryParser::FLAG_WILDCARD
                    | partialQueryFlag;
-  const auto query = queryParser.parse_query(filter.getQuery(), flags);
-  Xapian::Enquire enquire(m_bookDB);
+  return queryParser.parse_query(normalizeText(filter.getQuery()), flags);
+}
+
+Xapian::Query nameQuery(const std::string& name)
+{
+  return Xapian::Query("XN" + normalizeText(name));
+}
+
+Xapian::Query categoryQuery(const std::string& category)
+{
+  return Xapian::Query("XC" + normalizeText(category));
+}
+
+Xapian::Query langQuery(const std::string& lang)
+{
+  return Xapian::Query("L" + normalizeText(lang));
+}
+
+Xapian::Query publisherQuery(const std::string& publisher)
+{
+  Xapian::QueryParser queryParser;
+  queryParser.set_default_op(Xapian::Query::OP_OR);
+  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
+  const auto flags = 0;
+  const auto q = queryParser.parse_query(normalizeText(publisher), flags, "XP");
+  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+}
+
+Xapian::Query creatorQuery(const std::string& creator)
+{
+  Xapian::QueryParser queryParser;
+  queryParser.set_default_op(Xapian::Query::OP_OR);
+  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
+  const auto flags = 0;
+  const auto q = queryParser.parse_query(normalizeText(creator), flags, "A");
+  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+}
+
+Xapian::Query tagsQuery(const Filter::Tags& acceptTags, const Filter::Tags& rejectTags)
+{
+  Xapian::Query q = Xapian::Query(std::string());
+  if (!acceptTags.empty()) {
+    for ( const auto& tag : acceptTags )
+      q &= Xapian::Query("XT" + normalizeText(tag));
+  }
+
+  if (!rejectTags.empty()) {
+    for ( const auto& tag : rejectTags )
+      q = Xapian::Query(Xapian::Query::OP_AND_NOT, q, "XT" + normalizeText(tag));
+  }
+  return q;
+}
+
+Xapian::Query buildXapianQuery(const Filter& filter)
+{
+  auto q = buildXapianQueryFromFilterQuery(filter);
+  if ( filter.hasName() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, nameQuery(filter.getName()));
+  }
+  if ( filter.hasCategory() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, categoryQuery(filter.getCategory()));
+  }
+  if ( filter.hasLang() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, langQuery(filter.getLang()));
+  }
+  if ( filter.hasPublisher() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, publisherQuery(filter.getPublisher()));
+  }
+  if ( filter.hasCreator() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, creatorQuery(filter.getCreator()));
+  }
+  if ( !filter.getAcceptTags().empty() || !filter.getRejectTags().empty() ) {
+    const auto tq = tagsQuery(filter.getAcceptTags(), filter.getRejectTags());
+    q = Xapian::Query(Xapian::Query::OP_AND, q, tq);;
+  }
+  return q;
+}
+
+} // unnamed namespace
+
+Library::BookIdCollection Library::filterViaBookDB(const Filter& filter) const
+{
+  const auto query = buildXapianQuery(filter);
+
+  if ( willSelectEverything(query) )
+    return getBooksIds();
+
+  BookIdCollection bookIds;
+
+  Xapian::Enquire enquire(*m_bookDB);
   enquire.set_query(query);
   const auto results = enquire.get_mset(0, m_books.size());
   for ( auto it = results.begin(); it != results.end(); ++it  ) {
@@ -315,11 +470,11 @@ Library::BookIdCollection Library::getBooksByTitleOrDescription(const Filter& fi
   return bookIds;
 }
 
-Library::BookIdCollection Library::filter(const Filter& filter)
+Library::BookIdCollection Library::filter(const Filter& filter) const
 {
   BookIdCollection result;
-  for(auto id : getBooksByTitleOrDescription(filter)) {
-    if(filter.acceptByNonQueryCriteria(m_books[id])) {
+  for(auto id : filterViaBookDB(filter)) {
+    if(filter.accept(m_books.at(id))) {
       result.push_back(id);
     }
   }
@@ -339,13 +494,13 @@ struct KEY_TYPE<SIZE> {
 template<supportedListSortBy sort>
 class Comparator {
   private:
-    Library* lib;
-    bool     ascending;
+    const Library* const lib;
+    const bool     ascending;
 
     inline typename KEY_TYPE<sort>::TYPE get_key(const std::string& id);
 
   public:
-    Comparator(Library* lib, bool ascending) : lib(lib), ascending(ascending) {}
+    Comparator(const Library* lib, bool ascending) : lib(lib), ascending(ascending) {}
     inline bool operator() (const std::string& id1, const std::string& id2) {
       if (ascending) {
         return get_key(id1) < get_key(id2);
@@ -385,7 +540,7 @@ std::string Comparator<PUBLISHER>::get_key(const std::string& id)
   return lib->getBookById(id).getPublisher();
 }
 
-void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending)
+void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending) const
 {
   switch(sort) {
     case TITLE:
@@ -417,7 +572,7 @@ Library::BookIdCollection Library::listBooksIds(
     const std::string& creator,
     const std::string& publisher,
     const std::vector<std::string>& tags,
-    size_t maxSize) {
+    size_t maxSize) const {
 
   Filter _filter;
   if (mode & LOCAL)
@@ -512,14 +667,14 @@ Filter& Filter::valid(bool accept)
   return *this;
 }
 
-Filter& Filter::acceptTags(std::vector<std::string> tags)
+Filter& Filter::acceptTags(const Tags& tags)
 {
   _acceptTags = tags;
   activeFilters |= ACCEPTTAGS;
   return *this;
 }
 
-Filter& Filter::rejectTags(std::vector<std::string> tags)
+Filter& Filter::rejectTags(const Tags& tags)
 {
   _rejectTags = tags;
   activeFilters |= REJECTTAGS;
@@ -583,12 +738,32 @@ bool Filter::hasQuery() const
   return ACTIVE(QUERY);
 }
 
-bool Filter::accept(const Book& book) const
+bool Filter::hasName() const
 {
-  return acceptByNonQueryCriteria(book) && acceptByQueryOnly(book);
+  return ACTIVE(NAME);
 }
 
-bool Filter::acceptByNonQueryCriteria(const Book& book) const
+bool Filter::hasCategory() const
+{
+  return ACTIVE(CATEGORY);
+}
+
+bool Filter::hasLang() const
+{
+  return ACTIVE(LANG);
+}
+
+bool Filter::hasPublisher() const
+{
+  return ACTIVE(_PUBLISHER);
+}
+
+bool Filter::hasCreator() const
+{
+  return ACTIVE(_CREATOR);
+}
+
+bool Filter::accept(const Book& book) const
 {
   auto local = !book.getPath().empty();
   FILTER(_LOCAL, local)
@@ -603,46 +778,8 @@ bool Filter::acceptByNonQueryCriteria(const Book& book) const
   FILTER(_NOREMOTE, !remote)
 
   FILTER(MAXSIZE, book.getSize() <= _maxSize)
-  FILTER(CATEGORY, book.getCategory() == _category)
-  FILTER(LANG, book.getLanguage() == _lang)
-  FILTER(_PUBLISHER, book.getPublisher() == _publisher)
-  FILTER(_CREATOR, book.getCreator() == _creator)
-  FILTER(NAME, book.getName() == _name)
-
-  if (ACTIVE(ACCEPTTAGS)) {
-    if (!_acceptTags.empty()) {
-      auto vBookTags = split(book.getTags(), ";");
-      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
-      for (auto& t: _acceptTags) {
-        if (sBookTags.find(t) == sBookTags.end()) {
-          return false;
-        }
-      }
-    }
-  }
-  if (ACTIVE(REJECTTAGS)) {
-    if (!_rejectTags.empty()) {
-      auto vBookTags = split(book.getTags(), ";");
-      std::set<std::string> sBookTags(vBookTags.begin(), vBookTags.end());
-      for (auto& t: _rejectTags) {
-        if (sBookTags.find(t) != sBookTags.end()) {
-          return false;
-        }
-      }
-    }
-  }
-  return true;
-}
-
-bool Filter::acceptByQueryOnly(const Book& book) const
-{
-  if ( ACTIVE(QUERY)
-    && !(matchRegex(book.getTitle(), "\\Q" + _query + "\\E")
-        || matchRegex(book.getDescription(), "\\Q" + _query + "\\E")))
-    return false;
 
   return true;
-
 }
 
 }

@@ -27,7 +27,7 @@
 #include <cctype>
 #include <locale>
 #include <string>
-#include <vector>
+#include <memory>
 #include <vector>
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
@@ -48,7 +48,7 @@ class Result
   virtual std::string get_content() = 0;
   virtual int get_wordCount() = 0;
   virtual int get_size() = 0;
-  virtual int get_readerIndex() = 0;
+  virtual std::string get_zimId() = 0;
 };
 
 struct SearcherInternal;
@@ -154,7 +154,7 @@ class Searcher
                      const bool verbose = false);
 
   std::vector<Reader*> readers;
-  SearcherInternal* internal;
+  std::unique_ptr<SearcherInternal> internal;
   std::string searchPattern;
   unsigned int estimatedResultCount;
   unsigned int resultStart;

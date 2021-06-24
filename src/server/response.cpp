@@ -24,6 +24,7 @@
 
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
+#include "tools/otherTools.h"
 
 #include "string.h"
 #include <mustache.hpp>
@@ -37,17 +38,6 @@ namespace kiwix {
 namespace
 {
 // some utilities
-
-std::string render_template(const std::string& template_str, kainjow::mustache::data data)
-{
-  kainjow::mustache::mustache tmpl(template_str);
-  kainjow::mustache::data urlencode{kainjow::mustache::lambda2{
-                               [](const std::string& str,const kainjow::mustache::renderer& r) { return urlEncode(r(str), true); }}};
-  data.set("urlencoded", urlencode);
-  std::stringstream ss;
-  tmpl.render(data, [&ss](const std::string& str) { ss << str; });
-  return ss.str();
-}
 
 std::string get_mime_type(const zim::Item& item)
 {
@@ -93,14 +83,15 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName)
+std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName, const std::string& bookTitle, const std::string& details)
 {
   MustacheData results;
   results.set("url", request.get_full_url());
+  results.set("details", details);
 
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
-  response->set_taskbar(bookName, "");
+  response->set_taskbar(bookName, bookTitle);
 
   return std::move(response);
 }
@@ -199,7 +190,7 @@ void ContentResponse::introduce_taskbar()
   kainjow::mustache::data data;
   data.set("root", m_root);
   data.set("content", m_bookName);
-  data.set("hascontent", !m_bookName.empty());
+  data.set("hascontent", (!m_bookName.empty() && !m_bookTitle.empty()));
   data.set("title", m_bookTitle);
   data.set("withlibrarybutton", m_withLibraryButton);
   auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
@@ -259,9 +250,9 @@ Response::create_mhd_response(const RequestContext& request)
 MHD_Response*
 ContentResponse::create_mhd_response(const RequestContext& request)
 {
-  inject_root_link();
-
   if (contentDecorationAllowed()) {
+    inject_root_link();
+
     if (m_withTaskbar) {
       introduce_taskbar();
     }
@@ -348,21 +339,21 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, bool wit
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype)
+std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
         server.m_verbose.load(),
-        server.m_withTaskbar,
+        server.m_withTaskbar && !isHomePage,
         server.m_withLibraryButton,
         server.m_blockExternalLinks,
         content,
         mimetype));
 }
 
-std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype) {
+std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype, bool isHomePage) {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype);
+  return ContentResponse::build(server, content, mimetype, isHomePage);
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :

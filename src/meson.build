@@ -25,7 +25,8 @@ kiwix_sources = [
   'server/etag.cpp',
   'server/request_context.cpp',
   'server/response.cpp',
-  'server/internalServer.cpp'
+  'server/internalServer.cpp',
+  'server/internalServer_catalog_v2.cpp'
 ]
 kiwix_sources += lib_resources
 

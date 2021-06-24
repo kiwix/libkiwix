@@ -35,7 +35,7 @@ namespace kiwix
 class _Result : public Result
 {
  public:
-  _Result(zim::Search::iterator& iterator);
+  _Result(zim::SearchResultSet::iterator iterator);
   virtual ~_Result(){};
 
   virtual std::string get_url();
@@ -45,29 +45,25 @@ class _Result : public Result
   virtual std::string get_content();
   virtual int get_wordCount();
   virtual int get_size();
-  virtual int get_readerIndex();
+  virtual std::string get_zimId();
 
  private:
-  zim::Search::iterator iterator;
+  zim::SearchResultSet::iterator iterator;
 };
 
-struct SearcherInternal {
-  const zim::Search* _search;
-  zim::Search::iterator current_iterator;
-
-  SearcherInternal() : _search(NULL) {}
-  ~SearcherInternal()
+struct SearcherInternal : zim::SearchResultSet {
+  explicit SearcherInternal(const zim::SearchResultSet& srs)
+    : zim::SearchResultSet(srs)
+    , current_iterator(srs.begin())
   {
-    if (_search != NULL) {
-      delete _search;
-    }
   }
+
+  zim::SearchResultSet::iterator current_iterator;
 };
 
 /* Constructor */
 Searcher::Searcher()
-    : internal(new SearcherInternal()),
-      searchPattern(""),
+    : searchPattern(""),
       estimatedResultCount(0),
       resultStart(0),
       resultEnd(0)
@@ -78,7 +74,6 @@ Searcher::Searcher()
 /* Destructor */
 Searcher::~Searcher()
 {
-  delete internal;
 }
 
 bool Searcher::add_reader(Reader* reader)
@@ -122,13 +117,13 @@ void Searcher::search(const std::string& search,
           archives.push_back(*(*current)->getZimArchive());
       }
     }
-    zim::Search* search = new zim::Search(archives);
-    search->set_verbose(verbose);
-    search->set_query(unaccentedSearch);
-    search->set_range(resultStart, resultEnd);
-    internal->_search = search;
-    internal->current_iterator = internal->_search->begin();
-    this->estimatedResultCount = internal->_search->get_matches_estimated();
+    zim::Searcher searcher(archives);
+    zim::Query query;
+    query.setQuery(unaccentedSearch, false);
+    query.setVerbose(verbose);
+    zim::Search search = searcher.search(query);
+    internal.reset(new SearcherInternal(search.getResults(resultStart, resultEnd)));
+    this->estimatedResultCount = search.getEstimatedMatches();
   }
 
   return;
@@ -163,28 +158,28 @@ void Searcher::geo_search(float latitude, float longitude, float distance,
        current++) {
     archives.push_back(*(*current)->getZimArchive());
   }
-  zim::Search* search = new zim::Search(archives);
-  search->set_verbose(verbose);
-  search->set_query("");
-  search->set_georange(latitude, longitude, distance);
-  search->set_range(resultStart, resultEnd);
-  internal->_search = search;
-  internal->current_iterator = internal->_search->begin();
-  this->estimatedResultCount = internal->_search->get_matches_estimated();
+  zim::Searcher searcher(archives);
+  zim::Query query;
+  query.setVerbose(verbose);
+  query.setQuery("", false);
+  query.setGeorange(latitude, longitude, distance);
+  zim::Search search = searcher.search(query);
+  internal.reset(new SearcherInternal(search.getResults(resultStart, resultEnd)));
+  this->estimatedResultCount = search.getEstimatedMatches();
 }
 
 
 void Searcher::restart_search()
 {
-  if (internal->_search) {
-    internal->current_iterator = internal->_search->begin();
+  if (internal.get()) {
+    internal->current_iterator = internal->begin();
   }
 }
 
 Result* Searcher::getNextResult()
 {
-  if (internal->_search &&
-             internal->current_iterator != internal->_search->end()) {
+  if (internal.get() &&
+             internal->current_iterator != internal->end()) {
     Result* result = new _Result(internal->current_iterator);
     internal->current_iterator++;
     return result;
@@ -218,14 +213,13 @@ void Searcher::suggestions(std::string& searchPattern, const bool verbose)
        current++) {
     archives.push_back(*(*current)->getZimArchive());
   }
-  zim::Search* search = new zim::Search(archives);
-  search->set_verbose(verbose);
-  search->set_query(unaccentedSearch);
-  search->set_range(resultStart, resultEnd);
-  search->set_suggestion_mode(true);
-  internal->_search = search;
-  internal->current_iterator = internal->_search->begin();
-  this->estimatedResultCount = internal->_search->get_matches_estimated();
+  zim::Searcher searcher(archives);
+  zim::Query query;
+  query.setVerbose(verbose);
+  query.setQuery(unaccentedSearch, true);
+  zim::Search search = searcher.search(query);
+  internal.reset(new SearcherInternal(search.getResults(resultStart, resultEnd)));
+  this->estimatedResultCount = search.getEstimatedMatches();
 }
 
 /* Return the result count estimation */
@@ -234,26 +228,26 @@ unsigned int Searcher::getEstimatedResultCount()
   return this->estimatedResultCount;
 }
 
-_Result::_Result(zim::Search::iterator& iterator)
+_Result::_Result(zim::SearchResultSet::iterator iterator)
     : iterator(iterator)
 {
 }
 
 std::string _Result::get_url()
 {
-  return iterator.get_url();
+  return iterator.getPath();
 }
 std::string _Result::get_title()
 {
-  return iterator.get_title();
+  return iterator.getTitle();
 }
 int _Result::get_score()
 {
-  return iterator.get_score();
+  return iterator.getScore();
 }
 std::string _Result::get_snippet()
 {
-  return iterator.get_snippet();
+  return iterator.getSnippet();
 }
 std::string _Result::get_content()
 {
@@ -261,15 +255,17 @@ std::string _Result::get_content()
 }
 int _Result::get_size()
 {
-  return iterator.get_size();
+  return iterator.getSize();
 }
 int _Result::get_wordCount()
 {
-  return iterator.get_wordCount();
+  return iterator.getWordCount();
 }
-int _Result::get_readerIndex()
+std::string _Result::get_zimId()
 {
-  return iterator.get_fileIndex();
+  std::ostringstream s;
+  s << iterator.getZimId();
+  return s.str();
 }
 
 

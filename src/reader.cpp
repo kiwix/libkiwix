@@ -184,8 +184,7 @@ Entry Reader::getMainPage() const
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
   try {
-    auto entry = zimArchive->getFaviconEntry();
-    auto item = entry.getItem(true);
+    auto item = zimArchive->getIllustrationItem();
     content = item.getData();
     mimeType = item.getMimetype();
     return true;
@@ -432,12 +431,12 @@ bool Reader::searchSuggestions(const string& prefix,
        article is already in the suggestions list (with an other
        title) */
     bool insert = true;
-    std::vector<std::vector<std::string>>::iterator suggestionItr;
+    std::vector<SuggestionItem>::iterator suggestionItr;
     for (suggestionItr = results.begin();
          suggestionItr != results.end();
          suggestionItr++) {
-      int result = normalizedArticleTitle.compare((*suggestionItr)[2]);
-      if (result == 0 && articleFinalUrl.compare((*suggestionItr)[1]) == 0) {
+      int result = normalizedArticleTitle.compare((*suggestionItr).getNormalizedTitle());
+      if (result == 0 && articleFinalUrl.compare((*suggestionItr).getPath()) == 0) {
         insert = false;
         break;
       } else if (result < 0) {
@@ -447,10 +446,7 @@ bool Reader::searchSuggestions(const string& prefix,
 
     /* Insert if possible */
     if (insert) {
-      std::vector<std::string> suggestion;
-      suggestion.push_back(entry.getTitle());
-      suggestion.push_back(articleFinalUrl);
-      suggestion.push_back(normalizedArticleTitle);
+      SuggestionItem suggestion(entry.getTitle(), normalizedArticleTitle, articleFinalUrl);
       results.insert(suggestionItr, suggestion);
     }
 
@@ -495,19 +491,19 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
   bool retVal = false;
 
   /* Try to search in the title using fulltext search database */
-  auto suggestionSearch = zim::Search(*zimArchive);
-  suggestionSearch.set_query(prefix);
-  suggestionSearch.set_range(0, suggestionsCount);
-  suggestionSearch.set_suggestion_mode(true);
 
-  if (suggestionSearch.get_matches_estimated()) {
-    for (auto current = suggestionSearch.begin();
-         current != suggestionSearch.end();
+  auto suggestionSearcher = zim::Searcher(*zimArchive);
+  zim::Query suggestionQuery;
+  suggestionQuery.setQuery(prefix, true);
+  auto suggestionSearch = suggestionSearcher.search(suggestionQuery);
+
+  if (suggestionSearch.getEstimatedMatches()) {
+    const auto suggestions = suggestionSearch.getResults(0, suggestionsCount);
+    for (auto current = suggestions.begin();
+         current != suggestions.end();
          current++) {
-      std::vector<std::string> suggestion;
-      suggestion.push_back(current->getTitle());
-      suggestion.push_back(current->getPath());
-      suggestion.push_back(kiwix::normalize(current->getTitle()));
+      SuggestionItem suggestion(current.getTitle(), kiwix::normalize(current.getTitle()),
+                                current.getPath(), current.getSnippet());
       results.push_back(suggestion);
     }
     retVal = true;
@@ -528,7 +524,7 @@ bool Reader::getNextSuggestion(string& title)
 {
   if (this->suggestionsOffset != this->suggestions.end()) {
     /* title */
-    title = (*(this->suggestionsOffset))[0];
+    title = (*(this->suggestionsOffset)).getTitle();
 
     /* increment the cursor for the next call */
     this->suggestionsOffset++;
@@ -543,8 +539,8 @@ bool Reader::getNextSuggestion(string& title, string& url)
 {
   if (this->suggestionsOffset != this->suggestions.end()) {
     /* title */
-    title = (*(this->suggestionsOffset))[0];
-    url = (*(this->suggestionsOffset))[1];
+    title = (*(this->suggestionsOffset)).getTitle();
+    url = (*(this->suggestionsOffset)).getPath();
 
     /* increment the cursor for the next call */
     this->suggestionsOffset++;

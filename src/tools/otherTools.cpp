@@ -19,6 +19,7 @@
 
 #include "tools/otherTools.h"
 #include <algorithm>
+#include <iomanip>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -31,6 +32,8 @@
 #include <map>
 #include <sstream>
 #include <pugixml.hpp>
+
+#include <zim/uuid.h>
 
 
 static std::map<std::string, std::string> codeisomapping {
@@ -340,4 +343,36 @@ kiwix::MimeCounterType kiwix::parseMimetypeCounter(const std::string& counterDat
   }
 
   return counters;
+}
+
+std::string kiwix::gen_date_str()
+{
+  auto now = std::time(0);
+  auto tm = std::localtime(&now);
+
+  std::stringstream is;
+  is << std::setw(2) << std::setfill('0')
+     << 1900+tm->tm_year << "-"
+     << std::setw(2) << std::setfill('0') << tm->tm_mon+1 << "-"
+     << std::setw(2) << std::setfill('0') << tm->tm_mday << "T"
+     << std::setw(2) << std::setfill('0') << tm->tm_hour << ":"
+     << std::setw(2) << std::setfill('0') << tm->tm_min << ":"
+     << std::setw(2) << std::setfill('0') << tm->tm_sec << "Z";
+  return is.str();
+}
+
+std::string kiwix::gen_uuid(const std::string& s)
+{
+  return kiwix::to_string(zim::Uuid::generate(s));
+}
+
+std::string kiwix::render_template(const std::string& template_str, kainjow::mustache::data data)
+{
+  kainjow::mustache::mustache tmpl(template_str);
+  kainjow::mustache::data urlencode{kainjow::mustache::lambda2{
+                               [](const std::string& str,const kainjow::mustache::renderer& r) { return urlEncode(r(str), true); }}};
+  data.set("urlencoded", urlencode);
+  std::stringstream ss;
+  tmpl.render(data, [&ss](const std::string& str) { ss << str; });
+  return ss.str();
 }

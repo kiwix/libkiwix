@@ -77,9 +77,7 @@ std::string SearchRenderer::getHtml()
     result.set("title", p_result->get_title());
     result.set("url", p_result->get_url());
     result.set("snippet", p_result->get_snippet());
-    auto readerIndex = p_result->get_readerIndex();
-    auto reader = mp_searcher->get_reader(readerIndex);
-    result.set("resultContentId", mp_nameMapper->getNameForId(reader->getId()));
+    result.set("resultContentId", mp_nameMapper->getNameForId(p_result->get_zimId()));
 
     if (p_result->get_wordCount() >= 0) {
       result.set("wordCount", kiwix::beautifyInteger(p_result->get_wordCount()));

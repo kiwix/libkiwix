@@ -15,7 +15,7 @@ Build-Depends: debhelper-compat (= 13),
  zlib1g-dev
 Standards-Version: 4.5.0
 Section: libs
-Homepage: https://github.com/kiwix/kiwix-lib
+Homepage: https://github.com/kiwix/libkiwix
 Rules-Requires-Root: no
 
 Package: libkiwix-dev
