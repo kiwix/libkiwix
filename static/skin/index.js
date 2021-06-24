@@ -42,6 +42,17 @@
         return result;
     }
 
+    const humanFriendlySize = (fileSize) => {
+        if (fileSize === 0) {
+            return 'unkown';
+        }
+        const units = ['bytes', 'kB', 'MB', 'GB', 'TB'];
+        let quotient = Math.floor(Math.log10(fileSize) / 3);
+        quotient = quotient < units.length ? quotient : units.length - 1;
+        fileSize /= (1000 ** quotient);
+        return `${+fileSize.toFixed(2)} ${units[quotient]}`;
+      };      
+
     function htmlEncode(str) {
         return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => `&#${i.charCodeAt(0)};`);
     }
@@ -75,26 +86,31 @@
             })
             .filter((tag, index, tags) => tags.indexOf(tag) === index).join(' | ');
         let downloadLink;
+        let zimSize = 0;
         try {
-            downloadLink = book.querySelector('link[type="application/x-zim"]').getAttribute('href').split('.meta4')[0];
+            const downloadBookLink = book.querySelector('link[type="application/x-zim"]')
+            zimSize = parseInt(downloadBookLink.getAttribute('length'));
+            downloadLink = downloadBookLink.getAttribute('href').split('.meta4')[0];
         } catch {
             downloadLink = '';
         }
 
-        const linkTag = document.createElement('a');
-        linkTag.setAttribute('class', 'book');
-        linkTag.setAttribute('data-id', id);
-        linkTag.setAttribute('href', link);
+        const divTag = document.createElement('div');
+        divTag.setAttribute('class', 'book');
+        divTag.setAttribute('data-id', id);
         if (sort) {
-            linkTag.setAttribute('data-idx', bookOrderMap.get(id));
+            divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
-        linkTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img src='${iconUrl}'></div>
-            <div class='book__title' title='${title}'>${title}</div>
+        divTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img src='${iconUrl}'></div>
+            <div class='book__title' title='${title}'>
+                <div id='bookSize'>${humanFriendlySize(zimSize)}</div>
+                <div id="bookTitle">${title}</div>
+            </div>
             <div class='book__description' title='${description}'>${description}</div>
             <div class='book__languageTag'>${language.substr(0, 2).toUpperCase()}</div>
             <div class='book__tags'>${tagHtml}</div>
-            <div class='book__links'> ${downloadLink ? `<a href="${downloadLink}" download>Download</a>` : `<span>Download</span>`} </div></div>`;
-        return linkTag;
+            <div class='book__links'> <a href="${link}" data-hover="Preview">Preview</a>&nbsp;|&nbsp;${downloadLink ? `<a href="${downloadLink}" data-hove="Download" download>Download</a>` : `<span>Download</span>`} </div></div>`;
+        return divTag;
     }
 
     function toggleFooter(show=false) {
@@ -140,21 +156,23 @@
         if (!bookOrderMap.size) {
             if (!noResultInjected) {
                 noResultInjected = true;
-                iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('a'));
+                iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('div'));
                 iso.layout();
-                const divTag = document.createElement('div');
-                divTag.setAttribute('class', 'noResults');
-                divTag.innerHTML = `No result. Would you like to<a href="/?lang="> reset filter?</a>`;
-                kiwixHomeBody.append(divTag);
-                kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
-                divTag.getElementsByTagName('a')[0].onclick = (event) => {
-                    event.preventDefault();
-                    window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
-                    setCookie(filterCookieName, 'lang=');
-                    resetAndFilter();
-                    filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
-                };
-                loader.setAttribute('style', 'position: absolute; top: 50%');
+                setTimeout(() => {
+                    const divTag = document.createElement('div');
+                    divTag.setAttribute('class', 'noResults');
+                    divTag.innerHTML = `No result. Would you like to<a href="/?lang="> reset filter?</a>`;
+                    kiwixHomeBody.append(divTag);
+                    kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
+                    divTag.getElementsByTagName('a')[0].onclick = (event) => {
+                        event.preventDefault();
+                        window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
+                        setCookie(filterCookieName, 'lang=');
+                        resetAndFilter();
+                        filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
+                    };
+                    loader.setAttribute('style', 'position: absolute; top: 50%');
+                }, 300);
             }
             return true;
         } else if (noResultInjected) {
