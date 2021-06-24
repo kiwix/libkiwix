@@ -45,4 +45,17 @@ public class Book
   private native void allocate();
   private native void dispose();
   private long nativeHandle;
+
+    /**
+     * Only use the book's id to generate a hash code
+     * Returns a hash code for this string in this case we should use the id of book
+     */
+  public native long hashCode();
+
+   /**
+    * Two books are equal if their ids match
+    * @param object will assume as [Book] object.
+    * @return true if their id's match
+    */
+  public native boolean equals(Object object);
 }
