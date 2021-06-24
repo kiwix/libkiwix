@@ -6,7 +6,8 @@
     };
     const filterTypes = ['lang', 'category', 'q'];
     const bookOrderMap = new Map();
-    const filterCookieName = 'filters'
+    const filterCookieName = 'filters';
+    const oneDayDelta = 86400000;
     let footer;
     let fadeOutDiv;
     let iso;
@@ -25,7 +26,7 @@
 
     function setCookie(cookieName, cookieValue) {
         const date = new Date();
-        date.setTime(date.getTime() + ( 24 * 60 * 60 * 1000));
+        date.setTime(date.getTime() + oneDayDelta);
         document.cookie = `${cookieName}=${cookieValue};expires=${date.toUTCString()};sameSite=Strict`;
     }
 
