@@ -8,6 +8,8 @@ tests = [
     'kiwixserve',
     'book',
     'manager',
+    'reader',
+    'searcher'
 ]
 
 if build_machine.system() != 'windows'
