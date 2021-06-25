@@ -5,13 +5,16 @@
         count: viewPortToCount()
     };
     const filterTypes = ['lang', 'category', 'q'];
-    const bookMap = new Map();
+    const bookOrderMap = new Map();
+    const filterCookieName = 'filters';
+    const oneDayDelta = 86400000;
     let footer;
     let fadeOutDiv;
     let iso;
     let isFetching = false;
     let noResultInjected = false;
-    let params = new URLSearchParams(window.location.search);
+    let filters = getCookie(filterCookieName);
+    let params = new URLSearchParams(window.location.search || filters || '');
     let timer;
 
     function queryUrlBuilder() {
@@ -19,6 +22,23 @@
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
         params.forEach((value, key) => {url+= value ? `&${key}=${value}` : ''});
         return (url);
+    }
+
+    function setCookie(cookieName, cookieValue) {
+        const date = new Date();
+        date.setTime(date.getTime() + oneDayDelta);
+        document.cookie = `${cookieName}=${cookieValue};expires=${date.toUTCString()};sameSite=Strict`;
+    }
+
+    function getCookie(cookieName) {
+        const name = cookieName + "=";
+        let result;
+        decodeURIComponent(document.cookie).split('; ').forEach(val => {
+            if (val.indexOf(name) === 0) {
+                result = val.substring(name.length);
+            }
+        });
+        return result;
     }
 
     function htmlEncode(str) {
@@ -47,7 +67,7 @@
         linkTag.setAttribute('data-id', id);
         linkTag.setAttribute('href', link);
         if (sort) {
-            linkTag.setAttribute('data-idx', bookMap[id]);
+            linkTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
         linkTag.innerHTML = `<div class='book__background' style="background-image: url('${iconUrl}');">
             <div class='book__title' title='${title}'>${title}</div>
@@ -73,10 +93,10 @@
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
             const books = data.querySelectorAll('entry');
             books.forEach((book, idx) => {
-                bookMap.set(getInnerHtml(book, 'id'), idx);
+                bookOrderMap.set(getInnerHtml(book, 'id'), idx);
             });
             incrementalLoadingParams.start += books.length;
-            if (parseInt(data.querySelector('totalResults').innerHTML) === bookMap.size) {
+            if (parseInt(data.querySelector('totalResults').innerHTML) === bookOrderMap.size) {
                 incrementalLoadingParams.count = 0;
                 toggleFooter(true);
             } else {
@@ -95,7 +115,7 @@
     }
 
     function checkAndInjectEmptyMessage() {
-        if (!bookMap.size) {
+        if (!bookOrderMap.size) {
             if (!noResultInjected) {
                 noResultInjected = true;
                 iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('a'));
@@ -107,6 +127,7 @@
                 spanTag.getElementsByTagName('a')[0].onclick = (event) => {
                     event.preventDefault();
                     window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
+                    setCookie(filterCookieName, 'lang=');
                     resetAndFilter();
                     filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
                 };
@@ -134,11 +155,11 @@
         iso.arrange({
             filter: function (idx, elem) {
                 const id = elem.getAttribute('data-id');
-                const retVal = bookMap.has(id);
+                const retVal = bookOrderMap.has(id);
                 if (retVal) {
                     booksToFilter.add(id);
                     if (sort) {
-                        elem.setAttribute('data-idx', bookMap[id]);
+                        elem.setAttribute('data-idx', bookOrderMap.get(id));
                         iso.updateSortData(elem);
                     }
                 } else {
@@ -157,11 +178,12 @@
         incrementalLoadingParams.start = 0;
         incrementalLoadingParams.count = viewPortToCount();
         fadeOutDiv.style.display = 'none';
-        bookMap.clear();
+        bookOrderMap.clear();
         params = new URLSearchParams(window.location.search);
         if (filterType) {
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
+            setCookie(filterCookieName, params.toString());
         }
         await loadAndDisplayBooks(true);
     }
@@ -212,18 +234,17 @@
             const filterTag = document.getElementsByName(filter)[0];
             filterTag.addEventListener('change', () => {resetAndFilter(filterTag.name, filterTag.value)});
         });
+        if (filters) {
+            window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
+        }
         params.forEach((value, key) => {document.getElementsByName(key)[0].value = value});
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
         if (!window.location.search) {
             const browserLang = navigator.language.split('-')[0];
-            if (browserLang.length === 3) {
-                document.getElementById('languageFilter').value = browserLang;
-                langFilter.dispatchEvent(new Event('change'));
-            } else {
-                const langFilter = document.getElementById('languageFilter');
-                langFilter.value = iso6391To3[browserLang];
-                langFilter.dispatchEvent(new Event('change'));
-            }
+            const langFilter = document.getElementById('languageFilter');
+            langFilter.value = browserLang.length === 3 ? browserLang : iso6391To3[browserLang];
+            langFilter.dispatchEvent(new Event('change'));
         }
+        setCookie(filterCookieName, params.toString());
     }
 })();
