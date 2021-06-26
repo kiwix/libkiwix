@@ -44,7 +44,7 @@
 
     const humanFriendlySize = (fileSize) => {
         if (fileSize === 0) {
-            return 'unkown';
+            return '';
         }
         const units = ['bytes', 'kB', 'MB', 'GB', 'TB'];
         let quotient = Math.floor(Math.log10(fileSize) / 3);
@@ -94,6 +94,7 @@
         } catch {
             downloadLink = '';
         }
+        humanFriendlyZimSize = humanFriendlySize(zimSize);
 
         const divTag = document.createElement('div');
         divTag.setAttribute('class', 'book');
@@ -103,13 +104,13 @@
         }
         divTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img src='${iconUrl}'></div>
             <div class='book__title' title='${title}'>
-                <div id='bookSize'>${humanFriendlySize(zimSize)}</div>
                 <div id="bookTitle">${title}</div>
+                ${humanFriendlyZimSize ? `<div id='bookSize'>${humanFriendlyZimSize}</div>`: ''}
             </div>
             <div class='book__description' title='${description}'>${description}</div>
             <div class='book__languageTag'>${language.substr(0, 2).toUpperCase()}</div>
-            <div class='book__tags'>${tagHtml}</div>
-            <div class='book__links'> <a href="${link}" data-hover="Preview">Preview</a>&nbsp;|&nbsp;${downloadLink ? `<a href="${downloadLink}" data-hove="Download" download>Download</a>` : `<span>Download</span>`} </div></div>`;
+            <div class='book__tags'><div class="book__tags--wrapper">${tagHtml}</div></div>
+            <div class='book__links'> <a href="${link}" data-hover="Preview">Preview</a>${downloadLink ? `&nbsp;|&nbsp;<a href="${downloadLink}" data-hove="Download" download>Download</a>` : ''} </div></div>`;
         return divTag;
     }
 
