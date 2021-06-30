@@ -20,7 +20,7 @@
 #include "gtest/gtest.h"
 #include <string>
 #include <vector>
-#include "../include/tools/pathTools.h"
+#include "../src/tools/pathTools.h"
 
 #ifdef _WIN32
 # define S "\\"

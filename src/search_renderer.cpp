@@ -30,7 +30,7 @@
 
 #include <mustache.hpp>
 #include "kiwixlib-resources.h"
-
+#include "tools/stringTools.h"
 
 namespace kiwix
 {

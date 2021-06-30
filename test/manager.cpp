@@ -2,6 +2,7 @@
 #include "../include/manager.h"
 #include "../include/library.h"
 #include "../include/book.h"
+#include "../src/tools/pathTools.h"
 #include <iostream>
 #include <fstream>
 

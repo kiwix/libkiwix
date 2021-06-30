@@ -29,8 +29,6 @@
 #include <string>
 #include "common.h"
 #include "entry.h"
-#include "tools/pathTools.h"
-#include "tools/stringTools.h"
 
 using namespace std;
 
