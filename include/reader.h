@@ -45,20 +45,20 @@ class SuggestionItem
   // Temporarily making the constructor public until the code move is complete
   public:
     // Create a sugggestion item.
-    explicit SuggestionItem(std::string title, std::string normalizedTitle,
-                            std::string path, std::string snippet = "") :
+    explicit SuggestionItem(const std::string& title, const std::string& normalizedTitle,
+                            const std::string& path, const std::string& snippet = "") :
       title(title),
       normalizedTitle(normalizedTitle),
       path(path),
       snippet(snippet) {}
 
   public:
-    const std::string getTitle()           {return title;}
-    const std::string getNormalizedTitle() {return normalizedTitle;}
-    const std::string getPath()            {return path;}
-    const std::string getSnippet()         {return snippet;}
+    const std::string& getTitle() const           { return title;}
+    const std::string& getNormalizedTitle() const { return normalizedTitle;}
+    const std::string& getPath() const            { return path;}
+    const std::string& getSnippet() const         { return snippet;}
 
-    const bool hasSnippet()                {return !snippet.empty();}
+    bool hasSnippet() const                { return !snippet.empty();}
 
   // Data
   private:
