@@ -24,8 +24,8 @@
 #include <zim/item.h>
 #include <zim/error.h>
 
+#include "tools.h"
 #include "tools/stringTools.h"
-#include "tools/pathTools.h"
 #include "tools/otherTools.h"
 #include "tools/archiveTools.h"
 

@@ -43,7 +43,7 @@ extern "C" {
 #include "microhttpd_wrapper.h"
 }
 
-#include "tools/otherTools.h"
+#include "tools.h"
 #include "tools/pathTools.h"
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"

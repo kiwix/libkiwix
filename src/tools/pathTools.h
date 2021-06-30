@@ -26,11 +26,6 @@
 std::string WideToUtf8(const std::wstring& wstr);
 std::wstring Utf8ToWide(const std::string& str);
 #endif
-bool isRelativePath(const std::string& path);
-std::string computeAbsolutePath(const std::string& path, const std::string& relativePath);
-std::string computeRelativePath(const std::string& path, const std::string& absolutePath);
-std::string removeLastPathElement(const std::string& path);
-std::string appendToDirectory(const std::string& directoryPath, const std::string& filename);
 
 unsigned int getFileSize(const std::string& path);
 std::string getFileSizeAsString(const std::string& path);
@@ -39,10 +34,8 @@ bool fileExists(const std::string& path);
 bool makeDirectory(const std::string& path);
 std::string makeTmpDirectory();
 bool copyFile(const std::string& sourcePath, const std::string& destPath);
-std::string getLastPathElement(const std::string& path);
-std::string getExecutablePath(bool realPathOnly = false);
-std::string getCurrentDirectory();
-std::string getDataDirectory();
 bool writeTextFile(const std::string& path, const std::string& content);
 std::string getMimeTypeForFile(const std::string& filename);
+
 #endif
+

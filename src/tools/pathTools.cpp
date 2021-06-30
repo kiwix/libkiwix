@@ -17,7 +17,10 @@
  * MA 02110-1301, USA.
  */
 
+// Implement method defined in <kiwix/tools.h> and "tools/pathTools.h"
+#include "tools.h"
 #include "tools/pathTools.h"
+
 #include <stdexcept>
 
 #ifdef __APPLE__
@@ -59,7 +62,6 @@
 #define PATH_MAX 1024
 #endif
 
-
 #ifdef _WIN32
 std::string WideToUtf8(const std::wstring& wstr)
 {
@@ -78,7 +80,7 @@ std::wstring Utf8ToWide(const std::string& str)
 }
 #endif
 
-bool isRelativePath(const std::string& path)
+bool kiwix::isRelativePath(const std::string& path)
 {
 #ifdef _WIN32
   if (path.size() < 3 ) {
@@ -173,7 +175,7 @@ std::vector<std::string> normalizeParts(std::vector<std::string>& parts, bool ab
   return ret;
 }
 
-std::string computeRelativePath(const std::string& path, const std::string& absolutePath)
+std::string kiwix::computeRelativePath(const std::string& path, const std::string& absolutePath)
 {
   auto parts = kiwix::split(path, SEPARATOR, false);
   auto pathParts = normalizeParts(parts, false);
@@ -198,11 +200,11 @@ std::string computeRelativePath(const std::string& path, const std::string& abso
   return ret;
 }
 
-std::string computeAbsolutePath(const std::string& path, const std::string& relativePath)
+std::string kiwix::computeAbsolutePath(const std::string& path, const std::string& relativePath)
 {
   std::string absolutePath = path;
   if (path.empty()) {
-    absolutePath = getCurrentDirectory();
+    absolutePath = kiwix::getCurrentDirectory();
   }
 
   auto parts = kiwix::split(absolutePath, SEPARATOR, false);
@@ -215,7 +217,7 @@ std::string computeAbsolutePath(const std::string& path, const std::string& rela
   return ret;
 }
 
-std::string removeLastPathElement(const std::string& path)
+std::string kiwix::removeLastPathElement(const std::string& path)
 {
   auto parts_ = kiwix::split(path, SEPARATOR, false);
   auto parts = normalizeParts(parts_, false);
@@ -226,7 +228,7 @@ std::string removeLastPathElement(const std::string& path)
   return ret;
 }
 
-std::string appendToDirectory(const std::string& directoryPath, const std::string& filename)
+std::string kiwix::appendToDirectory(const std::string& directoryPath, const std::string& filename)
 {
   std::string newPath = directoryPath;
   if (!directoryPath.empty() && directoryPath.back() != SEPARATOR[0]) {
@@ -236,7 +238,7 @@ std::string appendToDirectory(const std::string& directoryPath, const std::strin
   return newPath;
 }
 
-std::string getLastPathElement(const std::string& path)
+std::string kiwix::getLastPathElement(const std::string& path)
 {
   auto parts_ = kiwix::split(path, SEPARATOR);
   auto parts = normalizeParts(parts_, false);
@@ -366,7 +368,7 @@ bool copyFile(const std::string& sourcePath, const std::string& destPath)
 #endif
 }
 
-std::string getExecutablePath(bool realPathOnly)
+std::string kiwix::getExecutablePath(bool realPathOnly)
 {
   if (!realPathOnly) {
     char* cAppImage = ::getenv("APPIMAGE");
@@ -420,7 +422,7 @@ bool writeTextFile(const std::string& path, const std::string& content)
   return true;
 }
 
-std::string getCurrentDirectory()
+std::string kiwix::getCurrentDirectory()
 {
 #ifdef _WIN32
   wchar_t* a_cwd = _wgetcwd(NULL, 0);
@@ -434,7 +436,7 @@ std::string getCurrentDirectory()
   return ret;
 }
 
-std::string getDataDirectory()
+std::string kiwix::getDataDirectory()
 {
 // Try to get the dataDir from the `KIWIX_DATA_DIR` env var
 #ifdef _WIN32
@@ -524,4 +526,3 @@ std::string getMimeTypeForFile(const std::string& filename)
 
   return mimeType;
 }
-

@@ -32,9 +32,7 @@ namespace pugi {
 
 namespace kiwix
 {
-  void sleep(unsigned int milliseconds);
   std::string nodeToString(const pugi::xml_node& node);
-  std::string converta2toa3(const std::string& a2code);
 
   /*
    * Convert all format tag string to new format

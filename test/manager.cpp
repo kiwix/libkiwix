@@ -2,7 +2,7 @@
 #include "../include/manager.h"
 #include "../include/library.h"
 #include "../include/book.h"
-#include "../src/tools/pathTools.h"
+#include "../include/tools.h"
 #include <iostream>
 #include <fstream>
 
@@ -14,13 +14,13 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim");
     ASSERT_NE(bookId, "");
     kiwix::Book book = lib.getBookById(bookId);
-    EXPECT_EQ(book.getPath(), computeAbsolutePath("", "./test/example.zim"));
+    EXPECT_EQ(book.getPath(), kiwix::computeAbsolutePath("", "./test/example.zim"));
 
     const std::string pathToSave = "./pathToSave";
     const std::string url = "url";
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave, url, true);
     book = lib.getBookById(bookId);
-    auto savedPath = computeAbsolutePath(removeLastPathElement(manager.writableLibraryPath), pathToSave);
+    auto savedPath = kiwix::computeAbsolutePath(kiwix::removeLastPathElement(manager.writableLibraryPath), pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
     EXPECT_EQ(book.getUrl(), url);
 }

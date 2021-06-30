@@ -17,9 +17,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <tools/stringTools.h>
+// Implement function declared in tools.h and tools/stringTools.h
+#include "tools.h"
+#include "tools/stringTools.h"
 
-#include <tools/pathTools.h>
+#include "tools/pathTools.h"
 #include <unicode/normlzr.h>
 #include <unicode/rep.h>
 #include <unicode/translit.h>

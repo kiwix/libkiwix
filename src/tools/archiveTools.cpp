@@ -18,6 +18,8 @@
  */
 
 #include "archiveTools.h"
+
+#include "tools.h"
 #include "pathTools.h"
 #include "otherTools.h"
 #include "stringTools.h"

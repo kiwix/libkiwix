@@ -19,6 +19,7 @@
 
 #include "manager.h"
 
+#include "tools.h"
 #include "tools/pathTools.h"
 
 #include <pugixml.hpp>
