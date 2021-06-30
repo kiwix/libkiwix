@@ -46,56 +46,53 @@ body {
 
 .kiwixNav__kiwixFilter {
     -webkit-appearance: none;
-   -moz-appearance: none;
-   -ms-appearance: none;
-   appearance: none;
-   outline: 0;
-   box-shadow: none;
-   border: 0 !important;
-   background: white;
-   background-image: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0 !important;
+    background: white;
+    background-image: none;
     border-radius: 1px;
     width: 195px;
     height: 35px;
- }
- 
- .kiwixNav__kiwixFilter:-ms-expand {
-   display: none;
- }
-
-.kiwixNav__select {
-  position: relative;
-  display: flex;
-  width: 231px;
-  height: 35px;
-  line-height: 3;
-  background: #627B93;
-  overflow: hidden;
-  border-radius: 10px;
-  border: 1px solid #394856; 
-}
-
-.kiwixNav__kiwixFilter {
     flex: 1;
     color: black;
     padding: 7px 10px 10px;
     cursor: pointer;
+ }
+ 
+ .kiwixNav__kiwixFilter:-ms-expand {
+    display: none;
+ }
+
+.kiwixNav__select {
+    position: relative;
+    display: flex;
+    width: 231px;
+    height: 35px;
+    line-height: 3;
+    background: #627B93;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #394856; 
 }
 
 .kiwixNav__select::after {
-  content: '\25BC';
-  color: #fff;
-  background-color: #627B93;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0 1em;
-  cursor: pointer;
-  pointer-events: none;
-  -webkit-transition: .25s all ease;
-  -o-transition: .25s all ease;
-  transition: .25s all ease;
+    content: '\25BC';
+    color: #fff;
+    background-color: #627B93;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 1em;
+    cursor: pointer;
+    pointer-events: none;
+    -webkit-transition: .25s all ease;
+    -o-transition: .25s all ease;
+    transition: .25s all ease;
 }
 
 .kiwixSearch {
