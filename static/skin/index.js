@@ -73,18 +73,8 @@
         const iconUrl = getInnerHtml(book, 'icon');
         const language = getInnerHtml(book, 'language');
         const tags = getInnerHtml(book, 'tags');
-        let tagHtml = tags.split(';').filter(tag => { return !(tag.split(':')[1] && tag.split(':')[1] == 'no')})
-            .map((tag) => {
-                tag = tag.split(':');
-                if (tag.length === 1) {
-                    return tag[0].replace(/_/, ' ');
-                } else if (tag[1] !== 'yes') {
-                    return tag[1].replace(/_/, ' ');
-                } else {
-                    return (tag[0].indexOf('_') === 0 ? tag[0].replace('_', '') : tag[0]).replace(/_/, ' ');
-                }
-            })
-            .filter((tag, index, tags) => tags.indexOf(tag) === index).join(' | ');
+        let tagHtml = tags.split(';').filter(tag => {return !(tag.split(':')[0].startsWith('_'))})
+            .join(' | ').replace(/_/g, ' ');
         let downloadLink;
         let zimSize = 0;
         try {
@@ -102,7 +92,7 @@
         if (sort) {
             divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
-        divTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img src='${iconUrl}'></div>
+        divTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img class="book__icon--image" src='${iconUrl}'></div>
             <div class='book__title' title='${title}'>
                 <div id="bookTitle">${title}</div>
                 ${humanFriendlyZimSize ? `<div id='bookSize'>${humanFriendlyZimSize}</div>`: ''}
@@ -139,7 +129,7 @@
             } else {
                 toggleFooter();
             }
-            document.querySelector('.kiwixNav__results').innerHTML = `Results: ${results} items`
+            document.querySelector('.kiwixHomeBody__results').innerHTML = `${results} books`
             loader.style.display = 'none';
             return books;
         });
@@ -162,7 +152,7 @@
                 setTimeout(() => {
                     const divTag = document.createElement('div');
                     divTag.setAttribute('class', 'noResults');
-                    divTag.innerHTML = `No result. Would you like to<a href="/?lang="> reset filter?</a>`;
+                    divTag.innerHTML = `No result. Would you like to <a href="/?lang=">reset filter</a>?`;
                     kiwixHomeBody.append(divTag);
                     kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
                     divTag.getElementsByTagName('a')[0].onclick = (event) => {
@@ -226,6 +216,12 @@
         bookOrderMap.clear();
         params = new URLSearchParams(window.location.search);
         if (filterType) {
+            const filter = document.getElementsByName(filterType)[0];
+            if (filterValue) {
+                filter.style = 'background-color: #4f6478; color: #fff';
+            } else {
+                filter.style = 'background-color: #ffffff; color: black';
+            }
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
             setCookie(filterCookieName, params.toString());

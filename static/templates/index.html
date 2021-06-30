@@ -46,14 +46,17 @@
   </head>
   <body>
     <div class='kiwixNav'>
-      <h3 class="kiwixNav__results"></h3>
       <div class="kiwixNav__filters">
-        <select name="lang" id="languageFilter" class='kiwixNav__kiwixFilter'>
-          <option value="" selected>All languages</option>
-        </select>
-        <select name="category" id="categoryFilter" class='kiwixNav__kiwixFilter'>
-          <option value="" selected>All categories</option>
-        </select>
+        <div class="kiwixNav__select">
+          <select name="lang" id="languageFilter" class='kiwixNav__kiwixFilter'>
+            <option value="" selected>All languages</option>
+          </select>
+        </div>
+        <div class="kiwixNav__select">
+          <select name="category" id="categoryFilter" class='kiwixNav__kiwixFilter'>
+            <option value="" selected>All categories</option>
+          </select>
+        </div>
       </div>
       <form id='kiwixSearchForm' class='kiwixNav__SearchForm'>
         <input type="text" name="q" placeholder="Search" id="searchFilter" class='kiwixSearch'>
@@ -61,6 +64,7 @@
       </form>
     </div>
     <div class="kiwixHomeBody">
+      <h3 class="kiwixHomeBody__results"></h3>
       <div class="book__list"></div>
       <div id="fadeOut" class="fadeOut"></div>
     </div>
