@@ -13,7 +13,8 @@ headers = [
   'search_renderer.h',
   'server.h',
   'kiwixserve.h',
-  'name_mapper.h'
+  'name_mapper.h',
+  'tools.h'
 ]
 
 install_headers(headers, subdir:'kiwix')
