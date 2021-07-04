@@ -376,6 +376,11 @@ body {
     .kiwixNav__filters {
         grid-template-columns: 1fr;
     }
+
+    .searchButton {
+        margin: 17px 0;
+        width: 229px;
+    }
 }
 
 @media screen and (max-width: 340px) {
