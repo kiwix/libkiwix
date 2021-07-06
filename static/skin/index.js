@@ -74,6 +74,7 @@
         const language = getInnerHtml(book, 'language');
         const tags = getInnerHtml(book, 'tags');
         let tagHtml = tags.split(';').filter(tag => {return !(tag.split(':')[0].startsWith('_'))})
+            .map((tag) => {return tag.charAt(0).toUpperCase() + tag.slice(1)})
             .join(' | ').replace(/_/g, ' ');
         let downloadLink;
         let zimSize = 0;
@@ -131,7 +132,11 @@
             }
             const kiwixResultText = document.querySelector('.kiwixHomeBody__results')
             if (results) {
-                kiwixResultText.innerHTML = `${results} books`;
+                let resultText = `${results} books`;
+                if (results === 1) {
+                    resultText = `${results} book`;
+                }
+                kiwixResultText.innerHTML = resultText;
             } else {
                 kiwixResultText.innerHTML = ``;
             }
