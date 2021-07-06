@@ -25,6 +25,7 @@ install_headers(
   'tools/pathTools.h',
   'tools/regexTools.h',
   'tools/stringTools.h',
+  'tools/archiveTools.h',
   subdir:'kiwix/tools'
 )
 

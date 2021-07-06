@@ -25,6 +25,7 @@
 #include <zim/error.h>
 
 #include "tools/otherTools.h"
+#include "tools/archiveTools.h"
 
 inline char hi(char v)
 {
@@ -85,6 +86,11 @@ Reader::Reader(const string zimFilePath)
   /* initialize random seed: */
   srand(time(nullptr));
 }
+
+Reader::Reader(const std::shared_ptr<zim::Archive> archive)
+  : zimArchive(archive),
+    zimFilePath(archive->getFilename())
+  {}
 
 #ifndef _WIN32
 Reader::Reader(int fd)
@@ -183,14 +189,7 @@ Entry Reader::getMainPage() const
 
 bool Reader::getFavicon(string& content, string& mimeType) const
 {
-  try {
-    auto item = zimArchive->getIllustrationItem();
-    content = item.getData();
-    mimeType = item.getMimetype();
-    return true;
-  } catch(zim::EntryNotFound& e) {};
-
-  return false;
+  return kiwix::getArchiveFavicon(*zimArchive, content, mimeType);
 }
 
 string Reader::getZimFilePath() const
@@ -212,47 +211,32 @@ bool Reader::getMetadata(const string& name, string& value) const
 
 string Reader::getName() const
 {
-  METADATA("Name")
+  return kiwix::getMetaName(*zimArchive);
 }
 
 string Reader::getTitle() const
 {
-  string value = zimArchive->getMetadata("Title");
-  if (value.empty()) {
-    value = getLastPathElement(zimFilePath);
-    std::replace(value.begin(), value.end(), '_', ' ');
-    size_t pos = value.find(".zim");
-    value = value.substr(0, pos);
-  }
-  return value;
+  return kiwix::getArchiveTitle(*zimArchive);
 }
 
 string Reader::getCreator() const
 {
-  METADATA("Creator")
+  return kiwix::getMetaCreator(*zimArchive);
 }
 
 string Reader::getPublisher() const
 {
-  METADATA("Publisher")
+  return kiwix::getMetaPublisher(*zimArchive);
 }
 
 string Reader::getDate() const
 {
-  METADATA("Date")
+  return kiwix::getMetaDate(*zimArchive);
 }
 
 string Reader::getDescription() const
 {
-  string value;
-  this->getMetadata("Description", value);
-
-  /* Mediawiki Collection tends to use the "Subtitle" name */
-  if (value.empty()) {
-    this->getMetadata("Subtitle", value);
-  }
-
-  return value;
+  return kiwix::getMetaDescription(*zimArchive);
 }
 
 string Reader::getLongDescription() const
@@ -262,7 +246,7 @@ string Reader::getLongDescription() const
 
 string Reader::getLanguage() const
 {
-  METADATA("Language")
+  return kiwix::getMetaLanguage(*zimArchive);
 }
 
 string Reader::getLicense() const
@@ -272,13 +256,7 @@ string Reader::getLicense() const
 
 string Reader::getTags(bool original) const
 {
-  string tags_str;
-  getMetadata("Tags", tags_str);
-  if (original) {
-    return tags_str;
-  }
-  auto tags = convertTags(tags_str);
-  return join(tags, ";");
+  return kiwix::getMetaTags(*zimArchive, original);
 }
 
 
@@ -342,12 +320,8 @@ string Reader::getOrigId() const
 
 Entry Reader::getEntryFromPath(const std::string& path) const
 {
-  if (path.empty() || path == "/") {
-    return getMainPage();
-  }
-
   try {
-    return zimArchive->getEntryByPath(path);
+    return kiwix::getEntryFromPath(*zimArchive, path);
   } catch (zim::EntryNotFound& e) {
     throw NoEntry();
   }
@@ -460,12 +434,7 @@ bool Reader::searchSuggestions(const string& prefix,
 std::vector<std::string> Reader::getTitleVariants(
     const std::string& title) const
 {
-  std::vector<std::string> variants;
-  variants.push_back(title);
-  variants.push_back(kiwix::ucFirst(title));
-  variants.push_back(kiwix::lcFirst(title));
-  variants.push_back(kiwix::toTitle(title));
-  return variants;
+  return kiwix::getTitleVariants(title);
 }
 
 

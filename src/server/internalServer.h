@@ -69,7 +69,7 @@ class InternalServer {
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
-    std::unique_ptr<Response> build_redirect(const std::string& bookName, const kiwix::Entry& entry) const;
+    std::unique_ptr<Response> build_redirect(const std::string& bookName, const zim::Item& item) const;
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
     std::unique_ptr<Response> handle_skin(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog(const RequestContext& request);
@@ -89,7 +89,6 @@ class InternalServer {
 
     MustacheData get_default_data() const;
 
-    std::shared_ptr<Reader> get_reader(const std::string& bookName) const;
     bool etag_not_needed(const RequestContext& r) const;
     ETag get_matching_if_none_match_etag(const RequestContext& request) const;
 

@@ -47,6 +47,7 @@ extern "C" {
 #include "tools/pathTools.h"
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
+#include "tools/archiveTools.h"
 #include "library.h"
 #include "name_mapper.h"
 #include "entry.h"
@@ -55,6 +56,10 @@ extern "C" {
 #include "opds_dumper.h"
 
 #include <zim/uuid.h>
+#include <zim/error.h>
+#include <zim/search.h>
+#include <zim/entry.h>
+#include <zim/item.h>
 
 #include <mustache.hpp>
 
@@ -323,22 +328,63 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
   return ContentResponse::build(*this, RESOURCE::templates::index_html, get_default_data(), "text/html; charset=utf-8", true);
 }
 
+/**
+ * Archive and Zim handlers begin
+ **/
+
+// TODO: retrieve searcher from caching mechanism
+SuggestionsList_t getSuggestions(const zim::Archive* const archive,
+                  const std::string& queryString, int suggestionCount)
+{
+  SuggestionsList_t suggestions;
+  if (archive->hasTitleIndex()) {
+    auto searcher = zim::Searcher(*archive);
+    zim::Query suggestionQuery;
+    suggestionQuery.setQuery(queryString, true);
+    auto suggestionSearch = searcher.search(suggestionQuery);
+    auto suggestionResult = suggestionSearch.getResults(0, suggestionCount);
+
+    for (auto it = suggestionResult.begin(); it != suggestionResult.end(); it++) {
+      SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
+                                it.getPath(), it.getSnippet());
+      suggestions.push_back(suggestion);
+    }
+  } else {
+    // TODO: This case should be handled by libzim
+    std::vector<std::string> variants = getTitleVariants(queryString);
+    int currCount = 0;
+    for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
+      for (auto& entry: archive->findByTitle(*it)) {
+        SuggestionItem suggestion(entry.getTitle(), kiwix::normalize(entry.getTitle()),
+                                  entry.getPath());
+        suggestions.push_back(suggestion);
+        currCount++;
+      }
+    }
+  }
+  return suggestions;
+}
+
+/**
+ * Archive and Zim handlers end
+ **/
+
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
 {
   std::string bookName;
   std::string bookId;
   std::string meta_name;
-  std::shared_ptr<Reader> reader;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
     meta_name = request.get_argument("name");
-    reader = mp_library->getReaderById(bookId);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {
     return Response::build_404(*this, request, bookName, "");
   }
 
-  if (reader == nullptr) {
+  if (archive == nullptr) {
     return Response::build_404(*this, request, bookName, "");
   }
 
@@ -346,23 +392,23 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   std::string mimeType = "text";
 
   if (meta_name == "title") {
-    content = reader->getTitle();
+    content = getArchiveTitle(*archive);
   } else if (meta_name == "description") {
-    content = reader->getDescription();
+    content = getMetaDescription(*archive);
   } else if (meta_name == "language") {
-    content = reader->getLanguage();
+    content = getMetaLanguage(*archive);
   } else if (meta_name == "name") {
-    content = reader->getName();
+    content = getMetaName(*archive);
   } else if (meta_name == "tags") {
-    content = reader->getTags();
+    content = getMetaTags(*archive);
   } else if (meta_name == "date") {
-    content = reader->getDate();
+    content = getMetaDate(*archive);
   } else if (meta_name == "creator") {
-    content = reader->getCreator();
+    content = getMetaCreator(*archive);
   } else if (meta_name == "publisher") {
-    content = reader->getPublisher();
+    content = getMetaPublisher(*archive);
   } else if (meta_name == "favicon") {
-    reader->getFavicon(content, mimeType);
+    getArchiveFavicon(*archive, content, mimeType);
   } else {
     return Response::build_404(*this, request, bookName, "");
   }
@@ -385,51 +431,54 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   std::string bookName;
   std::string bookId;
-  std::string term;
-  std::shared_ptr<Reader> reader;
+  std::string queryString;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
-    term = request.get_argument("term");
-    reader = mp_library->getReaderById(bookId);
+    queryString = request.get_argument("term");
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     return Response::build_404(*this, request, bookName, "");
   }
 
+  if (archive == nullptr) {
+    return Response::build_404(*this, request, bookName, "");
+  }
+
   if (m_verbose.load()) {
-    printf("Searching suggestions for: \"%s\"\n", term.c_str());
+    printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
 
   MustacheData results{MustacheData::type::list};
 
   bool first = true;
-  if (reader != nullptr) {
-    /* Get the suggestions */
-    SuggestionsList_t suggestions;
-    reader->searchSuggestionsSmart(term, maxSuggestionCount, suggestions);
-    for(auto& suggestion:suggestions) {
-      MustacheData result;
-      result.set("label", suggestion.getTitle());
 
-      if (suggestion.hasSnippet()) {
-        result.set("label", suggestion.getSnippet());
-      }
+  /* Get the suggestions */
+  SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, maxSuggestionCount);
+  for(auto& suggestion:suggestions) {
+    MustacheData result;
+    result.set("label", suggestion.getTitle());
 
-      result.set("value", suggestion.getTitle());
-      result.set("kind", "path");
-      result.set("path", suggestion.getPath());
-      result.set("first", first);
-      first = false;
-      results.push_back(result);
-      suggestionCount++;
+    if (suggestion.hasSnippet()) {
+      result.set("label", suggestion.getSnippet());
     }
+
+    result.set("value", suggestion.getTitle());
+    result.set("kind", "path");
+    result.set("path", suggestion.getPath());
+    result.set("first", first);
+    first = false;
+    results.push_back(result);
+    suggestionCount++;
   }
 
+
   /* Propose the fulltext search if possible */
-  if (reader->hasFulltextIndex()) {
+  if (archive->hasFulltextIndex()) {
     MustacheData result;
-    result.set("label", "containing '" + term + "'...");
-    result.set("value", term + " ");
+    result.set("label", "containing '" + queryString + "'...");
+    result.set("value", queryString + " ");
     result.set("kind", "pattern");
     result.set("first", first);
     results.push_back(result);
@@ -492,30 +541,34 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   } catch(const std::out_of_range&) {}
     catch(const std::invalid_argument&) {}
 
-  std::shared_ptr<Reader> reader(nullptr);
+  std::shared_ptr<zim::Archive> archive;
   try {
-    reader = mp_library->getReaderById(bookId);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {}
 
   /* Make the search */
-  if ( (!reader && !bookName.empty())
+  if ( (!archive && !bookName.empty())
     || (patternString.empty() && ! has_geo_query) ) {
     auto data = get_default_data();
     data.set("pattern", encodeDiples(patternString));
     auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
     response->set_code(MHD_HTTP_NOT_FOUND);
     return std::move(response);
   }
 
-  Searcher searcher;
-  if (reader) {
-    searcher.add_reader(reader.get());
+  std::shared_ptr<zim::Searcher> searcher;
+  if (archive) {
+    searcher = std::make_shared<zim::Searcher>(*archive);
   } else {
     for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-      auto currentReader = mp_library->getReaderById(bookId);
-      if (currentReader) {
-        searcher.add_reader(currentReader.get());
+      auto currentArchive = mp_library->getArchiveById(bookId);
+      if (currentArchive) {
+        if (! searcher) {
+          searcher = std::make_shared<zim::Searcher>(*currentArchive);
+        } else {
+          searcher->add_archive(*currentArchive);
+        }
       }
     }
   }
@@ -540,21 +593,37 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
   /* Get the results */
   try {
+    zim::Query query;
     if (patternString.empty()) {
-      searcher.geo_search(latitude, longitude, distance,
-                           start, end, m_verbose.load());
+      // Execute geo-search
+      if (m_verbose.load()) {
+        cout << "Performing geo query `" << distance << "&(" << latitude << ";" << longitude << ")'" << endl;
+      }
+
+      query.setVerbose(m_verbose.load());
+      query.setQuery("", false);
+      query.setGeorange(latitude, longitude, distance);
     } else {
-      searcher.search(patternString,
-                       start, end, m_verbose.load());
+      // Execute Ft search
+      if (m_verbose.load()) {
+          cout << "Performing query `" << patternString << "'" << endl;
+      }
+
+      std::string queryString = removeAccents(patternString);
+      query.setQuery(queryString, false);
+      query.setVerbose(m_verbose.load());
     }
-    SearchRenderer renderer(&searcher, mp_nameMapper);
+
+    zim::Search search = searcher->search(query);
+    SearchRenderer renderer(search.getResults(start, end), mp_nameMapper, start,
+                            search.getEstimatedMatches());
     renderer.setSearchPattern(patternString);
     renderer.setSearchContent(bookName);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(bookName, reader ? reader->getTitle() : "");
+    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
 
     return std::move(response);
   } catch (const std::exception& e) {
@@ -571,23 +640,23 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
 
   std::string bookName;
   std::string bookId;
-  std::shared_ptr<Reader> reader;
+  std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
-    reader = mp_library->getReaderById(bookId);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     return Response::build_404(*this, request, bookName, "");
   }
 
-  if (reader == nullptr) {
+  if (archive == nullptr) {
     return Response::build_404(*this, request, bookName, "");
   }
 
   try {
-    auto entry = reader->getRandomPage();
-    return build_redirect(bookName, entry.getFinalEntry());
-  } catch(kiwix::NoEntry& e) {
+    auto entry = archive->getRandomEntry();
+    return build_redirect(bookName, getFinalItem(*archive, entry));
+  } catch(zim::EntryNotFound& e) {
     return Response::build_404(*this, request, bookName, "");
   }
 }
@@ -734,22 +803,10 @@ std::string searchSuggestionHTML(const std::string& searchURL, const std::string
 
 } // unnamed namespace
 
-std::shared_ptr<Reader>
-InternalServer::get_reader(const std::string& bookName) const
-{
-  std::shared_ptr<Reader> reader;
-  try {
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
-    reader = mp_library->getReaderById(bookId);
-  } catch (const std::out_of_range& e) {
-  }
-  return reader;
-}
-
 std::unique_ptr<Response>
-InternalServer::build_redirect(const std::string& bookName, const kiwix::Entry& entry) const
+InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(entry.getPath());
+  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(item.getPath());
   return Response::build_redirect(*this, redirectUrl);
 }
 
@@ -765,8 +822,13 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   if (bookName.empty())
     return build_homepage(request);
 
-  const std::shared_ptr<Reader> reader = get_reader(bookName);
-  if (reader == nullptr) {
+  std::shared_ptr<zim::Archive> archive;
+  try {
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
+  } catch (const std::out_of_range& e) {}
+
+  if (archive == nullptr) {
     std::string searchURL = m_root+"/search?pattern="+pattern; // Make a full search on the entire library.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
@@ -779,31 +841,31 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   try {
-    auto entry = reader->getEntryFromPath(urlStr);
+    auto entry = getEntryFromPath(*archive, urlStr);
     if (entry.isRedirect() || urlStr.empty()) {
       // If urlStr is empty, we want to mainPage.
       // We must do a redirection to the real page.
-      return build_redirect(bookName, entry.getFinalEntry());
+      return build_redirect(bookName, getFinalItem(*archive, entry));
     }
-    auto response = ItemResponse::build(*this, request, entry.getZimEntry().getItem());
+    auto response = ItemResponse::build(*this, request, entry.getItem());
     try {
-      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, reader->getTitle());
+      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, getArchiveTitle(*archive));
     } catch (std::bad_cast& e) {}
 
     if (m_verbose.load()) {
       printf("Found %s\n", entry.getPath().c_str());
-      printf("mimeType: %s\n", entry.getMimetype().c_str());
+      printf("mimeType: %s\n", entry.getItem(true).getMimetype().c_str());
     }
 
     return response;
-  } catch(kiwix::NoEntry& e) {
+  } catch(zim::EntryNotFound& e) {
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
     std::string searchURL = m_root+"/search?content="+bookName+"&pattern="+pattern; // Make a search on this specific book only.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request, bookName, reader->getTitle(), details);
+    return Response::build_404(*this, request, bookName, getArchiveTitle(*archive), details);
   }
 }
 

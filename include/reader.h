@@ -41,11 +41,11 @@ namespace kiwix
  * The SuggestionItem is a helper class that contains the info about a single
  * suggestion item.
  */
-
 class SuggestionItem
 {
   // Functions
-  private:
+  // Temporarily making the constructor public until the code move is complete
+  public:
     // Create a sugggestion item.
     explicit SuggestionItem(std::string title, std::string normalizedTitle,
                             std::string path, std::string snippet = "") :
@@ -91,6 +91,13 @@ class Reader
    *                    (.zim extesion).
    */
   explicit Reader(const string zimFilePath);
+
+   /**
+   * Create a Reader to read a zim file given by the Archive.
+   *
+   * @param archive The shared pointer to the Archive object.
+   */
+  explicit Reader(const std::shared_ptr<zim::Archive> archive);
 #ifndef _WIN32
   explicit Reader(int fd);
   Reader(int fd, zim::offset_type offset, zim::size_type size);
@@ -488,7 +495,7 @@ class Reader
   zim::Archive* getZimArchive() const;
 
  protected:
-  std::unique_ptr<zim::Archive> zimArchive;
+  std::shared_ptr<zim::Archive> zimArchive;
   std::string zimFilePath;
 
   SuggestionsList_t suggestions;
