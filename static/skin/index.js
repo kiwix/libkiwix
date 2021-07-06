@@ -129,7 +129,12 @@
             } else {
                 toggleFooter();
             }
-            document.querySelector('.kiwixHomeBody__results').innerHTML = `${results} books`
+            const kiwixResultText = document.querySelector('.kiwixHomeBody__results')
+            if (results) {
+                kiwixResultText.innerHTML = `${results} books`;
+            } else {
+                kiwixResultText.innerHTML = ``;
+            }
             loader.style.display = 'none';
             return books;
         });
@@ -160,7 +165,14 @@
                         window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
                         setCookie(filterCookieName, 'lang=');
                         resetAndFilter();
-                        filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
+                        document.querySelectorAll('.filter').forEach(filter => {
+                            filter.value = params.get(filter.name) || '';
+                            if (filter.value) {
+                                filter.style = 'background-color: #858585; color: #fff';
+                            } else {
+                                filter.style = 'background-color: #ffffff; color: black';
+                            }
+                        })
                     };
                     loader.setAttribute('style', 'position: absolute; top: 50%');
                 }, 300);
@@ -216,22 +228,23 @@
         bookOrderMap.clear();
         params = new URLSearchParams(window.location.search);
         if (filterType) {
-            const filter = document.getElementsByName(filterType)[0];
-            if (filterValue) {
-                filter.style = 'background-color: #4f6478; color: #fff';
-            } else {
-                filter.style = 'background-color: #ffffff; color: black';
-            }
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
             setCookie(filterCookieName, params.toString());
         }
+        document.querySelectorAll('.filter').forEach(filter => {
+            if (filter.value) {
+                filter.style = 'background-color: #858585; color: #fff';
+            } else {
+                filter.style = 'background-color: #ffffff; color: black';
+            }
+        });
         await loadAndDisplayBooks(true);
     }
 
     window.addEventListener('popstate', async () => {
         await resetAndFilter();
-        filterTypes.forEach(key => {document.getElementsByName(key)[0].value = params.get(key) || ''});
+        document.querySelectorAll('.filter').forEach(filter => {filter.value = params.get(filter.name) || ''});
     });
 
     async function loadSubset() {
@@ -277,6 +290,9 @@
         await loadAndDisplayBooks();
         await loadAndDisplayOptions('#languageFilter', langList);
         await loadAndDisplayOptions('#categoryFilter', categoryList);
+        document.querySelectorAll('.filter').forEach(filter => {
+            filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
+        });
         filterTypes.forEach((filter) => {
             const filterTag = document.getElementsByName(filter)[0];
             filterTag.addEventListener('change', () => {resetAndFilter(filterTag.name, filterTag.value)});
@@ -292,6 +308,13 @@
             langFilter.value = browserLang.length === 3 ? browserLang : iso6391To3[browserLang];
             langFilter.dispatchEvent(new Event('change'));
         }
+        document.querySelectorAll('.filter').forEach(filter => {
+            if (filter.value) {
+                filter.style = 'background-color: #858585; color: #fff';
+            } else {
+                filter.style = 'background-color: #ffffff; color: black';
+            }
+        });
         setCookie(filterCookieName, params.toString());
     }
 })();
