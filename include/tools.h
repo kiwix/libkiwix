@@ -155,7 +155,7 @@ void sleep(unsigned int milliseconds);
  * @param keepDelim true if delimiter must be included from the result.
  * @return a list of part (potentially containing delimiters)
  */
-std::vector<std::string> split(const std::string& str, const std::string& delims, bool trimEmpty=true, bool keepDelim = false);
+std::vector<std::string> split(const std::string& str, const std::string& delims, bool dropEmpty=true, bool keepDelim = false);
 
 /** Convert language code from iso2 code to iso3
  *

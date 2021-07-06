@@ -270,7 +270,7 @@ std::string kiwix::urlDecode(const std::string& value, bool component)
 /* Split string in a token array */
 std::vector<std::string> kiwix::split(const std::string& str,
                                       const std::string& delims,
-                                      bool trimEmpty,
+                                      bool dropEmpty,
                                       bool keepDelim)
 {
   std::string::size_type lastPos = 0;
@@ -279,7 +279,7 @@ std::vector<std::string> kiwix::split(const std::string& str,
   while( (pos = str.find_first_of(delims, lastPos)) < str.length() )
   {
     auto token = str.substr(lastPos, pos - lastPos);
-    if (!trimEmpty || !token.empty()) {
+    if (!dropEmpty || !token.empty()) {
       tokens.push_back(token);
     }
     if (keepDelim) {
@@ -289,7 +289,7 @@ std::vector<std::string> kiwix::split(const std::string& str,
   }
 
   auto token = str.substr(lastPos);
-  if (!trimEmpty || !token.empty()) {
+  if (!dropEmpty || !token.empty()) {
     tokens.push_back(token);
   }
   return tokens;
