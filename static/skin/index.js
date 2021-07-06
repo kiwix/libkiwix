@@ -293,10 +293,6 @@
         document.querySelectorAll('.filter').forEach(filter => {
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
-        filterTypes.forEach((filter) => {
-            const filterTag = document.getElementsByName(filter)[0];
-            filterTag.addEventListener('change', () => {resetAndFilter(filterTag.name, filterTag.value)});
-        });
         if (filters) {
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
         }
