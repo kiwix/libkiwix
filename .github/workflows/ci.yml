@@ -21,7 +21,7 @@ jobs:
       - name: Install deps
         shell: bash
         run: |
-          ARCHIVE_NAME=deps2_osx_native_dyn_kiwix-lib.tar.xz
+          ARCHIVE_NAME=deps2_osx_native_dyn_libkiwix.tar.xz
           wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C $HOME
       - name: Compile
         shell: bash
@@ -115,7 +115,7 @@ jobs:
     - name: Install deps
       shell: bash
       run: |
-        ARCHIVE_NAME=deps2_${OS_NAME}_${{matrix.target}}_kiwix-lib.tar.xz
+        ARCHIVE_NAME=deps2_${OS_NAME}_${{matrix.target}}_libkiwix.tar.xz
         wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C /home/runner
     - name: Compile
       shell: bash
