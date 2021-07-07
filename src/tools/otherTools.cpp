@@ -17,7 +17,11 @@
  * MA 02110-1301, USA.
  */
 
+// Implement function declared in tools.h and tools/otherTools.h
+#include "tools.h"
 #include "tools/otherTools.h"
+
+
 #include <algorithm>
 #include <iomanip>
 

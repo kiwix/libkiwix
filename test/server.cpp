@@ -5,7 +5,7 @@
 #include "../include/manager.h"
 #include "../include/server.h"
 #include "../include/name_mapper.h"
-
+#include "../include/tools.h"
 
 using TestContextImpl = std::vector<std::pair<std::string, std::string> >;
 struct TestContext : TestContextImpl {
@@ -81,8 +81,8 @@ private: // data
 ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
 : manager(&this->library)
 {
-  if ( isRelativePath(libraryFilePath) )
-    libraryFilePath = computeAbsolutePath(getCurrentDirectory(), libraryFilePath);
+  if ( kiwix::isRelativePath(libraryFilePath) )
+    libraryFilePath = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), libraryFilePath);
   manager.readFile(libraryFilePath, true, true);
 
   run(serverPort);

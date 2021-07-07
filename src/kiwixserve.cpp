@@ -9,6 +9,7 @@
     # include <unistd.h>
 #endif
 
+#include "tools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
 

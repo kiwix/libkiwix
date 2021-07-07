@@ -20,10 +20,13 @@
 #include "book.h"
 #include "reader.h"
 
+#include "tools.h"
 #include "tools/base64.h"
 #include "tools/regexTools.h"
 #include "tools/networkTools.h"
 #include "tools/otherTools.h"
+#include "tools/stringTools.h"
+#include "tools/pathTools.h"
 
 #include <pugixml.hpp>
 

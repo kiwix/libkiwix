@@ -20,7 +20,8 @@
 #include "gtest/gtest.h"
 #include <string>
 #include <vector>
-#include "../include/tools/pathTools.h"
+#include "../include/tools.h"
+#include "../src/tools/pathTools.h"
 
 #ifdef _WIN32
 # define S "\\"
@@ -101,61 +102,61 @@ TEST(pathTools, normalizePartsRelative)
 
 TEST(pathTools, isRelativePath)
 {
-  ASSERT_TRUE(isRelativePath("foo"));
-  ASSERT_TRUE(isRelativePath(P2("foo","bar")));
-  ASSERT_TRUE(isRelativePath(P3(".","foo","bar")));
-  ASSERT_TRUE(isRelativePath(P2("..","foo")));
-  ASSERT_TRUE(isRelativePath(P4("foo","","bar","")));
-  ASSERT_FALSE(isRelativePath(A1("foo")));
-  ASSERT_FALSE(isRelativePath(A2("foo", "bar")));
+  ASSERT_TRUE(kiwix::isRelativePath("foo"));
+  ASSERT_TRUE(kiwix::isRelativePath(P2("foo","bar")));
+  ASSERT_TRUE(kiwix::isRelativePath(P3(".","foo","bar")));
+  ASSERT_TRUE(kiwix::isRelativePath(P2("..","foo")));
+  ASSERT_TRUE(kiwix::isRelativePath(P4("foo","","bar","")));
+  ASSERT_FALSE(kiwix::isRelativePath(A1("foo")));
+  ASSERT_FALSE(kiwix::isRelativePath(A2("foo", "bar")));
 #ifdef _WIN32
-  ASSERT_FALSE(isRelativePath(P2(A_SAMBA, "foo")));
-  ASSERT_FALSE(isRelativePath(P3(A_SAMBA, "foo", "bar")));
+  ASSERT_FALSE(kiwix::isRelativePath(P2(A_SAMBA, "foo")));
+  ASSERT_FALSE(kiwix::isRelativePath(P3(A_SAMBA, "foo", "bar")));
 #endif
 }
 
 TEST(pathTools, computeAbsolutePath)
 {
-  ASSERT_EQ(computeAbsolutePath(A2("a","b"), "foo"),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A2("a","b"), "foo"),
             A3("a","b","foo"));
-  ASSERT_EQ(computeAbsolutePath(A3("a","b",""), "foo"),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b",""), "foo"),
             A3("a","b","foo"));
-  ASSERT_EQ(computeAbsolutePath(A2("a","b"), P2(".","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A2("a","b"), P2(".","foo")),
             A3("a","b","foo"));
-  ASSERT_EQ(computeAbsolutePath(A2("a","b"), P2("..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A2("a","b"), P2("..","foo")),
             A2("a","foo"));
-  ASSERT_EQ(computeAbsolutePath(A3("a","b",""), P2("..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b",""), P2("..","foo")),
             A2("a","foo"));
-  ASSERT_EQ(computeAbsolutePath(A5("a","b","c","d","e"), P2("..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A5("a","b","c","d","e"), P2("..","foo")),
             A5("a","b","c","d","foo"));
-  ASSERT_EQ(computeAbsolutePath(A5("a","b","c","d","e"), P5("..","..","..","g","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A5("a","b","c","d","e"), P5("..","..","..","g","foo")),
             A4("a","b","g","foo"));
 #ifdef _WIN32
-  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b",""), P2("..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P4(A_SAMBA,"a","b",""), P2("..","foo")),
             P3(A_SAMBA,"a","foo"));
-  ASSERT_EQ(computeAbsolutePath(P6(A_SAMBA,"a","b","c","d","e"), P5("..","..","..","g","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P6(A_SAMBA,"a","b","c","d","e"), P5("..","..","..","g","foo")),
             P5(A_SAMBA,"a","b","g","foo"));
 #endif
 }
 
 TEST(pathTools, computeRelativePath)
 {
-  ASSERT_EQ(computeRelativePath(A2("a","b"), A3("a","b","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(A2("a","b"), A3("a","b","foo")),
             "foo");
-  ASSERT_EQ(computeRelativePath(A3("a","b",""), A3("a","b","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(A3("a","b",""), A3("a","b","foo")),
             "foo");
-  ASSERT_EQ(computeRelativePath(A2("a","b"), A2("a","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(A2("a","b"), A2("a","foo")),
             P2("..","foo"));
-  ASSERT_EQ(computeRelativePath(A3("a","b",""), A2("a","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(A3("a","b",""), A2("a","foo")),
             P2("..","foo"));
-  ASSERT_EQ(computeRelativePath(A5("a","b","c","d","e"), A5("a","b","c","d","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(A5("a","b","c","d","e"), A5("a","b","c","d","foo")),
             P2("..","foo"));
-  ASSERT_EQ(computeRelativePath(A5("a","b","c","d","e"), A4("a","b","g","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(A5("a","b","c","d","e"), A4("a","b","g","foo")),
             P5("..","..","..","g","foo"));
 #ifdef _WIN32
-  ASSERT_EQ(computeRelativePath(P3(A_SAMBA,"a","b"), P3(A_SAMBA,"a","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(P3(A_SAMBA,"a","b"), P3(A_SAMBA,"a","foo")),
             P2("..","foo"));
-  ASSERT_EQ(computeRelativePath(P6(A_SAMBA,"a","b","c","d","e"), P5(A_SAMBA,"a","b","g","foo")),
+  ASSERT_EQ(kiwix::computeRelativePath(P6(A_SAMBA,"a","b","c","d","e"), P5(A_SAMBA,"a","b","g","foo")),
             P5("..","..","..","g","foo"));
 
 #endif
@@ -163,73 +164,73 @@ TEST(pathTools, computeRelativePath)
 
 TEST(pathTools, removeLastPathElement)
 {
-  ASSERT_EQ(removeLastPathElement(P3("a","b","c")),
+  ASSERT_EQ(kiwix::removeLastPathElement(P3("a","b","c")),
             P2("a","b"));
-  ASSERT_EQ(removeLastPathElement(A3("a","b","c")),
+  ASSERT_EQ(kiwix::removeLastPathElement(A3("a","b","c")),
             A2("a","b"));
-  ASSERT_EQ(removeLastPathElement(P4("a","b","c","")),
+  ASSERT_EQ(kiwix::removeLastPathElement(P4("a","b","c","")),
             P2("a","b"));
-  ASSERT_EQ(removeLastPathElement(A4("a","b","c","")),
+  ASSERT_EQ(kiwix::removeLastPathElement(A4("a","b","c","")),
             A2("a","b"));
 }
 
 TEST(pathTools, appendToDirectory)
 {
-  ASSERT_EQ(appendToDirectory(P3("a","b","c"), "foo.xml"),
+  ASSERT_EQ(kiwix::appendToDirectory(P3("a","b","c"), "foo.xml"),
             P4("a","b","c","foo.xml"));
-  ASSERT_EQ(appendToDirectory(P4("a","b","c",""), "foo.xml"),
+  ASSERT_EQ(kiwix::appendToDirectory(P4("a","b","c",""), "foo.xml"),
             P4("a","b","c","foo.xml"));
-  ASSERT_EQ(appendToDirectory(P3("a","b","c"), P2("d","foo.xml")),
+  ASSERT_EQ(kiwix::appendToDirectory(P3("a","b","c"), P2("d","foo.xml")),
             P5("a","b","c","d","foo.xml"));
-  ASSERT_EQ(appendToDirectory(P4("a","b","c",""), P2("d","foo.xml")),
+  ASSERT_EQ(kiwix::appendToDirectory(P4("a","b","c",""), P2("d","foo.xml")),
             P5("a","b","c","d","foo.xml"));
-  ASSERT_EQ(appendToDirectory(P3("a","b","c"), P2(".","foo.xml")),
+  ASSERT_EQ(kiwix::appendToDirectory(P3("a","b","c"), P2(".","foo.xml")),
             P5("a","b","c",".","foo.xml"));
-  ASSERT_EQ(appendToDirectory(P4("a","b","c",""), P2(".","foo.xml")),
+  ASSERT_EQ(kiwix::appendToDirectory(P4("a","b","c",""), P2(".","foo.xml")),
             P5("a","b","c",".","foo.xml"));
 }
 
 
 TEST(pathTools, goUp)
 {
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), ".."),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), ".."),
             A2("a", "b"));
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P2("..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P2("..","..")),
             A1("a"));
 #ifdef _WIN32
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P3("..","..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P3("..","..","..")),
             "c:");
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P4("..","..","..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P4("..","..","..","..")),
             "c:");
-  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), ".."),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P4(A_SAMBA,"a","b","c"), ".."),
             P3(A_SAMBA,"a", "b"));
-  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P2("..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P2("..","..")),
             P2(A_SAMBA,"a"));
-  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P3("..","..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P3("..","..","..")),
             A_SAMBA);
-  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P4("..","..","..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P4("..","..","..","..")),
             A_SAMBA);
 
 #else
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P3("..","..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P3("..","..","..")),
             "/");
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P4("..","..","..","..")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P4("..","..","..","..")),
             "/");
 #endif
 
 
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P2("..", "foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P2("..", "foo")),
             A3("a", "b","foo"));
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P3("..","..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P3("..","..","foo")),
             A2("a","foo"));
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P4("..","..","..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P4("..","..","..","foo")),
             A1("foo"));
-  ASSERT_EQ(computeAbsolutePath(A3("a","b","c"), P5("..","..","..","..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(A3("a","b","c"), P5("..","..","..","..","foo")),
             A1("foo"));
 #ifdef _WIN32
-  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P4("..","..","..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P4("..","..","..","foo")),
             P2(A_SAMBA,"foo"));
-  ASSERT_EQ(computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P5("..","..","..","..","foo")),
+  ASSERT_EQ(kiwix::computeAbsolutePath(P4(A_SAMBA,"a","b","c"), P5("..","..","..","..","foo")),
             P2(A_SAMBA,"foo"));
 #endif
 }
@@ -241,20 +242,20 @@ TEST(pathTools, dirChange)
   std::string p1("c:\\a\\b\\c");
   std::string p2("d:\\d\\e\\foo.xml");
   {
-    std::string relative_path = computeRelativePath(p1, p2);
+    std::string relative_path = kiwix::computeRelativePath(p1, p2);
     ASSERT_EQ(relative_path, p2);
-    std::string abs_path = computeAbsolutePath(p1, relative_path);
+    std::string abs_path = kiwix::computeAbsolutePath(p1, relative_path);
     ASSERT_EQ(abs_path, p2);
-    ASSERT_EQ(computeAbsolutePath(p1, "..\\..\\..\\..\\..\\d:\\d\\e\\foo.xml"), p2);
+    ASSERT_EQ(kiwix::computeAbsolutePath(p1, "..\\..\\..\\..\\..\\d:\\d\\e\\foo.xml"), p2);
   }
   std::string ps("\\\\samba\\d\\e\\foo.xml");
   {
-    std::string relative_path = computeRelativePath(p1, ps);
+    std::string relative_path = kiwix::computeRelativePath(p1, ps);
     ASSERT_EQ(relative_path, ps);
-    std::string abs_path = computeAbsolutePath(p1, relative_path);
+    std::string abs_path = kiwix::computeAbsolutePath(p1, relative_path);
     ASSERT_EQ(abs_path, ps);
     // I'm not sure this test is valid on windows :/
-//    ASSERT_EQ(computeAbsolutePath(p1, "..\\..\\..\\..\\..\\\\samba\\d\\e\\foo.xml"), ps);
+//    ASSERT_EQ(kiwix::computeAbsolutePath(p1, "..\\..\\..\\..\\..\\\\samba\\d\\e\\foo.xml"), ps);
   }
 }
 

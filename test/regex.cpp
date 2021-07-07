@@ -21,7 +21,7 @@
 #include <string>
 
 
-#include "../include/tools/regexTools.h"
+#include "../src/tools/regexTools.h"
 
 namespace
 {

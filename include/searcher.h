@@ -29,8 +29,6 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include "tools/pathTools.h"
-#include "tools/stringTools.h"
 
 #include <zim/search.h>
 

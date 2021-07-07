@@ -17,10 +17,12 @@
  * MA 02110-1301, USA.
  */
 
-#include <tools/archiveTools.h>
-#include <tools/pathTools.h>
-#include <tools/otherTools.h>
-#include <tools/stringTools.h>
+#include "archiveTools.h"
+
+#include "tools.h"
+#include "pathTools.h"
+#include "otherTools.h"
+#include "stringTools.h"
 
 #include <zim/error.h>
 #include <zim/item.h>

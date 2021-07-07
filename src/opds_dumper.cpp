@@ -20,10 +20,11 @@
 #include "opds_dumper.h"
 #include "book.h"
 
-#include "tools/otherTools.h"
-
 #include "kiwixlib-resources.h"
 #include <mustache.hpp>
+
+#include "tools/stringTools.h"
+#include "tools/otherTools.h"
 
 namespace kiwix
 {

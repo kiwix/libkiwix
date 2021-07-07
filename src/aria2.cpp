@@ -6,10 +6,10 @@
 #include <sstream>
 #include <thread>
 #include <chrono>
-#include <tools/otherTools.h>
-#include <tools/pathTools.h>
-#include <tools/stringTools.h>
-#include <downloader.h> // For AriaError
+#include "tools.h"
+#include "tools/pathTools.h"
+#include "tools/stringTools.h"
+#include "downloader.h" // For AriaError
 
 #ifdef _WIN32
 # define ARIA2_CMD "aria2c.exe"

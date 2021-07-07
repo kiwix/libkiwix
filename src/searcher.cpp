@@ -18,7 +18,6 @@
  */
 
 
-#include <cmath>
 
 #include "searcher.h"
 #include "reader.h"
@@ -26,6 +25,8 @@
 #include <zim/search.h>
 
 #include <mustache.hpp>
+#include <cmath>
+#include "tools/stringTools.h"
 #include "kiwixlib-resources.h"
 
 #define MAX_SEARCH_LEN 140
