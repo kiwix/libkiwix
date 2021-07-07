@@ -104,7 +104,7 @@ void Book::update(const zim::Archive& archive) {
   m_mediaCount = getArchiveMediaCount(archive);
   m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
 
-  getArchiveFavicon(archive, m_favicon, m_faviconMimeType);
+  getArchiveFavicon(archive, 48, m_favicon, m_faviconMimeType);
 }
 
 #define ATTR(name) node.attribute(name).value()
