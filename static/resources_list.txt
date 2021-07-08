@@ -18,6 +18,7 @@ skin/jquery-ui/images/ui-bg_glass_95_fef1ec_1x400.png
 skin/jquery-ui/jquery-ui.theme.min.css
 skin/jquery-ui/jquery-ui.min.css
 skin/caret.png
+skin/search-icon.svg
 skin/taskbar.js
 skin/langList.js
 skin/categoryList.js
@@ -25,6 +26,9 @@ skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
 skin/taskbar.css
+skin/home.css
+skin/fonts/Poppins.ttf
+skin/fonts/Roboto.ttf
 skin/block_external.js
 templates/search_result.html
 templates/no_search_result.html
