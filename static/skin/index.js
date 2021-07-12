@@ -101,7 +101,7 @@
             <div class='book__description' title='${description}'>${description}</div>
             <div class='book__languageTag'>${language.substr(0, 2).toUpperCase()}</div>
             <div class='book__tags'><div class="book__tags--wrapper">${tagHtml}</div></div>
-            <div class='book__links'> <a href="${link}" data-hover="Preview">Preview</a>${downloadLink ? `&nbsp;|&nbsp;<a href="${downloadLink}" data-hove="Download" download>Download</a>` : ''} </div></div>`;
+            <div class='book__links'> <a href="${link}" data-hover="Preview">Preview</a>${downloadLink ? `&nbsp;|&nbsp;<span class="download" data-link=${downloadLink} class="modal-button">Download</span>` : ''} </div></div>`;
         return divTag;
     }
 
@@ -112,6 +112,62 @@
             footer.style.display = 'none';
             fadeOutDiv.style.display = 'block';
         }
+    }
+
+    function insertModal(button) {
+        const downloadLink = button.getAttribute('data-link');
+        button.addEventListener('click', () => {
+            document.body.insertAdjacentHTML('beforeend', `<div class="modal-wrapper">
+                <div class="modal">
+                    <div class="modal-heading">
+                        <div class="modal-title">
+                            <div>
+                                Download
+                            </div>
+                        </div>
+                        <div onclick="closeModal()" class="modal-close-button">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7071 1.70711C14.0976 1.31658 14.0976 
+                                    0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711
+                                    0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417
+                                    -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834
+                                    -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7
+                                    8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 
+                                    14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z" fill="black" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-regular-download">
+                            <a href="${downloadLink}" download>
+                                <img src="../skin/download.png" alt="direct download" />
+                                <div>Direct download</div>
+                            </a>
+                        </div>
+                        <div class="modal-regular-download">
+                            <a href="${downloadLink}.sha256" download>
+                                <img src="../skin/hash.png" alt="download hash" />
+                                <div>Download sha256 hash</div>
+                            </a>
+                        </div>
+                        <div class="modal-regular-download">
+                            <a href="${downloadLink}.magnet">
+                                <img src="../skin/magnet.png" alt="download magnet" />
+                                <div>Download magnet link</div>
+                            </a>
+                        </div>
+                        <div class="modal-regular-download">
+                            <a href="${downloadLink}.torrent" download>
+                                <img src="../skin/bittorrent.png" alt="download torrent" />
+                                <div>Download torrent file</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>`);
+        })
     }
 
     async function loadBooks() {
@@ -222,7 +278,13 @@
         });
         books = [...books].filter((book) => {return !booksToFilter.has(getInnerHtml(book, 'id'))});
         booksToDelete.forEach(book => {iso.remove(book);});
-        books.forEach((book) => {iso.insert(generateBookHtml(book, sort))});
+        books.forEach((book) => {
+            iso.insert(generateBookHtml(book, sort))
+            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .download`);
+            if (downloadButton) {
+                insertModal(downloadButton);
+            }
+        });
     }
 
     async function resetAndFilter(filterType = '', filterValue = '') {
