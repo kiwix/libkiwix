@@ -153,10 +153,10 @@
                             </a>
                         </div>
                         <div class="modal-regular-download">
-                            <a href="${downloadLink}.magnet">
+                            <span onclick="fetchAndRedirect('${downloadLink}.magnet')">
                                 <img src="../skin/magnet.png" alt="download magnet" />
                                 <div>Download magnet link</div>
-                            </a>
+                            </span>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.torrent" download>

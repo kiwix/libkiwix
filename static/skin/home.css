@@ -330,7 +330,11 @@ body {
     text-decoration: none;
 }
 
-.modal-content a>div {
+.modal-content span {
+    cursor: pointer;
+}
+
+.modal-content a>div, .modal-content span>div {
     position: relative;
     top: -26px;
     left: 50px;
