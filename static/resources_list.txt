@@ -18,6 +18,10 @@ skin/jquery-ui/images/ui-bg_glass_95_fef1ec_1x400.png
 skin/jquery-ui/jquery-ui.theme.min.css
 skin/jquery-ui/jquery-ui.min.css
 skin/caret.png
+skin/bittorrent.png
+skin/magnet.png
+skin/download.png
+skin/hash.png
 skin/search-icon.svg
 skin/taskbar.js
 skin/langList.js
