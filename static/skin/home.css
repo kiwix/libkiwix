@@ -330,16 +330,14 @@ body {
     text-decoration: none;
 }
 
-.modal-content span {
-    cursor: pointer;
-}
-
-.modal-content a>div, .modal-content span>div {
+.modal-content a>div {
     position: relative;
-    top: -26px;
+    top: -28px;
     left: 50px;
     text-decoration: underline;
-    color: black;
+    font-size: 13px;
+    font-family: poppins;
+    color: #444343;
 }
 
 .modal-content img {

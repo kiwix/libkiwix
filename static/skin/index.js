@@ -143,25 +143,25 @@
                         <div class="modal-regular-download">
                             <a href="${downloadLink}" download>
                                 <img src="../skin/download.png" alt="direct download" />
-                                <div>Direct download</div>
+                                <div>Direct</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.sha256" download>
                                 <img src="../skin/hash.png" alt="download hash" />
-                                <div>Download sha256 hash</div>
+                                <div>Sha256 hash</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
-                            <span onclick="fetchAndRedirect('${downloadLink}.magnet')">
+                            <a href="${downloadLink}.magnet" target="_blank">
                                 <img src="../skin/magnet.png" alt="download magnet" />
-                                <div>Download magnet link</div>
-                            </span>
+                                <div>Magnet link</div>
+                            </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.torrent" download>
                                 <img src="../skin/bittorrent.png" alt="download torrent" />
-                                <div>Download torrent file</div>
+                                <div>Torrent file</div>
                             </a>
                         </div>
                     </div>

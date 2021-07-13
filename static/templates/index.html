@@ -77,10 +77,5 @@
         modal.remove();
       }
     }
-    async function fetchAndRedirect(link) {
-      const response = await fetch(link);
-      const magnetLink = await response.text();
-      window.location = magnetLink;
-    }
   </script>
 </html>
