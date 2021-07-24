@@ -93,7 +93,7 @@
         if (sort) {
             divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
-        divTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img class="book__icon--image" src='${iconUrl}'></div>
+        divTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img class="book__icon--image" src='${root}${iconUrl}'></div>
             <div class='book__title' title='${title}'>
                 <div id="bookTitle">${title}</div>
                 ${humanFriendlyZimSize ? `<div id='bookSize'>${humanFriendlyZimSize}</div>`: ''}
@@ -101,7 +101,7 @@
             <div class='book__description' title='${description}'>${description}</div>
             <div class='book__languageTag'>${language.substr(0, 2).toUpperCase()}</div>
             <div class='book__tags'><div class="book__tags--wrapper">${tagHtml}</div></div>
-            <div class='book__links'> <a href="${link}" data-hover="Preview">Preview</a>${downloadLink ? `&nbsp;|&nbsp;<span class="download" data-link=${downloadLink} class="modal-button">Download</span>` : ''} </div></div>`;
+            <div class='book__links'> <a href="${root}${link}" data-hover="Preview">Preview</a>${downloadLink ? `&nbsp;|&nbsp;<span class="download" data-link=${downloadLink} class="modal-button">Download</span>` : ''} </div></div>`;
         return divTag;
     }
 
