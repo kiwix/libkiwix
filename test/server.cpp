@@ -1176,3 +1176,67 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
     "</feed>\n"
   );
 }
+
+TEST_F(LibraryServerTest, suggestions_in_range)
+{
+  /**
+   * Attempt to get 50 suggestions in steps of 5
+   * The suggestions are returned in the json format
+   * [{sugg1}, {sugg2}, ... , {suggN}, {suggest ft search}]
+   * Assuming the number of suggestions = (occurance of "{" - 1)
+   */
+  {
+    int suggCount = 0;
+    for (int i = 0; i < 10; i++) {
+      std::string url = "/suggest?content=zimfile&term=ray&start=" + std::to_string(i*5) + "&count=5";
+      const auto r = zfs1_->GET(url.c_str());
+      std::string body = r->body;
+      int currCount = std::count(body.begin(), body.end(), '{') - 1;
+      ASSERT_EQ(currCount, 5);
+      suggCount += currCount;
+    }
+    ASSERT_EQ(suggCount, 50);
+  }
+
+  // Attempt to get 10 suggestions in steps of 5 even though there are only 8
+  {
+    std::string url = "/suggest?content=zimfile&term=song+for+you&start=0&count=5";
+    const auto r1 = zfs1_->GET(url.c_str());
+    std::string body = r1->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 5);
+
+    url = "/suggest?content=zimfile&term=song+for+you&start=5&count=5";
+    const auto r2 = zfs1_->GET(url.c_str());
+    body = r2->body;
+    currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 3);
+  }
+
+  // Attempt to get 10 suggestions even though there is only 1
+  {
+    std::string url = "/suggest?content=zimfile&term=strong&start=0&count=5";
+    const auto r = zfs1_->GET(url.c_str());
+    std::string body = r->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 1);
+  }
+
+  // No Suggestion
+  {
+    std::string url = "/suggest?content=zimfile&term=oops&start=0&count=5";
+    const auto r = zfs1_->GET(url.c_str());
+    std::string body = r->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 0);
+  }
+
+  // Out of bound value
+  {
+    std::string url = "/suggest?content=zimfile&term=ray&start=-2&count=-1";
+    const auto r = zfs1_->GET(url.c_str());
+    std::string body = r->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 0);
+  }
+}
