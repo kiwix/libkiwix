@@ -170,6 +170,14 @@
         })
     }
 
+    async function getBookCount(query) {
+        const url = `${root}/catalog/search?${query}`;
+        return await fetch(url).then(async (resp) => {
+            const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
+            return parseInt(data.querySelector('totalResults').innerHTML);
+        });
+    }
+
     async function loadBooks() {
         loader.style.display = 'block';
         return await fetch(queryUrlBuilder()).then(async (resp) => {
@@ -368,8 +376,11 @@
         if (!window.location.search) {
             const browserLang = navigator.language.split('-')[0];
             const langFilter = document.getElementById('languageFilter');
-            langFilter.value = browserLang.length === 3 ? browserLang : iso6391To3[browserLang];
-            langFilter.dispatchEvent(new Event('change'));
+            const lang = browserLang.length === 3 ? browserLang : iso6391To3[browserLang];
+            if (await getBookCount(`lang=${lang}`)) {
+                langFilter.value = lang;
+                langFilter.dispatchEvent(new Event('change'));
+            }
         }
         document.querySelectorAll('.filter').forEach(filter => {
             if (filter.value) {
