@@ -67,7 +67,7 @@ Searcher::Searcher()
     : searchPattern(""),
       estimatedResultCount(0),
       resultStart(0),
-      resultEnd(0)
+      maxResultCount(0)
 {
   loadICUExternalTables();
 }
@@ -95,7 +95,7 @@ Reader* Searcher::get_reader(int readerIndex)
 /* Search strings in the database */
 void Searcher::search(const std::string& search,
                       unsigned int resultStart,
-                      unsigned int resultEnd,
+                      unsigned int maxResultCount,
                       const bool verbose)
 {
   this->reset();
@@ -106,9 +106,9 @@ void Searcher::search(const std::string& search,
 
   this->searchPattern = search;
   this->resultStart = resultStart;
-  this->resultEnd = resultEnd;
+  this->maxResultCount = maxResultCount;
   /* Try to find results */
-  if (resultStart != resultEnd) {
+  if (maxResultCount != 0) {
     /* Perform the search */
     string unaccentedSearch = removeAccents(search);
     std::vector<zim::Archive> archives;
@@ -123,7 +123,7 @@ void Searcher::search(const std::string& search,
     query.setQuery(unaccentedSearch, false);
     query.setVerbose(verbose);
     zim::Search search = searcher.search(query);
-    internal.reset(new SearcherInternal(search.getResults(resultStart, resultEnd)));
+    internal.reset(new SearcherInternal(search.getResults(resultStart, maxResultCount)));
     this->estimatedResultCount = search.getEstimatedMatches();
   }
 
@@ -133,7 +133,7 @@ void Searcher::search(const std::string& search,
 
 void Searcher::geo_search(float latitude, float longitude, float distance,
                           unsigned int resultStart,
-                          unsigned int resultEnd,
+                          unsigned int maxResultCount,
                           const bool verbose)
 {
   this->reset();
@@ -147,10 +147,10 @@ void Searcher::geo_search(float latitude, float longitude, float distance,
   oss << "Articles located less than " << distance << " meters of " << latitude << ";" << longitude;
   this->searchPattern = oss.str();
   this->resultStart = resultStart;
-  this->resultEnd = resultEnd;
+  this->maxResultCount = maxResultCount;
 
   /* Try to find results */
-  if (resultStart == resultEnd) {
+  if (maxResultCount == 0) {
     return;
   }
 
@@ -165,7 +165,7 @@ void Searcher::geo_search(float latitude, float longitude, float distance,
   query.setQuery("", false);
   query.setGeorange(latitude, longitude, distance);
   zim::Search search = searcher.search(query);
-  internal.reset(new SearcherInternal(search.getResults(resultStart, resultEnd)));
+  internal.reset(new SearcherInternal(search.getResults(resultStart, maxResultCount)));
   this->estimatedResultCount = search.getEstimatedMatches();
 }
 
@@ -206,7 +206,7 @@ void Searcher::suggestions(std::string& searchPattern, const bool verbose)
 
   this->searchPattern = searchPattern;
   this->resultStart = 0;
-  this->resultEnd = 10;
+  this->maxResultCount = 10;
   string unaccentedSearch = removeAccents(searchPattern);
 
   std::vector<zim::Archive> archives;
@@ -219,7 +219,7 @@ void Searcher::suggestions(std::string& searchPattern, const bool verbose)
   query.setVerbose(verbose);
   query.setQuery(unaccentedSearch, true);
   zim::Search search = searcher.search(query);
-  internal.reset(new SearcherInternal(search.getResults(resultStart, resultEnd)));
+  internal.reset(new SearcherInternal(search.getResults(resultStart, maxResultCount)));
   this->estimatedResultCount = search.getEstimatedMatches();
 }
 
