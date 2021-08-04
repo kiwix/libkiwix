@@ -589,8 +589,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     pageLength = 25;
   }
 
-  auto end = start + pageLength;
-
   /* Get the results */
   try {
     zim::Query query;
@@ -615,7 +613,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     }
 
     zim::Search search = searcher->search(query);
-    SearchRenderer renderer(search.getResults(start, end), mp_nameMapper, start,
+    SearchRenderer renderer(search.getResults(start, pageLength), mp_nameMapper, start,
                             search.getEstimatedMatches());
     renderer.setSearchPattern(patternString);
     renderer.setSearchContent(bookName);

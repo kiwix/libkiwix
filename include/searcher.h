@@ -85,12 +85,12 @@ class Searcher
    *
    * @param search The search query.
    * @param resultStart the start offset of the search results (used for pagination).
-   * @param resultEnd the end offset of the search results (used for pagination).
+   * @param maxResultCount Maximum results to get from start (used for pagination).
    * @param verbose print some info on stdout if true.
    */
   void search(const std::string& search,
               unsigned int resultStart,
-              unsigned int resultEnd,
+              unsigned int maxResultCount,
               const bool verbose = false);
 
   /**
@@ -104,12 +104,12 @@ class Searcher
    * @param longitude The longitude of the center point.
    * @param distance The radius of the disc.
    * @param resultStart the start offset of the search results (used for pagination).
-   * @param resultEnd the end offset of the search results (used for pagination).
+   * @param maxResultCount Maximum number of results to get from start (used for pagination).
    * @param verbose print some info on stdout if true.
    */
   void geo_search(float latitude, float longitude, float distance,
                   unsigned int resultStart,
-                  unsigned int resultEnd,
+                  unsigned int maxResultCount,
                   const bool verbose = false);
 
   /**
@@ -148,14 +148,14 @@ class Searcher
   zim::SearchResultSet getSearchResultSet();
 
   unsigned int getResultStart() { return resultStart; }
-  unsigned int getResultEnd() { return resultEnd; }
+  unsigned int getMaxResultCount() { return maxResultCount; }
 
  protected:
   std::string beautifyInteger(const unsigned int number);
   void closeIndex();
   void searchInIndex(string& search,
                      const unsigned int resultStart,
-                     const unsigned int resultEnd,
+                     const unsigned int maxResultCount,
                      const bool verbose = false);
 
   std::vector<Reader*> readers;
@@ -163,7 +163,7 @@ class Searcher
   std::string searchPattern;
   unsigned int estimatedResultCount;
   unsigned int resultStart;
-  unsigned int resultEnd;
+  unsigned int maxResultCount;
 
  private:
   void reset();

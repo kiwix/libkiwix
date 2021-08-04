@@ -32,7 +32,7 @@ TEST(Searcher, incrementalRange) {
 
   int suggCount = 0;
   for (int i = 0; i < 10; i++) {
-    auto srs = search.getResults(i*5, (i + 1)*5); // get 5 results
+    auto srs = search.getResults(i*5, 5); // get 5 results
     ASSERT_EQ(srs.size(), 5);
     suggCount += srs.size();
   }
