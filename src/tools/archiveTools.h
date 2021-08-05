@@ -42,7 +42,7 @@ namespace kiwix
     std::string getMetaFlavour(const zim::Archive& archive);
     std::string getArchiveId(const zim::Archive& archive);
 
-    bool getArchiveFavicon(const zim::Archive& archive,
+    bool getArchiveFavicon(const zim::Archive& archive, unsigned size,
                            std::string& content, std::string& mimeType);
 
     unsigned int getArchiveMediaCount(const zim::Archive& archive);
