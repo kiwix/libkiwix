@@ -4,7 +4,6 @@
         start: 0,
         count: viewPortToCount()
     };
-    const filterTypes = ['lang', 'category', 'q'];
     const bookOrderMap = new Map();
     const filterCookieName = 'filters';
     const oneDayDelta = 86400000;
@@ -51,7 +50,7 @@
         quotient = quotient < units.length ? quotient : units.length - 1;
         fileSize /= (1000 ** quotient);
         return `${+fileSize.toFixed(2)} ${units[quotient]}`;
-      };      
+    };
 
     function htmlEncode(str) {
         return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => `&#${i.charCodeAt(0)};`);
@@ -66,11 +65,16 @@
     }
 
     function generateBookHtml(book, sort = false) {
-        const link = book.querySelector('link').getAttribute('href');
+        const link = book.querySelector('link[type="text/html"]').getAttribute('href');
+        let iconUrl;
+        book.querySelectorAll('link[rel="http://opds-spec.org/image/thumbnail"]').forEach(link => {
+            if (link.getAttribute('type').split(';')[1] == 'width=48' && !iconUrl) {
+                iconUrl = link.getAttribute('href');
+            }
+        });
         const title =  getInnerHtml(book, 'title');
         const description = getInnerHtml(book, 'summary');
         const id = getInnerHtml(book, 'id');
-        const iconUrl = getInnerHtml(book, 'icon');
         const language = getInnerHtml(book, 'language');
         const tags = getInnerHtml(book, 'tags');
         let tagHtml = tags.split(';').filter(tag => {return !(tag.split(':')[0].startsWith('_'))})
@@ -85,7 +89,7 @@
         } catch {
             downloadLink = '';
         }
-        humanFriendlyZimSize = humanFriendlySize(zimSize);
+        const humanFriendlyZimSize = humanFriendlySize(zimSize);
 
         const divTag = document.createElement('div');
         divTag.setAttribute('class', 'book');
