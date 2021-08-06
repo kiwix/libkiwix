@@ -1028,7 +1028,8 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
   const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
-      xmlns:opds="https://specs.opds.io/opds-1.2">
+      xmlns:opds="https://specs.opds.io/opds-1.2"
+      xmlns:thr="http://purl.org/syndication/thread/1.0">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
         href="/catalog/v2/languages"

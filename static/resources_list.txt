@@ -24,8 +24,6 @@ skin/download.png
 skin/hash.png
 skin/search-icon.svg
 skin/taskbar.js
-skin/langList.js
-skin/categoryList.js
 skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js

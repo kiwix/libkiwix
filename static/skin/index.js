@@ -51,6 +51,11 @@
         fileSize /= (1000 ** quotient);
         return `${+fileSize.toFixed(2)} ${units[quotient]}`;
     };
+    
+    const humanFriendlyTitle = (title) => {
+        title = title.replace(/_/g, ' ');
+        return htmlEncode(title[0].toUpperCase() + title.slice(1));
+    }
 
     function htmlEncode(str) {
         return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => `&#${i.charCodeAt(0)};`);
@@ -213,11 +218,17 @@
         });
     }
 
-    async function loadAndDisplayOptions(nodeQuery, query) {
-        // currently taking an object in place of query, will replace it with query while fetching data from backend later on.
-        document.querySelector(nodeQuery).innerHTML += Object.keys(query)
-            .map((option) => {return `<option value='${option}'>${htmlEncode(query[option])}</option>`})
-        .join('');
+    async function loadAndDisplayOptions(nodeQuery, query, valueEntryNode) {
+        await fetch(query).then(async (resp) => {
+            const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
+            let optionStr = '';
+            data.querySelectorAll('entry').forEach(entry => {
+                const title = getInnerHtml(entry, 'title');
+                const value = getInnerHtml(entry, valueEntryNode);
+                optionStr += `<option value='${value}'>${humanFriendlyTitle(title)}</option>`;
+            });
+            document.querySelector(nodeQuery).innerHTML += optionStr;
+        });
     }
 
     function checkAndInjectEmptyMessage() {
@@ -367,15 +378,20 @@
         fadeOutDiv = document.getElementById('fadeOut');
         loader = document.querySelector('.loader');
         await loadAndDisplayBooks();
-        await loadAndDisplayOptions('#languageFilter', langList);
-        await loadAndDisplayOptions('#categoryFilter', categoryList);
+        await loadAndDisplayOptions('#languageFilter', `${root}/catalog/v2/languages`, 'language');
+        await loadAndDisplayOptions('#categoryFilter', `${root}/catalog/v2/categories`, 'title');
         document.querySelectorAll('.filter').forEach(filter => {
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
         if (filters) {
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
         }
-        params.forEach((value, key) => {document.getElementsByName(key)[0].value = value});
+        params.forEach((value, key) => {
+            const selectBox = document.getElementsByName(key)[0];
+            if (selectBox) {
+                selectBox.value = value
+            }
+        });
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
         if (!window.location.search) {
             const browserLang = navigator.language.split('-')[0];
