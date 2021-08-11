@@ -62,7 +62,8 @@
     }
 
     function viewPortToCount(){
-        return Math.floor(window.innerHeight/300 + 1)*(window.innerWidth>1000 ? 4 : 3);
+        const zoom = Math.floor((( window.outerWidth - 10 ) / window.innerWidth) * 100);
+        return Math.floor(window.innerHeight/(3*zoom) + 1)*(window.innerWidth/(2.5*zoom) + 1);
     }
 
     function getInnerHtml(node, query) {
