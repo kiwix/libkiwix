@@ -58,6 +58,7 @@ extern "C" {
 #include <zim/uuid.h>
 #include <zim/error.h>
 #include <zim/search.h>
+#include <zim/suggestion.h>
 #include <zim/entry.h>
 #include <zim/item.h>
 
@@ -347,14 +348,12 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
                   const std::string& queryString, int suggestionCount)
 {
   SuggestionsList_t suggestions;
+  auto searcher = zim::SuggestionSearcher(*archive);
   if (archive->hasTitleIndex()) {
-    auto searcher = zim::Searcher(*archive);
-    zim::Query suggestionQuery;
-    suggestionQuery.setQuery(queryString, true);
-    auto suggestionSearch = searcher.search(suggestionQuery);
-    auto suggestionResult = suggestionSearch.getResults(0, suggestionCount);
+    auto search = searcher.suggest(queryString);
+    auto srs = search.getResults(0, suggestionCount);
 
-    for (auto it = suggestionResult.begin(); it != suggestionResult.end(); it++) {
+    for (auto it : srs) {
       SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
                                 it.getPath(), it.getSnippet());
       suggestions.push_back(suggestion);
@@ -364,9 +363,11 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
     std::vector<std::string> variants = getTitleVariants(queryString);
     int currCount = 0;
     for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
-      for (auto& entry: archive->findByTitle(*it)) {
-        SuggestionItem suggestion(entry.getTitle(), kiwix::normalize(entry.getTitle()),
-                                  entry.getPath());
+      auto search = searcher.suggest(queryString);
+      auto srs = search.getResults(0, suggestionCount);
+      for (auto it : srs) {
+        SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
+                                  it.getPath());
         suggestions.push_back(suggestion);
         currCount++;
       }
@@ -610,8 +611,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
         cout << "Performing geo query `" << distance << "&(" << latitude << ";" << longitude << ")'" << endl;
       }
 
-      query.setVerbose(m_verbose.load());
-      query.setQuery("", false);
+      query.setQuery("");
       query.setGeorange(latitude, longitude, distance);
     } else {
       // Execute Ft search
@@ -620,8 +620,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       }
 
       std::string queryString = removeAccents(patternString);
-      query.setQuery(queryString, false);
-      query.setVerbose(m_verbose.load());
+      query.setQuery(queryString);
     }
 
     zim::Search search = searcher->search(query);
