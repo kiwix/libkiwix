@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include <zim/search.h>
+#include <zim/suggestion.h>
 #include <zim/item.h>
 #include <zim/error.h>
 
@@ -377,35 +378,36 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
                                     SuggestionsList_t& results)
 {
   std::vector<std::string> variants = this->getTitleVariants(prefix);
-  bool retVal = false;
 
-  /* Try to search in the title using fulltext search database */
+  auto suggestionSearcher = zim::SuggestionSearcher(*zimArchive);
 
-  auto suggestionSearcher = zim::Searcher(*zimArchive);
-  zim::Query suggestionQuery;
-  suggestionQuery.setQuery(prefix, true);
-  auto suggestionSearch = suggestionSearcher.search(suggestionQuery);
-
-  if (suggestionSearch.getEstimatedMatches()) {
+  if (zimArchive->hasTitleIndex()) {
+    auto suggestionSearch = suggestionSearcher.suggest(prefix);
     const auto suggestions = suggestionSearch.getResults(0, suggestionsCount);
-    for (auto current = suggestions.begin();
-         current != suggestions.end();
-         current++) {
+    for (auto current : suggestions) {
       SuggestionItem suggestion(current.getTitle(), kiwix::normalize(current.getTitle()),
                                 current.getPath(), current.getSnippet());
       results.push_back(suggestion);
     }
-    retVal = true;
   } else {
+    // Check some of the variants of the prefix
     for (std::vector<std::string>::iterator variantsItr = variants.begin();
          variantsItr != variants.end();
          variantsItr++) {
-      retVal = this->searchSuggestions(*variantsItr, suggestionsCount, results)
-               || retVal;
+      auto suggestionSearch = suggestionSearcher.suggest(*variantsItr);
+      for (auto current : suggestionSearch.getResults(0, suggestionsCount)) {
+        if (results.size() >= suggestionsCount) {
+          break;
+        }
+
+        SuggestionItem suggestion(current.getTitle(), kiwix::normalize(current.getTitle()),
+                                current.getPath(), current.getSnippet());
+        results.push_back(suggestion);
+      }
     }
   }
 
-  return retVal;
+  return results.size() > 0;
 }
 
 /* Get next suggestion */

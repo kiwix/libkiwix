@@ -22,12 +22,37 @@ TEST(Searcher, search) {
   ASSERT_EQ(result->get_title(), "Wikibooks");
 }
 
+TEST(Searcher, suggestion) {
+  Reader reader("./test/zimfile.zim");
+
+  Searcher searcher;
+  searcher.add_reader(&reader);
+  ASSERT_EQ(searcher.get_reader(0)->getTitle(), reader.getTitle());
+
+  std::string query = "ray";
+  searcher.suggestions(query, true);
+  searcher.restart_search();
+
+  auto result = searcher.getNextResult();
+  ASSERT_EQ(result->get_title(), "Charles, Ray");
+  ASSERT_EQ(result->get_url(), "A/Charles,_Ray");
+  ASSERT_EQ(result->get_snippet(), "Charles, <b>Ray</b>");
+  ASSERT_EQ(result->get_score(), 0);
+  ASSERT_EQ(result->get_content(), "");
+  ASSERT_EQ(result->get_size(), 0);
+  ASSERT_EQ(result->get_wordCount(), 0);
+  ASSERT_EQ(result->get_zimId(), "");
+
+  result = searcher.getNextResult();
+  ASSERT_EQ(result->get_title(), "Ray (film)");
+}
+
 TEST(Searcher, incrementalRange) {
   // Attempt to get 50 results in steps of 5
   zim::Archive archive("./test/zimfile.zim");
   zim::Searcher ftsearcher(archive);
   zim::Query query;
-  query.setQuery("ray", false);
+  query.setQuery("ray");
   auto search = ftsearcher.search(query);
 
   int suggCount = 0;

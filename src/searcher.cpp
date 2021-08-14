@@ -23,6 +23,7 @@
 #include "reader.h"
 
 #include <zim/search.h>
+#include <zim/suggestion.h>
 
 #include <mustache.hpp>
 #include <cmath>
@@ -37,6 +38,7 @@ class _Result : public Result
 {
  public:
   _Result(zim::SearchResultSet::iterator iterator);
+  _Result(SuggestionItem suggestionItem);
   virtual ~_Result(){};
 
   virtual std::string get_url();
@@ -50,6 +52,8 @@ class _Result : public Result
 
  private:
   zim::SearchResultSet::iterator iterator;
+  SuggestionItem suggestionItem;
+  bool isSuggestion;
 };
 
 struct SearcherInternal : zim::SearchResultSet {
@@ -60,6 +64,14 @@ struct SearcherInternal : zim::SearchResultSet {
   }
 
   zim::SearchResultSet::iterator current_iterator;
+};
+
+struct SuggestionInternal : zim::SuggestionResultSet {
+  explicit SuggestionInternal(const zim::SuggestionResultSet& srs)
+    : zim::SuggestionResultSet(srs),
+      currentIterator(srs.begin()) {}
+
+  zim::SuggestionResultSet::iterator currentIterator;
 };
 
 /* Constructor */
@@ -119,9 +131,9 @@ void Searcher::search(const std::string& search,
       }
     }
     zim::Searcher searcher(archives);
+    searcher.setVerbose(verbose);
     zim::Query query;
-    query.setQuery(unaccentedSearch, false);
-    query.setVerbose(verbose);
+    query.setQuery(unaccentedSearch);
     zim::Search search = searcher.search(query);
     internal.reset(new SearcherInternal(search.getResults(resultStart, maxResultCount)));
     this->estimatedResultCount = search.getEstimatedMatches();
@@ -160,9 +172,9 @@ void Searcher::geo_search(float latitude, float longitude, float distance,
     archives.push_back(*(*current)->getZimArchive());
   }
   zim::Searcher searcher(archives);
+  searcher.setVerbose(verbose);
   zim::Query query;
-  query.setVerbose(verbose);
-  query.setQuery("", false);
+  query.setQuery("");
   query.setGeorange(latitude, longitude, distance);
   zim::Search search = searcher.search(query);
   internal.reset(new SearcherInternal(search.getResults(resultStart, maxResultCount)));
@@ -179,10 +191,20 @@ void Searcher::restart_search()
 
 Result* Searcher::getNextResult()
 {
-  if (internal.get() &&
-             internal->current_iterator != internal->end()) {
+  if (internal.get() && internal->current_iterator != internal->end()) {
     Result* result = new _Result(internal->current_iterator);
     internal->current_iterator++;
+    return result;
+  } else if (suggestionInternal.get() &&
+             suggestionInternal->currentIterator != suggestionInternal->end()) {
+    SuggestionItem item(
+                        suggestionInternal->currentIterator->getTitle(),
+                        normalize(suggestionInternal->currentIterator->getTitle()),
+                        suggestionInternal->currentIterator->getPath(),
+                        suggestionInternal->currentIterator->getSnippet()
+                      );
+    Result* result = new _Result(item);
+    suggestionInternal->currentIterator++;
     return result;
   }
   return NULL;
@@ -209,17 +231,12 @@ void Searcher::suggestions(std::string& searchPattern, const bool verbose)
   this->maxResultCount = 10;
   string unaccentedSearch = removeAccents(searchPattern);
 
-  std::vector<zim::Archive> archives;
-  for (auto current = this->readers.begin(); current != this->readers.end();
-       current++) {
-    archives.push_back(*(*current)->getZimArchive());
-  }
-  zim::Searcher searcher(archives);
-  zim::Query query;
-  query.setVerbose(verbose);
-  query.setQuery(unaccentedSearch, true);
-  zim::Search search = searcher.search(query);
-  internal.reset(new SearcherInternal(search.getResults(resultStart, maxResultCount)));
+  // Multizim suggestion is not supported as of now! taking only one archive
+  zim::Archive archive = *(*this->readers.begin())->getZimArchive();
+  zim::SuggestionSearcher searcher(archive);
+  searcher.setVerbose(verbose);
+  zim::SuggestionSearch search = searcher.suggest(searchPattern);
+  suggestionInternal.reset(new SuggestionInternal(search.getResults(resultStart, maxResultCount)));
   this->estimatedResultCount = search.getEstimatedMatches();
 }
 
@@ -235,40 +252,69 @@ zim::SearchResultSet Searcher::getSearchResultSet()
 }
 
 _Result::_Result(zim::SearchResultSet::iterator iterator)
-    : iterator(iterator)
-{
-}
+    : iterator(iterator),
+      suggestionItem("", "", ""),
+      isSuggestion(false)
+{}
+
+_Result::_Result(SuggestionItem item)
+    : iterator(),
+      suggestionItem(item.getTitle(), item.getNormalizedTitle(), item.getPath(), item.getSnippet()),
+      isSuggestion(true)
+{}
 
 std::string _Result::get_url()
 {
+  if (isSuggestion) {
+    return suggestionItem.getPath();
+  }
   return iterator.getPath();
 }
 std::string _Result::get_title()
 {
+  if (isSuggestion) {
+    return suggestionItem.getTitle();
+  }
   return iterator.getTitle();
 }
 int _Result::get_score()
 {
+  if (isSuggestion) {
+    return 0;
+  }
   return iterator.getScore();
 }
 std::string _Result::get_snippet()
 {
+  if (isSuggestion) {
+    return suggestionItem.getSnippet();
+  }
   return iterator.getSnippet();
 }
 std::string _Result::get_content()
 {
+  if (isSuggestion) return "";
   return iterator->getItem(true).getData();
 }
 int _Result::get_size()
 {
+  if (isSuggestion) {
+    return 0;
+  }
   return iterator.getSize();
 }
 int _Result::get_wordCount()
 {
+  if (isSuggestion) {
+    return 0;
+  }
   return iterator.getWordCount();
 }
 std::string _Result::get_zimId()
 {
+  if (isSuggestion) {
+    return "";
+  }
   std::ostringstream s;
   s << iterator.getZimId();
   return s.str();
