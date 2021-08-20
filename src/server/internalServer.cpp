@@ -345,13 +345,13 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
 
 // TODO: retrieve searcher from caching mechanism
 SuggestionsList_t getSuggestions(const zim::Archive* const archive,
-                  const std::string& queryString, int suggestionCount)
+                  const std::string& queryString, int start, int suggestionCount)
 {
   SuggestionsList_t suggestions;
   auto searcher = zim::SuggestionSearcher(*archive);
   if (archive->hasTitleIndex()) {
     auto search = searcher.suggest(queryString);
-    auto srs = search.getResults(0, suggestionCount);
+    auto srs = search.getResults(start, suggestionCount);
 
     for (auto it : srs) {
       SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
@@ -439,8 +439,6 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   std::string content;
   std::string mimeType;
-  unsigned int maxSuggestionCount = 10;
-  unsigned int suggestionCount = 0;
 
   std::string bookName;
   std::string bookId;
@@ -453,6 +451,20 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     return Response::build_404(*this, request, bookName, "");
+  }
+
+  auto start = 0;
+  try {
+    start = request.get_argument<unsigned int>("start");
+  } catch (const std::exception&) {}
+
+  unsigned int count = 10;
+  try {
+    count = request.get_argument<unsigned int>("count");
+  } catch (const std::exception&) {}
+
+  if (count == 0) {
+    count = 10;
   }
 
   if (archive == nullptr) {
@@ -468,7 +480,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   bool first = true;
 
   /* Get the suggestions */
-  SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, maxSuggestionCount);
+  SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, start, count);
   for(auto& suggestion:suggestions) {
     MustacheData result;
     result.set("label", suggestion.getTitle());
@@ -483,7 +495,6 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     result.set("first", first);
     first = false;
     results.push_back(result);
-    suggestionCount++;
   }
 
 
