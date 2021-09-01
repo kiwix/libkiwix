@@ -134,20 +134,22 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
   return render_template(RESOURCE::templates::catalog_entries_xml, template_data);
 }
 
-string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const
+string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
   const auto bookData = getBookData(library, bookIds);
 
+  const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
      {"endpoint_root", rootLocation + "/catalog/v2"},
-     {"feed_id", gen_uuid(libraryId + "/entries?"+query)},
+     {"feed_id", gen_uuid(libraryId + endpoint + "?" + query)},
      {"filter", query.empty() ? MustacheData(false) : MustacheData(query)},
      {"query", query.empty() ? "" : "?" + urlEncode(query)},
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
-     {"books", bookData }
+     {"books", bookData },
+     {"dump_partial_entries", MustacheData(partial)}
   };
 
   return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);

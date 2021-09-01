@@ -59,7 +59,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
     const std::string entryId  = request.get_url_part(3);
     return handle_catalog_v2_complete_entry(request, entryId);
   } else if (url == "entries") {
-    return handle_catalog_v2_entries(request);
+    return handle_catalog_v2_entries(request, /*partial=*/false);
+  } else if (url == "partial_entries") {
+    return handle_catalog_v2_entries(request, /*partial=*/true);
   } else if (url == "categories") {
     return handle_catalog_v2_categories(request);
   } else if (url == "languages") {
@@ -86,13 +88,13 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
 {
   OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   const auto bookIds = search_catalog(request, opdsDumper);
-  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query());
+  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
   return ContentResponse::build(
              *this,
              opdsFeed,

@@ -5,7 +5,7 @@
   <id>{{feed_id}}</id>
 
   <link rel="self"
-        href="{{endpoint_root}}/entries{{{query}}}"
+        href="{{endpoint_root}}/{{#dump_partial_entries}}partial_{{/dump_partial_entries}}entries{{{query}}}"
         type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
   <link rel="start"
         href="{{endpoint_root}}/root.xml"
@@ -26,7 +26,11 @@
     <id>urn:uuid:{{id}}</id>
     <title>{{title}}</title>
     <updated>{{updated}}</updated>
-    <summary>{{description}}</summary>
+{{#dump_partial_entries}}
+    <link rel="alternate"
+          href="{{endpoint_root}}/entry/{{{id}}}"
+          type="application/atom+xml;type=entry;profile=opds-catalog"/>
+{{/dump_partial_entries}}{{^dump_partial_entries}}    <summary>{{description}}</summary>
     <language>{{language}}</language>
     <name>{{name}}</name>
     <flavour>{{flavour}}</flavour>
@@ -49,6 +53,7 @@
     {{#url}}
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="{{{url}}}" length="{{{size}}}" />
     {{/url}}
+{{/dump_partial_entries}}
   </entry>
   {{/books}}
 </feed>
