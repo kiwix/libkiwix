@@ -25,9 +25,9 @@
   <entry>
     <id>urn:uuid:{{id}}</id>
     <title>{{title}}</title>
+    <updated>{{updated}}</updated>
     <summary>{{description}}</summary>
     <language>{{language}}</language>
-    <updated>{{updated}}</updated>
     <name>{{name}}</name>
     <flavour>{{flavour}}</flavour>
     <category>{{category}}</category>

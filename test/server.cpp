@@ -618,9 +618,9 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  <entry>\n"                                                       \
     "    <id>urn:uuid:charlesray</id>\n"                                \
     "    <title>Charles, Ray</title>\n"                                 \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
     "    <language>fra</language>\n"                                    \
-    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_fr_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>jazz</category>\n"                                   \
@@ -644,9 +644,9 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  <entry>\n"                                                       \
     "    <id>urn:uuid:raycharles</id>\n"                                \
     "    <title>Ray Charles</title>\n"                                  \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
     "    <language>eng</language>\n"                                    \
-    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>wikipedia</category>\n"                              \
@@ -670,9 +670,9 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  <entry>\n"                                                       \
     "    <id>urn:uuid:raycharles_uncategorized</id>\n"                  \
     "    <title>Ray (uncategorized) Charles</title>\n"                  \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <summary>No category is assigned to this library entry.</summary>\n" \
     "    <language>rus</language>\n"                                    \
-    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
     "    <name>wikipedia_ru_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category></category>\n"                                \
