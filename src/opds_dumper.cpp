@@ -75,7 +75,7 @@ kainjow::mustache::object getSingleBookData(const Book& book)
                                ? MustacheData(false)
                                : MustacheData(book.getUrl());
     return kainjow::mustache::object{
-      {"id", "urn:uuid:"+book.getId()},
+      {"id", book.getId()},
       {"name", book.getName()},
       {"title", book.getTitle()},
       {"description", book.getDescription()},

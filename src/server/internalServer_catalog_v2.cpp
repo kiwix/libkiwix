@@ -55,6 +55,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
         "application/opensearchdescription+xml"
     );
+  } else if (url == "entry") {
+    const std::string entryId  = request.get_url_part(3);
+    return handle_catalog_v2_complete_entry(request, entryId);
   } else if (url == "entries") {
     return handle_catalog_v2_entries(request);
   } else if (url == "categories") {
@@ -94,6 +97,25 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
              *this,
              opdsFeed,
              "application/atom+xml;profile=opds-catalog;kind=acquisition"
+  );
+}
+
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const RequestContext& request, const std::string& entryId)
+{
+  try {
+    mp_library->getBookById(entryId);
+  } catch (const std::out_of_range&) {
+    return Response::build_404(*this, request, "", "");
+  }
+
+  OPDSDumper opdsDumper(mp_library);
+  opdsDumper.setRootLocation(m_root);
+  opdsDumper.setLibraryId(m_library_id);
+  const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
+  return ContentResponse::build(
+             *this,
+             opdsFeed,
+             "application/atom+xml;type=entry;profile=opds-catalog"
   );
 }
 

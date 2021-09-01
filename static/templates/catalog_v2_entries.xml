@@ -23,7 +23,7 @@
 {{/filter}}
   {{#books}}
   <entry>
-    <id>{{id}}</id>
+    <id>urn:uuid:{{id}}</id>
     <title>{{title}}</title>
     <summary>{{description}}</summary>
     <language>{{language}}</language>

@@ -1240,3 +1240,16 @@ TEST_F(LibraryServerTest, suggestions_in_range)
     ASSERT_EQ(currCount, 0);
   }
 }
+
+TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
+{
+  const auto r = zfs1_->GET("/catalog/v2/entry/raycharles");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    RAY_CHARLES_CATALOG_ENTRY
+  );
+
+  const auto r1 = zfs1_->GET("/catalog/v2/entry/non-existent-entry");
+  EXPECT_EQ(r1->status, 404);
+}
