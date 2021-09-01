@@ -24,6 +24,15 @@
     <content type="text">All entries from this catalog.</content>
   </entry>
   <entry>
+    <title>All entries (partial)</title>
+    <link rel="subsection"
+          href="{{endpoint_root}}/partial_entries"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>{{date}}</updated>
+    <id>{{partial_entries_feed_id}}</id>
+    <content type="text">All entries from this catalog in partial format.</content>
+  </entry>
+  <entry>
     <title>List of categories</title>
     <link rel="subsection"
           href="{{endpoint_root}}/categories"

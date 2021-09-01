@@ -941,6 +941,15 @@ TEST_F(LibraryServerTest, catalog_v2_root)
     <content type="text">All entries from this catalog.</content>
   </entry>
   <entry>
+    <title>All entries (partial)</title>
+    <link rel="subsection"
+          href="/catalog/v2/partial_entries"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries from this catalog in partial format.</content>
+  </entry>
+  <entry>
     <title>List of categories</title>
     <link rel="subsection"
           href="/catalog/v2/categories"

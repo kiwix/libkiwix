@@ -81,6 +81,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
                {"endpoint_root", m_root + "/catalog/v2"},
                {"feed_id", gen_uuid(m_library_id)},
                {"all_entries_feed_id", gen_uuid(m_library_id + "/entries")},
+               {"partial_entries_feed_id", gen_uuid(m_library_id + "/partial_entries")},
                {"category_list_feed_id", gen_uuid(m_library_id + "/categories")},
                {"language_list_feed_id", gen_uuid(m_library_id + "/languages")}
              },
