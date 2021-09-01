@@ -64,6 +64,14 @@ class OPDSDumper
   std::string dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query) const;
 
   /**
+   * Dump the OPDS complete entry document.
+   *
+   * @param bookId the id of the book
+   * @return The OPDS complete entry document.
+   */
+  std::string dumpOPDSCompleteEntry(const std::string& bookId) const;
+
+  /**
    * Dump the categories OPDS feed.
    *
    * @return The OPDS feed.

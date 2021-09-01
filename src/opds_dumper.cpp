@@ -153,6 +153,13 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
   return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);
 }
 
+std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
+{
+  const auto bookData = getSingleBookData(library->getBookById(bookId));
+
+  return render_template(RESOURCE::templates::catalog_v2_complete_entry_xml, bookData);
+}
+
 std::string OPDSDumper::categoriesOPDSFeed() const
 {
   const auto now = gen_date_str();
