@@ -69,15 +69,12 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
     return illustrations;
 }
 
-BookData getBookData(const Library* library, const std::vector<std::string>& bookIds)
+kainjow::mustache::object getSingleBookData(const Book& book)
 {
-  BookData bookData;
-  for ( const auto& bookId : bookIds ) {
-    const Book& book = library->getBookById(bookId);
     const MustacheData bookUrl = book.getUrl().empty()
                                ? MustacheData(false)
                                : MustacheData(book.getUrl());
-    bookData.push_back(kainjow::mustache::object{
+    return kainjow::mustache::object{
       {"id", "urn:uuid:"+book.getId()},
       {"name", book.getName()},
       {"title", book.getTitle()},
@@ -95,7 +92,15 @@ BookData getBookData(const Library* library, const std::vector<std::string>& boo
       {"url", bookUrl},
       {"size", to_string(book.getSize())},
       {"icons", getBookIllustrationInfo(book)},
-    });
+    };
+}
+
+BookData getBookData(const Library* library, const std::vector<std::string>& bookIds)
+{
+  BookData bookData;
+  for ( const auto& bookId : bookIds ) {
+    const Book& book = library->getBookById(bookId);
+    bookData.push_back(getSingleBookData(book));
   }
 
   return bookData;
