@@ -905,7 +905,6 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <startIndex>100</startIndex>\n"
       "  <itemsPerPage>0</itemsPerPage>\n"
       CATALOG_LINK_TAGS
-      "  \n"
       "</feed>\n"
     );
   }

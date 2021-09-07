@@ -51,7 +51,7 @@ namespace
 {
 
 typedef kainjow::mustache::data MustacheData;
-typedef kainjow::mustache::list BookData;
+typedef kainjow::mustache::list BooksData;
 typedef kainjow::mustache::list IllustrationInfo;
 
 IllustrationInfo getBookIllustrationInfo(const Book& book)
@@ -95,15 +95,26 @@ kainjow::mustache::object getSingleBookData(const Book& book)
     };
 }
 
-BookData getBookData(const Library* library, const std::vector<std::string>& bookIds)
+std::string getSingleBookEntryXML(const Book& book, bool withXMLHeader, const std::string& endpointRoot, bool partial)
 {
-  BookData bookData;
+  auto data = getSingleBookData(book);
+  data["with_xml_header"] = MustacheData(withXMLHeader);
+  data["dump_partial_entries"] = MustacheData(partial);
+  data["endpoint_root"] = endpointRoot;
+  return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
+}
+
+BooksData getBooksData(const Library* library, const std::vector<std::string>& bookIds, const std::string& endpointRoot, bool partial)
+{
+  BooksData booksData;
   for ( const auto& bookId : bookIds ) {
     const Book& book = library->getBookById(bookId);
-    bookData.push_back(getSingleBookData(book));
+    booksData.push_back(kainjow::mustache::object{
+        {"entry", getSingleBookEntryXML(book, false, endpointRoot, partial)}
+    });
   }
 
-  return bookData;
+  return booksData;
 }
 
 std::string getLanguageSelfName(const std::string& lang) {
@@ -119,7 +130,7 @@ std::string getLanguageSelfName(const std::string& lang) {
 
 string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
 {
-  const auto bookData = getBookData(library, bookIds);
+  const auto booksData = getBooksData(library, bookIds, "", false);
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
      {"root", rootLocation},
@@ -128,7 +139,7 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
-     {"books", bookData }
+     {"books", booksData }
   };
 
   return render_template(RESOURCE::templates::catalog_entries_xml, template_data);
@@ -136,19 +147,20 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
 
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
-  const auto bookData = getBookData(library, bookIds);
+  const auto endpointRoot = rootLocation + "/catalog/v2";
+  const auto booksData = getBooksData(library, bookIds, endpointRoot, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
-     {"endpoint_root", rootLocation + "/catalog/v2"},
+     {"endpoint_root", endpointRoot},
      {"feed_id", gen_uuid(libraryId + endpoint + "?" + query)},
      {"filter", query.empty() ? MustacheData(false) : MustacheData(query)},
      {"query", query.empty() ? "" : "?" + urlEncode(query)},
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
-     {"books", bookData },
+     {"books", booksData },
      {"dump_partial_entries", MustacheData(partial)}
   };
 
@@ -157,9 +169,7 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
 
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
 {
-  const auto bookData = getSingleBookData(library->getBookById(bookId));
-
-  return render_template(RESOURCE::templates::catalog_v2_complete_entry_xml, bookData);
+  return getSingleBookEntryXML(library->getBookById(bookId), true, "", false);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const

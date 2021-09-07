@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-  <entry>
+{{#with_xml_header}}<?xml version="1.0" encoding="UTF-8"?>
+{{/with_xml_header}}  <entry>
     <id>urn:uuid:{{id}}</id>
     <title>{{title}}</title>
     <updated>{{updated}}</updated>
-    <summary>{{description}}</summary>
+{{#dump_partial_entries}}
+    <link rel="alternate"
+          href="{{endpoint_root}}/entry/{{{id}}}"
+          type="application/atom+xml;type=entry;profile=opds-catalog"/>
+{{/dump_partial_entries}}{{^dump_partial_entries}}    <summary>{{description}}</summary>
     <language>{{language}}</language>
     <name>{{name}}</name>
     <flavour>{{flavour}}</flavour>
@@ -26,4 +30,5 @@
     {{#url}}
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="{{{url}}}" length="{{{size}}}" />
     {{/url}}
+{{/dump_partial_entries}}
   </entry>
