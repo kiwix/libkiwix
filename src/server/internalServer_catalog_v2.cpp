@@ -55,8 +55,13 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
         "application/opensearchdescription+xml"
     );
+  } else if (url == "entry") {
+    const std::string entryId  = request.get_url_part(3);
+    return handle_catalog_v2_complete_entry(request, entryId);
   } else if (url == "entries") {
-    return handle_catalog_v2_entries(request);
+    return handle_catalog_v2_entries(request, /*partial=*/false);
+  } else if (url == "partial_entries") {
+    return handle_catalog_v2_entries(request, /*partial=*/true);
   } else if (url == "categories") {
     return handle_catalog_v2_categories(request);
   } else if (url == "languages") {
@@ -76,6 +81,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
                {"endpoint_root", m_root + "/catalog/v2"},
                {"feed_id", gen_uuid(m_library_id)},
                {"all_entries_feed_id", gen_uuid(m_library_id + "/entries")},
+               {"partial_entries_feed_id", gen_uuid(m_library_id + "/partial_entries")},
                {"category_list_feed_id", gen_uuid(m_library_id + "/categories")},
                {"language_list_feed_id", gen_uuid(m_library_id + "/languages")}
              },
@@ -83,17 +89,36 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
 {
   OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   const auto bookIds = search_catalog(request, opdsDumper);
-  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query());
+  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
   return ContentResponse::build(
              *this,
              opdsFeed,
              "application/atom+xml;profile=opds-catalog;kind=acquisition"
+  );
+}
+
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const RequestContext& request, const std::string& entryId)
+{
+  try {
+    mp_library->getBookById(entryId);
+  } catch (const std::out_of_range&) {
+    return Response::build_404(*this, request, "", "");
+  }
+
+  OPDSDumper opdsDumper(mp_library);
+  opdsDumper.setRootLocation(m_root);
+  opdsDumper.setLibraryId(m_library_id);
+  const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
+  return ContentResponse::build(
+             *this,
+             opdsFeed,
+             "application/atom+xml;type=entry;profile=opds-catalog"
   );
 }
 

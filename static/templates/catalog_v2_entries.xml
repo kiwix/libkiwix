@@ -5,7 +5,7 @@
   <id>{{feed_id}}</id>
 
   <link rel="self"
-        href="{{endpoint_root}}/entries{{{query}}}"
+        href="{{endpoint_root}}/{{#dump_partial_entries}}partial_{{/dump_partial_entries}}entries{{{query}}}"
         type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
   <link rel="start"
         href="{{endpoint_root}}/root.xml"
@@ -21,34 +21,4 @@
   <startIndex>{{startIndex}}</startIndex>
   <itemsPerPage>{{itemsPerPage}}</itemsPerPage>
 {{/filter}}
-  {{#books}}
-  <entry>
-    <id>{{id}}</id>
-    <title>{{title}}</title>
-    <summary>{{description}}</summary>
-    <language>{{language}}</language>
-    <updated>{{updated}}</updated>
-    <name>{{name}}</name>
-    <flavour>{{flavour}}</flavour>
-    <category>{{category}}</category>
-    <tags>{{tags}}</tags>
-    <articleCount>{{article_count}}</articleCount>
-    <mediaCount>{{media_count}}</mediaCount>
-    {{#icons}}
-    <link rel="http://opds-spec.org/image/thumbnail"
-          href="/meta?name=Illustration_{{icon_width}}x{{icon_height}}@{{icon_scale}}&amp;content={{{content_id}}}"
-          type="image/png;width={{icon_width}};height={{icon_height}};scale={{icon_scale}}"/>
-    {{/icons}}
-    <link type="text/html" href="/{{{content_id}}}" />
-    <author>
-      <name>{{author_name}}</name>
-    </author>
-    <publisher>
-      <name>{{publisher_name}}</name>
-    </publisher>
-    {{#url}}
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="{{{url}}}" length="{{{size}}}" />
-    {{/url}}
-  </entry>
-  {{/books}}
-</feed>
+{{#books}}{{{entry}}}{{/books}}</feed>
