@@ -591,7 +591,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
         if (! searcher) {
           searcher = std::make_shared<zim::Searcher>(*currentArchive);
         } else {
-          searcher->add_archive(*currentArchive);
+          searcher->addArchive(*currentArchive);
         }
       }
     }
