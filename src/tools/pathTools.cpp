@@ -269,7 +269,7 @@ std::string getFileSizeAsString(const std::string& path)
   return convert.str();
 }
 
-std::string getFileContent(const std::string& path)
+std::string kiwix::getFileContent(const std::string& path)
 {
 #ifdef _WIN32
   auto wpath = Utf8ToWide(path);
@@ -302,7 +302,7 @@ std::string getFileContent(const std::string& path)
   return content;
 }
 
-bool fileExists(const std::string& path)
+bool kiwix::fileExists(const std::string& path)
 {
 #ifdef _WIN32
   return PathFileExistsW(Utf8ToWide(path).c_str());
@@ -505,7 +505,7 @@ static std::map<std::string, std::string> extMimeTypes = {
 };
 
 /* Try to get the mimeType from the file extension */
-std::string getMimeTypeForFile(const std::string& filename)
+std::string kiwix::getMimeTypeForFile(const std::string& filename)
 {
   std::string mimeType = "text/plain";
   auto pos = filename.find_last_of(".");
