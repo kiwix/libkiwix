@@ -167,5 +167,32 @@ std::vector<std::string> split(const std::string& str, const std::string& delims
  * @throw std::out_of_range if iso2 code is not known.
  */
 std::string converta2toa3(const std::string& a2code);
+
+/** Extracts content from given file.
+ *
+ * This function provides content of a file provided it's path.
+ *
+ * @param path The absolute path provided in string format.
+ * @return Content of corresponding file in string format.
+ */
+std::string getFileContent(const std::string& path);
+
+/** checks if file exists.
+ *
+ * This function returns boolean stating if file exists or not.
+ *
+ * @param path The absolute path provided in string format.
+ * @return Boolean representing if file exists or not.
+ */
+bool fileExists(const std::string& path);
+
+/** provides mimetype from filename.
+ *
+ * This function provides mimetype from file-name.
+ *
+ * @param filename string containing filename.
+ * @return mimetype from filename in string format.
+ */
+std::string getMimeTypeForFile(const std::string& filename);
 }
 #endif // KIWIX_TOOLS_H

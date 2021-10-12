@@ -55,6 +55,7 @@ namespace kiwix
        void setPort(int port) { m_port = port; }
        void setNbThreads(int threads) { m_nbThreads = threads; }
        void setVerbose(bool verbose) { m_verbose = verbose; }
+       void setIndexTemplateString(const std::string& indexTemplateString) { m_indexTemplateString = indexTemplateString; }
        void setTaskbar(bool withTaskbar, bool withLibraryButton)
         { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
        void setBlockExternalLinks(bool blockExternalLinks)
@@ -65,6 +66,7 @@ namespace kiwix
        NameMapper* mp_nameMapper;
        std::string m_root = "";
        std::string m_addr = "";
+       std::string m_indexTemplateString = "";
        int m_port = 80;
        int m_nbThreads = 1;
        bool m_verbose = false;
