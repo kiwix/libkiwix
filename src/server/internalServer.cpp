@@ -128,7 +128,8 @@ InternalServer::InternalServer(Library* library,
                                bool verbose,
                                bool withTaskbar,
                                bool withLibraryButton,
-                               bool blockExternalLinks) :
+                               bool blockExternalLinks,
+                               std::string indexTemplateString) :
   m_addr(addr),
   m_port(port),
   m_root(normalizeRootUrl(root)),
@@ -137,6 +138,7 @@ InternalServer::InternalServer(Library* library,
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
+  m_indexTemplateString(indexTemplateString.empty() ? RESOURCE::templates::index_html : indexTemplateString),
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper)
@@ -336,7 +338,7 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(*this, RESOURCE::templates::index_html, get_default_data(), "text/html; charset=utf-8", true);
+  return ContentResponse::build(*this, m_indexTemplateString, get_default_data(), "text/html; charset=utf-8", true);
 }
 
 /**

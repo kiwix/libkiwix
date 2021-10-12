@@ -146,6 +146,53 @@ cp ninja ../bin
 cd ..
 ```
 
+Custom Index Page
+-----------------
+
+to use custom welcome page mention `customIndexPage` argument in `kiwix::internalServer()` or use `kiwix::server->setCustomIndexTemplate()`.
+(note - while using custom html file please mention all external links as absolute path.)
+
+to create a HTML template with custom JS you need to have a look at various OPDS based endpoints as mentioned [here](https://wiki.kiwix.org/wiki/OPDS) to load books.
+
+To use JS provided by kiwix-serve you can use the following template to start with -> 
+
+```
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title><-- Custom Tittle --></title>
+    <script
+      type="text/javascript"
+      src="{{root}}/skin/jquery-ui/external/jquery/jquery.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="{{root}}/skin/jquery-ui/jquery-ui.min.js"
+    ></script>
+    <script src="{{root}}/skin/isotope.pkgd.min.js" defer></script>
+    <script src="{{root}}/skin/iso6391To3.js"></script>
+    <script type="text/javascript" src="{{root}}/skin/index.js" defer></script>
+  </head>
+  <body>
+  </body>
+</html>
+```
+
+- To get books listed using `index.js` add - `<div class="book__list"></div>` under body tag.
+- To get number of books listed add - `<h3 class="kiwixHomeBody__results"></h3>` under body tag.
+- To add language select box add - `<select id="languageFilter"></select>` under body tag.
+- To add language select box add - `<select id="categoryFilter"></select>` under body tag.
+- To add search box for books use following form - 
+    ```
+        <form id='kiwixSearchForm'>
+        <input type="text" name="q" placeholder="Search" id="searchFilter" class='kiwixSearch filter'>
+        <input type="submit" class="searchButton" value="Search"/>
+        </form>
+    ```
+
+
 If you compile manually Libmicrohttpd, you might need to compile it
 without GNU TLS, a bug here will empeach further compilation
 otherwise.

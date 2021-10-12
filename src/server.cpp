@@ -48,7 +48,8 @@ bool Server::start() {
     m_verbose,
     m_withTaskbar,
     m_withLibraryButton,
-    m_blockExternalLinks));
+    m_blockExternalLinks,
+    m_indexTemplateString));
   return mp_server->start();
 }
 

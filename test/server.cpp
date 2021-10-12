@@ -54,7 +54,7 @@ public: // types
 
 public: // functions
   ZimFileServer(int serverPort, std::string libraryFilePath);
-  ZimFileServer(int serverPort, const FilePathCollection& zimpaths);
+  ZimFileServer(int serverPort, const FilePathCollection& zimpaths, std::string indexTemplateString = "");
   ~ZimFileServer();
 
   Response GET(const char* path, const Headers& headers = Headers())
@@ -68,7 +68,7 @@ public: // functions
   }
 
 private:
-  void run(int serverPort);
+  void run(int serverPort, std::string indexTemplateString = "");
 
 private: // data
   kiwix::Library library;
@@ -88,7 +88,7 @@ ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
   run(serverPort);
 }
 
-ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
+ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths, std::string indexTemplateString)
 : manager(&this->library)
 {
   for ( const auto& zimpath : zimpaths ) {
@@ -96,10 +96,10 @@ ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths)
       throw std::runtime_error("Unable to add the ZIM file '" + zimpath + "'");
   }
 
-  run(serverPort);
+  run(serverPort, indexTemplateString);
 }
 
-void ZimFileServer::run(int serverPort)
+void ZimFileServer::run(int serverPort, std::string indexTemplateString)
 {
   const std::string address = "127.0.0.1";
   nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
@@ -108,6 +108,9 @@ void ZimFileServer::run(int serverPort)
   server->setPort(serverPort);
   server->setNbThreads(2);
   server->setVerbose(false);
+  if (!indexTemplateString.empty()) {
+    server->setIndexTemplateString(indexTemplateString);
+  }
 
   if ( !server->start() )
     throw std::runtime_error("ZimFileServer failed to start");
@@ -209,6 +212,35 @@ const ResourceCollection resources200Uncompressible{
 ResourceCollection all200Resources()
 {
   return concat(resources200Compressible, resources200Uncompressible);
+}
+
+TEST(indexTemplateStringTest, emptyIndexTemplate) {
+  const int PORT = 8001;
+  const ZimFileServer::FilePathCollection ZIMFILES {
+    "./test/zimfile.zim",
+    "./test/corner_cases.zim"
+  };
+
+  ZimFileServer zfs(PORT, ZIMFILES, "");
+  EXPECT_EQ(200, zfs.GET("/")->status);
+}
+
+TEST(indexTemplateStringTest, indexTemplateCheck) {
+  const int PORT = 8001;
+  const ZimFileServer::FilePathCollection ZIMFILES {
+    "./test/zimfile.zim",
+    "./test/corner_cases.zim"
+  };
+
+  ZimFileServer zfs(PORT, ZIMFILES, "<!DOCTYPE html><head>"
+      "<title>Welcome to kiwix library</title>"
+    "</head>"
+  "</html>");
+  EXPECT_EQ("<!DOCTYPE html><head>"
+    "<title>Welcome to kiwix library</title>"
+    "<link type=\"root\" href=\"\">"
+    "</head>"
+  "</html>", zfs.GET("/")->body);
 }
 
 TEST_F(ServerTest, 200)
