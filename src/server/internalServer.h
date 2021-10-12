@@ -28,6 +28,9 @@ extern "C" {
 #include "library.h"
 #include "name_mapper.h"
 
+#include <zim/search.h>
+#include <zim/suggestion.h>
+
 #include <mustache.hpp>
 
 #include <atomic>
@@ -36,9 +39,13 @@ extern "C" {
 #include "server/request_context.h"
 #include "server/response.h"
 
+#include "tools/concurrent_cache.h"
+
 namespace kiwix {
 
 typedef kainjow::mustache::data MustacheData;
+typedef ConcurrentCache<string, std::shared_ptr<zim::Searcher>> SearcherCache;
+typedef ConcurrentCache<string, std::shared_ptr<zim::Search>> SearchCache;
 
 class Entry;
 class OPDSDumper;
@@ -114,6 +121,9 @@ class InternalServer {
 
     Library* mp_library;
     NameMapper* mp_nameMapper;
+
+    SearcherCache searcherCache;
+    SearchCache searchCache;
 
     std::string m_server_id;
     std::string m_library_id;
