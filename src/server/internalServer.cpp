@@ -147,7 +147,8 @@ InternalServer::InternalServer(Library* library,
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
   searcherCache(getCacheLength("SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
-  searchCache(getCacheLength("SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE))
+  searchCache(getCacheLength("SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
+  suggestionSearcherCache(getCacheLength("SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U)))
 {}
 
 bool InternalServer::start() {
@@ -352,14 +353,15 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
  * Archive and Zim handlers begin
  **/
 
-// TODO: retrieve searcher from caching mechanism
-SuggestionsList_t getSuggestions(const zim::Archive* const archive,
-                  const std::string& queryString, int start, int suggestionCount)
+SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Archive* const archive,
+                  const std::string& bookId, const std::string& queryString, int start, int suggestionCount)
 {
   SuggestionsList_t suggestions;
-  auto searcher = zim::SuggestionSearcher(*archive);
+  std::shared_ptr<zim::SuggestionSearcher> searcher;
+  searcher = cache.getOrPut(bookId, [=](){ return make_shared<zim::SuggestionSearcher>(*archive); });
+
   if (archive->hasTitleIndex()) {
-    auto search = searcher.suggest(queryString);
+    auto search = searcher->suggest(queryString);
     auto srs = search.getResults(start, suggestionCount);
 
     for (auto it : srs) {
@@ -372,7 +374,7 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
     std::vector<std::string> variants = getTitleVariants(queryString);
     int currCount = 0;
     for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
-      auto search = searcher.suggest(queryString);
+      auto search = searcher->suggest(queryString);
       auto srs = search.getResults(0, suggestionCount);
       for (auto it : srs) {
         SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
@@ -392,11 +394,11 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     printf("** running handle_suggest\n");
   }
 
-  std::string bookName;
+  std::string bookName, bookId;
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    bookId = mp_nameMapper->getIdForName(bookName);
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     // error handled by the archive == nullptr check below
@@ -423,7 +425,8 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   bool first = true;
 
   /* Get the suggestions */
-  SuggestionsList_t suggestions = getSuggestions(archive.get(), queryString, start, count);
+  SuggestionsList_t suggestions = getSuggestions(suggestionSearcherCache, archive.get(),
+                                                  bookId, queryString, start, count);
   for(auto& suggestion:suggestions) {
     MustacheData result;
     result.set("label", suggestion.getTitle());
