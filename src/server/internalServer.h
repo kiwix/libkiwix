@@ -35,7 +35,6 @@ extern "C" {
 
 #include "server/request_context.h"
 #include "server/response.h"
-#include "networkTools.h"
 
 namespace kiwix {
 
@@ -68,6 +67,8 @@ class InternalServer {
                                void** cont_cls);
     bool start();
     void stop();
+    std::string getAddress() { return m_addr; }
+    int getPort() { return m_port; } 
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);

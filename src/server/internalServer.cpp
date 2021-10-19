@@ -48,6 +48,7 @@ extern "C" {
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
 #include "tools/archiveTools.h"
+#include "tools/networkTools.h"
 #include "library.h"
 #include "name_mapper.h"
 #include "entry.h"
@@ -159,8 +160,9 @@ bool InternalServer::start() {
   sockAddr.sin_family = AF_INET;
   sockAddr.sin_port = htons(m_port);
   if (m_addr.empty()) {
-    if (0 != INADDR_ANY)
+    if (0 != INADDR_ANY) {
       sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    }
     m_addr = kiwix::getBestPublicIp();
   } else {
     if (inet_pton(AF_INET, m_addr.c_str(), &(sockAddr.sin_addr.s_addr)) == 0) {
@@ -168,11 +170,6 @@ bool InternalServer::start() {
       return false;
     }
   }
-
-  std::string url = "http://" + m_addr + ":" + std::to_string(m_port) + "/";
-  std::cout << "The Kiwix server is running and can be accessed in the local network at : "
-            << url << std::endl;
-            
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
                             NULL,
