@@ -26,6 +26,7 @@ kiwix_sources = [
   'server/etag.cpp',
   'server/request_context.cpp',
   'server/response.cpp',
+  'server/networkTools.cpp',
   'server/internalServer.cpp',
   'server/internalServer_catalog_v2.cpp',
   'opds_catalog.cpp'

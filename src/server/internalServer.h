@@ -35,6 +35,7 @@ extern "C" {
 
 #include "server/request_context.h"
 #include "server/response.h"
+#include "networkTools.h"
 
 namespace kiwix {
 
