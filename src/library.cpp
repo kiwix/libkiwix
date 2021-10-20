@@ -148,19 +148,11 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
     return m_readers.at(id);
   } catch (std::out_of_range& e) {}
 
-  try {
-    auto reader = make_shared<Reader>(m_archives.at(id));
-    m_readers[id] = reader;
-    return reader;
-  } catch (std::out_of_range& e) {}
-
-  auto book = getBookById(id);
-  if (!book.isPathValid())
+  const auto archive = getArchiveById(id);
+  if ( !archive )
     return nullptr;
 
-  auto archive = make_shared<zim::Archive>(book.getPath());
-  m_archives[id] = archive;
-  auto reader = make_shared<Reader>(archive);
+  const auto reader = make_shared<Reader>(archive);
   m_readers[id] = reader;
   return reader;
 }
