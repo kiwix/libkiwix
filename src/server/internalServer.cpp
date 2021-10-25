@@ -385,12 +385,11 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
 {
   std::string bookName;
-  std::string bookId;
   std::string meta_name;
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    bookId = mp_nameMapper->getIdForName(bookName);
+    auto bookId = mp_nameMapper->getIdForName(bookName);
     meta_name = request.get_argument("name");
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {
@@ -401,36 +400,25 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
     return Response::build_404(*this, request, bookName, "");
   }
 
-  std::string content;
-  std::string mimeType = "text";
-
-  if (meta_name == "title") {
-    content = getArchiveTitle(*archive);
-  } else if (meta_name == "description") {
-    content = getMetaDescription(*archive);
-  } else if (meta_name == "language") {
-    content = getMetaLanguage(*archive);
-  } else if (meta_name == "name") {
-    content = getMetaName(*archive);
-  } else if (meta_name == "tags") {
-    content = getMetaTags(*archive);
-  } else if (meta_name == "date") {
-    content = getMetaDate(*archive);
-  } else if (meta_name == "creator") {
-    content = getMetaCreator(*archive);
-  } else if (meta_name == "publisher") {
-    content = getMetaPublisher(*archive);
-  } else if (meta_name == "favicon") {
-    getArchiveFavicon(*archive, 48, content, mimeType);
-  } else if (const unsigned illustrationSize = parseIllustration(meta_name)) {
-    getArchiveFavicon(*archive, illustrationSize, content, mimeType);
-  } else {
-    return Response::build_404(*this, request, bookName, "");
+  try {
+    auto meta_item = archive->getMetadataItem(meta_name);
+    auto response = ContentResponse::build(*this, meta_item.getData(), meta_item.getMimetype());
+    response->set_cacheable();
+    return std::move(response);
+  } catch (const zim::EntryNotFound& e) {
+    // Some (old) zim have no Illustration metadata but has a favicon in the content.
+    // But the api will return the favicon as a 48px Illustration. And so kiwix-serve
+    // will try to access 48px illustration even if we actually have a favicon.
+    if (const unsigned illustrationSize = parseIllustration(meta_name)) {
+      std::string content, mimetype;
+      getArchiveFavicon(*archive, illustrationSize, content, mimetype);
+      auto response = ContentResponse::build(*this, content, mimetype);
+      response ->set_cacheable();
+      return std::move(response);
+    } else {
+      return Response::build_404(*this, request, bookName, "");
+    }
   }
-
-  auto response = ContentResponse::build(*this, content, mimeType);
-  response->set_cacheable();
-  return std::move(response);
 }
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)

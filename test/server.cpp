@@ -191,15 +191,14 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/skin/jquery-ui/images/animated-overlay.gif" },
   { WITH_ETAG, "/skin/caret.png" },
 
-  { WITH_ETAG, "/meta?content=zimfile&name=title" },
-  { WITH_ETAG, "/meta?content=zimfile&name=description" },
-  { WITH_ETAG, "/meta?content=zimfile&name=language" },
-  { WITH_ETAG, "/meta?content=zimfile&name=name" },
-  { WITH_ETAG, "/meta?content=zimfile&name=tags" },
-  { WITH_ETAG, "/meta?content=zimfile&name=date" },
-  { WITH_ETAG, "/meta?content=zimfile&name=creator" },
-  { WITH_ETAG, "/meta?content=zimfile&name=publisher" },
-  { WITH_ETAG, "/meta?content=zimfile&name=favicon" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Title" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Description" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Language" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Name" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Tags" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Date" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Creator" },
+  { WITH_ETAG, "/meta?content=zimfile&name=Publisher" },
   { WITH_ETAG, "/meta?content=zimfile&name=Illustration_48x48@1" },
 
   { WITH_ETAG, "/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
@@ -459,8 +458,8 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
     const auto etag2 = etag.substr(0, etag.size() - 1) + "x\"";
     const auto h = zfs1_->HEAD(res.url, { {"If-None-Match", etag2} } );
     const auto g2 = zfs1_->GET(res.url, { {"If-None-Match", etag2} } );
-    EXPECT_EQ(200, h->status);
-    EXPECT_EQ(200, g2->status);
+    EXPECT_EQ(200, h->status) << res.url;
+    EXPECT_EQ(200, g2->status) << res.url;
   }
 }
 
