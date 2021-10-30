@@ -141,6 +141,10 @@ body {
     border-color: #acacac;
 }
 
+.book__link {
+    text-decoration: none;
+}
+
 .book__wrapper {
     color: #444343;
     height: 280px;
