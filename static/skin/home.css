@@ -218,7 +218,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 2px #acacac;
     background-color: #ffffff;
     font-weight: bold;
     font-family: roboto;
