@@ -105,14 +105,14 @@
         }
         divTag.innerHTML = `<a class="book__link" href="${root}${link}" data-hover="Preview">
             <div class="book__wrapper">
-            <div class='book__icon' ><img class="book__icon--image" src='${root}${iconUrl}'></div>
-            <div class='book__title'>
+            <div class="book__icon"><img class="book__icon--image" src="${root}${iconUrl}"></div>
+            <div class="book__title">
                 <div id="bookTitle">${title}</div>
                 ${downloadLink ? `<div id="bookDownload"><span data-link="${downloadLink}" class="modal-button">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
-            <div class='book__description' title='${description}'>${description}</div>
-            <div class='book__languageTag'>${language.substr(0, 2).toUpperCase()}</div>
-            <div class='book__tags'><div class="book__tags--wrapper">${tagHtml}</div></div>
+            <div class="book__description" title="${description}">${description}</div>
+            <div class="book__languageTag">${language.substr(0, 2).toUpperCase()}</div>
+            <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
             </div></div></a>`;
         return divTag;
     }
@@ -229,7 +229,7 @@
             data.querySelectorAll('entry').forEach(entry => {
                 const title = getInnerHtml(entry, 'title');
                 const value = getInnerHtml(entry, valueEntryNode);
-                optionStr += `<option value='${value}'>${humanFriendlyTitle(title)}</option>`;
+                optionStr += `<option value='${value}">${humanFriendlyTitle(title)}</option>`;
             });
             document.querySelector(nodeQuery).innerHTML += optionStr;
         });
