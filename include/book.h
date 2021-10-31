@@ -107,10 +107,12 @@ class Book
   void setSize(uint64_t size) { m_size = size; }
   void setDownloadId(const std::string& downloadId) { m_downloadId = downloadId; }
 
- private:
+ private: // functions
   std::string getCategoryFromTags() const;
+  const Illustration& getDefaultIllustration() const;
+  Illustration& getMutableDefaultIllustration();
 
- protected:
+ protected: // data
   std::string m_id;
   std::string m_downloadId;
   std::string m_path;
