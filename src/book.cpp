@@ -104,6 +104,7 @@ void Book::update(const zim::Archive& archive) {
 
   Illustration& favicon = getMutableDefaultIllustration();
   getArchiveFavicon(archive, 48, favicon.data, favicon.mimeType);
+  // XXX: isn't favicon.url neglected here?
 }
 
 #define ATTR(name) node.attribute(name).value()
@@ -182,6 +183,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
       Illustration& favicon = getMutableDefaultIllustration();
+      // XXX: shouldn't favicon.data be cleared()?
       favicon.url = urlHost + linkNode.attribute("href").value();
       favicon.mimeType = linkNode.attribute("type").value();
     }
