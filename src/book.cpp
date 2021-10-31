@@ -226,16 +226,20 @@ Book::Illustration& Book::getMutableDefaultIllustration()
   return m_illustration;
 }
 
-const std::string& Book::getFavicon() const {
-  const Illustration& favicon = getDefaultIllustration();
-  if (favicon.data.empty() && !favicon.url.empty()) {
+const std::string& Book::Illustration::getData() const
+{
+  if (data.empty() && !url.empty()) {
     try {
-      favicon.data = download(favicon.url);
+      data = download(url);
     } catch(...) {
-      std::cerr << "Cannot download favicon from " << favicon.url;
+      std::cerr << "Cannot download favicon from " << url;
     }
   }
-  return favicon.data;
+  return data;
+}
+
+const std::string& Book::getFavicon() const {
+  return getDefaultIllustration().getData();
 }
 
 const std::string& Book::getFaviconUrl() const

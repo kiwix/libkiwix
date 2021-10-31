@@ -42,10 +42,16 @@ class Reader;
 class Book
 {
  public: // types
-  struct Illustration
+  class Illustration
   {
+    friend class Book;
+   public:
     std::string mimeType;
     std::string url;
+
+    const std::string& getData() const;
+
+   private:
     mutable std::string data;
   };
 
