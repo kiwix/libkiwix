@@ -48,6 +48,8 @@ class Book
   {
     friend class Book;
    public:
+    uint16_t width = 48;
+    uint16_t height = 48;
     std::string mimeType;
     std::string url;
 

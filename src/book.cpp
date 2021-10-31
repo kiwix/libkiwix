@@ -226,8 +226,12 @@ void Book::setPath(const std::string& path)
 
 const Book::Illustration& Book::getDefaultIllustration() const
 {
-  assert(m_illustrations.size() == 1);
-  return *m_illustrations.front();
+  for ( const auto& ilPtr : m_illustrations ) {
+    if (ilPtr->width == 48 && ilPtr->height == 48) {
+      return *ilPtr;
+    }
+  }
+  throw std::runtime_error("No default illustration");
 }
 
 Book::Illustration& Book::getMutableDefaultIllustration()
