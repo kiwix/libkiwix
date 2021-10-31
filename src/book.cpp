@@ -72,9 +72,7 @@ bool Book::update(const kiwix::Book& other)
   m_articleCount = other.m_articleCount;
   m_mediaCount = other.m_mediaCount;
   m_size = other.m_size;
-  m_favicon = other.m_favicon;
-  m_faviconMimeType = other.m_faviconMimeType;
-  m_faviconUrl = other.m_faviconUrl;
+  m_illustration = other.m_illustration;
 
   m_downloadId = other.m_downloadId;
 
@@ -104,7 +102,7 @@ void Book::update(const zim::Archive& archive) {
   m_mediaCount = getArchiveMediaCount(archive);
   m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
 
-  getArchiveFavicon(archive, 48, m_favicon, m_faviconMimeType);
+  getArchiveFavicon(archive, 48, m_illustration.data, m_illustration.mimeType);
 }
 
 #define ATTR(name) node.attribute(name).value()
@@ -131,9 +129,9 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
   m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
   m_size = strtoull(ATTR("size"), 0, 0) << 10;
-  m_favicon = base64_decode(ATTR("favicon"));
-  m_faviconMimeType = ATTR("faviconMimeType");
-  m_faviconUrl = ATTR("faviconUrl");
+  m_illustration.data = base64_decode(ATTR("favicon"));
+  m_illustration.mimeType = ATTR("faviconMimeType");
+  m_illustration.url = ATTR("faviconUrl");
   try {
     m_downloadId = ATTR("downloadId");
   } catch(...) {}
@@ -181,8 +179,8 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
-      m_faviconUrl = urlHost + linkNode.attribute("href").value();
-      m_faviconMimeType = linkNode.attribute("type").value();
+      m_illustration.url = urlHost + linkNode.attribute("href").value();
+      m_illustration.mimeType = linkNode.attribute("type").value();
     }
  }
 
@@ -216,24 +214,24 @@ void Book::setPath(const std::string& path)
 }
 
 const std::string& Book::getFavicon() const {
-  if (m_favicon.empty() && !m_faviconUrl.empty()) {
+  if (m_illustration.data.empty() && !m_illustration.url.empty()) {
     try {
-      m_favicon = download(m_faviconUrl);
+      m_illustration.data = download(m_illustration.url);
     } catch(...) {
-      std::cerr << "Cannot download favicon from " << m_faviconUrl;
+      std::cerr << "Cannot download favicon from " << m_illustration.url;
     }
   }
-  return m_favicon;
+  return m_illustration.data;
 }
 
 const std::string& Book::getFaviconUrl() const
 {
-  return m_faviconUrl;
+  return m_illustration.url;
 }
 
 const std::string& Book::getFaviconMimeType() const
 {
-  return m_faviconMimeType;
+  return m_illustration.mimeType;
 }
 
 std::string Book::getTagStr(const std::string& tagName) const {

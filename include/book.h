@@ -41,7 +41,15 @@ class Reader;
  */
 class Book
 {
- public:
+ public: // types
+  struct Illustration
+  {
+    std::string mimeType;
+    std::string url;
+    mutable std::string data;
+  };
+
+ public: // functions
   Book();
   ~Book();
 
@@ -76,6 +84,7 @@ class Book
   const std::string& getFavicon() const;
   const std::string& getFaviconUrl() const;
   const std::string& getFaviconMimeType() const;
+
   const std::string& getDownloadId() const { return m_downloadId; }
 
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
@@ -122,9 +131,7 @@ class Book
   uint64_t m_mediaCount = 0;
   bool m_readOnly = false;
   uint64_t m_size = 0;
-  mutable std::string m_favicon;
-  std::string m_faviconUrl;
-  std::string m_faviconMimeType;
+  Illustration m_illustration;
 };
 
 }
