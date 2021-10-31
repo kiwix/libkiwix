@@ -21,6 +21,8 @@
 #define KIWIX_BOOK_H
 
 #include <string>
+#include <vector>
+#include <memory>
 
 namespace pugi {
 class xml_node;
@@ -139,7 +141,7 @@ class Book
   uint64_t m_mediaCount = 0;
   bool m_readOnly = false;
   uint64_t m_size = 0;
-  Illustration m_illustration;
+  std::vector<std::shared_ptr<Illustration>> m_illustrations;
 };
 
 }

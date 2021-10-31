@@ -40,7 +40,10 @@ Book::Book() :
   m_pathValid(false),
   m_readOnly(false)
 {
+  const auto illustration = std::make_shared<Illustration>();
+  m_illustrations.assign(1, illustration);
 }
+
 /* Destructor */
 Book::~Book()
 {
@@ -72,7 +75,10 @@ bool Book::update(const kiwix::Book& other)
   m_articleCount = other.m_articleCount;
   m_mediaCount = other.m_mediaCount;
   m_size = other.m_size;
-  m_illustration = other.m_illustration;
+  m_illustrations.clear();
+  for ( const auto& ill : other.m_illustrations ) {
+    m_illustrations.push_back(std::make_shared<Illustration>(*ill));
+  }
 
   m_downloadId = other.m_downloadId;
 
@@ -220,12 +226,14 @@ void Book::setPath(const std::string& path)
 
 const Book::Illustration& Book::getDefaultIllustration() const
 {
-  return m_illustration;
+  assert(m_illustrations.size() == 1);
+  return *m_illustrations.front();
 }
 
 Book::Illustration& Book::getMutableDefaultIllustration()
 {
-  return m_illustration;
+  const Book* const const_this = this;
+  return const_cast<Illustration&>(const_this->getDefaultIllustration());
 }
 
 const std::string& Book::Illustration::getData() const
