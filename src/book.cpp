@@ -108,9 +108,16 @@ void Book::update(const zim::Archive& archive) {
   m_mediaCount = getArchiveMediaCount(archive);
   m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
 
-  Illustration& favicon = getMutableDefaultIllustration();
-  getArchiveFavicon(archive, 48, favicon.data, favicon.mimeType);
-  // XXX: isn't favicon.url neglected here?
+  m_illustrations.clear();
+  for ( const auto illustrationSize : archive.getIllustrationSizes() ) {
+    const auto illustration = std::make_shared<Illustration>();
+    const zim::Item illustrationItem = archive.getIllustrationItem(illustrationSize);
+    illustration->width = illustration->height = illustrationSize;
+    illustration->mimeType = illustrationItem.getMimetype();
+    illustration->data = illustrationItem.getData();
+    // NOTE: illustration->url is left uninitialized
+    m_illustrations.push_back(illustration);
+  }
 }
 
 #define ATTR(name) node.attribute(name).value()
