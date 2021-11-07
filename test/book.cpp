@@ -68,6 +68,9 @@ TEST(BookTest, updateFromXMLTest)
             articleCount="123456"
             mediaCount="234567"
             size="345678"
+            favicon="ZmFrZS1ib29rLWZhdmljb24tZGF0YQ=="
+            faviconMimeType="text/plain"
+            faviconUrl="http://who.org/zara.fav"
           >
       </book>
     )");
@@ -85,6 +88,9 @@ TEST(BookTest, updateFromXMLTest)
     EXPECT_EQ(book.getArticleCount(), 123456U);
     EXPECT_EQ(book.getMediaCount(), 234567U);
     EXPECT_EQ(book.getSize(), 345678U*1024U);
+    EXPECT_EQ(book.getFavicon(), "fake-book-favicon-data");
+    EXPECT_EQ(book.getFaviconMimeType(), "text/plain");
+    EXPECT_EQ(book.getFaviconUrl(), "http://who.org/zara.fav");
 }
 
 TEST(BookTest, updateFromXMLCategoryHandlingTest)
