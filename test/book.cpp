@@ -139,17 +139,23 @@ TEST(BookTest, updateCopiesCategory)
 
 TEST(BookTest, updateTest)
 {
-    kiwix::Book book;
+    const XMLDoc xml(R"(
+      <book id="xyz"
+            path="/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim"
+            url="book-url"
+            name="skin-of-color-society_en_all"
+            tags="youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes"
+            favicon="Ym9vay1mYXZpY29u"
+            faviconMimeType="book-favicon-mimetype"
+          >
+      </book>
+    )");
 
-    book.setId("xyz");
+    kiwix::Book book;
+    book.updateFromXml(xml.child("book"), "/data/zim");
+
     book.setReadOnly(false);
-    book.setPath("/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim");
     book.setPathValid(true);
-    book.setUrl("book-url");
-    book.setTags("youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes");
-    book.setName("skin-of-color-society_en_all");
-    book.setFavicon("book-favicon");
-    book.setFaviconMimeType("book-favicon-mimetype");
 
     kiwix::Book newBook;
 
