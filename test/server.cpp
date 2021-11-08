@@ -57,12 +57,12 @@ public: // functions
   ZimFileServer(int serverPort, const FilePathCollection& zimpaths, std::string indexTemplateString = "");
   ~ZimFileServer();
 
-  Response GET(const char* path, const Headers& headers = Headers())
+  httplib::Result GET(const char* path, const Headers& headers = Headers())
   {
     return client->Get(path, headers);
   }
 
-  Response HEAD(const char* path, const Headers& headers = Headers())
+  httplib::Result HEAD(const char* path, const Headers& headers = Headers())
   {
     return client->Head(path, headers);
   }
