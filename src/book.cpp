@@ -55,27 +55,7 @@ bool Book::update(const kiwix::Book& other)
   if (m_id != other.m_id)
     return false;
 
-  m_readOnly = other.m_readOnly;
-  m_path = other.m_path;
-  m_pathValid = other.m_pathValid;
-  m_title = other.m_title;
-  m_description = other.m_description;
-  m_language = other.m_language;
-  m_creator = other.m_creator;
-  m_publisher = other.m_publisher;
-  m_date = other.m_date;
-  m_url = other.m_url;
-  m_name = other.m_name;
-  m_flavour = other.m_flavour;
-  m_tags = other.m_tags;
-  m_category = other.m_category;
-  m_origId = other.m_origId;
-  m_articleCount = other.m_articleCount;
-  m_mediaCount = other.m_mediaCount;
-  m_size = other.m_size;
-  m_illustrations = other.m_illustrations;
-  m_downloadId = other.m_downloadId;
-
+  *this = other;
   return true;
 }
 
