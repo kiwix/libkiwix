@@ -2892,9 +2892,9 @@ inline ssize_t Stream::write_format(const char *fmt, const Args &... args) {
   std::array<char, 2048> buf;
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
-  auto sn = _snprintf_s(buf, bufsiz, buf.size() - 1, fmt, args...);
+  auto sn = _snprintf_s(buf, bufsiz, 2048 - 1, fmt, args...);
 #else
-  auto sn = snprintf(buf.data(), buf.size() - 1, fmt, args...);
+  auto sn = snprintf(buf.data(), 2048 - 1, fmt, args...);
 #endif
   if (sn <= 0) { return sn; }
 
@@ -3758,7 +3758,7 @@ inline socket_t Client::create_client_socket() const {
 inline bool Client::read_response_line(Stream &strm, Response &res) {
   std::array<char, 2048> buf;
 
-  detail::stream_line_reader line_reader(strm, buf.data(), buf.size());
+  detail::stream_line_reader line_reader(strm, buf.data(), 2048);
 
   if (!line_reader.getline()) { return false; }
 
