@@ -103,15 +103,17 @@
         if (sort) {
             divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
-        divTag.innerHTML = `<div class="book__wrapper"><div class='book__icon' ><img class="book__icon--image" src='${root}${iconUrl}'></div>
-            <div class='book__title' title='${title}'>
-                <div id="bookTitle">${title}</div>
-                ${humanFriendlyZimSize ? `<div id='bookSize'>${humanFriendlyZimSize}</div>`: ''}
+        divTag.innerHTML = `<a class="book__link" href="${root}${link}" data-hover="Preview">
+            <div class="book__wrapper">
+            <div class="book__icon"><img class="book__icon--image" src="${root}${iconUrl}"></div>
+            <div class="book__header">
+                <div id="book__title">${title}</div>
+                ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
-            <div class='book__description' title='${description}'>${description}</div>
-            <div class='book__languageTag'>${language.substr(0, 2).toUpperCase()}</div>
-            <div class='book__tags'><div class="book__tags--wrapper">${tagHtml}</div></div>
-            <div class='book__links'> <a href="${root}${link}" data-hover="Preview">Preview</a>${downloadLink ? `&nbsp;|&nbsp;<span class="download" data-link=${downloadLink} class="modal-button">Download</span>` : ''} </div></div>`;
+            <div class="book__description" title="${description}">${description}</div>
+            <div class="book__languageTag">${language.substr(0, 2).toUpperCase()}</div>
+            <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
+            </div></div></a>`;
         return divTag;
     }
 
@@ -126,7 +128,8 @@
 
     function insertModal(button) {
         const downloadLink = button.getAttribute('data-link');
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
             document.body.insertAdjacentHTML('beforeend', `<div class="modal-wrapper">
                 <div class="modal">
                     <div class="modal-heading">
@@ -226,7 +229,7 @@
             data.querySelectorAll('entry').forEach(entry => {
                 const title = getInnerHtml(entry, 'title');
                 const value = getInnerHtml(entry, valueEntryNode);
-                optionStr += `<option value='${value}'>${humanFriendlyTitle(title)}</option>`;
+                optionStr += `<option value='${value}">${humanFriendlyTitle(title)}</option>`;
             });
             document.querySelector(nodeQuery).innerHTML += optionStr;
         });
@@ -304,7 +307,7 @@
         booksToDelete.forEach(book => {iso.remove(book);});
         books.forEach((book) => {
             iso.insert(generateBookHtml(book, sort))
-            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .download`);
+            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download`);
             if (downloadButton) {
                 insertModal(downloadButton);
             }

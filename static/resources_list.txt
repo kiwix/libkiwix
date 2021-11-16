@@ -28,7 +28,7 @@ skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
 skin/taskbar.css
-skin/home.css
+skin/index.css
 skin/fonts/Poppins.ttf
 skin/fonts/Roboto.ttf
 skin/block_external.js
