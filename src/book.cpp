@@ -217,14 +217,23 @@ void Book::setPath(const std::string& path)
 
 const Book::Illustration Book::missingDefaultIllustration;
 
-const Book::Illustration& Book::getDefaultIllustration() const
+std::shared_ptr<const Book::Illustration> Book::getIllustration(unsigned int size) const
 {
   for ( const auto& ilPtr : m_illustrations ) {
-    if (ilPtr->width == 48 && ilPtr->height == 48) {
-      return *ilPtr;
+    if (ilPtr->width == size && ilPtr->height == size) {
+      return ilPtr;
     }
   }
-  return missingDefaultIllustration;
+  throw std::runtime_error("Cannot find illustration");
+}
+
+const Book::Illustration& Book::getDefaultIllustration() const
+{
+  try {
+    return *getIllustration(48);
+  } catch (...) {
+    return missingDefaultIllustration;
+  }
 }
 
 const std::string& Book::Illustration::getData() const

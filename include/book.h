@@ -100,6 +100,7 @@ class Book
   const std::string& getFaviconMimeType() const;
 
   Illustrations getIllustrations() const;
+  std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
 
   const std::string& getDownloadId() const { return m_downloadId; }
 
