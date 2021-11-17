@@ -66,6 +66,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
     return handle_catalog_v2_categories(request);
   } else if (url == "languages") {
     return handle_catalog_v2_languages(request);
+  } else if (url == "illustration") {
+    return handle_catalog_v2_illustration(request);
   } else {
     return Response::build_404(*this, request.get_full_url(), "", "");
   }
@@ -144,6 +146,20 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
              opdsDumper.languagesOPDSFeed(),
              "application/atom+xml;profile=opds-catalog;kind=navigation"
   );
+}
+
+std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const RequestContext& request)
+{
+  try {
+    const auto bookName  = request.get_url_part(3);
+    const auto bookId = mp_nameMapper->getIdForName(bookName);
+    auto book = mp_library->getBookByIdThreadSafe(bookId);
+    auto size = request.get_argument<unsigned int>("size");
+    auto illustration = book.getIllustration(size);
+    return ContentResponse::build(*this, illustration->getData(), illustration->mimeType);
+  } catch(...) {
+    return Response::build_404(*this, request.get_full_url(), "", "");
+  }
 }
 
 } // namespace kiwix

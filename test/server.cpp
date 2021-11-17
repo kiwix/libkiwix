@@ -201,6 +201,7 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/meta?content=zimfile&name=publisher" },
   { WITH_ETAG, "/ROOT/meta?content=zimfile&name=favicon" },
   { WITH_ETAG, "/ROOT/meta?content=zimfile&name=Illustration_48x48@1" },
+  { NO_ETAG, "/ROOT/catalog/v2/illustration/zimfile?size=48" },
 
   { WITH_ETAG, "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
@@ -276,6 +277,7 @@ const char* urls404[] = {
   "/ROOT/catalog",
   "/ROOT/catalog/non-existent-item",
   "/ROOT/catalogBLABLABLA/root.xml",
+  "/ROOT/catalog/v2/illustration/zimfile?size=96",
   "/ROOT/meta",
   "/ROOT/meta?content=zimfile",
   "/ROOT/meta?content=zimfile&name=non-existent-item",
