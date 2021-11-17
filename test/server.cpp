@@ -175,16 +175,12 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT/",
-R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3"
-      src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff"
-      href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3"
-      href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9"
-      href="/ROOT/skin/index.css?cacheid=56e818cd"
+R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=56e818cd"
         src: url("/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=a0307d03" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=76440e7a" defer></script>
 )EXPECTEDRESULT"
     },
     {
