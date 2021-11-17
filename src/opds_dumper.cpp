@@ -47,7 +47,7 @@ void OPDSDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
   m_count = count;
 }
 
-namespace
+namespace internal
 {
 
 typedef kainjow::mustache::data MustacheData;
@@ -182,7 +182,9 @@ std::string getLanguageSelfName(const std::string& lang) {
   return lang;
 };
 
-} // unnamed namespace
+} // namespace internal
+
+using namespace internal;
 
 string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
 {

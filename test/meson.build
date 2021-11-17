@@ -9,7 +9,8 @@ tests = [
     'book',
     'manager',
     'name_mapper',
-    'opds_catalog'
+    'opds_catalog',
+    'opds_dumper'
 ]
 
 if build_machine.system() != 'windows'
