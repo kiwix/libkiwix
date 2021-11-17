@@ -686,7 +686,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
     "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
-    "          href=\"/ROOT/meta?name=Illustration_48x48@1&amp;content=zimfile\"\n" \
+    "          href=\"/ROOT/catalog/v2/illustration/zimfile/?size=48\"\n" \
     "          type=\"image/png;width=48;height=48;scale=1\"/>\n"               \
     "    <link type=\"text/html\" href=\"/ROOT/zimfile\" />\n"               \
     "    <author>\n"                                                    \
