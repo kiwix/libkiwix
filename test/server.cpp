@@ -195,11 +195,11 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
       /* url */ "/ROOT/zimfile/A/index",
 R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=44515708" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=0ce2deb2" defer></script>
 <script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
         <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
@@ -211,11 +211,11 @@ R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROO
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
   <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=44515708" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=0ce2deb2" defer></script>
 <script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
         <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
@@ -445,11 +445,11 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
     R"FRAG(
   <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=44515708" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=0ce2deb2" defer></script>
 <script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
 </head>
   <body><span class="kiwix">
@@ -533,10 +533,9 @@ std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
 std::string TestContentIn404HtmlResponse::searchPatternInput() const
 {
   const std::string searchboxTooltip = isTranslatedVersion()
-                                     ? "Որոնել '" + bookTitle + "'֊ում"
-                                     : "Search '" + bookTitle + "'";
-
-  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title=")"
+                                    ? "Որոնել '" + bookTitle + "'֊ում"
+                                    : "Search '" + bookTitle + "'";
+  return R"(          <input autocomplete="off" id="kiwixsearchbox" name="pattern" type="text" size="50" title=")"
        + searchboxTooltip
        + R"(" aria-label=")"
        + searchboxTooltip

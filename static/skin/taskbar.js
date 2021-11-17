@@ -3,46 +3,51 @@ function htmlDecode(input) {
     return doc.documentElement.textContent;
 }
 
-const jq = jQuery.noConflict(true);
-jq(document).ready(() => {
-    (function ($) {
-        const root = $( `link[type='root']` ).attr("href");
+document.addEventListener('DOMContentLoaded', function () {
+  const root = document.querySelector(`link[type='root']`).getAttribute("href");
+  const bookName = (window.location.pathname == `${root}/search`)
+    ? (new URLSearchParams(window.location.search)).get('content')
+    : window.location.pathname.split(`${root}/`)[1].split('/')[0];
 
-        const bookName = (window.location.pathname == `${root}/search`)
-               ? (new URLSearchParams(window.location.search)).get('content') 
-               : window.location.pathname.split(`${root}/`)[1].split('/')[0];
-    
-        const userlang = (new URLSearchParams(window.location.search)).get('userlang') || "en";
-        $( "#kiwixsearchbox" ).autocomplete({
-    
-            source: `${root}/suggest?content=${bookName}&userlang=${userlang}`,
-            dataType: "json",
-            cache: false,
-    
-            response: function( event, ui ) {
-                  for(const item of ui.content) {
-                      item.label = htmlDecode(item.label);
-                      item.value = htmlDecode(item.value);
-                      if (item.path) item.path = htmlDecode(item.path);
-                  }
-            },
-    
-            select: function(event, ui) {
-                if (ui.item.kind === 'path') {
-                    window.location.href = `${root}/${bookName}/${encodeURI(ui.item.path)}`;
-                } else {
-                    $( "#kiwixsearchbox" ).val(ui.item.value);
-                    $( "#kiwixsearchform" ).submit();
-                }
-            },
-        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-            return $( "<li>" )
-              .data( "ui-autocomplete-item", item )
-              .append( item.label )
-              .appendTo( ul );
-        };
-    
-        /* cybook hack */
+  const autoCompleteJS = new autoComplete(
+    {
+      selector: "#kiwixsearchbox",
+      placeHolder: document.querySelector("#kiwixsearchbox").title,
+      threshold: 1,
+      debounce: 300,
+      data : {
+        src: async (query) => {
+          try {
+            // Fetch Data from external Source
+            const source = await fetch(`${root}/suggest?content=${encodeURIComponent(bookName)}&term=${encodeURIComponent(query)}`);
+            const data = await source.json();
+            return data;
+          } catch (error) {
+            return error;
+          }
+        },
+        keys: ['label'],
+      },
+      searchEngine: (query, record) => {
+        // We accept all records
+        return true;
+      },
+      resultsList: {
+        noResults: true,
+        /* We must display 10 results (requested) + 1 potential link to do a full text search. */
+        maxResults: 11,
+        highlight: true
+      },
+      resultItem: {
+        element: (item, data) => {
+          item.innerHTML = `${htmlDecode(data.value.label)}`;
+          }
+        }
+      }
+    );
+
+  /*
+        // cybook hack
         if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
             $("html").addClass("cybook");
         }
@@ -93,5 +98,5 @@ jq(document).ready(() => {
                 $('label[for="kiwix_button_show_toggle"], .kiwix_button_cont').removeClass('searching');
             }
         });
-    })(jq);
-})
+    };*/
+});
