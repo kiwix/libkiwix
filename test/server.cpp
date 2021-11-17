@@ -408,6 +408,7 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 )FRAG",
 
     R"FRAG(  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/css/autoComplete.01.css" rel="Stylesheet" />
 <script type="text/javascript" src="/ROOT/skin/autoComplete.min.js"></script>
 <script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
 </head>
@@ -484,7 +485,7 @@ std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
 
 std::string TestContentIn404HtmlResponse::searchPatternInput() const
 {
-  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ')"
+  return R"(          <input autocomplete="off" id="kiwixsearchbox" name="pattern" type="text" title="Search ')"
        + bookTitle
        + R"('" aria-label="Search ')"
        + bookTitle

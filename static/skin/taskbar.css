@@ -9,6 +9,7 @@
     transition: 0.3s;
     width: 100%;
     box-sizing: border-box;
+    background: #bbb;
 }
 
 #kiwixtoolbar>a {
@@ -100,7 +101,6 @@ label[for="kiwix_button_show_toggle"],
 }
 
 .kiwix #kiwixtoolbar #kiwixsearchform input[type='text'] {
-    position: absolute;
     left: 0;
     box-sizing: border-box !important;
     width: 100%;
