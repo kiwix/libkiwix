@@ -175,11 +175,6 @@ typedef std::vector<Resource> ResourceCollection;
 const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/ROOT/" },
 
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.structure.min.css" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.min.js" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/external/jquery/jquery.js" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.min.css" },
   { WITH_ETAG, "/ROOT/skin/taskbar.js" },
   { WITH_ETAG, "/ROOT/skin/taskbar.css" },
   { WITH_ETAG, "/ROOT/skin/block_external.js" },
@@ -203,7 +198,6 @@ const ResourceCollection resources200Compressible{
 };
 
 const ResourceCollection resources200Uncompressible{
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/images/animated-overlay.gif" },
   { WITH_ETAG, "/ROOT/skin/caret.png" },
 
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
@@ -413,11 +407,8 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
     R"FRAG(</title>
 )FRAG",
 
-    R"FRAG(  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
+    R"FRAG(  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js"></script>
 <script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
 </head>
   <body><span class="kiwix">
