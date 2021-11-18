@@ -143,6 +143,10 @@ class Book
   bool m_readOnly = false;
   uint64_t m_size = 0;
   std::vector<std::shared_ptr<Illustration>> m_illustrations;
+
+  // Used as the return value of getDefaultIllustration() when no default
+  // illustration is found in the book
+  static const Illustration missingDefaultIllustration;
 };
 
 }

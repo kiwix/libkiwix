@@ -231,6 +231,8 @@ void Book::setPath(const std::string& path)
    : path;
 }
 
+const Book::Illustration Book::missingDefaultIllustration;
+
 const Book::Illustration& Book::getDefaultIllustration() const
 {
   for ( const auto& ilPtr : m_illustrations ) {
@@ -238,7 +240,7 @@ const Book::Illustration& Book::getDefaultIllustration() const
       return *ilPtr;
     }
   }
-  throw std::runtime_error("No default illustration");
+  return missingDefaultIllustration;
 }
 
 const std::string& Book::Illustration::getData() const
