@@ -196,10 +196,11 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
-      Illustration& favicon = getMutableDefaultIllustration();
-      // XXX: shouldn't favicon.data be cleared()?
-      favicon.url = urlHost + linkNode.attribute("href").value();
-      favicon.mimeType = linkNode.attribute("type").value();
+      const auto favicon = std::make_shared<Illustration>();
+      favicon->data.clear();
+      favicon->url = urlHost + linkNode.attribute("href").value();
+      favicon->mimeType = linkNode.attribute("type").value();
+      m_illustrations.assign(1, favicon);
     }
  }
 
