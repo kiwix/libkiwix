@@ -96,8 +96,6 @@ class Book
   void setArticleCount(uint64_t articleCount) { m_articleCount = articleCount; }
   void setMediaCount(uint64_t mediaCount) { m_mediaCount = mediaCount; }
   void setSize(uint64_t size) { m_size = size; }
-  void setFavicon(const std::string& favicon) { m_favicon = favicon; }
-  void setFaviconMimeType(const std::string& faviconMimeType) { m_faviconMimeType = faviconMimeType; }
   void setDownloadId(const std::string& downloadId) { m_downloadId = downloadId; }
 
  private:
