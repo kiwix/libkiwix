@@ -142,7 +142,7 @@ class Book
   uint64_t m_mediaCount = 0;
   bool m_readOnly = false;
   uint64_t m_size = 0;
-  std::vector<std::shared_ptr<Illustration>> m_illustrations;
+  std::vector<std::shared_ptr<const Illustration>> m_illustrations;
 
   // Used as the return value of getDefaultIllustration() when no default
   // illustration is found in the book

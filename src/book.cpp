@@ -73,11 +73,7 @@ bool Book::update(const kiwix::Book& other)
   m_articleCount = other.m_articleCount;
   m_mediaCount = other.m_mediaCount;
   m_size = other.m_size;
-  m_illustrations.clear();
-  for ( const auto& ill : other.m_illustrations ) {
-    m_illustrations.push_back(std::make_shared<Illustration>(*ill));
-  }
-
+  m_illustrations = other.m_illustrations;
   m_downloadId = other.m_downloadId;
 
   return true;
