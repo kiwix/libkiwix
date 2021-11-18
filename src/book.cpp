@@ -226,6 +226,16 @@ const std::string& Book::getFavicon() const {
   return m_favicon;
 }
 
+const std::string& Book::getFaviconUrl() const
+{
+  return m_faviconUrl;
+}
+
+const std::string& Book::getFaviconMimeType() const
+{
+  return m_faviconMimeType;
+}
+
 std::string Book::getTagStr(const std::string& tagName) const {
   return getTagValueFromTagList(convertTags(m_tags), tagName);
 }

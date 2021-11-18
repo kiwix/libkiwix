@@ -74,8 +74,8 @@ class Book
   const uint64_t& getMediaCount() const { return m_mediaCount; }
   const uint64_t& getSize() const { return m_size; }
   const std::string& getFavicon() const;
-  const std::string& getFaviconUrl() const { return m_faviconUrl; }
-  const std::string& getFaviconMimeType() const { return m_faviconMimeType; }
+  const std::string& getFaviconUrl() const;
+  const std::string& getFaviconMimeType() const;
   const std::string& getDownloadId() const { return m_downloadId; }
 
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
