@@ -58,10 +58,10 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
 {
     kainjow::mustache::list illustrations;
     if ( book.isPathValid() ) {
-      for ( auto illustration_size : zim::Archive(book.getPath()).getIllustrationSizes() ) {
+      for ( const auto& illustration : book.getIllustrations() ) {
         illustrations.push_back(kainjow::mustache::object{
-          {"icon_width", to_string(illustration_size)},
-          {"icon_height", to_string(illustration_size)},
+          {"icon_width", to_string(illustration->width)},
+          {"icon_height", to_string(illustration->height)},
           {"icon_scale", "1"},
         });
       }

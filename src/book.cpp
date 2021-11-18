@@ -47,6 +47,11 @@ Book::~Book()
 {
 }
 
+Book::Illustrations Book::getIllustrations() const
+{
+  return m_illustrations;
+}
+
 bool Book::update(const kiwix::Book& other)
 {
   if (m_readOnly)
