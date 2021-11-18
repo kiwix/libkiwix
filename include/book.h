@@ -120,7 +120,6 @@ class Book
  private: // functions
   std::string getCategoryFromTags() const;
   const Illustration& getDefaultIllustration() const;
-  Illustration& getMutableDefaultIllustration();
 
  protected: // data
   std::string m_id;

@@ -40,8 +40,6 @@ Book::Book() :
   m_pathValid(false),
   m_readOnly(false)
 {
-  const auto illustration = std::make_shared<Illustration>();
-  m_illustrations.assign(1, illustration);
 }
 
 /* Destructor */
@@ -241,12 +239,6 @@ const Book::Illustration& Book::getDefaultIllustration() const
     }
   }
   throw std::runtime_error("No default illustration");
-}
-
-Book::Illustration& Book::getMutableDefaultIllustration()
-{
-  const Book* const const_this = this;
-  return const_cast<Illustration&>(const_this->getDefaultIllustration());
 }
 
 const std::string& Book::Illustration::getData() const
