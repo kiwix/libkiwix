@@ -227,10 +227,13 @@ const Book::Illustration& Book::getDefaultIllustration() const
 const std::string& Book::Illustration::getData() const
 {
   if (data.empty() && !url.empty()) {
-    try {
-      data = download(url);
-    } catch(...) {
-      std::cerr << "Cannot download favicon from " << url;
+    const std::lock_guard<std::mutex> l(mutex);
+    if ( data.empty() ) {
+      try {
+        data = download(url);
+      } catch(...) {
+        std::cerr << "Cannot download favicon from " << url;
+      }
     }
   }
   return data;

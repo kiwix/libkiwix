@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <mutex>
 
 namespace pugi {
 class xml_node;
@@ -57,6 +58,7 @@ class Book
 
    private:
     mutable std::string data;
+    mutable std::mutex mutex;
   };
 
   typedef std::vector<std::shared_ptr<const Illustration>> Illustrations;
