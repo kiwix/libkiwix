@@ -2,42 +2,6 @@
 #include "../include/book.h"
 #include <pugixml.hpp>
 
-TEST(BookTest, updateTest)
-{
-    kiwix::Book book;
-
-    book.setId("xyz");
-    book.setReadOnly(false);
-    book.setPath("/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim");
-    book.setPathValid(true);
-    book.setUrl("book-url");
-    book.setTags("youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes");
-    book.setName("skin-of-color-society_en_all");
-    book.setFavicon("book-favicon");
-    book.setFaviconMimeType("book-favicon-mimetype");
-
-    kiwix::Book newBook;
-
-    newBook.setReadOnly(true);
-    EXPECT_FALSE(newBook.update(book));
-
-    newBook.setReadOnly(false);
-    EXPECT_FALSE(newBook.update(book));
-
-    newBook.setId("xyz");
-    EXPECT_TRUE(newBook.update(book));
-
-    EXPECT_EQ(newBook.readOnly(), book.readOnly());
-    EXPECT_EQ(newBook.getPath(), book.getPath());
-    EXPECT_EQ(newBook.isPathValid(), book.isPathValid());
-    EXPECT_EQ(newBook.getUrl(), book.getUrl());
-    EXPECT_EQ(newBook.getTags(), book.getTags());
-    EXPECT_EQ(newBook.getCategory(), book.getCategory());
-    EXPECT_EQ(newBook.getName(), book.getName());
-    EXPECT_EQ(newBook.getFavicon(), book.getFavicon());
-    EXPECT_EQ(newBook.getFaviconMimeType(), book.getFaviconMimeType());
-}
-
 namespace
 {
 
@@ -68,6 +32,9 @@ TEST(BookTest, updateFromXMLTest)
             articleCount="123456"
             mediaCount="234567"
             size="345678"
+            favicon="ZmFrZS1ib29rLWZhdmljb24tZGF0YQ=="
+            faviconMimeType="text/plain"
+            faviconUrl="http://who.org/zara.fav"
           >
       </book>
     )");
@@ -85,6 +52,9 @@ TEST(BookTest, updateFromXMLTest)
     EXPECT_EQ(book.getArticleCount(), 123456U);
     EXPECT_EQ(book.getMediaCount(), 234567U);
     EXPECT_EQ(book.getSize(), 345678U*1024U);
+    EXPECT_EQ(book.getFavicon(), "fake-book-favicon-data");
+    EXPECT_EQ(book.getFaviconMimeType(), "text/plain");
+    EXPECT_EQ(book.getFaviconUrl(), "http://who.org/zara.fav");
 }
 
 TEST(BookTest, updateFromXMLCategoryHandlingTest)
@@ -165,4 +135,46 @@ TEST(BookTest, updateCopiesCategory)
     EXPECT_EQ(newBook.getCategory(), "");
     newBook.update(book);
     EXPECT_EQ(newBook.getCategory(), "ted");
+}
+
+TEST(BookTest, updateTest)
+{
+    const XMLDoc xml(R"(
+      <book id="xyz"
+            path="/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim"
+            url="book-url"
+            name="skin-of-color-society_en_all"
+            tags="youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes"
+            favicon="Ym9vay1mYXZpY29u"
+            faviconMimeType="book-favicon-mimetype"
+          >
+      </book>
+    )");
+
+    kiwix::Book book;
+    book.updateFromXml(xml.child("book"), "/data/zim");
+
+    book.setReadOnly(false);
+    book.setPathValid(true);
+
+    kiwix::Book newBook;
+
+    newBook.setReadOnly(true);
+    EXPECT_FALSE(newBook.update(book));
+
+    newBook.setReadOnly(false);
+    EXPECT_FALSE(newBook.update(book));
+
+    newBook.setId("xyz");
+    EXPECT_TRUE(newBook.update(book));
+
+    EXPECT_EQ(newBook.readOnly(), book.readOnly());
+    EXPECT_EQ(newBook.getPath(), book.getPath());
+    EXPECT_EQ(newBook.isPathValid(), book.isPathValid());
+    EXPECT_EQ(newBook.getUrl(), book.getUrl());
+    EXPECT_EQ(newBook.getTags(), book.getTags());
+    EXPECT_EQ(newBook.getCategory(), book.getCategory());
+    EXPECT_EQ(newBook.getName(), book.getName());
+    EXPECT_EQ(newBook.getFavicon(), book.getFavicon());
+    EXPECT_EQ(newBook.getFaviconMimeType(), book.getFaviconMimeType());
 }

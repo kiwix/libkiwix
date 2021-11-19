@@ -21,6 +21,9 @@
 #define KIWIX_BOOK_H
 
 #include <string>
+#include <vector>
+#include <memory>
+#include <mutex>
 
 namespace pugi {
 class xml_node;
@@ -41,7 +44,26 @@ class Reader;
  */
 class Book
 {
- public:
+ public: // types
+  class Illustration
+  {
+    friend class Book;
+   public:
+    uint16_t width = 48;
+    uint16_t height = 48;
+    std::string mimeType;
+    std::string url;
+
+    const std::string& getData() const;
+
+   private:
+    mutable std::string data;
+    mutable std::mutex mutex;
+  };
+
+  typedef std::vector<std::shared_ptr<const Illustration>> Illustrations;
+
+ public: // functions
   Book();
   ~Book();
 
@@ -74,8 +96,11 @@ class Book
   const uint64_t& getMediaCount() const { return m_mediaCount; }
   const uint64_t& getSize() const { return m_size; }
   const std::string& getFavicon() const;
-  const std::string& getFaviconUrl() const { return m_faviconUrl; }
-  const std::string& getFaviconMimeType() const { return m_faviconMimeType; }
+  const std::string& getFaviconUrl() const;
+  const std::string& getFaviconMimeType() const;
+
+  Illustrations getIllustrations() const;
+
   const std::string& getDownloadId() const { return m_downloadId; }
 
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
@@ -96,14 +121,13 @@ class Book
   void setArticleCount(uint64_t articleCount) { m_articleCount = articleCount; }
   void setMediaCount(uint64_t mediaCount) { m_mediaCount = mediaCount; }
   void setSize(uint64_t size) { m_size = size; }
-  void setFavicon(const std::string& favicon) { m_favicon = favicon; }
-  void setFaviconMimeType(const std::string& faviconMimeType) { m_faviconMimeType = faviconMimeType; }
   void setDownloadId(const std::string& downloadId) { m_downloadId = downloadId; }
 
- private:
+ private: // functions
   std::string getCategoryFromTags() const;
+  const Illustration& getDefaultIllustration() const;
 
- protected:
+ protected: // data
   std::string m_id;
   std::string m_downloadId;
   std::string m_path;
@@ -124,9 +148,11 @@ class Book
   uint64_t m_mediaCount = 0;
   bool m_readOnly = false;
   uint64_t m_size = 0;
-  mutable std::string m_favicon;
-  std::string m_faviconUrl;
-  std::string m_faviconMimeType;
+  Illustrations m_illustrations;
+
+  // Used as the return value of getDefaultIllustration() when no default
+  // illustration is found in the book
+  static const Illustration missingDefaultIllustration;
 };
 
 }

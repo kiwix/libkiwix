@@ -41,9 +41,15 @@ Book::Book() :
   m_readOnly(false)
 {
 }
+
 /* Destructor */
 Book::~Book()
 {
+}
+
+Book::Illustrations Book::getIllustrations() const
+{
+  return m_illustrations;
 }
 
 bool Book::update(const kiwix::Book& other)
@@ -54,30 +60,7 @@ bool Book::update(const kiwix::Book& other)
   if (m_id != other.m_id)
     return false;
 
-  m_readOnly = other.m_readOnly;
-  m_path = other.m_path;
-  m_pathValid = other.m_pathValid;
-  m_title = other.m_title;
-  m_description = other.m_description;
-  m_language = other.m_language;
-  m_creator = other.m_creator;
-  m_publisher = other.m_publisher;
-  m_date = other.m_date;
-  m_url = other.m_url;
-  m_name = other.m_name;
-  m_flavour = other.m_flavour;
-  m_tags = other.m_tags;
-  m_category = other.m_category;
-  m_origId = other.m_origId;
-  m_articleCount = other.m_articleCount;
-  m_mediaCount = other.m_mediaCount;
-  m_size = other.m_size;
-  m_favicon = other.m_favicon;
-  m_faviconMimeType = other.m_faviconMimeType;
-  m_faviconUrl = other.m_faviconUrl;
-
-  m_downloadId = other.m_downloadId;
-
+  *this = other;
   return true;
 }
 
@@ -104,7 +87,16 @@ void Book::update(const zim::Archive& archive) {
   m_mediaCount = getArchiveMediaCount(archive);
   m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
 
-  getArchiveFavicon(archive, 48, m_favicon, m_faviconMimeType);
+  m_illustrations.clear();
+  for ( const auto illustrationSize : archive.getIllustrationSizes() ) {
+    const auto illustration = std::make_shared<Illustration>();
+    const zim::Item illustrationItem = archive.getIllustrationItem(illustrationSize);
+    illustration->width = illustration->height = illustrationSize;
+    illustration->mimeType = illustrationItem.getMimetype();
+    illustration->data = illustrationItem.getData();
+    // NOTE: illustration->url is left uninitialized
+    m_illustrations.push_back(illustration);
+  }
 }
 
 #define ATTR(name) node.attribute(name).value()
@@ -131,9 +123,11 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
   m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
   m_size = strtoull(ATTR("size"), 0, 0) << 10;
-  m_favicon = base64_decode(ATTR("favicon"));
-  m_faviconMimeType = ATTR("faviconMimeType");
-  m_faviconUrl = ATTR("faviconUrl");
+  const auto favicon = std::make_shared<Illustration>();
+  favicon->data = base64_decode(ATTR("favicon"));
+  favicon->mimeType = ATTR("faviconMimeType");
+  favicon->url = ATTR("faviconUrl");
+  m_illustrations.assign(1, favicon);
   try {
     m_downloadId = ATTR("downloadId");
   } catch(...) {}
@@ -181,8 +175,11 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
-      m_faviconUrl = urlHost + linkNode.attribute("href").value();
-      m_faviconMimeType = linkNode.attribute("type").value();
+      const auto favicon = std::make_shared<Illustration>();
+      favicon->data.clear();
+      favicon->url = urlHost + linkNode.attribute("href").value();
+      favicon->mimeType = linkNode.attribute("type").value();
+      m_illustrations.assign(1, favicon);
     }
  }
 
@@ -215,15 +212,45 @@ void Book::setPath(const std::string& path)
    : path;
 }
 
-const std::string& Book::getFavicon() const {
-  if (m_favicon.empty() && !m_faviconUrl.empty()) {
-    try {
-      m_favicon = download(m_faviconUrl);
-    } catch(...) {
-      std::cerr << "Cannot download favicon from " << m_faviconUrl;
+const Book::Illustration Book::missingDefaultIllustration;
+
+const Book::Illustration& Book::getDefaultIllustration() const
+{
+  for ( const auto& ilPtr : m_illustrations ) {
+    if (ilPtr->width == 48 && ilPtr->height == 48) {
+      return *ilPtr;
     }
   }
-  return m_favicon;
+  return missingDefaultIllustration;
+}
+
+const std::string& Book::Illustration::getData() const
+{
+  if (data.empty() && !url.empty()) {
+    const std::lock_guard<std::mutex> l(mutex);
+    if ( data.empty() ) {
+      try {
+        data = download(url);
+      } catch(...) {
+        std::cerr << "Cannot download favicon from " << url;
+      }
+    }
+  }
+  return data;
+}
+
+const std::string& Book::getFavicon() const {
+  return getDefaultIllustration().getData();
+}
+
+const std::string& Book::getFaviconUrl() const
+{
+  return getDefaultIllustration().url;
+}
+
+const std::string& Book::getFaviconMimeType() const
+{
+  return getDefaultIllustration().mimeType;
 }
 
 std::string Book::getTagStr(const std::string& tagName) const {
