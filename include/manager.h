@@ -62,8 +62,8 @@ class DefaultLibraryManipulator : public LibraryManipulator {
 class Manager
 {
  public:
-  Manager(LibraryManipulator* manipulator);
-  Manager(Library* library);
+  explicit Manager(LibraryManipulator* manipulator);
+  explicit Manager(Library* library);
   ~Manager();
 
   /**
