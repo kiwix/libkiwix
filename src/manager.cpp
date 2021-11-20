@@ -26,28 +26,30 @@
 
 namespace kiwix
 {
+
+namespace
+{
+
+struct NoDelete
+{
+  template<class T> void operator()(T*) {}
+};
+
+} // unnamed namespace
+
 /* Constructor */
 Manager::Manager(LibraryManipulator* manipulator):
   writableLibraryPath(""),
-  manipulator(manipulator),
-  mustDeleteManipulator(false)
+  manipulator(manipulator, NoDelete())
 {
 }
 
 Manager::Manager(Library* library) :
   writableLibraryPath(""),
-  manipulator(new DefaultLibraryManipulator(library)),
-  mustDeleteManipulator(true)
+  manipulator(new DefaultLibraryManipulator(library))
 {
 }
 
-/* Destructor */
-Manager::~Manager()
-{
-  if (mustDeleteManipulator) {
-    delete manipulator;
-  }
-}
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
                           bool readOnly,
                           const std::string& libraryPath,

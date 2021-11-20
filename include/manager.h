@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace pugi {
 class xml_document;
@@ -64,7 +65,6 @@ class Manager
  public:
   explicit Manager(LibraryManipulator* manipulator);
   explicit Manager(Library* library);
-  ~Manager();
 
   /**
    * Read a `library.xml` and add book in the file to the library.
@@ -150,8 +150,7 @@ class Manager
   uint64_t m_itemsPerPage = 0;
 
  protected:
-  kiwix::LibraryManipulator* manipulator;
-  bool mustDeleteManipulator;
+  std::shared_ptr<kiwix::LibraryManipulator> manipulator;
 
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,
