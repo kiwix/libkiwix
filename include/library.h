@@ -357,6 +357,7 @@ private: // functions
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
   void updateBookDB(const Book& book);
+  void dropReader(const std::string& bookId);
 };
 
 }

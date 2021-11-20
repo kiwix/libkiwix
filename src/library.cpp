@@ -49,6 +49,13 @@ std::string normalizeText(const std::string& text)
   return removeAccents(text);
 }
 
+bool booksReferToTheSameArchive(const Book& book1, const Book& book2)
+{
+  return book1.isPathValid()
+      && book2.isPathValid()
+      && book1.getPath() == book2.getPath();
+}
+
 } // unnamed namespace
 
 class Library::BookDB : public Xapian::WritableDatabase
@@ -79,6 +86,9 @@ bool Library::addBook(const Book& book)
   updateBookDB(book);
   try {
     auto& oldbook = m_books.at(book.getId());
+    if ( ! booksReferToTheSameArchive(oldbook, book) ) {
+      dropReader(book.getId());
+    }
     oldbook.update(book);
     return false;
   } catch (std::out_of_range&) {
@@ -104,12 +114,16 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 }
 
 
+void Library::dropReader(const std::string& id)
+{
+  m_readers.erase(id);
+  m_archives.erase(id);
+}
 
 bool Library::removeBookById(const std::string& id)
 {
   m_bookDB->delete_document("Q" + id);
-  m_readers.erase(id);
-  m_archives.erase(id);
+  dropReader(id);
   return m_books.erase(id) == 1;
 }
 
