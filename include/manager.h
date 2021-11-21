@@ -35,26 +35,23 @@ class xml_document;
 namespace kiwix
 {
 
-class LibraryManipulator {
- public:
-  virtual ~LibraryManipulator() {}
-  virtual bool addBookToLibrary(Book book) = 0;
-  virtual void addBookmarkToLibrary(Bookmark bookmark) = 0;
-};
+class LibraryManipulator
+{
+ public: // functions
+  explicit LibraryManipulator(Library* library);
+  virtual ~LibraryManipulator();
 
-class DefaultLibraryManipulator : public LibraryManipulator {
- public:
-  DefaultLibraryManipulator(Library* library) :
-    library(library) {}
-  virtual ~DefaultLibraryManipulator() {}
-  bool addBookToLibrary(Book book) {
-    return library->addBook(book);
-  }
-  void addBookmarkToLibrary(Bookmark bookmark) {
-    library->addBookmark(bookmark);
-  }
- private:
-   kiwix::Library* library;
+  Library& getLibrary() const { return library; }
+
+  bool addBookToLibrary(const Book& book);
+  void addBookmarkToLibrary(const Bookmark& bookmark);
+
+ protected: // overrides
+  virtual void bookWasAddedToLibrary(const Book& book);
+  virtual void bookmarkWasAddedToLibrary(const Bookmark& bookmark);
+
+ private: // data
+  kiwix::Library& library;
 };
 
 /**

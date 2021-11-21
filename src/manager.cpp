@@ -37,6 +37,44 @@ struct NoDelete
 
 } // unnamed namespace
 
+////////////////////////////////////////////////////////////////////////////////
+// LibraryManipulator
+////////////////////////////////////////////////////////////////////////////////
+
+LibraryManipulator::LibraryManipulator(Library* library)
+  : library(*library)
+{}
+
+LibraryManipulator::~LibraryManipulator()
+{}
+
+bool LibraryManipulator::addBookToLibrary(const Book& book)
+{
+  const auto ret = library.addBook(book);
+  if ( ret ) {
+    bookWasAddedToLibrary(book);
+  }
+  return ret;
+}
+
+void LibraryManipulator::addBookmarkToLibrary(const Bookmark& bookmark)
+{
+  library.addBookmark(bookmark);
+  bookmarkWasAddedToLibrary(bookmark);
+}
+
+void LibraryManipulator::bookWasAddedToLibrary(const Book& book)
+{
+}
+
+void LibraryManipulator::bookmarkWasAddedToLibrary(const Bookmark& bookmark)
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Manager
+////////////////////////////////////////////////////////////////////////////////
+
 /* Constructor */
 Manager::Manager(LibraryManipulator* manipulator):
   writableLibraryPath(""),
@@ -46,7 +84,7 @@ Manager::Manager(LibraryManipulator* manipulator):
 
 Manager::Manager(Library* library) :
   writableLibraryPath(""),
-  manipulator(new DefaultLibraryManipulator(library))
+  manipulator(new LibraryManipulator(library))
 {
 }
 
