@@ -63,15 +63,16 @@ std::string HumanReadableNameMapper::getIdForName(const std::string& name) const
 // NameMapperProxy
 ////////////////////////////////////////////////////////////////////////////////
 
-NameMapperProxy::NameMapperProxy(Library& lib)
+NameMapperProxy::NameMapperProxy(Library& lib, bool withAlias)
   : library(lib)
+  , withAlias(withAlias)
 {
   update();
 }
 
 void NameMapperProxy::update()
 {
-  const auto newNameMapper = new HumanReadableNameMapper(library, false);
+  const auto newNameMapper = new HumanReadableNameMapper(library, withAlias);
   std::lock_guard<std::mutex> lock(mutex);
   nameMapper.reset(newNameMapper);
 }

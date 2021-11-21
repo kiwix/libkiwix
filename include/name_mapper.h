@@ -59,7 +59,7 @@ class HumanReadableNameMapper : public NameMapper {
 class NameMapperProxy : public NameMapper {
     typedef std::shared_ptr<NameMapper> NameMapperHandle;
   public:
-    explicit NameMapperProxy(Library& library);
+    NameMapperProxy(Library& library, bool withAlias);
 
     virtual std::string getNameForId(const std::string& id) const;
     virtual std::string getIdForName(const std::string& name) const;
@@ -73,6 +73,7 @@ class NameMapperProxy : public NameMapper {
     mutable std::mutex mutex;
     Library& library;
     NameMapperHandle nameMapper;
+    const bool withAlias;
 };
 
 }
