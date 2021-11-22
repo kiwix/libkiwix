@@ -53,12 +53,8 @@ public:
 
 } // unnamed namespace
 
-TEST_F(NameMapperTest, HumanReadableNameMapperWithoutAliases)
+void checkUnaliasedEntriesInNameMapper(const kiwix::NameMapper& nm)
 {
-  CapturedStderr stderror;
-  kiwix::HumanReadableNameMapper nm(lib, false);
-  EXPECT_EQ("", std::string(stderror));
-
   EXPECT_EQ("zero_one",           nm.getNameForId("01"));
   EXPECT_EQ("zero_two",           nm.getNameForId("02"));
   EXPECT_EQ("zero_three",         nm.getNameForId("03"));
@@ -70,6 +66,15 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithoutAliases)
   EXPECT_EQ("03",         nm.getIdForName("zero_three"));
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four_2021-10"));
   EXPECT_EQ("04-2021-11", nm.getIdForName("zero_four_2021-11"));
+}
+
+TEST_F(NameMapperTest, HumanReadableNameMapperWithoutAliases)
+{
+  CapturedStderr stderror;
+  kiwix::HumanReadableNameMapper nm(lib, false);
+  EXPECT_EQ("", std::string(stderror));
+
+  checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
 
   lib.removeBookById("04-2021-10");
@@ -89,17 +94,7 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
       , std::string(stderror)
   );
 
-  EXPECT_EQ("zero_one",           nm.getNameForId("01"));
-  EXPECT_EQ("zero_two",           nm.getNameForId("02"));
-  EXPECT_EQ("zero_three",         nm.getNameForId("03"));
-  EXPECT_EQ("zero_four_2021-10",  nm.getNameForId("04-2021-10"));
-  EXPECT_EQ("zero_four_2021-11",  nm.getNameForId("04-2021-11"));
-
-  EXPECT_EQ("01",         nm.getIdForName("zero_one"));
-  EXPECT_EQ("02",         nm.getIdForName("zero_two"));
-  EXPECT_EQ("03",         nm.getIdForName("zero_three"));
-  EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four_2021-10"));
-  EXPECT_EQ("04-2021-11", nm.getIdForName("zero_four_2021-11"));
+  checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
 
   lib.removeBookById("04-2021-10");
