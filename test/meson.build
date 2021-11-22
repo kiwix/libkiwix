@@ -8,6 +8,7 @@ tests = [
     'kiwixserve',
     'book',
     'manager',
+    'name_mapper',
     'opds_catalog',
     'reader',
     'searcher'
