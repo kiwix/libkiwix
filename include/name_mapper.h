@@ -31,15 +31,15 @@ class Library;
 class NameMapper {
   public:
     virtual ~NameMapper() = default;
-    virtual std::string getNameForId(const std::string& id) = 0;
-    virtual std::string getIdForName(const std::string& name) = 0;
+    virtual std::string getNameForId(const std::string& id) const = 0;
+    virtual std::string getIdForName(const std::string& name) const = 0;
 };
 
 
 class IdNameMapper : public NameMapper {
   public:
-    virtual std::string getNameForId(const std::string& id) { return id; };
-    virtual std::string getIdForName(const std::string& name) { return name; };
+    virtual std::string getNameForId(const std::string& id) const { return id; };
+    virtual std::string getIdForName(const std::string& name) const { return name; };
 };
 
 class HumanReadableNameMapper : public NameMapper {
@@ -50,11 +50,9 @@ class HumanReadableNameMapper : public NameMapper {
   public:
     HumanReadableNameMapper(kiwix::Library& library, bool withAlias);
     virtual ~HumanReadableNameMapper() = default;
-    virtual std::string getNameForId(const std::string& id);
-    virtual std::string getIdForName(const std::string& name);
+    virtual std::string getNameForId(const std::string& id) const;
+    virtual std::string getIdForName(const std::string& name) const;
 };
-
-
 
 }
 

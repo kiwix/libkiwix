@@ -51,11 +51,11 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
   }
 }
 
-std::string HumanReadableNameMapper::getNameForId(const std::string& id) {
+std::string HumanReadableNameMapper::getNameForId(const std::string& id) const {
   return m_idToName.at(id);
 }
 
-std::string HumanReadableNameMapper::getIdForName(const std::string& name) {
+std::string HumanReadableNameMapper::getIdForName(const std::string& name) const {
   return m_nameToId.at(name);
 }
 
