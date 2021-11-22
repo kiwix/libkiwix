@@ -190,7 +190,7 @@ std::string Book::getHumanReadableIdFromPath() const
 {
   std::string id = m_path;
   if (!id.empty()) {
-    kiwix::removeAccents(id);
+    id = kiwix::removeAccents(id);
 
 #ifdef _WIN32
     id = replaceRegex(id, "", "^.*\\\\");
