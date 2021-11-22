@@ -59,4 +59,45 @@ std::string HumanReadableNameMapper::getIdForName(const std::string& name) const
   return m_nameToId.at(name);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// NameMapperProxy
+////////////////////////////////////////////////////////////////////////////////
+
+NameMapperProxy::NameMapperProxy(Library& lib)
+  : library(lib)
+{
+  update();
+}
+
+void NameMapperProxy::update()
+{
+  const auto newNameMapper = new HumanReadableNameMapper(library, false);
+  std::lock_guard<std::mutex> lock(mutex);
+  nameMapper.reset(newNameMapper);
+}
+
+NameMapperProxy::NameMapperHandle
+NameMapperProxy::currentNameMapper() const
+{
+  // Return a copy of the handle to the current NameMapper object. It will
+  // ensure that the object survives any call to NameMapperProxy::update()
+  // made before the completion of any pending operation on that object.
+  std::lock_guard<std::mutex> lock(mutex);
+  return nameMapper;
+}
+
+std::string NameMapperProxy::getNameForId(const std::string& id) const
+{
+  // Ensure that the current nameMapper object survives a concurrent call
+  // to NameMapperProxy::update()
+  return currentNameMapper()->getNameForId(id);
+}
+
+std::string NameMapperProxy::getIdForName(const std::string& name) const
+{
+  // Ensure that the current nameMapper object survives a concurrent call
+  // to NameMapperProxy::update()
+  return currentNameMapper()->getIdForName(name);
+}
+
 }

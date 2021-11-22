@@ -22,6 +22,8 @@
 
 #include <string>
 #include <map>
+#include <memory>
+#include <mutex>
 
 namespace kiwix
 {
@@ -52,6 +54,25 @@ class HumanReadableNameMapper : public NameMapper {
     virtual ~HumanReadableNameMapper() = default;
     virtual std::string getNameForId(const std::string& id) const;
     virtual std::string getIdForName(const std::string& name) const;
+};
+
+class NameMapperProxy : public NameMapper {
+    typedef std::shared_ptr<NameMapper> NameMapperHandle;
+  public:
+    explicit NameMapperProxy(Library& library);
+
+    virtual std::string getNameForId(const std::string& id) const;
+    virtual std::string getIdForName(const std::string& name) const;
+
+    void update();
+
+  private:
+    NameMapperHandle currentNameMapper() const;
+
+  private:
+    mutable std::mutex mutex;
+    Library& library;
+    NameMapperHandle nameMapper;
 };
 
 }
