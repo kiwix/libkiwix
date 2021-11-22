@@ -102,3 +102,44 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four_2021-10"));
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
 }
+
+TEST_F(NameMapperTest, NameMapperProxyWithoutAliases)
+{
+  CapturedStderr stderror;
+  kiwix::NameMapperProxy nm(lib, false);
+  EXPECT_EQ("", std::string(stderror));
+
+  checkUnaliasedEntriesInNameMapper(nm);
+  EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
+
+  lib.removeBookById("04-2021-10");
+  nm.update();
+  EXPECT_THROW(nm.getNameForId("04-2021-10"), std::out_of_range);
+  EXPECT_THROW(nm.getIdForName("zero_four_2021-10"), std::out_of_range);
+  EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
+}
+
+TEST_F(NameMapperTest, NameMapperProxyWithAliases)
+{
+  CapturedStderr stderror;
+  kiwix::NameMapperProxy nm(lib, true);
+  EXPECT_EQ(
+      "Path collision: /data/zero_four_2021-10.zim and"
+      " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
+      " Therefore, only /data/zero_four_2021-10.zim will be served.\n"
+      , std::string(stderror)
+  );
+
+  checkUnaliasedEntriesInNameMapper(nm);
+  EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
+
+  {
+    CapturedStderr nmUpdateStderror;
+    lib.removeBookById("04-2021-10");
+    nm.update();
+    EXPECT_EQ("", std::string(nmUpdateStderror));
+  }
+  EXPECT_EQ("04-2021-11", nm.getIdForName("zero_four"));
+  EXPECT_THROW(nm.getNameForId("04-2021-10"), std::out_of_range);
+  EXPECT_THROW(nm.getIdForName("zero_four_2021-10"), std::out_of_range);
+}
