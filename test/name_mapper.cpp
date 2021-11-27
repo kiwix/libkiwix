@@ -103,10 +103,10 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
 }
 
-TEST_F(NameMapperTest, NameMapperProxyWithoutAliases)
+TEST_F(NameMapperTest, UpdatableNameMapperWithoutAliases)
 {
   CapturedStderr stderror;
-  kiwix::NameMapperProxy nm(lib, false);
+  kiwix::UpdatableNameMapper nm(lib, false);
   EXPECT_EQ("", std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
@@ -119,10 +119,10 @@ TEST_F(NameMapperTest, NameMapperProxyWithoutAliases)
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
 }
 
-TEST_F(NameMapperTest, NameMapperProxyWithAliases)
+TEST_F(NameMapperTest, UpdatableNameMapperWithAliases)
 {
   CapturedStderr stderror;
-  kiwix::NameMapperProxy nm(lib, true);
+  kiwix::UpdatableNameMapper nm(lib, true);
   EXPECT_EQ(
       "Path collision: /data/zero_four_2021-10.zim and"
       " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."

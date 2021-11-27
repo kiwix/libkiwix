@@ -60,44 +60,44 @@ std::string HumanReadableNameMapper::getIdForName(const std::string& name) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// NameMapperProxy
+// UpdatableNameMapper
 ////////////////////////////////////////////////////////////////////////////////
 
-NameMapperProxy::NameMapperProxy(Library& lib, bool withAlias)
+UpdatableNameMapper::UpdatableNameMapper(Library& lib, bool withAlias)
   : library(lib)
   , withAlias(withAlias)
 {
   update();
 }
 
-void NameMapperProxy::update()
+void UpdatableNameMapper::update()
 {
   const auto newNameMapper = new HumanReadableNameMapper(library, withAlias);
   std::lock_guard<std::mutex> lock(mutex);
   nameMapper.reset(newNameMapper);
 }
 
-NameMapperProxy::NameMapperHandle
-NameMapperProxy::currentNameMapper() const
+UpdatableNameMapper::NameMapperHandle
+UpdatableNameMapper::currentNameMapper() const
 {
   // Return a copy of the handle to the current NameMapper object. It will
-  // ensure that the object survives any call to NameMapperProxy::update()
+  // ensure that the object survives any call to UpdatableNameMapper::update()
   // made before the completion of any pending operation on that object.
   std::lock_guard<std::mutex> lock(mutex);
   return nameMapper;
 }
 
-std::string NameMapperProxy::getNameForId(const std::string& id) const
+std::string UpdatableNameMapper::getNameForId(const std::string& id) const
 {
   // Ensure that the current nameMapper object survives a concurrent call
-  // to NameMapperProxy::update()
+  // to UpdatableNameMapper::update()
   return currentNameMapper()->getNameForId(id);
 }
 
-std::string NameMapperProxy::getIdForName(const std::string& name) const
+std::string UpdatableNameMapper::getIdForName(const std::string& name) const
 {
   // Ensure that the current nameMapper object survives a concurrent call
-  // to NameMapperProxy::update()
+  // to UpdatableNameMapper::update()
   return currentNameMapper()->getIdForName(name);
 }
 

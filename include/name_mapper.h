@@ -56,10 +56,10 @@ class HumanReadableNameMapper : public NameMapper {
     virtual std::string getIdForName(const std::string& name) const;
 };
 
-class NameMapperProxy : public NameMapper {
+class UpdatableNameMapper : public NameMapper {
     typedef std::shared_ptr<NameMapper> NameMapperHandle;
   public:
-    NameMapperProxy(Library& library, bool withAlias);
+    UpdatableNameMapper(Library& library, bool withAlias);
 
     virtual std::string getNameForId(const std::string& id) const;
     virtual std::string getIdForName(const std::string& name) const;
