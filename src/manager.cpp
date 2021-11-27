@@ -289,4 +289,18 @@ bool Manager::readBookmarkFile(const std::string& path)
   return true;
 }
 
+void Manager::reload(const Paths& paths)
+{
+  for (std::string path : paths) {
+    if (!path.empty()) {
+      if ( kiwix::isRelativePath(path) )
+        path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
+
+      if (!readFile(path, false, true)) {
+        throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
+      }
+    }
+  }
+}
+
 }

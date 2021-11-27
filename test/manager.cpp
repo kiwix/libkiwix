@@ -67,3 +67,29 @@ TEST(ManagerTest, readXml)
     EXPECT_EQ(45U, book.getMediaCount());
     EXPECT_EQ(678U*1024, book.getSize());
 }
+
+TEST(Manager, reload)
+{
+  kiwix::Library lib;
+  kiwix::Manager manager(&lib);
+
+  manager.reload({ "./test/library.xml" });
+  EXPECT_EQ(lib.getBooksIds(), (kiwix::Library::BookIdCollection{
+        "charlesray",
+        "raycharles",
+        "raycharles_uncategorized"
+  }));
+
+  lib.removeBookById("raycharles");
+  EXPECT_EQ(lib.getBooksIds(), (kiwix::Library::BookIdCollection{
+        "charlesray",
+        "raycharles_uncategorized"
+  }));
+
+  manager.reload({ "./test/library.xml" });
+  EXPECT_EQ(lib.getBooksIds(), kiwix::Library::BookIdCollection({
+        "charlesray",
+        "raycharles",
+        "raycharles_uncategorized"
+  }));
+}

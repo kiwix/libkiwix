@@ -59,7 +59,10 @@ class LibraryManipulator
  */
 class Manager
 {
- public:
+ public: // types
+  typedef std::vector<std::string> Paths;
+
+ public: // functions
   explicit Manager(LibraryManipulator* manipulator);
   explicit Manager(Library* library);
 
@@ -69,9 +72,19 @@ class Manager
    * @param path The (utf8) path to the `library.xml`.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
+   * @param trustLibrary use book metadata coming from XML.
    * @return True if file has been properly parsed.
    */
   bool readFile(const std::string& path, bool readOnly = true, bool trustLibrary = true);
+
+  /**
+   * Sync the contents of the library with one or more `library.xml` files.
+   *
+   * The metadata of the library files is trusted unconditionally.
+   *
+   * @param paths The (utf8) paths to the `library.xml` files.
+   */
+  void reload(const Paths& paths);
 
   /**
    * Load a library content store in the string.
