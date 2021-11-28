@@ -156,6 +156,12 @@ const Book& Library::getBookById(const std::string& id) const
   return m_books.at(id);
 }
 
+Book Library::getBookByIdThreadSafe(const std::string& id) const
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  return getBookById(id);
+}
+
 const Book& Library::getBookByPath(const std::string& path) const
 {
   // XXX: Doesn't make sense to lock this operation since it cannot

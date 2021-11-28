@@ -220,6 +220,8 @@ class Library : private LibraryBase
   // XXX: This is a non-thread-safe operation
   const Book& getBookByPath(const std::string& path) const;
 
+  Book getBookByIdThreadSafe(const std::string& id) const;
+
   std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
 
