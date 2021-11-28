@@ -101,6 +101,7 @@ Library::~Library()
 bool Library::addBook(const Book& book)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
+  ++m_revision;
   /* Try to find it */
   updateBookDB(book);
   try {
@@ -111,9 +112,12 @@ bool Library::addBook(const Book& book)
     oldbook.update(book); // XXX: This may have no effect if oldbook is readonly
                           // XXX: Then m_bookDB will become out-of-sync with
                           // XXX: the real contents of the library.
+    oldbook.lastUpdatedRevision = m_revision;
     return false;
   } catch (std::out_of_range&) {
-    m_books[book.getId()] = book;
+    Entry& newEntry = m_books[book.getId()];
+    static_cast<Book&>(newEntry) = book;
+    newEntry.lastUpdatedRevision = m_revision;
     return true;
   }
 }
@@ -149,6 +153,32 @@ bool Library::removeBookById(const std::string& id)
   m_bookDB->delete_document("Q" + id);
   dropReader(id);
   return m_books.erase(id) == 1;
+}
+
+Library::Revision Library::getRevision() const
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  return m_revision;
+}
+
+uint32_t Library::removeBooksNotUpdatedSince(LibraryRevision libraryRevision)
+{
+  BookIdCollection booksToRemove;
+  {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    for ( const auto& entry : m_books) {
+      if ( entry.second.lastUpdatedRevision <= libraryRevision ) {
+        booksToRemove.push_back(entry.first);
+      }
+    }
+  }
+
+  uint32_t countOfRemovedBooks = 0;
+  for ( const auto& id : booksToRemove ) {
+    if ( removeBookById(id) )
+      ++countOfRemovedBooks;
+  }
+  return countOfRemovedBooks;
 }
 
 const Book& Library::getBookById(const std::string& id) const

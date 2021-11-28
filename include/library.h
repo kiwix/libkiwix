@@ -147,8 +147,20 @@ private: // functions
  */
 class LibraryBase
 {
+protected: // types
+  typedef uint64_t LibraryRevision;
+
+  struct Entry : Book
+  {
+    LibraryRevision lastUpdatedRevision = 0;
+
+    // May also keep the Archive and Reader pointers here and get
+    // rid of the m_readers and m_archives data members in Library
+  };
+
 protected: // data
-  std::map<std::string, kiwix::Book> m_books;
+  LibraryRevision m_revision;
+  std::map<std::string, Entry> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
   std::vector<kiwix::Bookmark> m_bookmarks;
@@ -172,6 +184,7 @@ class Library : private LibraryBase
   mutable std::mutex m_mutex;
 
  public:
+  typedef LibraryRevision Revision;
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
 
@@ -367,6 +380,24 @@ class Library : private LibraryBase
     const std::string& publisher = "",
     const std::vector<std::string>& tags = {},
     size_t maxSize = 0) const;
+
+  /**
+   * Return the current revision of the library.
+   *
+   * The revision of the library is updated (incremented by one) only by
+   * the addBook() operation.
+   *
+   * @return Current revision of the library.
+   */
+  LibraryRevision getRevision() const;
+
+  /**
+   * Remove books that have not been updated since the specified revision.
+   *
+   * @param  rev the library revision to use
+   * @return Count of books that were removed by this operation.
+   */
+  uint32_t removeBooksNotUpdatedSince(LibraryRevision rev);
 
   friend class OPDSDumper;
   friend class libXMLDumper;

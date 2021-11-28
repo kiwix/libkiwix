@@ -707,4 +707,35 @@ TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
   EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
 };
 
+TEST_F(LibraryTest, removeBooksNotUpdatedSince)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter(),
+    "An example ZIM archive",
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Islam Stack Exchange",
+    "Mathématiques",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business",
+    "Tania Louis",
+    "Wikiquote"
+  );
+
+  const uint64_t rev = lib.getRevision();
+  for ( const auto& id : lib.filter(kiwix::Filter().query("exchange")) ) {
+    lib.addBook(lib.getBookByIdThreadSafe(id));
+  }
+
+  EXPECT_EQ(9u, lib.removeBooksNotUpdatedSince(rev));
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter(),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+  );
+};
+
 };
