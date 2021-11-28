@@ -58,21 +58,39 @@ bool booksReferToTheSameArchive(const Book& book1, const Book& book2)
 
 } // unnamed namespace
 
-class Library::BookDB : public Xapian::WritableDatabase
+class LibraryBase::BookDB : public Xapian::WritableDatabase
 {
 public:
   BookDB() : Xapian::WritableDatabase("", Xapian::DB_BACKEND_INMEMORY) {}
 };
 
-/* Constructor */
-Library::Library()
+LibraryBase::LibraryBase()
   : m_bookDB(new BookDB)
 {
 }
 
-Library::Library(Library&& ) = default;
+LibraryBase::~LibraryBase()
+{
+}
 
-Library& Library::operator=(Library&& ) = default;
+LibraryBase::LibraryBase(LibraryBase&& ) = default;
+LibraryBase& LibraryBase::operator=(LibraryBase&& ) = default;
+
+/* Constructor */
+Library::Library()
+{
+}
+
+Library::Library(Library&& other)
+  : LibraryBase(std::move(other))
+{
+}
+
+Library& Library::operator=(Library&& other)
+{
+  LibraryBase::operator=(std::move(other));
+  return *this;
+}
 
 /* Destructor */
 Library::~Library()

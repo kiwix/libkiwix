@@ -24,6 +24,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <zim/archive.h>
 
 #include "book.h"
@@ -139,18 +140,36 @@ private: // functions
     bool accept(const Book& book) const;
 };
 
-
 /**
- * A Library store several books.
+ * This class is not part of the libkiwix API. Its only purpose is
+ * to simplify the implementation of the Library's move operations
+ * and avoid bugs should new data members be added to Library.
  */
-class Library
+class LibraryBase
 {
+protected: // data
   std::map<std::string, kiwix::Book> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
   std::vector<kiwix::Bookmark> m_bookmarks;
   class BookDB;
   std::unique_ptr<BookDB> m_bookDB;
+
+protected: // functions
+  LibraryBase();
+  ~LibraryBase();
+
+  LibraryBase(LibraryBase&& );
+  LibraryBase& operator=(LibraryBase&& );
+};
+
+/**
+ * A Library store several books.
+ */
+class Library : private LibraryBase
+{
+  // all data fields must be added in LibraryBase
+  mutable std::mutex m_mutex;
 
  public:
   typedef std::vector<std::string> BookIdCollection;
