@@ -45,10 +45,12 @@ class LibraryManipulator
 
   bool addBookToLibrary(const Book& book);
   void addBookmarkToLibrary(const Bookmark& bookmark);
+  uint32_t removeBooksNotUpdatedSince(Library::Revision rev);
 
  protected: // overrides
   virtual void bookWasAddedToLibrary(const Book& book);
   virtual void bookmarkWasAddedToLibrary(const Bookmark& bookmark);
+  virtual void booksWereRemovedFromLibrary();
 
  private: // data
   kiwix::Library& library;
@@ -81,6 +83,8 @@ class Manager
    * Sync the contents of the library with one or more `library.xml` files.
    *
    * The metadata of the library files is trusted unconditionally.
+   * Any books not present in the input library.xml files are removed
+   * from the library.
    *
    * @param paths The (utf8) paths to the `library.xml` files.
    */

@@ -63,11 +63,24 @@ void LibraryManipulator::addBookmarkToLibrary(const Bookmark& bookmark)
   bookmarkWasAddedToLibrary(bookmark);
 }
 
+uint32_t LibraryManipulator::removeBooksNotUpdatedSince(Library::Revision rev)
+{
+  const auto n = library.removeBooksNotUpdatedSince(rev);
+  if ( n != 0 ) {
+    booksWereRemovedFromLibrary();
+  }
+  return n;
+}
+
 void LibraryManipulator::bookWasAddedToLibrary(const Book& book)
 {
 }
 
 void LibraryManipulator::bookmarkWasAddedToLibrary(const Bookmark& bookmark)
+{
+}
+
+void LibraryManipulator::booksWereRemovedFromLibrary()
 {
 }
 
@@ -291,6 +304,7 @@ bool Manager::readBookmarkFile(const std::string& path)
 
 void Manager::reload(const Paths& paths)
 {
+  const auto libRevision = manipulator->getLibrary().getRevision();
   for (std::string path : paths) {
     if (!path.empty()) {
       if ( kiwix::isRelativePath(path) )
@@ -301,6 +315,8 @@ void Manager::reload(const Paths& paths)
       }
     }
   }
+
+  manipulator->removeBooksNotUpdatedSince(libRevision);
 }
 
 }
