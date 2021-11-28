@@ -215,8 +215,11 @@ class Library : private LibraryBase
    */
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
+  // XXX: This is a non-thread-safe operation
   const Book& getBookById(const std::string& id) const;
+  // XXX: This is a non-thread-safe operation
   const Book& getBookByPath(const std::string& path) const;
+
   std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
 

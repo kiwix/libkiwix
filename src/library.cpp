@@ -100,6 +100,7 @@ Library::~Library()
 
 bool Library::addBook(const Book& book)
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   /* Try to find it */
   updateBookDB(book);
   try {
@@ -117,11 +118,13 @@ bool Library::addBook(const Book& book)
 
 void Library::addBookmark(const Bookmark& bookmark)
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   m_bookmarks.push_back(bookmark);
 }
 
 bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   for(auto it=m_bookmarks.begin(); it!=m_bookmarks.end(); it++) {
     if (it->getBookId() == zimId && it->getUrl() == url) {
       m_bookmarks.erase(it);
@@ -140,6 +143,7 @@ void Library::dropReader(const std::string& id)
 
 bool Library::removeBookById(const std::string& id)
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   m_bookDB->delete_document("Q" + id);
   dropReader(id);
   return m_books.erase(id) == 1;
@@ -147,11 +151,15 @@ bool Library::removeBookById(const std::string& id)
 
 const Book& Library::getBookById(const std::string& id) const
 {
+  // XXX: Doesn't make sense to lock this operation since it cannot
+  // XXX: guarantee thread-safety because of its return type
   return m_books.at(id);
 }
 
 const Book& Library::getBookByPath(const std::string& path) const
 {
+  // XXX: Doesn't make sense to lock this operation since it cannot
+  // XXX: guarantee thread-safety because of its return type
   for(auto& it: m_books) {
     auto& book = it.second;
     if (book.getPath() == path)
@@ -165,6 +173,7 @@ const Book& Library::getBookByPath(const std::string& path) const
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
   try {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return m_readers.at(id);
   } catch (std::out_of_range& e) {}
 
@@ -173,12 +182,14 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
     return nullptr;
 
   const auto reader = make_shared<Reader>(archive);
+  std::lock_guard<std::mutex> lock(m_mutex);
   m_readers[id] = reader;
   return reader;
 }
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   try {
     return m_archives.at(id);
   } catch (std::out_of_range& e) {}
@@ -195,6 +206,7 @@ std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 unsigned int Library::getBookCount(const bool localBooks,
                                    const bool remoteBooks) const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   unsigned int result = 0;
   for (auto& pair: m_books) {
     auto& book = pair.second;
@@ -208,20 +220,33 @@ unsigned int Library::getBookCount(const bool localBooks,
 
 bool Library::writeToFile(const std::string& path) const
 {
+  const auto allBookIds = getBooksIds();
+
   auto baseDir = removeLastPathElement(path);
   LibXMLDumper dumper(this);
   dumper.setBaseDir(baseDir);
-  return writeTextFile(path, dumper.dumpLibXMLContent(getBooksIds()));
+  std::string xml;
+  {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    xml = dumper.dumpLibXMLContent(allBookIds);
+  };
+  return writeTextFile(path, xml);
 }
 
 bool Library::writeBookmarksToFile(const std::string& path) const
 {
   LibXMLDumper dumper(this);
-  return writeTextFile(path, dumper.dumpLibXMLBookmark());
+  std::string xml;
+  {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    xml = dumper.dumpLibXMLBookmark();
+  };
+  return writeTextFile(path, xml);
 }
 
 Library::AttributeCounts Library::getBookAttributeCounts(BookStrPropMemFn p) const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   AttributeCounts propValueCounts;
 
   for (const auto& pair: m_books) {
@@ -254,6 +279,7 @@ Library::AttributeCounts Library::getBooksLanguagesWithCounts() const
 
 std::vector<std::string> Library::getBooksCategories() const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   std::set<std::string> categories;
 
   for (const auto& pair: m_books) {
@@ -284,6 +310,7 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
   }
   std::vector<kiwix::Bookmark> validBookmarks;
   auto booksId = getBooksIds();
+  std::lock_guard<std::mutex> lock(m_mutex);
   for(auto& bookmark:m_bookmarks) {
     if (std::find(booksId.begin(), booksId.end(), bookmark.getBookId()) != booksId.end()) {
       validBookmarks.push_back(bookmark);
@@ -294,6 +321,7 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
 
 Library::BookIdCollection Library::getBooksIds() const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   BookIdCollection bookIds;
 
   for (auto& pair: m_books) {
@@ -483,6 +511,7 @@ Library::BookIdCollection Library::filterViaBookDB(const Filter& filter) const
 
   BookIdCollection bookIds;
 
+  std::lock_guard<std::mutex> lock(m_mutex);
   Xapian::Enquire enquire(*m_bookDB);
   enquire.set_query(query);
   const auto results = enquire.get_mset(0, m_books.size());
@@ -496,7 +525,9 @@ Library::BookIdCollection Library::filterViaBookDB(const Filter& filter) const
 Library::BookIdCollection Library::filter(const Filter& filter) const
 {
   BookIdCollection result;
-  for(auto id : filterViaBookDB(filter)) {
+  const auto preliminaryResult = filterViaBookDB(filter);
+  std::lock_guard<std::mutex> lock(m_mutex);
+  for(auto id : preliminaryResult) {
     if(filter.accept(m_books.at(id))) {
       result.push_back(id);
     }
@@ -565,6 +596,11 @@ std::string Comparator<PUBLISHER>::get_key(const std::string& id)
 
 void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending) const
 {
+  // NOTE: Can reimplement this method in a way that doesn't require locking
+  // NOTE: for the entire duration of the sort. Will need to obtain (under a
+  // NOTE: lock) the required atributes from the books once, and then the
+  // NOTE: sorting will run on a copy of data without locking.
+  std::lock_guard<std::mutex> lock(m_mutex);
   switch(sort) {
     case TITLE:
       std::sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this, ascending));
