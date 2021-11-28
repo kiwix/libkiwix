@@ -108,7 +108,9 @@ bool Library::addBook(const Book& book)
     if ( ! booksReferToTheSameArchive(oldbook, book) ) {
       dropReader(book.getId());
     }
-    oldbook.update(book);
+    oldbook.update(book); // XXX: This may have no effect if oldbook is readonly
+                          // XXX: Then m_bookDB will become out-of-sync with
+                          // XXX: the real contents of the library.
     return false;
   } catch (std::out_of_range&) {
     m_books[book.getId()] = book;
