@@ -21,9 +21,11 @@ class NameMapperTest : public ::testing::Test {
  protected:
   void SetUp() override {
      kiwix::Manager manager(&lib);
-     manager.readXml(libraryXML, true, "./library.xml", true);
+     manager.readXml(libraryXML, false, "./library.xml", true);
      for ( const std::string& id : lib.getBooksIds() ) {
-       lib.getBookById(id).setPathValid(true);
+       kiwix::Book bookCopy = lib.getBookById(id);
+       bookCopy.setPathValid(true);
+       lib.addBook(bookCopy);
      }
   }
 

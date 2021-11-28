@@ -232,7 +232,7 @@ class LibraryTest : public ::testing::Test {
   void SetUp() override {
      kiwix::Manager manager(&lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
-     manager.readXml(sampleLibraryXML, true, "./test/library.xml", true);
+     manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }
 
     kiwix::Bookmark createBookmark(const std::string &id) {
@@ -660,13 +660,14 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
 
 TEST_F(LibraryTest, getBookByPath)
 {
-  auto& book = lib.getBookById(lib.getBooksIds()[0]);
+  kiwix::Book book = lib.getBookById(lib.getBooksIds()[0]);
 #ifdef _WIN32
   auto path = "C:\\some\\abs\\path.zim";
 #else
   auto path = "/some/abs/path.zim";
 #endif
   book.setPath(path);
+  lib.addBook(book);
   EXPECT_EQ(lib.getBookByPath(path).getId(), book.getId());
   EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
 }

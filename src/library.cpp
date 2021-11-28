@@ -132,12 +132,6 @@ const Book& Library::getBookById(const std::string& id) const
   return m_books.at(id);
 }
 
-Book& Library::getBookById(const std::string& id)
-{
-  const Library& const_self = *this;
-  return const_cast<Book&>(const_self.getBookById(id));
-}
-
 const Book& Library::getBookByPath(const std::string& path) const
 {
   for(auto& it: m_books) {
@@ -148,12 +142,6 @@ const Book& Library::getBookByPath(const std::string& path) const
   std::ostringstream ss;
   ss << "No book with path " << path << " in the library." << std::endl;
   throw std::out_of_range(ss.str());
-}
-
-Book& Library::getBookByPath(const std::string& path)
-{
-  const Library& const_self = *this;
-  return const_cast<Book&>(const_self.getBookByPath(path));
 }
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)

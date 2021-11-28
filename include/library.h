@@ -197,9 +197,7 @@ class Library
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
   const Book& getBookById(const std::string& id) const;
-  Book& getBookById(const std::string& id);
   const Book& getBookByPath(const std::string& path) const;
-  Book& getBookByPath(const std::string& path);
   std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
 
