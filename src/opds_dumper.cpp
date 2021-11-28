@@ -108,10 +108,15 @@ BooksData getBooksData(const Library* library, const std::vector<std::string>& b
 {
   BooksData booksData;
   for ( const auto& bookId : bookIds ) {
-    const Book& book = library->getBookById(bookId);
-    booksData.push_back(kainjow::mustache::object{
-        {"entry", getSingleBookEntryXML(book, false, endpointRoot, partial)}
-    });
+    try {
+      const Book book = library->getBookByIdThreadSafe(bookId);
+      booksData.push_back(kainjow::mustache::object{
+          {"entry", getSingleBookEntryXML(book, false, endpointRoot, partial)}
+      });
+    } catch ( const std::out_of_range& ) {
+      // the book was removed from the library since its id was obtained
+      // ignore it
+    }
   }
 
   return booksData;
