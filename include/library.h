@@ -213,6 +213,11 @@ class Library : private LibraryBase
   bool addBook(const Book& book);
 
   /**
+   * A self-explanatory alias for addBook()
+   */
+  bool addOrUpdateBook(const Book& book) { return addBook(book); }
+
+  /**
    * Add a bookmark to the library.
    *
    * @param bookmark the book to add.
