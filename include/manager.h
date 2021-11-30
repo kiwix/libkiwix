@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace pugi {
 class xml_document;
@@ -34,26 +35,25 @@ class xml_document;
 namespace kiwix
 {
 
-class LibraryManipulator {
- public:
-  virtual ~LibraryManipulator() {}
-  virtual bool addBookToLibrary(Book book) = 0;
-  virtual void addBookmarkToLibrary(Bookmark bookmark) = 0;
-};
+class LibraryManipulator
+{
+ public: // functions
+  explicit LibraryManipulator(Library* library);
+  virtual ~LibraryManipulator();
 
-class DefaultLibraryManipulator : public LibraryManipulator {
- public:
-  DefaultLibraryManipulator(Library* library) :
-    library(library) {}
-  virtual ~DefaultLibraryManipulator() {}
-  bool addBookToLibrary(Book book) {
-    return library->addBook(book);
-  }
-  void addBookmarkToLibrary(Bookmark bookmark) {
-    library->addBookmark(bookmark);
-  }
- private:
-   kiwix::Library* library;
+  Library& getLibrary() const { return library; }
+
+  bool addBookToLibrary(const Book& book);
+  void addBookmarkToLibrary(const Bookmark& bookmark);
+  uint32_t removeBooksNotUpdatedSince(Library::Revision rev);
+
+ protected: // overrides
+  virtual void bookWasAddedToLibrary(const Book& book);
+  virtual void bookmarkWasAddedToLibrary(const Bookmark& bookmark);
+  virtual void booksWereRemovedFromLibrary();
+
+ private: // data
+  kiwix::Library& library;
 };
 
 /**
@@ -61,10 +61,12 @@ class DefaultLibraryManipulator : public LibraryManipulator {
  */
 class Manager
 {
- public:
-  Manager(LibraryManipulator* manipulator);
-  Manager(Library* library);
-  ~Manager();
+ public: // types
+  typedef std::vector<std::string> Paths;
+
+ public: // functions
+  explicit Manager(LibraryManipulator* manipulator);
+  explicit Manager(Library* library);
 
   /**
    * Read a `library.xml` and add book in the file to the library.
@@ -72,9 +74,21 @@ class Manager
    * @param path The (utf8) path to the `library.xml`.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
+   * @param trustLibrary use book metadata coming from XML.
    * @return True if file has been properly parsed.
    */
   bool readFile(const std::string& path, bool readOnly = true, bool trustLibrary = true);
+
+  /**
+   * Sync the contents of the library with one or more `library.xml` files.
+   *
+   * The metadata of the library files is trusted unconditionally.
+   * Any books not present in the input library.xml files are removed
+   * from the library.
+   *
+   * @param paths The (utf8) paths to the `library.xml` files.
+   */
+  void reload(const Paths& paths);
 
   /**
    * Load a library content store in the string.
@@ -150,8 +164,7 @@ class Manager
   uint64_t m_itemsPerPage = 0;
 
  protected:
-  kiwix::LibraryManipulator* manipulator;
-  bool mustDeleteManipulator;
+  std::shared_ptr<kiwix::LibraryManipulator> manipulator;
 
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,

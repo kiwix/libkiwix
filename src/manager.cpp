@@ -26,28 +26,81 @@
 
 namespace kiwix
 {
+
+namespace
+{
+
+struct NoDelete
+{
+  template<class T> void operator()(T*) {}
+};
+
+} // unnamed namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// LibraryManipulator
+////////////////////////////////////////////////////////////////////////////////
+
+LibraryManipulator::LibraryManipulator(Library* library)
+  : library(*library)
+{}
+
+LibraryManipulator::~LibraryManipulator()
+{}
+
+bool LibraryManipulator::addBookToLibrary(const Book& book)
+{
+  const auto ret = library.addBook(book);
+  if ( ret ) {
+    bookWasAddedToLibrary(book);
+  }
+  return ret;
+}
+
+void LibraryManipulator::addBookmarkToLibrary(const Bookmark& bookmark)
+{
+  library.addBookmark(bookmark);
+  bookmarkWasAddedToLibrary(bookmark);
+}
+
+uint32_t LibraryManipulator::removeBooksNotUpdatedSince(Library::Revision rev)
+{
+  const auto n = library.removeBooksNotUpdatedSince(rev);
+  if ( n != 0 ) {
+    booksWereRemovedFromLibrary();
+  }
+  return n;
+}
+
+void LibraryManipulator::bookWasAddedToLibrary(const Book& book)
+{
+}
+
+void LibraryManipulator::bookmarkWasAddedToLibrary(const Bookmark& bookmark)
+{
+}
+
+void LibraryManipulator::booksWereRemovedFromLibrary()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Manager
+////////////////////////////////////////////////////////////////////////////////
+
 /* Constructor */
 Manager::Manager(LibraryManipulator* manipulator):
   writableLibraryPath(""),
-  manipulator(manipulator),
-  mustDeleteManipulator(false)
+  manipulator(manipulator, NoDelete())
 {
 }
 
 Manager::Manager(Library* library) :
   writableLibraryPath(""),
-  manipulator(new DefaultLibraryManipulator(library)),
-  mustDeleteManipulator(true)
+  manipulator(new LibraryManipulator(library))
 {
 }
 
-/* Destructor */
-Manager::~Manager()
-{
-  if (mustDeleteManipulator) {
-    delete manipulator;
-  }
-}
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
                           bool readOnly,
                           const std::string& libraryPath,
@@ -247,6 +300,23 @@ bool Manager::readBookmarkFile(const std::string& path)
   }
 
   return true;
+}
+
+void Manager::reload(const Paths& paths)
+{
+  const auto libRevision = manipulator->getLibrary().getRevision();
+  for (std::string path : paths) {
+    if (!path.empty()) {
+      if ( kiwix::isRelativePath(path) )
+        path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
+
+      if (!readFile(path, false, true)) {
+        throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
+      }
+    }
+  }
+
+  manipulator->removeBooksNotUpdatedSince(libRevision);
 }
 
 }

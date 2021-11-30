@@ -232,7 +232,7 @@ class LibraryTest : public ::testing::Test {
   void SetUp() override {
      kiwix::Manager manager(&lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
-     manager.readXml(sampleLibraryXML, true, "./test/library.xml", true);
+     manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }
 
     kiwix::Bookmark createBookmark(const std::string &id) {
@@ -660,13 +660,14 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
 
 TEST_F(LibraryTest, getBookByPath)
 {
-  auto& book = lib.getBookById(lib.getBooksIds()[0]);
+  kiwix::Book book = lib.getBookById(lib.getBooksIds()[0]);
 #ifdef _WIN32
   auto path = "C:\\some\\abs\\path.zim";
 #else
   auto path = "/some/abs/path.zim";
 #endif
   book.setPath(path);
+  lib.addBook(book);
   EXPECT_EQ(lib.getBookByPath(path).getId(), book.getId());
   EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
 }
@@ -704,6 +705,37 @@ TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
   // make sure that Library::filter() doesn't add an empty book with
   // an id surviving in the search DB
   EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+};
+
+TEST_F(LibraryTest, removeBooksNotUpdatedSince)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter(),
+    "An example ZIM archive",
+    "Encyclopédie de la Tunisie",
+    "Granblue Fantasy Wiki",
+    "Géographie par Wikipédia",
+    "Islam Stack Exchange",
+    "Mathématiques",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+    "Ray Charles",
+    "TED talks - Business",
+    "Tania Louis",
+    "Wikiquote"
+  );
+
+  const uint64_t rev = lib.getRevision();
+  for ( const auto& id : lib.filter(kiwix::Filter().query("exchange")) ) {
+    lib.addBook(lib.getBookByIdThreadSafe(id));
+  }
+
+  EXPECT_EQ(9u, lib.removeBooksNotUpdatedSince(rev));
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter(),
+    "Islam Stack Exchange",
+    "Movies & TV Stack Exchange",
+    "Mythology & Folklore Stack Exchange",
+  );
 };
 
 };

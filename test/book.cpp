@@ -178,3 +178,32 @@ TEST(BookTest, updateTest)
     EXPECT_EQ(newBook.getFavicon(), book.getFavicon());
     EXPECT_EQ(newBook.getFaviconMimeType(), book.getFaviconMimeType());
 }
+
+namespace
+{
+
+std::string path2HumanReadableId(const std::string& path)
+{
+    const XMLDoc xml("<book id=\"xyz\" path=\"" + path + "\"></book>");
+
+    kiwix::Book book;
+    book.updateFromXml(xml.child("book"), "/data/zim");
+    return book.getHumanReadableIdFromPath();
+}
+
+} // unnamed namespace
+
+TEST(BookTest, getHumanReadableIdFromPath)
+{
+  EXPECT_EQ("abc",     path2HumanReadableId("abc.zim"));
+  EXPECT_EQ("abc",     path2HumanReadableId("ABC.zim"));
+  EXPECT_EQ("abc",     path2HumanReadableId("âbç.zim"));
+  EXPECT_EQ("ancient", path2HumanReadableId("ancient.zimbabwe"));
+  EXPECT_EQ("ab_cd",   path2HumanReadableId("ab cd.zim"));
+#ifdef _WIN32
+  EXPECT_EQ("abc",     path2HumanReadableId("C:\\Data\\ZIM\\abc.zim"));
+#else
+  EXPECT_EQ("abc",     path2HumanReadableId("/Data/ZIM/abc.zim"));
+#endif
+  EXPECT_EQ("3plus2",  path2HumanReadableId("3+2.zim"));
+}

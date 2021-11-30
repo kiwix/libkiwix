@@ -24,6 +24,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <zim/archive.h>
 
 #include "book.h"
@@ -139,20 +140,51 @@ private: // functions
     bool accept(const Book& book) const;
 };
 
-
 /**
- * A Library store several books.
+ * This class is not part of the libkiwix API. Its only purpose is
+ * to simplify the implementation of the Library's move operations
+ * and avoid bugs should new data members be added to Library.
  */
-class Library
+class LibraryBase
 {
-  std::map<std::string, kiwix::Book> m_books;
+protected: // types
+  typedef uint64_t LibraryRevision;
+
+  struct Entry : Book
+  {
+    LibraryRevision lastUpdatedRevision = 0;
+
+    // May also keep the Archive and Reader pointers here and get
+    // rid of the m_readers and m_archives data members in Library
+  };
+
+protected: // data
+  LibraryRevision m_revision;
+  std::map<std::string, Entry> m_books;
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
   std::vector<kiwix::Bookmark> m_bookmarks;
   class BookDB;
   std::unique_ptr<BookDB> m_bookDB;
 
+protected: // functions
+  LibraryBase();
+  ~LibraryBase();
+
+  LibraryBase(LibraryBase&& );
+  LibraryBase& operator=(LibraryBase&& );
+};
+
+/**
+ * A Library store several books.
+ */
+class Library : private LibraryBase
+{
+  // all data fields must be added in LibraryBase
+  mutable std::mutex m_mutex;
+
  public:
+  typedef LibraryRevision Revision;
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
 
@@ -181,6 +213,11 @@ class Library
   bool addBook(const Book& book);
 
   /**
+   * A self-explanatory alias for addBook()
+   */
+  bool addOrUpdateBook(const Book& book) { return addBook(book); }
+
+  /**
    * Add a bookmark to the library.
    *
    * @param bookmark the book to add.
@@ -196,10 +233,13 @@ class Library
    */
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
+  // XXX: This is a non-thread-safe operation
   const Book& getBookById(const std::string& id) const;
-  Book& getBookById(const std::string& id);
+  // XXX: This is a non-thread-safe operation
   const Book& getBookByPath(const std::string& path) const;
-  Book& getBookByPath(const std::string& path);
+
+  Book getBookByIdThreadSafe(const std::string& id) const;
+
   std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
 
@@ -346,6 +386,24 @@ class Library
     const std::vector<std::string>& tags = {},
     size_t maxSize = 0) const;
 
+  /**
+   * Return the current revision of the library.
+   *
+   * The revision of the library is updated (incremented by one) only by
+   * the addBook() operation.
+   *
+   * @return Current revision of the library.
+   */
+  LibraryRevision getRevision() const;
+
+  /**
+   * Remove books that have not been updated since the specified revision.
+   *
+   * @param  rev the library revision to use
+   * @return Count of books that were removed by this operation.
+   */
+  uint32_t removeBooksNotUpdatedSince(LibraryRevision rev);
+
   friend class OPDSDumper;
   friend class libXMLDumper;
 
@@ -357,6 +415,7 @@ private: // functions
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
   void updateBookDB(const Book& book);
+  void dropReader(const std::string& bookId);
 };
 
 }
