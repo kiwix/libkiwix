@@ -78,6 +78,9 @@ subdir('scripts')
 subdir('static')
 subdir('src')
 subdir('test')
+if get_option('doc')
+  subdir('docs')
+endif
 
 pkg_requires = ['libzim', 'icu-i18n', 'pugixml', 'libcurl', 'libmicrohttpd', 'xapian-core']
 
