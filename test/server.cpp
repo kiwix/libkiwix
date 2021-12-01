@@ -701,14 +701,14 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    <link type=\"text/html\" href=\"/ROOT/zimfile\" />\n"               \
+    "    <link type=\"text/html\" href=\"/ROOT/zimfile%26other\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
     "    </author>\n"                                                   \
     "    <publisher>\n"                                                 \
     "      <name>Kiwix</name>\n"                                        \
     "    </publisher>\n"                                                \
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim\" length=\"569344\" />\n" \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim\" length=\"569344\" />\n" \
     "  </entry>\n"
 
 #define RAY_CHARLES_CATALOG_ENTRY \
