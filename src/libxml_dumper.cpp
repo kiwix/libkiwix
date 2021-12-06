@@ -91,7 +91,7 @@ void LibXMLDumper::handleBookmark(Bookmark bookmark, pugi::xml_node root_node) {
   auto book_node = entry_node.append_child("book");
 
   try {
-    auto book = library->getBookById(bookmark.getBookId());
+    auto book = library->getBookByIdThreadSafe(bookmark.getBookId());
     ADD_TEXT_ENTRY(book_node, "id", book.getId());
     ADD_TEXT_ENTRY(book_node, "title", book.getTitle());
     ADD_TEXT_ENTRY(book_node, "language", book.getLanguage());

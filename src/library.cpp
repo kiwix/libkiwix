@@ -274,11 +274,8 @@ bool Library::writeToFile(const std::string& path) const
 bool Library::writeBookmarksToFile(const std::string& path) const
 {
   LibXMLDumper dumper(this);
-  std::string xml;
-  {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    xml = dumper.dumpLibXMLBookmark();
-  };
+  // NOTE: LibXMLDumper::dumpLibXMLBookmark uses Library in a thread-safe way
+  const std::string xml = dumper.dumpLibXMLBookmark();
   return writeTextFile(path, xml);
 }
 
