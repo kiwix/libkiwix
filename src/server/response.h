@@ -78,9 +78,27 @@ class Response {
 
 class ContentResponse : public Response {
   public:
-    ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype);
-    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage = false);
-    static std::unique_ptr<ContentResponse> build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype, bool isHomePage = false);
+    ContentResponse(
+      const std::string& root,
+      bool verbose,
+      bool raw,
+      bool withTaskbar,
+      bool withLibraryButton,
+      bool blockExternalLinks,
+      const std::string& content,
+      const std::string& mimetype);
+    static std::unique_ptr<ContentResponse> build(
+      const InternalServer& server,
+      const std::string& content,
+      const std::string& mimetype,
+      bool isHomePage = false,
+      bool raw = false);
+    static std::unique_ptr<ContentResponse> build(
+      const InternalServer& server,
+      const std::string& template_str,
+      kainjow::mustache::data data,
+      const std::string& mimetype,
+      bool isHomePage = false);
 
     void set_taskbar(const std::string& bookName, const std::string& bookTitle);
 
@@ -98,6 +116,7 @@ class ContentResponse : public Response {
     std::string m_root;
     std::string m_content;
     std::string m_mimeType;
+    bool m_raw;
     bool m_withTaskbar;
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
@@ -108,7 +127,7 @@ class ContentResponse : public Response {
 class ItemResponse : public Response {
   public:
     ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
-    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
+    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw = false);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
