@@ -89,6 +89,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_random(const RequestContext& request);
     std::unique_ptr<Response> handle_captured_external(const RequestContext& request);
     std::unique_ptr<Response> handle_content(const RequestContext& request);
+    std::unique_ptr<Response> handle_raw(const RequestContext& request);
 
     std::vector<std::string> search_catalog(const RequestContext& request,
                                             kiwix::OPDSDumper& opdsDumper);

@@ -185,6 +185,9 @@ const ResourceCollection resources200Compressible{
 
   { WITH_ETAG, "/ROOT/zimfile/A/index" },
   { WITH_ETAG, "/ROOT/zimfile/A/Ray_Charles" },
+
+  { WITH_ETAG, "/ROOT/raw/zimfile/content/A/index" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/content/A/Ray_Charles" },
 };
 
 const ResourceCollection resources200Uncompressible{
@@ -208,6 +211,10 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/corner_cases/A/empty.html" },
   { WITH_ETAG, "/ROOT/corner_cases/-/empty.css" },
   { WITH_ETAG, "/ROOT/corner_cases/-/empty.js" },
+
+  // The title and creator are too small to be compressed
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
 };
 
 ResourceCollection all200Resources()
@@ -311,6 +318,32 @@ TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
   ASSERT_EQ("/ROOT/zimfile/A/index", g->get_header_value("Location"));
+}
+
+
+TEST_F(ServerTest, RawEntry)
+{
+  auto p = zfs1_->GET("/ROOT/raw/zimfile/meta/Title");
+  EXPECT_EQ(200, p->status);
+  EXPECT_EQ(p->body, std::string("Ray Charles"));
+
+  p = zfs1_->GET("/ROOT/raw/zimfile/meta/Creator");
+  EXPECT_EQ(200, p->status);
+  EXPECT_EQ(p->body, std::string("Wikipedia"));
+
+  // The raw content of Ray_Charles returned by the server is
+  // the same as the one in the zim file.
+  auto archive = zim::Archive("./test/zimfile.zim");
+  auto entry = archive.getEntryByPath("A/Ray_Charles");
+  p = zfs1_->GET("/ROOT/raw/zimfile/content/A/Ray_Charles");
+  EXPECT_EQ(200, p->status);
+  EXPECT_EQ(std::string(p->body), std::string(entry.getItem(true).getData()));
+
+  // ... but the "normal" content is not
+  p = zfs1_->GET("/ROOT/zimfile/A/Ray_Charles");
+  EXPECT_EQ(200, p->status);
+  EXPECT_NE(std::string(p->body), std::string(entry.getItem(true).getData()));
+  EXPECT_TRUE(p->body.find("taskbar") != std::string::npos);
 }
 
 TEST_F(ServerTest, HeadMethodIsSupported)
