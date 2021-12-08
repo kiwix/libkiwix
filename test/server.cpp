@@ -659,9 +659,6 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
-    "          href=\"/meta?name=Illustration_48x48@1&amp;content=zimfile\"\n" \
-    "          type=\"image/png;width=48;height=48;scale=1\"/>\n"               \
     "    <link type=\"text/html\" href=\"/zimfile\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
@@ -711,9 +708,6 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>unittest;wikipedia;_pictures:no;_videos:no;_details:no</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
-    "          href=\"/meta?name=Illustration_48x48@1&amp;content=zimfile\"\n" \
-    "          type=\"image/png;width=48;height=48;scale=1\"/>\n"               \
     "    <link type=\"text/html\" href=\"/zimfile\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
