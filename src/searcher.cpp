@@ -94,6 +94,12 @@ bool Searcher::add_reader(Reader* reader)
   if (!reader->hasFulltextIndex()) {
       return false;
   }
+
+  for ( const Reader* const existing_reader : readers ) {
+    if ( existing_reader->getZimFilePath() == reader->getZimFilePath() )
+      return false;
+  }
+
   this->readers.push_back(reader);
   return true;
 }
