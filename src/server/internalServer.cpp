@@ -271,7 +271,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
 {
   try {
     if (! request.is_valid_url())
-      return Response::build_404(*this, request, "", "");
+      return Response::build_404(*this, request.get_full_url(), "", "");
 
     const ETag etag = get_matching_if_none_match_etag(request);
     if ( etag )
@@ -394,11 +394,11 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
     meta_name = request.get_argument("name");
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {
-    return Response::build_404(*this, request, bookName, "");
+    // error handled by the archive == nullptr check below
   }
 
   if (archive == nullptr) {
-    return Response::build_404(*this, request, bookName, "");
+    return Response::build_404(*this, request.get_full_url(), bookName, "");
   }
 
   std::string content;
@@ -425,7 +425,7 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   } else if (const unsigned illustrationSize = parseIllustration(meta_name)) {
     getArchiveFavicon(*archive, illustrationSize, content, mimeType);
   } else {
-    return Response::build_404(*this, request, bookName, "");
+    return Response::build_404(*this, request.get_full_url(), bookName, "");
   }
 
   auto response = ContentResponse::build(*this, content, mimeType);
@@ -452,7 +452,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     queryString = request.get_argument("term");
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
-    return Response::build_404(*this, request, bookName, "");
+    return Response::build_404(*this, "", bookName, "");
   }
 
   auto start = 0;
@@ -470,7 +470,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   if (archive == nullptr) {
-    return Response::build_404(*this, request, bookName, "");
+    return Response::build_404(*this, "", bookName, "");
   }
 
   if (m_verbose.load()) {
@@ -532,7 +532,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     response->set_cacheable();
     return std::move(response);
   } catch (const ResourceNotFound& e) {
-    return Response::build_404(*this, request, "", "");
+    return Response::build_404(*this, request.get_full_url(), "", "");
   }
 }
 
@@ -673,7 +673,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
 
   if (archive == nullptr) {
     const std::string error_details = "No such book: " + bookName;
-    return Response::build_404(*this, request, bookName, "", error_details);
+    return Response::build_404(*this, "", bookName, "", error_details);
   }
 
   try {
@@ -681,7 +681,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     return build_redirect(bookName, getFinalItem(*archive, entry));
   } catch(zim::EntryNotFound& e) {
     const std::string error_details = "Oops! Failed to pick a random article :(";
-    return Response::build_404(*this, request, bookName, getArchiveTitle(*archive), error_details);
+    return Response::build_404(*this, "", bookName, getArchiveTitle(*archive), error_details);
   }
 }
 
@@ -693,7 +693,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
   } catch (const std::out_of_range& e) {}
 
   if (source.empty())
-    return Response::build_404(*this, request, "", "");
+    return Response::build_404(*this, request.get_full_url(), "", "");
 
   auto data = get_default_data();
   data.set("source", source);
@@ -712,7 +712,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
-    return Response::build_404(*this, request, "", "");
+    return Response::build_404(*this, request.get_full_url(), "", "");
   }
 
   if (url == "v2") {
@@ -720,7 +720,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return Response::build_404(*this, request, "", "");
+    return Response::build_404(*this, request.get_full_url(), "", "");
   }
 
   if (url == "searchdescription.xml") {
@@ -856,7 +856,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root+"/search?pattern="+pattern; // Make a full search on the entire library.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request, bookName, "", details);
+    return Response::build_404(*this, request.get_full_url(), bookName, "", details);
   }
 
   auto urlStr = request.get_url().substr(bookName.size()+1);
@@ -889,7 +889,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root+"/search?content="+bookName+"&pattern="+pattern; // Make a search on this specific book only.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request, bookName, getArchiveTitle(*archive), details);
+    return Response::build_404(*this, request.get_full_url(), bookName, getArchiveTitle(*archive), details);
   }
 }
 

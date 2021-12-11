@@ -83,11 +83,11 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName, const std::string& bookTitle, const std::string& details)
+std::unique_ptr<Response> Response::build_404(const InternalServer& server, const std::string& url, const std::string& bookName, const std::string& bookTitle, const std::string& details)
 {
   MustacheData results;
-  if ( request.get_url() != "/random" ) {
-    results.set("url", request.get_full_url());
+  if ( !url.empty() ) {
+    results.set("url", url);
   }
   results.set("details", details);
 
