@@ -86,7 +86,9 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
 std::unique_ptr<Response> Response::build_404(const InternalServer& server, const RequestContext& request, const std::string& bookName, const std::string& bookTitle, const std::string& details)
 {
   MustacheData results;
-  results.set("url", request.get_full_url());
+  if ( request.get_url() != "/random" ) {
+    results.set("url", request.get_full_url());
+  }
   results.set("details", details);
 
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");

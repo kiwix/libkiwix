@@ -6,9 +6,11 @@
   </head>
   <body>
     <h1>Not Found</h1>
+    {{#url}}
     <p>
       The requested URL "{{url}}" was not found on this server.
     </p>
+    {{/url}}
     {{#details}}
     <p>
       {{{details}}}

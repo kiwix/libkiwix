@@ -668,18 +668,20 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     bookId = mp_nameMapper->getIdForName(bookName);
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
-    return Response::build_404(*this, request, bookName, "");
+    // error handled by the archive == nullptr check below
   }
 
   if (archive == nullptr) {
-    return Response::build_404(*this, request, bookName, "");
+    const std::string error_details = "No such book: " + bookName;
+    return Response::build_404(*this, request, bookName, "", error_details);
   }
 
   try {
     auto entry = archive->getRandomEntry();
     return build_redirect(bookName, getFinalItem(*archive, entry));
   } catch(zim::EntryNotFound& e) {
-    return Response::build_404(*this, request, bookName, "");
+    const std::string error_details = "Oops! Failed to pick a random article :(";
+    return Response::build_404(*this, request, bookName, getArchiveTitle(*archive), error_details);
   }
 }
 
