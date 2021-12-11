@@ -440,38 +440,26 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     printf("** running handle_suggest\n");
   }
 
-  std::string content;
-  std::string mimeType;
-
   std::string bookName;
-  std::string bookId;
-  std::string queryString;
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    bookId = mp_nameMapper->getIdForName(bookName);
-    queryString = request.get_argument("term");
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
-    return Response::build_404(*this, "", bookName, "");
-  }
-
-  auto start = 0;
-  try {
-    start = request.get_argument<unsigned int>("start");
-  } catch (const std::exception&) {}
-
-  unsigned int count = 10;
-  try {
-    count = request.get_argument<unsigned int>("count");
-  } catch (const std::exception&) {}
-
-  if (count == 0) {
-    count = 10;
+    // error handled by the archive == nullptr check below
   }
 
   if (archive == nullptr) {
-    return Response::build_404(*this, "", bookName, "");
+    const std::string error_details = "No such book: " + bookName;
+    return Response::build_404(*this, "", bookName, "", error_details);
+  }
+
+  const auto queryString = request.get_optional_param("term", std::string());
+  const auto start = request.get_optional_param<unsigned int>("start", 0);
+  unsigned int count = request.get_optional_param<unsigned int>("count", 10);
+  if (count == 0) {
+    count = 10;
   }
 
   if (m_verbose.load()) {

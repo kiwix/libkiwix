@@ -179,6 +179,7 @@ const ResourceCollection resources200Compressible{
 
   { NO_ETAG,   "/search?content=zimfile&pattern=a" },
 
+  { NO_ETAG,   "/suggest?content=zimfile" },
   { NO_ETAG,   "/suggest?content=zimfile&term=ray" },
 
   { NO_ETAG,   "/catch/external?source=www.example.com" },
@@ -282,7 +283,6 @@ const char* urls404[] = {
   "/random?content=non-existent-book",
   "/search",
   "/suggest",
-  "/suggest?content=zimfile",
   "/suggest?content=non-existent-book&term=abcd",
   "/catch/external",
   "/zimfile/A/non-existent-article",
