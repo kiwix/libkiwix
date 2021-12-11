@@ -386,23 +386,23 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
 {
   std::string bookName;
   std::string bookId;
-  std::string meta_name;
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
     bookId = mp_nameMapper->getIdForName(bookName);
-    meta_name = request.get_argument("name");
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {
     // error handled by the archive == nullptr check below
   }
 
   if (archive == nullptr) {
-    return Response::build_404(*this, request.get_full_url(), bookName, "");
+    const std::string error_details = "No such book: " + bookName;
+    return Response::build_404(*this, "", bookName, "", error_details);
   }
 
   std::string content;
   std::string mimeType = "text";
+  const auto meta_name = request.get_optional_param("name", std::string());
 
   if (meta_name == "title") {
     content = getArchiveTitle(*archive);
@@ -425,7 +425,8 @@ std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& requ
   } else if (const unsigned illustrationSize = parseIllustration(meta_name)) {
     getArchiveFavicon(*archive, illustrationSize, content, mimeType);
   } else {
-    return Response::build_404(*this, request.get_full_url(), bookName, "");
+    const std::string error_details = "No such metadata item: " + meta_name;
+    return Response::build_404(*this, "", bookName, "", error_details);
   }
 
   auto response = ContentResponse::build(*this, content, mimeType);
