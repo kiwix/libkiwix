@@ -96,7 +96,7 @@ bool Searcher::add_reader(Reader* reader)
   }
 
   for ( const Reader* const existing_reader : readers ) {
-    if ( existing_reader->getZimFilePath() == reader->getZimFilePath() )
+    if ( existing_reader->getZimArchive()->getUuid() == reader->getZimArchive()->getUuid() )
       return false;
   }
 
