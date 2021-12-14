@@ -65,7 +65,7 @@ all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep, libcurl_dep, microh
 inc = include_directories('include', extra_include)
 
 conf = configuration_data()
-conf.set('VERSION', '"@0@"'.format(meson.project_version()))
+conf.set('LIBKIWIX_VERSION', '"@0@"'.format(meson.project_version()))
 
 if build_machine.system() == 'windows'
      extra_link_args = ['-lshlwapi', '-lwinmm']
