@@ -5,6 +5,18 @@
 namespace kiwix
 {
 
+TEST(Searcher, add_reader) {
+  Reader reader1("./test/example.zim");
+  Reader reader2("./test/example.zim");
+  Reader reader3("./test/../test/example.zim");
+
+  Searcher searcher;
+  ASSERT_TRUE (searcher.add_reader(&reader1));
+  ASSERT_FALSE(searcher.add_reader(&reader1));
+  ASSERT_FALSE(searcher.add_reader(&reader2));
+  ASSERT_FALSE(searcher.add_reader(&reader3));
+}
+
 TEST(Searcher, search) {
   Reader reader("./test/example.zim");
 
