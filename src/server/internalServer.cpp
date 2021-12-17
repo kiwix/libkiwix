@@ -385,11 +385,10 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
 std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
 {
   std::string bookName;
-  std::string bookId;
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    bookId = mp_nameMapper->getIdForName(bookName);
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {
     // error handled by the archive == nullptr check below
@@ -531,13 +530,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     printf("** running handle_search\n");
   }
 
-  std::string bookName;
-  std::string bookId;
-  try {
-    bookName = request.get_argument("content");
-    bookId = mp_nameMapper->getIdForName(bookName);
-  } catch (const std::out_of_range&) {}
-
   std::string patternString;
   try {
     patternString = request.get_argument("pattern");
@@ -556,8 +548,11 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   } catch(const std::out_of_range&) {}
     catch(const std::invalid_argument&) {}
 
+  std::string bookName;
   std::shared_ptr<zim::Archive> archive;
   try {
+    bookName = request.get_argument("content");
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {}
 
@@ -650,11 +645,10 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
   }
 
   std::string bookName;
-  std::string bookId;
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    bookId = mp_nameMapper->getIdForName(bookName);
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     // error handled by the archive == nullptr check below
