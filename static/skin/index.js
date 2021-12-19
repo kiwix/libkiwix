@@ -51,7 +51,7 @@
         fileSize /= (1000 ** quotient);
         return `${+fileSize.toFixed(2)} ${units[quotient]}`;
     };
-    
+
     const humanFriendlyTitle = (title) => {
         title = title.replace(/_/g, ' ');
         return htmlEncode(title[0].toUpperCase() + title.slice(1));
@@ -229,7 +229,7 @@
             data.querySelectorAll('entry').forEach(entry => {
                 const title = getInnerHtml(entry, 'title');
                 const value = getInnerHtml(entry, valueEntryNode);
-                optionStr += `<option value='${value}">${humanFriendlyTitle(title)}</option>`;
+                optionStr += `<option value="${value}">${humanFriendlyTitle(title)}</option>`;
             });
             document.querySelector(nodeQuery).innerHTML += optionStr;
         });
