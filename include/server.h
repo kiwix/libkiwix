@@ -60,7 +60,9 @@ namespace kiwix
         { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
        void setBlockExternalLinks(bool blockExternalLinks)
         { m_blockExternalLinks = blockExternalLinks; }
-
+       int getPort();
+       std::string getAddress();
+       
      protected:
        Library* mp_library;
        NameMapper* mp_nameMapper;

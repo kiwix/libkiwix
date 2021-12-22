@@ -48,6 +48,7 @@ extern "C" {
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
 #include "tools/archiveTools.h"
+#include "tools/networkTools.h"
 #include "library.h"
 #include "name_mapper.h"
 #include "entry.h"
@@ -159,15 +160,16 @@ bool InternalServer::start() {
   sockAddr.sin_family = AF_INET;
   sockAddr.sin_port = htons(m_port);
   if (m_addr.empty()) {
-    if (0 != INADDR_ANY)
+    if (0 != INADDR_ANY) {
       sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    }
+    m_addr = kiwix::getBestPublicIp();
   } else {
     if (inet_pton(AF_INET, m_addr.c_str(), &(sockAddr.sin_addr.s_addr)) == 0) {
       std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
       return false;
     }
   }
-
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
                             NULL,

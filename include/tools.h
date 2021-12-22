@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace kiwix {
 
@@ -194,5 +195,17 @@ bool fileExists(const std::string& path);
  * @return mimetype from filename in string format.
  */
 std::string getMimeTypeForFile(const std::string& filename);
+
+/** Provides all available network interfaces
+ * 
+ * This function provides the available IPv4 network interfaces
+ */
+std::map<std::string, std::string> getNetworkInterfaces();
+
+/** Provides the best IP address
+ * This function provides the best IP address from the list given by getNetworkInterfaces
+ */
+std::string getBestPublicIp();
+
 }
 #endif // KIWIX_TOOLS_H

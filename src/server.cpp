@@ -71,4 +71,14 @@ void Server::setRoot(const std::string& root)
   }
 }
 
+int Server::getPort()
+{
+  return mp_server->getPort();
+}
+
+std::string Server::getAddress()
+{
+  return mp_server->getAddress();
+}
+
 }
