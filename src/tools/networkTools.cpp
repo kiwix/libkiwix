@@ -76,7 +76,7 @@ std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
 
 #ifdef _WIN32
   SOCKET sd = WSASocket(AF_INET, SOCK_DGRAM, 0, 0, 0, 0);
-  if (sd == SOCKET_ERROR) {
+  if (sd == INVALID_SOCKET) {
     std::cerr << "Failed to get a socket. Error " << WSAGetLastError() << std::endl;
     return interfaces;
   }
