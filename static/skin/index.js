@@ -67,7 +67,8 @@
     }
 
     function getInnerHtml(node, query) {
-        return node.querySelector(query).innerHTML;
+        const queryNode = node.querySelector(query);
+        return queryNode != null ? queryNode.innerHTML : "";
     }
 
     function generateBookHtml(book, sort = false) {
@@ -103,6 +104,7 @@
         if (sort) {
             divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
+        const languageAttr = language != '' ? '' : 'style="background-color: transparent"';
         divTag.innerHTML = `<a class="book__link" href="${root}${link}" data-hover="Preview">
             <div class="book__wrapper">
             <div class="book__icon"><img class="book__icon--image" src="${root}${iconUrl}"></div>
@@ -111,7 +113,7 @@
                 ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
-            <div class="book__languageTag">${language.substr(0, 2).toUpperCase()}</div>
+            <div class="book__languageTag" ${languageAttr}>${language.substr(0, 2).toUpperCase()}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
             </div></div></a>`;
         return divTag;
