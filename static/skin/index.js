@@ -104,10 +104,11 @@
         if (sort) {
             divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
+        const faviconAttr = iconUrl != undefined ? `style="background-image: url('${root}${iconUrl}')"` : '';
         const languageAttr = language != '' ? '' : 'style="background-color: transparent"';
         divTag.innerHTML = `<a class="book__link" href="${root}${link}" data-hover="Preview">
             <div class="book__wrapper">
-            <div class="book__icon"><img class="book__icon--image" src="${root}${iconUrl}"></div>
+            <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
                 <div id="book__title">${title}</div>
                 ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
