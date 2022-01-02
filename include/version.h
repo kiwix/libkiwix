@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Emmanuel Engelhart <kelson@kiwix.org>
+ * Copyright 2021 Emmanuel Engelhart <kelson@kiwix.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -17,9 +17,17 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_H
-#define KIWIX_H
+#ifndef KIWIX_VERSION_H
+#define KIWIX_VERSION_H
 
-#include "library.h"
+#include <string>
+#include <vector>
 
-#endif
+namespace kiwix
+{
+  typedef std::vector<std::pair<std::string, std::string>> LibVersions;
+  LibVersions getVersions();
+  void printVersions(std::ostream& out = std::cout);
+}
+
+#endif // KIWIX_VERSION_H
