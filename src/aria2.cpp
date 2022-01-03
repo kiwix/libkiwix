@@ -3,12 +3,14 @@
 #include "aria2.h"
 #include "xmlrpc.h"
 #include <iostream>
+#include <algorithm>
 #include <sstream>
 #include <thread>
 #include <chrono>
 #include "tools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
+#include "tools/otherTools.h"
 #include "downloader.h" // For AriaError
 
 #ifdef _WIN32
@@ -30,7 +32,7 @@ namespace kiwix {
 Aria2::Aria2():
   mp_aria(nullptr),
   m_port(42042),
-  m_secret("kiwixariarpc"),
+  m_secret(getNewRpcSecret()),
   m_curlErrorBuffer(new char[CURL_ERROR_SIZE]),
   mp_curl(nullptr)
 {
@@ -193,6 +195,13 @@ std::string Aria2::tellStatus(const std::string& gid, const std::vector<std::str
     }
   }
   return doRequest(methodCall);
+}
+
+std::string Aria2::getNewRpcSecret()
+{
+  std::string uuid = gen_uuid("");
+  uuid.erase(std::remove(uuid.begin(), uuid.end(), '-'));
+  return uuid.substr(0, 9);
 }
 
 std::vector<std::string> Aria2::tellActive()
