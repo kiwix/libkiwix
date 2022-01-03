@@ -345,7 +345,7 @@
     });
 
     async function loadSubset() {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        if (window.innerHeight + window.scrollY >= (document.body.offsetHeight * 0.98)) {
             if (incrementalLoadingParams.count) {
                 loadAndDisplayBooks();
             }
