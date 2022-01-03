@@ -70,7 +70,7 @@ Aria2::Aria2():
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());
   callCmd.push_back(download_dir.c_str());
-  if (fileExists(session_file)) {
+  if (fileReadable(session_file)) {
     callCmd.push_back(inputFile.c_str());
   }
   callCmd.push_back(session.c_str());

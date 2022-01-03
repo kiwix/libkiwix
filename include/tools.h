@@ -180,12 +180,21 @@ std::string getFileContent(const std::string& path);
 
 /** checks if file exists.
  *
- * This function returns boolean stating if file exists or not.
+ * This function returns boolean stating if file exists.
  *
  * @param path The absolute path provided in string format.
  * @return Boolean representing if file exists or not.
  */
 bool fileExists(const std::string& path);
+
+/** checks if file is readable.
+ * 
+ * This function returns boolean stating if file is readable.
+ * 
+ * @param path The absolute path provided in string format.
+ * @return Boolean representing if file is readale or not.
+ */
+bool fileReadable(const std::string& path);
 
 /** provides mimetype from filename.
  *
