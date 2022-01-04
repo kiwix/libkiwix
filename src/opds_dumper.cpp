@@ -59,10 +59,11 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
     kainjow::mustache::list illustrations;
     if ( book.isPathValid() ) {
       for ( const auto& illustration : book.getIllustrations() ) {
+        // For now, we are handling only sizexsize@1 illustration.
+        // So we can simply pass one size to mustache.
         illustrations.push_back(kainjow::mustache::object{
-          {"icon_width", to_string(illustration->width)},
-          {"icon_height", to_string(illustration->height)},
-          {"icon_scale", "1"},
+          {"icon_size", to_string(illustration->width)},
+          {"icon_mimetype", illustration->mimeType}
         });
       }
     }
@@ -95,23 +96,24 @@ kainjow::mustache::object getSingleBookData(const Book& book)
     };
 }
 
-std::string getSingleBookEntryXML(const Book& book, bool withXMLHeader, const std::string& endpointRoot, bool partial)
+std::string getSingleBookEntryXML(const Book& book, bool withXMLHeader, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
 {
   auto data = getSingleBookData(book);
   data["with_xml_header"] = MustacheData(withXMLHeader);
   data["dump_partial_entries"] = MustacheData(partial);
   data["endpoint_root"] = endpointRoot;
+  data["root"] = rootLocation;
   return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
 }
 
-BooksData getBooksData(const Library* library, const std::vector<std::string>& bookIds, const std::string& endpointRoot, bool partial)
+BooksData getBooksData(const Library* library, const std::vector<std::string>& bookIds, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
 {
   BooksData booksData;
   for ( const auto& bookId : bookIds ) {
     try {
       const Book book = library->getBookByIdThreadSafe(bookId);
       booksData.push_back(kainjow::mustache::object{
-          {"entry", getSingleBookEntryXML(book, false, endpointRoot, partial)}
+          {"entry", getSingleBookEntryXML(book, false, rootLocation, endpointRoot, partial)}
       });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -135,7 +137,7 @@ std::string getLanguageSelfName(const std::string& lang) {
 
 string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
 {
-  const auto booksData = getBooksData(library, bookIds, "", false);
+  const auto booksData = getBooksData(library, bookIds, rootLocation, "", false);
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
      {"root", rootLocation},
@@ -153,7 +155,7 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
   const auto endpointRoot = rootLocation + "/catalog/v2";
-  const auto booksData = getBooksData(library, bookIds, endpointRoot, partial);
+  const auto booksData = getBooksData(library, bookIds, rootLocation, endpointRoot, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const kainjow::mustache::object template_data{
@@ -174,7 +176,7 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
 
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
 {
-  return getSingleBookEntryXML(library->getBookById(bookId), true, "", false);
+  return getSingleBookEntryXML(library->getBookById(bookId), true, rootLocation, "", false);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const

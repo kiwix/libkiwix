@@ -15,12 +15,10 @@
     <tags>{{tags}}</tags>
     <articleCount>{{article_count}}</articleCount>
     <mediaCount>{{media_count}}</mediaCount>
-    {{#icons}}
-    <link rel="http://opds-spec.org/image/thumbnail"
-          href="/meta?name=Illustration_{{icon_width}}x{{icon_height}}@{{icon_scale}}&amp;content={{{content_id}}}"
-          type="image/png;width={{icon_width}};height={{icon_height}};scale={{icon_scale}}"/>
-    {{/icons}}
-    <link type="text/html" href="/{{{content_id}}}" />
+    {{#icons}}<link rel="http://opds-spec.org/image/thumbnail"
+          href="{{root}}/catalog/v2/illustration/{{{content_id}}}/?size={{icon_size}}"
+          type="{{icon_mimetype}};width={{icon_size}};height={{icon_size}};scale=1"/>
+    {{/icons}}<link type="text/html" href="{{root}}/{{{content_id}}}" />
     <author>
       <name>{{author_name}}</name>
     </author>
