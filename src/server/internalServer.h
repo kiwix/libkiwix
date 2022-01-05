@@ -89,6 +89,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_random(const RequestContext& request);
     std::unique_ptr<Response> handle_captured_external(const RequestContext& request);
     std::unique_ptr<Response> handle_content(const RequestContext& request);
+    std::unique_ptr<Response> handle_raw(const RequestContext& request);
 
     std::vector<std::string> search_catalog(const RequestContext& request,
                                             kiwix::OPDSDumper& opdsDumper);
@@ -117,8 +118,8 @@ class InternalServer {
     std::string m_library_id;
 
     friend std::unique_ptr<Response> Response::build(const InternalServer& server);
-    friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage);
-    friend std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
+    friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage, bool raw);
+    friend std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw);
     friend std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg);
 
 };

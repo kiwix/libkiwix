@@ -285,6 +285,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (startsWith(request.get_url(), "/catalog/"))
       return handle_catalog(request);
 
+    if (startsWith(request.get_url(), "/raw/"))
+      return handle_raw(request);
+
     if (request.get_url() == "/meta")
       return handle_meta(request);
 
@@ -875,6 +878,64 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
     return Response::build_404(*this, request.get_full_url(), bookName, getArchiveTitle(*archive), details);
+  }
+}
+
+
+std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_raw\n");
+  }
+
+  std::string bookName;
+  std::string kind;
+  try {
+     bookName = request.get_url_part(1);
+     kind = request.get_url_part(2);
+  } catch (const std::out_of_range& e) {
+     return Response::build_404(*this, request.get_full_url(), bookName, "", "");
+  }
+
+  if (kind != "meta" && kind!= "content") {
+    const std::string error_details = kind + " is not a valid request for raw content.";
+    return Response::build_404(*this, request.get_full_url(), bookName, "", error_details);
+  }
+
+  std::shared_ptr<zim::Archive> archive;
+  try {
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
+  } catch (const std::out_of_range& e) {}
+
+  if (archive == nullptr) {
+    const std::string error_details = "No such book: " + bookName;
+    return Response::build_404(*this, request.get_full_url(), bookName, "", error_details);
+  }
+
+  // Remove the beggining of the path:
+  // /raw/<bookName>/<kind>/foo
+  // ^^^^^          ^      ^
+  //   5      +     1  +   1   = 7
+  auto itemPath = request.get_url().substr(bookName.size()+kind.size()+7);
+
+  try {
+    if (kind == "meta") {
+      auto item = archive->getMetadataItem(itemPath);
+      return ItemResponse::build(*this, request, item, /*raw=*/true);
+    } else {
+      auto entry = archive->getEntryByPath(itemPath);
+      if (entry.isRedirect()) {
+        return build_redirect(bookName, entry.getItem(true));
+      }
+      return ItemResponse::build(*this, request, entry.getItem(), /*raw=*/true);
+    }
+  } catch (zim::EntryNotFound& e ) {
+    if (m_verbose.load()) {
+      printf("Failed to find %s\n", itemPath.c_str());
+    }
+    const std::string error_details = "Cannot find " + kind + " entry " + itemPath;
+    return Response::build_404(*this, request.get_full_url(), bookName, getArchiveTitle(*archive), error_details);
   }
 }
 

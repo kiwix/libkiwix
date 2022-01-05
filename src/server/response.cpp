@@ -117,7 +117,16 @@ std::unique_ptr<Response> Response::build_500(const InternalServer& server, cons
   data.set("error", msg);
   auto content = render_template(RESOURCE::templates::_500_html, data);
   std::unique_ptr<Response> response (
-      new ContentResponse(server.m_root, true, false, false, false, content, "text/html"));
+      new ContentResponse(
+        server.m_root, //root
+        true, //verbose
+        true, //raw
+        false, //withTaskbar
+        false, //withLibraryButton
+        false, //blockExternalLinks
+        content, //content
+        "text/html" //mimetype
+  ));
   response->set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
   return response;
 }
@@ -238,8 +247,11 @@ ContentResponse::can_compress(const RequestContext& request) const
 bool
 ContentResponse::contentDecorationAllowed() const
 {
-    return (startsWith(m_mimeType, "text/html")
-         && m_mimeType.find(";raw=true") == std::string::npos);
+  if (m_raw) {
+    return false;
+  }
+  return (startsWith(m_mimeType, "text/html")
+    && m_mimeType.find(";raw=true") == std::string::npos);
 }
 
 MHD_Response*
@@ -327,11 +339,12 @@ void ContentResponse::set_taskbar(const std::string& bookName, const std::string
 }
 
 
-ContentResponse::ContentResponse(const std::string& root, bool verbose, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
+ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
   Response(verbose),
   m_root(root),
   m_content(content),
   m_mimeType(mimetype),
+  m_raw(raw),
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
@@ -341,11 +354,17 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, bool wit
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage)
+std::unique_ptr<ContentResponse> ContentResponse::build(
+  const InternalServer& server,
+  const std::string& content,
+  const std::string& mimetype,
+  bool isHomePage,
+  bool raw)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
         server.m_verbose.load(),
+        raw,
         server.m_withTaskbar && !isHomePage,
         server.m_withLibraryButton,
         server.m_blockExternalLinks,
@@ -353,7 +372,13 @@ std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& se
         mimetype));
 }
 
-std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& template_str, kainjow::mustache::data data, const std::string& mimetype, bool isHomePage) {
+std::unique_ptr<ContentResponse> ContentResponse::build(
+  const InternalServer& server,
+  const std::string& template_str,
+  kainjow::mustache::data data,
+  const std::string& mimetype,
+  bool isHomePage)
+{
   auto content = render_template(template_str, data);
   return ContentResponse::build(server, content, mimetype, isHomePage);
 }
@@ -368,14 +393,14 @@ ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::strin
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item)
+std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw)
 {
   const std::string mimetype = get_mime_type(item);
   auto byteRange = request.get_range().resolve(item.getSize());
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    auto response = ContentResponse::build(server, item.getData(), mimetype);
+    auto response = ContentResponse::build(server, item.getData(), mimetype, /*isHomePage=*/false, raw);
     response->set_cacheable();
     response->m_byteRange = byteRange;
     return std::move(response);
