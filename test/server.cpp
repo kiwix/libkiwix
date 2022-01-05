@@ -296,6 +296,9 @@ const char* urls404[] = {
   "/ROOT/catch/external",
   "/ROOT/zimfile/A/non-existent-article",
 
+  "/ROOT/raw/non-existent-book/meta/Title",
+  "/ROOT/raw/zimfile/wrong-kind/Foo",
+
   // zimfile has no Favicon nor Illustration_48x48@1 meta item
   "/ROOT/raw/zimfile/meta/Favicon",
   "/ROOT/raw/zimfile/meta/Illustration_48x48@1",
