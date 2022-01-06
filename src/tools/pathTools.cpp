@@ -306,8 +306,8 @@ bool kiwix::fileExists(const std::string& path)
 {
 #ifdef _WIN32
   return (_waccess_s(Utf8ToWide(path).c_str(), 0) == 0);
-#else  
-  return (access(path.c_str(), F_OK) == 0); 
+#else
+  return (access(path.c_str(), F_OK) == 0);
 #endif
 }
 

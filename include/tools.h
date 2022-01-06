@@ -188,9 +188,9 @@ std::string getFileContent(const std::string& path);
 bool fileExists(const std::string& path);
 
 /** checks if file is readable.
- * 
+ *
  * This function returns boolean stating if file is readable.
- * 
+ *
  * @param path The absolute path provided in string format.
  * @return Boolean representing if file is readale or not.
  */
@@ -206,7 +206,7 @@ bool fileReadable(const std::string& path);
 std::string getMimeTypeForFile(const std::string& filename);
 
 /** Provides all available network interfaces
- * 
+ *
  * This function provides the available IPv4 network interfaces
  */
 std::map<std::string, std::string> getNetworkInterfaces();

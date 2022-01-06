@@ -20,6 +20,8 @@
 #include "gtest/gtest.h"
 #include <string>
 #include <vector>
+#include <unistd.h>
+#include <fcntl.h>
 #include "../include/tools.h"
 #include "../src/tools/pathTools.h"
 
@@ -190,6 +192,34 @@ TEST(pathTools, appendToDirectory)
             P5("a","b","c",".","foo.xml"));
 }
 
+TEST(pathTools, fileExists)
+{
+  ASSERT_TRUE(kiwix::fileExists(P3(".","test","example.zim")));
+  ASSERT_FALSE(kiwix::fileExists(P3(".","test","noFile.zim")));
+}
+
+TEST(pathTools, fileReadable)
+{
+  ASSERT_TRUE(kiwix::fileReadable(P3(".","test","example.zim")));
+  ASSERT_FALSE(kiwix::fileReadable(P3(".","test","noFile.zim")));
+#ifdef _POSIX_SOURCE
+  std::string path = P3(".","test","example.zim");
+  auto myprivs = geteuid();
+  if (myprivs != 0) {
+    int fd = open(path.c_str(), O_RDONLY);
+    if (fd != -1) {
+      int wResp = fchmod(fd, ~(S_IRWXU | S_IRWXG | S_IRWXO)); // remove all permissions
+      if (wResp == 0) {
+        EXPECT_FALSE(kiwix::fileReadable(P3(".","test","example.zim")));
+      }
+      int resetResp = fchmod(fd, S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP); // reset back permissions to -rw-rw-r--
+      if (resetResp == 0) {
+        EXPECT_TRUE(kiwix::fileReadable(P3(".","test","example.zim")));
+      }
+    }
+  }
+#endif
+}
 
 TEST(pathTools, goUp)
 {
