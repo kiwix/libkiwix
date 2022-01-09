@@ -305,16 +305,18 @@ std::string kiwix::getFileContent(const std::string& path)
 bool kiwix::fileExists(const std::string& path)
 {
 #ifdef _WIN32
-  return PathFileExistsW(Utf8ToWide(path).c_str());
+  return (_waccess_s(Utf8ToWide(path).c_str(), 0) == 0);
 #else
-  bool flag = false;
-  std::fstream fin;
-  fin.open(path.c_str(), std::ios::in);
-  if (fin.is_open()) {
-    flag = true;
-  }
-  fin.close();
-  return flag;
+  return (access(path.c_str(), F_OK) == 0);
+#endif
+}
+
+bool kiwix::fileReadable(const std::string& path)
+{
+#ifdef _WIN32
+  return (_waccess_s(Utf8ToWide(path).c_str(), 4) == 0);
+#else
+  return (access(path.c_str(), R_OK) == 0);
 #endif
 }
 

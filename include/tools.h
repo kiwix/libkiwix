@@ -178,16 +178,25 @@ std::string converta2toa3(const std::string& a2code);
  */
 std::string getFileContent(const std::string& path);
 
-/** checks if file exists.
+/** Checks if file exists.
  *
- * This function returns boolean stating if file exists or not.
+ * This function returns boolean stating if file exists.
  *
  * @param path The absolute path provided in string format.
  * @return Boolean representing if file exists or not.
  */
 bool fileExists(const std::string& path);
 
-/** provides mimetype from filename.
+/** Checks if file is readable.
+ *
+ * This function returns boolean stating if file is readable.
+ *
+ * @param path The absolute path provided in string format.
+ * @return Boolean representing if file is readale or not.
+ */
+bool fileReadable(const std::string& path);
+
+/** Provides mimetype from filename.
  *
  * This function provides mimetype from file-name.
  *
@@ -197,7 +206,7 @@ bool fileExists(const std::string& path);
 std::string getMimeTypeForFile(const std::string& filename);
 
 /** Provides all available network interfaces
- * 
+ *
  * This function provides the available IPv4 network interfaces
  */
 std::map<std::string, std::string> getNetworkInterfaces();
