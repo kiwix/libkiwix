@@ -178,7 +178,7 @@ std::string converta2toa3(const std::string& a2code);
  */
 std::string getFileContent(const std::string& path);
 
-/** checks if file exists.
+/** Checks if file exists.
  *
  * This function returns boolean stating if file exists.
  *
@@ -187,7 +187,7 @@ std::string getFileContent(const std::string& path);
  */
 bool fileExists(const std::string& path);
 
-/** checks if file is readable.
+/** Checks if file is readable.
  *
  * This function returns boolean stating if file is readable.
  *
@@ -196,7 +196,7 @@ bool fileExists(const std::string& path);
  */
 bool fileReadable(const std::string& path);
 
-/** provides mimetype from filename.
+/** Provides mimetype from filename.
  *
  * This function provides mimetype from file-name.
  *
