@@ -194,16 +194,15 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/skin/jquery-ui/images/animated-overlay.gif" },
   { WITH_ETAG, "/ROOT/skin/caret.png" },
 
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=title" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=description" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=language" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=name" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=tags" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=date" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=creator" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=publisher" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=favicon" },
-  { WITH_ETAG, "/ROOT/meta?content=zimfile&name=Illustration_48x48@1" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Description" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Language" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Name" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Tags" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Date" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
+  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Publisher" },
+
   { NO_ETAG, "/ROOT/catalog/v2/illustration/zimfile?size=48" },
 
   { WITH_ETAG, "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
@@ -296,6 +295,13 @@ const char* urls404[] = {
   "/ROOT/suggest?content=non-existent-book&term=abcd",
   "/ROOT/catch/external",
   "/ROOT/zimfile/A/non-existent-article",
+
+  "/ROOT/raw/non-existent-book/meta/Title",
+  "/ROOT/raw/zimfile/wrong-kind/Foo",
+
+  // zimfile has no Favicon nor Illustration_48x48@1 meta item
+  "/ROOT/raw/zimfile/meta/Favicon",
+  "/ROOT/raw/zimfile/meta/Illustration_48x48@1",
 };
 
 TEST_F(ServerTest, 404)

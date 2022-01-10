@@ -96,16 +96,6 @@ inline std::string normalizeRootUrl(std::string rootUrl)
   return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
-unsigned parseIllustration(const std::string& s)
-{
-  int nw(0), nh(0), nEnd(0);
-  long int w(-1), h(-1);
-  if ( sscanf(s.c_str(), "Illustration_%n%ldx%n%ld@1%n)", &nw, &w, &nh, &h, &nEnd) == 2
-     && nEnd == (int)s.size() && !isspace(s[nw]) && !isspace(s[nh]) && w == h && w >= 0) {
-    return w;
-  }
-  return 0;
-}
 } // unnamed namespace
 
 static IdNameMapper defaultNameMapper;
@@ -288,9 +278,6 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (startsWith(request.get_url(), "/raw/"))
       return handle_raw(request);
 
-    if (request.get_url() == "/meta")
-      return handle_meta(request);
-
     if (request.get_url() == "/search")
       return handle_search(request);
 
@@ -383,60 +370,6 @@ SuggestionsList_t getSuggestions(const zim::Archive* const archive,
   return suggestions;
 }
 
-/**
- * Archive and Zim handlers end
- **/
-
-std::unique_ptr<Response> InternalServer::handle_meta(const RequestContext& request)
-{
-  std::string bookName;
-  std::shared_ptr<zim::Archive> archive;
-  try {
-    bookName = request.get_argument("content");
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
-    archive = mp_library->getArchiveById(bookId);
-  } catch (const std::out_of_range& e) {
-    // error handled by the archive == nullptr check below
-  }
-
-  if (archive == nullptr) {
-    const std::string error_details = "No such book: " + bookName;
-    return Response::build_404(*this, "", bookName, "", error_details);
-  }
-
-  std::string content;
-  std::string mimeType = "text";
-  const auto meta_name = request.get_optional_param("name", std::string());
-
-  if (meta_name == "title") {
-    content = getArchiveTitle(*archive);
-  } else if (meta_name == "description") {
-    content = getMetaDescription(*archive);
-  } else if (meta_name == "language") {
-    content = getMetaLanguage(*archive);
-  } else if (meta_name == "name") {
-    content = getMetaName(*archive);
-  } else if (meta_name == "tags") {
-    content = getMetaTags(*archive);
-  } else if (meta_name == "date") {
-    content = getMetaDate(*archive);
-  } else if (meta_name == "creator") {
-    content = getMetaCreator(*archive);
-  } else if (meta_name == "publisher") {
-    content = getMetaPublisher(*archive);
-  } else if (meta_name == "favicon") {
-    getArchiveFavicon(*archive, 48, content, mimeType);
-  } else if (const unsigned illustrationSize = parseIllustration(meta_name)) {
-    getArchiveFavicon(*archive, illustrationSize, content, mimeType);
-  } else {
-    const std::string error_details = "No such metadata item: " + meta_name;
-    return Response::build_404(*this, "", bookName, "", error_details);
-  }
-
-  auto response = ContentResponse::build(*this, content, mimeType);
-  response->set_cacheable();
-  return std::move(response);
-}
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
