@@ -114,10 +114,16 @@
                 ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
-            <div class="book__languageTag" ${languageAttr}>${language.substr(0, 2).toUpperCase()}</div>
+            <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(language)}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
             </div></div></a>`;
         return divTag;
+    }
+
+    function getLanguageCodeToDisplay(langCode3Letter) {
+        const langCode2Letter = (Object.keys(iso6391To3).find(key => iso6391To3[key] === langCode3Letter));
+        const res = (langCode2Letter != undefined) ? langCode2Letter : langCode3Letter;
+        return res.toUpperCase();
     }
 
     function toggleFooter(show=false) {
