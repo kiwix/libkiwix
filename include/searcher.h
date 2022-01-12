@@ -56,6 +56,8 @@ struct SuggestionInternal;
 /**
  * The Searcher class is reponsible to do different kind of search using the
  * fulltext index.
+ *
+ * The Searcher is now deprecated. Use libzim search feature.
  */
 class Searcher
 {
@@ -63,7 +65,7 @@ class Searcher
   /**
    * The default constructor.
    */
-  Searcher();
+  DEPRECATED Searcher();
 
   ~Searcher();
 
