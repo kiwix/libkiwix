@@ -35,8 +35,8 @@
       ></book>
   <book
         id="charlesray"
-        path="./zimfile.zim"
-        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
+        path="./zimfile&amp;other.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim"
         title="Charles, Ray"
         description="Wikipedia articles about Ray Charles"
         language="fra"

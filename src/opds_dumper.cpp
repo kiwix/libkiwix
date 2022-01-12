@@ -81,7 +81,7 @@ kainjow::mustache::object getSingleBookData(const Book& book)
       {"title", book.getTitle()},
       {"description", book.getDescription()},
       {"language", book.getLanguage()},
-      {"content_id",  book.getHumanReadableIdFromPath()},
+      {"content_id",  urlEncode(book.getHumanReadableIdFromPath(), true)},
       {"updated", book.getDate() + "T00:00:00Z"},
       {"category", book.getCategory()},
       {"flavour", book.getFlavour()},
