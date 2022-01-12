@@ -122,7 +122,7 @@ string Reader::getId() const
 Entry Reader::getRandomPage() const
 {
   try {
-    return zimArchive->getRandomEntry();
+    return Entry(zimArchive->getRandomEntry(), true);
   } catch(...) {
     throw NoEntry();
   }
@@ -130,7 +130,7 @@ Entry Reader::getRandomPage() const
 
 Entry Reader::getMainPage() const
 {
-  return zimArchive->getMainEntry();
+  return Entry(zimArchive->getMainEntry(), true);
 }
 
 bool Reader::getFavicon(string& content, string& mimeType) const
@@ -242,7 +242,7 @@ string Reader::getScraper() const
 Entry Reader::getEntryFromPath(const std::string& path) const
 {
   try {
-    return kiwix::getEntryFromPath(*zimArchive, path);
+    return Entry(kiwix::getEntryFromPath(*zimArchive, path), true);
   } catch (zim::EntryNotFound& e) {
     throw NoEntry();
   }
@@ -256,7 +256,7 @@ Entry Reader::getEntryFromEncodedPath(const std::string& path) const
 Entry Reader::getEntryFromTitle(const std::string& title) const
 {
   try {
-    return zimArchive->getEntryByTitle(title);
+    return Entry(zimArchive->getEntryByTitle(title), true);
   } catch(zim::EntryNotFound& e) {
     throw NoEntry();
   }

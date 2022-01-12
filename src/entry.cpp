@@ -23,7 +23,7 @@
 namespace kiwix
 {
 
-Entry::Entry(zim::Entry entry)
+Entry::Entry(zim::Entry entry, bool _marker)
   : entry(entry)
 {
 }
@@ -53,7 +53,7 @@ Entry Entry::getRedirectEntry() const
     throw NoEntry();
   }
 
-  return entry.getRedirectEntry();
+  return Entry(entry.getRedirectEntry(), true);
 }
 
 Entry Entry::getFinalEntry() const
@@ -67,7 +67,7 @@ Entry Entry::getFinalEntry() const
   if (final_entry.isRedirect()) {
     throw NoEntry();
   }
-  return final_entry;
+  return Entry(final_entry, true);
 }
 
 }
