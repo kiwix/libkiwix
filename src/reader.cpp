@@ -273,32 +273,6 @@ bool Reader::hasFulltextIndex() const
   return zimArchive->hasFulltextIndex();
 }
 
-/* Search titles by prefix */
-
-bool Reader::searchSuggestions(const string& prefix,
-                               unsigned int suggestionsCount,
-                               const bool reset)
-{
-  /* Reset the suggestions otherwise check if the suggestions number is less
-   * than the suggestionsCount */
-  if (reset) {
-    this->suggestions.clear();
-    this->suggestionsOffset = this->suggestions.begin();
-  } else {
-    if (this->suggestions.size() > suggestionsCount) {
-      return false;
-    }
-  }
-
-  auto ret =  searchSuggestions(prefix, suggestionsCount, this->suggestions);
-
-  /* Set the cursor to the begining */
-  this->suggestionsOffset = this->suggestions.begin();
-
-  return ret;
-}
-
-
 bool Reader::searchSuggestions(const string& prefix,
                                unsigned int suggestionsCount,
                                SuggestionsList_t& results)
@@ -359,19 +333,6 @@ std::vector<std::string> Reader::getTitleVariants(
 }
 
 
-bool Reader::searchSuggestionsSmart(const string& prefix,
-                                    unsigned int suggestionsCount)
-{
-  this->suggestions.clear();
-  this->suggestionsOffset = this->suggestions.begin();
-
-  auto ret = searchSuggestionsSmart(prefix, suggestionsCount, this->suggestions);
-
-  this->suggestionsOffset = this->suggestions.begin();
-
-  return ret;
-}
-
 /* Try also a few variations of the prefix to have better results */
 bool Reader::searchSuggestionsSmart(const string& prefix,
                                     unsigned int suggestionsCount,
@@ -408,38 +369,6 @@ bool Reader::searchSuggestionsSmart(const string& prefix,
   }
 
   return results.size() > 0;
-}
-
-/* Get next suggestion */
-bool Reader::getNextSuggestion(string& title)
-{
-  if (this->suggestionsOffset != this->suggestions.end()) {
-    /* title */
-    title = (*(this->suggestionsOffset)).getTitle();
-
-    /* increment the cursor for the next call */
-    this->suggestionsOffset++;
-
-    return true;
-  }
-
-  return false;
-}
-
-bool Reader::getNextSuggestion(string& title, string& url)
-{
-  if (this->suggestionsOffset != this->suggestions.end()) {
-    /* title */
-    title = (*(this->suggestionsOffset)).getTitle();
-    url = (*(this->suggestionsOffset)).getPath();
-
-    /* increment the cursor for the next call */
-    this->suggestionsOffset++;
-
-    return true;
-  }
-
-  return false;
 }
 
 /* Check if the file has as checksum */
