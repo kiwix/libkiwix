@@ -42,7 +42,6 @@ namespace kiwix
 class SuggestionItem
 {
   // Functions
-  // Temporarily making the constructor public until the code move is complete
   public:
     // Create a sugggestion item.
     explicit SuggestionItem(const std::string& title, const std::string& normalizedTitle,
@@ -66,8 +65,6 @@ class SuggestionItem
     std::string normalizedTitle;
     std::string path;
     std::string snippet;
-
-  friend class Reader;
 };
 
 /**
