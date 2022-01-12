@@ -10,7 +10,6 @@ tests = [
     'manager',
     'name_mapper',
     'opds_catalog',
-    'reader',
     'searcher'
 ]
 

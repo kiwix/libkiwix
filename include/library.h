@@ -240,7 +240,7 @@ class Library : private LibraryBase
 
   Book getBookByIdThreadSafe(const std::string& id) const;
 
-  std::shared_ptr<Reader> getReaderById(const std::string& id);
+  DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
 
   /**

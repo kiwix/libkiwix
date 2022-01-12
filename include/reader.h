@@ -73,6 +73,8 @@ class SuggestionItem
 /**
  * The Reader class is the class who allow to get an entry content from a zim
  * file.
+ *
+ * Reader is now deprecated. Directly use `zim::Archive`.
  */
 
 using SuggestionsList_t = std::vector<SuggestionItem>;
@@ -88,17 +90,17 @@ class Reader
    *                    unsplitted path as if the file were not splitted
    *                    (.zim extesion).
    */
-  explicit Reader(const string zimFilePath);
+  explicit DEPRECATED Reader(const string zimFilePath);
 
    /**
    * Create a Reader to read a zim file given by the Archive.
    *
    * @param archive The shared pointer to the Archive object.
    */
-  explicit Reader(const std::shared_ptr<zim::Archive> archive);
+  explicit DEPRECATED Reader(const std::shared_ptr<zim::Archive> archive);
 #ifndef _WIN32
-  explicit Reader(int fd);
-  Reader(int fd, zim::offset_type offset, zim::size_type size);
+  explicit DEPRECATED Reader(int fd);
+  DEPRECATED Reader(int fd, zim::offset_type offset, zim::size_type size);
 #endif
   ~Reader() = default;
 
