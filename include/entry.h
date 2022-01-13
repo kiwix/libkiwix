@@ -47,7 +47,7 @@ class Entry
      *
      * @param article a zim::Article object
      */
-    Entry(zim::Entry entry);
+    DEPRECATED Entry(zim::Entry entry) : Entry(entry, true) {};
     virtual ~Entry() = default;
 
     /**
@@ -176,6 +176,16 @@ class Entry
 
   private:
     zim::Entry entry;
+
+  private:
+    // Entry is deprecated, so we've marked the constructor as deprecated.
+    // But we still need to construct the entry (in our deprecated code)
+    // To avoid warning because we use deprecated function, we create a second
+    // constructor not deprecated. The `bool marker` is unused, it sole purpose
+    // is to change the signature to have two different constructor.
+    // This one is not deprecated and we must use it in our private code.
+    Entry(zim::Entry entry, bool marker);
+    friend class Reader;
 };
 
 }

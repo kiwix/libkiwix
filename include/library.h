@@ -240,7 +240,7 @@ class Library : private LibraryBase
 
   Book getBookByIdThreadSafe(const std::string& id) const;
 
-  std::shared_ptr<Reader> getReaderById(const std::string& id);
+  DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
 
   /**
@@ -326,17 +326,6 @@ class Library : private LibraryBase
   BookIdCollection getBooksIds() const;
 
   /**
-   * Filter the library and generate a new one with the keep elements.
-   *
-   * This is equivalent to `listBookIds(ALL, UNSORTED, search)`.
-   *
-   * @param search List only books with search in the title or description.
-   * @return The list of bookIds corresponding to the query.
-   */
-  DEPRECATED BookIdCollection filter(const std::string& search) const;
-
-
-  /**
    * Filter the library and return the id of the keep elements.
    *
    * @param filter The filter to use.
@@ -353,38 +342,6 @@ class Library : private LibraryBase
    * @return The sorted list of books
    */
   void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending) const;
-
-  /**
-   * List books in the library.
-   *
-   * @param mode The mode of listing :
-   *             - LOCAL    : list only local books (with a path).
-   *             - REMOTE   : list only remote books (with an url).
-   *             - VALID    : list only valid books (without a path or with a
-   *                          path pointing to a valid zim file).
-   *             - NOLOCAL  : list only books without valid path.
-   *             - NOREMOTE : list only books without url.
-   *             - NOVALID  : list only books not valid.
-   *             - ALL : Do not do any filter (LOCAL or REMOTE)
-   *             - Flags can be combined.
-   * @param sortBy Attribute to sort by the book list.
-   * @param search List only books with search in the title, description.
-   * @param language List only books in this language.
-   * @param creator List only books of this creator.
-   * @param publisher List only books of this publisher.
-   * @param maxSize Do not list book bigger than maxSize.
-   *                Set to 0 to cancel this filter.
-   * @return The list of bookIds corresponding to the query.
-   */
-  DEPRECATED BookIdCollection listBooksIds(
-    int supportedListMode = ALL,
-    supportedListSortBy sortBy = UNSORTED,
-    const std::string& search = "",
-    const std::string& language = "",
-    const std::string& creator = "",
-    const std::string& publisher = "",
-    const std::vector<std::string>& tags = {},
-    size_t maxSize = 0) const;
 
   /**
    * Return the current revision of the library.

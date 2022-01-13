@@ -42,7 +42,6 @@ namespace kiwix
 class SuggestionItem
 {
   // Functions
-  // Temporarily making the constructor public until the code move is complete
   public:
     // Create a sugggestion item.
     explicit SuggestionItem(const std::string& title, const std::string& normalizedTitle,
@@ -66,13 +65,13 @@ class SuggestionItem
     std::string normalizedTitle;
     std::string path;
     std::string snippet;
-
-  friend class Reader;
 };
 
 /**
  * The Reader class is the class who allow to get an entry content from a zim
  * file.
+ *
+ * Reader is now deprecated. Directly use `zim::Archive`.
  */
 
 using SuggestionsList_t = std::vector<SuggestionItem>;
@@ -88,17 +87,17 @@ class Reader
    *                    unsplitted path as if the file were not splitted
    *                    (.zim extesion).
    */
-  explicit Reader(const string zimFilePath);
+  explicit DEPRECATED Reader(const string zimFilePath);
 
    /**
    * Create a Reader to read a zim file given by the Archive.
    *
    * @param archive The shared pointer to the Archive object.
    */
-  explicit Reader(const std::shared_ptr<zim::Archive> archive);
+  explicit DEPRECATED Reader(const std::shared_ptr<zim::Archive> archive);
 #ifndef _WIN32
-  explicit Reader(int fd);
-  Reader(int fd, zim::offset_type offset, zim::size_type size);
+  explicit DEPRECATED Reader(int fd);
+  DEPRECATED Reader(int fd, zim::offset_type offset, zim::size_type size);
 #endif
   ~Reader() = default;
 
@@ -333,28 +332,6 @@ class Reader
   /**
    * Search for entries with title starting with prefix (case sensitive).
    *
-   * Suggestions are stored in an internal vector and can be retrieved using
-   * `getNextSuggestion` method.
-   * This method is not thread safe and is deprecated. Use :
-   * bool searchSuggestions(const string& prefix,
-   *                        unsigned int suggestionsCount,
-   *                        SuggestionsList_t& results);
-   *
-   * @param prefix The prefix to search.
-   * @param suggestionsCount How many suggestions to search for.
-   * @param reset If true, remove previous suggestions in the internal vector.
-   *              If false, add suggestions to the internal vector
-   *              (until internal vector size is suggestionCount (or no more
-   *               suggestion))
-   * @return True if some suggestions have been added to the internal vector.
-   */
-  DEPRECATED bool searchSuggestions(const string& prefix,
-                         unsigned int suggestionsCount,
-                         const bool reset = true);
-
-  /**
-   * Search for entries with title starting with prefix (case sensitive).
-   *
    * Suggestions are added to the `result` vector.
    *
    * @param prefix The prefix to search.
@@ -366,28 +343,6 @@ class Reader
   bool searchSuggestions(const string& prefix,
                          unsigned int suggestionsCount,
                          SuggestionsList_t& resuls);
-
-  /**
-   * Search for entries for the given prefix.
-   *
-   * If the zim file has a internal fulltext index, the suggestions will be
-   * searched using it.
-   * Else the suggestions will be search using `searchSuggestions` while trying
-   * to be smart about case sensitivity (using `getTitleVariants`).
-   *
-   * In any case, suggestions are stored in an internal vector and can be
-   * retrieved using `getNextSuggestion` method.
-   * The internal vector will be reset.
-   * This method is not thread safe and is deprecated. Use :
-   * bool searchSuggestionsSmart(const string& prefix,
-   *                             unsigned int suggestionsCount,
-   *                             SuggestionsList_t& results);
-   *
-   * @param prefix The prefix to search for.
-   * @param suggestionsCount How many suggestions to search for.
-   */
-  DEPRECATED bool searchSuggestionsSmart(const string& prefix,
-                              unsigned int suggestionsCount);
 
   /**
    * Search for entries for the given prefix.
@@ -435,22 +390,6 @@ class Reader
    */
   std::vector<std::string> getTitleVariants(const std::string& title) const;
 
-  /**
-   * Get the next suggestion title.
-   *
-   * @param[out] title the title of the suggestion.
-   * @return True if title has been set.
-   */
-  DEPRECATED bool getNextSuggestion(string& title);
-
-  /**
-   * Get the next suggestion title and url.
-   *
-   * @param[out] title the title of the suggestion.
-   * @param[out] url the url of the suggestion.
-   * @return True if title and url have been set.
-   */
-  DEPRECATED bool getNextSuggestion(string& title, string& url);
 
   /**
    * Get if we can check zim file integrity (has a checksum).
@@ -485,9 +424,6 @@ class Reader
  protected:
   std::shared_ptr<zim::Archive> zimArchive;
   std::string zimFilePath;
-
-  SuggestionsList_t suggestions;
-  SuggestionsList_t::iterator suggestionsOffset;
 
  private:
   std::map<const std::string, unsigned int> parseCounterMetadata() const;

@@ -366,15 +366,6 @@ Library::BookIdCollection Library::getBooksIds() const
   return bookIds;
 }
 
-Library::BookIdCollection Library::filter(const std::string& search) const
-{
-  if (search.empty()) {
-    return getBooksIds();
-  }
-
-  return filter(Filter().query(search));
-}
-
 
 void Library::updateBookDB(const Book& book)
 {
@@ -657,48 +648,6 @@ void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool asc
   }
 }
 
-
-Library::BookIdCollection Library::listBooksIds(
-    int mode,
-    supportedListSortBy sortBy,
-    const std::string& search,
-    const std::string& language,
-    const std::string& creator,
-    const std::string& publisher,
-    const std::vector<std::string>& tags,
-    size_t maxSize) const {
-
-  Filter _filter;
-  if (mode & LOCAL)
-    _filter.local(true);
-  if (mode & NOLOCAL)
-    _filter.local(false);
-  if (mode & VALID)
-    _filter.valid(true);
-  if (mode & NOVALID)
-    _filter.valid(false);
-  if (mode & REMOTE)
-    _filter.remote(true);
-  if (mode & NOREMOTE)
-    _filter.remote(false);
-  if (!tags.empty())
-    _filter.acceptTags(tags);
-  if (maxSize != 0)
-    _filter.maxSize(maxSize);
-  if (!language.empty())
-    _filter.lang(language);
-  if (!publisher.empty())
-    _filter.publisher(publisher);
-  if (!creator.empty())
-    _filter.creator(creator);
-  if (!search.empty())
-    _filter.query(search);
-
-  auto bookIds = filter(_filter);
-
-  sort(bookIds, sortBy, true);
-  return bookIds;
-}
 
 Filter::Filter()
   : activeFilters(0),

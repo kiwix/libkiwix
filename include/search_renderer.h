@@ -35,12 +35,24 @@ class SearchRenderer
 {
  public:
   /**
-   * The default constructor.
+   * Construct a SearchRenderer from a Searcher.
    *
-   * @param humanReadableName The global zim's humanReadableName.
-   *                          Used to generate pagination links.
+   * This method is now deprecated. Construct the renderer from a
+   * `zim::SearchResultSet`
+   *
+   * @param searcher The `Searcher` to render.
+   * @param mapper The `NameMapper` to use to do the rendering.
    */
-  SearchRenderer(Searcher* searcher, NameMapper* mapper);
+  DEPRECATED SearchRenderer(Searcher* searcher, NameMapper* mapper);
+
+  /**
+   * Construct a SearchRenderer from a SearchResultSet.
+   *
+   * @param srs The `SearchResultSet` to render.
+   * @param mapper The `NameMapper` to use to do the rendering.
+   * @param start The start offset used for the srs.
+   * @param estimatedResultCount The estimatedResultCount of the whole search
+   */
   SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
                  unsigned int start, unsigned int estimatedResultCount);
 

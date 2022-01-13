@@ -52,9 +52,10 @@ TEST(BookTest, updateFromXMLTest)
     EXPECT_EQ(book.getArticleCount(), 123456U);
     EXPECT_EQ(book.getMediaCount(), 234567U);
     EXPECT_EQ(book.getSize(), 345678U*1024U);
-    EXPECT_EQ(book.getFavicon(), "fake-book-favicon-data");
-    EXPECT_EQ(book.getFaviconMimeType(), "text/plain");
-    EXPECT_EQ(book.getFaviconUrl(), "http://who.org/zara.fav");
+    auto defaultIllustration = book.getIllustration(48);
+    EXPECT_EQ(defaultIllustration->getData(), "fake-book-favicon-data");
+    EXPECT_EQ(defaultIllustration->mimeType, "text/plain");
+    EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
 }
 
 TEST(BookTest, updateFromXMLCategoryHandlingTest)
@@ -175,8 +176,10 @@ TEST(BookTest, updateTest)
     EXPECT_EQ(newBook.getTags(), book.getTags());
     EXPECT_EQ(newBook.getCategory(), book.getCategory());
     EXPECT_EQ(newBook.getName(), book.getName());
-    EXPECT_EQ(newBook.getFavicon(), book.getFavicon());
-    EXPECT_EQ(newBook.getFaviconMimeType(), book.getFaviconMimeType());
+    auto defaultIllustration = book.getIllustration(48);
+    auto newDefaultIllustration = newBook.getIllustration(48);
+    EXPECT_EQ(newDefaultIllustration->getData(), defaultIllustration->getData());
+    EXPECT_EQ(newDefaultIllustration->mimeType, defaultIllustration->mimeType);
 }
 
 namespace

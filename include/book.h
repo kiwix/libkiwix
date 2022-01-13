@@ -24,6 +24,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include "common.h"
 
 namespace pugi {
 class xml_node;
@@ -68,7 +69,7 @@ class Book
   ~Book();
 
   bool update(const Book& other);
-  void update(const Reader& reader);
+  DEPRECATED void update(const Reader& reader);
   void update(const zim::Archive& archive);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
@@ -95,9 +96,9 @@ class Book
   const uint64_t& getArticleCount() const { return m_articleCount; }
   const uint64_t& getMediaCount() const { return m_mediaCount; }
   const uint64_t& getSize() const { return m_size; }
-  const std::string& getFavicon() const;
-  const std::string& getFaviconUrl() const;
-  const std::string& getFaviconMimeType() const;
+  DEPRECATED const std::string& getFavicon() const;
+  DEPRECATED const std::string& getFaviconUrl() const;
+  DEPRECATED const std::string& getFaviconMimeType() const;
 
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;

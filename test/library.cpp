@@ -684,9 +684,9 @@ TEST_F(LibraryTest, removeBookByIdRemovesTheBook)
 
 TEST_F(LibraryTest, removeBookByIdDropsTheReader)
 {
-  EXPECT_NE(nullptr, lib.getReaderById("raycharles"));
+  EXPECT_NE(nullptr, lib.getArchiveById("raycharles"));
   lib.removeBookById("raycharles");
-  EXPECT_THROW(lib.getReaderById("raycharles"), std::out_of_range);
+  EXPECT_THROW(lib.getArchiveById("raycharles"), std::out_of_range);
 };
 
 TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
