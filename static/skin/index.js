@@ -104,9 +104,9 @@
         if (sort) {
             divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
-        const faviconAttr = iconUrl != undefined ? `style="background-image: url('${root}${iconUrl}')"` : '';
+        const faviconAttr = iconUrl != undefined ? `style="background-image: url('${iconUrl}')"` : '';
         const languageAttr = language != '' ? '' : 'style="background-color: transparent"';
-        divTag.innerHTML = `<a class="book__link" href="${root}${link}" data-hover="Preview">
+        divTag.innerHTML = `<a class="book__link" href="${link}" data-hover="Preview">
             <div class="book__wrapper">
             <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
