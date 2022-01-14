@@ -91,6 +91,14 @@ Meson. If you want statically linked libraries, you can add
 
 Depending of you system, `ninja` may be called `ninja-build`.
 
+The android wrapper uses deprecated methods of libkiwix so it cannot be compiled
+with `werror=true` (the default). So you must pass `-Dwerror=false` to meson:
+
+```bash
+meson . build -Dwrapper=android -Dwerror=false
+ninja -C build
+```
+
 Testing
 -------
 
@@ -154,7 +162,7 @@ to use custom welcome page mention `customIndexPage` argument in `kiwix::interna
 
 to create a HTML template with custom JS you need to have a look at various OPDS based endpoints as mentioned [here](https://wiki.kiwix.org/wiki/OPDS) to load books.
 
-To use JS provided by kiwix-serve you can use the following template to start with -> 
+To use JS provided by kiwix-serve you can use the following template to start with ->
 
 ```
 <!DOCTYPE html>
@@ -184,7 +192,7 @@ To use JS provided by kiwix-serve you can use the following template to start wi
 - To get number of books listed add - `<h3 class="kiwixHomeBody__results"></h3>` under body tag.
 - To add language select box add - `<select id="languageFilter"></select>` under body tag.
 - To add language select box add - `<select id="categoryFilter"></select>` under body tag.
-- To add search box for books use following form - 
+- To add search box for books use following form -
     ```
         <form id='kiwixSearchForm'>
         <input type="text" name="q" placeholder="Search" id="searchFilter" class='kiwixSearch filter'>
