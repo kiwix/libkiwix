@@ -55,6 +55,7 @@ extern "C" {
 #include "searcher.h"
 #include "search_renderer.h"
 #include "opds_dumper.h"
+#include "i18n.h"
 
 #include <zim/uuid.h>
 #include <zim/error.h>
@@ -446,10 +447,7 @@ std::string makeFulltextSearchSuggestion(const std::string& queryString)
 {
   MustacheData data;
   data.set("SEARCH_TERMS", queryString);
-  // NOTE: Search terms are **not** HTML-escaped at this point.
-  // NOTE: HTML-escaping is performed when the result of this function
-  // NOTE: is expanded into the suggestions.json template
-  const std::string tmpl("containing '{{{SEARCH_TERMS}}}'...");
+  const std::string tmpl = getTranslatedString("en", "suggest-full-text-search");
   return render_template(tmpl, data);
 }
 
