@@ -45,6 +45,18 @@ Headers invariantHeaders(Headers headers)
   return headers;
 }
 
+// Output generated via mustache templates sometimes contains end-of-line
+// whitespace. This complicates representing the expected output of a unit-test
+// as C++ raw strings in editors that are configured to delete EOL whitespace.
+// A workaround is to put special markers (//EOLWHITESPACEMARKER) at the end
+// of such lines in the expected output string and remove them at runtime.
+// This is exactly what this function is for.
+std::string removeEOLWhitespaceMarkers(const std::string& s)
+{
+  const std::regex pattern("//EOLWHITESPACEMARKER");
+  return std::regex_replace(s, pattern, "");
+}
+
 
 class ZimFileServer
 {
@@ -444,7 +456,7 @@ TEST_F(ServerTest, ETagOfUncompressibleContentIsNotAffectedByAcceptEncoding)
 // NOTE: The "Date" header (which should belong to that list as required
 // NOTE: by RFC 7232) is not included (since the result of this function
 // NOTE: will be used to check the equality of headers from the 200 and 304
-// NOTe: responses).
+// NOTE: responses).
 Headers special304Headers(const httplib::Response& r)
 {
   Headers result;
@@ -622,6 +634,85 @@ TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
     EXPECT_EQ(206, r->status);
     EXPECT_EQ("bytes 100-200/20077", r->get_header_value("Content-Range"));
     EXPECT_EQ(r0->body, r->body);
+  }
+}
+
+TEST_F(ServerTest, suggestions)
+{
+  typedef std::pair<std::string, std::string> UrlAndExpectedResponse;
+  const std::vector<UrlAndExpectedResponse> testData{
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=thing",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "Doing His Thing",
+    "label" : "Doing His &lt;b&gt;Thing&lt;/b&gt;",
+    "kind" : "path"
+      , "path" : "A/Doing_His_Thing"
+  },
+  {
+    "value" : "We Didn&apos;t See a Thing",
+    "label" : "We Didn&apos;t See a &lt;b&gt;Thing&lt;/b&gt;",
+    "kind" : "path"
+      , "path" : "A/We_Didn&apos;t_See_a_Thing"
+  },
+  {
+    "value" : "thing ",
+    "label" : "containing &apos;thing&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=movie",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "Ray (movie)",
+    "label" : "Ray (&lt;b&gt;movie&lt;/b&gt;)",
+    "kind" : "path"
+      , "path" : "A/Ray_(movie)"
+  },
+  {
+    "value" : "movie ",
+    "label" : "containing &apos;movie&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "abracadabra ",
+    "label" : "containing &apos;abracadabra&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+    { // Test handling of & (%26 when url-encoded) in the search string
+      /* url: */ "/ROOT/suggest?content=zimfile&term=A%26B",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "A&amp;B ",
+    "label" : "containing &apos;A&amp;B&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+  };
+
+  for ( const auto& urlAndExpectedResponse : testData ) {
+    const std::string url = urlAndExpectedResponse.first;
+    const std::string expectedResponse = urlAndExpectedResponse.second;
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(r->status, 200) << ctx;
+    EXPECT_EQ(r->body, removeEOLWhitespaceMarkers(expectedResponse)) << ctx;
   }
 }
 
