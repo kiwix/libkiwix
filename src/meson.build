@@ -33,6 +33,7 @@ kiwix_sources = [
   'version.cpp'
 ]
 kiwix_sources += lib_resources
+kiwix_sources += i18n_resources
 
 if host_machine.system() == 'windows'
   kiwix_sources += 'subprocess_windows.cpp'

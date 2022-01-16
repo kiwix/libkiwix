@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+		]
+	},
+	"name":"English",
+	"suggest-full-text-search": "containing '{{{SEARCH_TERMS}}}'..."
+}

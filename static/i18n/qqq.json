@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Veloman Yunkan"
+		]
+	},
+	"name": "Current language to which the string is being translated to.",
+	"suggest-full-text-search": "Text appearing in the suggestion list that, when selected, runs a full text search instead of the title search"
+}
