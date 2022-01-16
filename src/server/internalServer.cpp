@@ -444,7 +444,13 @@ namespace
 
 std::string makeFulltextSearchSuggestion(const std::string& queryString)
 {
-  return "containing '" + queryString + "'...";
+  MustacheData data;
+  data.set("SEARCH_TERMS", queryString);
+  // NOTE: Search terms are **not** HTML-escaped at this point.
+  // NOTE: HTML-escaping is performed when the result of this function
+  // NOTE: is expanded into the suggestions.json template
+  const std::string tmpl("containing '{{{SEARCH_TERMS}}}'...");
+  return render_template(tmpl, data);
 }
 
 std::string noSuchBookErrorMsg(const std::string& bookName)
