@@ -443,11 +443,11 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
 namespace
 {
 
-std::string makeFulltextSearchSuggestion(const std::string& queryString)
+std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
 {
   MustacheData data;
   data.set("SEARCH_TERMS", queryString);
-  const std::string tmpl = getTranslatedString("en", "suggest-full-text-search");
+  const std::string tmpl = getTranslatedString(lang, "suggest-full-text-search");
   return render_template(tmpl, data);
 }
 
@@ -523,7 +523,8 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   /* Propose the fulltext search if possible */
   if (archive->hasFulltextIndex()) {
     MustacheData result;
-    result.set("label", makeFulltextSearchSuggestion(queryString));
+    const auto lang = request.get_user_language();
+    result.set("label", makeFulltextSearchSuggestion(lang, queryString));
     result.set("value", queryString + " ");
     result.set("kind", "pattern");
     result.set("first", first);

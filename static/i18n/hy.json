@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+		]
+	},
+	"name":"Հայերեն",
+	"suggest-full-text-search": "որոնել '{{{SEARCH_TERMS}}}'..."
+}

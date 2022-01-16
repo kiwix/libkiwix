@@ -1184,6 +1184,17 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra&userlang=hy",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "abracadabra ",
+    "label" : "որոնել &apos;abracadabra&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
   };
 
   for ( const auto& urlAndExpectedResponse : testData ) {

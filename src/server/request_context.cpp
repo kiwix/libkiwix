@@ -193,4 +193,9 @@ std::string RequestContext::get_query() const {
   return q;
 }
 
+std::string RequestContext::get_user_language() const
+{
+  return get_optional_param<std::string>("userlang", "en");
+}
+
 }
