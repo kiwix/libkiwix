@@ -94,7 +94,8 @@ class Reader
    *
    * @param archive The shared pointer to the Archive object.
    */
-  explicit DEPRECATED Reader(const std::shared_ptr<zim::Archive> archive);
+  explicit DEPRECATED Reader(const std::shared_ptr<zim::Archive> archive)
+   : Reader(archive, true) {};
 #ifndef _WIN32
   explicit DEPRECATED Reader(int fd);
   DEPRECATED Reader(int fd, zim::offset_type offset, zim::size_type size);
@@ -490,6 +491,15 @@ class Reader
 
  private:
   std::map<const std::string, unsigned int> parseCounterMetadata() const;
+
+  // Reader is deprecated, so we've marked the constructor as deprecated.
+  // But we still need to construct the reader (in our deprecated code)
+  // To avoid warning because we use deprecated function, we create a
+  // constructor not deprecated. The `bool marker` is unused, it sole purpose
+  // is to change the signature to have a different constructor.
+  // This one is not deprecated and we must use it in our private code.
+  Reader(const std::shared_ptr<zim::Archive> archive, bool marker);
+  friend class Library;
 };
 }
 
