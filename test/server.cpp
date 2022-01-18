@@ -322,6 +322,53 @@ TEST_F(ServerTest, 404)
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
 }
 
+TEST_F(ServerTest, RandomOnNonExistentBook)
+{
+  const auto r = zfs1_->GET("/ROOT/random?content=non-existent-book");
+  const char expectedResponse[] = R"EXPECTEDRESPONSE(<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <title>Content not found</title>
+  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
+</head>
+  <body><span class="kiwix">
+  <span id="kiwixtoolbar" class="ui-widget-header">
+    <div class="kiwix_centered">
+      <div class="kiwix_searchform">
+        <form class="kiwixsearch" method="GET" action="/ROOT/search" id="kiwixsearchform">
+          //EOLWHITESPACEMARKER
+          <label for="kiwixsearchbox">&#x1f50d;</label>
+          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ''" aria-label="Search ''">
+        </form>
+      </div>
+        <input type="checkbox" id="kiwix_button_show_toggle">
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
+        <div class="kiwix_button_cont">
+            <a id="kiwix_serve_taskbar_library_button" title="Go to welcome page" aria-label="Go to welcome page" href="/ROOT/"><button>&#x1f3e0;</button></a>
+          //EOLWHITESPACEMARKER
+        </div>
+    </div>
+  </span>
+</span>
+
+    <h1>Not Found</h1>
+    //EOLWHITESPACEMARKER
+    <p>
+      No such book: non-existent-book
+    </p>
+  </body>
+</html>
+)EXPECTEDRESPONSE";
+
+  EXPECT_EQ(r->body, removeEOLWhitespaceMarkers(expectedResponse));
+}
+
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
 {
   auto g = zfs1_->GET("/ROOT/random?content=zimfile");
