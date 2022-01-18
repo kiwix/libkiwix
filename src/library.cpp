@@ -219,7 +219,7 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
   if ( !archive )
     return nullptr;
 
-  const auto reader = make_shared<Reader>(archive);
+  const shared_ptr<Reader> reader(new Reader(archive, true));
   std::lock_guard<std::mutex> lock(m_mutex);
   m_readers[id] = reader;
   return reader;

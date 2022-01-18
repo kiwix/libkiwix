@@ -52,7 +52,7 @@ Reader::Reader(const string zimFilePath)
   srand(time(nullptr));
 }
 
-Reader::Reader(const std::shared_ptr<zim::Archive> archive)
+Reader::Reader(const std::shared_ptr<zim::Archive> archive, bool _marker)
   : zimArchive(archive),
     zimFilePath(archive->getFilename())
   {}
