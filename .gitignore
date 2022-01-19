@@ -5,3 +5,5 @@ subprojects/googletest-release*
 build/
 .vscode/
 builddir/
+.cache/
+.clangd/

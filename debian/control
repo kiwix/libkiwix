@@ -4,7 +4,7 @@ Maintainer: Kiwix team <kiwix@kiwix.org>
 Build-Depends: debhelper-compat (= 13),
  meson,
  pkg-config,
- libzim-dev (>= 6.1.8),
+ libzim-dev (>= 7.2.0),
  libcurl4-gnutls-dev,
  libicu-dev,
  libgtest-dev,
@@ -23,7 +23,7 @@ Section: libdevel
 Architecture: any
 Multi-Arch: same
 Depends: libkiwix10 (= ${binary:Version}), ${misc:Depends}, python3,
- libzim-dev (>= 6.0.0),
+ libzim-dev (>= 7.2.0),
  libicu-dev,
  libpugixml-dev,
  libcurl4-gnutls-dev,
