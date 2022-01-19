@@ -1,7 +1,68 @@
 libkiwix 10.0.0
 ===============
 
- * ...
+ This release is huge release.
+ The project has been renamed to libkiwix, it is more coherent with the library name.
+
+ * Server front page :
+  - Use js in the front page to display the available book,
+     using the OPDS stream as source. The front page is now populated only with
+     the visible books and user can search for books. (@MananJethwany #530, #541, #534)
+     (@kelson42 #628)
+  - Revamp css (@MananJethwany #559)
+  - Correctly Convert 3iso language code to 2iso (@juuz0 #672)
+
+ * Server suggestions search :
+  - Add pagination for suggestion search (@maneeshpm #591)
+  - Fix suggestion system (@MananJethwany #498)
+  - Provide the kind and path (when adapted) to the suggestion answer (@MananJethwany #464)
+  - The displayed suggestion have now highligth on the searched terms (@maneeshpm #505)
+  - Properly handle html encoding of suggestions (@veloman-yunkan #458)
+
+ * Server improvements :
+  - Remove meta endpoints (@mgautier #669)
+  - Add raw endpoints to get the raw content of a zim (@mgautierfr #646)
+  - Add details on 404 error pages (@soumyankar #490)
+  - Fix headbar insertion when `<head>` tag has attributes (@kelson42 #440)
+  - Better headbar insertion (after charset definition) (@kelson42 #442)
+
+ * New OPDS Stream v2 :
+  - Add a list of categories (@veloman-yunkan)
+  - Support for partial entries (@veloman-yunkan #602)
+  - Support multiple icons size in the OPDS stream (@veloman-yunkan #577 #630)
+  - Add language endpoint to catalog (@veloman-yunkan #553)
+  - Add illustration API to get the illustration of a book (@mgautierfr #645)
+  - OPDS search can now filter books by category (@veloman-yunkan #459)
+
+ * Library improvements :
+  - Allow the libray to be live reloaded when the library.xml changes (@veloman-yunkan #636)
+  - Properly handle removing of book from the library (@veloman-yunkan #485)
+  - Use xapian to search for books in the library (@veloman-yunkan #460, #488)
+
+ * Added methods/functions :
+  - Fix `fileExist` and introduce `fileReadable` (@juuz0 #668)
+  - Add `getVersions` and `printVersions` functions (@kelson42 #665)
+  - Add `getNetworkInterfaces()` and `getBestPublicIP()` functions (@juuz0 #622)
+  - Add `get_zimid()` method to the search result (@maneeshpm #510)
+
+ * Various improvements :
+  - Better secret value for aria2c rpc (@juuz0 #666)
+  - Avoid duplicated Archive/Reader in the Searcher (@veloman-yunkan #648)
+  - Add basic documentation (@mgautierfr #640)
+  - Do not use Reader internally (@maneeshpm #536 #576)
+  - Remove dependency headers from our public headers (@mgautierfr #574)
+  - Downloader now don't write metalink on the filesystem (@kelson42 #502)
+  - Support opening a zim file using a fd (@veloman-yukan #429)
+  - Use C++11 std::thread instead of pthread (@mgautierfr #445)
+  - [READER] Do not crash if zim file has no `Counter` metadata (@mgautierfr #449)
+  - Ensure libzim dependency is compiled with xapian (@mgautierfr #434)
+  - Support video and audio mimetype in `getMediaCount` (@kelson42 #439)
+  - Better parsing of the counterMap (@kelson42 #437)
+  - Adapt libkiwix to libzim 7.0.0 (@mgautierfr #428)
+  - Remove deprecated methods (@mgautierfr)
+  - CI: Build package for Ubuntu Hirsute, Impish and Jammy (@legoktm #431 #568) and remove Groovy
+  - Fix compilation for FreeBSD (@swills g#432)
+  - Many fixes and improvement (@MananJethwany, @maneeshpm, @veloman-yunkan, @mgautierfr)
 
 kiwix-lib 9.4.1
 ===============
