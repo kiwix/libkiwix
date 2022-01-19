@@ -20,8 +20,10 @@
 #include "gtest/gtest.h"
 #include <string>
 #include <vector>
-#include <unistd.h>
-#include <fcntl.h>
+#ifndef _WIN32
+# include <unistd.h>
+# include <fcntl.h>
+#endif
 #include "../include/tools.h"
 #include "../src/tools/pathTools.h"
 
