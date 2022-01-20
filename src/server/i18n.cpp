@@ -19,6 +19,8 @@
 
 #include "i18n.h"
 
+#include "tools/otherTools.h"
+
 #include <algorithm>
 #include <map>
 
@@ -90,5 +92,18 @@ std::string getTranslatedString(const std::string& lang, const std::string& key)
 
   return stringDb.get(lang, key);
 }
+
+namespace i18n
+{
+
+std::string expandParameterizedString(const std::string& lang,
+                                      const std::string& key,
+                                      const Parameters& params)
+{
+  const std::string tmpl = getTranslatedString(lang, key);
+  return render_template(tmpl, params);
+}
+
+} // namespace i18n
 
 } // namespace kiwix

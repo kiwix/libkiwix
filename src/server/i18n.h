@@ -21,6 +21,7 @@
 #define KIWIX_SERVER_I18N
 
 #include <string>
+#include <mustache.hpp>
 
 namespace kiwix
 {
@@ -39,6 +40,17 @@ struct I18nStringTable {
 };
 
 std::string getTranslatedString(const std::string& lang, const std::string& key);
+
+namespace i18n
+{
+
+typedef kainjow::mustache::object Parameters;
+
+std::string expandParameterizedString(const std::string& lang,
+                                      const std::string& key,
+                                      const Parameters& params);
+
+} // namespace i18n
 
 } // namespace kiwix
 
