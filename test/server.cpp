@@ -364,18 +364,59 @@ std::string makeExpected404Response(const std::string& body)
   return removeEOLWhitespaceMarkers(preBody + body + postBody);
 }
 
-TEST_F(ServerTest, RandomOnNonExistentBook)
+TEST_F(ServerTest, 404WithBodyTesting)
 {
-  const auto r = zfs1_->GET("/ROOT/random?content=non-existent-book");
-  const std::string expectedResponse = makeExpected404Response(R"(
+  typedef std::pair<std::string, std::string> UrlAndExpectedBody;
+  const std::vector<UrlAndExpectedBody> testData{
+    { /* url */ "/ROOT/random?content=non-existent-book",
+      /* expected body */ R"(
     <h1>Not Found</h1>
     //EOLWHITESPACEMARKER
     <p>
       No such book: non-existent-book
     </p>
-)");
+)"  },
 
-  EXPECT_EQ(r->body, expectedResponse);
+    { /* url */ "/ROOT/suggest?content=no-such-book&term=whatever",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    //EOLWHITESPACEMARKER
+    <p>
+      No such book: no-such-book
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/raw/no-such-book/meta/Title",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/no-such-book/meta/Title" was not found on this server.
+    </p>
+    <p>
+      No such book: no-such-book
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/raw/zimfile/XYZ",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/zimfile/XYZ" was not found on this server.
+    </p>
+    <p>
+      XYZ is not a valid request for raw content.
+    </p>
+)"  }
+  };
+
+  for ( const auto& urlAndExpectedBody : testData ) {
+    const std::string url = urlAndExpectedBody.first;
+    const std::string expectedBody = urlAndExpectedBody.second;
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(r->status, 404) << ctx;
+    EXPECT_EQ(r->body, makeExpected404Response(expectedBody)) << ctx;
+  }
 }
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
