@@ -322,10 +322,9 @@ TEST_F(ServerTest, 404)
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
 }
 
-TEST_F(ServerTest, RandomOnNonExistentBook)
+std::string makeExpected404Response(const std::string& body)
 {
-  const auto r = zfs1_->GET("/ROOT/random?content=non-existent-book");
-  const char expectedResponse[] = R"EXPECTEDRESPONSE(<!DOCTYPE html>
+  const std::string preBody = R"PREBODY(<!DOCTYPE html>
 <html>
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
@@ -356,17 +355,27 @@ TEST_F(ServerTest, RandomOnNonExistentBook)
     </div>
   </span>
 </span>
+)PREBODY";
 
+  const std::string postBody = R"POSTBODY(  </body>
+</html>
+)POSTBODY";
+
+  return removeEOLWhitespaceMarkers(preBody + body + postBody);
+}
+
+TEST_F(ServerTest, RandomOnNonExistentBook)
+{
+  const auto r = zfs1_->GET("/ROOT/random?content=non-existent-book");
+  const std::string expectedResponse = makeExpected404Response(R"(
     <h1>Not Found</h1>
     //EOLWHITESPACEMARKER
     <p>
       No such book: non-existent-book
     </p>
-  </body>
-</html>
-)EXPECTEDRESPONSE";
+)");
 
-  EXPECT_EQ(r->body, removeEOLWhitespaceMarkers(expectedResponse));
+  EXPECT_EQ(r->body, expectedResponse);
 }
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
