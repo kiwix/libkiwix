@@ -53,8 +53,12 @@
     };
 
     const humanFriendlyTitle = (title) => {
-        title = title.replace(/_/g, ' ');
-        return htmlEncode(title[0].toUpperCase() + title.slice(1));
+        if (typeof title === 'string' && title.length > 0) {
+            title = title.replace(/_/g, ' ');
+            return htmlEncode(title[0].toUpperCase() + title.slice(1));
+        } else {
+            return '';
+        }
     }
 
     function htmlEncode(str) {
@@ -238,7 +242,8 @@
             data.querySelectorAll('entry').forEach(entry => {
                 const title = getInnerHtml(entry, 'title');
                 const value = getInnerHtml(entry, valueEntryNode);
-                optionStr += `<option value="${value}">${humanFriendlyTitle(title)}</option>`;
+                const hfTitle = humanFriendlyTitle(title);
+                optionStr += (hfTitle != '') ? `<option value="${value}">${hfTitle}</option>` : '';
             });
             document.querySelector(nodeQuery).innerHTML += optionStr;
         });
