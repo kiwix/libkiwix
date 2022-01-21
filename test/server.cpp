@@ -386,6 +386,39 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
 )"  },
 
+    { /* url */ "/ROOT/catalog/",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/catalog/" was not found on this server.
+    </p>
+    <p>
+      //EOLWHITESPACEMARKER
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/catalog/invalid_endpoint",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/catalog/invalid_endpoint" was not found on this server.
+    </p>
+    <p>
+      //EOLWHITESPACEMARKER
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/invalid-book/whatever",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/invalid-book/whatever" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?pattern=whatever">whatever</a>
+    </p>
+)"  },
+
     { /* url */ "/ROOT/raw/no-such-book/meta/Title",
       /* expected body */ R"(
     <h1>Not Found</h1>
