@@ -33,6 +33,10 @@ extern "C" {
 #include "microhttpd_wrapper.h"
 }
 
+namespace zim {
+class Archive;
+} // namespace zim
+
 namespace kiwix {
 
 class InternalServer;
@@ -123,6 +127,10 @@ class ContentResponse : public Response {
     std::string m_bookName;
     std::string m_bookTitle;
  };
+
+std::unique_ptr<ContentResponse> withTaskbarInfo(const std::string& bookName,
+                                                 const zim::Archive* archive,
+                                                 std::unique_ptr<ContentResponse> r);
 
 class ItemResponse : public Response {
   public:

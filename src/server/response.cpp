@@ -25,6 +25,7 @@
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
+#include "tools/archiveTools.h"
 
 #include "string.h"
 #include <mustache.hpp>
@@ -381,6 +382,15 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
 {
   auto content = render_template(template_str, data);
   return ContentResponse::build(server, content, mimetype, isHomePage);
+}
+
+std::unique_ptr<ContentResponse> withTaskbarInfo(
+  const std::string& bookName,
+  const zim::Archive* archive,
+  std::unique_ptr<ContentResponse> r)
+{
+  r->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
+  return r;
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :

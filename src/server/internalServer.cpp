@@ -519,9 +519,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     data.set("pattern", encodeDiples(patternString));
     data.set("root", m_root);
     auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
     response->set_code(MHD_HTTP_NOT_FOUND);
-    return std::move(response);
+    return withTaskbarInfo(bookName, archive.get(), std::move(response));
   }
 
   std::shared_ptr<zim::Searcher> searcher;
@@ -591,9 +590,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
-
-    return std::move(response);
+    return withTaskbarInfo(bookName, archive.get(), std::move(response));
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     return Response::build_500(*this, e.what());
