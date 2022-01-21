@@ -38,7 +38,7 @@ namespace kiwix {
 class InternalServer;
 class RequestContext;
 
-class EntryResponse;
+class ContentResponse;
 
 class Response {
   public:
@@ -47,7 +47,7 @@ class Response {
 
     static std::unique_ptr<Response> build(const InternalServer& server);
     static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
-    static std::unique_ptr<Response> build_404(const InternalServer& server, const std::string& url, const std::string& bookName, const std::string& bookTitle, const std::string& details="");
+    static std::unique_ptr<ContentResponse> build_404(const InternalServer& server, const std::string& url, const std::string& bookName, const std::string& bookTitle, const std::string& details="");
     static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
     static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
     static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
