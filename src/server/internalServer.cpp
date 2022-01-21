@@ -720,7 +720,8 @@ InternalServer::search_catalog(const RequestContext& request,
     const auto totalResults = bookIdsToDump.size();
     const size_t count = request.get_optional_param("count", 10UL);
     const size_t startIndex = request.get_optional_param("start", 0UL);
-    bookIdsToDump = subrange(bookIdsToDump, startIndex, count);
+    const size_t intendedCount = count > 0 ? count : bookIdsToDump.size();
+    bookIdsToDump = subrange(bookIdsToDump, startIndex, intendedCount);
     opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
     return bookIdsToDump;
 }

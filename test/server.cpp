@@ -939,8 +939,11 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>0</itemsPerPage>\n"
+      "  <itemsPerPage>3</itemsPerPage>\n"
       CATALOG_LINK_TAGS
+      CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
   }
