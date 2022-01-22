@@ -657,7 +657,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
-    return Response::build_404(*this, request.get_full_url());
+    return make404Response(*this, request)
+           + make404ResponseData(request.get_full_url());
   }
 
   if (url == "v2") {

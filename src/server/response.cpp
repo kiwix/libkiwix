@@ -109,6 +109,15 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
   return response;
 }
 
+ContentResponseBlueprint make404Response(const InternalServer& server,
+                                         const RequestContext& request)
+{
+  return ContentResponseBlueprint(&server,
+                                  &request,
+                                  MHD_HTTP_NOT_FOUND,
+                                  "text/html",
+                                  RESOURCE::templates::_404_html);
+}
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
 {

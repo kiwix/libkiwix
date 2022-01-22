@@ -133,6 +133,55 @@ std::unique_ptr<ContentResponse> withTaskbarInfo(const std::string& bookName,
                                                  const zim::Archive* archive,
                                                  std::unique_ptr<ContentResponse> r);
 
+class ContentResponseBlueprint
+{
+public: // functions
+  ContentResponseBlueprint(const InternalServer* server,
+                           const RequestContext* request,
+                           int httpStatusCode,
+                           const std::string& mimeType,
+                           const std::string& templateStr)
+    : m_server(*server)
+    , m_request(*request)
+    , m_httpStatusCode(httpStatusCode)
+    , m_mimeType(mimeType)
+    , m_template(templateStr)
+  {}
+
+  ContentResponseBlueprint& operator+(kainjow::mustache::data&& data)
+  {
+    this->m_data = std::move(data);
+    return *this;
+  }
+
+  operator std::unique_ptr<ContentResponse>() const
+  {
+    auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
+    r->set_code(m_httpStatusCode);
+    return r;
+  }
+
+  operator std::unique_ptr<Response>() const
+  {
+    return operator std::unique_ptr<ContentResponse>();
+  }
+
+private: // data
+  const InternalServer& m_server;
+  const RequestContext& m_request;
+  const int m_httpStatusCode;
+  const std::string m_mimeType;
+  const std::string m_template;
+  kainjow::mustache::data m_data;
+};
+
+ContentResponseBlueprint make404Response(const InternalServer& server,
+                                         const RequestContext& request);
+
+kainjow::mustache::data make404ResponseData(const std::string& url,
+                                            const std::string& details = "");
+
+
 class ItemResponse : public Response {
   public:
     ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
