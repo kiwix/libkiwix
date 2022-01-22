@@ -387,6 +387,25 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
   return suggestions;
 }
 
+namespace
+{
+
+class UrlNotFoundMsg {};
+
+const UrlNotFoundMsg urlNotFoundMsg;
+
+ContentResponseBlueprint&& operator+(ContentResponseBlueprint&& crb,
+                                     UrlNotFoundMsg /*unused*/)
+{
+  const std::string requestUrl = crb.m_request.get_full_url();
+  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
+  const auto urlNotFoundMsgText = msgTmpl.render({"url", requestUrl});
+  crb.m_data["details"].push_back({"p", urlNotFoundMsgText});
+  return std::move(crb);
+}
+
+
+} // unnamed namespace
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
@@ -658,7 +677,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
     return make404Response(*this, request)
-           + make404ResponseData(request.get_full_url());
+           + urlNotFoundMsg;
   }
 
   if (url == "v2") {
@@ -666,7 +685,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return Response::build_404(*this, request.get_full_url());
+    return make404Response(*this, request)
+           + urlNotFoundMsg;
   }
 
   if (url == "searchdescription.xml") {

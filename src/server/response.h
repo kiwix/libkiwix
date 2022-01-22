@@ -166,7 +166,7 @@ public: // functions
     return operator std::unique_ptr<ContentResponse>();
   }
 
-private: // data
+public: //data
   const InternalServer& m_server;
   const RequestContext& m_request;
   const int m_httpStatusCode;
