@@ -92,11 +92,17 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
   }
   data.set("details", details);
 
+  return build_404(server, data);
+}
+
+std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const kainjow::mustache::data& data)
+{
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, data, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
 
   return response;
 }
+
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
 {
