@@ -86,13 +86,13 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
 
 std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
 {
-  MustacheData results;
+  MustacheData data;
   if ( !url.empty() ) {
-    results.set("url", url);
+    data.set("url", url);
   }
-  results.set("details", details);
+  data.set("details", details);
 
-  auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
+  auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, data, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
 
   return response;
