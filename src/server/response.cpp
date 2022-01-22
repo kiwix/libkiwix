@@ -84,7 +84,7 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
+kainjow::mustache::data make404ResponseData(const std::string& url, const std::string& details)
 {
   kainjow::mustache::list pList;
   if ( !url.empty() ) {
@@ -93,8 +93,12 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
     pList.push_back({"p", urlNotFoundMsg});
   }
   pList.push_back({"p", details});
+  return {"details", pList};
+}
 
-  return build_404(server, {"details", pList});
+std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
+{
+  return build_404(server, make404ResponseData(url, details));
 }
 
 std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const kainjow::mustache::data& data)
