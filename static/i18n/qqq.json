@@ -11,4 +11,5 @@
 	, "suggest-search" : "Suggest a search when the URL points to a non existing article"
 	, "random-article-failure" :  "Failure of the random article selection procedure"
 	, "invalid-raw-data-type" : "Invalid DATATYPE was used with the /raw endpoint (/raw/<book>/DATATYPE/...); allowed values are 'meta' and 'content'"
+	, "raw-entry-not-found" : "Entry requested via the /raw endpoint was not found"
 }

@@ -10,4 +10,5 @@
 	, "suggest-search" : "Make a full text search for <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>"
 	, "random-article-failure" :  "Oops! Failed to pick a random article :("
 	, "invalid-raw-data-type" : "{{DATATYPE}} is not a valid request for raw content."
+	, "raw-entry-not-found" : "Cannot find {{DATATYPE}} entry {{ENTRY}}"
 }

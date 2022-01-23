@@ -467,6 +467,16 @@ ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
   return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
 }
 
+ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::string& entry)
+{
+  return ParameterizedMessage("raw-entry-not-found",
+                              {
+                                {"DATATYPE", dt},
+                                {"ENTRY", entry},
+                              }
+  );
+}
+
 ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
 {
   return ParameterizedMessage(msgId, {});
@@ -967,10 +977,9 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
     if (m_verbose.load()) {
       printf("Failed to find %s\n", itemPath.c_str());
     }
-    const std::string error_details = "Cannot find " + kind + " entry " + itemPath;
     return HTTP404HtmlResponse(*this, request)
            + urlNotFoundMsg
-           + error_details;
+           + rawEntryNotFoundMsg(kind, itemPath);
   }
 }
 
