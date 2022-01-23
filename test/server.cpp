@@ -532,7 +532,33 @@ TEST_F(ServerTest, 404WithBodyTesting)
     <p>
       XYZ is not a valid request for raw content.
     </p>
-)"  }
+)"  },
+
+    { /* url */ "/ROOT/raw/zimfile/meta/invalid-metadata",
+      /* book name */  "zimfile",
+      /* book title */ "Ray Charles",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/zimfile/meta/invalid-metadata" was not found on this server.
+    </p>
+    <p>
+      Cannot find meta entry invalid-metadata
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/raw/zimfile/content/invalid-article",
+      /* book name */  "zimfile",
+      /* book title */ "Ray Charles",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/zimfile/content/invalid-article" was not found on this server.
+    </p>
+    <p>
+      Cannot find content entry invalid-article
+    </p>
+)"  },
   };
 
   for ( const auto& t : testData ) {
