@@ -111,6 +111,13 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
 
 extern const UrlNotFoundMsg urlNotFoundMsg;
 
+std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
+{
+  auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
+  r->set_code(m_httpStatusCode);
+  return r;
+}
+
 HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
                                          const RequestContext& request)
   : ContentResponseBlueprint(&server,

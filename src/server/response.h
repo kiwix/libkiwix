@@ -161,17 +161,13 @@ public: // functions
     return generateResponseObject();
   }
 
-  virtual std::unique_ptr<ContentResponse> generateResponseObject() const
-  {
-    auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
-    r->set_code(m_httpStatusCode);
-    return r;
-  }
-
   operator std::unique_ptr<Response>() const
   {
     return operator std::unique_ptr<ContentResponse>();
   }
+
+protected: // functions
+  virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 public: //data
   const InternalServer& m_server;
