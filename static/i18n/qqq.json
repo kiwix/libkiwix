@@ -8,4 +8,5 @@
 	"suggest-full-text-search": "Text appearing in the suggestion list that, when selected, runs a full text search instead of the title search"
 	, "no-such-book": "Error text when the requested book is not found in the library"
 	, "url-not-found" : "Error text about wrong URL for an HTTP 404 error"
+	, "suggest-search" : "Suggest a search when the URL points to a non existing article"
 }

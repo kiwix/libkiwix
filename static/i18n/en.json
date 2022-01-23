@@ -7,4 +7,5 @@
 	"suggest-full-text-search": "containing '{{{SEARCH_TERMS}}}'..."
 	, "no-such-book": "No such book: {{BOOK_NAME}}"
 	, "url-not-found" : "The requested URL \"{{url}}\" was not found on this server."
+	, "suggest-search" : "Make a full text search for <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>"
 }

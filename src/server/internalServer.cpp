@@ -823,13 +823,18 @@ std::string get_book_name(const RequestContext& request)
   }
 }
 
+ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::string& pattern)
+{
+  return ParameterizedMessage("suggest-search",
+                              {
+                                { "PATTERN",    pattern   },
+                                { "SEARCH_URL", searchURL }
+                              });
+}
+
 std::string searchSuggestionHTML(const std::string& searchURL, const std::string& pattern)
 {
-  kainjow::mustache::mustache tmpl("Make a full text search for <a href=\"{{{searchURL}}}\">{{pattern}}</a>");
-  MustacheData data;
-  data.set("pattern", pattern);
-  data.set("searchURL", searchURL);
-  return (tmpl.render(data));
+  return suggestSearchMsg(searchURL, pattern).getText("en");
 }
 
 } // unnamed namespace
@@ -863,7 +868,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404HtmlResponse(*this, request)
            + urlNotFoundMsg
-           + searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern))
+           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern))
            + TaskbarInfo(bookName);
   }
 
