@@ -572,8 +572,9 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  },
 
     { /* url */ "/ROOT/random?content=non-existent-book&userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
       expected_body==R"(
-    <h1>Not Found</h1>
+    <h1>Սխալ հասցե</h1>
     <p>
       Գիրքը բացակայում է՝ non-existent-book
     </p>
@@ -596,8 +597,9 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  },
 
     { /* url */ "/ROOT/catalog/?userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
       expected_body==R"(
-    <h1>Not Found</h1>
+    <h1>Սխալ հասցե</h1>
     <p>
       Սխալ հասցե՝ /ROOT/catalog/
     </p>
@@ -612,8 +614,9 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  },
 
     { /* url */ "/ROOT/catalog/invalid_endpoint?userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
       expected_body==R"(
-    <h1>Not Found</h1>
+    <h1>Սխալ հասցե</h1>
     <p>
       Սխալ հասցե՝ /ROOT/catalog/invalid_endpoint
     </p>

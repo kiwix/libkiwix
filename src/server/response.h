@@ -167,6 +167,7 @@ public: // functions
   ContentResponseBlueprint& operator+(const TaskbarInfo& taskbarInfo);
 
 protected: // functions
+  std::string getMessage(const std::string& msgId) const;
   virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 public: //data
@@ -184,8 +185,8 @@ struct HTTPErrorHtmlResponse : ContentResponseBlueprint
   HTTPErrorHtmlResponse(const InternalServer& server,
                       const RequestContext& request,
                       int httpStatusCode,
-                      const std::string& pageTitleMsg,
-                      const std::string& headingMsg,
+                      const std::string& pageTitleMsgId,
+                      const std::string& headingMsgId,
                       const std::string& cssUrl = "");
 
   using ContentResponseBlueprint::operator+;

@@ -12,4 +12,11 @@
 	, "random-article-failure" :  "Failure of the random article selection procedure"
 	, "invalid-raw-data-type" : "Invalid DATATYPE was used with the /raw endpoint (/raw/<book>/DATATYPE/...); allowed values are 'meta' and 'content'"
 	, "raw-entry-not-found" : "Entry requested via the /raw endpoint was not found"
+	, "400-page-title" : "Title of the 400 error page"
+	, "400-page-heading" : "Heading of the 400 error page"
+	, "404-page-title" : "Title of the 404 error page"
+	, "404-page-heading" : "Heading of the 404 error page"
+	, "500-page-title" : "Title of the 500 error page"
+	, "500-page-heading" : "Heading of the 500 error page"
+	, "fulltext-search-unavailable" : "Title of the error page returned when search is attempted in a book without fulltext search database"
 }

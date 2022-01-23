@@ -11,4 +11,11 @@
 	, "random-article-failure" :  "Oops! Failed to pick a random article :("
 	, "invalid-raw-data-type" : "{{DATATYPE}} is not a valid request for raw content."
 	, "raw-entry-not-found" : "Cannot find {{DATATYPE}} entry {{ENTRY}}"
+	, "400-page-title" : "Invalid request"
+	, "400-page-heading" : "Invalid request"
+	, "404-page-title" : "Content not found"
+	, "404-page-heading" : "Not Found"
+	, "500-page-title" : "Internal Server Error"
+	, "500-page-heading" : "Internal Server Error"
+	, "fulltext-search-unavailable" : "Fulltext search unavailable"
 }

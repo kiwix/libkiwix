@@ -628,8 +628,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
       // (in case of zim file not containing a index)
       return HTTPErrorHtmlResponse(*this, request, MHD_HTTP_NOT_FOUND,
-                                   "Fulltext search unavailable",
-                                   "Not Found",
+                                   "fulltext-search-unavailable",
+                                   "404-page-heading",
                                    m_root + "/skin/search_results.css")
            + noSearchResultsMsg()
            + TaskbarInfo(searchInfo.bookName, archive.get());
