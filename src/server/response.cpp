@@ -84,31 +84,6 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-kainjow::mustache::data make404ResponseData(const std::string& url, const std::string& details)
-{
-  kainjow::mustache::list pList;
-  if ( !url.empty() ) {
-    kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
-    const auto urlNotFoundMsg = msgTmpl.render({"url", url});
-    pList.push_back({"p", urlNotFoundMsg});
-  }
-  pList.push_back({"p", details});
-  return {"details", pList};
-}
-
-std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
-{
-  return build_404(server, make404ResponseData(url, details));
-}
-
-std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const kainjow::mustache::data& data)
-{
-  auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, data, "text/html");
-  response->set_code(MHD_HTTP_NOT_FOUND);
-
-  return response;
-}
-
 const UrlNotFoundMsg urlNotFoundMsg;
 const InvalidUrlMsg invalidUrlMsg;
 

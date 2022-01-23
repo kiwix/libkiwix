@@ -42,8 +42,6 @@ namespace kiwix {
 class InternalServer;
 class RequestContext;
 
-class ContentResponse;
-
 class Response {
   public:
     Response(bool verbose);
@@ -51,8 +49,6 @@ class Response {
 
     static std::unique_ptr<Response> build(const InternalServer& server);
     static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
-    static std::unique_ptr<ContentResponse> build_404(const InternalServer& server, const kainjow::mustache::data& data);
-    static std::unique_ptr<ContentResponse> build_404(const InternalServer& server, const std::string& url, const std::string& details="");
     static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
     static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
     static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
@@ -160,12 +156,6 @@ public: // functions
   {}
 
   virtual ~ContentResponseBlueprint() = default;
-
-  ContentResponseBlueprint& operator+(kainjow::mustache::data&& data)
-  {
-    this->m_data = std::move(data);
-    return *this;
-  }
 
   operator std::unique_ptr<ContentResponse>() const
   {
