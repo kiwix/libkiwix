@@ -387,26 +387,6 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
   return suggestions;
 }
 
-namespace
-{
-
-class UrlNotFoundMsg {};
-
-const UrlNotFoundMsg urlNotFoundMsg;
-
-ContentResponseBlueprint&& operator+(ContentResponseBlueprint&& crb,
-                                     UrlNotFoundMsg /*unused*/)
-{
-  const std::string requestUrl = crb.m_request.get_full_url();
-  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
-  const auto urlNotFoundMsgText = msgTmpl.render({"url", requestUrl});
-  crb.m_data["details"].push_back({"p", urlNotFoundMsgText});
-  return std::move(crb);
-}
-
-
-} // unnamed namespace
-
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
   if (m_verbose.load()) {

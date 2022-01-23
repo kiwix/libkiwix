@@ -175,10 +175,16 @@ public: //data
   kainjow::mustache::data m_data;
 };
 
+class UrlNotFoundMsg {};
+
+extern const UrlNotFoundMsg urlNotFoundMsg;
+
 struct HTTP404HtmlResponse : ContentResponseBlueprint
 {
   HTTP404HtmlResponse(const InternalServer& server,
                       const RequestContext& request);
+
+  HTTP404HtmlResponse& operator+(UrlNotFoundMsg /*unused*/);
 };
 
 class ItemResponse : public Response {
