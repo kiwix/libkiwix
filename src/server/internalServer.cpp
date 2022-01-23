@@ -462,6 +462,11 @@ std::string noSearchResultsMsg()
   return "The fulltext search engine is not available for this content.";
 }
 
+ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
+{
+  return ParameterizedMessage(msgId, {});
+}
+
 } // unnamed namespace
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
@@ -680,9 +685,8 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     auto entry = archive->getRandomEntry();
     return build_redirect(bookName, getFinalItem(*archive, entry));
   } catch(zim::EntryNotFound& e) {
-    const std::string error_details = "Oops! Failed to pick a random article :(";
     return HTTP404HtmlResponse(*this, request)
-           + error_details
+           + nonParameterizedMessage("random-article-failure")
            + TaskbarInfo(bookName, archive.get());
   }
 }
