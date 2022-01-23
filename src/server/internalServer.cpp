@@ -832,11 +832,6 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
                               });
 }
 
-std::string searchSuggestionHTML(const std::string& searchURL, const std::string& pattern)
-{
-  return suggestSearchMsg(searchURL, pattern).getText("en");
-}
-
 } // unnamed namespace
 
 std::unique_ptr<Response>
@@ -902,7 +897,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404HtmlResponse(*this, request)
            + urlNotFoundMsg
-           + searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern))
+           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern))
            + TaskbarInfo(bookName, archive.get());
   }
 }
