@@ -322,9 +322,23 @@ TEST_F(ServerTest, 404)
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
 }
 
-std::string makeExpected404Response(const std::string& body)
+struct TestContentIn404HtmlResponse
 {
-  const std::string preBody = R"PREBODY(<!DOCTYPE html>
+  TestContentIn404HtmlResponse(const std::string& url,
+                               const std::string& expectedBody)
+    : url(url)
+    , expectedBody(expectedBody)
+  {}
+
+  std::string url, expectedBody;
+
+  std::string expectedResponse() const;
+};
+
+std::string TestContentIn404HtmlResponse::expectedResponse() const
+{
+  const std::string frag[] =  {
+    R"FRAG(<!DOCTYPE html>
 <html>
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
@@ -341,33 +355,47 @@ std::string makeExpected404Response(const std::string& body)
     <div class="kiwix_centered">
       <div class="kiwix_searchform">
         <form class="kiwixsearch" method="GET" action="/ROOT/search" id="kiwixsearchform">
-          //EOLWHITESPACEMARKER
+          )FRAG",
+
+  R"FRAG(
           <label for="kiwixsearchbox">&#x1f50d;</label>
-          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ''" aria-label="Search ''">
-        </form>
+)FRAG",
+
+  R"FRAG(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ''" aria-label="Search ''">
+)FRAG",
+
+  R"FRAG(        </form>
       </div>
         <input type="checkbox" id="kiwix_button_show_toggle">
         <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
         <div class="kiwix_button_cont">
             <a id="kiwix_serve_taskbar_library_button" title="Go to welcome page" aria-label="Go to welcome page" href="/ROOT/"><button>&#x1f3e0;</button></a>
-          //EOLWHITESPACEMARKER
+          )FRAG",
+
+  R"FRAG(
         </div>
     </div>
   </span>
 </span>
-)PREBODY";
+)FRAG",
 
-  const std::string postBody = R"POSTBODY(  </body>
+  R"FRAG(  </body>
 </html>
-)POSTBODY";
+)FRAG"
+  };
 
-  return removeEOLWhitespaceMarkers(preBody + body + postBody);
+  return frag[0]
+       + frag[1]
+       + frag[2]
+       + frag[3]
+       + frag[4]
+       + removeEOLWhitespaceMarkers(expectedBody)
+       + frag[5];
 }
 
 TEST_F(ServerTest, 404WithBodyTesting)
 {
-  typedef std::pair<std::string, std::string> UrlAndExpectedBody;
-  const std::vector<UrlAndExpectedBody> testData{
+  const std::vector<TestContentIn404HtmlResponse> testData{
     { /* url */ "/ROOT/random?content=non-existent-book",
       /* expected body */ R"(
     <h1>Not Found</h1>
@@ -442,13 +470,11 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  }
   };
 
-  for ( const auto& urlAndExpectedBody : testData ) {
-    const std::string url = urlAndExpectedBody.first;
-    const std::string expectedBody = urlAndExpectedBody.second;
-    const TestContext ctx{ {"url", url} };
-    const auto r = zfs1_->GET(url.c_str());
+  for ( const auto& t : testData ) {
+    const TestContext ctx{ {"url", t.url} };
+    const auto r = zfs1_->GET(t.url.c_str());
     EXPECT_EQ(r->status, 404) << ctx;
-    EXPECT_EQ(r->body, makeExpected404Response(expectedBody)) << ctx;
+    EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
   }
 }
 
