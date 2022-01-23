@@ -462,6 +462,11 @@ std::string noSearchResultsMsg()
   return "The fulltext search engine is not available for this content.";
 }
 
+ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
+{
+  return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
+}
+
 ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
 {
   return ParameterizedMessage(msgId, {});
@@ -924,10 +929,9 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   }
 
   if (kind != "meta" && kind!= "content") {
-    const std::string error_details = kind + " is not a valid request for raw content.";
     return HTTP404HtmlResponse(*this, request)
            + urlNotFoundMsg
-           + error_details;
+           + invalidRawAccessMsg(kind);
   }
 
   std::shared_ptr<zim::Archive> archive;

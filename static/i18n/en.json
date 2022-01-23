@@ -9,4 +9,5 @@
 	, "url-not-found" : "The requested URL \"{{url}}\" was not found on this server."
 	, "suggest-search" : "Make a full text search for <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>"
 	, "random-article-failure" :  "Oops! Failed to pick a random article :("
+	, "invalid-raw-data-type" : "{{DATATYPE}} is not a valid request for raw content."
 }
