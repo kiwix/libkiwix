@@ -109,17 +109,16 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
   return response;
 }
 
-ContentResponseBlueprint make404Response(const InternalServer& server,
+HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
                                          const RequestContext& request)
+  : ContentResponseBlueprint(&server,
+                             &request,
+                             MHD_HTTP_NOT_FOUND,
+                             "text/html",
+                             RESOURCE::templates::_404_html)
 {
-  auto crb = ContentResponseBlueprint(&server,
-                                      &request,
-                                      MHD_HTTP_NOT_FOUND,
-                                      "text/html",
-                                      RESOURCE::templates::_404_html);
-
   kainjow::mustache::list emptyList;
-  return crb + kainjow::mustache::object{{"details", emptyList}};
+  this->m_data = kainjow::mustache::object{{"details", emptyList}};
 }
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)

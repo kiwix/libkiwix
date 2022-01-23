@@ -676,7 +676,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
-    return make404Response(*this, request)
+    return HTTP404HtmlResponse(*this, request)
            + urlNotFoundMsg;
   }
 
@@ -685,7 +685,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return make404Response(*this, request)
+    return HTTP404HtmlResponse(*this, request)
            + urlNotFoundMsg;
   }
 

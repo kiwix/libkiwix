@@ -175,12 +175,11 @@ public: //data
   kainjow::mustache::data m_data;
 };
 
-ContentResponseBlueprint make404Response(const InternalServer& server,
-                                         const RequestContext& request);
-
-kainjow::mustache::data make404ResponseData(const std::string& url,
-                                            const std::string& details = "");
-
+struct HTTP404HtmlResponse : ContentResponseBlueprint
+{
+  HTTP404HtmlResponse(const InternalServer& server,
+                      const RequestContext& request);
+};
 
 class ItemResponse : public Response {
   public:
