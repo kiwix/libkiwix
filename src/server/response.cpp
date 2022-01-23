@@ -106,7 +106,11 @@ HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
                              RESOURCE::templates::_404_html)
 {
   kainjow::mustache::list emptyList;
-  this->m_data = kainjow::mustache::object{{"details", emptyList}};
+  this->m_data = kainjow::mustache::object{
+                    {"PAGE_TITLE",   "Content not found"},
+                    {"PAGE_HEADING", "Not Found"},
+                    {"details", emptyList}
+  };
 }
 
 HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
