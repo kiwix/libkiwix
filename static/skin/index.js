@@ -322,7 +322,7 @@
         booksToDelete.forEach(book => {iso.remove(book);});
         books.forEach((book) => {
             iso.insert(generateBookHtml(book, sort))
-            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download`);
+            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download span`);
             if (downloadButton) {
                 insertModal(downloadButton);
             }
