@@ -55,10 +55,11 @@
     const humanFriendlyTitle = (title) => {
         if (typeof title === 'string' && title.length > 0) {
             title = title.replace(/_/g, ' ');
-            return htmlEncode(title[0].toUpperCase() + title.slice(1));
-        } else {
-            return '';
+            if (title.length > 0) {
+                return htmlEncode(title[0].toUpperCase() + title.slice(1));
+            }
         }
+        return '';
     }
 
     function htmlEncode(str) {
