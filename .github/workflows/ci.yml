@@ -8,10 +8,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
-      - name: Setup python 3.5
-        uses: actions/setup-python@v1
+      - name: Setup python 3.10
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.5'
+          python-version: '3.10'
       - name: Install packages
         run: |
           brew update
@@ -37,17 +37,8 @@ jobs:
           export LD_LIBRARY_PATH=$HOME/BUILD_native_dyn/INSTALL/lib:$HOME/BUILD_native_dyn/INSTALL/lib64
           cd build
           meson test --verbose
-          ninja coverage
         env:
           SKIP_BIG_MEMORY_TEST: 1
-      - name: Publish coverage
-        shell: bash
-        run: |
-          curl https://codecov.io/bash -o codecov.sh
-          bash codecov.sh -n osx_native_dyn -Z
-          rm codecov.sh
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   Linux:
     strategy:
