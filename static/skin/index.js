@@ -16,6 +16,7 @@
     let filters = getCookie(filterCookieName);
     let params = new URLSearchParams(window.location.search || filters || '');
     let timer;
+    let languages = {};
 
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
@@ -87,7 +88,8 @@
         const title =  getInnerHtml(book, 'title');
         const description = getInnerHtml(book, 'summary');
         const id = getInnerHtml(book, 'id');
-        const language = getInnerHtml(book, 'language');
+        const langCode = getInnerHtml(book, 'language');
+        const language = languages[langCode];
         const tags = getInnerHtml(book, 'tags');
         let tagHtml = tags.split(';').filter(tag => {return !(tag.split(':')[0].startsWith('_'))})
             .map((tag) => {return tag.charAt(0).toUpperCase() + tag.slice(1)})
@@ -110,7 +112,7 @@
             divTag.setAttribute('data-idx', bookOrderMap.get(id));
         }
         const faviconAttr = iconUrl != undefined ? `style="background-image: url('${iconUrl}')"` : '';
-        const languageAttr = language != '' ? '' : 'style="background-color: transparent"';
+        const languageAttr = langCode != '' ? `title="${language}" aria-label="${language}"` : 'style="background-color: transparent"';
         divTag.innerHTML = `<a class="book__link" href="${link}" data-hover="Preview">
             <div class="book__wrapper">
             <div class="book__icon" ${faviconAttr}></div>
@@ -119,7 +121,7 @@
                 ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
-            <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(language)}</div>
+            <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(langCode)}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
             </div></div></a>`;
         return divTag;
@@ -244,6 +246,7 @@
                 const title = getInnerHtml(entry, 'title');
                 const value = getInnerHtml(entry, valueEntryNode);
                 const hfTitle = humanFriendlyTitle(title);
+                languages[value] = hfTitle;
                 optionStr += (hfTitle != '') ? `<option value="${value}">${hfTitle}</option>` : '';
             });
             document.querySelector(nodeQuery).innerHTML += optionStr;
@@ -396,9 +399,9 @@
         footer = document.getElementById('kiwixfooter');
         fadeOutDiv = document.getElementById('fadeOut');
         loader = document.querySelector('.loader');
-        await loadAndDisplayBooks();
         await loadAndDisplayOptions('#languageFilter', `${root}/catalog/v2/languages`, 'language');
         await loadAndDisplayOptions('#categoryFilter', `${root}/catalog/v2/categories`, 'title');
+        await loadAndDisplayBooks();
         document.querySelectorAll('.filter').forEach(filter => {
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
