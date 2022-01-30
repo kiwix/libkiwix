@@ -22,4 +22,5 @@
 	, "library-button-text": "Go to welcome page"
 	, "home-button-text": "Go to the main page of '{{BOOK_TITLE}}'"
 	, "random-page-button-text": "Go to a randomly selected page"
+	, "searchbox-tooltip": "Search '{{BOOK_TITLE}}'"
 }

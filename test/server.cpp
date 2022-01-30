@@ -520,11 +520,15 @@ std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
 
 std::string TestContentIn404HtmlResponse::searchPatternInput() const
 {
-  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ')"
-       + bookTitle
-       + R"('" aria-label="Search ')"
-       + bookTitle
-       + R"('">
+  const std::string searchboxTooltip = isTranslatedVersion()
+                                     ? "Որոնել '" + bookTitle + "'֊ում"
+                                     : "Search '" + bookTitle + "'";
+
+  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title=")"
+       + searchboxTooltip
+       + R"(" aria-label=")"
+       + searchboxTooltip
+       + R"(">
 )";
 }
 

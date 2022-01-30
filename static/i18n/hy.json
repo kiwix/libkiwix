@@ -13,4 +13,5 @@
 	, "library-button-text": "Գրադարանի էջ"
 	, "home-button-text": "Դեպի '{{BOOK_TITLE}}'֊ի գլխավոր էջը"
 	, "random-page-button-text": "Բացել պատահական էջ"
+	, "searchbox-tooltip": "Որոնել '{{BOOK_TITLE}}'֊ում"
 }

@@ -292,6 +292,7 @@ void ContentResponse::introduce_taskbar(const std::string& lang)
     {"LIBRARY_BUTTON_TEXT", t("library-button-text")},
     {"HOME_BUTTON_TEXT", t("home-button-text", {{"BOOK_TITLE", m_bookTitle}}) },
     {"RANDOM_PAGE_BUTTON_TEXT", t("random-page-button-text") },
+    {"SEARCHBOX_TOOLTIP", t("searchbox-tooltip", {{"BOOK_TITLE", m_bookTitle}}) },
   };
   auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
   m_content = prependToFirstOccurence(

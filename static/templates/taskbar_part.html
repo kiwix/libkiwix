@@ -5,7 +5,7 @@
         <form class="kiwixsearch" method="GET" action="{{root}}/search" id="kiwixsearchform">
           {{#hascontent}}<input type="hidden" name="content" value="{{content}}" />{{/hascontent}}
           <label for="kiwixsearchbox">&#x1f50d;</label>
-          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search '{{title}}'" aria-label="Search '{{title}}'">
+          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="{{{SEARCHBOX_TOOLTIP}}}" aria-label="{{{SEARCHBOX_TOOLTIP}}}">
         </form>
       </div>
         <input type="checkbox" id="kiwix_button_show_toggle">
