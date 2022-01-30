@@ -97,30 +97,45 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
   return r;
 }
 
-HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
-                                         const RequestContext& request)
+HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
+                                             const RequestContext& request,
+                                             int httpStatusCode,
+                                             const std::string& templateStr,
+                                             const std::string& pageTitleMsg,
+                                             const std::string& headingMsg)
   : ContentResponseBlueprint(&server,
                              &request,
-                             MHD_HTTP_NOT_FOUND,
-                             "text/html",
-                             RESOURCE::templates::_404_html)
+                             httpStatusCode,
+                             "text/html; charset=utf-8",
+                             templateStr)
 {
   kainjow::mustache::list emptyList;
   this->m_data = kainjow::mustache::object{
-                    {"PAGE_TITLE",   "Content not found"},
-                    {"PAGE_HEADING", "Not Found"},
+                    {"PAGE_TITLE",   pageTitleMsg},
+                    {"PAGE_HEADING", headingMsg},
                     {"details", emptyList}
   };
 }
 
-HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
+HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
+                                             const RequestContext& request)
+  : HTTPErrorHtmlResponse(server,
+                          request,
+                          MHD_HTTP_NOT_FOUND,
+                          RESOURCE::templates::_404_html,
+                          "Content not found",
+                          "Not Found")
+{
+}
+
+HTTPErrorHtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
 {
   const std::string requestUrl = m_request.get_full_url();
   kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
   return *this + msgTmpl.render({"url", requestUrl});
 }
 
-HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
+HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
 {
   m_data["details"].push_back({"p", msg});
   return *this;
