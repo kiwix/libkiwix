@@ -411,11 +411,13 @@ public:
   std::string expectedResponse() const;
 
 private:
+  bool isTranslatedVersion() const;
   virtual std::string pageTitle() const;
   std::string pageCssLink() const;
   std::string hiddenBookNameInput() const;
   std::string searchPatternInput() const;
   std::string taskbarLinks() const;
+  std::string goToWelcomePageText() const;
 };
 
 std::string TestContentIn404HtmlResponse::expectedResponse() const
@@ -454,7 +456,11 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
         <input type="checkbox" id="kiwix_button_show_toggle">
         <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
         <div class="kiwix_button_cont">
-            <a id="kiwix_serve_taskbar_library_button" title="Go to welcome page" aria-label="Go to welcome page" href="/ROOT/"><button>&#x1f3e0;</button></a>
+            <a id="kiwix_serve_taskbar_library_button" title=")FRAG",
+
+  R"FRAG(" aria-label=")FRAG",
+
+  R"FRAG(" href="/ROOT/"><button>&#x1f3e0;</button></a>
           )FRAG",
 
   R"FRAG(
@@ -478,10 +484,14 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
        + frag[3]
        + searchPatternInput()
        + frag[4]
-       + taskbarLinks()
+       + goToWelcomePageText()
        + frag[5]
-       + removeEOLWhitespaceMarkers(expectedBody)
-       + frag[6];
+       + goToWelcomePageText()
+       + frag[6]
+       + taskbarLinks()
+       + frag[7]
+       + expectedBody
+       + frag[8];
 }
 
 std::string TestContentIn404HtmlResponse::pageTitle() const
@@ -538,6 +548,19 @@ std::string TestContentIn404HtmlResponse::taskbarLinks() const
        + R"("><button>&#x1F3B2;</button></a>)";
 }
 
+bool TestContentIn404HtmlResponse::isTranslatedVersion() const
+{
+  return url.find("userlang=hy") != std::string::npos;
+}
+
+std::string TestContentIn404HtmlResponse::goToWelcomePageText() const
+{
+  return isTranslatedVersion()
+       ? "Գրադարանի էջ"
+       : "Go to welcome page";
+}
+
+
 class TestContentIn400HtmlResponse : public TestContentIn404HtmlResponse
 {
 public:
@@ -555,7 +578,6 @@ std::string TestContentIn400HtmlResponse::pageTitle() const {
      ? "Invalid request"
      : expectedPageTitle;
 }
-
 
 } // namespace TestingOfHtmlResponses
 
