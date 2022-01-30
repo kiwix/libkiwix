@@ -533,11 +533,15 @@ std::string TestContentIn404HtmlResponse::taskbarLinks() const
   if ( bookName.empty() )
     return "";
 
-  return R"(<a id="kiwix_serve_taskbar_home_button" title="Go to the main page of ')"
-       + bookTitle
-       + R"('" aria-label="Go to the main page of ')"
-       + bookTitle
-       + R"('" href="/ROOT/)"
+  const auto goToMainPageOfBook = isTranslatedVersion()
+                                ? "Դեպի '" + bookTitle + "'֊ի գլխավոր էջը"
+                                : "Go to the main page of '" + bookTitle + "'";
+
+  return R"(<a id="kiwix_serve_taskbar_home_button" title=")"
+       + goToMainPageOfBook
+       + R"(" aria-label=")"
+       + goToMainPageOfBook
+       + R"(" href="/ROOT/)"
        + bookName
        + R"(/"><button>)"
        + bookTitle
@@ -689,6 +693,20 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
     <p>
       Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/zimfile/invalid-article?userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
+      book_name=="zimfile" &&
+      book_title=="Ray Charles" &&
+      expected_body==R"(
+    <h1>Սխալ հասցե</h1>
+    <p>
+      Սխալ հասցե՝ /ROOT/zimfile/invalid-article
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
