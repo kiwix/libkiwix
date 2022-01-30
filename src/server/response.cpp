@@ -280,14 +280,16 @@ void print_response_info(int retCode, MHD_Response* response)
 }
 
 
-void ContentResponse::introduce_taskbar()
+void ContentResponse::introduce_taskbar(const std::string& lang)
 {
+  i18n::GetTranslatedString t(lang);
   kainjow::mustache::data data;
   data.set("root", m_root);
   data.set("content", m_bookName);
   data.set("hascontent", (!m_bookName.empty() && !m_bookTitle.empty()));
   data.set("title", m_bookTitle);
   data.set("withlibrarybutton", m_withLibraryButton);
+  data.set("LIBRARY_BUTTON_TEXT", t("library-button-text"));
   auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
   m_content = prependToFirstOccurence(
     m_content,
@@ -352,7 +354,7 @@ ContentResponse::create_mhd_response(const RequestContext& request)
     inject_root_link();
 
     if (m_withTaskbar) {
-      introduce_taskbar();
+      introduce_taskbar(request.get_user_language());
     }
     if (m_blockExternalLinks) {
       inject_externallinks_blocker();

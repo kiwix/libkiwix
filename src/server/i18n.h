@@ -50,6 +50,20 @@ std::string expandParameterizedString(const std::string& lang,
                                       const std::string& key,
                                       const Parameters& params);
 
+class GetTranslatedString
+{
+public:
+  explicit GetTranslatedString(const std::string& lang) : m_lang(lang) {}
+
+  std::string operator()(const std::string& key) const
+  {
+    return getTranslatedString(m_lang, key);
+  }
+
+private:
+  const std::string m_lang;
+};
+
 } // namespace i18n
 
 struct ParameterizedMessage
