@@ -303,6 +303,7 @@ const char* urls404[] = {
   "/ROOT/random",
   "/ROOT/random?content=non-existent-book",
   "/ROOT/search",
+  "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT/suggest",
   "/ROOT/suggest?content=non-existent-book&term=abcd",
   "/ROOT/catch/external",
