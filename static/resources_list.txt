@@ -35,8 +35,8 @@ skin/block_external.js
 skin/search_results.css
 templates/search_result.html
 templates/no_search_result.html
+templates/error.html
 templates/400.html
-templates/404.html
 templates/500.html
 templates/index.html
 templates/suggestion.json

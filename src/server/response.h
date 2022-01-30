@@ -184,7 +184,6 @@ struct HTTPErrorHtmlResponse : ContentResponseBlueprint
   HTTPErrorHtmlResponse(const InternalServer& server,
                       const RequestContext& request,
                       int httpStatusCode,
-                      const std::string& templateStr,
                       const std::string& pageTitleMsg,
                       const std::string& headingMsg);
 
