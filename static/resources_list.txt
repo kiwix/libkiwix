@@ -32,6 +32,7 @@ skin/index.css
 skin/fonts/Poppins.ttf
 skin/fonts/Roboto.ttf
 skin/block_external.js
+skin/search_results.css
 templates/search_result.html
 templates/no_search_result.html
 templates/404.html
