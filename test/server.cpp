@@ -537,6 +537,10 @@ std::string TestContentIn404HtmlResponse::taskbarLinks() const
                                 ? "Դեպի '" + bookTitle + "'֊ի գլխավոր էջը"
                                 : "Go to the main page of '" + bookTitle + "'";
 
+  const std::string goToRandomPage = isTranslatedVersion()
+                                   ? "Բացել պատահական էջ"
+                                   : "Go to a randomly selected page";
+
   return R"(<a id="kiwix_serve_taskbar_home_button" title=")"
        + goToMainPageOfBook
        + R"(" aria-label=")"
@@ -546,7 +550,11 @@ std::string TestContentIn404HtmlResponse::taskbarLinks() const
        + R"(/"><button>)"
        + bookTitle
        + R"(</button></a>
-          <a id="kiwix_serve_taskbar_random_button" title="Go to a randomly selected page" aria-label="Go to a randomly selected page"
+          <a id="kiwix_serve_taskbar_random_button" title=")"
+       + goToRandomPage
+       + R"(" aria-label=")"
+       + goToRandomPage
+       + R"("
             href="/ROOT/random?content=)"
        + bookName
        + R"("><button>&#x1F3B2;</button></a>)";
