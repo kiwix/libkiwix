@@ -686,6 +686,18 @@ TEST_F(ServerTest, 404WithBodyTesting)
       Cannot find content entry invalid-article
     </p>
 )"  },
+
+    { /* url */ "/ROOT/search?content=poor&pattern=whatever",
+      expected_page_title=="Fulltext search unavailable" &&
+      expected_css_url=="/ROOT/skin/search_results.css" &&
+      book_name=="poor" &&
+      book_title=="poor" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The fulltext search engine is not available for this content.
+    </p>
+)"  },
   };
 
   for ( const auto& t : testData ) {
