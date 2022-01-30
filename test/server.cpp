@@ -714,7 +714,7 @@ TEST_F(ServerTest, 404WithBodyTesting)
       Սխալ հասցե՝ /ROOT/zimfile/invalid-article
     </p>
     <p>
-      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
+      Որոնել <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
