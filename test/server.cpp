@@ -662,6 +662,30 @@ TEST_F(ServerTest, 404WithBodyTesting)
       Cannot find content entry invalid-article
     </p>
 )"  },
+
+    { /* url */ "/ROOT/search?content=zimfile",
+      expected_page_title=="Fulltext search unavailable" &&
+      expected_css_url=="/ROOT/skin/search_results.css" &&
+      book_name=="zimfile" &&
+      book_title=="Ray Charles" &&
+      expected_body==R"(
+    <div class="header">Not found</div>
+    <p>
+      There is no article with the title <b> ""</b>
+      and the fulltext search engine is not available for this content.
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/search?content=non-existent-book&pattern=asdfqwerty",
+      expected_page_title=="Fulltext search unavailable" &&
+      expected_css_url=="/ROOT/skin/search_results.css" &&
+      expected_body==R"(
+    <div class="header">Not found</div>
+    <p>
+      There is no article with the title <b> "asdfqwerty"</b>
+      and the fulltext search engine is not available for this content.
+    </p>
+)"  },
   };
 
   for ( const auto& t : testData ) {
