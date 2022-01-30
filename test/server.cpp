@@ -392,7 +392,7 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 {
   const std::string frag[] =  {
     R"FRAG(<!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
     <title>Content not found</title>
