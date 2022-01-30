@@ -283,13 +283,14 @@ void print_response_info(int retCode, MHD_Response* response)
 void ContentResponse::introduce_taskbar(const std::string& lang)
 {
   i18n::GetTranslatedString t(lang);
-  kainjow::mustache::data data;
-  data.set("root", m_root);
-  data.set("content", m_bookName);
-  data.set("hascontent", (!m_bookName.empty() && !m_bookTitle.empty()));
-  data.set("title", m_bookTitle);
-  data.set("withlibrarybutton", m_withLibraryButton);
-  data.set("LIBRARY_BUTTON_TEXT", t("library-button-text"));
+  kainjow::mustache::object data{
+    {"root", m_root},
+    {"content", m_bookName},
+    {"hascontent", (!m_bookName.empty() && !m_bookTitle.empty())},
+    {"title", m_bookTitle},
+    {"withlibrarybutton", m_withLibraryButton},
+    {"LIBRARY_BUTTON_TEXT", t("library-button-text")},
+  };
   auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
   m_content = prependToFirstOccurence(
     m_content,
