@@ -21,4 +21,5 @@
 	, "no-search-results": "The fulltext search engine is not available for this content."
 	, "library-button-text": "Go to welcome page"
 	, "home-button-text": "Go to the main page of '{{BOOK_TITLE}}'"
+	, "random-page-button-text": "Go to a randomly selected page"
 }

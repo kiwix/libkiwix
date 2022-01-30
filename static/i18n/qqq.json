@@ -22,4 +22,5 @@
 	, "no-search-results": "Text of the error page returned when search is attempted in a book without fulltext search database"
 	, "library-button-text": "Tooltip of the button leading to the welcome page"
 	, "home-button-text": "Tooltip of the button leading to the main page of a book"
+	, "random-page-button-text": "Tooltip of the button opening a randomly selected page"
 }
