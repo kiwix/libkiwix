@@ -136,10 +136,6 @@ struct TaskbarInfo
   {}
 };
 
-std::unique_ptr<ContentResponse> withTaskbarInfo(const std::string& bookName,
-                                                 const zim::Archive* archive,
-                                                 std::unique_ptr<ContentResponse> r);
-
 class ContentResponseBlueprint
 {
 public: // functions

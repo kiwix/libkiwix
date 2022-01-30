@@ -593,7 +593,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       data.set("pattern", encodeDiples(searchInfo.pattern));
       auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
       response->set_code(MHD_HTTP_NOT_FOUND);
-      return withTaskbarInfo(searchInfo.bookName, archive.get(), std::move(response));
+      response->set_taskbar(searchInfo.bookName, archive.get());
+      return response;
     }
 
 
@@ -622,7 +623,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    return withTaskbarInfo(searchInfo.bookName, archive.get(), std::move(response));
+    response->set_taskbar(searchInfo.bookName, archive.get());
+    return response;
   } catch (const std::invalid_argument& e) {
     return HTTP400HtmlResponse(*this, request)
       + invalidUrlMsg

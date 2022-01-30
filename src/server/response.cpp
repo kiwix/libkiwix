@@ -91,9 +91,10 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
 {
   auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
-  return m_taskbarInfo
-       ? withTaskbarInfo(m_taskbarInfo->bookName, m_taskbarInfo->archive, std::move(r))
-       : std::move(r);
+  if ( m_taskbarInfo ) {
+    r->set_taskbar(m_taskbarInfo->bookName, m_taskbarInfo->archive);
+  }
+  return r;
 }
 
 HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
@@ -440,15 +441,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
 {
   auto content = render_template(template_str, data);
   return ContentResponse::build(server, content, mimetype, isHomePage);
-}
-
-std::unique_ptr<ContentResponse> withTaskbarInfo(
-  const std::string& bookName,
-  const zim::Archive* archive,
-  std::unique_ptr<ContentResponse> r)
-{
-  r->set_taskbar(bookName, archive);
-  return r;
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
