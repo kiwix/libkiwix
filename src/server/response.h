@@ -104,7 +104,7 @@ class ContentResponse : public Response {
       const std::string& mimetype,
       bool isHomePage = false);
 
-    void set_taskbar(const std::string& bookName, const std::string& bookTitle);
+    void set_taskbar(const std::string& bookName, const zim::Archive* archive);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);

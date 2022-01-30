@@ -333,10 +333,10 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-void ContentResponse::set_taskbar(const std::string& bookName, const std::string& bookTitle)
+void ContentResponse::set_taskbar(const std::string& bookName, const zim::Archive* archive)
 {
   m_bookName = bookName;
-  m_bookTitle = bookTitle;
+  m_bookTitle = archive ? getArchiveTitle(*archive) : "";
 }
 
 
@@ -389,7 +389,7 @@ std::unique_ptr<ContentResponse> withTaskbarInfo(
   const zim::Archive* archive,
   std::unique_ptr<ContentResponse> r)
 {
-  r->set_taskbar(bookName, archive ? getArchiveTitle(*archive) : "");
+  r->set_taskbar(bookName, archive);
   return r;
 }
 

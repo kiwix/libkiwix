@@ -816,7 +816,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
     try {
-      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, getArchiveTitle(*archive));
+      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, archive.get());
     } catch (std::bad_cast& e) {}
 
     if (m_verbose.load()) {
