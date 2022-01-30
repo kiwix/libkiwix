@@ -60,6 +60,11 @@ public:
     return getTranslatedString(m_lang, key);
   }
 
+  std::string operator()(const std::string& key, const Parameters& params) const
+  {
+    return expandParameterizedString(m_lang, key, params);
+  }
+
 private:
   const std::string m_lang;
 };

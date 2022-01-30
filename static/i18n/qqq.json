@@ -21,4 +21,5 @@
 	, "fulltext-search-unavailable" : "Title of the error page returned when search is attempted in a book without fulltext search database"
 	, "no-search-results": "Text of the error page returned when search is attempted in a book without fulltext search database"
 	, "library-button-text": "Tooltip of the button leading to the welcome page"
+	, "home-button-text": "Tooltip of the button leading to the main page of a book"
 }

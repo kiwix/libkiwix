@@ -15,7 +15,7 @@
             <a id="kiwix_serve_taskbar_library_button" title="{{{LIBRARY_BUTTON_TEXT}}}" aria-label="{{{LIBRARY_BUTTON_TEXT}}}" href="{{root}}/"><button>&#x1f3e0;</button></a>
           {{/withlibrarybutton}}
           {{#hascontent}}
-          <a id="kiwix_serve_taskbar_home_button" title="Go to the main page of '{{title}}'" aria-label="Go to the main page of '{{title}}'" href="{{root}}/{{content}}/"><button>{{title}}</button></a>
+          <a id="kiwix_serve_taskbar_home_button" title="{{{HOME_BUTTON_TEXT}}}" aria-label="{{{HOME_BUTTON_TEXT}}}" href="{{root}}/{{content}}/"><button>{{title}}</button></a>
           <a id="kiwix_serve_taskbar_random_button" title="Go to a randomly selected page" aria-label="Go to a randomly selected page"
             href="{{root}}/random?content={{#urlencoded}}{{{content}}}{{/urlencoded}}"><button>&#x1F3B2;</button></a>
           {{/hascontent}}

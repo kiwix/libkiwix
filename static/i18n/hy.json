@@ -10,4 +10,5 @@
 	, "404-page-title" : "Սխալ հասցե"
 	, "404-page-heading" : "Սխալ հասցե"
 	, "library-button-text": "Գրադարանի էջ"
+	, "home-button-text": "Դեպի '{{BOOK_TITLE}}'֊ի գլխավոր էջը"
 }
