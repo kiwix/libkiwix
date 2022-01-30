@@ -101,7 +101,8 @@ HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
                                              const RequestContext& request,
                                              int httpStatusCode,
                                              const std::string& pageTitleMsg,
-                                             const std::string& headingMsg)
+                                             const std::string& headingMsg,
+                                             const std::string& cssUrl)
   : ContentResponseBlueprint(&server,
                              &request,
                              httpStatusCode,
@@ -110,6 +111,7 @@ HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
 {
   kainjow::mustache::list emptyList;
   this->m_data = kainjow::mustache::object{
+                    {"CSS_URL", onlyAsNonEmptyMustacheValue(cssUrl) },
                     {"PAGE_TITLE",   pageTitleMsg},
                     {"PAGE_HEADING", headingMsg},
                     {"details", emptyList}
