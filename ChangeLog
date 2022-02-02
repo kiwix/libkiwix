@@ -1,3 +1,19 @@
+libkiwix 10.0.1
+===============
+
+ * [server] The catalog search interpret `count=0` as no limit.
+   This was the case for a long time. This was changed unintentionally
+   (@veloman-yunkan #686)
+ * [server] Correctly generere a human friendly title in the server frontend.
+   (@juuz0 #687, @kelson42 #689)
+ * [server] Fix download button if there is no url do download from.
+   (@juuz0 #691)
+ * Add non-minified isotope.pkdg.js
+   Needed for debian packaging as we need the source and minified version is
+   not the source (@legoktm #693)
+ * [server] Add a tooltip with the full language for the lang tag.
+ * CI fixes (@kelson42 @legoktm)
+
 libkiwix 10.0.0
 ===============
 
