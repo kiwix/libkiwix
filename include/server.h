@@ -54,6 +54,7 @@ namespace kiwix
        void setAddress(const std::string& addr) { m_addr = addr; }
        void setPort(int port) { m_port = port; }
        void setNbThreads(int threads) { m_nbThreads = threads; }
+       void setIpConnectionLimit(int limit) { m_ipConnectionLimit = limit; }
        void setVerbose(bool verbose) { m_verbose = verbose; }
        void setIndexTemplateString(const std::string& indexTemplateString) { m_indexTemplateString = indexTemplateString; }
        void setTaskbar(bool withTaskbar, bool withLibraryButton)
@@ -75,6 +76,7 @@ namespace kiwix
        bool m_withTaskbar = true;
        bool m_withLibraryButton = true;
        bool m_blockExternalLinks = false;
+       int m_ipConnectionLimit = 0;
        std::unique_ptr<InternalServer> mp_server;
   };
 }
