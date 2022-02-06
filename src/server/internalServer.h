@@ -55,7 +55,8 @@ class InternalServer {
                    bool withTaskbar,
                    bool withLibraryButton,
                    bool blockExternalLinks,
-                   std::string indexTemplateString);
+                   std::string indexTemplateString,
+                   int ipConnectionLimit);
     virtual ~InternalServer() = default;
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
@@ -108,6 +109,7 @@ class InternalServer {
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
     std::string m_indexTemplateString;
+    int m_ipConnectionLimit;
     struct MHD_Daemon* mp_daemon;
 
     Library* mp_library;

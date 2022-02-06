@@ -49,7 +49,8 @@ bool Server::start() {
     m_withTaskbar,
     m_withLibraryButton,
     m_blockExternalLinks,
-    m_indexTemplateString));
+    m_indexTemplateString,
+    m_ipConnectionLimit));
   return mp_server->start();
 }
 

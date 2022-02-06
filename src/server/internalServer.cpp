@@ -120,7 +120,8 @@ InternalServer::InternalServer(Library* library,
                                bool withTaskbar,
                                bool withLibraryButton,
                                bool blockExternalLinks,
-                               std::string indexTemplateString) :
+                               std::string indexTemplateString,
+                               int ipConnectionLimit) :
   m_addr(addr),
   m_port(port),
   m_root(normalizeRootUrl(root)),
@@ -130,6 +131,7 @@ InternalServer::InternalServer(Library* library,
   m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
   m_indexTemplateString(indexTemplateString.empty() ? RESOURCE::templates::index_html : indexTemplateString),
+  m_ipConnectionLimit(ipConnectionLimit),
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper)
@@ -168,6 +170,7 @@ bool InternalServer::start() {
                             this,
                             MHD_OPTION_SOCK_ADDR, &sockAddr,
                             MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
+                            MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);
   if (mp_daemon == nullptr) {
     std::cerr << "Unable to instantiate the HTTP daemon. The port " << m_port
