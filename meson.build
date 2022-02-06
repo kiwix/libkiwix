@@ -19,11 +19,11 @@ if wrapper.contains('java')
 endif
 
 # See https://github.com/kiwix/libkiwix/issues/371
-if ['arm', 'mips', 'm68k', 'ppc', 'sh4'].contains(target_machine.cpu_family())
+if ['arm', 'mips', 'm68k', 'ppc', 'sh4'].contains(host_machine.cpu_family())
   extra_libs += '-latomic'
 endif
 
-if (compiler.get_id() == 'gcc' and build_machine.system() == 'linux') or target_machine.system() == 'freebsd'
+if (compiler.get_id() == 'gcc' and build_machine.system() == 'linux') or host_machine.system() == 'freebsd'
   # C++ std::thread is implemented using pthread on linux by gcc
   thread_dep = dependency('threads')
 else
@@ -51,12 +51,12 @@ endif
 
 
 extra_cflags = ''
-if target_machine.system() == 'windows' and static_deps
+if host_machine.system() == 'windows' and static_deps
   add_project_arguments('-DCURL_STATICLIB', language : 'cpp')
   extra_cflags += '-DCURL_STATICLIB'
 endif
 
-if target_machine.system() == 'windows'
+if host_machine.system() == 'windows'
   add_project_arguments('-DNOMINMAX', language: 'cpp')
 endif
 
