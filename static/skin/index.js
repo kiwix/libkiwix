@@ -246,7 +246,9 @@
                 const title = getInnerHtml(entry, 'title');
                 const value = getInnerHtml(entry, valueEntryNode);
                 const hfTitle = humanFriendlyTitle(title);
-                languages[value] = hfTitle;
+                if (valueEntryNode == 'language') {
+                    languages[value] = hfTitle;
+                }
                 optionStr += (hfTitle != '') ? `<option value="${value}">${hfTitle}</option>` : '';
             });
             document.querySelector(nodeQuery).innerHTML += optionStr;
