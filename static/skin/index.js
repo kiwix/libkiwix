@@ -77,6 +77,13 @@
         return queryNode != null ? queryNode.innerHTML : "";
     }
 
+    function generateTagLink(tagValue) {
+        tagValue = tagValue.toLowerCase();
+        const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
+        const tagMessage = `Filter by tag "${humanFriendlyTagValue}"`;
+        return `<span class='tag__link' aria-label='${tagMessage}' title='${tagMessage}' data-tag=${tagValue}>${humanFriendlyTagValue}</span>`
+    }
+
     function generateBookHtml(book, sort = false) {
         const link = book.querySelector('link[type="text/html"]').getAttribute('href');
         let iconUrl;
@@ -91,9 +98,9 @@
         const langCode = getInnerHtml(book, 'language');
         const language = languages[langCode];
         const tags = getInnerHtml(book, 'tags');
-        let tagHtml = tags.split(';').filter(tag => {return !(tag.split(':')[0].startsWith('_'))})
-            .map((tag) => {return tag.charAt(0).toUpperCase() + tag.slice(1)})
-            .join(' | ').replace(/_/g, ' ');
+        const tagList = tags.split(';').filter(tag => {return !(tag.startsWith('_'))});
+        const tagFilterLinks = tagList.map((tagValue) => generateTagLink(tagValue));
+        const tagHtml = tagFilterLinks.join(' | ');
         let downloadLink;
         let zimSize = 0;
         try {
@@ -113,17 +120,21 @@
         }
         const faviconAttr = iconUrl != undefined ? `style="background-image: url('${iconUrl}')"` : '';
         const languageAttr = langCode != '' ? `title="${language}" aria-label="${language}"` : 'style="background-color: transparent"';
-        divTag.innerHTML = `<a class="book__link" href="${link}" data-hover="Preview">
+        divTag.innerHTML = `
             <div class="book__wrapper">
+            <a class="book__link" href="${link}" data-hover="Preview">
+            <div class="book__link__wrapper">
             <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
                 <div id="book__title">${title}</div>
                 ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
+            </div>
+            </a>
             <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(langCode)}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
-            </div></div></a>`;
+            </div></div>`;
         return divTag;
     }
 
@@ -333,6 +344,7 @@
                 insertModal(downloadButton);
             }
         });
+        refreshTagLinks();
     }
 
     async function resetAndFilter(filterType = '', filterValue = '') {
@@ -376,10 +388,45 @@
             }
         });
     }
+    
+    function addTagElement(tagValue, resetFilter) {
+        const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
+        tagElement.style.display = 'inline-block';
+        const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
+        tagElement.innerHTML = `${humanFriendlyTagValue}`;
+        const tagMessage = `Stop filtering by tag "${humanFriendlyTagValue}"`;
+        tagElement.setAttribute('aria-label', tagMessage);
+        tagElement.setAttribute('title', tagMessage);
+        if (resetFilter)
+            resetAndFilter('tag', tagValue);
+    }
+
+    function refreshTagLinks() {
+        const tagLinks = document.getElementsByClassName('tag__link');
+        [...tagLinks].forEach(elem => {
+            if (!elem.getAttribute('click-listener')) {
+                elem.addEventListener('click', () => addTagElement(elem.dataset.tag, true));
+                elem.setAttribute('click-listener', 'true');
+            }
+        });
+    }
+
+    function removeTagElement(resetFilter) {
+        const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
+        tagElement.style.display = 'none';
+        if (resetFilter)
+            resetAndFilter('tag', '');
+    }
 
     function updateVisibleParams() {
         document.querySelectorAll('.filter').forEach(filter => {filter.value = params.get(filter.name) || ''});
         updateFilterColors();
+        const tagKey = params.get('tag');
+        if (tagKey !== null && tagKey.trim() !== '') {
+            addTagElement(tagKey, false);
+        } else {
+            removeTagElement(false);
+        }
     }
 
     window.addEventListener('resize', (event) => {
@@ -417,6 +464,8 @@
         document.querySelectorAll('.filter').forEach(filter => {
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
+        const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
+        tagElement.addEventListener('click', () => removeTagElement(true));
         if (filters) {
             const currentLink = window.location.search;
             const newLink = `?${params.toString()}`;

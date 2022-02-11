@@ -179,12 +179,12 @@ R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cache
       src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff"
       href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3"
       href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9"
-      href="/ROOT/skin/index.css?cacheid=1aca980a"
+      href="/ROOT/skin/index.css?cacheid=a1acc52f"
         src: url("/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=5f0f7683" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=e99ed2dd" defer></script>
 )EXPECTEDRESULT"
     },
     {
