@@ -322,17 +322,33 @@ TEST_F(ServerTest, 404)
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
 }
 
-struct TestContentIn404HtmlResponse
+class TestContentIn404HtmlResponse
 {
+public:
   TestContentIn404HtmlResponse(const std::string& url,
                                const std::string& expectedBody)
     : url(url)
     , expectedBody(expectedBody)
   {}
 
-  std::string url, expectedBody;
+  TestContentIn404HtmlResponse(const std::string& url,
+                               const std::string& bookName,
+                               const std::string& bookTitle,
+                               const std::string& expectedBody)
+    : url(url)
+    , bookName(bookName)
+    , bookTitle(bookTitle)
+    , expectedBody(expectedBody)
+  {}
+
+  const std::string url, bookName, bookTitle, expectedBody;
 
   std::string expectedResponse() const;
+
+private:
+  std::string hiddenBookNameInput() const;
+  std::string searchPatternInput() const;
+  std::string taskbarLinks() const;
 };
 
 std::string TestContentIn404HtmlResponse::expectedResponse() const
@@ -361,9 +377,6 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
           <label for="kiwixsearchbox">&#x1f50d;</label>
 )FRAG",
 
-  R"FRAG(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ''" aria-label="Search ''">
-)FRAG",
-
   R"FRAG(        </form>
       </div>
         <input type="checkbox" id="kiwix_button_show_toggle">
@@ -385,12 +398,51 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
   };
 
   return frag[0]
+       + hiddenBookNameInput()
        + frag[1]
+       + searchPatternInput()
        + frag[2]
+       + taskbarLinks()
        + frag[3]
-       + frag[4]
        + removeEOLWhitespaceMarkers(expectedBody)
-       + frag[5];
+       + frag[4];
+}
+
+std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
+{
+  return bookName.empty()
+       ? ""
+       : R"(<input type="hidden" name="content" value=")" + bookName + R"(" />)";
+}
+
+std::string TestContentIn404HtmlResponse::searchPatternInput() const
+{
+  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ')"
+       + bookTitle
+       + R"('" aria-label="Search ')"
+       + bookTitle
+       + R"('">
+)";
+}
+
+std::string TestContentIn404HtmlResponse::taskbarLinks() const
+{
+  if ( bookName.empty() )
+    return "";
+
+  return R"(<a id="kiwix_serve_taskbar_home_button" title="Go to the main page of ')"
+       + bookTitle
+       + R"('" aria-label="Go to the main page of ')"
+       + bookTitle
+       + R"('" href="/ROOT/)"
+       + bookName
+       + R"(/"><button>)"
+       + bookTitle
+       + R"(</button></a>
+          <a id="kiwix_serve_taskbar_random_button" title="Go to a randomly selected page" aria-label="Go to a randomly selected page"
+            href="/ROOT/random?content=)"
+       + bookName
+       + R"("><button>&#x1F3B2;</button></a>)";
 }
 
 TEST_F(ServerTest, 404WithBodyTesting)
@@ -444,6 +496,19 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
     <p>
       Make a full text search for <a href="/ROOT/search?pattern=whatever">whatever</a>
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/zimfile/invalid-article",
+      /* book name */  "zimfile",
+      /* book title */ "Ray Charles",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/zimfile/invalid-article" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
