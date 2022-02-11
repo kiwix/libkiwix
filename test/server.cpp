@@ -328,12 +328,17 @@ namespace TestingOfHtmlResponses
 
 struct ExpectedResponseData
 {
-  const std::string expectedPageTitle, bookName, bookTitle, expectedBody;
+  const std::string expectedPageTitle;
+  const std::string expectedCssUrl;
+  const std::string bookName;
+  const std::string bookTitle;
+  const std::string expectedBody;
 };
 
 enum ExpectedResponseDataType
 {
   expected_page_title,
+  expected_css_url,
   book_name,
   book_title,
   expected_body
@@ -346,10 +351,11 @@ ExpectedResponseData operator==(ExpectedResponseDataType t, std::string s)
 {
   switch (t)
   {
-    case expected_page_title: return ExpectedResponseData{s, "", "", ""};
-    case book_name:           return ExpectedResponseData{"", s, "", ""};
-    case book_title:          return ExpectedResponseData{"", "", s, ""};
-    case expected_body:       return ExpectedResponseData{"", "", "", s};
+    case expected_page_title: return ExpectedResponseData{s, "", "", "", ""};
+    case expected_css_url:    return ExpectedResponseData{"", s, "", "", ""};
+    case book_name:           return ExpectedResponseData{"", "", s, "", ""};
+    case book_title:          return ExpectedResponseData{"", "", "", s, ""};
+    case expected_body:       return ExpectedResponseData{"", "", "", "", s};
     default: assert(false); return ExpectedResponseData{};
   }
 }
@@ -367,6 +373,7 @@ ExpectedResponseData operator&&(const ExpectedResponseData& a,
 {
   return ExpectedResponseData{
     selectNonEmpty(a.expectedPageTitle, b.expectedPageTitle),
+    selectNonEmpty(a.expectedCssUrl, b.expectedCssUrl),
     selectNonEmpty(a.bookName, b.bookName),
     selectNonEmpty(a.bookTitle, b.bookTitle),
     selectNonEmpty(a.expectedBody, b.expectedBody)
@@ -388,6 +395,7 @@ public:
 
 private:
   std::string pageTitle() const;
+  std::string pageCssLink() const;
   std::string hiddenBookNameInput() const;
   std::string searchPatternInput() const;
   std::string taskbarLinks() const;
@@ -403,7 +411,9 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
     <title>)FRAG",
 
     R"FRAG(</title>
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
+)FRAG",
+
+    R"FRAG(  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
@@ -444,14 +454,16 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
   return frag[0]
        + pageTitle()
        + frag[1]
-       + hiddenBookNameInput()
+       + pageCssLink()
        + frag[2]
-       + searchPatternInput()
+       + hiddenBookNameInput()
        + frag[3]
-       + taskbarLinks()
+       + searchPatternInput()
        + frag[4]
+       + taskbarLinks()
+       + frag[5]
        + removeEOLWhitespaceMarkers(expectedBody)
-       + frag[5];
+       + frag[6];
 }
 
 std::string TestContentIn404HtmlResponse::pageTitle() const
@@ -459,6 +471,17 @@ std::string TestContentIn404HtmlResponse::pageTitle() const
   return expectedPageTitle.empty()
        ? "Content not found"
        : expectedPageTitle;
+}
+
+std::string TestContentIn404HtmlResponse::pageCssLink() const
+{
+  if ( expectedCssUrl.empty() )
+    return "";
+
+  return R"(    <link type="text/css" href=")"
+       + expectedCssUrl
+       + R"(" rel="Stylesheet" />
+)";
 }
 
 std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
