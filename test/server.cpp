@@ -664,17 +664,17 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
-    { /* url: */ "/ROOT/suggest?content=zimfile&term=movie",
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=old%20sun",
 R"EXPECTEDRESPONSE([
   {
-    "value" : "Ray (movie)",
-    "label" : "Ray (&lt;b&gt;movie&lt;/b&gt;)",
+    "value" : "That Lucky Old Sun",
+    "label" : "That Lucky &lt;b&gt;Old&lt;/b&gt; &lt;b&gt;Sun&lt;/b&gt;",
     "kind" : "path"
-      , "path" : "A/Ray_(movie)"
+      , "path" : "A/That_Lucky_Old_Sun"
   },
   {
-    "value" : "movie ",
-    "label" : "containing &apos;movie&apos;...",
+    "value" : "old sun ",
+    "label" : "containing &apos;old sun&apos;...",
     "kind" : "pattern"
     //EOLWHITESPACEMARKER
   }
