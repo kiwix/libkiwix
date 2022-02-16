@@ -57,6 +57,11 @@
       font-size: 100%;
       }
 
+      .book-title {
+      color: #662200;
+      font-size: 100%;
+      }
+
       .footer {
       padding: 0;
       margin-top: 1em;
@@ -120,6 +125,9 @@
             {{#snippet}}
               <cite>{{>snippet}}...</cite>
             {{/snippet}}
+	    {{#bookTitle}}
+	      <div class="book-title">from {{bookTitle}}</div>
+	    {{/bookTitle}}
             {{#wordCount}}
               <div class="informations">{{wordCount}} words</div>
             {{/wordCount}}

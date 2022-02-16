@@ -26,6 +26,8 @@
 #include "library.h"
 #include "name_mapper.h"
 
+#include "tools/archiveTools.h"
+
 #include <zim/search.h>
 
 #include <mustache.hpp>
@@ -45,10 +47,11 @@ SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
       resultStart(searcher->getResultStart())
 {}
 
-SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Library* library,
                       unsigned int start, unsigned int estimatedResultCount)
     : m_srs(srs),
       mp_nameMapper(mapper),
+      mp_library(library),
       protocolPrefix("zim://"),
       searchProtocolPrefix("search://?"),
       estimatedResultCount(estimatedResultCount),
@@ -90,6 +93,10 @@ std::string SearchRenderer::getHtml()
     std::ostringstream s;
     s << it.getZimId();
     result.set("resultContentId", mp_nameMapper->getNameForId(s.str()));
+    std::shared_ptr<zim::Archive> archive;
+    try {
+       result.set("bookTitle", mp_library->getBookById(s.str()).getTitle());
+    } catch (const std::out_of_range& e) {}
 
     if (it.getWordCount() >= 0) {
       result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
