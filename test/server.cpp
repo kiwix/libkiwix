@@ -322,6 +322,253 @@ TEST_F(ServerTest, 404)
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
 }
 
+class TestContentIn404HtmlResponse
+{
+public:
+  TestContentIn404HtmlResponse(const std::string& url,
+                               const std::string& expectedBody)
+    : url(url)
+    , expectedBody(expectedBody)
+  {}
+
+  TestContentIn404HtmlResponse(const std::string& url,
+                               const std::string& bookName,
+                               const std::string& bookTitle,
+                               const std::string& expectedBody)
+    : url(url)
+    , bookName(bookName)
+    , bookTitle(bookTitle)
+    , expectedBody(expectedBody)
+  {}
+
+  const std::string url, bookName, bookTitle, expectedBody;
+
+  std::string expectedResponse() const;
+
+private:
+  std::string hiddenBookNameInput() const;
+  std::string searchPatternInput() const;
+  std::string taskbarLinks() const;
+};
+
+std::string TestContentIn404HtmlResponse::expectedResponse() const
+{
+  const std::string frag[] =  {
+    R"FRAG(<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <title>Content not found</title>
+  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
+</head>
+  <body><span class="kiwix">
+  <span id="kiwixtoolbar" class="ui-widget-header">
+    <div class="kiwix_centered">
+      <div class="kiwix_searchform">
+        <form class="kiwixsearch" method="GET" action="/ROOT/search" id="kiwixsearchform">
+          )FRAG",
+
+  R"FRAG(
+          <label for="kiwixsearchbox">&#x1f50d;</label>
+)FRAG",
+
+  R"FRAG(        </form>
+      </div>
+        <input type="checkbox" id="kiwix_button_show_toggle">
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
+        <div class="kiwix_button_cont">
+            <a id="kiwix_serve_taskbar_library_button" title="Go to welcome page" aria-label="Go to welcome page" href="/ROOT/"><button>&#x1f3e0;</button></a>
+          )FRAG",
+
+  R"FRAG(
+        </div>
+    </div>
+  </span>
+</span>
+)FRAG",
+
+  R"FRAG(  </body>
+</html>
+)FRAG"
+  };
+
+  return frag[0]
+       + hiddenBookNameInput()
+       + frag[1]
+       + searchPatternInput()
+       + frag[2]
+       + taskbarLinks()
+       + frag[3]
+       + removeEOLWhitespaceMarkers(expectedBody)
+       + frag[4];
+}
+
+std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
+{
+  return bookName.empty()
+       ? ""
+       : R"(<input type="hidden" name="content" value=")" + bookName + R"(" />)";
+}
+
+std::string TestContentIn404HtmlResponse::searchPatternInput() const
+{
+  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ')"
+       + bookTitle
+       + R"('" aria-label="Search ')"
+       + bookTitle
+       + R"('">
+)";
+}
+
+std::string TestContentIn404HtmlResponse::taskbarLinks() const
+{
+  if ( bookName.empty() )
+    return "";
+
+  return R"(<a id="kiwix_serve_taskbar_home_button" title="Go to the main page of ')"
+       + bookTitle
+       + R"('" aria-label="Go to the main page of ')"
+       + bookTitle
+       + R"('" href="/ROOT/)"
+       + bookName
+       + R"(/"><button>)"
+       + bookTitle
+       + R"(</button></a>
+          <a id="kiwix_serve_taskbar_random_button" title="Go to a randomly selected page" aria-label="Go to a randomly selected page"
+            href="/ROOT/random?content=)"
+       + bookName
+       + R"("><button>&#x1F3B2;</button></a>)";
+}
+
+TEST_F(ServerTest, 404WithBodyTesting)
+{
+  const std::vector<TestContentIn404HtmlResponse> testData{
+    { /* url */ "/ROOT/random?content=non-existent-book",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    //EOLWHITESPACEMARKER
+    <p>
+      No such book: non-existent-book
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/suggest?content=no-such-book&term=whatever",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    //EOLWHITESPACEMARKER
+    <p>
+      No such book: no-such-book
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/catalog/",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/catalog/" was not found on this server.
+    </p>
+    <p>
+      //EOLWHITESPACEMARKER
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/catalog/invalid_endpoint",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/catalog/invalid_endpoint" was not found on this server.
+    </p>
+    <p>
+      //EOLWHITESPACEMARKER
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/invalid-book/whatever",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/invalid-book/whatever" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?pattern=whatever">whatever</a>
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/zimfile/invalid-article",
+      /* book name */  "zimfile",
+      /* book title */ "Ray Charles",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/zimfile/invalid-article" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/raw/no-such-book/meta/Title",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/no-such-book/meta/Title" was not found on this server.
+    </p>
+    <p>
+      No such book: no-such-book
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/raw/zimfile/XYZ",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/zimfile/XYZ" was not found on this server.
+    </p>
+    <p>
+      XYZ is not a valid request for raw content.
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/raw/zimfile/meta/invalid-metadata",
+      /* book name */  "zimfile",
+      /* book title */ "Ray Charles",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/zimfile/meta/invalid-metadata" was not found on this server.
+    </p>
+    <p>
+      Cannot find meta entry invalid-metadata
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/raw/zimfile/content/invalid-article",
+      /* book name */  "zimfile",
+      /* book title */ "Ray Charles",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/raw/zimfile/content/invalid-article" was not found on this server.
+    </p>
+    <p>
+      Cannot find content entry invalid-article
+    </p>
+)"  },
+  };
+
+  for ( const auto& t : testData ) {
+    const TestContext ctx{ {"url", t.url} };
+    const auto r = zfs1_->GET(t.url.c_str());
+    EXPECT_EQ(r->status, 404) << ctx;
+    EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
+  }
+}
+
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
 {
   auto g = zfs1_->GET("/ROOT/random?content=zimfile");
