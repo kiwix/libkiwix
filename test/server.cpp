@@ -45,6 +45,18 @@ Headers invariantHeaders(Headers headers)
   return headers;
 }
 
+// Output generated via mustache templates sometimes contains end-of-line
+// whitespace. This complicates representing the expected output of a unit-test
+// as C++ raw strings in editors that are configured to delete EOL whitespace.
+// A workaround is to put special markers (//EOLWHITESPACEMARKER) at the end
+// of such lines in the expected output string and remove them at runtime.
+// This is exactly what this function is for.
+std::string removeEOLWhitespaceMarkers(const std::string& s)
+{
+  const std::regex pattern("//EOLWHITESPACEMARKER");
+  return std::regex_replace(s, pattern, "");
+}
+
 
 class ZimFileServer
 {
@@ -444,7 +456,7 @@ TEST_F(ServerTest, ETagOfUncompressibleContentIsNotAffectedByAcceptEncoding)
 // NOTE: The "Date" header (which should belong to that list as required
 // NOTE: by RFC 7232) is not included (since the result of this function
 // NOTE: will be used to check the equality of headers from the 200 and 304
-// NOTe: responses).
+// NOTE: responses).
 Headers special304Headers(const httplib::Response& r)
 {
   Headers result;
@@ -622,6 +634,149 @@ TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
     EXPECT_EQ(206, r->status);
     EXPECT_EQ("bytes 100-200/20077", r->get_header_value("Content-Range"));
     EXPECT_EQ(r0->body, r->body);
+  }
+}
+
+TEST_F(ServerTest, suggestions)
+{
+  typedef std::pair<std::string, std::string> UrlAndExpectedResponse;
+  const std::vector<UrlAndExpectedResponse> testData{
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=thing",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "Doing His Thing",
+    "label" : "Doing His &lt;b&gt;Thing&lt;/b&gt;",
+    "kind" : "path"
+      , "path" : "A/Doing_His_Thing"
+  },
+  {
+    "value" : "We Didn&apos;t See a Thing",
+    "label" : "We Didn&apos;t See a &lt;b&gt;Thing&lt;/b&gt;",
+    "kind" : "path"
+      , "path" : "A/We_Didn&apos;t_See_a_Thing"
+  },
+  {
+    "value" : "thing ",
+    "label" : "containing &apos;thing&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=old%20sun",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "That Lucky Old Sun",
+    "label" : "That Lucky &lt;b&gt;Old&lt;/b&gt; &lt;b&gt;Sun&lt;/b&gt;",
+    "kind" : "path"
+      , "path" : "A/That_Lucky_Old_Sun"
+  },
+  {
+    "value" : "old sun ",
+    "label" : "containing &apos;old sun&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "abracadabra ",
+    "label" : "containing &apos;abracadabra&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+    { // Test handling of & (%26 when url-encoded) in the search string
+      /* url: */ "/ROOT/suggest?content=zimfile&term=A%26B",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "A&amp;B ",
+    "label" : "containing &apos;A&amp;B&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+  };
+
+  for ( const auto& urlAndExpectedResponse : testData ) {
+    const std::string url = urlAndExpectedResponse.first;
+    const std::string expectedResponse = urlAndExpectedResponse.second;
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(r->status, 200) << ctx;
+    EXPECT_EQ(r->body, removeEOLWhitespaceMarkers(expectedResponse)) << ctx;
+  }
+}
+
+TEST_F(ServerTest, suggestions_in_range)
+{
+  /**
+   * Attempt to get 50 suggestions in steps of 5
+   * The suggestions are returned in the json format
+   * [{sugg1}, {sugg2}, ... , {suggN}, {suggest ft search}]
+   * Assuming the number of suggestions = (occurance of "{" - 1)
+   */
+  {
+    int suggCount = 0;
+    for (int i = 0; i < 10; i++) {
+      std::string url = "/ROOT/suggest?content=zimfile&term=ray&start=" + std::to_string(i*5) + "&count=5";
+      const auto r = zfs1_->GET(url.c_str());
+      std::string body = r->body;
+      int currCount = std::count(body.begin(), body.end(), '{') - 1;
+      ASSERT_EQ(currCount, 5);
+      suggCount += currCount;
+    }
+    ASSERT_EQ(suggCount, 50);
+  }
+
+  // Attempt to get 10 suggestions in steps of 5 even though there are only 8
+  {
+    std::string url = "/ROOT/suggest?content=zimfile&term=song+for+you&start=0&count=5";
+    const auto r1 = zfs1_->GET(url.c_str());
+    std::string body = r1->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 5);
+
+    url = "/ROOT/suggest?content=zimfile&term=song+for+you&start=5&count=5";
+    const auto r2 = zfs1_->GET(url.c_str());
+    body = r2->body;
+    currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 3);
+  }
+
+  // Attempt to get 10 suggestions even though there is only 1
+  {
+    std::string url = "/ROOT/suggest?content=zimfile&term=strong&start=0&count=5";
+    const auto r = zfs1_->GET(url.c_str());
+    std::string body = r->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 1);
+  }
+
+  // No Suggestion
+  {
+    std::string url = "/ROOT/suggest?content=zimfile&term=oops&start=0&count=5";
+    const auto r = zfs1_->GET(url.c_str());
+    std::string body = r->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 0);
+  }
+
+  // Out of bound value
+  {
+    std::string url = "/ROOT/suggest?content=zimfile&term=ray&start=-2&count=-1";
+    const auto r = zfs1_->GET(url.c_str());
+    std::string body = r->body;
+    int currCount = std::count(body.begin(), body.end(), '{') - 1;
+    ASSERT_EQ(currCount, 0);
   }
 }
 
@@ -1274,70 +1429,6 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
     CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
   );
-}
-
-TEST_F(LibraryServerTest, suggestions_in_range)
-{
-  /**
-   * Attempt to get 50 suggestions in steps of 5
-   * The suggestions are returned in the json format
-   * [{sugg1}, {sugg2}, ... , {suggN}, {suggest ft search}]
-   * Assuming the number of suggestions = (occurance of "{" - 1)
-   */
-  {
-    int suggCount = 0;
-    for (int i = 0; i < 10; i++) {
-      std::string url = "/ROOT/suggest?content=zimfile&term=ray&start=" + std::to_string(i*5) + "&count=5";
-      const auto r = zfs1_->GET(url.c_str());
-      std::string body = r->body;
-      int currCount = std::count(body.begin(), body.end(), '{') - 1;
-      ASSERT_EQ(currCount, 5);
-      suggCount += currCount;
-    }
-    ASSERT_EQ(suggCount, 50);
-  }
-
-  // Attempt to get 10 suggestions in steps of 5 even though there are only 8
-  {
-    std::string url = "/ROOT/suggest?content=zimfile&term=song+for+you&start=0&count=5";
-    const auto r1 = zfs1_->GET(url.c_str());
-    std::string body = r1->body;
-    int currCount = std::count(body.begin(), body.end(), '{') - 1;
-    ASSERT_EQ(currCount, 5);
-
-    url = "/ROOT/suggest?content=zimfile&term=song+for+you&start=5&count=5";
-    const auto r2 = zfs1_->GET(url.c_str());
-    body = r2->body;
-    currCount = std::count(body.begin(), body.end(), '{') - 1;
-    ASSERT_EQ(currCount, 3);
-  }
-
-  // Attempt to get 10 suggestions even though there is only 1
-  {
-    std::string url = "/ROOT/suggest?content=zimfile&term=strong&start=0&count=5";
-    const auto r = zfs1_->GET(url.c_str());
-    std::string body = r->body;
-    int currCount = std::count(body.begin(), body.end(), '{') - 1;
-    ASSERT_EQ(currCount, 1);
-  }
-
-  // No Suggestion
-  {
-    std::string url = "/ROOT/suggest?content=zimfile&term=oops&start=0&count=5";
-    const auto r = zfs1_->GET(url.c_str());
-    std::string body = r->body;
-    int currCount = std::count(body.begin(), body.end(), '{') - 1;
-    ASSERT_EQ(currCount, 0);
-  }
-
-  // Out of bound value
-  {
-    std::string url = "/ROOT/suggest?content=zimfile&term=ray&start=-2&count=-1";
-    const auto r = zfs1_->GET(url.c_str());
-    std::string body = r->body;
-    int currCount = std::count(body.begin(), body.end(), '{') - 1;
-    ASSERT_EQ(currCount, 0);
-  }
 }
 
 TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
