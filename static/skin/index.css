@@ -129,7 +129,7 @@ body {
 }
 
 .kiwixHomeBody {
-    padding: 20px 15vw;
+    padding: 20px 5vw 20px 15vw;
     min-height: calc(100vh - 170px);
     position: relative;
 }
@@ -440,7 +440,7 @@ body {
 @media screen and (max-width: 1100px) {
 
     .kiwixHomeBody {
-        padding: 20px 10vw;
+        padding: 20px 5vw 20px 10vw;
         min-height: calc(100vh - 170px);
     }
 
