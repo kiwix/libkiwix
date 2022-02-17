@@ -22,7 +22,7 @@
 
 #include <string>
 #include <zim/search.h>
-#include <library.h>
+#include "library.h"
 
 namespace kiwix
 {
