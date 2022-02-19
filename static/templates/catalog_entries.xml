@@ -1,4 +1,6 @@
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
   <id>{{feed_id}}</id>
   <title>{{^filter}}All zims{{/filter}}{{#filter}}Filtered zims ({{filter}}){{/filter}}</title>
   <updated>{{date}}</updated>

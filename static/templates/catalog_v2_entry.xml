@@ -25,6 +25,7 @@
     <publisher>
       <name>{{publisher_name}}</name>
     </publisher>
+    <dc:issued>{{book_date}}</dc:issued>
     {{#url}}
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="{{{url}}}" length="{{{size}}}" />
     {{/url}}

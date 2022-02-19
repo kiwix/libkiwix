@@ -72,6 +72,7 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
 
 kainjow::mustache::object getSingleBookData(const Book& book)
 {
+    const auto bookDate = book.getDate() + "T00:00:00Z";
     const MustacheData bookUrl = book.getUrl().empty()
                                ? MustacheData(false)
                                : MustacheData(book.getUrl());
@@ -82,7 +83,8 @@ kainjow::mustache::object getSingleBookData(const Book& book)
       {"description", book.getDescription()},
       {"language", book.getLanguage()},
       {"content_id",  urlEncode(book.getHumanReadableIdFromPath(), true)},
-      {"updated", book.getDate() + "T00:00:00Z"},
+      {"updated", bookDate}, // XXX: this should be the entry update datetime
+      {"book_date", bookDate},
       {"category", book.getCategory()},
       {"flavour", book.getFlavour()},
       {"tags", book.getTags()},
