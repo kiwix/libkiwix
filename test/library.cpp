@@ -22,7 +22,9 @@
 
 
 const char * sampleOpdsStream = R"(
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
   <id>00000000-0000-0000-0000-000000000000</id>
   <entry>
     <title>Encyclopédie de la Tunisie</title>
@@ -31,6 +33,7 @@ const char * sampleOpdsStream = R"(
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd</id>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_tunisie_novid_2018-10</icon>
     <updated>2018-10-08T00:00::00:Z</updated>
+    <dc:issued>8 Oct 2018</dc:issued>
     <language>fra</language>
     <summary>Le meilleur de Wikipédia sur la Tunisie</summary>
     <tags>wikipedia;novid;_ftindex</tags>
@@ -246,7 +249,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie_novid_2018-10");
   EXPECT_EQ(book1.getFlavour(), "unforgettable");
   EXPECT_EQ(book1.getLanguage(), "fra");
-  EXPECT_EQ(book1.getDate(), "2018-10-08");
+  EXPECT_EQ(book1.getDate(), "8 Oct 2018");
   EXPECT_EQ(book1.getDescription(), "Le meilleur de Wikipédia sur la Tunisie");
   EXPECT_EQ(book1.getCreator(), "Wikipedia");
   EXPECT_EQ(book1.getPublisher(), "Wikipedia Publishing House");
