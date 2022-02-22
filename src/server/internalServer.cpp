@@ -553,7 +553,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (url == "/" )
       return build_homepage(request);
 
-    if (isEndpointUrl(url, "skin"))
+    if (isEndpointUrl(url, "viewer") || isEndpointUrl(url, "skin"))
       return handle_skin(request);
 
     if (isEndpointUrl(url, "content"))
@@ -720,12 +720,17 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     printf("** running handle_skin\n");
   }
 
-  auto resourceName = request.get_url().substr(1);
+  const bool isRequestForViewer = request.get_url() == "/viewer";
+  auto resourceName = isRequestForViewer
+                    ? "viewer.html"
+                    : request.get_url().substr(1);
   try {
     auto response = ContentResponse::build(
         *this,
         getResource(resourceName),
-        getMimeTypeForFile(resourceName));
+        getMimeTypeForFile(resourceName),
+        /*isHomePage=*/false,
+        /*raw=*/true);
     response->set_cacheable();
     return std::move(response);
   } catch (const ResourceNotFound& e) {

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>ZIM Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+  <body style="margin:0">
+    <div id=taskbar style="background:#bbffbb">Taskbar</div>
+
+    <iframe id="content_iframe"
+            referrerpolicy="same-origin"
+            onload="handle_content_url_change()"
+            src="skin/blank.html" title="ZIM content" width="100%"
+            style="border:0px">
+    </iframe>
+
+    <script>
+
+      // Terminology
+      //
+      // user url: identifier of the page that has to be displayed in the viewer
+      //           and that is used as the hash component of the viewer URL. For
+      //           book resources the address url is {book}/{resource} .
+      //
+      // iframe url: the URL to be loaded in the viewer iframe.
+
+      function userUrl2IframeUrl(url) {
+        return `/content/${url}`;
+      }
+
+      function iframeUrl2UserUrl(url) {
+        return url.split('/').slice(2).join('/');
+      }
+
+      const cf = document.getElementById('content_iframe');
+      cf.src = userUrl2IframeUrl(window.location.hash.slice(1));
+      cf.height = window.visualViewport.height - cf.offsetTop - 4;
+
+      function handle_content_url_change() {
+        document.title = cf.contentDocument.title;
+        const iframeContentUrl = cf.contentWindow.location.pathname;
+        console.log('handle_content_url_change: ' + iframeContentUrl);
+        window.location.hash = iframeUrl2UserUrl(iframeContentUrl);
+      };
+
+    </script>
+  </body>
+</html>

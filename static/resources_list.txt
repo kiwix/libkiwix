@@ -15,6 +15,8 @@ skin/fonts/Poppins.ttf
 skin/fonts/Roboto.ttf
 skin/block_external.js
 skin/search_results.css
+skin/blank.html
+viewer.html
 templates/search_result.html
 templates/search_result.xml
 templates/error.html
