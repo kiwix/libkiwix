@@ -22,13 +22,18 @@
 
 
 const char * sampleOpdsStream = R"(
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
   <id>00000000-0000-0000-0000-000000000000</id>
   <entry>
     <title>Encyclopédie de la Tunisie</title>
+    <name>wikipedia_fr_tunisie_novid_2018-10</name>
+    <flavour>unforgettable</flavour>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd</id>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_tunisie_novid_2018-10</icon>
     <updated>2018-10-08T00:00::00:Z</updated>
+    <dc:issued>8 Oct 2018</dc:issued>
     <language>fra</language>
     <summary>Le meilleur de Wikipédia sur la Tunisie</summary>
     <tags>wikipedia;novid;_ftindex</tags>
@@ -36,8 +41,13 @@ const char * sampleOpdsStream = R"(
     <author>
       <name>Wikipedia</name>
     </author>
+    <publisher>
+      <name>Wikipedia Publishing House</name>
+    </publisher>
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
     <link rel="http://opds-spec.org/image/thumbnail" type="image/png" href="/meta?name=favicon&amp;content=wikipedia_fr_tunisie_novid_2018-10" />
+    <mediaCount>1100</mediaCount>
+    <articleCount>172</articleCount>
   </entry>
   <entry>
     <title>Tania Louis</title>
@@ -224,6 +234,64 @@ const char sampleLibraryXML[] = R"(
 namespace
 {
 
+TEST(LibraryOpdsImportTest, allInOne)
+{
+  kiwix::Library lib;
+  kiwix::Manager manager(&lib);
+  manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
+
+  EXPECT_EQ(10U, lib.getBookCount(true, true));
+
+  {
+  const kiwix::Book& book1 = lib.getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd");
+
+  EXPECT_EQ(book1.getTitle(), "Encyclopédie de la Tunisie");
+  EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie_novid_2018-10");
+  EXPECT_EQ(book1.getFlavour(), "unforgettable");
+  EXPECT_EQ(book1.getLanguage(), "fra");
+  EXPECT_EQ(book1.getDate(), "8 Oct 2018");
+  EXPECT_EQ(book1.getDescription(), "Le meilleur de Wikipédia sur la Tunisie");
+  EXPECT_EQ(book1.getCreator(), "Wikipedia");
+  EXPECT_EQ(book1.getPublisher(), "Wikipedia Publishing House");
+  EXPECT_EQ(book1.getTags(), "wikipedia;novid;_ftindex");
+  EXPECT_EQ(book1.getCategory(), "");
+  EXPECT_EQ(book1.getUrl(), "http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4");
+  EXPECT_EQ(book1.getSize(), 90030080UL);
+  EXPECT_EQ(book1.getMediaCount(), 1100U); // Roman MC (MediaCount) is 1100
+  EXPECT_EQ(book1.getArticleCount(), 172U); // Hex AC (ArticleCount) is 172
+
+  const auto illustration = book1.getIllustration(48);
+  EXPECT_EQ(illustration->width, 48U);
+  EXPECT_EQ(illustration->height, 48U);
+  EXPECT_EQ(illustration->mimeType, "image/png");
+  EXPECT_EQ(illustration->url, "library-opds-import.unittests.dev/meta?name=favicon&content=wikipedia_fr_tunisie_novid_2018-10");
+  }
+
+  {
+  const kiwix::Book& book2 = lib.getBookById("0189d9be-2fd0-b4b6-7300-20fab0b5cdc8");
+  EXPECT_EQ(book2.getTitle(), "TED talks - Business");
+  EXPECT_EQ(book2.getName(), "");
+  EXPECT_EQ(book2.getFlavour(), "");
+  EXPECT_EQ(book2.getLanguage(), "eng");
+  EXPECT_EQ(book2.getDate(), "2018-07-23");
+  EXPECT_EQ(book2.getDescription(), "Ideas worth spreading");
+  EXPECT_EQ(book2.getCreator(), "TED");
+  EXPECT_EQ(book2.getPublisher(), "");
+  EXPECT_EQ(book2.getTags(), "");
+  EXPECT_EQ(book2.getCategory(), "");
+  EXPECT_EQ(book2.getUrl(), "http://download.kiwix.org/zim/ted/ted_en_business_2018-07.zim.meta4");
+  EXPECT_EQ(book2.getSize(), 8855827456UL);
+  EXPECT_EQ(book2.getMediaCount(), 0U);
+  EXPECT_EQ(book2.getArticleCount(), 0U);
+
+  const auto illustration = book2.getIllustration(48);
+  EXPECT_EQ(illustration->width, 48U);
+  EXPECT_EQ(illustration->height, 48U);
+  EXPECT_EQ(illustration->mimeType, "image/png");
+  EXPECT_EQ(illustration->url, "library-opds-import.unittests.dev/meta?name=favicon&content=ted_en_business_2018-07");
+  }
+}
+
 class LibraryTest : public ::testing::Test {
  protected:
   typedef kiwix::Library::BookIdCollection BookIdCollection;
@@ -292,7 +360,8 @@ TEST_F(LibraryTest, sanityCheck)
   EXPECT_EQ(lib.getBooksPublishers(), std::vector<std::string>({
       "",
       "Kiwix",
-      "Kiwix & Some Enthusiasts"
+      "Kiwix & Some Enthusiasts",
+      "Wikipedia Publishing House"
   }));
 }
 

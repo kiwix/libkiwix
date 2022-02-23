@@ -161,7 +161,9 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_language = VALUE("language");
   m_creator = node.child("author").child("name").child_value();
   m_publisher = node.child("publisher").child("name").child_value();
-  m_date = fromOpdsDate(VALUE("updated"));
+  const std::string dcIssuedDate = VALUE("dc:issued");
+  m_date = dcIssuedDate.empty() ? VALUE("updated") : dcIssuedDate;
+  m_date = fromOpdsDate(m_date);
   m_name = VALUE("name");
   m_flavour = VALUE("flavour");
   m_tags = VALUE("tags");
