@@ -95,7 +95,7 @@ std::string SearchRenderer::getHtml()
     result.set("resultContentId", mp_nameMapper->getNameForId(s.str()));
     std::shared_ptr<zim::Archive> archive;
     try {
-       result.set("bookTitle", mp_library->getBookById(s.str()).getTitle());
+       result.set("bookTitle", archive ? mp_library->getBookById(s.str()).getTitle() : kainjow::mustache::data(false));
     } catch (const std::out_of_range& e) {}
 
     if (it.getWordCount() >= 0) {
