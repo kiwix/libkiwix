@@ -47,6 +47,11 @@ SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
       resultStart(searcher->getResultStart())
 {}
 
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+                      unsigned int start, unsigned int estimatedResultCount)
+    : SearchRenderer(srs, mapper, nullptr, start, estimatedResultCount)
+{}
+
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Library* library,
                       unsigned int start, unsigned int estimatedResultCount)
     : m_srs(srs),
