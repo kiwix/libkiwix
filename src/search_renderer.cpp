@@ -95,12 +95,11 @@ std::string SearchRenderer::getHtml()
     result.set("title", it.getTitle());
     result.set("url", it.getPath());
     result.set("snippet", it.getSnippet());
-    std::ostringstream s;
-    s << it.getZimId();
-    result.set("resultContentId", mp_nameMapper->getNameForId(s.str()));
+    std::string zim_id(it.getZimId());
+    result.set("resultContentId", mp_nameMapper->getNameForId(zim_id));
     std::shared_ptr<zim::Archive> archive;
     try {
-       result.set("bookTitle", mp_library->getBookById(s.str()).getTitle());
+      result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());
     } catch (const std::out_of_range& e) {}
 
     if (it.getWordCount() >= 0) {
