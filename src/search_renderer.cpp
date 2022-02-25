@@ -98,9 +98,11 @@ std::string SearchRenderer::getHtml()
     std::string zim_id(it.getZimId());
     result.set("resultContentId", mp_nameMapper->getNameForId(zim_id));
     std::shared_ptr<zim::Archive> archive;
-    try {
+    if (!mp_library) {
+      result.set("bookTitle", kainjow::mustache::data(false));
+    } else {
       result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());
-    } catch (const std::out_of_range& e) {}
+    }
 
     if (it.getWordCount() >= 0) {
       result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
