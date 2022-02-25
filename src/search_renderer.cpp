@@ -97,7 +97,6 @@ std::string SearchRenderer::getHtml()
     result.set("snippet", it.getSnippet());
     std::string zim_id(it.getZimId());
     result.set("resultContentId", mp_nameMapper->getNameForId(zim_id));
-    std::shared_ptr<zim::Archive> archive;
     if (!mp_library) {
       result.set("bookTitle", kainjow::mustache::data(false));
     } else {
