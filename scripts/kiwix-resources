@@ -50,7 +50,7 @@ def set_cacheid(resource_matchobj):
     resource = 'skin/' + resource_matchobj.group(3)
     extra_query = resource_matchobj.group(4)
     cacheid = 'cacheid=' + resource_revisions[resource]
-    return f'{path}?{cacheid}{extra_query}'
+    return path + '?' + cacheid + extra_query
 
 def preprocess_line(line):
     if 'KIWIXCACHEID' in line:
@@ -82,7 +82,7 @@ def symlink_resource(src, resource_path):
     os.symlink(src, resource_path)
 
 def preprocess_resource(srcdir, resource_path, outdir):
-    print(f'Preprocessing {resource_path}...')
+    print('Preprocessing', resource_path, '...')
     resource_dir = os.path.dirname(resource_path)
     if resource_dir != '':
         os.makedirs(os.path.join(outdir, resource_dir), exist_ok=True)
