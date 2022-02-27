@@ -61,14 +61,21 @@ def preprocess_line(line):
         assert not 'KIWIXCACHEID' in line
     return line
 
-def preprocess_template(srcpath, dstpath):
+def get_preprocessed_resource(srcpath):
+    modified_line_count = 0
     preprocessed_lines = []
-    with open(srcpath, 'r') as source:
-        for line in source:
-            preprocessed_lines.append(preprocess_line(line))
+    try:
+        with open(srcpath, 'r') as source:
+            for line in source:
+                ppline = preprocess_line(line)
+                if ppline != line:
+                    modified_line_count += 1
+                preprocessed_lines.append(ppline)
+        return "".join(preprocessed_lines), modified_line_count
+    except UnicodeDecodeError:
+        # It was a binary resource
+        return None, 0
 
-    with open(dstpath, 'w') as target:
-        print("".join(preprocessed_lines), end='', file=target)
 
 def symlink_resource(src, resource_path):
     if os.path.exists(resource_path):
@@ -78,15 +85,19 @@ def symlink_resource(src, resource_path):
     os.symlink(src, resource_path)
 
 def preprocess_resource(srcdir, resource_path, outdir):
+    print(f'Preprocessing {resource_path}...')
     resource_dir = os.path.dirname(resource_path)
     if resource_dir != '':
         os.makedirs(os.path.join(outdir, resource_dir), exist_ok=True)
     srcpath = os.path.join(srcdir, resource_path)
     outpath = os.path.join(outdir, resource_path)
-    if resource_path.startswith('templates/'):
-        preprocess_template(srcpath, outpath)
-    else:
+    preprocessed_content, modified_line_count = get_preprocessed_resource(srcpath)
+    if modified_line_count == 0:
         symlink_resource(srcpath, outpath)
+    else:
+        with open(outpath, 'w') as target:
+            print(preprocessed_content, end='', file=target)
+
 
 def copy_file(src_path, dst_path):
     with open(src_path, 'rb') as src:
