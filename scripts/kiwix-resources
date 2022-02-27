@@ -88,6 +88,8 @@ def preprocess_resource(srcdir, resource_path, outdir):
         os.makedirs(os.path.join(outdir, resource_dir), exist_ok=True)
     srcpath = os.path.join(srcdir, resource_path)
     outpath = os.path.join(outdir, resource_path)
+    if os.path.exists(outpath):
+        os.remove(outpath)
     preprocessed_content, modified_line_count = get_preprocessed_resource(srcpath)
     if modified_line_count == 0:
         symlink_resource(srcpath, outpath)
