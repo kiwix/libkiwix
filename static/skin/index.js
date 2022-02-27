@@ -171,25 +171,25 @@
                     <div class="modal-content">
                         <div class="modal-regular-download">
                             <a href="${downloadLink}" download>
-                                <img src="../skin/download.png" alt="direct download" />
+                                <img src="../skin/download.png?KIWIXCACHEID" alt="direct download" />
                                 <div>Direct</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.sha256" download>
-                                <img src="../skin/hash.png" alt="download hash" />
+                                <img src="../skin/hash.png?KIWIXCACHEID" alt="download hash" />
                                 <div>Sha256 hash</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.magnet" target="_blank">
-                                <img src="../skin/magnet.png" alt="download magnet" />
+                                <img src="../skin/magnet.png?KIWIXCACHEID" alt="download magnet" />
                                 <div>Magnet link</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.torrent" download>
-                                <img src="../skin/bittorrent.png" alt="download torrent" />
+                                <img src="../skin/bittorrent.png?KIWIXCACHEID" alt="download torrent" />
                                 <div>Torrent file</div>
                             </a>
                         </div>

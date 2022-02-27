@@ -43,15 +43,12 @@ def fill_resource_revisions(resource_file_path):
     for resource in read_resource_file(resource_file_path):
         resource_revisions[resource] = get_resource_revision(base_dir, resource)
 
-RESOURCE_WITH_CACHEID_URL_PATTERN=r'([^"?]+)\?KIWIXCACHEID([^"]*)'
+RESOURCE_WITH_CACHEID_URL_PATTERN=r'((.*)/skin/([^"?]+))\?KIWIXCACHEID([^"]*)'
 
 def set_cacheid(resource_matchobj):
     path = resource_matchobj.group(1)
-    resource = path
-    root_prefix = '{{root}}/'
-    if resource.startswith(root_prefix):
-        resource = resource[len(root_prefix):]
-    extra_query = resource_matchobj.group(2)
+    resource = 'skin/' + resource_matchobj.group(3)
+    extra_query = resource_matchobj.group(4)
     cacheid = 'cacheid=' + resource_revisions[resource]
     return f'{path}?{cacheid}{extra_query}'
 

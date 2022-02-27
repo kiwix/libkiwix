@@ -319,15 +319,15 @@ R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cache
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=ea9ce83c" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=f2c89cb2" defer></script>
 )EXPECTEDRESULT"
     },
     {
       /* url */ "/ROOT/skin/index.js",
-R"EXPECTEDRESULT(                                <img src="../skin/download.png" alt="direct download" />
-                                <img src="../skin/hash.png" alt="download hash" />
-                                <img src="../skin/magnet.png" alt="download magnet" />
-                                <img src="../skin/bittorrent.png" alt="download torrent" />
+R"EXPECTEDRESULT(                                <img src="../skin/download.png?cacheid=a39aa502" alt="direct download" />
+                                <img src="../skin/hash.png?cacheid=f836e872" alt="download hash" />
+                                <img src="../skin/magnet.png?cacheid=73b6bddf" alt="download magnet" />
+                                <img src="../skin/bittorrent.png?cacheid=4f5c6882" alt="download torrent" />
 )EXPECTEDRESULT"
     },
     {
