@@ -49,10 +49,24 @@ class SearchRenderer
   /**
    * Construct a SearchRenderer from a SearchResultSet.
    *
+   * The constructed version of the SearchRenderer will not introduce
+   * the book name for each result. It is better to use the other constructor
+   * with a Library pointer to have a better html page.
+   *
    * @param srs The `SearchResultSet` to render.
    * @param mapper The `NameMapper` to use to do the rendering.
-   * @param library The `Library` to use to look up book details for search
-   *        results
+   * @param start The start offset used for the srs.
+   * @param estimatedResultCount The estimatedResultCount of the whole search
+   */
+  SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+                 unsigned int start, unsigned int estimatedResultCount);
+
+  /**
+   * Construct a SearchRenderer from a SearchResultSet.
+   *
+   * @param srs The `SearchResultSet` to render.
+   * @param mapper The `NameMapper` to use to do the rendering.
+   * @param library The `Library` to use to look up book details for search results.
    * @param start The start offset used for the srs.
    * @param estimatedResultCount The estimatedResultCount of the whole search
    */

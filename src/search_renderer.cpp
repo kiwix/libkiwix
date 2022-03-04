@@ -39,12 +39,17 @@ namespace kiwix
 
 /* Constructor */
 SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
-    : m_srs(searcher->getSearchResultSet()),
-      mp_nameMapper(mapper),
-      protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?"),
-      estimatedResultCount(searcher->getEstimatedResultCount()),
-      resultStart(searcher->getResultStart())
+    : SearchRenderer(
+        searcher->getSearchResultSet(),
+        mapper,
+        nullptr,
+        searcher->getEstimatedResultCount(),
+        searcher->getResultStart())
+{}
+
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+                      unsigned int start, unsigned int estimatedResultCount)
+    : SearchRenderer(srs, mapper, nullptr, start, estimatedResultCount)
 {}
 
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Library* library,
@@ -90,13 +95,13 @@ std::string SearchRenderer::getHtml()
     result.set("title", it.getTitle());
     result.set("url", it.getPath());
     result.set("snippet", it.getSnippet());
-    std::ostringstream s;
-    s << it.getZimId();
-    result.set("resultContentId", mp_nameMapper->getNameForId(s.str()));
-    std::shared_ptr<zim::Archive> archive;
-    try {
-       result.set("bookTitle", mp_library->getBookById(s.str()).getTitle());
-    } catch (const std::out_of_range& e) {}
+    std::string zim_id(it.getZimId());
+    result.set("resultContentId", mp_nameMapper->getNameForId(zim_id));
+    if (!mp_library) {
+      result.set("bookTitle", kainjow::mustache::data(false));
+    } else {
+      result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());
+    }
 
     if (it.getWordCount() >= 0) {
       result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
