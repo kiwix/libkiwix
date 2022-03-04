@@ -49,8 +49,8 @@ class SearchRenderer
   /**
    * Construct a SearchRenderer from a SearchResultSet.
    *
-   * The constructed version of the SearchRendered will not introduce
-   * the book name for each result. It is better to use the another constructor
+   * The constructed version of the SearchRenderer will not introduce
+   * the book name for each result. It is better to use the other constructor
    * with a Library pointer to have a better html page.
    *
    * @param srs The `SearchResultSet` to render.
