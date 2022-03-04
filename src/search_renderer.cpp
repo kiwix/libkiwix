@@ -39,12 +39,12 @@ namespace kiwix
 
 /* Constructor */
 SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
-    : m_srs(searcher->getSearchResultSet()),
-      mp_nameMapper(mapper),
-      protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?"),
-      estimatedResultCount(searcher->getEstimatedResultCount()),
-      resultStart(searcher->getResultStart())
+    : SearchRenderer(
+        searcher->getSearchResultSet(),
+        mapper,
+        nullptr,
+        searcher->getEstimatedResultCount(),
+        searcher->getResultStart())
 {}
 
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
