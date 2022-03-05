@@ -146,7 +146,6 @@ bool InternalServer::start() {
   if (m_verbose.load())
     flags |= MHD_USE_DEBUG;
 
-
   struct sockaddr_in sockAddr;
   memset(&sockAddr, 0, sizeof(sockAddr));
   sockAddr.sin_family = AF_INET;

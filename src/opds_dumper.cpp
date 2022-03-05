@@ -126,13 +126,63 @@ BooksData getBooksData(const Library* library, const std::vector<std::string>& b
   return booksData;
 }
 
+std::map<std::string, std::string> iso639_3 = {
+  {"atj", "atikamekw"},
+  {"azb", "آذربایجان دیلی"},
+  {"bcl", "central bikol"},
+  {"bgs", "tagabawa"},
+  {"bxr", "буряад хэлэн"},
+  {"cbk", "chavacano"},
+  {"cdo", "閩東語"},
+  {"dag", "Dagbani"},
+  {"diq", "dimli"},
+  {"dty", "डोटेली"},
+  {"eml", "emiliân-rumagnōl"},
+  {"fbs", "српскохрватски"},
+  {"ido", "ido"},
+  {"kbp", "kabɩyɛ"},
+  {"kld", "Gamilaraay"},
+  {"lbe", "лакку маз"},
+  {"lbj", "ལ་དྭགས་སྐད་"},
+  {"map", "Austronesian"},
+  {"mhr", "марий йылме"},
+  {"mnw", "ဘာသာမန်"},
+  {"myn", "mayan"},
+  {"nah", "nahuatl"},
+  {"nai", "north American Indian"},
+  {"nds", "plattdütsch"},
+  {"nrm", "bhasa narom"},
+  {"olo", "livvi"},
+  {"pih", "Pitcairn-Norfolk"},
+  {"pnb", "Western Panjabi"},
+  {"rmr", "Caló"},
+  {"rmy", "romani shib"},
+  {"roa", "romance languages"},
+  {"twi", "twi"}
+};
+
+std::once_flag fillLanguagesFlag;
+
+void fillLanguagesMap()
+{
+  for (auto icuLangPtr = icu::Locale::getISOLanguages(); *icuLangPtr != NULL; ++icuLangPtr) {
+    auto lang = *icuLangPtr;
+    const icu::Locale locale(lang);
+    icu::UnicodeString ustring;
+    locale.getDisplayLanguage(locale, ustring);
+    std::string displayLanguage;
+    ustring.toUTF8String(displayLanguage);
+    std::string iso3LangCode = locale.getISO3Language();
+    iso639_3.insert({iso3LangCode, displayLanguage});
+  }
+}
+
 std::string getLanguageSelfName(const std::string& lang) {
-  const icu::Locale locale(lang.c_str());
-  icu::UnicodeString ustring;
-  locale.getDisplayLanguage(locale, ustring);
-  std::string result;
-  ustring.toUTF8String(result);
-  return result;
+  const auto itr = iso639_3.find(lang);
+  if (itr != iso639_3.end()) {
+    return itr->second;
+  }
+  return lang;
 };
 
 } // unnamed namespace
@@ -210,6 +260,7 @@ std::string OPDSDumper::languagesOPDSFeed() const
 {
   const auto now = gen_date_str();
   kainjow::mustache::list languageData;
+  std::call_once(fillLanguagesFlag, fillLanguagesMap);
   for ( const auto& langAndBookCount : library->getBooksLanguagesWithCounts() ) {
     const std::string languageCode = langAndBookCount.first;
     const int bookCount = langAndBookCount.second;
