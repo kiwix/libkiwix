@@ -567,22 +567,31 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       }
     }
 
+
     /* Make the search */
-    std::shared_ptr<zim::Searcher> searcher;
-    if (archive) {
-      searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
-    } else {
-      for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-        auto currentArchive = mp_library->getArchiveById(bookId);
-        if (currentArchive) {
-          if (! searcher) {
-            searcher = std::make_shared<zim::Searcher>(*currentArchive);
-          } else {
-            searcher->addArchive(*currentArchive);
+    // Try to get a search from the searchInfo, else build it
+    std::shared_ptr<zim::Search> search;
+    search = searchCache.getOrPut(searchInfo,
+      [=](){
+        std::shared_ptr<zim::Searcher> searcher;
+        if (archive) {
+          searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
+        } else {
+          for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
+            auto currentArchive = mp_library->getArchiveById(bookId);
+            if (currentArchive) {
+              if (! searcher) {
+                searcher = std::make_shared<zim::Searcher>(*currentArchive);
+              } else {
+                searcher->addArchive(*currentArchive);
+              }
+            }
           }
         }
+        return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
       }
-    }
+    );
+
 
     auto start = 0;
     try {
@@ -601,9 +610,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     }
 
     /* Get the results */
-    std::shared_ptr<zim::Search> search;
-    search = searchCache.getOrPut(searchInfo, [=](){ return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));});
-
     SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
