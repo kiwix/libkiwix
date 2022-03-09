@@ -287,6 +287,19 @@ TEST_F(ServerTest, UncompressibleContentIsNotCompressed)
   }
 }
 
+const char* urls400[] = {
+  "/ROOT/search",
+  "/ROOT/search?content=zimfile",
+  "/ROOT/search?pattern"
+};
+
+
+TEST_F(ServerTest, 400)
+{
+  for (cosnt char* url: urls400 )
+    EXPECT_EQ(400, zfs1_->GET(url)->status) << "url: " << url;
+}
+
 const char* urls404[] = {
   "/",
   "/zimfile",
@@ -302,7 +315,6 @@ const char* urls404[] = {
   "/ROOT/meta?content=non-existent-book&name=title",
   "/ROOT/random",
   "/ROOT/random?content=non-existent-book",
-  "/ROOT/search",
   "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT/suggest",
   "/ROOT/suggest?content=non-existent-book&term=abcd",

@@ -83,6 +83,20 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
+std::unique_ptr<Response> Response::build_400(const InternalServer& server, const std::string& url, const std::string& details)
+{
+  MustacheData results;
+  if ( !url.empty() ) {
+    results.set("url", url);
+  }
+  results.set("details", details);
+
+  auto response = ContentResponse::build(server, RESOURCE::templates::_400_html, results, "text/html");
+  response->set_code(MHD_HTTP_BAD_REQUEST);
+  return std::move(response);
+}
+
+
 std::unique_ptr<Response> Response::build_404(const InternalServer& server, const std::string& url, const std::string& bookName, const std::string& bookTitle, const std::string& details)
 {
   MustacheData results;

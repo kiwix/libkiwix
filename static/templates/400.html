@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <title>Invalid request</title>
+  </head>
+  <body>
+    <h1>Invalid request</h1>
+    {{#url}}
+    <p>
+      The requested URL "{{.}}" is not a valid request.
+    </p>
+    {{/url}}
+    {{#details}}
+    <p>
+      {{{.}}}
+    </p>
+    {{/details}}
+  </body>
+</html>
