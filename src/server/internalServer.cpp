@@ -556,13 +556,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
         bookId = mp_nameMapper->getIdForName(searchInfo.bookName);
         archive = mp_library->getArchiveById(bookId);
       } catch (const std::out_of_range&) {
-        auto data = get_default_data();
-        data.set("pattern", encodeDiples(patternString));
-        data.set("root", m_root);
-        auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-        response->set_taskbar(searchInfo.bookName, archive ? getArchiveTitle(*archive) : "");
-        response->set_code(MHD_HTTP_NOT_FOUND);
-        return std::move(response);
+        throw std::invalid_argument("The requested book doesn't exist.");
       }
     }
 
@@ -618,7 +612,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     response->set_taskbar(searchInfo.bookName, archive ? getArchiveTitle(*archive) : "");
-
     return std::move(response);
   } catch (const std::invalid_argument& e) {
     auto url = request.get_full_url();
