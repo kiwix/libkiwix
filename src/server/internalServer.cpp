@@ -109,6 +109,55 @@ unsigned int getCacheLength(const char* name, unsigned int defaultVal) {
 }
 } // unnamed namespace
 
+SearchInfo::SearchInfo(const std::string& pattern)
+  : pattern(pattern),
+    geoQuery()
+{}
+
+SearchInfo::SearchInfo(const std::string& pattern, GeoQuery geoQuery)
+  : pattern(pattern),
+    geoQuery(geoQuery)
+{}
+
+SearchInfo::SearchInfo(const RequestContext& request)
+  : pattern(request.get_optional_param<std::string>("pattern", "")),
+    geoQuery(),
+    bookName(request.get_optional_param<std::string>("content", ""))
+{
+  /* Retrive geo search */
+  try {
+    auto latitude = request.get_argument<float>("latitude");
+    auto longitude = request.get_argument<float>("longitude");
+    auto distance = request.get_argument<float>("distance");
+    geoQuery = GeoQuery(latitude, longitude, distance);
+  } catch(const std::out_of_range&) {}
+    catch(const std::invalid_argument&) {}
+
+  if (!geoQuery && pattern.empty()) {
+    throw std::invalid_argument("No query provided.");
+  }
+}
+
+zim::Query SearchInfo::getZimQuery(bool verbose) const {
+  zim::Query query;
+  if(pattern.empty()) {
+    // Execute geo-search
+    if (verbose) {
+      cout << "Performing geo query `" << geoQuery.distance << "&(" << geoQuery.latitude << ";" << geQuery.longitude << ")'" << endl;
+    }
+    query.setQuery("");
+    query.setGeorange(geoQuery.latitude, geoQuery.longitude, geoQuery.distance);
+  } else {
+    // Execute Ft search
+    if (verbose) {
+      cout << "Performing query `" << pattern << "'" << endl;
+    }
+    query.setQuery(pattern);
+  }
+  return query;
+}
+
+
 static IdNameMapper defaultNameMapper;
 
 static MHD_Result staticHandlerCallback(void* cls,
@@ -499,116 +548,75 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     printf("** running handle_search\n");
   }
 
-  std::string patternString;
   try {
-    patternString = request.get_argument("pattern");
-  } catch (const std::out_of_range&) {}
+    auto searchInfo = SearchInfo(request);
 
-  /* Retrive geo search */
-  bool has_geo_query = false;
-  float latitude = 0;
-  float longitude = 0;
-  float distance = 0;
-  try {
-    latitude = request.get_argument<float>("latitude");
-    longitude = request.get_argument<float>("longitude");
-    distance = request.get_argument<float>("distance");
-    has_geo_query = true;
-  } catch(const std::out_of_range&) {}
-    catch(const std::invalid_argument&) {}
+    std::string bookId;
+    std::shared_ptr<zim::Archive> archive;
+    if (!searchInfo.bookName.empty()) {
+      try {
+        bookId = mp_nameMapper->getIdForName(searchInfo.bookName);
+        archive = mp_library->getArchiveById(bookId);
+      } catch (const std::out_of_range&) {
+        auto data = get_default_data();
+        data.set("pattern", encodeDiples(searchInfo.pattern));
+        data.set("root", m_root);
+        auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
+        response->set_code(MHD_HTTP_NOT_FOUND);
+        return withTaskbarInfo(searchInfo.bookName, archive.get(), std::move(response));
+      }
+    }
 
-  std::string bookName, bookId;
-  std::shared_ptr<zim::Archive> archive;
-  try {
-    bookName = request.get_argument("content");
-    bookId = mp_nameMapper->getIdForName(bookName);
-    archive = mp_library->getArchiveById(bookId);
-  } catch (const std::out_of_range&) {}
-
-  /* Make the search */
-  if (patternString.empty() && ! has_geo_query) {
-    return HTTP400HtmlResponse(*this, request)
-          + invalidUrlMsg
-          + std::string("No query provided.");
-  }
-
-  if (!archive && !bookName.empty()) {
-    auto data = get_default_data();
-    data.set("pattern", encodeDiples(patternString));
-    data.set("root", m_root);
-    auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-    response->set_code(MHD_HTTP_NOT_FOUND);
-    return withTaskbarInfo(bookName, archive.get(), std::move(response));
-  }
-
-  std::shared_ptr<zim::Searcher> searcher;
-  if (archive) {
-    searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
-  } else {
-    for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-      auto currentArchive = mp_library->getArchiveById(bookId);
-      if (currentArchive) {
-        if (! searcher) {
-          searcher = std::make_shared<zim::Searcher>(*currentArchive);
-        } else {
-          searcher->addArchive(*currentArchive);
+    /* Make the search */
+    std::shared_ptr<zim::Searcher> searcher;
+    if (archive) {
+      searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
+    } else {
+      for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
+        auto currentArchive = mp_library->getArchiveById(bookId);
+        if (currentArchive) {
+          if (! searcher) {
+            searcher = std::make_shared<zim::Searcher>(*currentArchive);
+          } else {
+            searcher->addArchive(*currentArchive);
+          }
         }
       }
     }
-  }
 
-  auto start = 0;
-  try {
-    start = request.get_argument<unsigned int>("start");
-  } catch (const std::exception&) {}
+    auto start = 0;
+    try {
+      start = request.get_argument<unsigned int>("start");
+    } catch (const std::exception&) {}
 
-  auto pageLength = 25;
-  try {
-    pageLength = request.get_argument<unsigned int>("pageLength");
-  } catch (const std::exception&) {}
-  if (pageLength > MAX_SEARCH_LEN) {
-    pageLength = MAX_SEARCH_LEN;
-  }
-  if (pageLength == 0) {
-    pageLength = 25;
-  }
-
-  /* Get the results */
-  std::string queryString;
-  try {
-    zim::Query query;
-    if (patternString.empty()) {
-      // Execute geo-search
-      if (m_verbose.load()) {
-        cout << "Performing geo query `" << distance << "&(" << latitude << ";" << longitude << ")'" << endl;
-      }
-
-      query.setQuery("");
-      queryString = "GEO:" + to_string(latitude) + to_string(longitude) + to_string(distance);
-      query.setGeorange(latitude, longitude, distance);
-    } else {
-      // Execute Ft search
-      if (m_verbose.load()) {
-          cout << "Performing query `" << patternString << "'" << endl;
-      }
-
-      queryString = "FT:" + removeAccents(patternString);
-      query.setQuery(queryString);
+    auto pageLength = 25;
+    try {
+      pageLength = request.get_argument<unsigned int>("pageLength");
+    } catch (const std::exception&) {}
+    if (pageLength > MAX_SEARCH_LEN) {
+      pageLength = MAX_SEARCH_LEN;
     }
-    queryString = bookId + queryString;
+    if (pageLength == 0) {
+      pageLength = 25;
+    }
 
+    /* Get the results */
     std::shared_ptr<zim::Search> search;
-    search = searchCache.getOrPut(queryString, [=](){ return make_shared<zim::Search>(searcher->search(query));});
+    search = searchCache.getOrPut(searchInfo, [=](){ return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));});
 
     SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
-    renderer.setSearchPattern(patternString);
-    renderer.setSearchContent(bookName);
+    renderer.setSearchPattern(searchInfo.pattern);
+    renderer.setSearchContent(searchInfo.bookName);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    return withTaskbarInfo(bookName, archive.get(), std::move(response));
+    return withTaskbarInfo(searchInfo.bookName, archive.get(), std::move(response));
+  } catch (const std::invalid_argument& e) {
+    return HTTP400HtmlResponse(*this, request)
+      + invalidUrlMsg
+      + std::string(e.what());
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     return Response::build_500(*this, e.what());
