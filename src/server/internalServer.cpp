@@ -564,26 +564,37 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     /* Make the search */
     // Try to get a search from the searchInfo, else build it
     std::shared_ptr<zim::Search> search;
-    search = searchCache.getOrPut(searchInfo,
-      [=](){
-        std::shared_ptr<zim::Searcher> searcher;
-        if (archive) {
-          searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
-        } else {
-          for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-            auto currentArchive = mp_library->getArchiveById(bookId);
-            if (currentArchive) {
-              if (! searcher) {
-                searcher = std::make_shared<zim::Searcher>(*currentArchive);
-              } else {
-                searcher->addArchive(*currentArchive);
+    try {
+      search = searchCache.getOrPut(searchInfo,
+        [=](){
+          std::shared_ptr<zim::Searcher> searcher;
+          if (archive) {
+            searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
+          } else {
+            for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
+              auto currentArchive = mp_library->getArchiveById(bookId);
+              if (currentArchive) {
+                if (! searcher) {
+                  searcher = std::make_shared<zim::Searcher>(*currentArchive);
+                } else {
+                  searcher->addArchive(*currentArchive);
+                }
               }
-            }
+           }
           }
+          return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
         }
-        return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
-      }
-    );
+      );
+    } catch(std::runtime_error& e) {
+      // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
+      // (in case of zim file not containing a index)
+      auto data = get_default_data();
+      data.set("pattern", encodeDiples(searchInfo.pattern));
+      auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
+      response->set_taskbar(searchInfo.bookName, archive ? getArchiveTitle(*archive) : "");
+      response->set_code(MHD_HTTP_NOT_FOUND);
+      return std::move(response);
+    }
 
 
     auto start = 0;
