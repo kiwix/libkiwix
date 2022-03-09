@@ -290,6 +290,8 @@ TEST_F(ServerTest, UncompressibleContentIsNotCompressed)
 const char* urls400[] = {
   "/ROOT/search",
   "/ROOT/search?content=zimfile",
+  "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
+  "/ROOT/search?content=non-existing-book&pattern=asd<qwerty",
   "/ROOT/search?pattern"
 };
 
@@ -315,7 +317,6 @@ const char* urls404[] = {
   "/ROOT/meta?content=non-existent-book&name=title",
   "/ROOT/random",
   "/ROOT/random?content=non-existent-book",
-  "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT/suggest",
   "/ROOT/suggest?content=non-existent-book&term=abcd",
   "/ROOT/catch/external",
@@ -682,17 +683,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
       Cannot find content entry invalid-article
     </p>
 )"  },
-
-    { /* url */ "/ROOT/search?content=non-existent-book&pattern=asdfqwerty",
-      expected_page_title=="Fulltext search unavailable" &&
-      expected_css_url=="/ROOT/skin/search_results.css" &&
-      expected_body==R"(
-    <div class="header">Not found</div>
-    <p>
-      There is no article with the title <b> "asdfqwerty"</b>
-      and the fulltext search engine is not available for this content.
-    </p>
-)"  },
   };
 
   for ( const auto& t : testData ) {
@@ -725,6 +715,26 @@ TEST_F(ServerTest, 400WithBodyTesting)
     </p>
     <p>
       No query provided.
+    </p>
+)"  },
+    { /* url */ "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
+      expected_body==R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search?content=non-existing-book&pattern=asdfqwerty" is not a valid request.
+    </p>
+    <p>
+      The requested book doesn't exist.
+    </p>
+)"  },
+    { /* url */ "/ROOT/search?content=non-existing-book&pattern=a\"<script foo>",
+      expected_body==R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search?content=non-existing-book&pattern=a"&lt;script foo&gt;" is not a valid request.
+    </p>
+    <p>
+      The requested book doesn't exist.
     </p>
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate

@@ -558,12 +558,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
         bookId = mp_nameMapper->getIdForName(searchInfo.bookName);
         archive = mp_library->getArchiveById(bookId);
       } catch (const std::out_of_range&) {
-        auto data = get_default_data();
-        data.set("pattern", encodeDiples(searchInfo.pattern));
-        data.set("root", m_root);
-        auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-        response->set_code(MHD_HTTP_NOT_FOUND);
-        return withTaskbarInfo(searchInfo.bookName, archive.get(), std::move(response));
+        throw std::invalid_argument("The requested book doesn't exist.");
       }
     }
 
