@@ -798,7 +798,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
-    std::string searchURL = m_root+"/search?pattern="+pattern; // Make a full search on the entire library.
+    std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true); // Make a full search on the entire library.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
     return Response::build_404(*this, request.get_full_url(), bookName, "", details);
@@ -831,7 +831,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
-    std::string searchURL = m_root+"/search?content="+bookName+"&pattern="+pattern; // Make a search on this specific book only.
+    std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true); // Make a search on this specific book only.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
     return Response::build_404(*this, request.get_full_url(), bookName, getArchiveTitle(*archive), details);

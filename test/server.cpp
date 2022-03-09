@@ -512,6 +512,30 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
 )"  },
 
+    { /* url */ R"(/ROOT/"><svg onload=alert(1)>)",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
+    </p>
+)"  },
+
+    { /* url */ R"(/ROOT/zimfile/"><svg onload=alert(1)>)",
+      /* book name */  "zimfile",
+      /* book title */ "Ray Charles",
+      /* expected body */ R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/zimfile/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
+    </p>
+)"  },
+
     { /* url */ "/ROOT/raw/no-such-book/meta/Title",
       /* expected body */ R"(
     <h1>Not Found</h1>
