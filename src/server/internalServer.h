@@ -43,9 +43,47 @@ extern "C" {
 
 namespace kiwix {
 
+struct GeoQuery {
+  GeoQuery(float latitude, float longitude, float distance)
+    : latitude(latitude), longitude(longitude), distance(distance)
+  {}
+  float latitude;
+  float longitude;
+  float distance;
+
+
+  friend bool operator<(const GeoQuery& l, const GeoQuery& r)
+  {
+      return std::tie(l.latitude, l.longitude, l.distance)
+           < std::tie(r.latitude, r.longitude, r.distance); // keep the same order
+  }
+};
+
+class SearchInfo {
+  public:
+    SearchInfo(const std::string& pattern);
+    SearchInfo(const std::string& pattern, GeoQuery geo_query);
+    SearchInfo(const RequestContext& request);
+
+    zim::Query getZimQuery(bool verbose) const;
+
+    friend bool operator<(const SearchInfo& l, const SearchInfo& r)
+    {
+        return std::tie(l.bookName, l.pattern, l.has_geo_query, l.geo_query)
+             < std::tie(r.bookName, r.pattern, r.has_geo_query, r.geo_query); // keep the same order
+    }
+
+  public: //data
+    std::string pattern;
+    bool has_geo_query;
+    GeoQuery geo_query;
+    std::string bookName;
+};
+
+
 typedef kainjow::mustache::data MustacheData;
 typedef ConcurrentCache<string, std::shared_ptr<zim::Searcher>> SearcherCache;
-typedef ConcurrentCache<string, std::shared_ptr<zim::Search>> SearchCache;
+typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
 typedef ConcurrentCache<string, std::shared_ptr<zim::SuggestionSearcher>> SuggestionSearcherCache;
 
 class Entry;
