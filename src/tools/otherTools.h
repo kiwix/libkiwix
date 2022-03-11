@@ -48,6 +48,10 @@ namespace kiwix
   std::string gen_date_str();
   std::string gen_uuid(const std::string& s);
 
+  // if s is empty then returns kainjow::mustache::data(false)
+  // otherwise kainjow::mustache::data(value)
+  kainjow::mustache::data onlyAsNonEmptyMustacheValue(const std::string& s);
+
   std::string render_template(const std::string& template_str, kainjow::mustache::data data);
 }
 
