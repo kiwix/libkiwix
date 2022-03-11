@@ -279,7 +279,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
 {
   try {
     if (! request.is_valid_url())
-      return Response::build_404(*this, request.get_full_url(), "", "");
+      return Response::build_404(*this, request.get_full_url());
 
     const ETag etag = get_matching_if_none_match_etag(request);
     if ( etag )
@@ -406,7 +406,8 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   if (archive == nullptr) {
     const std::string error_details = "No such book: " + bookName;
-    return Response::build_404(*this, "", bookName, "", error_details);
+    auto response = Response::build_404(*this, "", error_details);
+    return withTaskbarInfo(bookName, nullptr, std::move(response));
   }
 
   const auto queryString = request.get_optional_param("term", std::string());
@@ -476,7 +477,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     response->set_cacheable();
     return std::move(response);
   } catch (const ResourceNotFound& e) {
-    return Response::build_404(*this, request.get_full_url(), "", "");
+    return Response::build_404(*this, request.get_full_url());
   }
 }
 
@@ -615,7 +616,8 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
 
   if (archive == nullptr) {
     const std::string error_details = "No such book: " + bookName;
-    return Response::build_404(*this, "", bookName, "", error_details);
+    auto response = Response::build_404(*this, "", error_details);
+    return withTaskbarInfo(bookName, nullptr, std::move(response));
   }
 
   try {
@@ -623,7 +625,8 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     return build_redirect(bookName, getFinalItem(*archive, entry));
   } catch(zim::EntryNotFound& e) {
     const std::string error_details = "Oops! Failed to pick a random article :(";
-    return Response::build_404(*this, "", bookName, getArchiveTitle(*archive), error_details);
+    auto response = Response::build_404(*this, "", error_details);
+    return withTaskbarInfo(bookName, archive.get(), std::move(response));
   }
 }
 
@@ -635,7 +638,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
   } catch (const std::out_of_range& e) {}
 
   if (source.empty())
-    return Response::build_404(*this, request.get_full_url(), "", "");
+    return Response::build_404(*this, request.get_full_url());
 
   auto data = get_default_data();
   data.set("source", source);
@@ -654,7 +657,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
-    return Response::build_404(*this, request.get_full_url(), "", "");
+    return Response::build_404(*this, request.get_full_url());
   }
 
   if (url == "v2") {
@@ -662,7 +665,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return Response::build_404(*this, request.get_full_url(), "", "");
+    return Response::build_404(*this, request.get_full_url());
   }
 
   if (url == "searchdescription.xml") {
@@ -799,7 +802,8 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true); // Make a full search on the entire library.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request.get_full_url(), bookName, "", details);
+    auto response = Response::build_404(*this, request.get_full_url(), details);
+    return withTaskbarInfo(bookName, nullptr, std::move(response));
   }
 
   auto urlStr = request.get_url().substr(bookName.size()+1);
@@ -832,7 +836,8 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true); // Make a search on this specific book only.
     const std::string details = searchSuggestionHTML(searchURL, kiwix::urlDecode(pattern));
 
-    return Response::build_404(*this, request.get_full_url(), bookName, getArchiveTitle(*archive), details);
+    auto response = Response::build_404(*this, request.get_full_url(), details);
+    return withTaskbarInfo(bookName, archive.get(), std::move(response));
   }
 }
 
@@ -849,12 +854,12 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
      bookName = request.get_url_part(1);
      kind = request.get_url_part(2);
   } catch (const std::out_of_range& e) {
-     return Response::build_404(*this, request.get_full_url(), bookName, "", "");
+    return Response::build_404(*this, request.get_full_url());
   }
 
   if (kind != "meta" && kind!= "content") {
     const std::string error_details = kind + " is not a valid request for raw content.";
-    return Response::build_404(*this, request.get_full_url(), bookName, "", error_details);
+    return Response::build_404(*this, request.get_full_url(), error_details);
   }
 
   std::shared_ptr<zim::Archive> archive;
@@ -865,7 +870,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
 
   if (archive == nullptr) {
     const std::string error_details = "No such book: " + bookName;
-    return Response::build_404(*this, request.get_full_url(), bookName, "", error_details);
+    return Response::build_404(*this, request.get_full_url(), error_details);
   }
 
   // Remove the beggining of the path:
@@ -890,7 +895,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
       printf("Failed to find %s\n", itemPath.c_str());
     }
     const std::string error_details = "Cannot find " + kind + " entry " + itemPath;
-    return Response::build_404(*this, request.get_full_url(), bookName, getArchiveTitle(*archive), error_details);
+    return Response::build_404(*this, request.get_full_url(), error_details);
   }
 }
 

@@ -638,8 +638,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  },
 
     { /* url */ "/ROOT/raw/zimfile/meta/invalid-metadata",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -651,8 +649,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  },
 
     { /* url */ "/ROOT/raw/zimfile/content/invalid-article",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>

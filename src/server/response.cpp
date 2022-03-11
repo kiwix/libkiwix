@@ -84,7 +84,7 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& bookName, const std::string& bookTitle, const std::string& details)
+std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
 {
   MustacheData results;
   if ( !url.empty() ) {
@@ -94,7 +94,6 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
 
   auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
-  response->set_taskbar(bookName, bookTitle);
 
   return response;
 }
