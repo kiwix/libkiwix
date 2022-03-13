@@ -121,9 +121,10 @@ body {
     color: white;
     background-color: #909090;
     border: solid 1px #b5b2b2;
+    cursor: pointer;
 }
 
-.kiwixButton:hover {
+.kiwixButtonHover:hover {
     background-color: #858585;
 }
 
