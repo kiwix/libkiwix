@@ -297,8 +297,9 @@ const char* urls400[] = {
 
 TEST_F(ServerTest, 400)
 {
-  for (const char* url: urls400 )
+  for (const char* url: urls400 ) {
     EXPECT_EQ(400, zfs1_->GET(url)->status) << "url: " << url;
+  }
 }
 
 const char* urls404[] = {
@@ -331,8 +332,9 @@ const char* urls404[] = {
 
 TEST_F(ServerTest, 404)
 {
-  for ( const char* url : urls404 )
+  for ( const char* url : urls404 ) {
     EXPECT_EQ(404, zfs1_->GET(url)->status) << "url: " << url;
+  }
 }
 
 namespace TestingOfHtmlResponses
@@ -805,14 +807,16 @@ TEST_F(ServerTest, RawEntry)
 
 TEST_F(ServerTest, HeadMethodIsSupported)
 {
-  for ( const Resource& res : all200Resources() )
+  for ( const Resource& res : all200Resources() ) {
     EXPECT_EQ(200, zfs1_->HEAD(res.url)->status) << res;
+  }
 }
 
 TEST_F(ServerTest, TheResponseToHeadRequestHasNoBody)
 {
-  for ( const Resource& res : all200Resources() )
+  for ( const Resource& res : all200Resources() ) {
     EXPECT_TRUE(zfs1_->HEAD(res.url)->body.empty()) << res;
+  }
 }
 
 TEST_F(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
