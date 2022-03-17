@@ -151,19 +151,18 @@ SearchInfo::SearchInfo(const RequestContext& request)
 
 zim::Query SearchInfo::getZimQuery(bool verbose) const {
   zim::Query query;
-  if(pattern.empty()) {
-    // Execute geo-search
+  if (verbose) {
+    std::cout << "Performing query '" << pattern<< "'";
+  }
+  query.setQuery(pattern);
+  if (has_geo_query) {
     if (verbose) {
-      cout << "Performing geo query `" << geo_query.distance << "&(" << geo_query.latitude << ";" << geo_query.longitude << ")'" << endl;
+      std::cout << " with geo query '" << geo_query.distance << "&(" << geo_query.latitude << ";" << geo_query.longitude << ")'";
     }
-    query.setQuery("");
     query.setGeorange(geo_query.latitude, geo_query.longitude, geo_query.distance);
-  } else {
-    // Execute Ft search
-    if (verbose) {
-        cout << "Performing query `" << pattern << "'" << endl;
-    }
-    query.setQuery(pattern);
+  }
+  if (verbose) {
+    std::cout << std::endl;
   }
   return query;
 }
