@@ -328,11 +328,12 @@ namespace TestingOfHtmlResponses
 
 struct ExpectedResponseData
 {
-  const std::string bookName, bookTitle, expectedBody;
+  const std::string expectedPageTitle, bookName, bookTitle, expectedBody;
 };
 
 enum ExpectedResponseDataType
 {
+  expected_page_title,
   book_name,
   book_title,
   expected_body
@@ -345,9 +346,10 @@ ExpectedResponseData operator==(ExpectedResponseDataType t, std::string s)
 {
   switch (t)
   {
-    case book_name:           return ExpectedResponseData{s, "", ""};
-    case book_title:          return ExpectedResponseData{"", s, ""};
-    case expected_body:       return ExpectedResponseData{"", "", s};
+    case expected_page_title: return ExpectedResponseData{s, "", "", ""};
+    case book_name:           return ExpectedResponseData{"", s, "", ""};
+    case book_title:          return ExpectedResponseData{"", "", s, ""};
+    case expected_body:       return ExpectedResponseData{"", "", "", s};
     default: assert(false); return ExpectedResponseData{};
   }
 }
@@ -364,6 +366,7 @@ ExpectedResponseData operator&&(const ExpectedResponseData& a,
                                 const ExpectedResponseData& b)
 {
   return ExpectedResponseData{
+    selectNonEmpty(a.expectedPageTitle, b.expectedPageTitle),
     selectNonEmpty(a.bookName, b.bookName),
     selectNonEmpty(a.bookTitle, b.bookTitle),
     selectNonEmpty(a.expectedBody, b.expectedBody)
@@ -384,6 +387,7 @@ public:
   std::string expectedResponse() const;
 
 private:
+  std::string pageTitle() const;
   std::string hiddenBookNameInput() const;
   std::string searchPatternInput() const;
   std::string taskbarLinks() const;
@@ -396,7 +400,9 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
-    <title>Content not found</title>
+    <title>)FRAG",
+
+    R"FRAG(</title>
   <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
@@ -436,14 +442,23 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
   };
 
   return frag[0]
-       + hiddenBookNameInput()
+       + pageTitle()
        + frag[1]
-       + searchPatternInput()
+       + hiddenBookNameInput()
        + frag[2]
-       + taskbarLinks()
+       + searchPatternInput()
        + frag[3]
+       + taskbarLinks()
+       + frag[4]
        + removeEOLWhitespaceMarkers(expectedBody)
-       + frag[4];
+       + frag[5];
+}
+
+std::string TestContentIn404HtmlResponse::pageTitle() const
+{
+  return expectedPageTitle.empty()
+       ? "Content not found"
+       : expectedPageTitle;
 }
 
 std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
