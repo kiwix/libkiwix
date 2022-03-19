@@ -35,8 +35,19 @@
       }
 
       const cf = document.getElementById('content_iframe');
-      cf.src = userUrl2IframeUrl(window.location.hash.slice(1));
       cf.height = window.visualViewport.height - cf.offsetTop - 4;
+
+      function handle_location_hash_change() {
+        const hash = window.location.hash;
+        const iframeContentUrl = userUrl2IframeUrl(hash.slice(1));
+        console.log("handle_location_hash_change: " + hash);
+        if ( iframeContentUrl != cf.contentWindow.location.pathname ) {
+          cf.src = iframeContentUrl;
+        }
+      }
+
+      window.onhashchange = handle_location_hash_change;
+      handle_location_hash_change();
 
       function handle_content_url_change() {
         document.title = cf.contentDocument.title;
