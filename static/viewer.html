@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
 
-  <body style="margin:0">
+  <body style="margin:0" onload="handle_visual_viewport_change()">
     <div id=taskbar style="background:#bbffbb">Taskbar</div>
 
     <iframe id="content_iframe"
@@ -35,7 +35,11 @@
       }
 
       const cf = document.getElementById('content_iframe');
-      cf.height = window.visualViewport.height - cf.offsetTop - 4;
+
+      function handle_visual_viewport_change() {
+        cf.height = window.visualViewport.height - cf.offsetTop - 4;
+      }
+      window.onresize = handle_visual_viewport_change;
 
       function handle_location_hash_change() {
         const hash = window.location.hash;
