@@ -199,6 +199,16 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
 )EXPECTEDRESULT"
     },
     {
+      /* url */ "/ROOT/viewer",
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
+    <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
+    <script type="text/javascript" src="./skin/taskbar.js?cacheid=1aec4a68" defer></script>
+    <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
+          return '/skin/blank.html';
+        if ( url == '/skin/blank.html' ) {
+)EXPECTEDRESULT"
+    },
+    {
       /* url */ "/ROOT/content/zimfile/A/index",
 R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
