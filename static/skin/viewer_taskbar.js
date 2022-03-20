@@ -37,11 +37,12 @@ function setupAutoHidingOfTheToolbar() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  const root = document.querySelector(`link[type='root']`).getAttribute("href");
-  const bookName = (window.location.pathname == `${root}/search`)
-    ? (new URLSearchParams(window.location.search)).get('content')
-    : window.location.pathname.split(`${root}/`)[1].split('/')[0];
+  const p = location.pathname;
+  const root = p.slice(0, p.length - '/viewer'.length);
 
+  const bookName = location.hash.slice(1).split('/')[0];
+
+/*
   const autoCompleteJS = new autoComplete(
     {
       selector: "#kiwixsearchbox",
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       resultsList: {
         noResults: true,
-        /* We must display 10 results (requested) + 1 potential link to do a full text search. */
+        // We must display 10 results (requested) + 1 potential link to do a full text search.
         maxResults: 11,
       },
       resultItem: {
@@ -118,5 +119,5 @@ document.addEventListener('DOMContentLoaded', function () {
   if (document.body.clientWidth < 520) {
     setupAutoHidingOfTheToolbar();
   }
-  
+  */
 });
