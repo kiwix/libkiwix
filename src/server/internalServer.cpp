@@ -95,18 +95,6 @@ inline std::string normalizeRootUrl(std::string rootUrl)
   return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
-// Returns the value of env var `name` if found, otherwise returns defaultVal
-unsigned int getCacheLength(const char* name, unsigned int defaultVal) {
-  try {
-    const char* envString = std::getenv(name);
-    if (envString == nullptr) {
-      throw std::runtime_error("Environment variable not set");
-    }
-    return extractFromString<unsigned int>(envString);
-  } catch (...) {}
-
-  return defaultVal;
-}
 } // unnamed namespace
 
 SearchInfo::SearchInfo(const std::string& pattern)
@@ -194,9 +182,9 @@ InternalServer::InternalServer(Library* library,
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
-  searcherCache(getCacheLength("SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
-  searchCache(getCacheLength("SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
-  suggestionSearcherCache(getCacheLength("SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U)))
+  searcherCache(getEnvVar<int>("SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
+  searchCache(getEnvVar<int>("SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
+  suggestionSearcherCache(getEnvVar<int>("SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U)))
 {}
 
 bool InternalServer::start() {
