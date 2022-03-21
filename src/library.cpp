@@ -27,6 +27,7 @@
 #include "tools/regexTools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
+#include "tools/concurrent_cache.h"
 
 #include <pugixml.hpp>
 #include <algorithm>
@@ -69,15 +70,12 @@ struct LibraryBase
   struct Entry : Book
   {
     Library::Revision lastUpdatedRevision = 0;
-
-    // May also keep the Archive and Reader pointers here and get
-    // rid of the m_readers and m_archives data members in Library
   };
 
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
-  std::map<std::string, std::shared_ptr<Reader>> m_readers;
-  std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
+  using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
+  std::unique_ptr<ArchiveCache> mp_archiveCache;
   std::vector<kiwix::Bookmark> m_bookmarks;
   class BookDB;
   std::unique_ptr<BookDB> m_bookDB;
@@ -97,7 +95,8 @@ public:
 };
 
 LibraryBase::LibraryBase()
-  : m_bookDB(new BookDB)
+  : mp_archiveCache(new ArchiveCache(10)),
+    m_bookDB(new BookDB)
 {
 }
 
@@ -139,7 +138,7 @@ bool Library::addBook(const Book& book)
   try {
     auto& oldbook = mp_base->m_books.at(book.getId());
     if ( ! booksReferToTheSameArchive(oldbook, book) ) {
-      dropReader(book.getId());
+      dropCache(book.getId());
     }
     oldbook.update(book); // XXX: This may have no effect if oldbook is readonly
                           // XXX: Then m_bookDB will become out-of-sync with
@@ -173,17 +172,16 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 }
 
 
-void Library::dropReader(const std::string& id)
+void Library::dropCache(const std::string& id)
 {
-  mp_base->m_readers.erase(id);
-  mp_base->m_archives.erase(id);
+  mp_base->mp_archiveCache->drop(id);
 }
 
 bool Library::removeBookById(const std::string& id)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
   mp_base->m_bookDB->delete_document("Q" + id);
-  dropReader(id);
+  dropCache(id);
   return mp_base->m_books.erase(id) == 1;
 }
 
@@ -242,35 +240,29 @@ const Book& Library::getBookByPath(const std::string& path) const
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
-  try {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return mp_base->m_readers.at(id);
-  } catch (std::out_of_range& e) {}
-
-  const auto archive = getArchiveById(id);
-  if ( !archive )
+  auto archive = getArchiveById(id);
+  if(archive) {
+    return make_shared<Reader>(archive);
+  } else {
     return nullptr;
-
-  const shared_ptr<Reader> reader(new Reader(archive, true));
-  std::lock_guard<std::mutex> lock(m_mutex);
-  mp_base->m_readers[id] = reader;
-  return reader;
+  }
 }
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
   try {
-    return mp_base->m_archives.at(id);
-  } catch (std::out_of_range& e) {}
-
-  auto book = getBookById(id);
-  if (!book.isPathValid())
+    return mp_base->mp_archiveCache->getOrPut(id,
+    [&](){
+      auto book = getBookById(id);
+      if (!book.isPathValid()) {
+        throw std::invalid_argument("");
+      }
+      return make_shared<zim::Archive>(book.getPath());
+    });
+  } catch (std::invalid_argument&) {
     return nullptr;
+  }
 
-  auto sptr = make_shared<zim::Archive>(book.getPath());
-  mp_base->m_archives[id] = sptr;
-  return sptr;
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
