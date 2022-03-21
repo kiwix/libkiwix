@@ -141,50 +141,15 @@ private: // functions
 };
 
 /**
- * This class is not part of the libkiwix API. Its only purpose is
- * to simplify the implementation of the Library's move operations
- * and avoid bugs should new data members be added to Library.
- */
-class LibraryBase
-{
-protected: // types
-  typedef uint64_t LibraryRevision;
-
-  struct Entry : Book
-  {
-    LibraryRevision lastUpdatedRevision = 0;
-
-    // May also keep the Archive and Reader pointers here and get
-    // rid of the m_readers and m_archives data members in Library
-  };
-
-protected: // data
-  LibraryRevision m_revision;
-  std::map<std::string, Entry> m_books;
-  std::map<std::string, std::shared_ptr<Reader>> m_readers;
-  std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
-  std::vector<kiwix::Bookmark> m_bookmarks;
-  class BookDB;
-  std::unique_ptr<BookDB> m_bookDB;
-
-protected: // functions
-  LibraryBase();
-  ~LibraryBase();
-
-  LibraryBase(LibraryBase&& );
-  LibraryBase& operator=(LibraryBase&& );
-};
-
-/**
  * A Library store several books.
  */
-class Library : private LibraryBase
+class Library
 {
   // all data fields must be added in LibraryBase
   mutable std::mutex m_mutex;
 
  public:
-  typedef LibraryRevision Revision;
+  typedef uint64_t Revision;
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
 
@@ -351,7 +316,7 @@ class Library : private LibraryBase
    *
    * @return Current revision of the library.
    */
-  LibraryRevision getRevision() const;
+  Revision getRevision() const;
 
   /**
    * Remove books that have not been updated since the specified revision.
@@ -359,13 +324,14 @@ class Library : private LibraryBase
    * @param  rev the library revision to use
    * @return Count of books that were removed by this operation.
    */
-  uint32_t removeBooksNotUpdatedSince(LibraryRevision rev);
+  uint32_t removeBooksNotUpdatedSince(Revision rev);
 
   friend class OPDSDumper;
   friend class libXMLDumper;
 
 private: // types
   typedef const std::string& (Book::*BookStrPropMemFn)() const;
+  struct Impl;
 
 private: // functions
   AttributeCounts getBookAttributeCounts(BookStrPropMemFn p) const;
@@ -373,6 +339,9 @@ private: // functions
   BookIdCollection filterViaBookDB(const Filter& filter) const;
   void updateBookDB(const Book& book);
   void dropReader(const std::string& bookId);
+
+private: //data
+  std::unique_ptr<Impl> mp_impl;
 };
 
 }
