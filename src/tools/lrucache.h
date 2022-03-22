@@ -144,6 +144,14 @@ public: // functions
     return previous;
   }
 
+  std::set<key_t> keys() const  {
+    std::set<key_t> keys;
+    for(auto& item:_cache_items_map) {
+      keys.insert(item.first);
+    }
+    return keys;
+  }
+
 private: // functions
   void putMissing(const key_t& key, const value_t& value) {
     assert(_cache_items_map.find(key) == _cache_items_map.end());

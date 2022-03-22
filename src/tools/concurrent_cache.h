@@ -90,7 +90,7 @@ public: // types
     return  impl_.setMaxSize(new_size);
   }
 
-private: // data
+protected: // data
   Impl impl_;
   std::mutex lock_;
 };
