@@ -137,32 +137,32 @@
     </div>
 
     <div class="footer">
-      {{#hasPages}}
+      {{#pagination.hasPages}}
         <ul>
-          {{#resultLastPageStart}}
+          {{#pagination.firstPage}}
             <li>
-              <a href="{{searchProtocolPrefix}}{{query.path}}&start=0&pageLength={{pageLength}}">
+              <a href="{{searchProtocolPrefix}}{{query.path}}&start={{start}}&pageLength={{query.itemsPerPage}}">
                 ◀
               </a>
             </li>
-          {{/resultLastPageStart}}
-          {{#pages}}
+          {{/pagination.firstPage}}
+          {{#pagination.pages}}
             <li>
-              <a {{#selected}}class="selected"{{/selected}}
-                 href="{{searchProtocolPrefix}}{{query.path}}&start={{start}}&pageLength={{pageLength}}">
+              <a {{#current}}class="selected"{{/current}}
+                 href="{{searchProtocolPrefix}}{{query.path}}&start={{start}}&pageLength={{query.itemsPerPage}}">
                 {{label}}
               </a>
             </li>
-          {{/pages}}
-          {{#resultLastPageStart}}
+          {{/pagination.pages}}
+          {{#pagination.lastPage}}
             <li>
-              <a href="{{searchProtocolPrefix}}{{query.path}}&start={{resultLastPageStart}}&pageLength={{pageLength}}">
+              <a href="{{searchProtocolPrefix}}{{query.path}}&start={{start}}&pageLength={{query.itemsPerPage}}">
                 ▶
               </a>
             </li>
-          {{/resultLastPageStart}}
+          {{/pagination.lastPage}}
         </ul>
-      {{/hasPages}}
+      {{/pagination.hasPages}}
     </div>
   </body>
 </html>
