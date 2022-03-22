@@ -596,21 +596,15 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     try {
       search = searchCache.getOrPut(searchInfo,
         [=](){
-          std::shared_ptr<zim::Searcher> searcher;
+          Library::BookIdSet bookIds;
           if(!bookId.empty()) {
-            searcher = mp_library->getSearcherById(bookId);
+            bookIds.insert(bookId);
           } else {
             for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-              auto currentArchive = mp_library->getArchiveById(bookId);
-              if (currentArchive) {
-                if (! searcher) {
-                  searcher = std::make_shared<zim::Searcher>(*currentArchive);
-                } else {
-                  searcher->addArchive(*currentArchive);
-                }
-              }
-           }
+              bookIds.insert(bookId);
+            }
           }
+          auto searcher = mp_library->getSearcherByIds(bookIds);
           return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
         }
       );

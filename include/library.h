@@ -153,6 +153,7 @@ class Library
   typedef uint64_t Revision;
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
+  typedef std::set<std::string> BookIdSet;
 
  public:
   Library();
@@ -208,7 +209,10 @@ class Library
 
   DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
-  std::shared_ptr<zim::Searcher> getSearcherById(const std::string& id);
+  std::shared_ptr<zim::Searcher> getSearcherById(const std::string& id) {
+    return getSearcherByIds(BookIdSet{id});
+  }
+  std::shared_ptr<zim::Searcher> getSearcherByIds(const BookIdSet& ids);
 
   /**
    * Remove a book from the library.
