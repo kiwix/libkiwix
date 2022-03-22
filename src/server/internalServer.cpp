@@ -205,7 +205,6 @@ InternalServer::InternalServer(Library* library,
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
-  searcherCache(getCacheLength("SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   searchCache(getCacheLength("SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getCacheLength("SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U)))
 {}
@@ -549,11 +548,9 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     auto searchInfo = SearchInfo(request);
 
     std::string bookId;
-    std::shared_ptr<zim::Archive> archive;
     if (!searchInfo.bookName.empty()) {
       try {
         bookId = mp_nameMapper->getIdForName(searchInfo.bookName);
-        archive = mp_library->getArchiveById(bookId);
       } catch (const std::out_of_range&) {
         throw std::invalid_argument("The requested book doesn't exist.");
       }
@@ -567,8 +564,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       search = searchCache.getOrPut(searchInfo,
         [=](){
           std::shared_ptr<zim::Searcher> searcher;
-          if (archive) {
-            searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
+          if(!bookId.empty()) {
+            searcher = mp_library->getSearcherById(bookId);
           } else {
             for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
               auto currentArchive = mp_library->getArchiveById(bookId);
@@ -590,7 +587,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       auto data = get_default_data();
       data.set("pattern", encodeDiples(searchInfo.pattern));
       auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-      response->set_taskbar(searchInfo.bookName, archive ? getArchiveTitle(*archive) : "");
+      //[TODO]
+      //response->set_taskbar(searchInfo.bookName, archive ? getArchiveTitle(*archive) : "");
       response->set_code(MHD_HTTP_NOT_FOUND);
       return std::move(response);
     }
@@ -621,7 +619,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(searchInfo.bookName, archive ? getArchiveTitle(*archive) : "");
+    //[TODO]
+    //response->set_taskbar(searchInfo.bookName, archive ? getArchiveTitle(*archive) : "");
     return std::move(response);
   } catch (const std::invalid_argument& e) {
     auto url = request.get_full_url();

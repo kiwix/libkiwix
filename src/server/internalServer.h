@@ -82,7 +82,6 @@ class SearchInfo {
 
 
 typedef kainjow::mustache::data MustacheData;
-typedef ConcurrentCache<string, std::shared_ptr<zim::Searcher>> SearcherCache;
 typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
 typedef ConcurrentCache<string, std::shared_ptr<zim::SuggestionSearcher>> SuggestionSearcherCache;
 
@@ -115,7 +114,7 @@ class InternalServer {
     bool start();
     void stop();
     std::string getAddress() { return m_addr; }
-    int getPort() { return m_port; } 
+    int getPort() { return m_port; }
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
@@ -161,7 +160,6 @@ class InternalServer {
     Library* mp_library;
     NameMapper* mp_nameMapper;
 
-    SearcherCache searcherCache;
     SearchCache searchCache;
     SuggestionSearcherCache suggestionSearcherCache;
 

@@ -26,6 +26,7 @@
 #include <memory>
 #include <mutex>
 #include <zim/archive.h>
+#include <zim/search.h>
 
 #include "book.h"
 #include "bookmark.h"
@@ -209,6 +210,7 @@ class Library
 
   DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
+  std::shared_ptr<zim::Searcher> getSearcherById(const std::string& id);
 
   /**
    * Remove a book from the library.

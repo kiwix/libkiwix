@@ -76,6 +76,8 @@ struct LibraryBase
   std::map<std::string, Entry> m_books;
   using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
   std::unique_ptr<ArchiveCache> mp_archiveCache;
+  using SearcherCache = ConcurrentCache<std::string, std::shared_ptr<zim::Searcher>>;
+  std::unique_ptr<SearcherCache> mp_searcherCache;
   std::vector<kiwix::Bookmark> m_bookmarks;
   class BookDB;
   std::unique_ptr<BookDB> m_bookDB;
@@ -96,6 +98,8 @@ public:
 
 LibraryBase::LibraryBase()
   : mp_archiveCache(new ArchiveCache(10)),
+    // [TODO] Use `SEARCHER_CACHE_SIZE` env var
+    mp_searcherCache(new SearcherCache(10)),
     m_bookDB(new BookDB)
 {
 }
@@ -175,6 +179,7 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 void Library::dropCache(const std::string& id)
 {
   mp_base->mp_archiveCache->drop(id);
+  mp_base->mp_searcherCache->drop(id);
 }
 
 bool Library::removeBookById(const std::string& id)
@@ -262,7 +267,22 @@ std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
   } catch (std::invalid_argument&) {
     return nullptr;
   }
+}
 
+std::shared_ptr<zim::Searcher> Library::getSearcherById(const std::string& id)
+{
+  try {
+    return mp_base->mp_searcherCache->getOrPut(id,
+    [&](){
+      auto archive = getArchiveById(id);
+      if(!archive) {
+        throw std::invalid_argument("");
+      }
+      return make_shared<zim::Searcher>(*archive);
+    });
+  } catch (std::invalid_argument&) {
+    return nullptr;
+  }
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
