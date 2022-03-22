@@ -84,7 +84,7 @@ public: // types
     return impl_.drop(key);
   }
 
-private: // data
+protected: // data
   Impl impl_;
   std::mutex lock_;
 };

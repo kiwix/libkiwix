@@ -59,6 +59,27 @@ bool booksReferToTheSameArchive(const Book& book1, const Book& book2)
 
 } // unnamed namespace
 
+template<typename Key, typename Value>
+class MultiKeyCache: public ConcurrentCache<std::set<Key>, Value>
+{
+  public:
+    explicit MultiKeyCache(size_t maxEntries)
+      : ConcurrentCache<std::set<Key>, Value>(maxEntries)
+    {}
+
+    bool drop(const Key& key)
+    {
+      std::unique_lock<std::mutex> l(this->lock_);
+      bool removed = false;
+      for(auto cache_key: this->impl_.keys()) {
+        if(cache_key.find(key)!=cache_key.end()) {
+          removed |= this->impl_.drop(cache_key);
+        }
+      }
+      return removed;
+    }
+};
+
 /**
  * This class is not part of the libkiwix API. Its only purpose is
  * to simplify the implementation of the Library's move operations
@@ -76,7 +97,7 @@ struct LibraryBase
   std::map<std::string, Entry> m_books;
   using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
   std::unique_ptr<ArchiveCache> mp_archiveCache;
-  using SearcherCache = ConcurrentCache<std::string, std::shared_ptr<zim::Searcher>>;
+  using SearcherCache = MultiKeyCache<std::string, std::shared_ptr<zim::Searcher>>;
   std::unique_ptr<SearcherCache> mp_searcherCache;
   std::vector<kiwix::Bookmark> m_bookmarks;
   class BookDB;
@@ -271,8 +292,9 @@ std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 
 std::shared_ptr<zim::Searcher> Library::getSearcherById(const std::string& id)
 {
+  std::set<std::string> ids {id};
   try {
-    return mp_base->mp_searcherCache->getOrPut(id,
+    return mp_base->mp_searcherCache->getOrPut(ids,
     [&](){
       auto archive = getArchiveById(id);
       if(!archive) {
