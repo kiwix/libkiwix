@@ -1611,7 +1611,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     static std::string makeUrl(const std::string pattern, int start, size_t resultsPerPage)
     {
-      std::string url = "/ROOT/search?pattern=" + pattern + "&content=zimfile";
+      std::string url = "/ROOT/search?pattern=" + pattern + "&books.id=6f1d19d0-633f-087b-fb55-7ac324ff9baf";
 
       if ( start >= 0 ) {
         url += "&start=" + to_string(start);
