@@ -606,10 +606,9 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
-    //[TODO]
-    //renderer.setSearchContent(searchInfo.bookNames);
+    renderer.setSearchBookNames(searchInfo.bookNames);
     renderer.setProtocolPrefix(m_root + "/");
-    renderer.setSearchProtocolPrefix(m_root + "/search?");
+    renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     //[TODO]
