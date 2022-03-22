@@ -145,7 +145,8 @@ SearchInfo::SearchInfo(const RequestContext& request)
   }
 
   try {
-    bookName = request.get_argument("content");
+    auto content_vector = request.get_arguments("content");
+    bookNames = std::set<std::string>(content_vector.begin(), content_vector.end());
   } catch (const std::out_of_range&) {}
 }
 
@@ -547,16 +548,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   try {
     auto searchInfo = SearchInfo(request);
 
-    std::string bookId;
-    if (!searchInfo.bookName.empty()) {
-      try {
-        bookId = mp_nameMapper->getIdForName(searchInfo.bookName);
-      } catch (const std::out_of_range&) {
-        throw std::invalid_argument("The requested book doesn't exist.");
-      }
-    }
-
-
     /* Make the search */
     // Try to get a search from the searchInfo, else build it
     std::shared_ptr<zim::Search> search;
@@ -564,8 +555,15 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       search = searchCache.getOrPut(searchInfo,
         [=](){
           std::set<std::string> bookIds;
-          if(!bookId.empty()) {
-            bookIds.insert(bookId);
+          if(!searchInfo.bookNames.empty()) {
+            for(const auto& bookName: searchInfo.bookNames) {
+              try {
+                auto bookId = mp_nameMapper->getIdForName(bookName);
+                bookIds.insert(bookId);
+              } catch(const std::out_of_range&) {
+                throw std::invalid_argument("The requested book desn't exist.");
+              }
+            }
           } else {
             for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
               bookIds.insert(bookId);
@@ -608,7 +606,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
-    renderer.setSearchContent(searchInfo.bookName);
+    //[TODO]
+    //renderer.setSearchContent(searchInfo.bookNames);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search?");
     renderer.setPageLength(pageLength);

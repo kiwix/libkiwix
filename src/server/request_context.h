@@ -25,6 +25,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <vector>
 #include <stdexcept>
 
 #include "byte_range.h"
@@ -68,10 +69,14 @@ class RequestContext {
     std::string get_header(const std::string& name) const;
     template<typename T=std::string>
     T get_argument(const std::string& name) const {
-        std::istringstream stream(arguments.at(name));
+        std::istringstream stream(get_argument(name));
         T v;
         stream >> v;
         return v;
+    }
+
+    std::vector<std::string> get_arguments(const std::string& name) const {
+      return arguments.at(name);
     }
 
     template<class T>
@@ -105,7 +110,7 @@ class RequestContext {
 
     ByteRange byteRange_;
     std::map<std::string, std::string> headers;
-    std::map<std::string, std::string> arguments;
+    std::map<std::string, std::vector<std::string>> arguments;
 
   private: // functions
     static MHD_Result fill_header(void *, enum MHD_ValueKind, const char*, const char*);
