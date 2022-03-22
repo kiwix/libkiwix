@@ -217,6 +217,9 @@ std::string SearchRenderer::getHtml()
 
   std::stringstream ss;
   tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
+  if (!tmpl.is_valid()) {
+    throw std::runtime_error(tmpl.error_message());
+  }
   return ss.str();
 }
 
