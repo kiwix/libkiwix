@@ -210,7 +210,10 @@ class Library
 
   DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
-  std::shared_ptr<zim::Searcher> getSearcherById(const std::string& id);
+  std::shared_ptr<zim::Searcher> getSearcherById(const std::string& id) {
+    return getSearcherByIds(std::set<std::string>{id});
+  }
+  std::shared_ptr<zim::Searcher> getSearcherByIds(const std::set<std::string>& ids);
 
   /**
    * Remove a book from the library.

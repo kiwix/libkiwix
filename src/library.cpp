@@ -290,17 +290,24 @@ std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
   }
 }
 
-std::shared_ptr<zim::Searcher> Library::getSearcherById(const std::string& id)
+std::shared_ptr<zim::Searcher> Library::getSearcherByIds(const std::set<std::string>& ids)
 {
-  std::set<std::string> ids {id};
   try {
     return mp_base->mp_searcherCache->getOrPut(ids,
     [&](){
-      auto archive = getArchiveById(id);
-      if(!archive) {
-        throw std::invalid_argument("");
+      std::shared_ptr<zim::Searcher> searcher;
+      for(auto& id:ids) {
+        auto archive = getArchiveById(id);
+        if(!archive) {
+          throw std::invalid_argument("");
+        }
+        if (!searcher) {
+          searcher = std::make_shared<zim::Searcher>(*archive);
+        } else {
+          searcher->addArchive(*archive);
+        }
       }
-      return make_shared<zim::Searcher>(*archive);
+      return searcher;
     });
   } catch (std::invalid_argument&) {
     return nullptr;
