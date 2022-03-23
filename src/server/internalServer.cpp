@@ -514,7 +514,12 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
   /* Make the search */
   if (patternString.empty() && ! has_geo_query) {
-    return Response::build_400(*this, request.get_full_url(), "No query provided.");
+    auto url = request.get_full_url();
+    const auto query = request.get_query();
+    if (! query.empty()) {
+      url += "?" + query;
+    }
+    return Response::build_400(*this, url, "No query provided.");
   }
 
   if (!archive && !bookName.empty()) {
