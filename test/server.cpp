@@ -303,6 +303,7 @@ const char* urls404[] = {
   "/ROOT/random",
   "/ROOT/random?content=non-existent-book",
   "/ROOT/search",
+  "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT/suggest",
   "/ROOT/suggest?content=non-existent-book&term=abcd",
   "/ROOT/catch/external",
@@ -327,11 +328,17 @@ namespace TestingOfHtmlResponses
 
 struct ExpectedResponseData
 {
-  const std::string bookName, bookTitle, expectedBody;
+  const std::string expectedPageTitle;
+  const std::string expectedCssUrl;
+  const std::string bookName;
+  const std::string bookTitle;
+  const std::string expectedBody;
 };
 
 enum ExpectedResponseDataType
 {
+  expected_page_title,
+  expected_css_url,
   book_name,
   book_title,
   expected_body
@@ -344,9 +351,11 @@ ExpectedResponseData operator==(ExpectedResponseDataType t, std::string s)
 {
   switch (t)
   {
-    case book_name:           return ExpectedResponseData{s, "", ""};
-    case book_title:          return ExpectedResponseData{"", s, ""};
-    case expected_body:       return ExpectedResponseData{"", "", s};
+    case expected_page_title: return ExpectedResponseData{s, "", "", "", ""};
+    case expected_css_url:    return ExpectedResponseData{"", s, "", "", ""};
+    case book_name:           return ExpectedResponseData{"", "", s, "", ""};
+    case book_title:          return ExpectedResponseData{"", "", "", s, ""};
+    case expected_body:       return ExpectedResponseData{"", "", "", "", s};
     default: assert(false); return ExpectedResponseData{};
   }
 }
@@ -363,6 +372,8 @@ ExpectedResponseData operator&&(const ExpectedResponseData& a,
                                 const ExpectedResponseData& b)
 {
   return ExpectedResponseData{
+    selectNonEmpty(a.expectedPageTitle, b.expectedPageTitle),
+    selectNonEmpty(a.expectedCssUrl, b.expectedCssUrl),
     selectNonEmpty(a.bookName, b.bookName),
     selectNonEmpty(a.bookTitle, b.bookTitle),
     selectNonEmpty(a.expectedBody, b.expectedBody)
@@ -383,6 +394,8 @@ public:
   std::string expectedResponse() const;
 
 private:
+  std::string pageTitle() const;
+  std::string pageCssLink() const;
   std::string hiddenBookNameInput() const;
   std::string searchPatternInput() const;
   std::string taskbarLinks() const;
@@ -392,11 +405,15 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 {
   const std::string frag[] =  {
     R"FRAG(<!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
-    <title>Content not found</title>
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
+    <title>)FRAG",
+
+    R"FRAG(</title>
+)FRAG",
+
+    R"FRAG(  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
 <script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
@@ -435,14 +452,36 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
   };
 
   return frag[0]
-       + hiddenBookNameInput()
+       + pageTitle()
        + frag[1]
-       + searchPatternInput()
+       + pageCssLink()
        + frag[2]
-       + taskbarLinks()
+       + hiddenBookNameInput()
        + frag[3]
+       + searchPatternInput()
+       + frag[4]
+       + taskbarLinks()
+       + frag[5]
        + removeEOLWhitespaceMarkers(expectedBody)
-       + frag[4];
+       + frag[6];
+}
+
+std::string TestContentIn404HtmlResponse::pageTitle() const
+{
+  return expectedPageTitle.empty()
+       ? "Content not found"
+       : expectedPageTitle;
+}
+
+std::string TestContentIn404HtmlResponse::pageCssLink() const
+{
+  if ( expectedCssUrl.empty() )
+    return "";
+
+  return R"(    <link type="text/css" href=")"
+       + expectedCssUrl
+       + R"(" rel="Stylesheet" />
+)";
 }
 
 std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
@@ -621,6 +660,30 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
     <p>
       Cannot find content entry invalid-article
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/search?content=zimfile",
+      expected_page_title=="Fulltext search unavailable" &&
+      expected_css_url=="/ROOT/skin/search_results.css" &&
+      book_name=="zimfile" &&
+      book_title=="Ray Charles" &&
+      expected_body==R"(
+    <div class="header">Not found</div>
+    <p>
+      There is no article with the title <b> ""</b>
+      and the fulltext search engine is not available for this content.
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/search?content=non-existent-book&pattern=asdfqwerty",
+      expected_page_title=="Fulltext search unavailable" &&
+      expected_css_url=="/ROOT/skin/search_results.css" &&
+      expected_body==R"(
+    <div class="header">Not found</div>
+    <p>
+      There is no article with the title <b> "asdfqwerty"</b>
+      and the fulltext search engine is not available for this content.
     </p>
 )"  },
   };
