@@ -291,6 +291,7 @@ const char* urls400[] = {
   "/ROOT/search",
   "/ROOT/search?content=zimfile",
   "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
+  "/ROOT/search?content=non-existing-book&pattern=asd<qwerty",
   "/ROOT/search?pattern"
 };
 
@@ -736,6 +737,16 @@ TEST_F(ServerTest, 400WithBodyTesting)
     <h1>Invalid request</h1>
     <p>
       The requested URL "/ROOT/search?content=non-existing-book&pattern=asdfqwerty" is not a valid request.
+    </p>
+    <p>
+      The requested book doesn't exist.
+    </p>
+)"  },
+    { /* url */ "/ROOT/search?content=non-existing-book&pattern=a\"<script foo>",
+      expected_body==R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search?content=non-existing-book&pattern=a"&lt;script foo&gt;" is not a valid request.
     </p>
     <p>
       The requested book doesn't exist.

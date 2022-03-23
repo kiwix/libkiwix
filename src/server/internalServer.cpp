@@ -627,7 +627,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     auto url = request.get_full_url();
     const auto query = request.get_query();
     if (! query.empty()) {
-      url += "?" + query;
+      url += "?" + encodeDiples(query);
     }
     return Response::build_400(*this, url, e.what());
   } catch (const std::exception& e) {
