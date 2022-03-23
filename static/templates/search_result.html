@@ -106,26 +106,26 @@
   </head>
   <body bgcolor="white">
     <div class="header">
-      {{#hasResults}}
+      {{#results.hasResults}}
         Results
         <b>
-          {{resultStart}}-{{resultEnd}}
+          {{results.start}}-{{results.end}}
         </b> of <b>
-          {{count}}
+          {{results.count}}
         </b> for <b>
           "{{{query.pattern}}}"
         </b>
-      {{/hasResults}}
-      {{^hasResults}}
+      {{/results.hasResults}}
+      {{^results.hasResults}}
         No results were found for <b>"{{{query.pattern}}}"</b>
-      {{/hasResults}}
+      {{/results.hasResults}}
     </div>
 
     <div class="results">
       <ul>
-        {{#results}}
+        {{#results.items}}
           <li>
-            <a href="{{protocolPrefix}}{{resultContentId}}/{{url}}">
+            <a href="{{{absolutePath}}}">
               {{title}}
             </a>
             {{#snippet}}
@@ -138,7 +138,7 @@
               <div class="informations">{{wordCount}} words</div>
             {{/wordCount}}
           </li>
-        {{/results}}
+        {{/results.items}}
       </ul>
     </div>
 
