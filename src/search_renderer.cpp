@@ -164,28 +164,28 @@ kainjow::mustache::data buildPagination(
 std::string SearchRenderer::getHtml()
 {
   // Build the results list
-  kainjow::mustache::data results{kainjow::mustache::data::type::list};
-
+  kainjow::mustache::data results;
+  kainjow::mustache::data items{kainjow::mustache::data::type::list};
   for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
     kainjow::mustache::data result;
-    result.set("title", it.getTitle());
-    result.set("url", it.getPath());
-    result.set("snippet", it.getSnippet());
     std::string zim_id(it.getZimId());
-    result.set("resultContentId", mp_nameMapper->getNameForId(zim_id));
-    if (!mp_library) {
-      result.set("bookTitle", kainjow::mustache::data(false));
-    } else {
+    result.set("title", it.getTitle());
+    result.set("absolutePath", urlEncode(mp_nameMapper->getNameForId(zim_id)+"/"+it.getPath()));
+    result.set("snippet", it.getSnippet());
+    if (mp_library) {
       result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());
     }
-
     if (it.getWordCount() >= 0) {
       result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
     }
 
-    results.push_back(result);
-  } 
-
+    items.push_back(result);
+  }
+  results.set("items", items);
+  results.set("count", kiwix::beautifyInteger(estimatedResultCount));
+  results.set("hasResults", estimatedResultCount != 0);
+  results.set("start", kiwix::beautifyInteger(resultStart+1));
+  results.set("end", kiwix::beautifyInteger(min(resultStart+pageLength, estimatedResultCount)));
 
   // pagination
   auto pagination = buildPagination(
@@ -193,8 +193,6 @@ std::string SearchRenderer::getHtml()
     estimatedResultCount,
     resultStart
   );
-
-  auto resultEnd = min(resultStart+pageLength, estimatedResultCount);
 
   kainjow::mustache::data query = buildQueryData(
     searchPattern,
@@ -206,10 +204,6 @@ std::string SearchRenderer::getHtml()
 
   kainjow::mustache::data allData;
   allData.set("results", results);
-  allData.set("hasResults", estimatedResultCount != 0);
-  allData.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  allData.set("resultStart", to_string(resultStart + 1));
-  allData.set("resultEnd", to_string(resultEnd));
   allData.set("protocolPrefix", this->protocolPrefix);
   allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
   allData.set("pagination", pagination);
