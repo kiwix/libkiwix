@@ -627,9 +627,9 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
   }
 
   if (archive == nullptr) {
-    const std::string error_details = noSuchBookErrorMsg(bookName);
-    auto response = Response::build_404(*this, "", error_details);
-    return withTaskbarInfo(bookName, nullptr, std::move(response));
+    return HTTP404HtmlResponse(*this, request)
+           + noSuchBookErrorMsg(bookName)
+           + TaskbarInfo(bookName);
   }
 
   try {

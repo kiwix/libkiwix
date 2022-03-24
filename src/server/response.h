@@ -148,6 +148,8 @@ public: // functions
     , m_template(templateStr)
   {}
 
+  virtual ~ContentResponseBlueprint() = default;
+
   ContentResponseBlueprint& operator+(kainjow::mustache::data&& data)
   {
     this->m_data = std::move(data);
@@ -155,6 +157,11 @@ public: // functions
   }
 
   operator std::unique_ptr<ContentResponse>() const
+  {
+    return generateResponseObject();
+  }
+
+  virtual std::unique_ptr<ContentResponse> generateResponseObject() const
   {
     auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
     r->set_code(m_httpStatusCode);
@@ -179,6 +186,17 @@ class UrlNotFoundMsg {};
 
 extern const UrlNotFoundMsg urlNotFoundMsg;
 
+struct TaskbarInfo
+{
+  const std::string bookName;
+  const zim::Archive* const archive;
+
+  TaskbarInfo(const std::string& bookName, const zim::Archive* a = nullptr)
+    : bookName(bookName)
+    , archive(a)
+  {}
+};
+
 struct HTTP404HtmlResponse : ContentResponseBlueprint
 {
   HTTP404HtmlResponse(const InternalServer& server,
@@ -186,6 +204,11 @@ struct HTTP404HtmlResponse : ContentResponseBlueprint
 
   HTTP404HtmlResponse& operator+(UrlNotFoundMsg /*unused*/);
   HTTP404HtmlResponse& operator+(const std::string& errorDetails);
+  HTTP404HtmlResponse& operator+(const TaskbarInfo& taskbarInfo);
+
+  std::unique_ptr<ContentResponse> generateResponseObject() const override;
+
+  std::unique_ptr<TaskbarInfo> taskbarInfo;
 };
 
 class ItemResponse : public Response {

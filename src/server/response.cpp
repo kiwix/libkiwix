@@ -136,6 +136,20 @@ HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
   return *this;
 }
 
+HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const TaskbarInfo& taskbarInfo)
+{
+  this->taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
+  return *this;
+}
+
+std::unique_ptr<ContentResponse> HTTP404HtmlResponse::generateResponseObject() const
+{
+  auto r = ContentResponseBlueprint::generateResponseObject();
+  return taskbarInfo
+       ? withTaskbarInfo(taskbarInfo->bookName, taskbarInfo->archive, std::move(r))
+       : std::move(r);
+}
+
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
 {
   auto response = Response::build(server);
