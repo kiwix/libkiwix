@@ -21,6 +21,7 @@
 #include "request_context.h"
 #include "internalServer.h"
 #include "kiwixlib-resources.h"
+#include "i18n.h"
 
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
@@ -131,8 +132,12 @@ HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
 HTTPErrorHtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
 {
   const std::string requestUrl = m_request.get_full_url();
-  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
-  return *this + msgTmpl.render({"url", requestUrl});
+  const auto urlNotFoundMsg = i18n::expandParameterizedString(
+      "en", // FIXME: hardcoded language
+      "url-not-found",
+      {{"url", requestUrl}}
+  );
+  return *this + urlNotFoundMsg;
 }
 
 HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
