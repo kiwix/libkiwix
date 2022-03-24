@@ -86,13 +86,15 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
 
 std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
 {
-  MustacheData data;
+  kainjow::mustache::list pList;
   if ( !url.empty() ) {
-    data.set("url", url);
+    kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
+    const auto urlNotFoundMsg = msgTmpl.render({"url", url});
+    pList.push_back({"p", urlNotFoundMsg});
   }
-  data.set("details", details);
+  pList.push_back({"p", details});
 
-  return build_404(server, data);
+  return build_404(server, {"details", pList});
 }
 
 std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const kainjow::mustache::data& data)
