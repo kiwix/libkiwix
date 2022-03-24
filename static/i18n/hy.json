@@ -5,4 +5,5 @@
 	},
 	"name":"Հայերեն",
 	"suggest-full-text-search": "որոնել '{{{SEARCH_TERMS}}}'..."
+	, "url-not-found" : "Սխալ հասցե՝ {{url}}"
 }
