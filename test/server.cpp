@@ -571,6 +571,14 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
 )"  },
 
+    { /* url */ "/ROOT/random?content=non-existent-book&userlang=hy",
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      Գիրքը բացակայում է՝ non-existent-book
+    </p>
+)"  },
+
     { /* url */ "/ROOT/suggest?content=no-such-book&term=whatever",
       expected_body==R"(
     <h1>Not Found</h1>

@@ -452,9 +452,9 @@ std::string makeFulltextSearchSuggestion(const std::string& lang, const std::str
          );
 }
 
-std::string noSuchBookErrorMsg(const std::string& bookName)
+ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
 {
-  return "No such book: " + bookName;
+  return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
 }
 
 std::string noSearchResultsMsg()
