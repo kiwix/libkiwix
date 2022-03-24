@@ -416,9 +416,9 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   if (archive == nullptr) {
-    const std::string error_details = noSuchBookErrorMsg(bookName);
-    auto response = Response::build_404(*this, "", error_details);
-    return withTaskbarInfo(bookName, nullptr, std::move(response));
+    return HTTP404HtmlResponse(*this, request)
+           + noSuchBookErrorMsg(bookName)
+           + TaskbarInfo(bookName);
   }
 
   const auto queryString = request.get_optional_param("term", std::string());
