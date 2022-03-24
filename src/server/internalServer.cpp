@@ -389,6 +389,16 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
   return suggestions;
 }
 
+namespace
+{
+
+std::string noSuchBookErrorMsg(const std::string& bookName)
+{
+  return "No such book: " + bookName;
+}
+
+} // unnamed namespace
+
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -406,7 +416,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   if (archive == nullptr) {
-    const std::string error_details = "No such book: " + bookName;
+    const std::string error_details = noSuchBookErrorMsg(bookName);
     auto response = Response::build_404(*this, "", error_details);
     return withTaskbarInfo(bookName, nullptr, std::move(response));
   }
@@ -617,7 +627,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
   }
 
   if (archive == nullptr) {
-    const std::string error_details = "No such book: " + bookName;
+    const std::string error_details = noSuchBookErrorMsg(bookName);
     auto response = Response::build_404(*this, "", error_details);
     return withTaskbarInfo(bookName, nullptr, std::move(response));
   }
@@ -876,10 +886,9 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
-    const std::string error_details = "No such book: " + bookName;
     return HTTP404HtmlResponse(*this, request)
            + urlNotFoundMsg
-           + error_details;
+           + noSuchBookErrorMsg(bookName);
   }
 
   // Remove the beggining of the path:
