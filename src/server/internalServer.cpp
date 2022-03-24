@@ -442,6 +442,11 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
 namespace
 {
 
+std::string makeFulltextSearchSuggestion(const std::string& queryString)
+{
+  return "containing '" + queryString + "'...";
+}
+
 std::string noSuchBookErrorMsg(const std::string& bookName)
 {
   return "No such book: " + bookName;
@@ -514,7 +519,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   /* Propose the fulltext search if possible */
   if (archive->hasFulltextIndex()) {
     MustacheData result;
-    result.set("label", "containing '" + queryString + "'...");
+    result.set("label", makeFulltextSearchSuggestion(queryString));
     result.set("value", queryString + " ");
     result.set("kind", "pattern");
     result.set("first", first);
