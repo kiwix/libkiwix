@@ -127,8 +127,12 @@ HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
 {
   const std::string requestUrl = m_request.get_full_url();
   kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
-  const auto urlNotFoundMsgText = msgTmpl.render({"url", requestUrl});
-  m_data["details"].push_back({"p", urlNotFoundMsgText});
+  return *this + msgTmpl.render({"url", requestUrl});
+}
+
+HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
+{
+  m_data["details"].push_back({"p", msg});
   return *this;
 }
 

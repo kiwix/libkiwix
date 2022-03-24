@@ -185,6 +185,7 @@ struct HTTP404HtmlResponse : ContentResponseBlueprint
                       const RequestContext& request);
 
   HTTP404HtmlResponse& operator+(UrlNotFoundMsg /*unused*/);
+  HTTP404HtmlResponse& operator+(const std::string& errorDetails);
 };
 
 class ItemResponse : public Response {

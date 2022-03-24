@@ -877,7 +877,9 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
 
   if (archive == nullptr) {
     const std::string error_details = "No such book: " + bookName;
-    return Response::build_404(*this, request.get_full_url(), error_details);
+    return HTTP404HtmlResponse(*this, request)
+           + urlNotFoundMsg
+           + error_details;
   }
 
   // Remove the beggining of the path:
