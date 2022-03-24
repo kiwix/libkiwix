@@ -1,3 +1,20 @@
+libkiwix 10.1.0
+===============
+
+ This release is an important one as it fixes a Xss vulnerability introduced
+ in libkiwix 10.0.0
+
+ * [SECURITY] Fix a Xss attack vulnerability (introduced in 10.0.0) (@juuz0 #721)
+ * [server] Add a option to set a limit on the number of connexion per IP (@kelson42 #700)
+ * [server] Do not display a lang tag in the UI if the book has no language (@juuz0 #706)
+ * [server] Add the book title associated to a search results (@thavelick #705, @mgautierfr #718)
+ * Add `dc:issued` to opds output stream (@veloman-yunkan #715)
+ * Add handling of several languages not provided by ICU (@juuz0 #701)
+ * [server] Add a caching system for search and suggestion (@maneeshpm #620)
+ * Fix cross-compilation (@kelson42 #703)
+ * Add unit-testing of suggestions and error pages (@veloman-yunkan #709 #710 #727)
+ * Better testing system of html response (@veloman-yunkan #725)
+
 libkiwix 10.0.1
 ===============
 
