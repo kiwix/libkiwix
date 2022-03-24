@@ -115,7 +115,9 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
 {
   auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
-  return r;
+  return m_taskbarInfo
+       ? withTaskbarInfo(m_taskbarInfo->bookName, m_taskbarInfo->archive, std::move(r))
+       : std::move(r);
 }
 
 HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
@@ -143,18 +145,10 @@ HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
   return *this;
 }
 
-HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const TaskbarInfo& taskbarInfo)
+ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo& taskbarInfo)
 {
-  this->taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
+  this->m_taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
   return *this;
-}
-
-std::unique_ptr<ContentResponse> HTTP404HtmlResponse::generateResponseObject() const
-{
-  auto r = ContentResponseBlueprint::generateResponseObject();
-  return taskbarInfo
-       ? withTaskbarInfo(taskbarInfo->bookName, taskbarInfo->archive, std::move(r))
-       : std::move(r);
 }
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
