@@ -25,6 +25,7 @@
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
+#include "tools/archiveTools.h"
 
 #include "string.h"
 #include <mustache.hpp>
@@ -83,19 +84,71 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-std::unique_ptr<Response> Response::build_404(const InternalServer& server, const std::string& url, const std::string& bookName, const std::string& bookTitle, const std::string& details)
+kainjow::mustache::data make404ResponseData(const std::string& url, const std::string& details)
 {
-  MustacheData results;
+  kainjow::mustache::list pList;
   if ( !url.empty() ) {
-    results.set("url", url);
+    kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
+    const auto urlNotFoundMsg = msgTmpl.render({"url", url});
+    pList.push_back({"p", urlNotFoundMsg});
   }
-  results.set("details", details);
+  pList.push_back({"p", details});
+  return {"details", pList};
+}
 
-  auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, results, "text/html");
+std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
+{
+  return build_404(server, make404ResponseData(url, details));
+}
+
+std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const kainjow::mustache::data& data)
+{
+  auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, data, "text/html");
   response->set_code(MHD_HTTP_NOT_FOUND);
-  response->set_taskbar(bookName, bookTitle);
 
-  return std::move(response);
+  return response;
+}
+
+extern const UrlNotFoundMsg urlNotFoundMsg;
+
+std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
+{
+  auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
+  r->set_code(m_httpStatusCode);
+  return m_taskbarInfo
+       ? withTaskbarInfo(m_taskbarInfo->bookName, m_taskbarInfo->archive, std::move(r))
+       : std::move(r);
+}
+
+HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
+                                         const RequestContext& request)
+  : ContentResponseBlueprint(&server,
+                             &request,
+                             MHD_HTTP_NOT_FOUND,
+                             "text/html",
+                             RESOURCE::templates::_404_html)
+{
+  kainjow::mustache::list emptyList;
+  this->m_data = kainjow::mustache::object{{"details", emptyList}};
+}
+
+HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
+{
+  const std::string requestUrl = m_request.get_full_url();
+  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
+  return *this + msgTmpl.render({"url", requestUrl});
+}
+
+HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
+{
+  m_data["details"].push_back({"p", msg});
+  return *this;
+}
+
+ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo& taskbarInfo)
+{
+  this->m_taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
+  return *this;
 }
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
@@ -332,10 +385,10 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-void ContentResponse::set_taskbar(const std::string& bookName, const std::string& bookTitle)
+void ContentResponse::set_taskbar(const std::string& bookName, const zim::Archive* archive)
 {
   m_bookName = bookName;
-  m_bookTitle = bookTitle;
+  m_bookTitle = archive ? getArchiveTitle(*archive) : "";
 }
 
 
@@ -381,6 +434,15 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
 {
   auto content = render_template(template_str, data);
   return ContentResponse::build(server, content, mimetype, isHomePage);
+}
+
+std::unique_ptr<ContentResponse> withTaskbarInfo(
+  const std::string& bookName,
+  const zim::Archive* archive,
+  std::unique_ptr<ContentResponse> r)
+{
+  r->set_taskbar(bookName, archive);
+  return r;
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :

@@ -370,6 +370,13 @@ std::string kiwix::gen_uuid(const std::string& s)
   return kiwix::to_string(zim::Uuid::generate(s));
 }
 
+kainjow::mustache::data kiwix::onlyAsNonEmptyMustacheValue(const std::string& s)
+{
+  return s.empty()
+       ? kainjow::mustache::data(false)
+       : kainjow::mustache::data(s);
+}
+
 std::string kiwix::render_template(const std::string& template_str, kainjow::mustache::data data)
 {
   kainjow::mustache::mustache tmpl(template_str);

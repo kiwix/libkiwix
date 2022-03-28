@@ -33,12 +33,16 @@ extern "C" {
 #include "microhttpd_wrapper.h"
 }
 
+namespace zim {
+class Archive;
+} // namespace zim
+
 namespace kiwix {
 
 class InternalServer;
 class RequestContext;
 
-class EntryResponse;
+class ContentResponse;
 
 class Response {
   public:
@@ -47,7 +51,8 @@ class Response {
 
     static std::unique_ptr<Response> build(const InternalServer& server);
     static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
-    static std::unique_ptr<Response> build_404(const InternalServer& server, const std::string& url, const std::string& bookName, const std::string& bookTitle, const std::string& details="");
+    static std::unique_ptr<ContentResponse> build_404(const InternalServer& server, const kainjow::mustache::data& data);
+    static std::unique_ptr<ContentResponse> build_404(const InternalServer& server, const std::string& url, const std::string& details="");
     static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
     static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
     static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
@@ -100,7 +105,7 @@ class ContentResponse : public Response {
       const std::string& mimetype,
       bool isHomePage = false);
 
-    void set_taskbar(const std::string& bookName, const std::string& bookTitle);
+    void set_taskbar(const std::string& bookName, const zim::Archive* archive);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
@@ -123,6 +128,84 @@ class ContentResponse : public Response {
     std::string m_bookName;
     std::string m_bookTitle;
  };
+
+struct TaskbarInfo
+{
+  const std::string bookName;
+  const zim::Archive* const archive;
+
+  TaskbarInfo(const std::string& bookName, const zim::Archive* a = nullptr)
+    : bookName(bookName)
+    , archive(a)
+  {}
+};
+
+std::unique_ptr<ContentResponse> withTaskbarInfo(const std::string& bookName,
+                                                 const zim::Archive* archive,
+                                                 std::unique_ptr<ContentResponse> r);
+
+class ContentResponseBlueprint
+{
+public: // functions
+  ContentResponseBlueprint(const InternalServer* server,
+                           const RequestContext* request,
+                           int httpStatusCode,
+                           const std::string& mimeType,
+                           const std::string& templateStr)
+    : m_server(*server)
+    , m_request(*request)
+    , m_httpStatusCode(httpStatusCode)
+    , m_mimeType(mimeType)
+    , m_template(templateStr)
+  {}
+
+  virtual ~ContentResponseBlueprint() = default;
+
+  ContentResponseBlueprint& operator+(kainjow::mustache::data&& data)
+  {
+    this->m_data = std::move(data);
+    return *this;
+  }
+
+  operator std::unique_ptr<ContentResponse>() const
+  {
+    return generateResponseObject();
+  }
+
+  operator std::unique_ptr<Response>() const
+  {
+    return operator std::unique_ptr<ContentResponse>();
+  }
+
+
+  ContentResponseBlueprint& operator+(const TaskbarInfo& taskbarInfo);
+
+protected: // functions
+  virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
+
+public: //data
+  const InternalServer& m_server;
+  const RequestContext& m_request;
+  const int m_httpStatusCode;
+  const std::string m_mimeType;
+  const std::string m_template;
+  kainjow::mustache::data m_data;
+  std::unique_ptr<TaskbarInfo> m_taskbarInfo;
+};
+
+class UrlNotFoundMsg {};
+
+extern const UrlNotFoundMsg urlNotFoundMsg;
+
+struct HTTP404HtmlResponse : ContentResponseBlueprint
+{
+  HTTP404HtmlResponse(const InternalServer& server,
+                      const RequestContext& request);
+
+  using ContentResponseBlueprint::operator+;
+  HTTP404HtmlResponse& operator+(UrlNotFoundMsg /*unused*/);
+  HTTP404HtmlResponse& operator+(const std::string& errorDetails);
+};
 
 class ItemResponse : public Response {
   public:

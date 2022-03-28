@@ -530,7 +530,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
     { /* url */ "/ROOT/random?content=non-existent-book",
       expected_body==R"(
     <h1>Not Found</h1>
-    //EOLWHITESPACEMARKER
     <p>
       No such book: non-existent-book
     </p>
@@ -539,7 +538,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
     { /* url */ "/ROOT/suggest?content=no-such-book&term=whatever",
       expected_body==R"(
     <h1>Not Found</h1>
-    //EOLWHITESPACEMARKER
     <p>
       No such book: no-such-book
     </p>
@@ -551,9 +549,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
     <p>
       The requested URL "/ROOT/catalog/" was not found on this server.
     </p>
-    <p>
-      //EOLWHITESPACEMARKER
-    </p>
 )"  },
 
     { /* url */ "/ROOT/catalog/invalid_endpoint",
@@ -561,9 +556,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
     <h1>Not Found</h1>
     <p>
       The requested URL "/ROOT/catalog/invalid_endpoint" was not found on this server.
-    </p>
-    <p>
-      //EOLWHITESPACEMARKER
     </p>
 )"  },
 
@@ -638,8 +630,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  },
 
     { /* url */ "/ROOT/raw/zimfile/meta/invalid-metadata",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -651,8 +641,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
 )"  },
 
     { /* url */ "/ROOT/raw/zimfile/content/invalid-article",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
