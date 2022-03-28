@@ -526,8 +526,13 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   } catch (const std::out_of_range&) {}
 
   /* Make the search */
-  if ( (!archive && !bookName.empty())
-    || (patternString.empty() && ! has_geo_query) ) {
+  if (patternString.empty() && ! has_geo_query) {
+    return HTTP400HtmlResponse(*this, request)
+          + invalidUrlMsg
+          + std::string("No query provided.");
+  }
+
+  if (!archive && !bookName.empty()) {
     auto data = get_default_data();
     data.set("pattern", encodeDiples(patternString));
     data.set("root", m_root);

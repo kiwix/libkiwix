@@ -287,6 +287,19 @@ TEST_F(ServerTest, UncompressibleContentIsNotCompressed)
   }
 }
 
+const char* urls400[] = {
+  "/ROOT/search",
+  "/ROOT/search?content=zimfile",
+  "/ROOT/search?pattern"
+};
+
+
+TEST_F(ServerTest, 400)
+{
+  for (const char* url: urls400 )
+    EXPECT_EQ(400, zfs1_->GET(url)->status) << "url: " << url;
+}
+
 const char* urls404[] = {
   "/",
   "/zimfile",
@@ -302,7 +315,6 @@ const char* urls404[] = {
   "/ROOT/meta?content=non-existent-book&name=title",
   "/ROOT/random",
   "/ROOT/random?content=non-existent-book",
-  "/ROOT/search",
   "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT/suggest",
   "/ROOT/suggest?content=non-existent-book&term=abcd",
@@ -388,13 +400,14 @@ public:
     : ExpectedResponseData(erd)
     , url(url)
   {}
+  virtual ~TestContentIn404HtmlResponse() = default;
 
   const std::string url;
 
   std::string expectedResponse() const;
 
 private:
-  std::string pageTitle() const;
+  virtual std::string pageTitle() const;
   std::string pageCssLink() const;
   std::string hiddenBookNameInput() const;
   std::string searchPatternInput() const;
@@ -520,6 +533,25 @@ std::string TestContentIn404HtmlResponse::taskbarLinks() const
        + bookName
        + R"("><button>&#x1F3B2;</button></a>)";
 }
+
+class TestContentIn400HtmlResponse : public TestContentIn404HtmlResponse
+{
+public:
+  TestContentIn400HtmlResponse(const std::string& url,
+                               const ExpectedResponseData& erd)
+    : TestContentIn404HtmlResponse(url, erd)
+  {}
+
+private:
+  std::string pageTitle() const;
+};
+
+std::string TestContentIn400HtmlResponse::pageTitle() const {
+  return expectedPageTitle.empty()
+     ? "Invalid request"
+     : expectedPageTitle;
+}
+
 
 } // namespace TestingOfHtmlResponses
 
@@ -651,19 +683,6 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/search?content=zimfile",
-      expected_page_title=="Fulltext search unavailable" &&
-      expected_css_url=="/ROOT/skin/search_results.css" &&
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_body==R"(
-    <div class="header">Not found</div>
-    <p>
-      There is no article with the title <b> ""</b>
-      and the fulltext search engine is not available for this content.
-    </p>
-)"  },
-
     { /* url */ "/ROOT/search?content=non-existent-book&pattern=asdfqwerty",
       expected_page_title=="Fulltext search unavailable" &&
       expected_css_url=="/ROOT/skin/search_results.css" &&
@@ -680,6 +699,52 @@ TEST_F(ServerTest, 404WithBodyTesting)
     const TestContext ctx{ {"url", t.url} };
     const auto r = zfs1_->GET(t.url.c_str());
     EXPECT_EQ(r->status, 404) << ctx;
+    EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
+  }
+}
+
+TEST_F(ServerTest, 400WithBodyTesting)
+{
+  using namespace TestingOfHtmlResponses;
+  const std::vector<TestContentIn400HtmlResponse> testData{
+    { /* url */ "/ROOT/search",
+      expected_body== R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search" is not a valid request.
+    </p>
+    <p>
+      No query provided.
+    </p>
+)"  },
+    { /* url */ "/ROOT/search?content=zimfile",
+      expected_body==R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search?content=zimfile" is not a valid request.
+    </p>
+    <p>
+      No query provided.
+    </p>
+)"  },
+    // There is a flaw in our way to handle query string, we cannot differenciate
+    // between `pattern` and `pattern=`
+    { /* url */ "/ROOT/search?pattern",
+      expected_body==R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search?pattern=" is not a valid request.
+    </p>
+    <p>
+      No query provided.
+    </p>
+)"  },
+  };
+
+  for ( const auto& t : testData ) {
+    const TestContext ctx{ {"url", t.url} };
+    const auto r = zfs1_->GET(t.url.c_str());
+    EXPECT_EQ(r->status, 400) << ctx;
     EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
   }
 }
