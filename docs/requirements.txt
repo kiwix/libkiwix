@@ -1,3 +1,2 @@
 breathe
 exhale
-sphinx<4
