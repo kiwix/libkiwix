@@ -207,6 +207,20 @@ struct HTTP404HtmlResponse : ContentResponseBlueprint
   HTTP404HtmlResponse& operator+(const std::string& errorDetails);
 };
 
+class InvalidUrlMsg {};
+
+extern const InvalidUrlMsg invalidUrlMsg;
+
+struct HTTP400HtmlResponse : ContentResponseBlueprint
+{
+  HTTP400HtmlResponse(const InternalServer& server,
+                      const RequestContext& request);
+
+  using ContentResponseBlueprint::operator+;
+  HTTP400HtmlResponse& operator+(InvalidUrlMsg /*unused*/);
+  HTTP400HtmlResponse& operator+(const std::string& errorDetails);
+};
+
 class ItemResponse : public Response {
   public:
     ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);

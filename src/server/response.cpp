@@ -110,6 +110,7 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
 }
 
 extern const UrlNotFoundMsg urlNotFoundMsg;
+extern const InvalidUrlMsg invalidUrlMsg;
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
@@ -144,6 +145,36 @@ HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
   m_data["details"].push_back({"p", msg});
   return *this;
 }
+
+HTTP400HtmlResponse::HTTP400HtmlResponse(const InternalServer& server,
+                                         const RequestContext& request)
+  : ContentResponseBlueprint(&server,
+                             &request,
+                             MHD_HTTP_BAD_REQUEST,
+                             "text/html",
+                             RESOURCE::templates::_400_html)
+{
+  kainjow::mustache::list emptyList;
+  this->m_data = kainjow::mustache::object{{"details", emptyList}};
+}
+
+HTTP400HtmlResponse& HTTP400HtmlResponse::operator+(InvalidUrlMsg /*unused*/)
+{
+  std::string requestUrl = m_request.get_full_url();
+  const auto query = m_request.get_query();
+  if (!query.empty()) {
+    requestUrl += "?" + encodeDiples(query);
+  }
+  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{{url}}}" is not a valid request.)");
+  return *this + msgTmpl.render({"url", requestUrl});
+}
+
+HTTP400HtmlResponse& HTTP400HtmlResponse::operator+(const std::string& msg)
+{
+  m_data["details"].push_back({"p", msg});
+  return *this;
+}
+
 
 ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo& taskbarInfo)
 {
