@@ -52,6 +52,24 @@ std::string expandParameterizedString(const std::string& lang,
 
 } // namespace i18n
 
+struct ParameterizedMessage
+{
+public: // types
+  typedef kainjow::mustache::object Parameters;
+
+public: // functions
+  ParameterizedMessage(const std::string& msgId, const Parameters& params)
+    : msgId(msgId)
+    , params(params)
+  {}
+
+  std::string getText(const std::string& lang) const;
+
+private: // data
+  const std::string msgId;
+  const Parameters  params;
+};
+
 } // namespace kiwix
 
 #endif // KIWIX_SERVER_I18N

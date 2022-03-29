@@ -28,6 +28,7 @@
 #include "byte_range.h"
 #include "entry.h"
 #include "etag.h"
+#include "i18n.h"
 
 extern "C" {
 #include "microhttpd_wrapper.h"
@@ -189,6 +190,7 @@ struct HTTPErrorHtmlResponse : ContentResponseBlueprint
 
   using ContentResponseBlueprint::operator+;
   HTTPErrorHtmlResponse& operator+(const std::string& msg);
+  HTTPErrorHtmlResponse& operator+(const ParameterizedMessage& errorDetails);
 };
 
 class UrlNotFoundMsg {};

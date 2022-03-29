@@ -21,7 +21,6 @@
 #include "request_context.h"
 #include "internalServer.h"
 #include "kiwixlib-resources.h"
-#include "i18n.h"
 
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"
@@ -132,12 +131,7 @@ HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
 HTTPErrorHtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
 {
   const std::string requestUrl = m_request.get_full_url();
-  const auto urlNotFoundMsg = i18n::expandParameterizedString(
-      "en", // FIXME: hardcoded language
-      "url-not-found",
-      {{"url", requestUrl}}
-  );
-  return *this + urlNotFoundMsg;
+  return *this + ParameterizedMessage("url-not-found", {{"url", requestUrl}});
 }
 
 HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
@@ -145,6 +139,12 @@ HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
   m_data["details"].push_back({"p", msg});
   return *this;
 }
+
+HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const ParameterizedMessage& details)
+{
+  return *this + details.getText(m_request.get_user_language());
+}
+
 
 HTTP400HtmlResponse::HTTP400HtmlResponse(const InternalServer& server,
                                          const RequestContext& request)
