@@ -208,14 +208,13 @@ class InvalidUrlMsg {};
 
 extern const InvalidUrlMsg invalidUrlMsg;
 
-struct HTTP400HtmlResponse : ContentResponseBlueprint
+struct HTTP400HtmlResponse : HTTPErrorHtmlResponse
 {
   HTTP400HtmlResponse(const InternalServer& server,
                       const RequestContext& request);
 
-  using ContentResponseBlueprint::operator+;
-  HTTP400HtmlResponse& operator+(InvalidUrlMsg /*unused*/);
-  HTTP400HtmlResponse& operator+(const std::string& errorDetails);
+  using HTTPErrorHtmlResponse::operator+;
+  HTTPErrorHtmlResponse& operator+(InvalidUrlMsg /*unused*/);
 };
 
 class ItemResponse : public Response {
