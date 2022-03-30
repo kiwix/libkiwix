@@ -95,6 +95,40 @@ inline std::string normalizeRootUrl(std::string rootUrl)
   return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
+Filter get_search_filter(const RequestContext& request)
+{
+    auto filter = kiwix::Filter().valid(true).local(true);
+    try {
+      filter.query(request.get_argument("q"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.maxSize(request.get_argument<unsigned long>("maxsize"));
+    } catch (...) {}
+    try {
+      filter.name(request.get_argument("name"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.category(request.get_argument("category"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.lang(request.get_argument("lang"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.acceptTags(kiwix::split(request.get_argument("tag"), ";"));
+    } catch (...) {}
+    try {
+      filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
+    } catch (...) {}
+    return filter;
+}
+
+template<class T>
+std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
+{
+  const size_t e = std::min(v.size(), s+n);
+  return std::vector<T>(v.begin()+std::min(v.size(), s), v.begin()+e);
+}
+
 } // unnamed namespace
 
 SearchInfo::SearchInfo(const std::string& pattern)
@@ -763,45 +797,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
       "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
   return std::move(response);
 }
-
-namespace
-{
-
-Filter get_search_filter(const RequestContext& request)
-{
-    auto filter = kiwix::Filter().valid(true).local(true);
-    try {
-      filter.query(request.get_argument("q"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.maxSize(request.get_argument<unsigned long>("maxsize"));
-    } catch (...) {}
-    try {
-      filter.name(request.get_argument("name"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.category(request.get_argument("category"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.lang(request.get_argument("lang"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.acceptTags(kiwix::split(request.get_argument("tag"), ";"));
-    } catch (...) {}
-    try {
-      filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
-    } catch (...) {}
-    return filter;
-}
-
-template<class T>
-std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
-{
-  const size_t e = std::min(v.size(), s+n);
-  return std::vector<T>(v.begin()+std::min(v.size(), s), v.begin()+e);
-}
-
-} // unnamed namespace
 
 std::vector<std::string>
 InternalServer::search_catalog(const RequestContext& request,
