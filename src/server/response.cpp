@@ -160,6 +160,30 @@ HTTPErrorHtmlResponse& HTTP400HtmlResponse::operator+(InvalidUrlMsg /*unused*/)
   return *this + msgTmpl.render({"url", requestUrl});
 }
 
+HTTP500HtmlResponse::HTTP500HtmlResponse(const InternalServer& server,
+                                         const RequestContext& request)
+  : HTTPErrorHtmlResponse(server,
+                          request,
+                          MHD_HTTP_INTERNAL_SERVER_ERROR,
+                          "Internal Server Error",
+                          "Internal Server Error")
+{
+  // operator+() is a state-modifying operator (akin to operator+=)
+  *this + "An internal server error occured. We are sorry about that :/";
+}
+
+std::unique_ptr<ContentResponse> HTTP500HtmlResponse::generateResponseObject() const
+{
+  // We want a 500 response to be a minimalistic one (so that the server doesn't
+  // have to provide additional resources required for its proper rendering)
+  // ";raw=true" in the MIME-type below disables response decoration
+  // (see ContentResponse::contentDecorationAllowed())
+  const std::string mimeType = "text/html;charset=utf-8;raw=true";
+  auto r = ContentResponse::build(m_server, m_template, m_data, mimeType);
+  r->set_code(m_httpStatusCode);
+  return r;
+}
+
 ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo& taskbarInfo)
 {
   this->m_taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
@@ -176,26 +200,6 @@ std::unique_ptr<Response> Response::build_416(const InternalServer& server, size
   oss << "bytes */" << resourceLength;
   response->add_header(MHD_HTTP_HEADER_CONTENT_RANGE, oss.str());
 
-  return response;
-}
-
-std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg)
-{
-  MustacheData data;
-  data.set("error", msg);
-  auto content = render_template(RESOURCE::templates::_500_html, data);
-  std::unique_ptr<Response> response (
-      new ContentResponse(
-        server.m_root, //root
-        true, //verbose
-        true, //raw
-        false, //withTaskbar
-        false, //withLibraryButton
-        false, //blockExternalLinks
-        content, //content
-        "text/html" //mimetype
-  ));
-  response->set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
   return response;
 }
 

@@ -359,10 +359,12 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     return handle_content(request);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
-    return Response::build_500(*this, e.what());
+    return HTTP500HtmlResponse(*this, request)
+         + e.what();
   } catch (...) {
     fprintf(stderr, "===== Unhandled unknown error\n");
-    return Response::build_500(*this, "Unknown error");
+    return HTTP500HtmlResponse(*this, request)
+         + "Unknown error";
   }
 }
 
@@ -631,7 +633,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       + std::string(e.what());
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return Response::build_500(*this, e.what());
+    return HTTP500HtmlResponse(*this, request)
+         + e.what();
   }
 }
 

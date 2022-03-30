@@ -50,7 +50,6 @@ class Response {
     static std::unique_ptr<Response> build(const InternalServer& server);
     static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
     static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
-    static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
     static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
 
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
@@ -215,6 +214,17 @@ struct HTTP400HtmlResponse : HTTPErrorHtmlResponse
 
   using HTTPErrorHtmlResponse::operator+;
   HTTPErrorHtmlResponse& operator+(InvalidUrlMsg /*unused*/);
+};
+
+struct HTTP500HtmlResponse : HTTPErrorHtmlResponse
+{
+  HTTP500HtmlResponse(const InternalServer& server,
+                      const RequestContext& request);
+
+private: // overrides
+  // generateResponseObject() is overriden in order to produce a minimal
+  // response without any need for additional resources from the server
+  std::unique_ptr<ContentResponse> generateResponseObject() const override;
 };
 
 class ItemResponse : public Response {
