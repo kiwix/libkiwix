@@ -149,6 +149,7 @@ class InternalServer {
 
     bool etag_not_needed(const RequestContext& r) const;
     ETag get_matching_if_none_match_etag(const RequestContext& request) const;
+    Library::BookIdSet selectBooks(const RequestContext& r) const;
 
   private: // data
     std::string m_addr;

@@ -131,6 +131,56 @@ std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
 
 } // unnamed namespace
 
+Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) const
+{
+  // Try old API
+  try {
+    auto bookName = request.get_argument("content");
+    try {
+      return {mp_nameMapper->getIdForName(bookName)};
+    } catch (const std::out_of_range&) {
+      throw std::invalid_argument("The requested book doesn't exist.");
+    }
+  } catch(const std::out_of_range&) {
+    // We've catch the out_of_range of get_argument
+    // continue
+  }
+
+  // Does user directly gives us ids ?
+  try {
+    auto id_vec = request.get_arguments("books.id");
+    if (id_vec.empty()) {
+      throw std::invalid_argument("You must provide a value for the id.");
+    }
+    return Library::BookIdSet(id_vec.begin(), id_vec.end());
+  } catch(const std::out_of_range&) {}
+
+  // Use the names
+  try {
+    auto name_vec = request.get_arguments("books.name");
+    if (name_vec.empty()) {
+      throw std::invalid_argument("You must provide a value for the name.");
+    }
+    Library::BookIdSet bookIds;
+    for(const auto& bookName: name_vec) {
+      try {
+        bookIds.insert(mp_nameMapper->getIdForName(bookName));
+      } catch(const std::out_of_range&) {
+        throw std::invalid_argument("The requested book doesn't exist.");
+      }
+    }
+    return bookIds;
+  } catch(const std::out_of_range&) {}
+
+  // Check for filtering
+  Filter filter = get_search_filter(request, "books.filter.");
+  auto id_vec = mp_library->filter(filter);
+  if (id_vec.empty()) {
+    throw std::invalid_argument("No books found.");
+  }
+  return Library::BookIdSet(id_vec.begin(), id_vec.end());
+}
+
 SearchInfo::SearchInfo(const std::string& pattern)
   : pattern(pattern),
     geoQuery()
