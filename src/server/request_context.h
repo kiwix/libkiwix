@@ -28,6 +28,7 @@
 #include <stdexcept>
 
 #include "byte_range.h"
+#include "tools/stringTools.h"
 
 extern "C" {
 #include "microhttpd_wrapper.h"
@@ -68,10 +69,7 @@ class RequestContext {
     std::string get_header(const std::string& name) const;
     template<typename T=std::string>
     T get_argument(const std::string& name) const {
-        std::istringstream stream(arguments.at(name));
-        T v;
-        stream >> v;
-        return v;
+        return extractFromString<T>(arguments.at(name));
     }
 
     template<class T>
