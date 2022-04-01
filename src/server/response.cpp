@@ -109,8 +109,8 @@ std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& serve
   return response;
 }
 
-extern const UrlNotFoundMsg urlNotFoundMsg;
-extern const InvalidUrlMsg invalidUrlMsg;
+const UrlNotFoundMsg urlNotFoundMsg;
+const InvalidUrlMsg invalidUrlMsg;
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
