@@ -288,6 +288,85 @@ TEST_F(ServerTest, UncompressibleContentIsNotCompressed)
   }
 }
 
+
+// Selects from text only the lines containing the specified (fixed string)
+// pattern
+std::string fgrep(const std::string& pattern, const std::string& text)
+{
+  std::istringstream iss(text);
+  std::string line;
+  std::string result;
+  while ( getline(iss, line) ) {
+    if ( line.find(pattern) != std::string::npos ) {
+      result += line + "\n";
+    }
+  }
+  return result;
+}
+
+TEST_F(ServerTest, CacheIdsOfStaticResources)
+{
+  typedef std::pair<std::string, std::string> UrlAndExpectedResult;
+  const std::vector<UrlAndExpectedResult> testData{
+    {
+      /* url */ "/ROOT/",
+R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js"
+      src="/ROOT/skin/jquery-ui/jquery-ui.min.js"
+      href="/ROOT/skin/jquery-ui/jquery-ui.min.css"
+      href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css"
+      href="/ROOT/skin/index.css"
+        src: url("/ROOT/skin/fonts/Poppins.ttf") format("truetype");
+          src: url("/ROOT/skin/fonts/Roboto.ttf") format("truetype");
+    <script src="/ROOT/skin/isotope.pkgd.min.js" defer></script>
+    <script src="/ROOT/skin/iso6391To3.js"></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js" defer></script>
+)EXPECTEDRESULT"
+    },
+    {
+      /* url */ "/ROOT/skin/index.js",
+R"EXPECTEDRESULT(                                <img src="../skin/download.png" alt="direct download" />
+                                <img src="../skin/hash.png" alt="download hash" />
+                                <img src="../skin/magnet.png" alt="download magnet" />
+                                <img src="../skin/bittorrent.png" alt="download torrent" />
+)EXPECTEDRESULT"
+    },
+    {
+      /* url */ "/ROOT/zimfile/A/index",
+R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
+)EXPECTEDRESULT"
+    },
+    {
+      // Searching in a ZIM file without a full-text index returns
+      // a page rendered from static/templates/no_search_result_html
+      /* url */ "/ROOT/search?content=poor&pattern=whatever",
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css" rel="Stylesheet" />
+  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
+)EXPECTEDRESULT"
+    },
+  };
+
+  for ( const auto& urlAndExpectedResult : testData ) {
+    const std::string url = urlAndExpectedResult.first;
+    const std::string expectedResult = urlAndExpectedResult.second;
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(r->body.find("KIWIXCACHEID"), std::string::npos) << ctx;
+    EXPECT_EQ(fgrep("/skin/", r->body), expectedResult) << ctx;
+  }
+}
+
 const char* urls400[] = {
   "/ROOT/search",
   "/ROOT/search?content=zimfile",
