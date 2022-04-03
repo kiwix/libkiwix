@@ -142,6 +142,7 @@ protected:
   const int PORT = 8001;
   const ZimFileServer::FilePathCollection ZIMFILES {
     "./test/zimfile.zim",
+    "./test/poor.zim",
     "./test/corner_cases.zim"
   };
 
@@ -759,6 +760,31 @@ TEST_F(ServerTest, 400WithBodyTesting)
     EXPECT_EQ(r->status, 400) << ctx;
     EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
   }
+}
+
+TEST_F(ServerTest, 500)
+{
+  const std::string expectedBody = R"(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <title>Internal Server Error</title>
+  </head>
+  <body>
+    <h1>Internal Server Error</h1>
+    <p>
+      An internal server error occured. We are sorry about that :/
+    </p>
+    <p>
+      Entry redirect_loop.html is a redirect entry.
+    </p>
+  </body>
+</html>
+)";
+
+  const auto r = zfs1_->GET("/ROOT/poor/A/redirect_loop.html");
+  EXPECT_EQ(r->status, 500);
+  EXPECT_EQ(r->body, expectedBody);
 }
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
