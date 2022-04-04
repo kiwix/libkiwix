@@ -84,31 +84,6 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-kainjow::mustache::data make404ResponseData(const std::string& url, const std::string& details)
-{
-  kainjow::mustache::list pList;
-  if ( !url.empty() ) {
-    kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
-    const auto urlNotFoundMsg = msgTmpl.render({"url", url});
-    pList.push_back({"p", urlNotFoundMsg});
-  }
-  pList.push_back({"p", details});
-  return {"details", pList};
-}
-
-std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const std::string& url, const std::string& details)
-{
-  return build_404(server, make404ResponseData(url, details));
-}
-
-std::unique_ptr<ContentResponse> Response::build_404(const InternalServer& server, const kainjow::mustache::data& data)
-{
-  auto response = ContentResponse::build(server, RESOURCE::templates::_404_html, data, "text/html");
-  response->set_code(MHD_HTTP_NOT_FOUND);
-
-  return response;
-}
-
 const UrlNotFoundMsg urlNotFoundMsg;
 const InvalidUrlMsg invalidUrlMsg;
 
@@ -116,31 +91,49 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
 {
   auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
-  return m_taskbarInfo
-       ? withTaskbarInfo(m_taskbarInfo->bookName, m_taskbarInfo->archive, std::move(r))
-       : std::move(r);
+  if ( m_taskbarInfo ) {
+    r->set_taskbar(m_taskbarInfo->bookName, m_taskbarInfo->archive);
+  }
+  return r;
+}
+
+HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
+                                             const RequestContext& request,
+                                             int httpStatusCode,
+                                             const std::string& pageTitleMsg,
+                                             const std::string& headingMsg)
+  : ContentResponseBlueprint(&server,
+                             &request,
+                             httpStatusCode,
+                             "text/html; charset=utf-8",
+                             RESOURCE::templates::error_html)
+{
+  kainjow::mustache::list emptyList;
+  this->m_data = kainjow::mustache::object{
+                    {"PAGE_TITLE",   pageTitleMsg},
+                    {"PAGE_HEADING", headingMsg},
+                    {"details", emptyList}
+  };
 }
 
 HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
-                                         const RequestContext& request)
-  : ContentResponseBlueprint(&server,
-                             &request,
-                             MHD_HTTP_NOT_FOUND,
-                             "text/html",
-                             RESOURCE::templates::_404_html)
+                                             const RequestContext& request)
+  : HTTPErrorHtmlResponse(server,
+                          request,
+                          MHD_HTTP_NOT_FOUND,
+                          "Content not found",
+                          "Not Found")
 {
-  kainjow::mustache::list emptyList;
-  this->m_data = kainjow::mustache::object{{"details", emptyList}};
 }
 
-HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
+HTTPErrorHtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
 {
   const std::string requestUrl = m_request.get_full_url();
   kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
   return *this + msgTmpl.render({"url", requestUrl});
 }
 
-HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
+HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
 {
   m_data["details"].push_back({"p", msg});
   return *this;
@@ -148,17 +141,15 @@ HTTP404HtmlResponse& HTTP404HtmlResponse::operator+(const std::string& msg)
 
 HTTP400HtmlResponse::HTTP400HtmlResponse(const InternalServer& server,
                                          const RequestContext& request)
-  : ContentResponseBlueprint(&server,
-                             &request,
-                             MHD_HTTP_BAD_REQUEST,
-                             "text/html",
-                             RESOURCE::templates::_400_html)
+  : HTTPErrorHtmlResponse(server,
+                          request,
+                          MHD_HTTP_BAD_REQUEST,
+                          "Invalid request",
+                          "Invalid request")
 {
-  kainjow::mustache::list emptyList;
-  this->m_data = kainjow::mustache::object{{"details", emptyList}};
 }
 
-HTTP400HtmlResponse& HTTP400HtmlResponse::operator+(InvalidUrlMsg /*unused*/)
+HTTPErrorHtmlResponse& HTTP400HtmlResponse::operator+(InvalidUrlMsg /*unused*/)
 {
   std::string requestUrl = m_request.get_full_url();
   const auto query = m_request.get_query();
@@ -169,12 +160,29 @@ HTTP400HtmlResponse& HTTP400HtmlResponse::operator+(InvalidUrlMsg /*unused*/)
   return *this + msgTmpl.render({"url", requestUrl});
 }
 
-HTTP400HtmlResponse& HTTP400HtmlResponse::operator+(const std::string& msg)
+HTTP500HtmlResponse::HTTP500HtmlResponse(const InternalServer& server,
+                                         const RequestContext& request)
+  : HTTPErrorHtmlResponse(server,
+                          request,
+                          MHD_HTTP_INTERNAL_SERVER_ERROR,
+                          "Internal Server Error",
+                          "Internal Server Error")
 {
-  m_data["details"].push_back({"p", msg});
-  return *this;
+  // operator+() is a state-modifying operator (akin to operator+=)
+  *this + "An internal server error occured. We are sorry about that :/";
 }
 
+std::unique_ptr<ContentResponse> HTTP500HtmlResponse::generateResponseObject() const
+{
+  // We want a 500 response to be a minimalistic one (so that the server doesn't
+  // have to provide additional resources required for its proper rendering)
+  // ";raw=true" in the MIME-type below disables response decoration
+  // (see ContentResponse::contentDecorationAllowed())
+  const std::string mimeType = "text/html;charset=utf-8;raw=true";
+  auto r = ContentResponse::build(m_server, m_template, m_data, mimeType);
+  r->set_code(m_httpStatusCode);
+  return r;
+}
 
 ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo& taskbarInfo)
 {
@@ -192,26 +200,6 @@ std::unique_ptr<Response> Response::build_416(const InternalServer& server, size
   oss << "bytes */" << resourceLength;
   response->add_header(MHD_HTTP_HEADER_CONTENT_RANGE, oss.str());
 
-  return response;
-}
-
-std::unique_ptr<Response> Response::build_500(const InternalServer& server, const std::string& msg)
-{
-  MustacheData data;
-  data.set("error", msg);
-  auto content = render_template(RESOURCE::templates::_500_html, data);
-  std::unique_ptr<Response> response (
-      new ContentResponse(
-        server.m_root, //root
-        true, //verbose
-        true, //raw
-        false, //withTaskbar
-        false, //withLibraryButton
-        false, //blockExternalLinks
-        content, //content
-        "text/html" //mimetype
-  ));
-  response->set_code(MHD_HTTP_INTERNAL_SERVER_ERROR);
   return response;
 }
 
@@ -465,15 +453,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
 {
   auto content = render_template(template_str, data);
   return ContentResponse::build(server, content, mimetype, isHomePage);
-}
-
-std::unique_ptr<ContentResponse> withTaskbarInfo(
-  const std::string& bookName,
-  const zim::Archive* archive,
-  std::unique_ptr<ContentResponse> r)
-{
-  r->set_taskbar(bookName, archive);
-  return r;
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :

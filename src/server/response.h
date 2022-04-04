@@ -42,8 +42,6 @@ namespace kiwix {
 class InternalServer;
 class RequestContext;
 
-class ContentResponse;
-
 class Response {
   public:
     Response(bool verbose);
@@ -51,10 +49,7 @@ class Response {
 
     static std::unique_ptr<Response> build(const InternalServer& server);
     static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
-    static std::unique_ptr<ContentResponse> build_404(const InternalServer& server, const kainjow::mustache::data& data);
-    static std::unique_ptr<ContentResponse> build_404(const InternalServer& server, const std::string& url, const std::string& details="");
     static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
-    static std::unique_ptr<Response> build_500(const InternalServer& server, const std::string& msg);
     static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
 
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
@@ -140,10 +135,6 @@ struct TaskbarInfo
   {}
 };
 
-std::unique_ptr<ContentResponse> withTaskbarInfo(const std::string& bookName,
-                                                 const zim::Archive* archive,
-                                                 std::unique_ptr<ContentResponse> r);
-
 class ContentResponseBlueprint
 {
 public: // functions
@@ -160,12 +151,6 @@ public: // functions
   {}
 
   virtual ~ContentResponseBlueprint() = default;
-
-  ContentResponseBlueprint& operator+(kainjow::mustache::data&& data)
-  {
-    this->m_data = std::move(data);
-    return *this;
-  }
 
   operator std::unique_ptr<ContentResponse>() const
   {
@@ -193,32 +178,53 @@ public: //data
   std::unique_ptr<TaskbarInfo> m_taskbarInfo;
 };
 
+struct HTTPErrorHtmlResponse : ContentResponseBlueprint
+{
+  HTTPErrorHtmlResponse(const InternalServer& server,
+                      const RequestContext& request,
+                      int httpStatusCode,
+                      const std::string& pageTitleMsg,
+                      const std::string& headingMsg);
+
+  using ContentResponseBlueprint::operator+;
+  HTTPErrorHtmlResponse& operator+(const std::string& msg);
+};
+
 class UrlNotFoundMsg {};
 
 extern const UrlNotFoundMsg urlNotFoundMsg;
 
-struct HTTP404HtmlResponse : ContentResponseBlueprint
+struct HTTP404HtmlResponse : HTTPErrorHtmlResponse
 {
   HTTP404HtmlResponse(const InternalServer& server,
                       const RequestContext& request);
 
-  using ContentResponseBlueprint::operator+;
-  HTTP404HtmlResponse& operator+(UrlNotFoundMsg /*unused*/);
-  HTTP404HtmlResponse& operator+(const std::string& errorDetails);
+  using HTTPErrorHtmlResponse::operator+;
+  HTTPErrorHtmlResponse& operator+(UrlNotFoundMsg /*unused*/);
 };
 
 class InvalidUrlMsg {};
 
 extern const InvalidUrlMsg invalidUrlMsg;
 
-struct HTTP400HtmlResponse : ContentResponseBlueprint
+struct HTTP400HtmlResponse : HTTPErrorHtmlResponse
 {
   HTTP400HtmlResponse(const InternalServer& server,
                       const RequestContext& request);
 
-  using ContentResponseBlueprint::operator+;
-  HTTP400HtmlResponse& operator+(InvalidUrlMsg /*unused*/);
-  HTTP400HtmlResponse& operator+(const std::string& errorDetails);
+  using HTTPErrorHtmlResponse::operator+;
+  HTTPErrorHtmlResponse& operator+(InvalidUrlMsg /*unused*/);
+};
+
+struct HTTP500HtmlResponse : HTTPErrorHtmlResponse
+{
+  HTTP500HtmlResponse(const InternalServer& server,
+                      const RequestContext& request);
+
+private: // overrides
+  // generateResponseObject() is overriden in order to produce a minimal
+  // response without any need for additional resources from the server
+  std::unique_ptr<ContentResponse> generateResponseObject() const override;
 };
 
 class ItemResponse : public Response {
