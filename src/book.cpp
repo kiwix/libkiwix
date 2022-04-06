@@ -83,7 +83,7 @@ void Book::update(const zim::Archive& archive) {
   m_flavour = getMetaFlavour(archive);
   m_tags = getMetaTags(archive);
   m_category = getCategoryFromTags();
-  m_articleCount = archive.getArticleCount();
+  m_articleCount = getArchiveArticleCount(archive);
   m_mediaCount = getArchiveMediaCount(archive);
   m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
 

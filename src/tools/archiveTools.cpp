@@ -125,6 +125,30 @@ unsigned int getArchiveMediaCount(const zim::Archive& archive) {
   return counter;
 }
 
+unsigned int getArchiveArticleCount(const zim::Archive& archive) {
+  // [HACK]
+  // getArticleCount() returns different things depending of the "version" of the zim.
+  // On old zim (<=6), it returns the number of entry in `A` namespace
+  // On recent zim (>=7), it returns:
+  //  - the number of entry in `C` namespace (==getEntryCount) if no frontArticleIndex is present
+  //  - the number of front article if a frontArticleIndex is present
+  // The use case >=7 without frontArticleIndex is pretty rare so we don't care
+  // We can detect if we are reading a zim <= 6 by checking if we have a newNamespaceScheme.
+  if (archive.hasNewNamespaceScheme()) {
+    //The articleCount is "good"
+    return archive.getArticleCount();
+  } else {
+    // We have to parse the `M/Counter` metadata
+    unsigned int counter = 0;
+    for(const auto& pair:parseArchiveCounter(archive)) {
+      if (startsWith(pair.first, "text/html")) {
+        counter += pair.second;
+      }
+    }
+    return counter;
+  }
+}
+
 unsigned int getArchiveFileSize(const zim::Archive& archive) {
   return archive.getFilesize() / 1024;
 }
