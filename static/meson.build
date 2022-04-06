@@ -1,18 +1,27 @@
-resource_files = run_command(find_program('python3'),
-                    '-c',
-                    'import sys; f=open(sys.argv[1]); print(f.read())',
+resource_files = run_command(res_manager,
+                    '--list-all',
                     files('resources_list.txt')
                  ).stdout().strip().split('\n')
 
-lib_resources = custom_target('resources',
+preprocessed_resources = custom_target('preprocessed_resource_files',
     input: 'resources_list.txt',
+    output: ['resources_list.txt'],
+    command:[res_manager,
+             '--preprocess',
+             '--outdir', '@OUTDIR@',
+             '@INPUT@'],
+    depend_files: resource_files
+)
+
+lib_resources = custom_target('resources',
+    input: preprocessed_resources,
     output: ['kiwixlib-resources.cpp', 'kiwixlib-resources.h'],
     command:[res_compiler,
              '--cxxfile', '@OUTPUT0@',
              '--hfile', '@OUTPUT1@',
              '--source_dir', '@OUTDIR@',
              '@INPUT@'],
-    depend_files: resource_files
+    depends: preprocessed_resources
 )
 
 i18n_resource_files = run_command(find_program('python3'),

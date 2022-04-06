@@ -310,16 +310,16 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT/",
-R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js"
-      src="/ROOT/skin/jquery-ui/jquery-ui.min.js"
-      href="/ROOT/skin/jquery-ui/jquery-ui.min.css"
-      href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css"
-      href="/ROOT/skin/index.css"
-        src: url("/ROOT/skin/fonts/Poppins.ttf") format("truetype");
-          src: url("/ROOT/skin/fonts/Roboto.ttf") format("truetype");
-    <script src="/ROOT/skin/isotope.pkgd.min.js" defer></script>
-    <script src="/ROOT/skin/iso6391To3.js"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js" defer></script>
+R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3"
+      src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff"
+      href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3"
+      href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9"
+      href="/ROOT/skin/index.css?cacheid=1aca980a"
+        src: url("/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
+          src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
+    <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
+    <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=ea9ce83c" defer></script>
 )EXPECTEDRESULT"
     },
     {
@@ -332,13 +332,13 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png"
     },
     {
       /* url */ "/ROOT/zimfile/A/index",
-R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
-        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
+R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
     },
     {
@@ -346,13 +346,13 @@ R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROO
       // a page rendered from static/templates/no_search_result_html
       /* url */ "/ROOT/search?content=poor&pattern=whatever",
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css" rel="Stylesheet" />
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
-        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
+  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
     },
   };
@@ -512,12 +512,12 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 )FRAG",
 
     R"FRAG(
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js" defer></script>
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js" defer></script>
+  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
+<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
 </head>
   <body><span class="kiwix">
   <span id="kiwixtoolbar" class="ui-widget-header">
@@ -533,7 +533,7 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
   R"FRAG(        </form>
       </div>
         <input type="checkbox" id="kiwix_button_show_toggle">
-        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
         <div class="kiwix_button_cont">
             <a id="kiwix_serve_taskbar_library_button" title=")FRAG",
 
