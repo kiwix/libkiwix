@@ -447,6 +447,11 @@ std::string noSuchBookErrorMsg(const std::string& bookName)
   return "No such book: " + bookName;
 }
 
+std::string noSearchResultsMsg()
+{
+  return "The fulltext search engine is not available for this content.";
+}
+
 } // unnamed namespace
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
@@ -591,12 +596,12 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     } catch(std::runtime_error& e) {
       // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
       // (in case of zim file not containing a index)
-      auto data = get_default_data();
-      data.set("pattern", encodeDiples(searchInfo.pattern));
-      auto response = ContentResponse::build(*this, RESOURCE::templates::no_search_result_html, data, "text/html; charset=utf-8");
-      response->set_code(MHD_HTTP_NOT_FOUND);
-      response->set_taskbar(searchInfo.bookName, archive.get());
-      return std::move(response);
+      return HTTPErrorHtmlResponse(*this, request, MHD_HTTP_NOT_FOUND,
+                                   "Fulltext search unavailable",
+                                   "Not Found",
+                                   m_root + "/skin/search_results.css")
+           + noSearchResultsMsg()
+           + TaskbarInfo(searchInfo.bookName, archive.get());
     }
 
 
