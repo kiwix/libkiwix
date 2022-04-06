@@ -81,13 +81,13 @@ def symlink_resource(src, resource_path):
         os.remove(resource_path)
     os.symlink(src, resource_path)
 
-def preprocess_resource(srcdir, resource_path, outdir):
+def preprocess_resource(resource_path):
     print('Preprocessing', resource_path, '...')
     resource_dir = os.path.dirname(resource_path)
     if resource_dir != '':
-        os.makedirs(os.path.join(outdir, resource_dir), exist_ok=True)
-    srcpath = os.path.join(srcdir, resource_path)
-    outpath = os.path.join(outdir, resource_path)
+        os.makedirs(os.path.join(OUT_DIR, resource_dir), exist_ok=True)
+    srcpath = os.path.join(BASE_DIR, resource_path)
+    outpath = os.path.join(OUT_DIR, resource_path)
     if os.path.exists(outpath):
         os.remove(outpath)
     preprocessed_content, modified_line_count = get_preprocessed_resource(srcpath)
@@ -103,11 +103,11 @@ def copy_file(src_path, dst_path):
         with open(dst_path, 'wb') as dst:
             dst.write(src.read())
 
-def preprocess_resources(resource_file_path, outdir):
+def preprocess_resources(resource_file_path):
     resource_filename = os.path.basename(resource_file_path)
     for resource in read_resource_file(resource_file_path):
-        preprocess_resource(BASE_DIR, resource, outdir)
-    copy_file(resource_file_path, os.path.join(outdir, resource_filename))
+        preprocess_resource(resource)
+    copy_file(resource_file_path, os.path.join(OUT_DIR, resource_filename))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -118,8 +118,9 @@ if __name__ == "__main__":
     parser.add_argument('resource_file')
     args = parser.parse_args()
     BASE_DIR = os.path.dirname(os.path.realpath(args.resource_file))
+    OUT_DIR = args.outdir
 
     if args.list_all:
         list_resources(args.resource_file)
     elif args.preprocess:
-        preprocess_resources(args.resource_file, args.outdir)
+        preprocess_resources(args.resource_file)
