@@ -33,13 +33,14 @@ def list_resources(resource_file_path):
         print(resource_path)
 
 def compute_resource_revision(resource_path):
-    with open(os.path.join(BASE_DIR, resource_path), 'rb') as f:
+    with open(os.path.join(OUT_DIR, resource_path), 'rb') as f:
         return hashlib.sha1(f.read()).hexdigest()[:8]
 
 resource_revisions = {}
 
 def get_resource_revision(res):
     if not res in resource_revisions:
+        preprocess_resource(res)
         resource_revisions[res] = compute_resource_revision(res)
     return resource_revisions[res]
 
