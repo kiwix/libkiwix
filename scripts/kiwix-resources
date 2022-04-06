@@ -32,16 +32,16 @@ def list_resources(resource_file_path):
     for resource_path in read_resource_file(resource_file_path):
         print(resource_path)
 
-def get_resource_revision(base_dir, resource_path):
-    with open(os.path.join(base_dir, resource_path), 'rb') as f:
+def compute_resource_revision(resource_path):
+    with open(os.path.join(BASE_DIR, resource_path), 'rb') as f:
         return hashlib.sha1(f.read()).hexdigest()[:8]
 
 resource_revisions = {}
 
-def fill_resource_revisions(resource_file_path):
-    base_dir = os.path.dirname(os.path.realpath(resource_file_path))
-    for resource in read_resource_file(resource_file_path):
-        resource_revisions[resource] = get_resource_revision(base_dir, resource)
+def get_resource_revision(res):
+    if not res in resource_revisions:
+        resource_revisions[res] = compute_resource_revision(res)
+    return resource_revisions[res]
 
 RESOURCE_WITH_CACHEID_URL_PATTERN=r'((.*)/skin/([^"?]+))\?KIWIXCACHEID([^"]*)'
 
@@ -49,7 +49,7 @@ def set_cacheid(resource_matchobj):
     path = resource_matchobj.group(1)
     resource = 'skin/' + resource_matchobj.group(3)
     extra_query = resource_matchobj.group(4)
-    cacheid = 'cacheid=' + resource_revisions[resource]
+    cacheid = 'cacheid=' + get_resource_revision(resource)
     return path + '?' + cacheid + extra_query
 
 def preprocess_line(line):
@@ -104,10 +104,9 @@ def copy_file(src_path, dst_path):
             dst.write(src.read())
 
 def preprocess_resources(resource_file_path, outdir):
-    base_dir = os.path.dirname(os.path.realpath(resource_file_path))
     resource_filename = os.path.basename(resource_file_path)
     for resource in read_resource_file(resource_file_path):
-        preprocess_resource(base_dir, resource, outdir)
+        preprocess_resource(BASE_DIR, resource, outdir)
     copy_file(resource_file_path, os.path.join(outdir, resource_filename))
 
 if __name__ == "__main__":
@@ -118,9 +117,9 @@ if __name__ == "__main__":
     parser.add_argument('--outdir')
     parser.add_argument('resource_file')
     args = parser.parse_args()
+    BASE_DIR = os.path.dirname(os.path.realpath(args.resource_file))
 
     if args.list_all:
         list_resources(args.resource_file)
     elif args.preprocess:
-        fill_resource_revisions(args.resource_file)
         preprocess_resources(args.resource_file, args.outdir)
