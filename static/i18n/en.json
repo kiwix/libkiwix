@@ -18,4 +18,5 @@
 	, "500-page-title" : "Internal Server Error"
 	, "500-page-heading" : "Internal Server Error"
 	, "fulltext-search-unavailable" : "Fulltext search unavailable"
+	, "no-search-results": "The fulltext search engine is not available for this content."
 }

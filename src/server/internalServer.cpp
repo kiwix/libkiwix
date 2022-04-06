@@ -457,11 +457,6 @@ ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
   return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
 }
 
-std::string noSearchResultsMsg()
-{
-  return "The fulltext search engine is not available for this content.";
-}
-
 ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
 {
   return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
@@ -631,7 +626,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
                                    "fulltext-search-unavailable",
                                    "404-page-heading",
                                    m_root + "/skin/search_results.css")
-           + noSearchResultsMsg()
+           + nonParameterizedMessage("no-search-results")
            + TaskbarInfo(searchInfo.bookName, archive.get());
     }
 
