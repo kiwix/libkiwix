@@ -474,7 +474,8 @@ ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::strin
 
 ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
 {
-  return ParameterizedMessage(msgId, {});
+  const ParameterizedMessage::Parameters noParams;
+  return ParameterizedMessage(msgId, noParams);
 }
 
 } // unnamed namespace
