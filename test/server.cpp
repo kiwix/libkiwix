@@ -57,7 +57,6 @@ std::string removeEOLWhitespaceMarkers(const std::string& s)
   return std::regex_replace(s, pattern, "");
 }
 
-
 class ZimFileServer
 {
 public: // types
@@ -877,6 +876,79 @@ TEST_F(ServerTest, 500)
   const auto r = zfs1_->GET("/ROOT/poor/A/redirect_loop.html");
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
+}
+
+TEST_F(ServerTest, UserLanguageControl)
+{
+  struct TestData
+  {
+    const std::string url;
+    const std::string acceptLanguageHeader;
+    const std::string expectedH1;
+
+    operator TestContext() const
+    {
+      return TestContext{
+          {"url", url},
+          {"acceptLanguageHeader", acceptLanguageHeader},
+      };
+    }
+  };
+
+  const TestData testData[] = {
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article?userlang=en",
+      /*Accept-Language:*/ "",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article?userlang=hy",
+      /*Accept-Language:*/ "",
+      /* expected <h1> */ "Սխալ հասցե"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "*",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "hy",
+      /* expected <h1> */ "Սխալ հասցե"
+    },
+    {
+      // userlang query parameter takes precedence over Accept-Language
+      /*url*/ "/ROOT/zimfile/invalid-article?userlang=en",
+      /*Accept-Language:*/ "hy",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      // The value of the Accept-Language header is not currently parsed.
+      // In case of a comma separated list of languages (optionally weighted
+      // with quality values) the default (en) language is used instead.
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "hy;q=0.9, en;q=0.2",
+      /* expected <h1> */ "Not Found"
+    },
+  };
+
+  const std::regex h1Regex("<h1>(.+)</h1>");
+  for ( const auto& t : testData ) {
+    std::smatch h1Match;
+    Headers headers;
+    if ( !t.acceptLanguageHeader.empty() ) {
+      headers.insert({"Accept-Language", t.acceptLanguageHeader});
+    }
+    const auto r = zfs1_->GET(t.url.c_str(), headers);
+    std::regex_search(r->body, h1Match, h1Regex);
+    const std::string h1(h1Match[1]);
+    EXPECT_EQ(h1, t.expectedH1) << t;
+  }
 }
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)

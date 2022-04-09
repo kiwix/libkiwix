@@ -195,7 +195,15 @@ std::string RequestContext::get_query() const {
 
 std::string RequestContext::get_user_language() const
 {
-  return get_optional_param<std::string>("userlang", "en");
+  try {
+    return get_argument("userlang");
+  } catch(const std::out_of_range&) {}
+
+  try {
+    return get_header("Accept-Language");
+  } catch(const std::out_of_range&) {}
+
+  return "en";
 }
 
 }
