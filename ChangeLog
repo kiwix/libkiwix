@@ -1,3 +1,11 @@
+libkiwix 10.1.1
+===============
+
+ * Correctly detect the number of article for older zims (<=6) (@mgautier #743)
+ * [server] Fix fulltext search (@mgautierfr #724)
+ * [server][internal] New way to build Error message (@veloman-yunkan #732 #738 #744)
+ * Fix CI (@mgautierfr #736)
+
 libkiwix 10.1.0
 ===============
 
