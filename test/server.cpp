@@ -57,7 +57,6 @@ std::string removeEOLWhitespaceMarkers(const std::string& s)
   return std::regex_replace(s, pattern, "");
 }
 
-
 class ZimFileServer
 {
 public: // types
@@ -411,11 +410,13 @@ public:
   std::string expectedResponse() const;
 
 private:
+  bool isTranslatedVersion() const;
   virtual std::string pageTitle() const;
   std::string pageCssLink() const;
   std::string hiddenBookNameInput() const;
   std::string searchPatternInput() const;
   std::string taskbarLinks() const;
+  std::string goToWelcomePageText() const;
 };
 
 std::string TestContentIn404HtmlResponse::expectedResponse() const
@@ -454,7 +455,11 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
         <input type="checkbox" id="kiwix_button_show_toggle">
         <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png" alt=""></label>
         <div class="kiwix_button_cont">
-            <a id="kiwix_serve_taskbar_library_button" title="Go to welcome page" aria-label="Go to welcome page" href="/ROOT/"><button>&#x1f3e0;</button></a>
+            <a id="kiwix_serve_taskbar_library_button" title=")FRAG",
+
+  R"FRAG(" aria-label=")FRAG",
+
+  R"FRAG(" href="/ROOT/"><button>&#x1f3e0;</button></a>
           )FRAG",
 
   R"FRAG(
@@ -478,10 +483,14 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
        + frag[3]
        + searchPatternInput()
        + frag[4]
-       + taskbarLinks()
+       + goToWelcomePageText()
        + frag[5]
-       + removeEOLWhitespaceMarkers(expectedBody)
-       + frag[6];
+       + goToWelcomePageText()
+       + frag[6]
+       + taskbarLinks()
+       + frag[7]
+       + expectedBody
+       + frag[8];
 }
 
 std::string TestContentIn404HtmlResponse::pageTitle() const
@@ -510,11 +519,15 @@ std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
 
 std::string TestContentIn404HtmlResponse::searchPatternInput() const
 {
-  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search ')"
-       + bookTitle
-       + R"('" aria-label="Search ')"
-       + bookTitle
-       + R"('">
+  const std::string searchboxTooltip = isTranslatedVersion()
+                                     ? "Որոնել '" + bookTitle + "'֊ում"
+                                     : "Search '" + bookTitle + "'";
+
+  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title=")"
+       + searchboxTooltip
+       + R"(" aria-label=")"
+       + searchboxTooltip
+       + R"(">
 )";
 }
 
@@ -523,20 +536,45 @@ std::string TestContentIn404HtmlResponse::taskbarLinks() const
   if ( bookName.empty() )
     return "";
 
-  return R"(<a id="kiwix_serve_taskbar_home_button" title="Go to the main page of ')"
-       + bookTitle
-       + R"('" aria-label="Go to the main page of ')"
-       + bookTitle
-       + R"('" href="/ROOT/)"
+  const auto goToMainPageOfBook = isTranslatedVersion()
+                                ? "Դեպի '" + bookTitle + "'֊ի գլխավոր էջը"
+                                : "Go to the main page of '" + bookTitle + "'";
+
+  const std::string goToRandomPage = isTranslatedVersion()
+                                   ? "Բացել պատահական էջ"
+                                   : "Go to a randomly selected page";
+
+  return R"(<a id="kiwix_serve_taskbar_home_button" title=")"
+       + goToMainPageOfBook
+       + R"(" aria-label=")"
+       + goToMainPageOfBook
+       + R"(" href="/ROOT/)"
        + bookName
        + R"(/"><button>)"
        + bookTitle
        + R"(</button></a>
-          <a id="kiwix_serve_taskbar_random_button" title="Go to a randomly selected page" aria-label="Go to a randomly selected page"
+          <a id="kiwix_serve_taskbar_random_button" title=")"
+       + goToRandomPage
+       + R"(" aria-label=")"
+       + goToRandomPage
+       + R"("
             href="/ROOT/random?content=)"
        + bookName
        + R"("><button>&#x1F3B2;</button></a>)";
 }
+
+bool TestContentIn404HtmlResponse::isTranslatedVersion() const
+{
+  return url.find("userlang=hy") != std::string::npos;
+}
+
+std::string TestContentIn404HtmlResponse::goToWelcomePageText() const
+{
+  return isTranslatedVersion()
+       ? "Գրադարանի էջ"
+       : "Go to welcome page";
+}
+
 
 class TestContentIn400HtmlResponse : public TestContentIn404HtmlResponse
 {
@@ -556,7 +594,6 @@ std::string TestContentIn400HtmlResponse::pageTitle() const {
      : expectedPageTitle;
 }
 
-
 } // namespace TestingOfHtmlResponses
 
 TEST_F(ServerTest, 404WithBodyTesting)
@@ -568,6 +605,15 @@ TEST_F(ServerTest, 404WithBodyTesting)
     <h1>Not Found</h1>
     <p>
       No such book: non-existent-book
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/random?content=non-existent-book&userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
+      expected_body==R"(
+    <h1>Սխալ հասցե</h1>
+    <p>
+      Գիրքը բացակայում է՝ non-existent-book
     </p>
 )"  },
 
@@ -587,11 +633,29 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
 )"  },
 
+    { /* url */ "/ROOT/catalog/?userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
+      expected_body==R"(
+    <h1>Սխալ հասցե</h1>
+    <p>
+      Սխալ հասցե՝ /ROOT/catalog/
+    </p>
+)"  },
+
     { /* url */ "/ROOT/catalog/invalid_endpoint",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
       The requested URL "/ROOT/catalog/invalid_endpoint" was not found on this server.
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/catalog/invalid_endpoint?userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
+      expected_body==R"(
+    <h1>Սխալ հասցե</h1>
+    <p>
+      Սխալ հասցե՝ /ROOT/catalog/invalid_endpoint
     </p>
 )"  },
 
@@ -640,6 +704,20 @@ TEST_F(ServerTest, 404WithBodyTesting)
     </p>
     <p>
       Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/zimfile/invalid-article?userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
+      book_name=="zimfile" &&
+      book_title=="Ray Charles" &&
+      expected_body==R"(
+    <h1>Սխալ հասցե</h1>
+    <p>
+      Սխալ հասցե՝ /ROOT/zimfile/invalid-article
+    </p>
+    <p>
+      Որոնել <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
@@ -798,6 +876,79 @@ TEST_F(ServerTest, 500)
   const auto r = zfs1_->GET("/ROOT/poor/A/redirect_loop.html");
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
+}
+
+TEST_F(ServerTest, UserLanguageControl)
+{
+  struct TestData
+  {
+    const std::string url;
+    const std::string acceptLanguageHeader;
+    const std::string expectedH1;
+
+    operator TestContext() const
+    {
+      return TestContext{
+          {"url", url},
+          {"acceptLanguageHeader", acceptLanguageHeader},
+      };
+    }
+  };
+
+  const TestData testData[] = {
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article?userlang=en",
+      /*Accept-Language:*/ "",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article?userlang=hy",
+      /*Accept-Language:*/ "",
+      /* expected <h1> */ "Սխալ հասցե"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "*",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "hy",
+      /* expected <h1> */ "Սխալ հասցե"
+    },
+    {
+      // userlang query parameter takes precedence over Accept-Language
+      /*url*/ "/ROOT/zimfile/invalid-article?userlang=en",
+      /*Accept-Language:*/ "hy",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      // The value of the Accept-Language header is not currently parsed.
+      // In case of a comma separated list of languages (optionally weighted
+      // with quality values) the default (en) language is used instead.
+      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*Accept-Language:*/ "hy;q=0.9, en;q=0.2",
+      /* expected <h1> */ "Not Found"
+    },
+  };
+
+  const std::regex h1Regex("<h1>(.+)</h1>");
+  for ( const auto& t : testData ) {
+    std::smatch h1Match;
+    Headers headers;
+    if ( !t.acceptLanguageHeader.empty() ) {
+      headers.insert({"Accept-Language", t.acceptLanguageHeader});
+    }
+    const auto r = zfs1_->GET(t.url.c_str(), headers);
+    std::regex_search(r->body, h1Match, h1Regex);
+    const std::string h1(h1Match[1]);
+    EXPECT_EQ(h1, t.expectedH1) << t;
+  }
 }
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
@@ -1178,6 +1329,17 @@ R"EXPECTEDRESPONSE([
   {
     "value" : "A&amp;B ",
     "label" : "containing &apos;A&amp;B&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra&userlang=hy",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "abracadabra ",
+    "label" : "որոնել &apos;abracadabra&apos;...",
     "kind" : "pattern"
     //EOLWHITESPACEMARKER
   }

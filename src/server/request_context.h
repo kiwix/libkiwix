@@ -94,6 +94,8 @@ class RequestContext {
 
     bool can_compress() const { return acceptEncodingDeflate; }
 
+    std::string get_user_language() const;
+
   private: // data
     std::string full_url;
     std::string url;

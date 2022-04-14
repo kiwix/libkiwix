@@ -87,6 +87,11 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
 const UrlNotFoundMsg urlNotFoundMsg;
 const InvalidUrlMsg invalidUrlMsg;
 
+std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
+{
+  return getTranslatedString(m_request.get_user_language(), msgId);
+}
+
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
   auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
@@ -100,8 +105,8 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
 HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
                                              const RequestContext& request,
                                              int httpStatusCode,
-                                             const std::string& pageTitleMsg,
-                                             const std::string& headingMsg,
+                                             const std::string& pageTitleMsgId,
+                                             const std::string& headingMsgId,
                                              const std::string& cssUrl)
   : ContentResponseBlueprint(&server,
                              &request,
@@ -112,8 +117,8 @@ HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
   kainjow::mustache::list emptyList;
   this->m_data = kainjow::mustache::object{
                     {"CSS_URL", onlyAsNonEmptyMustacheValue(cssUrl) },
-                    {"PAGE_TITLE",   pageTitleMsg},
-                    {"PAGE_HEADING", headingMsg},
+                    {"PAGE_TITLE",   getMessage(pageTitleMsgId)},
+                    {"PAGE_HEADING", getMessage(headingMsgId)},
                     {"details", emptyList}
   };
 }
@@ -123,16 +128,15 @@ HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
   : HTTPErrorHtmlResponse(server,
                           request,
                           MHD_HTTP_NOT_FOUND,
-                          "Content not found",
-                          "Not Found")
+                          "404-page-title",
+                          "404-page-heading")
 {
 }
 
 HTTPErrorHtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
 {
   const std::string requestUrl = m_request.get_full_url();
-  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{url}}" was not found on this server.)");
-  return *this + msgTmpl.render({"url", requestUrl});
+  return *this + ParameterizedMessage("url-not-found", {{"url", requestUrl}});
 }
 
 HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
@@ -141,13 +145,19 @@ HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
   return *this;
 }
 
+HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const ParameterizedMessage& details)
+{
+  return *this + details.getText(m_request.get_user_language());
+}
+
+
 HTTP400HtmlResponse::HTTP400HtmlResponse(const InternalServer& server,
                                          const RequestContext& request)
   : HTTPErrorHtmlResponse(server,
                           request,
                           MHD_HTTP_BAD_REQUEST,
-                          "Invalid request",
-                          "Invalid request")
+                          "400-page-title",
+                          "400-page-heading")
 {
 }
 
@@ -167,8 +177,8 @@ HTTP500HtmlResponse::HTTP500HtmlResponse(const InternalServer& server,
   : HTTPErrorHtmlResponse(server,
                           request,
                           MHD_HTTP_INTERNAL_SERVER_ERROR,
-                          "Internal Server Error",
-                          "Internal Server Error")
+                          "500-page-title",
+                          "500-page-heading")
 {
   // operator+() is a state-modifying operator (akin to operator+=)
   *this + "An internal server error occured. We are sorry about that :/";
@@ -270,14 +280,20 @@ void print_response_info(int retCode, MHD_Response* response)
 }
 
 
-void ContentResponse::introduce_taskbar()
+void ContentResponse::introduce_taskbar(const std::string& lang)
 {
-  kainjow::mustache::data data;
-  data.set("root", m_root);
-  data.set("content", m_bookName);
-  data.set("hascontent", (!m_bookName.empty() && !m_bookTitle.empty()));
-  data.set("title", m_bookTitle);
-  data.set("withlibrarybutton", m_withLibraryButton);
+  i18n::GetTranslatedString t(lang);
+  kainjow::mustache::object data{
+    {"root", m_root},
+    {"content", m_bookName},
+    {"hascontent", (!m_bookName.empty() && !m_bookTitle.empty())},
+    {"title", m_bookTitle},
+    {"withlibrarybutton", m_withLibraryButton},
+    {"LIBRARY_BUTTON_TEXT", t("library-button-text")},
+    {"HOME_BUTTON_TEXT", t("home-button-text", {{"BOOK_TITLE", m_bookTitle}}) },
+    {"RANDOM_PAGE_BUTTON_TEXT", t("random-page-button-text") },
+    {"SEARCHBOX_TOOLTIP", t("searchbox-tooltip", {{"BOOK_TITLE", m_bookTitle}}) },
+  };
   auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
   m_content = prependToFirstOccurence(
     m_content,
@@ -342,7 +358,7 @@ ContentResponse::create_mhd_response(const RequestContext& request)
     inject_root_link();
 
     if (m_withTaskbar) {
-      introduce_taskbar();
+      introduce_taskbar(request.get_user_language());
     }
     if (m_blockExternalLinks) {
       inject_externallinks_blocker();

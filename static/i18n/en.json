@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+		]
+	},
+	"name":"English",
+	"suggest-full-text-search": "containing '{{{SEARCH_TERMS}}}'..."
+	, "no-such-book": "No such book: {{BOOK_NAME}}"
+	, "url-not-found" : "The requested URL \"{{url}}\" was not found on this server."
+	, "suggest-search" : "Make a full text search for <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>"
+	, "random-article-failure" :  "Oops! Failed to pick a random article :("
+	, "invalid-raw-data-type" : "{{DATATYPE}} is not a valid request for raw content."
+	, "raw-entry-not-found" : "Cannot find {{DATATYPE}} entry {{ENTRY}}"
+	, "400-page-title" : "Invalid request"
+	, "400-page-heading" : "Invalid request"
+	, "404-page-title" : "Content not found"
+	, "404-page-heading" : "Not Found"
+	, "500-page-title" : "Internal Server Error"
+	, "500-page-heading" : "Internal Server Error"
+	, "fulltext-search-unavailable" : "Fulltext search unavailable"
+	, "no-search-results": "The fulltext search engine is not available for this content."
+	, "library-button-text": "Go to welcome page"
+	, "home-button-text": "Go to the main page of '{{BOOK_TITLE}}'"
+	, "random-page-button-text": "Go to a randomly selected page"
+	, "searchbox-tooltip": "Search '{{BOOK_TITLE}}'"
+}

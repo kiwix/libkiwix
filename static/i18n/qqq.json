@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Veloman Yunkan"
+		]
+	},
+	"name": "Current language to which the string is being translated to.",
+	"suggest-full-text-search": "Text appearing in the suggestion list that, when selected, runs a full text search instead of the title search"
+	, "no-such-book": "Error text when the requested book is not found in the library"
+	, "url-not-found" : "Error text about wrong URL for an HTTP 404 error"
+	, "suggest-search" : "Suggest a search when the URL points to a non existing article"
+	, "random-article-failure" :  "Failure of the random article selection procedure"
+	, "invalid-raw-data-type" : "Invalid DATATYPE was used with the /raw endpoint (/raw/<book>/DATATYPE/...); allowed values are 'meta' and 'content'"
+	, "raw-entry-not-found" : "Entry requested via the /raw endpoint was not found"
+	, "400-page-title" : "Title of the 400 error page"
+	, "400-page-heading" : "Heading of the 400 error page"
+	, "404-page-title" : "Title of the 404 error page"
+	, "404-page-heading" : "Heading of the 404 error page"
+	, "500-page-title" : "Title of the 500 error page"
+	, "500-page-heading" : "Heading of the 500 error page"
+	, "fulltext-search-unavailable" : "Title of the error page returned when search is attempted in a book without fulltext search database"
+	, "no-search-results": "Text of the error page returned when search is attempted in a book without fulltext search database"
+	, "library-button-text": "Tooltip of the button leading to the welcome page"
+	, "home-button-text": "Tooltip of the button leading to the main page of a book"
+	, "random-page-button-text": "Tooltip of the button opening a randomly selected page"
+	, "searchbox-tooltip": "Tooltip displayed for the search box"
+}

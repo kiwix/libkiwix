@@ -28,10 +28,12 @@ kiwix_sources = [
   'server/response.cpp',
   'server/internalServer.cpp',
   'server/internalServer_catalog_v2.cpp',
+  'server/i18n.cpp',
   'opds_catalog.cpp',
   'version.cpp'
 ]
 kiwix_sources += lib_resources
+kiwix_sources += i18n_resources
 
 if host_machine.system() == 'windows'
   kiwix_sources += 'subprocess_windows.cpp'

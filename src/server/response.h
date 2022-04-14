@@ -28,6 +28,7 @@
 #include "byte_range.h"
 #include "entry.h"
 #include "etag.h"
+#include "i18n.h"
 
 extern "C" {
 #include "microhttpd_wrapper.h"
@@ -105,7 +106,7 @@ class ContentResponse : public Response {
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
 
-    void introduce_taskbar();
+    void introduce_taskbar(const std::string& lang);
     void inject_externallinks_blocker();
     void inject_root_link();
     bool can_compress(const RequestContext& request) const;
@@ -166,6 +167,7 @@ public: // functions
   ContentResponseBlueprint& operator+(const TaskbarInfo& taskbarInfo);
 
 protected: // functions
+  std::string getMessage(const std::string& msgId) const;
   virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 public: //data
@@ -183,12 +185,13 @@ struct HTTPErrorHtmlResponse : ContentResponseBlueprint
   HTTPErrorHtmlResponse(const InternalServer& server,
                       const RequestContext& request,
                       int httpStatusCode,
-                      const std::string& pageTitleMsg,
-                      const std::string& headingMsg,
+                      const std::string& pageTitleMsgId,
+                      const std::string& headingMsgId,
                       const std::string& cssUrl = "");
 
   using ContentResponseBlueprint::operator+;
   HTTPErrorHtmlResponse& operator+(const std::string& msg);
+  HTTPErrorHtmlResponse& operator+(const ParameterizedMessage& errorDetails);
 };
 
 class UrlNotFoundMsg {};

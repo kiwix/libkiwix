@@ -12,9 +12,10 @@ jq(document).ready(() => {
                ? (new URLSearchParams(window.location.search)).get('content') 
                : window.location.pathname.split(`${root}/`)[1].split('/')[0];
     
+        const userlang = (new URLSearchParams(window.location.search)).get('userlang') || "en";
         $( "#kiwixsearchbox" ).autocomplete({
     
-            source: `${root}/suggest?content=${bookName}`,
+            source: `${root}/suggest?content=${bookName}&userlang=${userlang}`,
             dataType: "json",
             cache: false,
     
