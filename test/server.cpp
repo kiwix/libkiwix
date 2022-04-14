@@ -345,7 +345,7 @@ R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROO
       // Searching in a ZIM file without a full-text index returns
       // a page rendered from static/templates/no_search_result_html
       /* url */ "/ROOT/search?content=poor&pattern=whatever",
-R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
   <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
@@ -847,7 +847,7 @@ TEST_F(ServerTest, 404WithBodyTesting)
 
     { /* url */ "/ROOT/search?content=poor&pattern=whatever",
       expected_page_title=="Fulltext search unavailable" &&
-      expected_css_url=="/ROOT/skin/search_results.css" &&
+      expected_css_url=="/ROOT/skin/search_results.css?cacheid=76d39c84" &&
       book_name=="poor" &&
       book_title=="poor" &&
       expected_body==R"(

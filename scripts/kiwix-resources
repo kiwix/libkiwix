@@ -43,7 +43,7 @@ def fill_resource_revisions(resource_file_path):
     for resource in read_resource_file(resource_file_path):
         resource_revisions[resource] = get_resource_revision(base_dir, resource)
 
-RESOURCE_WITH_CACHEID_URL_PATTERN=r'"([^"?]+)\?KIWIXCACHEID([^"]*)"'
+RESOURCE_WITH_CACHEID_URL_PATTERN=r'([^"?]+)\?KIWIXCACHEID([^"]*)'
 
 def set_cacheid(resource_matchobj):
     path = resource_matchobj.group(1)
@@ -53,7 +53,7 @@ def set_cacheid(resource_matchobj):
         resource = resource[len(root_prefix):]
     extra_query = resource_matchobj.group(2)
     cacheid = 'cacheid=' + resource_revisions[resource]
-    return f'"{path}?{cacheid}{extra_query}"'
+    return f'{path}?{cacheid}{extra_query}'
 
 def preprocess_line(line):
     if 'KIWIXCACHEID' in line:
