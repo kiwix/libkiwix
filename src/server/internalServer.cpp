@@ -95,29 +95,29 @@ inline std::string normalizeRootUrl(std::string rootUrl)
   return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
-Filter get_search_filter(const RequestContext& request)
+Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
 {
     auto filter = kiwix::Filter().valid(true).local(true);
     try {
-      filter.query(request.get_argument("q"));
+      filter.query(request.get_argument(prefix+"q"));
     } catch (const std::out_of_range&) {}
     try {
-      filter.maxSize(request.get_argument<unsigned long>("maxsize"));
+      filter.maxSize(request.get_argument<unsigned long>(prefix+"maxsize"));
     } catch (...) {}
     try {
-      filter.name(request.get_argument("name"));
+      filter.name(request.get_argument(prefix+"name"));
     } catch (const std::out_of_range&) {}
     try {
-      filter.category(request.get_argument("category"));
+      filter.category(request.get_argument(prefix+"category"));
     } catch (const std::out_of_range&) {}
     try {
-      filter.lang(request.get_argument("lang"));
+      filter.lang(request.get_argument(prefix+"lang"));
     } catch (const std::out_of_range&) {}
     try {
-      filter.acceptTags(kiwix::split(request.get_argument("tag"), ";"));
+      filter.acceptTags(kiwix::split(request.get_argument(prefix+"tag"), ";"));
     } catch (...) {}
     try {
-      filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
+      filter.rejectTags(kiwix::split(request.get_argument(prefix+"notag"), ";"));
     } catch (...) {}
     return filter;
 }
