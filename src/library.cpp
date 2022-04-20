@@ -75,6 +75,8 @@ struct Library::Impl
   std::vector<kiwix::Bookmark> m_bookmarks;
   Xapian::WritableDatabase m_bookDB;
 
+  unsigned int getBookCount(const bool localBooks, const bool remoteBooks) const;
+
   Impl();
   ~Impl();
 
@@ -94,7 +96,19 @@ Library::Impl::~Impl()
 Library::Impl::Impl(Library::Impl&& ) = default;
 Library::Impl& Library::Impl::operator=(Library::Impl&& ) = default;
 
-
+unsigned int
+Library::Impl::getBookCount(const bool localBooks, const bool remoteBooks) const
+{
+  unsigned int result = 0;
+  for (auto& pair: m_books) {
+    auto& book = pair.second;
+    if ((!book.getPath().empty() && localBooks)
+        || (book.getPath().empty() && remoteBooks)) {
+      result++;
+    }
+  }
+  return result;
+}
 
 /* Constructor */
 Library::Library()
@@ -263,15 +277,7 @@ unsigned int Library::getBookCount(const bool localBooks,
                                    const bool remoteBooks) const
 {
   std::lock_guard<std::mutex> lock(m_mutex);
-  unsigned int result = 0;
-  for (auto& pair: mp_impl->m_books) {
-    auto& book = pair.second;
-    if ((!book.getPath().empty() && localBooks)
-        || (book.getPath().empty() && remoteBooks)) {
-      result++;
-    }
-  }
-  return result;
+  return mp_impl->getBookCount(localBooks, remoteBooks);
 }
 
 bool Library::writeToFile(const std::string& path) const
