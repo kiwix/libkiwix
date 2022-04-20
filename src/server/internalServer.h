@@ -76,14 +76,14 @@ class SearchInfo {
 
     friend bool operator<(const SearchInfo& l, const SearchInfo& r)
     {
-        return std::tie(l.bookName, l.pattern, l.geoQuery)
-             < std::tie(r.bookName, r.pattern, r.geoQuery); // keep the same order
+        return std::tie(l.bookNames, l.pattern, l.geoQuery)
+             < std::tie(r.bookNames, r.pattern, r.geoQuery); // keep the same order
     }
 
   public: //data
     std::string pattern;
     GeoQuery geoQuery;
-    std::string bookName;
+    std::set<std::string> bookNames;
 };
 
 

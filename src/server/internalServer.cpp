@@ -109,8 +109,7 @@ SearchInfo::SearchInfo(const std::string& pattern, GeoQuery geoQuery)
 
 SearchInfo::SearchInfo(const RequestContext& request)
   : pattern(request.get_optional_param<std::string>("pattern", "")),
-    geoQuery(),
-    bookName(request.get_optional_param<std::string>("content", ""))
+    geoQuery()
 {
   /* Retrive geo search */
   try {
@@ -124,6 +123,11 @@ SearchInfo::SearchInfo(const RequestContext& request)
   if (!geoQuery && pattern.empty()) {
     throw std::invalid_argument("No query provided.");
   }
+
+  try {
+    auto content_vector = request.get_arguments("content");
+    bookNames = std::set<std::string>(content_vector.begin(), content_vector.end());
+  } catch (const std::out_of_range&) {}
 }
 
 zim::Query SearchInfo::getZimQuery(bool verbose) const {
@@ -580,16 +584,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   try {
     auto searchInfo = SearchInfo(request);
 
-    std::string bookId;
-    if (!searchInfo.bookName.empty()) {
-      try {
-        bookId = mp_nameMapper->getIdForName(searchInfo.bookName);
-      } catch (const std::out_of_range&) {
-        throw std::invalid_argument("The requested book doesn't exist.");
-      }
-    }
-
-
     /* Make the search */
     // Try to get a search from the searchInfo, else build it
     std::shared_ptr<zim::Search> search;
@@ -597,8 +591,15 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       search = searchCache.getOrPut(searchInfo,
         [=](){
           Library::BookIdSet bookIds;
-          if(!bookId.empty()) {
-            bookIds.insert(bookId);
+          if(!searchInfo.bookNames.empty()) {
+            for(const auto& bookName: searchInfo.bookNames) {
+              try {
+                auto bookId = mp_nameMapper->getIdForName(bookName);
+                bookIds.insert(bookId);
+              } catch(const std::out_of_range&) {
+                throw std::invalid_argument("The requested book doesn't exist.");
+              }
+            }
           } else {
             for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
               bookIds.insert(bookId);
@@ -613,14 +614,17 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       // (in case of zim file not containing a index)
       const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css);
       HTTPErrorHtmlResponse response(*this, request, MHD_HTTP_NOT_FOUND,
-                                   "fulltext-search-unavailable",
-                                   "404-page-heading",
+                                     "fulltext-search-unavailable",
+                                     "404-page-heading",
                                      cssUrl);
       response += nonParameterizedMessage("no-search-results");
-      response += TaskbarInfo(searchInfo.bookName, bookId.empty()?nullptr:mp_library->getArchiveById(bookId).get());
+      if(searchInfo.bookNames.size() == 1) {
+        auto bookName =*searchInfo.bookNames.begin();
+        auto bookId = mp_nameMapper->getIdForName(bookName);
+        response += TaskbarInfo(bookName, mp_library->getArchiveById(bookId).get());
+      }
       return response;
     }
-
 
     auto start = 0;
     try {
@@ -642,12 +646,17 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
-    renderer.setSearchContent(searchInfo.bookName);
+    //[TODO]
+    //renderer.setSearchContent(searchInfo.bookNames);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(searchInfo.bookName, bookId.empty()?nullptr:mp_library->getArchiveById(bookId).get());
+    if(searchInfo.bookNames.size() == 1) {
+      auto bookName = *searchInfo.bookNames.begin();
+      auto bookId = mp_nameMapper->getIdForName(bookName);
+      response->set_taskbar(bookName, mp_library->getArchiveById(bookId).get());
+    }
     return std::move(response);
   } catch (const std::invalid_argument& e) {
     return HTTP400HtmlResponse(*this, request)
