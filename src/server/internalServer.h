@@ -68,22 +68,21 @@ struct GeoQuery {
 
 class SearchInfo {
   public:
-    SearchInfo(const std::string& pattern);
-    SearchInfo(const std::string& pattern, GeoQuery geoQuery);
-    SearchInfo(const RequestContext& request);
+    SearchInfo(const std::string& pattern, GeoQuery geoQuery, const Library::BookIdSet& bookIds);
 
     zim::Query getZimQuery(bool verbose) const;
+    const Library::BookIdSet& getBookIds() const { return bookIds; }
 
     friend bool operator<(const SearchInfo& l, const SearchInfo& r)
     {
-        return std::tie(l.bookNames, l.pattern, l.geoQuery)
-             < std::tie(r.bookNames, r.pattern, r.geoQuery); // keep the same order
+        return std::tie(l.bookIds, l.pattern, l.geoQuery)
+             < std::tie(r.bookIds, r.pattern, r.geoQuery); // keep the same order
     }
 
   public: //data
     std::string pattern;
     GeoQuery geoQuery;
-    std::set<std::string> bookNames;
+    Library::BookIdSet bookIds;
 };
 
 
@@ -150,6 +149,7 @@ class InternalServer {
     bool etag_not_needed(const RequestContext& r) const;
     ETag get_matching_if_none_match_etag(const RequestContext& request) const;
     Library::BookIdSet selectBooks(const RequestContext& r) const;
+    SearchInfo getSearchInfo(const RequestContext& r) const;
 
   private: // data
     std::string m_addr;
