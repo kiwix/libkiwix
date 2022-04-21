@@ -129,6 +129,51 @@ std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
   return std::vector<T>(v.begin()+std::min(v.size(), s), v.begin()+e);
 }
 
+std::string renderUrl(const std::string& root, const std::string& urlTemplate)
+{
+  MustacheData data;
+  data.set("root", root);
+  auto url = kainjow::mustache::mustache(urlTemplate).render(data);
+  if ( url.back() == '\n' )
+    url.pop_back();
+  return url;
+}
+
+std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
+{
+  return i18n::expandParameterizedString(lang, "suggest-full-text-search",
+               {
+                  {"SEARCH_TERMS", queryString}
+               }
+         );
+}
+
+ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
+{
+  return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
+}
+
+ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
+{
+  return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
+}
+
+ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::string& entry)
+{
+  return ParameterizedMessage("raw-entry-not-found",
+                              {
+                                {"DATATYPE", dt},
+                                {"ENTRY", entry},
+                              }
+  );
+}
+
+ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
+{
+  const ParameterizedMessage::Parameters noParams;
+  return ParameterizedMessage(msgId, noParams);
+}
+
 } // unnamed namespace
 
 Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) const
@@ -508,56 +553,6 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
   }
   return suggestions;
 }
-
-namespace
-{
-
-std::string renderUrl(const std::string& root, const std::string& urlTemplate)
-{
-  MustacheData data;
-  data.set("root", root);
-  auto url = kainjow::mustache::mustache(urlTemplate).render(data);
-  if ( url.back() == '\n' )
-    url.pop_back();
-  return url;
-}
-
-std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
-{
-  return i18n::expandParameterizedString(lang, "suggest-full-text-search",
-               {
-                  {"SEARCH_TERMS", queryString}
-               }
-         );
-}
-
-ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
-{
-  return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
-}
-
-ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
-{
-  return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
-}
-
-ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::string& entry)
-{
-  return ParameterizedMessage("raw-entry-not-found",
-                              {
-                                {"DATATYPE", dt},
-                                {"ENTRY", entry},
-                              }
-  );
-}
-
-ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
-{
-  const ParameterizedMessage::Parameters noParams;
-  return ParameterizedMessage(msgId, noParams);
-}
-
-} // unnamed namespace
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
