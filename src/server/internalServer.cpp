@@ -674,10 +674,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     return HTTP400HtmlResponse(*this, request)
       + invalidUrlMsg
       + std::string(e.what());
-  } catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return HTTP500HtmlResponse(*this, request)
-         + e.what();
   }
 }
 
