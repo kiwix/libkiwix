@@ -158,6 +158,11 @@ ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
   return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
 }
 
+ParameterizedMessage noValueForArgMsg(const std::string& argument)
+{
+  return ParameterizedMessage("no-value-for-arg", { {"ARGUMENT", argument} });
+}
+
 ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::string& entry)
 {
   return ParameterizedMessage("raw-entry-not-found",
@@ -174,6 +179,20 @@ ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
   return ParameterizedMessage(msgId, noParams);
 }
 
+struct Error : public std::runtime_error {
+  explicit Error(const ParameterizedMessage& message)
+    : std::runtime_error("Error while handling request"),
+      _message(message)
+  {}
+
+  const ParameterizedMessage& message() const
+  {
+    return _message;
+  }
+
+  const ParameterizedMessage _message;
+};
+
 } // unnamed namespace
 
 Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) const
@@ -184,7 +203,7 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
     try {
       return {mp_nameMapper->getIdForName(bookName)};
     } catch (const std::out_of_range&) {
-      throw std::invalid_argument("The requested book doesn't exist.");
+      throw Error(noSuchBookErrorMsg(bookName));
     }
   } catch(const std::out_of_range&) {
     // We've catch the out_of_range of get_argument
@@ -195,7 +214,7 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
   try {
     auto id_vec = request.get_arguments("books.id");
     if (id_vec.empty()) {
-      throw std::invalid_argument("You must provide a value for the id.");
+      throw Error(noValueForArgMsg("books.id"));
     }
     return Library::BookIdSet(id_vec.begin(), id_vec.end());
   } catch(const std::out_of_range&) {}
@@ -204,14 +223,14 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
   try {
     auto name_vec = request.get_arguments("books.name");
     if (name_vec.empty()) {
-      throw std::invalid_argument("You must provide a value for the name.");
+      throw Error(noValueForArgMsg("books.name"));
     }
     Library::BookIdSet bookIds;
     for(const auto& bookName: name_vec) {
       try {
         bookIds.insert(mp_nameMapper->getIdForName(bookName));
       } catch(const std::out_of_range&) {
-        throw std::invalid_argument("The requested book doesn't exist.");
+        throw Error(noSuchBookErrorMsg(bookName));
       }
     }
     return bookIds;
@@ -221,7 +240,7 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
   Filter filter = get_search_filter(request, "books.filter.");
   auto id_vec = mp_library->filter(filter);
   if (id_vec.empty()) {
-    throw std::invalid_argument("No books found.");
+    throw Error(nonParameterizedMessage("no-book-found"));
   }
   return Library::BookIdSet(id_vec.begin(), id_vec.end());
 }
@@ -242,7 +261,7 @@ SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
     catch(const std::invalid_argument&) {}
 
   if (!geoQuery && pattern.empty()) {
-    throw std::invalid_argument("No query provided.");
+    throw Error(nonParameterizedMessage("no-query"));
   }
 
   return SearchInfo(pattern, geoQuery, bookIds);
@@ -717,10 +736,10 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       response->set_taskbar(bookName, mp_library->getArchiveById(bookId).get());
     }
     return std::move(response);
-  } catch (const std::invalid_argument& e) {
+  } catch (const Error& e) {
     return HTTP400HtmlResponse(*this, request)
       + invalidUrlMsg
-      + std::string(e.what());
+      + e.message();
   }
 }
 

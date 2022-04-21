@@ -919,7 +919,7 @@ TEST_F(ServerTest, 400WithBodyTesting)
       The requested URL "/ROOT/search?content=non-existing-book&pattern=asdfqwerty" is not a valid request.
     </p>
     <p>
-      The requested book doesn't exist.
+      No such book: non-existing-book
     </p>
 )"  },
     { /* url */ "/ROOT/search?content=non-existing-book&pattern=a\"<script foo>",
@@ -929,7 +929,7 @@ TEST_F(ServerTest, 400WithBodyTesting)
       The requested URL "/ROOT/search?content=non-existing-book&pattern=a"&lt;script foo&gt;" is not a valid request.
     </p>
     <p>
-      The requested book doesn't exist.
+      No such book: non-existing-book
     </p>
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate

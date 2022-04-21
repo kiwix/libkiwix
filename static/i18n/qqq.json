@@ -2,16 +2,20 @@
 	"@metadata": {
 		"authors": [
 			"Veloman Yunkan",
-			"Verdy p"
+			"Verdy p",
+			"Matthieu Gautier"
 		]
 	},
 	"name": "{{Doc-important|Don't write \"English\" in your language!}}\n\n'''Write the name of ''your'' language in its native script.'''\n\nCurrent language to which the string is being translated to.\n\nFor example, write \"français\" when translating to French, or \"Deutsch\" when translating to German.\n\n'''Important:''' Do not use your language’s word for “English”. Use the word that your language uses to refer to itself. If you translate this message to mean “English” in your language, your change will be reverted.",
 	"suggest-full-text-search": "Text appearing in the suggestion list that, when selected, runs a full text search instead of the title search",
 	"no-such-book": "Error text when the requested book is not found in the library",
 	"url-not-found": "Error text about wrong URL for an HTTP 404 error",
+	"no-book-found": "Error text when no book matches the selection criteria",
 	"suggest-search": "Suggest a search when the URL points to a non existing article",
 	"random-article-failure": "Failure of the random article selection procedure",
 	"invalid-raw-data-type": "Invalid DATATYPE was used with the /raw endpoint (/raw/<book>/DATATYPE/...); allowed values are 'meta' and 'content'",
+	"no-value-for-arg" : "Error text when no value has been provided for ARGUMENT in the request's query string",
+	"no-query" : "Error text when no query has been provided for fulltext search",
 	"raw-entry-not-found": "Entry requested via the /raw endpoint was not found",
 	"400-page-title": "Title of the 400 error page",
 	"400-page-heading": "Heading of the 400 error page",
