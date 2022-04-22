@@ -1,4 +1,5 @@
 
+#define CPPHTTPLIB_ZLIB_SUPPORT 1
 #include "./httplib.h"
 #include "gtest/gtest.h"
 
@@ -271,9 +272,9 @@ TEST_F(ServerTest, 200)
 TEST_F(ServerTest, CompressibleContentIsCompressedIfAcceptable)
 {
   for ( const Resource& res : resources200Compressible ) {
-    const auto x = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} });
+    const auto x = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} });
     EXPECT_EQ(200, x->status) << res;
-    EXPECT_EQ("deflate", x->get_header_value("Content-Encoding")) << res;
+    EXPECT_EQ("gzip", x->get_header_value("Content-Encoding")) << res;
     EXPECT_EQ("Accept-Encoding", x->get_header_value("Vary")) << res;
   }
 }
@@ -281,7 +282,7 @@ TEST_F(ServerTest, CompressibleContentIsCompressedIfAcceptable)
 TEST_F(ServerTest, UncompressibleContentIsNotCompressed)
 {
   for ( const Resource& res : resources200Uncompressible ) {
-    const auto x = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} });
+    const auto x = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} });
     EXPECT_EQ(200, x->status) << res;
     EXPECT_EQ("", x->get_header_value("Content-Encoding")) << res;
   }
@@ -1062,7 +1063,7 @@ TEST_F(ServerTest, CompressionInfluencesETag)
     if ( ! res.etag_expected ) continue;
     const auto g1 = zfs1_->GET(res.url);
     const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
-    const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} } );
+    const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} } );
     const auto etag = g1->get_header_value("ETag");
     EXPECT_EQ(etag, g2->get_header_value("ETag"));
     EXPECT_NE(etag, g3->get_header_value("ETag"));
@@ -1075,7 +1076,7 @@ TEST_F(ServerTest, ETagOfUncompressibleContentIsNotAffectedByAcceptEncoding)
     if ( ! res.etag_expected ) continue;
     const auto g1 = zfs1_->GET(res.url);
     const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
-    const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "deflate"} } );
+    const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} } );
     const auto etag = g1->get_header_value("ETag");
     EXPECT_EQ(etag, g2->get_header_value("ETag")) << res;
     EXPECT_EQ(etag, g3->get_header_value("ETag")) << res;
@@ -1114,7 +1115,7 @@ std::string make_etag_list(const std::string& etag)
 
 TEST_F(ServerTest, IfNoneMatchRequestsWithMatchingETagResultIn304Responses)
 {
-  const char* const encodings[] = { "", "deflate" };
+  const char* const encodings[] = { "", "gzip" };
   for ( const Resource& res : all200Resources() ) {
     for ( const char* enc: encodings ) {
       if ( ! res.etag_expected ) continue;
@@ -1245,7 +1246,7 @@ TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
 
   const Headers onlyRange{ {"Range", "bytes=123-456"} };
   Headers rangeAndCompression(onlyRange);
-  rangeAndCompression.insert({"Accept-Encoding", "deflate"});
+  rangeAndCompression.insert({"Accept-Encoding", "gzip"});
 
   const auto p1 = zfs1_->GET(url, onlyRange);
   const auto p2 = zfs1_->GET(url, rangeAndCompression);

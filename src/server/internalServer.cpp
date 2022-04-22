@@ -78,7 +78,6 @@ extern "C" {
 #include "response.h"
 
 #define MAX_SEARCH_LEN 140
-#define KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE 100
 #define DEFAULT_CACHE_SIZE 2
 
 namespace kiwix {
