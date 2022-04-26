@@ -103,7 +103,7 @@ Library::Impl::getBookCount(const bool localBooks, const bool remoteBooks) const
   for (auto& pair: m_books) {
     auto& book = pair.second;
     if ((!book.getPath().empty() && localBooks)
-        || (book.getPath().empty() && remoteBooks)) {
+        || (!book.getUrl().empty() && remoteBooks)) {
       result++;
     }
   }
