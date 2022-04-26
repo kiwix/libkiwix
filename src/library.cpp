@@ -73,8 +73,7 @@ struct Library::Impl
   std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
   std::vector<kiwix::Bookmark> m_bookmarks;
-  class BookDB;
-  std::unique_ptr<BookDB> m_bookDB;
+  Xapian::WritableDatabase m_bookDB;
 
   Impl();
   ~Impl();
@@ -83,15 +82,8 @@ struct Library::Impl
   Impl& operator=(Impl&& );
 };
 
-
-class Library::Impl::BookDB : public Xapian::WritableDatabase
-{
-public:
-  BookDB() : Xapian::WritableDatabase("", Xapian::DB_BACKEND_INMEMORY) {}
-};
-
 Library::Impl::Impl()
-  : m_bookDB(new BookDB)
+  : m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
 {
 }
 
@@ -176,7 +168,7 @@ void Library::dropReader(const std::string& id)
 bool Library::removeBookById(const std::string& id)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
-  mp_impl->m_bookDB->delete_document("Q" + id);
+  mp_impl->m_bookDB.delete_document("Q" + id);
   dropReader(id);
   return mp_impl->m_books.erase(id) == 1;
 }
@@ -431,7 +423,7 @@ void Library::updateBookDB(const Book& book)
 
   doc.set_data(book.getId());
 
-  mp_impl->m_bookDB->replace_document(idterm, doc);
+  mp_impl->m_bookDB.replace_document(idterm, doc);
 }
 
 namespace
@@ -564,7 +556,7 @@ Library::BookIdCollection Library::filterViaBookDB(const Filter& filter) const
   BookIdCollection bookIds;
 
   std::lock_guard<std::mutex> lock(m_mutex);
-  Xapian::Enquire enquire(*mp_impl->m_bookDB);
+  Xapian::Enquire enquire(mp_impl->m_bookDB);
   enquire.set_query(query);
   const auto results = enquire.get_mset(0, mp_impl->m_books.size());
   for ( auto it = results.begin(); it != results.end(); ++it  ) {
