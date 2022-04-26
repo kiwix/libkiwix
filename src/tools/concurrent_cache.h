@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2021 Matthieu Gautier <mgautier@kymeria.fr>
  * Copyright (C) 2020 Veloman Yunkan
@@ -82,6 +83,11 @@ public: // types
   {
     std::unique_lock<std::mutex> l(lock_);
     return impl_.drop(key);
+  }
+
+  size_t setMaxSize(size_t new_size) {
+    std::unique_lock<std::mutex> l(lock_);
+    return  impl_.setMaxSize(new_size);
   }
 
 private: // data

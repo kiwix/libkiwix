@@ -33,6 +33,7 @@
 #include <pugixml.hpp>
 #include <algorithm>
 #include <set>
+#include <cmath>
 #include <unicode/locid.h>
 #include <xapian.h>
 
@@ -151,6 +152,10 @@ bool Library::addBook(const Book& book)
     auto& newEntry = mp_impl->m_books[book.getId()];
     static_cast<Book&>(newEntry) = book;
     newEntry.lastUpdatedRevision = mp_impl->m_revision;
+    size_t new_cache_size = std::ceil(mp_impl->getBookCount(true, true)*0.1);
+    if (getEnvVar<int>("ARCHIVE_CACHE_SIZE", -1) <= 0) {
+      mp_impl->mp_archiveCache->setMaxSize(new_cache_size);
+    }
     return true;
   }
 }
@@ -184,6 +189,12 @@ bool Library::removeBookById(const std::string& id)
   std::lock_guard<std::mutex> lock(m_mutex);
   mp_impl->m_bookDB.delete_document("Q" + id);
   dropCache(id);
+  // We do not change the cache size here
+  // Most of the time, the book is remove in case of library refresh, it is
+  // often associated with addBook calls (which will properly set the cache size)
+  // Having a too big cache is not a problem here (or it would have been before)
+  // (And setMaxSize doesn't actually reduce the cache size, extra cached items
+  //  will be removed in put or getOrPut).
   return mp_impl->m_books.erase(id) == 1;
 }
 
