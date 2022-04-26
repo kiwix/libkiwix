@@ -405,3 +405,8 @@ std::vector<std::string> kiwix::getTitleVariants(const std::string& title) {
   variants.push_back(kiwix::toTitle(title));
   return variants;
 }
+
+template<>
+std::string kiwix::extractFromString(const std::string& str) {
+  return str;
+}
