@@ -70,7 +70,6 @@ struct Library::Impl
 
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
-  std::map<std::string, std::shared_ptr<Reader>> m_readers;
   std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
   std::vector<kiwix::Bookmark> m_bookmarks;
   Xapian::WritableDatabase m_bookDB;
@@ -139,7 +138,7 @@ bool Library::addBook(const Book& book)
   try {
     auto& oldbook = mp_impl->m_books.at(book.getId());
     if ( ! booksReferToTheSameArchive(oldbook, book) ) {
-      dropReader(book.getId());
+      dropCache(book.getId());
     }
     oldbook.update(book); // XXX: This may have no effect if oldbook is readonly
                           // XXX: Then m_bookDB will become out-of-sync with
@@ -173,9 +172,8 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 }
 
 
-void Library::dropReader(const std::string& id)
+void Library::dropCache(const std::string& id)
 {
-  mp_impl->m_readers.erase(id);
   mp_impl->m_archives.erase(id);
 }
 
@@ -183,7 +181,7 @@ bool Library::removeBookById(const std::string& id)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
   mp_impl->m_bookDB.delete_document("Q" + id);
-  dropReader(id);
+  dropCache(id);
   return mp_impl->m_books.erase(id) == 1;
 }
 
@@ -242,19 +240,12 @@ const Book& Library::getBookByPath(const std::string& path) const
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
-  try {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return mp_impl->m_readers.at(id);
-  } catch (std::out_of_range& e) {}
-
-  const auto archive = getArchiveById(id);
-  if ( !archive )
+  auto archive = getArchiveById(id);
+  if(archive) {
+    return std::make_shared<Reader>(archive);
+  } else {
     return nullptr;
-
-  const shared_ptr<Reader> reader(new Reader(archive, true));
-  std::lock_guard<std::mutex> lock(m_mutex);
-  mp_impl->m_readers[id] = reader;
-  return reader;
+  }
 }
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)

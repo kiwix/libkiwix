@@ -338,7 +338,7 @@ private: // functions
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
   void updateBookDB(const Book& book);
-  void dropReader(const std::string& bookId);
+  void dropCache(const std::string& bookId);
 
 private: //data
   std::unique_ptr<Impl> mp_impl;
