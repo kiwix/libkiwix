@@ -27,6 +27,8 @@
 #include "tools/regexTools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
+#include "tools/otherTools.h"
+#include "tools/concurrent_cache.h"
 
 #include <pugixml.hpp>
 #include <algorithm>
@@ -64,13 +66,12 @@ struct Library::Impl
   {
     Library::Revision lastUpdatedRevision = 0;
 
-    // May also keep the Archive and Reader pointers here and get
-    // rid of the m_readers and m_archives data members in Library
   };
 
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
-  std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
+  using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
+  std::unique_ptr<ArchiveCache> mp_archiveCache;
   std::vector<kiwix::Bookmark> m_bookmarks;
   Xapian::WritableDatabase m_bookDB;
 
@@ -84,7 +85,8 @@ struct Library::Impl
 };
 
 Library::Impl::Impl()
-  : m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
+  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("ARCHIVE_CACHE_SIZE", 1), 1))),
+    m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
 {
 }
 
@@ -174,7 +176,7 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 
 void Library::dropCache(const std::string& id)
 {
-  mp_impl->m_archives.erase(id);
+  mp_impl->mp_archiveCache->drop(id);
 }
 
 bool Library::removeBookById(const std::string& id)
@@ -250,18 +252,19 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
   try {
-    return mp_impl->m_archives.at(id);
-  } catch (std::out_of_range& e) {}
-
-  auto book = getBookById(id);
-  if (!book.isPathValid())
+    return mp_impl->mp_archiveCache->getOrPut(id,
+    [&](){
+      auto book = getBookById(id);
+      if (!book.isPathValid()) {
+        throw std::invalid_argument("");
+      }
+      return std::make_shared<zim::Archive>(book.getPath());
+    });
+  } catch (std::invalid_argument&) {
     return nullptr;
+  }
 
-  auto sptr = make_shared<zim::Archive>(book.getPath());
-  mp_impl->m_archives[id] = sptr;
-  return sptr;
 }
 
 unsigned int Library::getBookCount(const bool localBooks,
