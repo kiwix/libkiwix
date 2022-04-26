@@ -185,13 +185,10 @@ const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/ROOT/skin/taskbar.css" },
   { WITH_ETAG, "/ROOT/skin/block_external.js" },
 
-  { NO_ETAG,   "/ROOT/catalog/root.xml" },
-  { NO_ETAG,   "/ROOT/catalog/searchdescription.xml" },
   { NO_ETAG,   "/ROOT/catalog/search" },
 
   { NO_ETAG,   "/ROOT/search?content=zimfile&pattern=a" },
 
-  { NO_ETAG,   "/ROOT/suggest?content=zimfile" },
   { NO_ETAG,   "/ROOT/suggest?content=zimfile&term=ray" },
 
   { NO_ETAG,   "/ROOT/catch/external?source=www.example.com" },
@@ -224,7 +221,10 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/corner_cases/-/empty.css" },
   { WITH_ETAG, "/ROOT/corner_cases/-/empty.js" },
 
-  // The title and creator are too small to be compressed
+  // The following url's responses are too small to be compressed
+  { NO_ETAG,   "/ROOT/catalog/root.xml" },
+  { NO_ETAG,   "/ROOT/catalog/searchdescription.xml" },
+  { NO_ETAG,   "/ROOT/suggest?content=zimfile" },
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
 };

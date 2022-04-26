@@ -33,8 +33,15 @@
 
 #include <array>
 
-
-#define KIWIX_MIN_CONTENT_SIZE_TO_COMPRESS 100
+// This is somehow a magic value.
+// If this value is too small, we will compress (and lost cpu time) too much
+// content.
+// If this value is too big, we will not compress enough content and send too
+// much data.
+// If we assume that MTU is 1500 Bytes it is useless to compress
+// content smaller as the content will be sent in one packet anyway.
+// 1400 Bytes seems to be a common accepted limit.
+#define KIWIX_MIN_CONTENT_SIZE_TO_COMPRESS 1400
 
 namespace kiwix {
 
