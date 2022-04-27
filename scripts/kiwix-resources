@@ -44,14 +44,14 @@ def get_resource_revision(res):
         resource_revisions[res] = compute_resource_revision(res)
     return resource_revisions[res]
 
-RESOURCE_WITH_CACHEID_URL_PATTERN=r'((.*)/skin/([^"?]+))\?KIWIXCACHEID([^"]*)'
+RESOURCE_WITH_CACHEID_URL_PATTERN=r'(?P<pre>.*/(?P<resource>skin/[^"?]+)\?)KIWIXCACHEID(?P<post>[^"]*)'
 
 def set_cacheid(resource_matchobj):
-    path = resource_matchobj.group(1)
-    resource = 'skin/' + resource_matchobj.group(3)
-    extra_query = resource_matchobj.group(4)
+    pre = resource_matchobj.group('pre')
+    resource = resource_matchobj.group('resource')
+    post = resource_matchobj.group('post')
     cacheid = 'cacheid=' + get_resource_revision(resource)
-    return path + '?' + cacheid + extra_query
+    return pre + cacheid + post
 
 def preprocess_text(s):
     if 'KIWIXCACHEID' in s:
