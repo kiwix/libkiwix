@@ -108,8 +108,8 @@ struct Library::Impl
 };
 
 Library::Impl::Impl()
-  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("ARCHIVE_CACHE_SIZE", 1), 1))),
-    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("SEARCHER_CACHE_SIZE", 1), 1))),
+  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 1), 1))),
+    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", 1), 1))),
     m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
 {
 }
@@ -176,10 +176,10 @@ bool Library::addBook(const Book& book)
     static_cast<Book&>(newEntry) = book;
     newEntry.lastUpdatedRevision = mp_impl->m_revision;
     size_t new_cache_size = std::ceil(mp_impl->getBookCount(true, true)*0.1);
-    if (getEnvVar<int>("ARCHIVE_CACHE_SIZE", -1) <= 0) {
+    if (getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", -1) <= 0) {
       mp_impl->mp_archiveCache->setMaxSize(new_cache_size);
     }
-    if (getEnvVar<int>("SEARCHER_CACHE_SIZE", -1) <= 0) {
+    if (getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", -1) <= 0) {
       mp_impl->mp_searcherCache->setMaxSize(new_cache_size);
     }
     return true;
