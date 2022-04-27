@@ -66,13 +66,14 @@ struct Library::Impl
   struct Entry : Book
   {
     Library::Revision lastUpdatedRevision = 0;
-
   };
 
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
   using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
   std::unique_ptr<ArchiveCache> mp_archiveCache;
+  using SearcherCache = ConcurrentCache<std::string, std::shared_ptr<zim::Searcher>>;
+  std::unique_ptr<SearcherCache> mp_searcherCache;
   std::vector<kiwix::Bookmark> m_bookmarks;
   Xapian::WritableDatabase m_bookDB;
 
@@ -87,6 +88,7 @@ struct Library::Impl
 
 Library::Impl::Impl()
   : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("ARCHIVE_CACHE_SIZE", 1), 1))),
+    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("SEARCHER_CACHE_SIZE", 1), 1))),
     m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
 {
 }
@@ -156,6 +158,9 @@ bool Library::addBook(const Book& book)
     if (getEnvVar<int>("ARCHIVE_CACHE_SIZE", -1) <= 0) {
       mp_impl->mp_archiveCache->setMaxSize(new_cache_size);
     }
+    if (getEnvVar<int>("SEARCHER_CACHE_SIZE", -1) <= 0) {
+      mp_impl->mp_searcherCache->setMaxSize(new_cache_size);
+    }
     return true;
   }
 }
@@ -182,6 +187,7 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 void Library::dropCache(const std::string& id)
 {
   mp_impl->mp_archiveCache->drop(id);
+  mp_impl->mp_searcherCache->drop(id);
 }
 
 bool Library::removeBookById(const std::string& id)
@@ -275,7 +281,22 @@ std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
   } catch (std::invalid_argument&) {
     return nullptr;
   }
+}
 
+std::shared_ptr<zim::Searcher> Library::getSearcherById(const std::string& id)
+{
+  try {
+    return mp_impl->mp_searcherCache->getOrPut(id,
+    [&](){
+      auto archive = getArchiveById(id);
+      if(!archive) {
+        throw std::invalid_argument("");
+      }
+      return std::make_shared<zim::Searcher>(*archive);
+    });
+  } catch (std::invalid_argument&) {
+    return nullptr;
+  }
 }
 
 unsigned int Library::getBookCount(const bool localBooks,

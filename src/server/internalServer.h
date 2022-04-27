@@ -88,7 +88,6 @@ class SearchInfo {
 
 
 typedef kainjow::mustache::data MustacheData;
-typedef ConcurrentCache<string, std::shared_ptr<zim::Searcher>> SearcherCache;
 typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
 typedef ConcurrentCache<string, std::shared_ptr<zim::SuggestionSearcher>> SuggestionSearcherCache;
 
@@ -167,7 +166,6 @@ class InternalServer {
     Library* mp_library;
     NameMapper* mp_nameMapper;
 
-    SearcherCache searcherCache;
     SearchCache searchCache;
     SuggestionSearcherCache suggestionSearcherCache;
 
