@@ -53,26 +53,26 @@ def set_cacheid(resource_matchobj):
     cacheid = 'cacheid=' + get_resource_revision(resource)
     return path + '?' + cacheid + extra_query
 
-def preprocess_line(line):
-    if 'KIWIXCACHEID' in line:
-        line = re.sub(RESOURCE_WITH_CACHEID_URL_PATTERN, set_cacheid, line)
-        assert not 'KIWIXCACHEID' in line
-    return line
+def preprocess_text(s):
+    if 'KIWIXCACHEID' in s:
+        s = re.sub(RESOURCE_WITH_CACHEID_URL_PATTERN, set_cacheid, s)
+        assert not 'KIWIXCACHEID' in s
+    return s
 
 def get_preprocessed_resource(srcpath):
-    modified_line_count = 0
-    preprocessed_lines = []
+    """Get the transformed content of a resource
+
+    If the resource at srcpath is modified by preprocessing then this function
+    returns the transformed content of the resource. Otherwise it returns None.
+    """
     try:
-        with open(srcpath, 'r') as source:
-            for line in source:
-                ppline = preprocess_line(line)
-                if ppline != line:
-                    modified_line_count += 1
-                preprocessed_lines.append(ppline)
-        return "".join(preprocessed_lines), modified_line_count
+        with open(srcpath, 'r') as resource_file:
+            content = resource_file.read()
+            preprocessed_content = preprocess_text(content)
+        return preprocessed_content if preprocessed_content != content else None
     except UnicodeDecodeError:
         # It was a binary resource
-        return None, 0
+        return None
 
 
 def symlink_resource(src, resource_path):
@@ -91,8 +91,8 @@ def preprocess_resource(resource_path):
     outpath = os.path.join(OUT_DIR, resource_path)
     if os.path.exists(outpath):
         os.remove(outpath)
-    preprocessed_content, modified_line_count = get_preprocessed_resource(srcpath)
-    if modified_line_count == 0:
+    preprocessed_content = get_preprocessed_resource(srcpath)
+    if preprocessed_content is None:
         symlink_resource(srcpath, outpath)
     else:
         with open(outpath, 'w') as target:
