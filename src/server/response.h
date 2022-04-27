@@ -165,6 +165,7 @@ public: // functions
 
 
   ContentResponseBlueprint& operator+(const TaskbarInfo& taskbarInfo);
+  ContentResponseBlueprint& operator+=(const TaskbarInfo& taskbarInfo);
 
 protected: // functions
   std::string getMessage(const std::string& msgId) const;
@@ -190,8 +191,10 @@ struct HTTPErrorHtmlResponse : ContentResponseBlueprint
                       const std::string& cssUrl = "");
 
   using ContentResponseBlueprint::operator+;
+  using ContentResponseBlueprint::operator+=;
   HTTPErrorHtmlResponse& operator+(const std::string& msg);
   HTTPErrorHtmlResponse& operator+(const ParameterizedMessage& errorDetails);
+  HTTPErrorHtmlResponse& operator+=(const ParameterizedMessage& errorDetails);
 };
 
 class UrlNotFoundMsg {};

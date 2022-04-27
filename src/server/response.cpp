@@ -194,6 +194,12 @@ HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const ParameterizedMessa
   return *this + details.getText(m_request.get_user_language());
 }
 
+HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+=(const ParameterizedMessage& details)
+{
+  // operator+() is already a state-modifying operator (akin to operator+=)
+  return *this + details;
+}
+
 
 HTTP400HtmlResponse::HTTP400HtmlResponse(const InternalServer& server,
                                          const RequestContext& request)
@@ -245,6 +251,13 @@ ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo&
   this->m_taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
   return *this;
 }
+
+ContentResponseBlueprint& ContentResponseBlueprint::operator+=(const TaskbarInfo& taskbarInfo)
+{
+  // operator+() is already a state-modifying operator (akin to operator+=)
+  return *this + taskbarInfo;
+}
+
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
 {
