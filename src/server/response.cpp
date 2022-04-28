@@ -31,8 +31,17 @@
 #include <mustache.hpp>
 #include <zlib.h>
 
+#include <array>
 
-#define KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE 100
+// This is somehow a magic value.
+// If this value is too small, we will compress (and lost cpu time) too much
+// content.
+// If this value is too big, we will not compress enough content and send too
+// much data.
+// If we assume that MTU is 1500 Bytes it is useless to compress
+// content smaller as the content will be sent in one packet anyway.
+// 1400 Bytes seems to be a common accepted limit.
+#define KIWIX_MIN_CONTENT_SIZE_TO_COMPRESS 1400
 
 namespace kiwix {
 
@@ -57,6 +66,41 @@ bool is_compressible_mime_type(const std::string& mimeType)
       || mimeType.find("application/opensearchdescription") != string::npos
       || mimeType.find("application/json") != string::npos;
 }
+
+bool compress(std::string &content) {
+  z_stream strm;
+  strm.zalloc = Z_NULL;
+  strm.zfree = Z_NULL;
+  strm.opaque = Z_NULL;
+
+  auto ret = deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, 31, 8,
+                          Z_DEFAULT_STRATEGY);
+  if (ret != Z_OK) { return false; }
+
+  strm.avail_in = static_cast<decltype(strm.avail_in)>(content.size());
+  strm.next_in =
+      const_cast<Bytef *>(reinterpret_cast<const Bytef *>(content.data()));
+
+  std::string compressed;
+
+  std::array<char, 16384> buff{};
+  do {
+    strm.avail_out = buff.size();
+    strm.next_out = reinterpret_cast<Bytef *>(buff.data());
+    ret = deflate(&strm, Z_FINISH);
+    assert(ret != Z_STREAM_ERROR);
+    compressed.append(buff.data(), buff.size() - strm.avail_out);
+  } while (strm.avail_out == 0);
+
+  assert(ret == Z_STREAM_END);
+  assert(strm.avail_in == 0);
+
+  content.swap(compressed);
+
+  deflateEnd(&strm);
+  return true;
+}
+
 
 
 } // unnamed namespace
@@ -331,7 +375,7 @@ ContentResponse::can_compress(const RequestContext& request) const
 {
   return request.can_compress()
       && is_compressible_mime_type(m_mimeType)
-      && (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_DEFLATE);
+      && (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_COMPRESS);
 }
 
 bool
@@ -365,35 +409,17 @@ ContentResponse::create_mhd_response(const RequestContext& request)
     }
   }
 
-  bool shouldCompress = can_compress(request);
-  if (shouldCompress) {
-    std::vector<Bytef> compr_buffer(compressBound(m_content.size()));
-    uLongf comprLen = compr_buffer.capacity();
-    int err = compress(&compr_buffer[0],
-                       &comprLen,
-                       (const Bytef*)(m_content.data()),
-                       m_content.size());
-    if (err == Z_OK && comprLen > 2 && comprLen < (m_content.size() + 2)) {
-      /* /!\ Internet Explorer has a bug with deflate compression.
-         It can not handle the first two bytes (compression headers)
-         We need to chunk them off (move the content 2bytes)
-         It has no incidence on other browsers
-         See http://www.subbu.org/blog/2008/03/ie7-deflate-or-not and comments */
-      m_content = string((char*)&compr_buffer[2], comprLen - 2);
-      m_etag.set_option(ETag::COMPRESSED_CONTENT);
-    } else {
-      shouldCompress = false;
-    }
-  }
+  const bool isCompressed = can_compress(request) && compress(m_content);
 
   MHD_Response* response = MHD_create_response_from_buffer(
     m_content.size(), const_cast<char*>(m_content.data()), MHD_RESPMEM_MUST_COPY);
 
-  if (shouldCompress) {
+  if (isCompressed) {
+    m_etag.set_option(ETag::COMPRESSED_CONTENT);
     MHD_add_response_header(
         response, MHD_HTTP_HEADER_VARY, "Accept-Encoding");
     MHD_add_response_header(
-        response, MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
+        response, MHD_HTTP_HEADER_CONTENT_ENCODING, "gzip");
   }
   return response;
 }

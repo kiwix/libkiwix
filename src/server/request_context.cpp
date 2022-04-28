@@ -75,15 +75,15 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   method(str2RequestMethod(_method)),
   version(version),
   requestIndex(s_requestIndex++),
-  acceptEncodingDeflate(false),
+  acceptEncodingGzip(false),
   byteRange_()
 {
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
 
   try {
-    acceptEncodingDeflate =
-        (get_header(MHD_HTTP_HEADER_ACCEPT_ENCODING).find("deflate") != std::string::npos);
+    acceptEncodingGzip =
+        (get_header(MHD_HTTP_HEADER_ACCEPT_ENCODING).find("gzip") != std::string::npos);
   } catch (const std::out_of_range&) {}
 
   try {
@@ -127,7 +127,7 @@ void RequestContext::print_debug_info() const {
   printf("Parsed : \n");
   printf("full_url: %s\n", full_url.c_str());
   printf("url   : %s\n", url.c_str());
-  printf("acceptEncodingDeflate : %d\n", acceptEncodingDeflate);
+  printf("acceptEncodingGzip : %d\n", acceptEncodingGzip);
   printf("has_range : %d\n", byteRange_.kind() != ByteRange::NONE);
   printf("is_valid_url : %d\n", is_valid_url());
   printf(".............\n");
