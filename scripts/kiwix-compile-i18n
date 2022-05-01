@@ -86,22 +86,12 @@ extern const size_t langCount = $LANG_COUNT;
 '''
 
 class Resource:
-    def __init__(self, base_dirs, filename):
+    def __init__(self, filename):
         filename = filename.strip()
         self.filename = filename
         self.lang_code = lang_code(filename)
-        found = False
-        for base_dir in base_dirs:
-            try:
-                with open(os.path.join(base_dir, filename), 'r') as f:
-                    self.data = f.read()
-                found = True
-                break
-            except FileNotFoundError:
-                continue
-        if not found:
-            raise Exception("Impossible to find {}".format(filename))
-
+        with open(filename, 'r') as f:
+            self.data = f.read()
 
     def get_string_table_name(self):
         return "string_table_for_" + self.lang_code
@@ -147,14 +137,11 @@ if __name__ == "__main__":
     parser.add_argument('--cxxfile',
                         required=True,
                         help='The Cpp file name to generate')
-    parser.add_argument('i18n_resource_file',
+    parser.add_argument('i18n_resource_files', nargs='+',
                         help='The list of resources to compile.')
     args = parser.parse_args()
 
-    base_dir = os.path.dirname(os.path.realpath(args.i18n_resource_file))
-    with open(args.i18n_resource_file, 'r') as f:
-        resources = [Resource([base_dir], filename)
-                        for filename in f.readlines()]
+    resources = [Resource(filename) for filename in args.i18n_resource_files]
 
     with open(args.cxxfile, 'w') as f:
         f.write(gen_c_file(resources))
