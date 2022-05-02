@@ -442,6 +442,16 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
 namespace
 {
 
+std::string renderUrl(const std::string& root, const std::string& urlTemplate)
+{
+  MustacheData data;
+  data.set("root", root);
+  auto url = kainjow::mustache::mustache(urlTemplate).render(data);
+  if ( url.back() == '\n' )
+    url.pop_back();
+  return url;
+}
+
 std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
 {
   return i18n::expandParameterizedString(lang, "suggest-full-text-search",
@@ -622,10 +632,11 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     } catch(std::runtime_error& e) {
       // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
       // (in case of zim file not containing a index)
+      const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css);
       return HTTPErrorHtmlResponse(*this, request, MHD_HTTP_NOT_FOUND,
                                    "fulltext-search-unavailable",
                                    "404-page-heading",
-                                   m_root + "/skin/search_results.css")
+                                   cssUrl)
            + nonParameterizedMessage("no-search-results")
            + TaskbarInfo(searchInfo.bookName, archive.get());
     }
