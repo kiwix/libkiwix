@@ -102,10 +102,18 @@ class SearchRenderer
     this->pageLength  = pageLength;
   }
 
+  std::string renderTemplate(const std::string& tmpl_str);
+
   /**
    * Generate the html page with the resutls of the search.
    */
   std::string getHtml();
+
+    /**
+   * Generate the xml page with the resutls of the search.
+   */
+  std::string getXml();
+
 
  protected:
   std::string beautifyInteger(const unsigned int number);

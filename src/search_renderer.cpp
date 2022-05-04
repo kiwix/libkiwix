@@ -162,7 +162,7 @@ kainjow::mustache::data buildPagination(
   return pagination;
 }
 
-std::string SearchRenderer::getHtml()
+std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
 {
   // Build the results list
   kainjow::mustache::data items{kainjow::mustache::data::type::list};
@@ -201,13 +201,14 @@ std::string SearchRenderer::getHtml()
     searchBookQuery
   );
 
-  std::string template_str = RESOURCE::templates::search_result_html;
-  kainjow::mustache::mustache tmpl(template_str);
 
   kainjow::mustache::data allData;
+  allData.set("protocolPrefix", protocolPrefix);
   allData.set("results", results);
   allData.set("pagination", pagination);
   allData.set("query", query);
+
+  kainjow::mustache::mustache tmpl(tmpl_str);
 
   std::stringstream ss;
   tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
@@ -216,5 +217,16 @@ std::string SearchRenderer::getHtml()
   }
   return ss.str();
 }
+
+std::string SearchRenderer::getHtml()
+{
+  return renderTemplate(RESOURCE::templates::search_result_html);
+}
+
+std::string SearchRenderer::getXml()
+{
+  return renderTemplate(RESOURCE::templates::search_result_xml);
+}
+
 
 }
