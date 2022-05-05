@@ -102,7 +102,7 @@
       }
 
     </style>
-    <title>Search: {{searchPattern}}</title>
+    <title>Search: {{query.pattern}}</title>
   </head>
   <body bgcolor="white">
     <div class="header">
@@ -113,11 +113,11 @@
         </b> of <b>
           {{count}}
         </b> for <b>
-          "{{{searchPattern}}}"
+          "{{{query.pattern}}}"
         </b>
       {{/hasResults}}
       {{^hasResults}}
-        No results were found for <b>"{{{searchPattern}}}"</b>
+        No results were found for <b>"{{{query.pattern}}}"</b>
       {{/hasResults}}
     </div>
 
@@ -148,7 +148,7 @@
           {{#pagination.pages}}
             <li>
               <a {{#current}}class="selected"{{/current}}
-                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{start}}&pageLength={{pagination.itemsPerPage}}">
+                 href="{{{query.unpaginatedQuery}}}&start={{start}}&pageLength={{pagination.itemsPerPage}}">
                 {{label}}
               </a>
             </li>

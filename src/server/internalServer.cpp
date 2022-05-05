@@ -665,7 +665,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchPattern(searchInfo.pattern);
     renderer.setSearchContent(searchInfo.bookName);
     renderer.setProtocolPrefix(m_root + "/");
-    renderer.setSearchProtocolPrefix(m_root + "/search?");
+    renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     response->set_taskbar(searchInfo.bookName, archive.get());

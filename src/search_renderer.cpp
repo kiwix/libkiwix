@@ -58,7 +58,7 @@ SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Lib
       mp_nameMapper(mapper),
       mp_library(library),
       protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?"),
+      searchProtocolPrefix("search://"),
       estimatedResultCount(estimatedResultCount),
       resultStart(start)
 {}
@@ -68,12 +68,12 @@ SearchRenderer::~SearchRenderer() = default;
 
 void SearchRenderer::setSearchPattern(const std::string& pattern)
 {
-  this->searchPattern = pattern;
+  searchPattern = pattern;
 }
 
-void SearchRenderer::setSearchContent(const std::string& name)
+void SearchRenderer::setSearchContent(const std::string& content)
 {
-  this->searchContent = name;
+  searchContent = content;
 }
 
 void SearchRenderer::setProtocolPrefix(const std::string& prefix)
@@ -84,6 +84,21 @@ void SearchRenderer::setProtocolPrefix(const std::string& prefix)
 void SearchRenderer::setSearchProtocolPrefix(const std::string& prefix)
 {
   this->searchProtocolPrefix = prefix;
+}
+
+kainjow::mustache::data buildQueryData
+(
+  const std::string& searchProtocolPrefix,
+  const std::string& pattern,
+  const std::string& searchContent
+) {
+  kainjow::mustache::data query;
+  query.set("pattern", kiwix::encodeDiples(pattern));
+  std::ostringstream ss;
+  ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern, true);
+  ss << "&content=" << urlEncode(searchContent, true);
+  query.set("unpaginatedQuery", ss.str());
+  return query;
 }
 
 kainjow::mustache::data buildPagination(
@@ -181,6 +196,14 @@ std::string SearchRenderer::getHtml()
 
   auto resultEnd = min(resultStart+pageLength, estimatedResultCount);
 
+  kainjow::mustache::data query = buildQueryData(
+    searchProtocolPrefix,
+    searchPattern,
+    searchContent
+  );
+
+
+
   std::string template_str = RESOURCE::templates::search_result_html;
   kainjow::mustache::mustache tmpl(template_str);
 
@@ -188,14 +211,11 @@ std::string SearchRenderer::getHtml()
   allData.set("results", results);
   allData.set("hasResults", estimatedResultCount != 0);
   allData.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
-  allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
   allData.set("resultStart", to_string(resultStart + 1));
   allData.set("resultEnd", to_string(resultEnd));
   allData.set("protocolPrefix", this->protocolPrefix);
-  allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
-  allData.set("contentId", this->searchContent);
   allData.set("pagination", pagination);
+  allData.set("query", query);
 
   std::stringstream ss;
   tmpl.render(allData, [&ss](const std::string& str) { ss << str; });

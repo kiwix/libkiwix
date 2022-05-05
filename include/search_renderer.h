@@ -75,6 +75,9 @@ class SearchRenderer
 
   ~SearchRenderer();
 
+  /**
+   * Set the search pattern used to do the search
+   */
   void setSearchPattern(const std::string& pattern);
 
   /**
