@@ -46,6 +46,11 @@ Headers invariantHeaders(Headers headers)
   return headers;
 }
 
+std::string replace(std::string s, std::string pattern, std::string replacement)
+{
+  return std::regex_replace(s, std::regex(pattern), replacement);
+}
+
 // Output generated via mustache templates sometimes contains end-of-line
 // whitespace. This complicates representing the expected output of a unit-test
 // as C++ raw strings in editors that are configured to delete EOL whitespace.
@@ -973,6 +978,237 @@ TEST_F(ServerTest, 500)
   const auto r = zfs1_->GET("/ROOT/poor/A/redirect_loop.html");
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
+}
+
+std::string makeSearchResultsHtml(const std::string& pattern,
+                                  const std::string& header,
+                                  const std::string& results)
+{
+  const char SEARCHRESULTS_HTML_TEMPLATE[] = R"HTML(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+
+    //EOLWHITESPACEMARKER
+    <style type="text/css">
+      body{
+      color: #000000;
+      font: small/normal Arial,Helvetica,Sans-Serif;
+      margin-top: 0.5em;
+      font-size: 90%;
+      }
+
+      a{
+      color: #04c;
+      }
+
+      a:visited {
+      color: #639
+      }
+
+      a:hover {
+      text-decoration: underline
+      }
+
+      .header {
+      font-size: 120%;
+      }
+
+      ul {
+      margin:0;
+      padding:0
+      }
+
+      .results {
+      font-size: 110%;
+      }
+
+      .results li {
+      list-style-type:none;
+      margin-top: 0.5em;
+      }
+
+      .results a {
+      font-size: 110%;
+      text-decoration: underline
+      }
+
+      cite {
+      font-style:normal;
+      word-wrap:break-word;
+      display: block;
+      font-size: 100%;
+      }
+
+      .informations {
+      color: #388222;
+      font-size: 100%;
+      }
+
+      .book-title {
+      color: #662200;
+      font-size: 100%;
+      }
+
+      .footer {
+      padding: 0;
+      margin-top: 1em;
+      width: 100%;
+      float: left
+      }
+
+      .footer a, .footer span {
+      display: block;
+      padding: .3em .7em;
+      margin: 0 .38em 0 0;
+      text-align:center;
+      text-decoration: none;
+      }
+
+      .footer a:hover {
+      background: #ededed;
+      }
+
+      .footer ul, .footer li {
+      list-style:none;
+      margin: 0;
+      padding: 0;
+      }
+
+      .footer li {
+      float: left;
+      }
+
+      .selected {
+      background: #ededed;
+      }
+
+    </style>
+    <title>Search: %PATTERN%</title>
+  <link type="root" href="/ROOT"></head>
+  <body bgcolor="white">
+    <div class="header">
+      %HEADER%
+    </div>
+
+    <div class="results">
+      <ul>%RESULTS%
+      </ul>
+    </div>
+
+    <div class="footer">
+      %FOOTER%
+    </div>
+  </body>
+</html>
+)HTML";
+
+  std::string html = removeEOLWhitespaceMarkers(SEARCHRESULTS_HTML_TEMPLATE);
+  html = replace(html, "%PATTERN%", pattern);
+  html = replace(html, "%HEADER%", header);
+  html = replace(html, "%RESULTS%", results);
+  html = replace(html, "%FOOTER%", "");
+  return html;
+}
+
+TEST_F(TaskbarlessServerTest, searchResults)
+{
+  struct TestData
+  {
+    std::string pattern;
+    size_t totalResultCount;
+    size_t firstResultIndex;
+    std::vector<std::string> results;
+
+    std::string url() const
+    {
+      return "/ROOT/search?content=zimfile&pattern=" + pattern;
+    }
+
+    std::string expectedHeader() const
+    {
+      if ( totalResultCount == 0 ) {
+        return "\n        No results were found for <b>\"" + pattern + "\"</b>";
+      }
+
+      std::string header = R"(  Results
+        <b>
+          FIRSTRESULT-LASTRESULT
+        </b> of <b>
+          RESULTCOUNT
+        </b> for <b>
+          "PATTERN"
+        </b>
+      )";
+
+      const size_t lastResultIndex = firstResultIndex + results.size() - 1;
+      header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
+      header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
+      header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
+      header = replace(header, "PATTERN",     pattern);
+      return header;
+    }
+
+    std::string expectedResultsString() const
+    {
+      if ( results.empty() ) {
+        return "\n        ";
+      }
+
+      std::string s;
+      for ( const auto& r : results ) {
+        s += "\n          <li>";
+        s += r;
+        s += "          </li>";
+      }
+      return s;
+    }
+
+    std::string expectedHtml() const
+    {
+      return makeSearchResultsHtml(
+               pattern,
+               expectedHeader(),
+               expectedResultsString()
+      );
+    }
+
+    TestContext testContext() const
+    {
+      return TestContext{ { "url", url() } };
+    }
+  };
+
+  const TestData testData[] = {
+    {
+      /* pattern */          "velomanyunkan",
+      /* totalResultCount */ 0,
+      /* firstResultIndex */ 0,
+      /* results */          {},
+    },
+
+    {
+      /* pattern */          "razaf",
+      /* totalResultCount */ 1,
+      /* firstResultIndex */ 1,
+      /* results */ {
+R"SEARCHRESULT(
+            <a href="/ROOT/zimfile/A/We_Gonna_Move_to_the_Outskirts_of_Town">
+              We Gonna Move to the Outskirts of Town
+            </a>
+              <cite>...to the Outskirts of Town "We Gonna Move to the Outskirts of Town" is a country blues song recorded September 3, 1936 by Casey Bill Weldon (voice and guitar). The song has been covered by many other musicians, most often under the title "I'm Gonna Move to the Outskirts of Town", and sometimes simply Outskirts of Town. All recordings seem to credit Weldon as songwriter, often as Weldon or as Will Weldon or as William Weldon. Some cover versions give credit also to Andy <b>Razaf</b> and/or to Roy Jacobs....</cite>
+              <div class="book-title">from Ray Charles</div>
+              <div class="informations">93 words</div>
+)SEARCHRESULT"
+      },
+    },
+  };
+
+  for ( const auto& t : testData ) {
+    const auto r = zfs1_->GET(t.url().c_str());
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(r->body, t.expectedHtml()) << t.testContext();
+  }
 }
 
 TEST_F(ServerTest, UserLanguageControl)
