@@ -66,7 +66,10 @@ public: // types
 
 public: // functions
   ZimFileServer(int serverPort, std::string libraryFilePath);
-  ZimFileServer(int serverPort, const FilePathCollection& zimpaths, std::string indexTemplateString = "");
+  ZimFileServer(int serverPort,
+                bool withTaskbar,
+                const FilePathCollection& zimpaths,
+                std::string indexTemplateString = "");
   ~ZimFileServer();
 
   Response GET(const char* path, const Headers& headers = Headers())
@@ -88,6 +91,7 @@ private: // data
   std::unique_ptr<kiwix::HumanReadableNameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
+  const bool withTaskbar = true;
 };
 
 ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
@@ -99,8 +103,12 @@ ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
   run(serverPort);
 }
 
-ZimFileServer::ZimFileServer(int serverPort, const FilePathCollection& zimpaths, std::string indexTemplateString)
+ZimFileServer::ZimFileServer(int serverPort,
+                             bool _withTaskbar,
+                             const FilePathCollection& zimpaths,
+                             std::string indexTemplateString)
 : manager(&this->library)
+, withTaskbar(_withTaskbar)
 {
   for ( const auto& zimpath : zimpaths ) {
     if (!manager.addBookFromPath(zimpath, zimpath, "", false))
@@ -119,6 +127,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   server->setPort(serverPort);
   server->setNbThreads(2);
   server->setVerbose(false);
+  server->setTaskbar(withTaskbar, withTaskbar);
   if (!indexTemplateString.empty()) {
     server->setIndexTemplateString(indexTemplateString);
   }
@@ -148,11 +157,19 @@ protected:
 
 protected:
   void SetUp() override {
-    zfs1_.reset(new ZimFileServer(PORT, ZIMFILES));
+    zfs1_.reset(new ZimFileServer(PORT, /*withTaskbar=*/true, ZIMFILES));
   }
 
   void TearDown() override {
     zfs1_.reset();
+  }
+};
+
+class TaskbarlessServerTest : public ServerTest
+{
+protected:
+  void SetUp() override {
+    zfs1_.reset(new ZimFileServer(PORT, /*withTaskbar=*/false, ZIMFILES));
   }
 };
 
@@ -241,7 +258,7 @@ TEST(indexTemplateStringTest, emptyIndexTemplate) {
     "./test/corner_cases.zim"
   };
 
-  ZimFileServer zfs(PORT, ZIMFILES, "");
+  ZimFileServer zfs(PORT, /*withTaskbar=*/true, ZIMFILES, "");
   EXPECT_EQ(200, zfs.GET("/ROOT/")->status);
 }
 
@@ -252,7 +269,7 @@ TEST(indexTemplateStringTest, indexTemplateCheck) {
     "./test/corner_cases.zim"
   };
 
-  ZimFileServer zfs(PORT, ZIMFILES, "<!DOCTYPE html><head>"
+  ZimFileServer zfs(PORT, /*withTaskbar=*/true, ZIMFILES, "<!DOCTYPE html><head>"
       "<title>Welcome to kiwix library</title>"
     "</head>"
   "</html>");
@@ -1127,7 +1144,7 @@ TEST_F(ServerTest, ETagIsTheSameAcrossHeadAndGet)
 
 TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
 {
-  ZimFileServer zfs2(PORT + 1, ZIMFILES);
+  ZimFileServer zfs2(PORT + 1, /*withTaskbar=*/true, ZIMFILES);
   for ( const Resource& res : all200Resources() ) {
     if ( !res.etag_expected ) continue;
     const auto h1 = zfs1_->HEAD(res.url);
