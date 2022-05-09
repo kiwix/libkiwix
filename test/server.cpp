@@ -1202,6 +1202,31 @@ R"SEARCHRESULT(
 )SEARCHRESULT"
       },
     },
+
+    {
+      /* pattern */          "beatles",
+      /* totalResultCount */ 2,
+      /* firstResultIndex */ 1,
+      /* results */ {
+R"SEARCHRESULT(
+            <a href="/ROOT/zimfile/A/Eleanor_Rigby">
+              Eleanor Rigby
+            </a>
+              <cite>...a mainly rock and roll- and pop-oriented act to a more experimental, studio-based band. With a double string quartet arrangement by George Martin and striking lyrics about loneliness, "Eleanor Rigby" broke sharply with popular music conventions, both musically and lyrically. Richie Unterberger of AllMusic cites the band's "singing about the neglected concerns and fates of the elderly" on the song as "just one example of why the Beatles' appeal reached so far beyond the traditional rock audience"....</cite>
+              <div class="book-title">from Ray Charles</div>
+              <div class="informations">201 words</div>
+)SEARCHRESULT",
+
+R"SEARCHRESULT(
+            <a href="/ROOT/zimfile/A/True_to_Life_(Ray_Charles_album)">
+              True to Life (Ray Charles album)
+            </a>
+              <cite>...Been Going On?", and The Beatles' "Let It Be". The album was arranged by Larry Muhoberac, Roger Newman, Sid Feller and Ray Charles. True to Life Studio album by Ray Charles Released October 1977 Recorded 1977; R.P.M International Studios, Los Angeles, California Genre R&amp;B, soul Length 38:44 Label Atlantic Producer Ray Charles Ray Charles chronology Porgy and Bess (1976) True to Life (1977) Love &amp; Peace (1978) Professional ratings Review scores Source Rating Allmusic Christgau's Record Guide A......</cite>
+              <div class="book-title">from Ray Charles</div>
+              <div class="informations">134 words</div>
+)SEARCHRESULT"
+      },
+    },
   };
 
   for ( const auto& t : testData ) {
