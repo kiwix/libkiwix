@@ -1,2 +1,0 @@
-i18n/en.json
-i18n/hy.json
