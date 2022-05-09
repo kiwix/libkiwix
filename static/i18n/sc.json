@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"L2212"
+		]
+	},
+	"name": "Sardu",
+	"suggest-full-text-search": "chi cuntenet '{{{SEARCH_TERMS}}}'...",
+	"no-such-book": "Perunu libru cun custu nùmene: {{BOOK_NAME}}",
+	"url-not-found": "S'URL pedidu \"{{url}}\" non s'est atzapadu in custu serbidore.",
+	"suggest-search": "Faghe una chirca de testu intreu pro <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "Oops! Sa seletzione de un'artìculu a casu est fallida :(",
+	"invalid-raw-data-type": "{{DATATYPE}} no est una rechesta vàlida pro cuntenutu puru.",
+	"raw-entry-not-found": "Non faghet a atzapare s'elementu {{ENTRY}} de genia {{DATATYPE}}",
+	"400-page-title": "Rechesta non vàlida",
+	"400-page-heading": "Rechesta non vàlida",
+	"404-page-title": "Cuntentu no agatadu",
+	"404-page-heading": "No agatadu",
+	"500-page-title": "Errore internu de su serbidore",
+	"500-page-heading": "Errore internu de su serbidore",
+	"fulltext-search-unavailable": "Chirca de testu integrale no a disponimentu",
+	"no-search-results": "Su motore de chirca de testu integrale no est a disponimentu pro custu cuntenutu.",
+	"library-button-text": "Bae a sa pàgina de bene bènnidu",
+	"home-button-text": "Bae a sa pàgina printzipale de '{{BOOK_TITLE}}'",
+	"random-page-button-text": "Bae a una pàgina seletzionada a manera casuale",
+	"searchbox-tooltip": "Chirca '{{BOOK_TITLE}}'"
+}

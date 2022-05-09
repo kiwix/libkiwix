@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"name": "한국어",
+	"suggest-full-text-search": "'{{{SEARCH_TERMS}}}' 포함...",
+	"no-such-book": "해당 책이 없습니다: {{BOOK_NAME}}",
+	"400-page-title": "잘못된 요청",
+	"400-page-heading": "잘못된 요청",
+	"404-page-title": "내용이 없습니다",
+	"404-page-heading": "찾을 수 없음",
+	"500-page-title": "내부 서버 오류",
+	"500-page-heading": "내부 서버 오류",
+	"fulltext-search-unavailable": "전문 검색을 사용할 수 없습니다",
+	"random-page-button-text": "무작위로 선택된 문서로 이동"
+}

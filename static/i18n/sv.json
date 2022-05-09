@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga"
+		]
+	},
+	"suggest-full-text-search": "innehåller '{{{SEARCH_TERMS}}}'...",
+	"no-such-book": "Ingen sådan bok: {{BOOK_NAME}}",
+	"url-not-found": "Den begärda webbadressen \"{{url}}\" hittades inte på denna server.",
+	"suggest-search": "Utför en fulltextsökning för <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "Hoppsan! Kunde inte välja en slumpartikel :(",
+	"invalid-raw-data-type": "{{DATATYPE}} är ingen giltig begäran för oformaterat innehåll.",
+	"raw-entry-not-found": "Kunde inte hitta {{DATATYPE}}-inlägget {{ENTRY}}",
+	"400-page-title": "Ogiltig begäran",
+	"400-page-heading": "Ogiltig begäran",
+	"404-page-title": "Innehållet hittades inte",
+	"404-page-heading": "Hittades inte",
+	"500-page-title": "Internt serverfel",
+	"500-page-heading": "Internt serverfel",
+	"fulltext-search-unavailable": "Fulltextsökning är inte tillgänglig",
+	"no-search-results": "Sökmaskinen för fulltext är inte tillgänglig för detta innehåll.",
+	"library-button-text": "Gå till hemsidan",
+	"home-button-text": "Gå till huvudsidan för \"{{BOOK_TITLE}}\"",
+	"random-page-button-text": "Gå till en slumpmässigt utvald sida",
+	"searchbox-tooltip": "Sök efter \"{{BOOK_TITLE}}\""
+}
