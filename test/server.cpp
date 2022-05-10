@@ -1509,6 +1509,28 @@ R"SEARCHRESULT(
 )SEARCHRESULT"
 };
 
+// Snippets (i.e. the contents of the <cite> element) in the search results can
+// slightly vary depending on
+//
+// - the version of libxapian (for example, in various Packages CI builds)
+// - the parameters of the pagination (if using libzim before v7.2.2).
+//
+// In order to be able to share the same expected output data
+// LARGE_SEARCH_RESULTS between multiple build platforms and test-points
+// of the TaskbarlessServerTest.searchResults test-case
+//
+// 1. Snippets are excluded from the plain-text comparison of actual and
+//    expected HTML strings. This is done with the help of the
+//    function maskSnippetsInSearchResults()
+//
+// 2. Snippets must be checked separately using a somewhat lenient comparison
+//    method (TODO)
+
+std::string maskSnippetsInSearchResults(std::string s)
+{
+  return replace(s, "<cite>.+</cite>", "<cite>SNIPPET TEXT WAS MASKED</cite>");
+}
+
 TEST_F(TaskbarlessServerTest, searchResults)
 {
   struct TestData
@@ -1581,7 +1603,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       std::string s;
       for ( const auto& r : results ) {
         s += "\n          <li>";
-        s += r;
+        s += maskSnippetsInSearchResults(r);
         s += "          </li>";
       }
       return s;
@@ -1624,6 +1646,12 @@ TEST_F(TaskbarlessServerTest, searchResults)
     TestContext testContext() const
     {
       return TestContext{ { "url", url() } };
+    }
+
+    void check(const std::string& html) const
+    {
+      EXPECT_EQ(maskSnippetsInSearchResults(html), expectedHtml())
+        << testContext();
     }
   };
 
@@ -1750,7 +1778,7 @@ R"SEARCHRESULT(
   for ( const auto& t : testData ) {
     const auto r = zfs1_->GET(t.url().c_str());
     EXPECT_EQ(r->status, 200);
-    EXPECT_EQ(r->body, t.expectedHtml()) << t.testContext();
+    t.check(r->body);
   }
 }
 
