@@ -1521,6 +1521,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
     };
 
     std::string pattern;
+    int start;
     size_t resultsPerPage;
     size_t totalResultCount;
     size_t firstResultIndex;
@@ -1544,7 +1545,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     std::string url() const
     {
-      return makeUrl(pattern, -1, resultsPerPage);
+      return makeUrl(pattern, start, resultsPerPage);
     }
 
     std::string expectedHeader() const
@@ -1629,6 +1630,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
   const TestData testData[] = {
     {
       /* pattern */          "velomanyunkan",
+      /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
       /* firstResultIndex */ 0,
@@ -1638,6 +1640,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* pattern */          "razaf",
+      /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 1,
       /* firstResultIndex */ 1,
@@ -1656,6 +1659,7 @@ R"SEARCHRESULT(
 
     {
       /* pattern */          "beatles",
+      /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 1,
@@ -1683,6 +1687,7 @@ R"SEARCHRESULT(
 
     {
       /* pattern */          "jazz",
+      /* start */            -1,
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 1,
@@ -1692,6 +1697,7 @@ R"SEARCHRESULT(
 
     {
       /* pattern */          "jazz",
+      /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 1,
@@ -1710,6 +1716,32 @@ R"SEARCHRESULT(
         { "3", 10, false },
         { "4", 15, false },
         { "5", 20, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            5,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 6,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[5],
+        LARGE_SEARCH_RESULTS[6],
+        LARGE_SEARCH_RESULTS[7],
+        LARGE_SEARCH_RESULTS[8],
+        LARGE_SEARCH_RESULTS[9],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "1", 0,  false },
+        { "2", 5,  true  },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
         { "▶", 40, false },
       }
     },
