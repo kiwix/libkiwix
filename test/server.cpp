@@ -982,7 +982,8 @@ TEST_F(ServerTest, 500)
 
 std::string makeSearchResultsHtml(const std::string& pattern,
                                   const std::string& header,
-                                  const std::string& results)
+                                  const std::string& results,
+                                  const std::string& footer)
 {
   const char SEARCHRESULTS_HTML_TEMPLATE[] = R"HTML(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -1096,8 +1097,7 @@ std::string makeSearchResultsHtml(const std::string& pattern,
       </ul>
     </div>
 
-    <div class="footer">
-      %FOOTER%
+    <div class="footer">%FOOTER%
     </div>
   </body>
 </html>
@@ -1107,7 +1107,7 @@ std::string makeSearchResultsHtml(const std::string& pattern,
   html = replace(html, "%PATTERN%", pattern);
   html = replace(html, "%HEADER%", header);
   html = replace(html, "%RESULTS%", results);
-  html = replace(html, "%FOOTER%", "");
+  html = replace(html, "%FOOTER%", footer);
   return html;
 }
 
@@ -1513,21 +1513,38 @@ TEST_F(TaskbarlessServerTest, searchResults)
 {
   struct TestData
   {
+    struct PaginationEntry
+    {
+      std::string label;
+      size_t start;
+      bool selected;
+    };
+
     std::string pattern;
     size_t resultsPerPage;
     size_t totalResultCount;
     size_t firstResultIndex;
     std::vector<std::string> results;
+    std::vector<PaginationEntry> pagination;
 
-    std::string url() const
+    static std::string makeUrl(const std::string pattern, int start, size_t resultsPerPage)
     {
-      std::string url = "/ROOT/search?content=zimfile&pattern=" + pattern;
+      std::string url = "/ROOT/search?pattern=" + pattern + "&content=zimfile";
+
+      if ( start >= 0 ) {
+        url += "&start=" + to_string(start);
+      }
 
       if ( resultsPerPage != 0 ) {
         url += "&pageLength=" + to_string(resultsPerPage);
       }
 
       return url;
+    }
+
+    std::string url() const
+    {
+      return makeUrl(pattern, -1, resultsPerPage);
     }
 
     std::string expectedHeader() const
@@ -1569,12 +1586,37 @@ TEST_F(TaskbarlessServerTest, searchResults)
       return s;
     }
 
+    std::string expectedFooter() const
+    {
+      if ( pagination.empty() ) {
+        return "\n      ";
+      }
+
+      std::ostringstream oss;
+      oss << "\n        <ul>\n";
+      for ( const auto& p : pagination ) {
+        const auto url = makeUrl(pattern, p.start, resultsPerPage);
+        oss << "            <li>\n";
+        oss << "              <a ";
+        if ( p.selected ) {
+          oss << "class=\"selected\"";
+        }
+        oss << "\n                 href=\"" << url << "\">\n";
+        oss << "                " << p.label << "\n";
+        oss << "              </a>\n";
+        oss << "            </li>\n";
+      }
+      oss << "        </ul>";
+      return oss.str();
+    }
+
     std::string expectedHtml() const
     {
       return makeSearchResultsHtml(
                pattern,
                expectedHeader(),
-               expectedResultsString()
+               expectedResultsString(),
+               expectedFooter()
       );
     }
 
@@ -1591,6 +1633,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       /* totalResultCount */ 0,
       /* firstResultIndex */ 0,
       /* results */          {},
+      /* pagination */       {}
     },
 
     {
@@ -1608,6 +1651,7 @@ R"SEARCHRESULT(
               <div class="informations">93 words</div>
 )SEARCHRESULT"
       },
+      /* pagination */ {}
     },
 
     {
@@ -1634,6 +1678,7 @@ R"SEARCHRESULT(
               <div class="informations">134 words</div>
 )SEARCHRESULT"
       },
+      /* pagination */ {}
     },
 
     {
@@ -1641,7 +1686,32 @@ R"SEARCHRESULT(
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 1,
-      /* results */ LARGE_SEARCH_RESULTS
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
+      }
     },
   };
 

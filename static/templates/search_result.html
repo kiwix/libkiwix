@@ -147,7 +147,8 @@
         <ul>
           {{#resultLastPageStart}}
             <li>
-              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&pageLength={{pageLength}}">
+              <a {{! let the format of this tag be identical to the case below }}
+                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&pageLength={{pageLength}}">
                 ◀
               </a>
             </li>
@@ -162,7 +163,8 @@
           {{/pages}}
           {{#resultLastPageStart}}
             <li>
-              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&pageLength={{pageLength}}">
+              <a {{! let the format of this tag be identical to the case above }}
+                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&pageLength={{pageLength}}">
                 ▶
               </a>
             </li>
