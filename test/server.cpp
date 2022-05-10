@@ -1392,6 +1392,23 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=öld%20suñ",
+R"EXPECTEDRESPONSE([
+  {
+    "value" : "That Lucky Old Sun",
+    "label" : "That Lucky &lt;b&gt;Old&lt;/b&gt; &lt;b&gt;Sun&lt;/b&gt;",
+    "kind" : "path"
+      , "path" : "A/That_Lucky_Old_Sun"
+  },
+  {
+    "value" : "öld suñ ",
+    "label" : "containing &apos;öld suñ&apos;...",
+    "kind" : "pattern"
+    //EOLWHITESPACEMARKER
+  }
+]
+)EXPECTEDRESPONSE"
+    },
     { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra",
 R"EXPECTEDRESPONSE([
   {
