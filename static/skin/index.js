@@ -142,10 +142,21 @@
         }
     }
 
+    async function getMagnetLink(downloadLink) {
+        const magnetUrl = downloadLink + '.magnet';
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 5000);
+        const magnetLink = await fetch(magnetUrl, { signal: controller.signal }).then(response => {
+            return response.ok ? response.text() : '';
+        }).catch((_error) => '');
+        return magnetLink;
+    }
+
     function insertModal(button) {
         const downloadLink = button.getAttribute('data-link');
-        button.addEventListener('click', (event) => {
+        button.addEventListener('click', async (event) => {
             event.preventDefault();
+            const magnetLink = await getMagnetLink(downloadLink);
             document.body.insertAdjacentHTML('beforeend', `<div class="modal-wrapper">
                 <div class="modal">
                     <div class="modal-heading">
@@ -181,12 +192,13 @@
                                 <div>Sha256 hash</div>
                             </a>
                         </div>
-                        <div class="modal-regular-download">
-                            <a href="${downloadLink}.magnet" target="_blank">
+                        ${magnetLink ? 
+                        `<div class="modal-regular-download">
+                            <a href="${magnetLink}" target="_blank">
                                 <img src="../skin/magnet.png?KIWIXCACHEID" alt="download magnet" />
                                 <div>Magnet link</div>
                             </a>
-                        </div>
+                        </div>` : ``}
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.torrent" download>
                                 <img src="../skin/bittorrent.png?KIWIXCACHEID" alt="download torrent" />
