@@ -36,6 +36,7 @@ skin/search_results.css
 templates/search_result.html
 templates/search_result.xml
 templates/error.html
+templates/error.xml
 templates/index.html
 templates/suggestion.json
 templates/head_taskbar.html

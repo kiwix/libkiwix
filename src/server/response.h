@@ -181,52 +181,52 @@ public: //data
   std::unique_ptr<TaskbarInfo> m_taskbarInfo;
 };
 
-struct HTTPErrorHtmlResponse : ContentResponseBlueprint
+struct HTTPErrorResponse : ContentResponseBlueprint
 {
-  HTTPErrorHtmlResponse(const InternalServer& server,
-                      const RequestContext& request,
-                      int httpStatusCode,
-                      const std::string& pageTitleMsgId,
-                      const std::string& headingMsgId,
-                      const std::string& cssUrl = "");
+  HTTPErrorResponse(const InternalServer& server,
+                    const RequestContext& request,
+                    int httpStatusCode,
+                    const std::string& pageTitleMsgId,
+                    const std::string& headingMsgId,
+                    const std::string& cssUrl = "");
 
   using ContentResponseBlueprint::operator+;
   using ContentResponseBlueprint::operator+=;
-  HTTPErrorHtmlResponse& operator+(const std::string& msg);
-  HTTPErrorHtmlResponse& operator+(const ParameterizedMessage& errorDetails);
-  HTTPErrorHtmlResponse& operator+=(const ParameterizedMessage& errorDetails);
+  HTTPErrorResponse& operator+(const std::string& msg);
+  HTTPErrorResponse& operator+(const ParameterizedMessage& errorDetails);
+  HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);
 };
 
 class UrlNotFoundMsg {};
 
 extern const UrlNotFoundMsg urlNotFoundMsg;
 
-struct HTTP404HtmlResponse : HTTPErrorHtmlResponse
+struct HTTP404Response : HTTPErrorResponse
 {
-  HTTP404HtmlResponse(const InternalServer& server,
-                      const RequestContext& request);
+  HTTP404Response(const InternalServer& server,
+                  const RequestContext& request);
 
-  using HTTPErrorHtmlResponse::operator+;
-  HTTPErrorHtmlResponse& operator+(UrlNotFoundMsg /*unused*/);
+  using HTTPErrorResponse::operator+;
+  HTTPErrorResponse& operator+(UrlNotFoundMsg /*unused*/);
 };
 
 class InvalidUrlMsg {};
 
 extern const InvalidUrlMsg invalidUrlMsg;
 
-struct HTTP400HtmlResponse : HTTPErrorHtmlResponse
+struct HTTP400Response : HTTPErrorResponse
 {
-  HTTP400HtmlResponse(const InternalServer& server,
-                      const RequestContext& request);
+  HTTP400Response(const InternalServer& server,
+                  const RequestContext& request);
 
-  using HTTPErrorHtmlResponse::operator+;
-  HTTPErrorHtmlResponse& operator+(InvalidUrlMsg /*unused*/);
+  using HTTPErrorResponse::operator+;
+  HTTPErrorResponse& operator+(InvalidUrlMsg /*unused*/);
 };
 
-struct HTTP500HtmlResponse : HTTPErrorHtmlResponse
+struct HTTP500Response : HTTPErrorResponse
 {
-  HTTP500HtmlResponse(const InternalServer& server,
-                      const RequestContext& request);
+  HTTP500Response(const InternalServer& server,
+                  const RequestContext& request);
 
 private: // overrides
   // generateResponseObject() is overriden in order to produce a minimal
