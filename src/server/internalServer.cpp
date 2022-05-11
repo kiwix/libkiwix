@@ -777,7 +777,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
-    if (request.get_optional_param<std::string>("format", "") == "xml") {
+    if (request.get_requested_format() == "xml") {
       return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8",
       /*isHomePage =*/false,
       /*raw =*/true);

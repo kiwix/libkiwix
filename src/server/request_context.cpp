@@ -202,4 +202,9 @@ std::string RequestContext::get_user_language() const
   return "en";
 }
 
+std::string RequestContext::get_requested_format() const
+{
+  return get_optional_param<std::string>("format", "html");
+}
+
 }
