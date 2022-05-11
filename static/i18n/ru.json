@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Pacha Tchernof"
+		]
+	},
+	"name": "русский",
+	"400-page-title": "Недействительный запрос",
+	"400-page-heading": "Недействительный запрос",
+	"404-page-title": "Содержание не найдено",
+	"404-page-heading": "Не найдено",
+	"500-page-title": "Внутренняя ошибка сервера",
+	"500-page-heading": "Внутренняя ошибка сервера",
+	"library-button-text": "Перейти на страницу-приветствие",
+	"searchbox-tooltip": "Искать '{{BOOK_TITLE}}'"
+}

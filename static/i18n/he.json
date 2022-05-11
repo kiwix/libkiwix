@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"name": "עברית",
+	"suggest-full-text-search": "מכיל '{{{SEARCH_TERMS}}}'...",
+	"no-such-book": "אין ספר כזה: {{BOOK_NAME}}",
+	"url-not-found": "הכתובת המבוקשת \"{{url}}\" לא נמצאה בשרת הזה.",
+	"suggest-search": "לעשות חיפוש טקסט מלא עבור <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "אוי! לא עבדה בחירת ערך אקראי :(",
+	"invalid-raw-data-type": "{{DATATYPE}} הוא לא בקשה תקינה של תוכן גולמי.",
+	"raw-entry-not-found": "לא ניתן למצוא את רשומת ה־{{DATATYPE}} בשם {{ENTRY}}",
+	"400-page-title": "בקשה בלתי־תקינה",
+	"400-page-heading": "בקשה בלתי־תקינה",
+	"404-page-title": "התוכן לא נמצא",
+	"404-page-heading": "לא נמצא",
+	"500-page-title": "שגיאת שרת פנימית",
+	"500-page-heading": "שגיאת שרת פנימית",
+	"fulltext-search-unavailable": "חיפוש בטקסט מלא אינו זמין",
+	"no-search-results": "מנוע החיפוש בטקסט מלא אינו זמין עבור התוכן הזה.",
+	"library-button-text": "מעבר לדף הבית \"ברוך בואך\"",
+	"home-button-text": "מעבר לדף הראשי של \"{{BOOK_TITLE}}\"",
+	"random-page-button-text": "מעבר לדף שנבחר אקראית",
+	"searchbox-tooltip": "חיפוש \"{{BOOK_TITLE}}\""
+}

@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"name": "македонски",
+	"suggest-full-text-search": "содржи „{{{SEARCH_TERMS}}}“...",
+	"no-such-book": "Нема книга нарчена {{BOOK_NAME}}",
+	"url-not-found": "Не ја пронајдов побараната адреса „{{url}}“ на опслужувачот.",
+	"suggest-search": "Побарајте го <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> по целиот текст",
+	"random-article-failure": "Упс! Не успеав да изберам случајна статија :(",
+	"invalid-raw-data-type": "{{DATATYPE}} не претставува важечко барање за сирова содржина.",
+	"raw-entry-not-found": "Не можам да ја најдам {{DATATYPE}}-ставката {{ENTRY}}",
+	"400-page-title": "Неважечко барање",
+	"400-page-heading": "Неважечко барање",
+	"404-page-title": "Содржината не е најдена",
+	"404-page-heading": "Не е најдено",
+	"500-page-title": "Внатрешна грешка во опслужувачот",
+	"500-page-heading": "Внатрешна грешка во опслужувачот",
+	"fulltext-search-unavailable": "Целотекстното пребарување е недостапно",
+	"no-search-results": "Погонот за целотекстно пребарување не е достапен за оваа содржина.",
+	"library-button-text": "Оди на воведната страница",
+	"home-button-text": "Оди на главната страница на „{{BOOK_TITLE}}“",
+	"random-page-button-text": "Оди на случајно избрана страница",
+	"searchbox-tooltip": "Пребарај го „{{BOOK_TITLE}}“"
+}

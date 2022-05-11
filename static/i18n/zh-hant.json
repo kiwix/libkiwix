@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Winston Sung"
+		]
+	},
+	"name": "繁體中文",
+	"400-page-title": "無效請求",
+	"400-page-heading": "無效請求",
+	"404-page-title": "查無內容",
+	"404-page-heading": "查無頁面",
+	"500-page-title": "內部伺服器錯誤",
+	"500-page-heading": "內部伺服器錯誤",
+	"searchbox-tooltip": "在{{BOOK_TITLE}}搜尋"
+}

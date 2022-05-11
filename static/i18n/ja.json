@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"MathXplore"
+		]
+	},
+	"400-page-title": "無効なリクエストです",
+	"400-page-heading": "無効なリクエストです",
+	"404-page-title": "コンテンツが見つかりませんでした",
+	"404-page-heading": "見つかりません",
+	"500-page-title": "内部サーバーエラー",
+	"500-page-heading": "内部サーバーエラー",
+	"fulltext-search-unavailable": "全文検索は利用できません",
+	"no-search-results": "このコンテンツでは全文検索エンジンが利用できません",
+	"library-button-text": "ウェルカムページに移動",
+	"random-page-button-text": "無作為に選ばれたページに移動する"
+}

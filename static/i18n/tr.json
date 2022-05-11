@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hedda"
+		]
+	},
+	"name": "Türkçe",
+	"suggest-full-text-search": "'{{{SEARCH_TERMS}}}' içeriyor...",
+	"no-such-book": "Böyle bir kitap yok: {{BOOK_NAME}}",
+	"url-not-found": "İstenen \"{{url}}\" URL'si bu sunucuda bulunamadı.",
+	"suggest-search": "<a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> için tam metin araması yapın",
+	"random-article-failure": "Hata! Rastgele bir madde seçilemedi :(",
+	"invalid-raw-data-type": "{{DATATYPE}}, ham içerik için geçerli bir istek değil.",
+	"raw-entry-not-found": "{{DATATYPE}} {{ENTRY}} girişi bulunamadı",
+	"400-page-title": "Geçersiz istek",
+	"400-page-heading": "Geçersiz istek",
+	"404-page-title": "içerik bulunamadı",
+	"404-page-heading": "Bulunamadı",
+	"500-page-title": "İç Sunucu Hatası",
+	"500-page-heading": "İç Sunucu Hatası",
+	"fulltext-search-unavailable": "Tam metin araması kullanılamıyor",
+	"no-search-results": "Tam metin arama motoru bu içerik için kullanılamaz.",
+	"library-button-text": "Karşılama sayfasına git",
+	"home-button-text": "'{{BOOK_TITLE}}' anasayfasına gidin",
+	"random-page-button-text": "Rastgele seçilen bir sayfaya git",
+	"searchbox-tooltip": "'{{BOOK_TITLE}}' ara"
+}

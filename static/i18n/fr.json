@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Thibaut120094",
+			"Verdy p"
+		]
+	},
+	"name": "français",
+	"suggest-full-text-search": "contenant « {{{SEARCH_TERMS}}} »...",
+	"no-such-book": "Aucun livre avec ce nom : {{BOOK_NAME}}",
+	"url-not-found": "L’URL demandée « {{url}} » est introuvable sur ce serveur.",
+	"suggest-search": "Faire une recherche en texte intégral de « <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> »",
+	"random-article-failure": "Oups ! Échec de sélection d’un article aléatoire :(",
+	"invalid-raw-data-type": "{{DATATYPE}} n’est pas une requête valide pour du contenu brut.",
+	"raw-entry-not-found": "Impossible de trouver l’entrée « {{ENTRY}} » de type « {{DATATYPE}} »",
+	"400-page-title": "Requête non valide",
+	"400-page-heading": "Requête non valide",
+	"404-page-title": "Contenu non trouvé",
+	"404-page-heading": "Non trouvé",
+	"500-page-title": "Erreur interne du serveur",
+	"500-page-heading": "Erreur interne du serveur",
+	"fulltext-search-unavailable": "Recherche en texte intégral non disponible",
+	"no-search-results": "Le moteur de recherche en texte intégral n’est pas disponible pour ce contenu.",
+	"library-button-text": "Aller à la page de bienvenue",
+	"home-button-text": "Aller à la page principale de « {{BOOK_TITLE}} »",
+	"random-page-button-text": "Aller à une page sélectionnée aléatoirement",
+	"searchbox-tooltip": "Rechercher « {{BOOK_TITLE}} »"
+}
