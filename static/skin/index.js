@@ -69,7 +69,7 @@
 
     function viewPortToCount(){
         const zoom = Math.floor((( window.outerWidth - 10 ) / window.innerWidth) * 100);
-        return Math.floor(window.innerHeight/(3*zoom) + 1)*(window.innerWidth/(2.5*zoom) + 1);
+        return Math.floor((window.innerHeight/(3*zoom) + 1)*(window.innerWidth/(2.5*zoom) + 1));
     }
 
     function getInnerHtml(node, query) {
