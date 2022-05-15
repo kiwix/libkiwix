@@ -1797,7 +1797,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "beatles",
+      /* pattern */          "yellow",
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
@@ -1807,18 +1807,18 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Eleanor_Rigby">
               Eleanor Rigby
             </a>
-              <cite>...a mainly rock and roll- and pop-oriented act to a more experimental, studio-based band. With a double string quartet arrangement by George Martin and striking lyrics about loneliness, "Eleanor Rigby" broke sharply with popular music conventions, both musically and lyrically. Richie Unterberger of AllMusic cites the band's "singing about the neglected concerns and fates of the elderly" on the song as "just one example of why the Beatles' appeal reached so far beyond the traditional rock audience"....</cite>
+              <cite>...-side "<b>Yellow</b> Submarine" (double A-side) Released 5 August 1966 (1966-08-05) Format 7-inch single Recorded 28–29 April &amp; 6 June 1966 Studio EMI, London Genre Baroque pop, art rock Length 2:08 Label Parlophone (UK), Capitol (US) Songwriter(s) Lennon–McCartney Producer(s) George Martin The Beatles singles chronology "Paperback Writer" (1966) "Eleanor Rigby" / "<b>Yellow</b> Submarine" (1966) "Strawberry Fields Forever" / "Penny Lane" (1967) Music video "Eleanor Rigby" on YouTube The song continued the......</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">201 words</div>
 )SEARCHRESULT",
 
 R"SEARCHRESULT(
-            <a href="/ROOT/zimfile/A/True_to_Life_(Ray_Charles_album)">
-              True to Life (Ray Charles album)
+            <a href="/ROOT/zimfile/A/If_You_Go_Away">
+              If You Go Away
             </a>
-              <cite>...Been Going On?", and The Beatles' "Let It Be". The album was arranged by Larry Muhoberac, Roger Newman, Sid Feller and Ray Charles. True to Life Studio album by Ray Charles Released October 1977 Recorded 1977; R.P.M International Studios, Los Angeles, California Genre R&amp;B, soul Length 38:44 Label Atlantic Producer Ray Charles Ray Charles chronology Porgy and Bess (1976) True to Life (1977) Love &amp; Peace (1978) Professional ratings Review scores Source Rating Allmusic Christgau's Record Guide A......</cite>
+              <cite>...standard and has been recorded by many artists, including Greta Keller, for whom some say McKuen wrote the lyrics. "If You Go Away" Single by Damita Jo from the album If You Go Away B-side "<b>Yellow</b> Days" Released 1966 Genre Jazz Length 3:49 Label Epic Records Songwriter(s) Jacques Brel, Rod McKuen Producer(s) Bob Morgan Damita Jo singles chronology "Gotta Travel On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the......</cite>
               <div class="book-title">from Ray Charles</div>
-              <div class="informations">134 words</div>
+              <div class="informations">204 words</div>
 )SEARCHRESULT"
       },
       /* pagination */ {}
