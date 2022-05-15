@@ -319,7 +319,7 @@ R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cache
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=c434aa35" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=31ffa1f7" defer></script>
 )EXPECTEDRESULT"
     },
     {
