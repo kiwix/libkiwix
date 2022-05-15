@@ -2074,6 +2074,33 @@ R"SEARCHRESULT(
       }
     },
 
+    {
+      /* pattern */          "jazz",
+      /* start */            21,
+      /* resultsPerPage */   3,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 22,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[21],
+        LARGE_SEARCH_RESULTS[22],
+        LARGE_SEARCH_RESULTS[23],
+      },
+
+      /* pagination */ {
+        {  "◀", 0,  false },
+        {  "4", 9,  false },
+        {  "5", 12, false },
+        {  "6", 15, false },
+        {  "7", 18, false },
+        {  "8", 21, true  },
+        {  "9", 24, false },
+        { "10", 27, false },
+        { "11", 30, false },
+        { "12", 33, false },
+        {  "▶", 42, false },
+      }
+    },
+
     // This test-point only documents how the current implementation
     // works, not how it should work!
     {
