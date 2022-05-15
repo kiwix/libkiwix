@@ -1645,7 +1645,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
         </b>
       )";
 
-      const size_t lastResultIndex = firstResultIndex + results.size() - 1;
+      const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
       header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
       header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
       header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
@@ -2070,6 +2070,26 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, true  },
+        { "▶", 40, false },
+      }
+    },
+
+    // This test-point only documents how the current implementation
+    // works, not how it should work!
+    {
+      /* pattern */          "jazz",
+      /* start */            45,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 46,
+      /* results */ {},
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, false  },
         { "▶", 40, false },
       }
     },
