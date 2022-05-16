@@ -1,2 +1,15 @@
+i18n/bn.json
 i18n/en.json
+i18n/fr.json
+i18n/he.json
 i18n/hy.json
+i18n/it.json
+i18n/ja.json
+i18n/ko.json
+i18n/mk.json
+i18n/ru.json
+i18n/sc.json
+i18n/sk.json
+i18n/sv.json
+i18n/tr.json
+i18n/zh-hant.json
