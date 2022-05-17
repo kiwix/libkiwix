@@ -90,7 +90,7 @@ class Resource:
         filename = filename.strip()
         self.filename = filename
         self.lang_code = lang_code(filename)
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding='utf-8') as f:
             self.data = f.read()
 
     def get_string_table_name(self):
