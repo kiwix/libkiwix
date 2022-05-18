@@ -1179,7 +1179,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Tribute_to_Uncle_Ray">
               Tribute to Uncle Ray
             </a>
-              <cite>...singles as Motown struggled to find a sound to fit Wonder, who was just 12 when this album was released. Tribute to Uncle Ray Studio album by Little Stevie Wonder Released October 1962 Recorded 1962 Studio Studio A, Hitsville USA, Detroit Genre Soul, <b>jazz</b> Label Tamla Producer Henry Cosby, Clarence Paul Stevie Wonder chronology The <b>Jazz</b> Soul of Little Stevie (1962) Tribute to Uncle Ray (1962) Recorded Live: The 12 Year Old Genius (1963) Professional ratings Review scores Source Rating Allmusic...</cite>
+              <cite>...Stevie Wonder" with the successful and popular Ray Charles who was also a blind African American musician. Like his debut, this album failed to generate hit singles as Motown struggled to find a sound to fit Wonder, who was just 12 when this album was released. Tribute to Uncle Ray Studio album by Little Stevie Wonder Released October 1962 Recorded 1962 Studio Studio A, Hitsville USA, Detroit Genre Soul, <b>jazz</b> Label Tamla Producer Henry Cosby, Clarence Paul Stevie Wonder chronology The <b>Jazz</b> Soul of Little Stevie (1962) Tribute to Uncle Ray (1962) Recorded Live: The 12 Year Old Genius (1963) Professional ratings Review scores Source Rating Allmusic...</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">165 words</div>
 )SEARCHRESULT",
@@ -1206,7 +1206,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Ray_Charles_at_Newport">
               Ray Charles at Newport
             </a>
-              <cite>...unissued song from the 1958 Newport concert, "Swanee River Rock". Professional ratings Review scores Source Rating Allmusic link Discogs link Ray Charles at Newport Live album by Ray Charles Released November 1958 Recorded July 5, 1958 Venue Newport <b>Jazz</b> Festival, Newport, Rhode Island Genre R&amp;B Length 40:28 Label Atlantic Producer Tom Dowd (engineer) Ray Charles chronology The Great Ray Charles (1957) Ray Charles at Newport (1958) Yes Indeed! (1958) Re-issue cover 1987 re-issue/compilation...</cite>
+              <cite>...Ray Charles at Newport is a 1958 live album of Ray Charles' July 5, 1958 performance at the Newport <b>Jazz</b> Festival. The detailed liner notes on the album were written by Kenneth Lee Karpe. All tracks from this Newport album, along with all tracks from his 1959 Herndon Stadium performance in Atlanta, were also released on the Atlantic compilation LP, Ray Charles Live. A later CD reissue of that compilation album included a previously unissued song from the 1958 Newport concert, "Swanee River Rock". Professional ratings Review scores Source Rating Allmusic link Discogs link Ray Charles at Newport Live album by Ray Charles Released November 1958 Recorded July 5, 1958 Venue Newport <b>Jazz</b> Festival, Newport, Rhode Island Genre R&amp;B Length 40:28 Label Atlantic Producer Tom Dowd (engineer) Ray Charles chronology The Great Ray Charles (1957) Ray Charles at Newport (1958) Yes Indeed! (1958) Re-issue cover 1987 re-issue/compilation...</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">152 words</div>
 )SEARCHRESULT",
@@ -1296,7 +1296,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Ray_Sings,_Basie_Swings">
               Ray Sings, Basie Swings
             </a>
-              <cite>...instrumental tracks by the contemporary Count Basie Orchestra. Professional ratings Review scores Source Rating AllMusic Ray Sings, Basie Swings Compilation album by Ray Charles, Count Basie Orchestra Released October 3, 2006 (2006-10-03) Recorded Mid-1970s, February - May 2006 Studio Los Angeles Genre Soul, <b>jazz</b>, Swing Label Concord/Hear Music Producer Gregg Field Ray Charles chronology Genius &amp; Friends (2005) Ray Sings, Basie Swings (2006) Rare Genius: The Undiscovered Masters (2010)...</cite>
+              <cite>...from 1973 with newly recorded instrumental tracks by the contemporary Count Basie Orchestra. Professional ratings Review scores Source Rating AllMusic Ray Sings, Basie Swings Compilation album by Ray Charles, Count Basie Orchestra Released October 3, 2006 (2006-10-03) Recorded Mid-1970s, February - May 2006 Studio Los Angeles Genre Soul, <b>jazz</b>, Swing Label Concord/Hear Music Producer Gregg Field Ray Charles chronology Genius &amp; Friends (2005) Ray Sings, Basie Swings (2006) Rare Genius: The Undiscovered Masters (2010)...</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">91 words</div>
 )SEARCHRESULT",
@@ -1305,7 +1305,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/I_Remember_Brother_Ray">
               I Remember Brother Ray
             </a>
-              <cite>...tribute to his bandleader and mentor Ray Charles, which was recorded in 2004 and released on the HighNote label the following year. I Remember Brother Ray Studio album by David "Fathead" Newman Released January 11, 2005 Recorded August 14, 2004 Studio Van Gelder Studio, Englewood Cliffs, NJ Genre <b>Jazz</b> Length 50:39 Label HighNote HCD 7135 Producer David "Fathead" Newman, Houston Person David "Fathead" Newman chronology Song for the New Man (2004) I Remember Brother Ray (2005) Cityscape (2006)...</cite>
+              <cite>...is an album by saxophonist David "Fathead" Newman, paying tribute to his bandleader and mentor Ray Charles, which was recorded in 2004 and released on the HighNote label the following year. I Remember Brother Ray Studio album by David "Fathead" Newman Released January 11, 2005 Recorded August 14, 2004 Studio Van Gelder Studio, Englewood Cliffs, NJ Genre <b>Jazz</b> Length 50:39 Label HighNote HCD 7135 Producer David "Fathead" Newman, Houston Person David "Fathead" Newman chronology Song for the New Man (2004) I Remember Brother Ray (2005) Cityscape (2006)...</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">96 words</div>
 )SEARCHRESULT",
@@ -1323,7 +1323,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Soul_Meeting">
               Soul Meeting
             </a>
-              <cite>...Brothers, on a 2 CD compilation together with other 'bonus' tracks from the same recording sessions. Professional ratings Review scores Source Rating Down Beat (Original Lp release) AllMusic link Soul Meeting Studio album by Ray Charles, Milt Jackson Released 1961 Recorded April 10, 1958 Genre R&amp;B, <b>jazz</b> Length 37:43 Label Atlantic Producer Tom Dowd Ray Charles chronology The Genius Sings the Blues (1961) Soul Meeting (1961) The Genius After Hours (1961) Alternative cover compilation CD re-issue...</cite>
+              <cite>...in 1957 and released in 1961 on Atlantic Records. The album was later re-issued together with the other Charles–Jackson recording, Soul Brothers, on a 2 CD compilation together with other 'bonus' tracks from the same recording sessions. Professional ratings Review scores Source Rating Down Beat (Original Lp release) AllMusic link Soul Meeting Studio album by Ray Charles, Milt Jackson Released 1961 Recorded April 10, 1958 Genre R&amp;B, <b>jazz</b> Length 37:43 Label Atlantic Producer Tom Dowd Ray Charles chronology The Genius Sings the Blues (1961) Soul Meeting (1961) The Genius After Hours (1961) Alternative cover compilation CD re-issue...</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">114 words</div>
 )SEARCHRESULT",
@@ -1350,7 +1350,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Do_the_Twist!_with_Ray_Charles">
               Do the Twist! with Ray Charles
             </a>
-              <cite>...the Twist! with Ray Charles Greatest hits album by Ray Charles Released 1961 Recorded 1954-1960 Genre R&amp;B, Soul, <b>Jazz</b> Length 32:39 Label Atlantic Ray Charles chronology The Genius Sings the Blues (1961) Do the Twist! with Ray Charles (1961) Soul Meeting (1961) Professional ratings Review scores Source Rating Allmusic (link) The Rolling Stone Record Guide In 1963, the album got a new cover and was renamed The Greatest Ray Charles. Track listing and catalog number (Atlantic 8054) remained the same....</cite>
+              <cite>...peaked at #11. Do the Twist! with Ray Charles Greatest hits album by Ray Charles Released 1961 Recorded 1954-1960 Genre R&amp;B, Soul, <b>Jazz</b> Length 32:39 Label Atlantic Ray Charles chronology The Genius Sings the Blues (1961) Do the Twist! with Ray Charles (1961) Soul Meeting (1961) Professional ratings Review scores Source Rating Allmusic (link) The Rolling Stone Record Guide In 1963, the album got a new cover and was renamed The Greatest Ray Charles. Track listing and catalog number (Atlantic 8054) remained the same....</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">120 words</div>
 )SEARCHRESULT",
@@ -1386,7 +1386,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Soul_Brothers">
               Soul Brothers
             </a>
-              <cite>...on the original LP releases. Soul Brothers Studio album by Ray Charles, Milt Jackson Released June 1958 Recorded September 12, 1957 (Tracks 1-2) and April 10, 1958 (Tracks 3-7), in New York City Genre R&amp;B, <b>jazz</b> Length 38:42 Label Atlantic, Studio One Producer Nesuhi Ertegun Ray Charles chronology Yes Indeed! (1958) Soul Brothers (1958) What'd I Say (1959) alternate release cover compilation CD / re-issue Professional ratings Review scores Source Rating AllMusic Down Beat (Original Lp release)...</cite>
+              <cite>...and the eleventh studio album by Milt Jackson and released by Atlantic Records in 1958. The album was later re-issued in a 2 CD compilation together with the other Charles–Jackson album Soul Meeting and included additional tracks from the same recording sessions not present on the original LP releases. Soul Brothers Studio album by Ray Charles, Milt Jackson Released June 1958 Recorded September 12, 1957 (Tracks 1-2) and April 10, 1958 (Tracks 3-7), in New York City Genre R&amp;B, <b>jazz</b> Length 38:42 Label Atlantic, Studio One Producer Nesuhi Ertegun Ray Charles chronology Yes Indeed! (1958) Soul Brothers (1958) What'd I Say (1959) alternate release cover compilation CD / re-issue Professional ratings Review scores Source Rating AllMusic Down Beat (Original Lp release)...</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">135 words</div>
 )SEARCHRESULT",
@@ -1395,7 +1395,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Ray_Charles_and_Betty_Carter">
               Ray Charles and Betty Carter
             </a>
-              <cite>...Betty Carter Released August 1961 Recorded August 23, 1960 - June 14, 1961 Genre <b>Jazz</b> Length 41:38 Label ABC Producer Sid Feller Ray Charles chronology Dedicated to You (1961) Ray Charles and Betty Carter (1961) The Genius Sings the Blues (1961) Betty Carter chronology The Modern Sound of Betty Carter (1960) Ray Charles and Betty Carter (1961) 'Round Midnight (1962) Alternative cover / re-issue 1998 Rhino CD re-issue with Dedicated to You Professional ratings Review scores Source Rating Allmusic...</cite>
+              <cite>...Betty Carter Studio album by Ray Charles and Betty Carter Released August 1961 Recorded August 23, 1960 - June 14, 1961 Genre <b>Jazz</b> Length 41:38 Label ABC Producer Sid Feller Ray Charles chronology Dedicated to You (1961) Ray Charles and Betty Carter (1961) The Genius Sings the Blues (1961) Betty Carter chronology The Modern Sound of Betty Carter (1960) Ray Charles and Betty Carter (1961) 'Round Midnight (1962) Alternative cover / re-issue 1998 Rhino CD re-issue with Dedicated to You Professional ratings Review scores Source Rating Allmusic...</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">158 words</div>
 )SEARCHRESULT",
@@ -1404,7 +1404,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Ingredients_in_a_Recipe_for_Soul">
               Ingredients in a Recipe for Soul
             </a>
-              <cite>...<b>jazz</b> Label ABC 465 Producer Sid Feller Ray Charles chronology Modern Sounds in Country and Western Music, Vol. 2 (1962) Ingredients in a Recipe for Soul (1963) Sweet &amp; Sour Tears (1964) Alternative cover 1997 Rhino CD re-issue with Have a Smile with Me In 1990, the album was released on compact disc by DCC with four bonus tracks. In 1997, it was packaged together with 1964's Have a Smile with Me on a two-for-one CD reissue on Rhino with historical liner notes. Professional ratings Review scores......</cite>
+              <cite>...6, 1960–April 28, 1963 Genre R&amp;B, soul, country soul, vocal <b>jazz</b> Label ABC 465 Producer Sid Feller Ray Charles chronology Modern Sounds in Country and Western Music, Vol. 2 (1962) Ingredients in a Recipe for Soul (1963) Sweet &amp; Sour Tears (1964) Alternative cover 1997 Rhino CD re-issue with Have a Smile with Me In 1990, the album was released on compact disc by DCC with four bonus tracks. In 1997, it was packaged together with 1964's Have a Smile with Me on a two-for-one CD reissue on Rhino with historical liner notes. Professional ratings Review scores......</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">162 words</div>
 )SEARCHRESULT",
@@ -1422,7 +1422,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/The_Genius_of_Ray_Charles">
               The Genius of Ray Charles
             </a>
-              <cite>...<b>jazz</b>, gospel, and blues, for swinging pop with big band arrangements. It comprises a first half of big band songs and a second half of string-backed ballads. The Genius of Ray Charles sold fewer than 500,000 copies and charted at number 17 on the Billboard 200. "Let the Good Times Roll" and "Don't Let the Sun Catch You Cryin'" were released as singles in 1959. The Genius of Ray Charles Studio album by Ray Charles Released October 1959 Recorded May 6 and June 23, 1959 at 6 West Recording in New......</cite>
+              <cite>...the sixth studio album by American recording artist Ray Charles, released in 1959 by Atlantic Records. The album eschewed the soul sound of his 1950s recordings, which fused <b>jazz</b>, gospel, and blues, for swinging pop with big band arrangements. It comprises a first half of big band songs and a second half of string-backed ballads. The Genius of Ray Charles sold fewer than 500,000 copies and charted at number 17 on the Billboard 200. "Let the Good Times Roll" and "Don't Let the Sun Catch You Cryin'" were released as singles in 1959. The Genius of Ray Charles Studio album by Ray Charles Released October 1959 Recorded May 6 and June 23, 1959 at 6 West Recording in New......</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">172 words</div>
 )SEARCHRESULT",
@@ -1431,7 +1431,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Ray_Charles_in_Person">
               Ray Charles in Person
             </a>
-              <cite>...Soul = <b>Jazz</b> (1961) Re-issue cover 1987 re-issue / compilation Professional ratings Review scores Source Rating Allmusic The album was recorded by the concert sponsor, radio station WAOK. The station's lead disk jockey, Zenas "Daddy" Sears, recorded the album from the audience using a single microphone. The album is noted for its technical excellence in balancing band, singer, and audience, and also for its documentation of the jazzy R&amp;B Ray Charles sound prior to his great crossover success....</cite>
+              <cite>...night in Atlanta, Georgia at Morris Brown College's Herndon Stadium. All tracks from this album together with those from Ray Charles at Newport were also released on the 1987 Atlantic compilation CD, Ray Charles Live. Ray Charles: In Person Live album by Ray Charles Released July 1960 Recorded May 28, 1959 Genre R&amp;B Length 29:19 Label Atlantic Producer Harris Zenas Ray Charles chronology The Genius of Ray Charles (1959) Ray Charles: In Person (1960) Genius + Soul = <b>Jazz</b> (1961) Re-issue cover 1987 re-issue / compilation Professional ratings Review scores Source Rating Allmusic The album was recorded by the concert sponsor, radio station WAOK. The station's lead disk jockey, Zenas "Daddy" Sears, recorded the album from the audience using a single microphone. The album is noted for its technical excellence in balancing band, singer, and audience, and also for its documentation of the jazzy R&amp;B Ray Charles sound prior to his great crossover success....</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">176 words</div>
 )SEARCHRESULT",
@@ -1467,7 +1467,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Anthology_(Ray_Charles_album)">
               Anthology (Ray Charles album)
             </a>
-              <cite>...<b>jazz</b> piano blues Length 67:25 (original), 66:18 (re-release) Label Rhino Producer Ray Charles Steve Hoffman Richard Foos Ray Charles chronology Just Between Us (1988) Anthology (1988) Would You Believe? (1990) Posthumous cover Professional ratings Review scores Source Rating AllMusic Charles, who retained the master rights (currently controlled by his estate since his June 2004 passing) to his ABC-Paramount recordings, supervised a remixing of the 20 songs on this compilation especially for this......</cite>
+              <cite>...Charles' '60s and '70s ABC-Paramount material", while Rhino Records, the issuing label, refers to it in the liner notes as "the compact disc edition of Ray Charles' Greatest Hits", alluding to the two Rhino LPs issued the same year. It is one of the first CDs to be released by Rhino. Anthology Greatest hits album by Ray Charles Released 1988 Recorded 1960-1972 Genre R&amp;B soul <b>jazz</b> piano blues Length 67:25 (original), 66:18 (re-release) Label Rhino Producer Ray Charles Steve Hoffman Richard Foos Ray Charles chronology Just Between Us (1988) Anthology (1988) Would You Believe? (1990) Posthumous cover Professional ratings Review scores Source Rating AllMusic Charles, who retained the master rights (currently controlled by his estate since his June 2004 passing) to his ABC-Paramount recordings, supervised a remixing of the 20 songs on this compilation especially for this......</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">265 words</div>
 )SEARCHRESULT",
@@ -1476,7 +1476,7 @@ R"SEARCHRESULT(
             <a href="/ROOT/zimfile/A/Ray_Charles">
               Ray Charles
             </a>
-              <cite>...<b>jazz</b> rock and roll Occupation(s) musician singer songwriter composer Instruments Vocals piano Years active 1947–2004 Labels Atlantic ABC Tangerine Warner Bros. Swing Time Concord Columbia Flashback Associated acts The Raelettes USA for Africa Billy Joel Gladys Knight Website raycharles.com Charles pioneered the soul music genre during the 1950s by combining blues, rhythm and blues, and gospel styles into the music he recorded for Atlantic. He contributed to the integration of country music......</cite>
+              <cite>...1960s Background information Birth name Ray Charles Robinson Born (1930-09-23)September 23, 1930 Albany, Georgia, U.S. Died June 10, 2004(2004-06-10) (aged 73) Beverly Hills, California, U.S. Genres R&amp;B soul blues gospel country <b>jazz</b> rock and roll Occupation(s) musician singer songwriter composer Instruments Vocals piano Years active 1947–2004 Labels Atlantic ABC Tangerine Warner Bros. Swing Time Concord Columbia Flashback Associated acts The Raelettes USA for Africa Billy Joel Gladys Knight Website raycharles.com Charles pioneered the soul music genre during the 1950s by combining blues, rhythm and blues, and gospel styles into the music he recorded for Atlantic. He contributed to the integration of country music......</cite>
               <div class="book-title">from Ray Charles</div>
               <div class="informations">416 words</div>
 )SEARCHRESULT",
@@ -1881,6 +1881,195 @@ R"SEARCHRESULT(
         { "4", 15, false },
         { "5", 20, false },
         { "6", 25, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            10,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 11,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[10],
+        LARGE_SEARCH_RESULTS[11],
+        LARGE_SEARCH_RESULTS[12],
+        LARGE_SEARCH_RESULTS[13],
+        LARGE_SEARCH_RESULTS[14],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "1", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, true  },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            15,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 16,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[15],
+        LARGE_SEARCH_RESULTS[16],
+        LARGE_SEARCH_RESULTS[17],
+        LARGE_SEARCH_RESULTS[18],
+        LARGE_SEARCH_RESULTS[19],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "1", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, true  },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            20,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 21,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[20],
+        LARGE_SEARCH_RESULTS[21],
+        LARGE_SEARCH_RESULTS[22],
+        LARGE_SEARCH_RESULTS[23],
+        LARGE_SEARCH_RESULTS[24],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "1", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, true  },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            25,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 26,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[25],
+        LARGE_SEARCH_RESULTS[26],
+        LARGE_SEARCH_RESULTS[27],
+        LARGE_SEARCH_RESULTS[28],
+        LARGE_SEARCH_RESULTS[29],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, true  },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            30,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 31,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[30],
+        LARGE_SEARCH_RESULTS[31],
+        LARGE_SEARCH_RESULTS[32],
+        LARGE_SEARCH_RESULTS[33],
+        LARGE_SEARCH_RESULTS[34],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, true  },
+        { "8", 35, false },
+        { "9", 40, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            35,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 36,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[35],
+        LARGE_SEARCH_RESULTS[36],
+        LARGE_SEARCH_RESULTS[37],
+        LARGE_SEARCH_RESULTS[38],
+        LARGE_SEARCH_RESULTS[39],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, true  },
+        { "9", 40, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* pattern */          "jazz",
+      /* start */            40,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 41,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[40],
+        LARGE_SEARCH_RESULTS[41],
+        LARGE_SEARCH_RESULTS[42],
+        LARGE_SEARCH_RESULTS[43],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, true  },
         { "▶", 40, false },
       }
     },
