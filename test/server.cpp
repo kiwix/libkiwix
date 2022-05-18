@@ -1523,12 +1523,71 @@ R"SEARCHRESULT(
 //    expected HTML strings. This is done with the help of the
 //    function maskSnippetsInSearchResults()
 //
-// 2. Snippets must be checked separately using a somewhat lenient comparison
-//    method (TODO)
+// 2. Snippets are checked separately. If a plain-text comparison fails
+//    then a weaker comparison is attempted. Currently it works by testing
+//    that the actual snippet is a substring of the "expected" snippet
+//    (the "..." omitted text markes on the snippet boundaries are taken
+//    into account). The implementation of that approach is via the
+//    isSubSnippet() function.
+//
+//    Therefore the "expected" snippets in the test data must be a union of
+//    all possible snippets produced at runtime for a given (document, search
+//    terms) pair on all platforms of interest:
+//
+//    - Overlapping snippets must be properly merged
+//
+//    - Non-overlapping snippets can be joined with a " ... " in between.
+//
 
 std::string maskSnippetsInSearchResults(std::string s)
 {
   return replace(s, "<cite>.+</cite>", "<cite>SNIPPET TEXT WAS MASKED</cite>");
+}
+
+bool isValidSnippet(const std::string& s)
+{
+  return s.size() >= 250
+      && s.find("<b>")  != std::string::npos
+      && s.find("</b>") != std::string::npos;
+}
+
+size_t leadingDotCount(const std::string& s)
+{
+  return s.find_first_not_of(".");
+}
+
+size_t trailingDotCount(const std::string& s)
+{
+  return s.size() - 1 - s.find_last_not_of(".");
+}
+
+bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
+{
+  const auto leadingDotCountInSubSnippet = leadingDotCount(subSnippet);
+  const auto trailingDotCountInSubSnippet = trailingDotCount(subSnippet);
+  const bool subSnippetIsHeadless = leadingDotCountInSubSnippet >= 3;
+  const bool subSnippetIsTailless = trailingDotCountInSubSnippet >= 3;
+  if ( subSnippetIsHeadless )
+  {
+    subSnippet = subSnippet.substr(leadingDotCountInSubSnippet);
+  }
+
+  if ( subSnippetIsTailless )
+  {
+    subSnippet = subSnippet.substr(0, subSnippet.size() - trailingDotCountInSubSnippet);
+  }
+
+  const auto pos = superSnippet.find(subSnippet);
+  if ( pos == std::string::npos )
+    return false;
+
+  if ( subSnippetIsHeadless == (pos == 0) )
+    return false;
+
+  if ( subSnippetIsTailless == (pos + subSnippet.size() == superSnippet.size()) )
+    return false;
+
+  return true;
 }
 
 TEST_F(TaskbarlessServerTest, searchResults)
@@ -1652,6 +1711,58 @@ TEST_F(TaskbarlessServerTest, searchResults)
     {
       EXPECT_EQ(maskSnippetsInSearchResults(html), expectedHtml())
         << testContext();
+
+      checkSnippets(extractSearchResultSnippets(html));
+    }
+
+    typedef std::vector<std::string> Snippets;
+
+    static Snippets extractSearchResultSnippets(const std::string& html)
+    {
+      Snippets snippets;
+      const std::regex snippetRegex("<cite>(.*)</cite>");
+      std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
+      const std::sregex_iterator end;
+      for ( ; snippetIt != end; ++snippetIt)
+      {
+        const std::smatch snippetMatch = *snippetIt;
+        snippets.push_back(snippetMatch[1].str());
+      }
+      return snippets;
+    }
+
+    void checkSnippets(const Snippets& snippets) const
+    {
+      ASSERT_EQ(snippets.size(), results.size());
+      for ( size_t i = 0; i < results.size(); ++i )
+      {
+        const auto& r = results[i];
+        const auto expectedSnippet = extractSearchResultSnippets(r);
+        ASSERT_EQ(1u, expectedSnippet.size())
+          << "Multiple snippets in test data:"
+          << "\n" << r;
+
+        if ( snippets[i] != expectedSnippet[0] ) {
+          std::cout << "Trying a weaker check for a mismatching snippet...\n";
+          checkMismatchingSnippet(snippets[i], expectedSnippet[0]);
+        }
+      }
+    }
+
+    void checkMismatchingSnippet(std::string actual, std::string expected) const
+    {
+      TestContext testContext{
+                        { "url", url() },
+                        { "actual snippet", actual },
+                        { "expected snippet", expected }
+      };
+
+      ASSERT_TRUE(isValidSnippet(actual))   << testContext;
+      ASSERT_TRUE(isValidSnippet(expected)) << testContext;
+
+      if ( !isSubSnippet(actual, expected) ) {
+        EXPECT_EQ(actual, expected) << testContext;
+      }
     }
   };
 
