@@ -2,6 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+
+    {{!
+        The inline CSS below can be extracted into a standalone CSS resource
+        ONLY IF all clients of kiwix::SearchRenderer are required to provide
+        access to resources compiled into libkiwix.
+    }}
     <style type="text/css">
       body{
       color: #000000;
@@ -141,7 +147,8 @@
         <ul>
           {{#resultLastPageStart}}
             <li>
-              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&pageLength={{pageLength}}">
+              <a {{! let the format of this tag be identical to the case below }}
+                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&pageLength={{pageLength}}">
                 ◀
               </a>
             </li>
@@ -156,7 +163,8 @@
           {{/pages}}
           {{#resultLastPageStart}}
             <li>
-              <a href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&pageLength={{pageLength}}">
+              <a {{! let the format of this tag be identical to the case above }}
+                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&pageLength={{pageLength}}">
                 ▶
               </a>
             </li>
