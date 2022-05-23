@@ -1849,7 +1849,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  true  },
         { "2", 5,  false },
         { "3", 10, false },
@@ -1874,7 +1873,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  true  },
         { "3", 10, false },
@@ -1900,7 +1898,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  false },
         { "3", 10, true  },
@@ -1927,7 +1924,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  false },
         { "3", 10, false },
@@ -1955,7 +1951,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  false },
         { "3", 10, false },
@@ -1965,7 +1960,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -1993,7 +1987,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -2020,7 +2013,6 @@ R"SEARCHRESULT(
         { "7", 30, true  },
         { "8", 35, false },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -2046,7 +2038,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, true  },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -2070,7 +2061,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, true  },
-        { "▶", 40, false },
       }
     },
 
@@ -2117,7 +2107,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, false  },
-        { "▶", 40, false },
       }
     },
   };

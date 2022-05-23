@@ -143,34 +143,18 @@
     </div>
 
     <div class="footer">
-      {{#hasPages}}
+      {{#pagination.hasPages}}
         <ul>
-          {{#resultLastPageStart}}
+          {{#pagination.pages}}
             <li>
-              <a {{! let the format of this tag be identical to the case below }}
-                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start=0&pageLength={{pageLength}}">
-                ◀
-              </a>
-            </li>
-          {{/resultLastPageStart}}
-          {{#pages}}
-            <li>
-              <a {{#selected}}class="selected"{{/selected}}
-                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{start}}&pageLength={{pageLength}}">
+              <a {{#current}}class="selected"{{/current}}
+                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{start}}&pageLength={{pagination.itemsPerPage}}">
                 {{label}}
               </a>
             </li>
-          {{/pages}}
-          {{#resultLastPageStart}}
-            <li>
-              <a {{! let the format of this tag be identical to the case above }}
-                 href="{{searchProtocolPrefix}}pattern={{searchPatternEncoded}}{{#contentId}}&content={{.}}{{/contentId}}&start={{resultLastPageStart}}&pageLength={{pageLength}}">
-                ▶
-              </a>
-            </li>
-          {{/resultLastPageStart}}
+          {{/pagination.pages}}
         </ul>
-      {{/hasPages}}
+      {{/pagination.hasPages}}
     </div>
   </body>
 </html>

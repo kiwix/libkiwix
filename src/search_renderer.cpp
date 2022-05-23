@@ -86,8 +86,69 @@ void SearchRenderer::setSearchProtocolPrefix(const std::string& prefix)
   this->searchProtocolPrefix = prefix;
 }
 
+kainjow::mustache::data buildPagination(
+  unsigned int pageLength,
+  unsigned int resultsCount,
+  unsigned int resultsStart
+)
+{
+  assert(pageLength!=0);
+  kainjow::mustache::data pagination;
+  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
+
+  if (resultsCount == 0) {
+    // Easy case
+    pagination.set("itemsPerPage", to_string(pageLength));
+    pagination.set("hasPages", false);
+    pagination.set("pages", pages);
+    return pagination;
+  }
+
+  // First we want to display pages starting at a multiple of `pageLength`
+  // so, let's calculate the start index of the current page.
+  auto currentPage = resultsStart/pageLength;
+  auto lastPage = ((resultsCount-1)/pageLength);
+  auto lastPageStart = lastPage*pageLength;
+  auto nbPages = lastPage + 1;
+
+  auto firstPageGenerated = currentPage > 4 ? currentPage-4 : 0;
+  auto lastPageGenerated = min(currentPage+4, lastPage);
+
+  if (nbPages != 1) {
+    if (firstPageGenerated!=0) {
+      kainjow::mustache::data page;
+      page.set("label", "◀");
+      page.set("start", to_string(0));
+      page.set("current", false);
+      pages.push_back(page);
+    }
+
+    for (auto i=firstPageGenerated; i<=lastPageGenerated; i++) {
+      kainjow::mustache::data page;
+      page.set("label", to_string(i+1));
+      page.set("start", to_string(i*pageLength));
+      page.set("current", bool(i == currentPage));
+      pages.push_back(page);
+    }
+
+    if (lastPageGenerated!=lastPage) {
+      kainjow::mustache::data page;
+      page.set("label", "▶");
+      page.set("start", to_string(lastPageStart));
+      page.set("current", false);
+      pages.push_back(page);
+    }
+  }
+
+  pagination.set("itemsPerPage", to_string(pageLength));
+  pagination.set("hasPages", firstPageGenerated < lastPageGenerated);
+  pagination.set("pages", pages);
+  return pagination;
+}
+
 std::string SearchRenderer::getHtml()
 {
+  // Build the results list
   kainjow::mustache::data results{kainjow::mustache::data::type::list};
 
   for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
@@ -110,57 +171,31 @@ std::string SearchRenderer::getHtml()
     results.push_back(result);
   }
 
-  // pages
-  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
 
-  auto resultEnd = 0U;
-  auto currentPage = 0U;
-  auto pageStart = 0U;
-  auto pageEnd = 0U;
-  auto lastPageStart = 0U;
-  if (pageLength) {
-    currentPage = resultStart/pageLength;
-    pageStart = currentPage > 4 ? currentPage-4 : 0;
-    pageEnd = currentPage + 5;
-    if (pageEnd > estimatedResultCount / pageLength) {
-      pageEnd = (estimatedResultCount + pageLength - 1) / pageLength;
-    }
-    if (estimatedResultCount > pageLength) {
-      lastPageStart = ((estimatedResultCount-1)/pageLength)*pageLength;
-    }
-  }
+  // pagination
+  auto pagination = buildPagination(
+    pageLength,
+    estimatedResultCount,
+    resultStart
+  );
 
-  resultEnd = resultStart+pageLength; //setting result end
-
-  for (unsigned int i = pageStart; i < pageEnd; i++) {
-    kainjow::mustache::data page;
-    page.set("label", to_string(i + 1));
-    page.set("start", to_string(i * pageLength));
-
-    if (i == currentPage) {
-      page.set("selected", true);
-    }
-    pages.push_back(page);
-  }
+  auto resultEnd = min(resultStart+pageLength, estimatedResultCount);
 
   std::string template_str = RESOURCE::templates::search_result_html;
   kainjow::mustache::mustache tmpl(template_str);
 
   kainjow::mustache::data allData;
   allData.set("results", results);
-  allData.set("pages", pages);
   allData.set("hasResults", estimatedResultCount != 0);
-  allData.set("hasPages", pageStart + 1 < pageEnd);
   allData.set("count", kiwix::beautifyInteger(estimatedResultCount));
   allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
   allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
   allData.set("resultStart", to_string(resultStart + 1));
-  allData.set("resultEnd", to_string(min(resultEnd, estimatedResultCount)));
-  allData.set("pageLength", to_string(pageLength));
-  allData.set("resultLastPageStart", to_string(lastPageStart));
+  allData.set("resultEnd", to_string(resultEnd));
   allData.set("protocolPrefix", this->protocolPrefix);
   allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
   allData.set("contentId", this->searchContent);
+  allData.set("pagination", pagination);
 
   std::stringstream ss;
   tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
