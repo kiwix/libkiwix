@@ -173,6 +173,16 @@ ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::strin
   );
 }
 
+ParameterizedMessage tooManyBooksMsg(size_t nbBooks, size_t limit)
+{
+  return ParameterizedMessage("too-many-books",
+                              {
+                                {"NB_BOOKS", nbBooks},
+                                {"LIMIT", limit},
+                              }
+  );
+}
+
 ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
 {
   const ParameterizedMessage::Parameters noParams;
@@ -192,6 +202,15 @@ struct Error : public std::runtime_error {
 
   const ParameterizedMessage _message;
 };
+
+void checkBookNumber(const Library::BookIdSet& bookIds, size_t limit) {
+  if (bookIds.empty()) {
+    throw Error(nonParameterizedMessage("no-book-found"));
+  }
+  if (bookIds.size() > limit) {
+    throw Error(tooManyBooksMsg(bookIds.size(), limit));
+  }
+}
 
 } // unnamed namespace
 
@@ -216,7 +235,8 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
     if (id_vec.empty()) {
       throw Error(noValueForArgMsg("books.id"));
     }
-    return Library::BookIdSet(id_vec.begin(), id_vec.end());
+    const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
+    return bookIds;
   } catch(const std::out_of_range&) {}
 
   // Use the names
@@ -242,12 +262,14 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
   if (id_vec.empty()) {
     throw Error(nonParameterizedMessage("no-book-found"));
   }
-  return Library::BookIdSet(id_vec.begin(), id_vec.end());
+  const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
+  return bookIds;
 }
 
 SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
 {
   auto bookIds = selectBooks(request);
+  checkBookNumber(bookIds, 5);
   auto pattern = request.get_optional_param<std::string>("pattern", "");
   GeoQuery geoQuery;
 

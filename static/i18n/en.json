@@ -6,6 +6,7 @@
 	"name":"English",
 	"suggest-full-text-search" : "containing '{{{SEARCH_TERMS}}}'..."
 	, "no-such-book" : "No such book: {{BOOK_NAME}}"
+	, "too-many-books" : "Too many books requested ({{NB_BOOKS}}) where limit is {{LIMIT}}"
 	, "no-book-found" : "No book matches selection criteria"
 	, "url-not-found" : "The requested URL \"{{url}}\" was not found on this server."
 	, "suggest-search" : "Make a full text search for <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>"
