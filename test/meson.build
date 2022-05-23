@@ -9,7 +9,8 @@ tests = [
     'book',
     'manager',
     'name_mapper',
-    'opds_catalog'
+    'opds_catalog',
+    'server_helper'
 ]
 
 if build_machine.system() != 'windows'
@@ -59,6 +60,7 @@ if gtest_dep.found() and not meson.is_cross_build()
         # XXX: '#include <regex>' includes the regex unit test binary
         test_exe = executable(test_name, [test_name+'.cpp'],
                               implicit_include_directories: false,
+                              include_directories : inc,
                               link_with : kiwixlib,
                               link_args: extra_link_args,
                               dependencies : all_deps + [gtest_dep],

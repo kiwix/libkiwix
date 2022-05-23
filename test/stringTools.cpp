@@ -18,11 +18,11 @@
  */
 
 #include "gtest/gtest.h"
+#include "../src/tools/stringTools.h"
 #include <string>
 #include <vector>
 
 namespace kiwix {
-std::string join(const std::vector<std::string>& list, const std::string& sep);
 std::vector<std::string> split(const std::string&  base, const std::string& sep, bool trimEmpty, bool keepDelim);
 };
 
@@ -56,6 +56,27 @@ TEST(stringTools, split)
   ASSERT_EQ(split(";a;b=;c=d;", ";=", true, true), list5);
   std::vector<std::string> list6 = { "", ";", "a", ";", "b", "=", "", ";", "c", "=", "d", ";", ""};
   ASSERT_EQ(split(";a;b=;c=d;", ";=", false, true), list6);
+}
+
+TEST(stringTools, extractFromString)
+{
+  ASSERT_EQ(extractFromString<int>("55"), 55);
+  ASSERT_EQ(extractFromString<int>("-55"), -55);
+  ASSERT_EQ(extractFromString<float>("-55.0"), -55.0);
+  ASSERT_EQ(extractFromString<bool>("1"), true);
+  ASSERT_EQ(extractFromString<bool>("0"), false);
+  ASSERT_EQ(extractFromString<std::string>("55"), "55");
+  ASSERT_EQ(extractFromString<std::string>("foo"), "foo");
+  ASSERT_EQ(extractFromString<std::string>("foo bar"), "foo bar");
+
+// While spec says that >> operator should set the value to std::numeric_limits<uint>::max()
+// and set the failbit of the stream (and so detect the error), the gcc implementation (?)
+// set the value to (std::numeric_limits<uint>::max()-55) and doesn't set the failbit.
+//  ASSERT_THROW(extractFromString<uint>("-55"), std::invalid_argument);
+
+  ASSERT_THROW(extractFromString<int>("-55.0"), std::invalid_argument);
+  ASSERT_THROW(extractFromString<int>("55 foo"), std::invalid_argument);
+  ASSERT_THROW(extractFromString<float>("3.14.5"), std::invalid_argument);
 }
 
 };

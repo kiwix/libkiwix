@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <stdexcept>
 
 namespace kiwix
 {
@@ -65,8 +66,14 @@ T extractFromString(const std::string& str) {
     std::istringstream iss(str);
     T ret;
     iss >> ret;
+    if(iss.fail() || !iss.eof()) {
+        throw std::invalid_argument("no conversion");
+    }
     return ret;
 }
+
+template<>
+std::string extractFromString(const std::string& str);
 
 bool startsWith(const std::string& base, const std::string& start);
 

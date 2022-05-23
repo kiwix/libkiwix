@@ -1158,7 +1158,7 @@ R"SEARCHRESULT(
 )SEARCHRESULT",
 
 R"SEARCHRESULT(
-            <a href="/ROOT/zimfile/A/Catchin&apos;_Some_Rays:_The_Music_of_Ray_Charles">
+            <a href="/ROOT/zimfile/A/Catchin'_Some_Rays:_The_Music_of_Ray_Charles">
               Catchin&apos; Some Rays: The Music of Ray Charles
             </a>
               <cite>...<b>jazz</b> singer Roseanna Vitro, released in August 1997 on the Telarc <b>Jazz</b> label. Catchin' Some Rays: The Music of Ray Charles Studio album by Roseanna Vitro Released August 1997 Recorded March 26, 1997 at Sound on Sound, NYC April 4,1997 at Quad Recording Studios, NYC Genre Vocal <b>jazz</b> Length 61:00 Label Telarc <b>Jazz</b> CD-83419 Producer Paul Wickliffe Roseanna Vitro chronology Passion Dance (1996) Catchin' Some Rays: The Music of Ray Charles (1997) The Time of My Life: Roseanna Vitro Sings the Songs of......</cite>
@@ -1167,7 +1167,7 @@ R"SEARCHRESULT(
 )SEARCHRESULT",
 
 R"SEARCHRESULT(
-            <a href="/ROOT/zimfile/A/That&apos;s_What_I_Say:_John_Scofield_Plays_the_Music_of_Ray_Charles">
+            <a href="/ROOT/zimfile/A/That's_What_I_Say:_John_Scofield_Plays_the_Music_of_Ray_Charles">
               That&apos;s What I Say: John Scofield Plays the Music of Ray Charles
             </a>
               <cite>That's What I Say: John Scofield Plays the Music of Ray Charles Studio album by John Scofield Released June 7, 2005 (2005-06-07) Recorded December 2004 Studio Avatar Studios, New York City Genre <b>Jazz</b> Length 65:21 Label Verve Producer Steve Jordan John Scofield chronology EnRoute: John Scofield Trio LIVE (2004) That's What I Say: John Scofield Plays the Music of Ray Charles (2005) Out Louder (2006) Professional ratings Review scores Source Rating Allmusic All About <b>Jazz</b> All About <b>Jazz</b>...</cite>
@@ -1437,7 +1437,7 @@ R"SEARCHRESULT(
 )SEARCHRESULT",
 
 R"SEARCHRESULT(
-            <a href="/ROOT/zimfile/A/Don&apos;t_Let_the_Sun_Catch_You_Cryin&apos;">
+            <a href="/ROOT/zimfile/A/Don't_Let_the_Sun_Catch_You_Cryin'">
               Don&apos;t Let the Sun Catch You Cryin&apos;
             </a>
               <cite>...R&amp;B Sides" and No. 95 on the Billboard Hot 100. It was also recorded by Jackie DeShannon on her 1965 album This is Jackie De Shannon, Paul McCartney on his 1990 live album Tripping the Live Fantastic, Jex Saarelaht and Kate Ceberano on their album Open the Door - Live at Mietta's (1992) and <b>jazz</b> singer Roseanna Vitro on her 1997 album Catchin’ Some Rays: The Music of Ray Charles. Karin Krog and Steve Kuhn include it on their 2005 album, Together Again. Steve Alaimo released a version in 1963...</cite>
@@ -1446,7 +1446,7 @@ R"SEARCHRESULT(
 )SEARCHRESULT",
 
 R"SEARCHRESULT(
-            <a href="/ROOT/zimfile/A/I_Don&apos;t_Need_No_Doctor">
+            <a href="/ROOT/zimfile/A/I_Don't_Need_No_Doctor">
               I Don&apos;t Need No Doctor
             </a>
               <cite>...<b>jazz</b> guitar player John Scofield recorded a version for his album That's What I Say: John Scofield Plays the Music of Ray Charles in 2005, featuring the blues guitarist John Mayer on additional guitar and vocals. Mayer covered the song again with his band during his tour in summer 2007. A recorded live version from a Los Angeles show during that tour is available on Mayer's CD/DVD release Where the Light Is. A Ray Charles tribute album also provided the impetus for <b>jazz</b> singer Roseanna Vitro's......</cite>
@@ -1849,7 +1849,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  true  },
         { "2", 5,  false },
         { "3", 10, false },
@@ -1874,7 +1873,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  true  },
         { "3", 10, false },
@@ -1900,7 +1898,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  false },
         { "3", 10, true  },
@@ -1927,7 +1924,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  false },
         { "3", 10, false },
@@ -1955,7 +1951,6 @@ R"SEARCHRESULT(
       },
 
       /* pagination */ {
-        { "◀", 0,  false },
         { "1", 0,  false },
         { "2", 5,  false },
         { "3", 10, false },
@@ -1965,7 +1960,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -1993,7 +1987,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -2020,7 +2013,6 @@ R"SEARCHRESULT(
         { "7", 30, true  },
         { "8", 35, false },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -2046,7 +2038,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, true  },
         { "9", 40, false },
-        { "▶", 40, false },
       }
     },
 
@@ -2070,7 +2061,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, true  },
-        { "▶", 40, false },
       }
     },
 
@@ -2117,7 +2107,6 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, false  },
-        { "▶", 40, false },
       }
     },
   };

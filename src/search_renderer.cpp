@@ -58,7 +58,7 @@ SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Lib
       mp_nameMapper(mapper),
       mp_library(library),
       protocolPrefix("zim://"),
-      searchProtocolPrefix("search://?"),
+      searchProtocolPrefix("search://"),
       estimatedResultCount(estimatedResultCount),
       resultStart(start)
 {}
@@ -68,12 +68,12 @@ SearchRenderer::~SearchRenderer() = default;
 
 void SearchRenderer::setSearchPattern(const std::string& pattern)
 {
-  this->searchPattern = pattern;
+  searchPattern = pattern;
 }
 
-void SearchRenderer::setSearchContent(const std::string& name)
+void SearchRenderer::setSearchContent(const std::string& content)
 {
-  this->searchContent = name;
+  searchContent = content;
 }
 
 void SearchRenderer::setProtocolPrefix(const std::string& prefix)
@@ -86,84 +86,133 @@ void SearchRenderer::setSearchProtocolPrefix(const std::string& prefix)
   this->searchProtocolPrefix = prefix;
 }
 
-std::string SearchRenderer::getHtml()
-{
-  kainjow::mustache::data results{kainjow::mustache::data::type::list};
+kainjow::mustache::data buildQueryData
+(
+  const std::string& searchProtocolPrefix,
+  const std::string& pattern,
+  const std::string& searchContent
+) {
+  kainjow::mustache::data query;
+  query.set("pattern", kiwix::encodeDiples(pattern));
+  std::ostringstream ss;
+  ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern, true);
+  ss << "&content=" << urlEncode(searchContent, true);
+  query.set("unpaginatedQuery", ss.str());
+  return query;
+}
 
-  for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
-    kainjow::mustache::data result;
-    result.set("title", it.getTitle());
-    result.set("url", it.getPath());
-    result.set("snippet", it.getSnippet());
-    std::string zim_id(it.getZimId());
-    result.set("resultContentId", mp_nameMapper->getNameForId(zim_id));
-    if (!mp_library) {
-      result.set("bookTitle", kainjow::mustache::data(false));
-    } else {
-      result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());
+kainjow::mustache::data buildPagination(
+  unsigned int pageLength,
+  unsigned int resultsCount,
+  unsigned int resultsStart
+)
+{
+  assert(pageLength!=0);
+  kainjow::mustache::data pagination;
+  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
+
+  if (resultsCount == 0) {
+    // Easy case
+    pagination.set("itemsPerPage", to_string(pageLength));
+    pagination.set("hasPages", false);
+    pagination.set("pages", pages);
+    return pagination;
+  }
+
+  // First we want to display pages starting at a multiple of `pageLength`
+  // so, let's calculate the start index of the current page.
+  auto currentPage = resultsStart/pageLength;
+  auto lastPage = ((resultsCount-1)/pageLength);
+  auto lastPageStart = lastPage*pageLength;
+  auto nbPages = lastPage + 1;
+
+  auto firstPageGenerated = currentPage > 4 ? currentPage-4 : 0;
+  auto lastPageGenerated = min(currentPage+4, lastPage);
+
+  if (nbPages != 1) {
+    if (firstPageGenerated!=0) {
+      kainjow::mustache::data page;
+      page.set("label", "◀");
+      page.set("start", to_string(0));
+      page.set("current", false);
+      pages.push_back(page);
     }
 
+    for (auto i=firstPageGenerated; i<=lastPageGenerated; i++) {
+      kainjow::mustache::data page;
+      page.set("label", to_string(i+1));
+      page.set("start", to_string(i*pageLength));
+      page.set("current", bool(i == currentPage));
+      pages.push_back(page);
+    }
+
+    if (lastPageGenerated!=lastPage) {
+      kainjow::mustache::data page;
+      page.set("label", "▶");
+      page.set("start", to_string(lastPageStart));
+      page.set("current", false);
+      pages.push_back(page);
+    }
+  }
+
+  pagination.set("itemsPerPage", to_string(pageLength));
+  pagination.set("hasPages", firstPageGenerated < lastPageGenerated);
+  pagination.set("pages", pages);
+  return pagination;
+}
+
+std::string SearchRenderer::getHtml()
+{
+  // Build the results list
+  kainjow::mustache::data items{kainjow::mustache::data::type::list};
+  for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
+    kainjow::mustache::data result;
+    std::string zim_id(it.getZimId());
+    result.set("title", it.getTitle());
+    result.set("absolutePath", protocolPrefix + urlEncode(mp_nameMapper->getNameForId(zim_id), true) + "/" + urlEncode(it.getPath()));
+    result.set("snippet", it.getSnippet());
+    if (mp_library) {
+      result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());
+    }
     if (it.getWordCount() >= 0) {
       result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
     }
 
-    results.push_back(result);
+    items.push_back(result);
   }
+  kainjow::mustache::data results;
+  results.set("items", items);
+  results.set("count", kiwix::beautifyInteger(estimatedResultCount));
+  results.set("hasResults", estimatedResultCount != 0);
+  results.set("start", kiwix::beautifyInteger(resultStart+1));
+  results.set("end", kiwix::beautifyInteger(min(resultStart+pageLength, estimatedResultCount)));
 
-  // pages
-  kainjow::mustache::data pages{kainjow::mustache::data::type::list};
+  // pagination
+  auto pagination = buildPagination(
+    pageLength,
+    estimatedResultCount,
+    resultStart
+  );
 
-  auto resultEnd = 0U;
-  auto currentPage = 0U;
-  auto pageStart = 0U;
-  auto pageEnd = 0U;
-  auto lastPageStart = 0U;
-  if (pageLength) {
-    currentPage = resultStart/pageLength;
-    pageStart = currentPage > 4 ? currentPage-4 : 0;
-    pageEnd = currentPage + 5;
-    if (pageEnd > estimatedResultCount / pageLength) {
-      pageEnd = (estimatedResultCount + pageLength - 1) / pageLength;
-    }
-    if (estimatedResultCount > pageLength) {
-      lastPageStart = ((estimatedResultCount-1)/pageLength)*pageLength;
-    }
-  }
-
-  resultEnd = resultStart+pageLength; //setting result end
-
-  for (unsigned int i = pageStart; i < pageEnd; i++) {
-    kainjow::mustache::data page;
-    page.set("label", to_string(i + 1));
-    page.set("start", to_string(i * pageLength));
-
-    if (i == currentPage) {
-      page.set("selected", true);
-    }
-    pages.push_back(page);
-  }
+  kainjow::mustache::data query = buildQueryData(
+    searchProtocolPrefix,
+    searchPattern,
+    searchContent
+  );
 
   std::string template_str = RESOURCE::templates::search_result_html;
   kainjow::mustache::mustache tmpl(template_str);
 
   kainjow::mustache::data allData;
   allData.set("results", results);
-  allData.set("pages", pages);
-  allData.set("hasResults", estimatedResultCount != 0);
-  allData.set("hasPages", pageStart + 1 < pageEnd);
-  allData.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  allData.set("searchPattern", kiwix::encodeDiples(this->searchPattern));
-  allData.set("searchPatternEncoded", urlEncode(this->searchPattern));
-  allData.set("resultStart", to_string(resultStart + 1));
-  allData.set("resultEnd", to_string(min(resultEnd, estimatedResultCount)));
-  allData.set("pageLength", to_string(pageLength));
-  allData.set("resultLastPageStart", to_string(lastPageStart));
-  allData.set("protocolPrefix", this->protocolPrefix);
-  allData.set("searchProtocolPrefix", this->searchProtocolPrefix);
-  allData.set("contentId", this->searchContent);
+  allData.set("pagination", pagination);
+  allData.set("query", query);
 
   std::stringstream ss;
   tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
+  if (!tmpl.is_valid()) {
+    throw std::runtime_error("Error while rendering search results: " + tmpl.error_message());
+  }
   return ss.str();
 }
 

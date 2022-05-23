@@ -633,12 +633,13 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
       // (in case of zim file not containing a index)
       const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css);
-      return HTTPErrorHtmlResponse(*this, request, MHD_HTTP_NOT_FOUND,
-                                   "fulltext-search-unavailable",
-                                   "404-page-heading",
-                                   cssUrl)
-           + nonParameterizedMessage("no-search-results")
-           + TaskbarInfo(searchInfo.bookName, archive.get());
+      HTTPErrorHtmlResponse response(*this, request, MHD_HTTP_NOT_FOUND,
+                                     "fulltext-search-unavailable",
+                                     "404-page-heading",
+                                     cssUrl);
+      response += nonParameterizedMessage("no-search-results");
+      response += TaskbarInfo(searchInfo.bookName, archive.get());
+      return response;
     }
 
 
@@ -664,7 +665,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchPattern(searchInfo.pattern);
     renderer.setSearchContent(searchInfo.bookName);
     renderer.setProtocolPrefix(m_root + "/");
-    renderer.setSearchProtocolPrefix(m_root + "/search?");
+    renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     response->set_taskbar(searchInfo.bookName, archive.get());
@@ -673,10 +674,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     return HTTP400HtmlResponse(*this, request)
       + invalidUrlMsg
       + std::string(e.what());
-  } catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return HTTP500HtmlResponse(*this, request)
-         + e.what();
   }
 }
 
