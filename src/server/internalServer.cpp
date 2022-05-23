@@ -207,7 +207,7 @@ void checkBookNumber(const Library::BookIdSet& bookIds, size_t limit) {
   if (bookIds.empty()) {
     throw Error(nonParameterizedMessage("no-book-found"));
   }
-  if (bookIds.size() > limit) {
+  if (limit > 0 && bookIds.size() > limit) {
     throw Error(tooManyBooksMsg(bookIds.size(), limit));
   }
 }
@@ -269,7 +269,7 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
 SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
 {
   auto bookIds = selectBooks(request);
-  checkBookNumber(bookIds, 5);
+  checkBookNumber(bookIds, m_multizimSearchLimit);
   auto pattern = request.get_optional_param<std::string>("pattern", "");
   GeoQuery geoQuery;
 
@@ -332,6 +332,7 @@ InternalServer::InternalServer(Library* library,
                                int port,
                                std::string root,
                                int nbThreads,
+                               unsigned int multizimSearchLimit,
                                bool verbose,
                                bool withTaskbar,
                                bool withLibraryButton,
@@ -342,6 +343,7 @@ InternalServer::InternalServer(Library* library,
   m_port(port),
   m_root(normalizeRootUrl(root)),
   m_nbThreads(nbThreads),
+  m_multizimSearchLimit(multizimSearchLimit),
   m_verbose(verbose),
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),

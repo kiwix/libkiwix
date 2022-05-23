@@ -101,6 +101,7 @@ class InternalServer {
                    int port,
                    std::string root,
                    int nbThreads,
+                   unsigned int multizimSearchLimit,
                    bool verbose,
                    bool withTaskbar,
                    bool withLibraryButton,
@@ -156,6 +157,7 @@ class InternalServer {
     int m_port;
     std::string m_root;
     int m_nbThreads;
+    unsigned int m_multizimSearchLimit;
     std::atomic_bool m_verbose;
     bool m_withTaskbar;
     bool m_withLibraryButton;
