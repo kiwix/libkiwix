@@ -141,6 +141,22 @@ private: // functions
     bool accept(const Book& book) const;
 };
 
+
+class ZimSearcher : public zim::Searcher
+{
+  public:
+    explicit ZimSearcher(zim::Searcher&& searcher)
+      : zim::Searcher(searcher)
+    {}
+
+    std::unique_lock<std::mutex> getLock() {
+      return std::unique_lock<std::mutex>(m_mutex);
+    }
+    virtual ~ZimSearcher() = default;
+  private:
+    std::mutex m_mutex;
+};
+
 /**
  * A Library store several books.
  */
@@ -209,10 +225,10 @@ class Library
 
   DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
-  std::shared_ptr<zim::Searcher> getSearcherById(const std::string& id) {
+  std::shared_ptr<ZimSearcher> getSearcherById(const std::string& id) {
     return getSearcherByIds(BookIdSet{id});
   }
-  std::shared_ptr<zim::Searcher> getSearcherByIds(const BookIdSet& ids);
+  std::shared_ptr<ZimSearcher> getSearcherByIds(const BookIdSet& ids);
 
   /**
    * Remove a book from the library.

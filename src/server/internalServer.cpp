@@ -704,11 +704,13 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
     /* Make the search */
     // Try to get a search from the searchInfo, else build it
+    auto searcher = mp_library->getSearcherByIds(bookIds);
+    auto lock(searcher->getLock());
+
     std::shared_ptr<zim::Search> search;
     try {
       search = searchCache.getOrPut(searchInfo,
         [=](){
-          auto searcher = mp_library->getSearcherByIds(bookIds);
           return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
         }
       );

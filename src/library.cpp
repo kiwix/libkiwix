@@ -93,7 +93,7 @@ struct Library::Impl
   std::map<std::string, Entry> m_books;
   using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
   std::unique_ptr<ArchiveCache> mp_archiveCache;
-  using SearcherCache = MultiKeyCache<std::string, std::shared_ptr<zim::Searcher>>;
+  using SearcherCache = MultiKeyCache<std::string, std::shared_ptr<ZimSearcher>>;
   std::unique_ptr<SearcherCache> mp_searcherCache;
   std::vector<kiwix::Bookmark> m_bookmarks;
   Xapian::WritableDatabase m_bookDB;
@@ -304,7 +304,7 @@ std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
   }
 }
 
-std::shared_ptr<zim::Searcher> Library::getSearcherByIds(const BookIdSet& ids)
+std::shared_ptr<ZimSearcher> Library::getSearcherByIds(const BookIdSet& ids)
 {
   assert(!ids.empty());
   try {
@@ -318,7 +318,7 @@ std::shared_ptr<zim::Searcher> Library::getSearcherByIds(const BookIdSet& ids)
         }
         archives.push_back(*archive);
       }
-      return std::make_shared<zim::Searcher>(archives);
+      return std::make_shared<ZimSearcher>(zim::Searcher(archives));
     });
   } catch (std::invalid_argument&) {
     return nullptr;
