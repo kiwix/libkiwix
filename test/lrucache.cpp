@@ -107,3 +107,24 @@ TEST(ConcurrentCacheTest, handleException) {
     EXPECT_EQ(val, 888);
 }
 
+TEST(ConcurrentCacheTest, weakPtr) {
+    kiwix::ConcurrentCache<int, std::shared_ptr<int>> cache(1);
+    auto refValue = cache.getOrPut(7, []() { return std::make_shared<int>(777); });
+    EXPECT_EQ(*refValue, 777);
+    EXPECT_EQ(refValue.use_count(), 2);
+
+    // This will drop shared(777) from the cache
+    cache.getOrPut(8, []() { return std::make_shared<int>(888); });
+    EXPECT_EQ(refValue.use_count(), 1);
+
+    // We must get the shared value from the weakPtr we have
+    EXPECT_NO_THROW(cache.getOrPut(7, []() { throw std::runtime_error("oups"); return nullptr; }));
+    EXPECT_EQ(refValue.use_count(), 2);
+
+    // Drop all ref
+    cache.getOrPut(8, []() { return std::make_shared<int>(888); });
+    refValue.reset();
+
+    // Be sure we call the construction function
+    EXPECT_THROW(cache.getOrPut(7, []() { throw std::runtime_error("oups"); return nullptr; }), std::runtime_error);
+}
