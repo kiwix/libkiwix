@@ -40,6 +40,7 @@
 
 #include <map>
 #include <list>
+#include <set>
 #include <cstddef>
 #include <stdexcept>
 #include <cassert>

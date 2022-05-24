@@ -10,7 +10,8 @@ tests = [
     'manager',
     'name_mapper',
     'opds_catalog',
-    'server_helper'
+    'server_helper',
+    'lrucache'
 ]
 
 if build_machine.system() != 'windows'
