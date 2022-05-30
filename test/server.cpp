@@ -1590,6 +1590,8 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
   return true;
 }
 
+#define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
+
 TEST_F(TaskbarlessServerTest, searchResults)
 {
   struct TestData
@@ -1601,7 +1603,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       bool selected;
     };
 
-    std::string pattern;
+    std::string query;
     int start;
     size_t resultsPerPage;
     size_t totalResultCount;
@@ -1609,9 +1611,9 @@ TEST_F(TaskbarlessServerTest, searchResults)
     std::vector<std::string> results;
     std::vector<PaginationEntry> pagination;
 
-    static std::string makeUrl(const std::string pattern, int start, size_t resultsPerPage)
+    static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
     {
-      std::string url = "/ROOT/search?pattern=" + pattern + "&books.id=6f1d19d0-633f-087b-fb55-7ac324ff9baf";
+      std::string url = "/ROOT/search?" + query;
 
       if ( start >= 0 ) {
         url += "&start=" + to_string(start);
@@ -1624,15 +1626,23 @@ TEST_F(TaskbarlessServerTest, searchResults)
       return url;
     }
 
+    std::string getPattern() const
+    {
+      const std::string p = "pattern=";
+      const size_t i = query.find(p);
+      std::string r = query.substr(i + p.size());
+      return r.substr(0, r.find("&"));
+    }
+
     std::string url() const
     {
-      return makeUrl(pattern, start, resultsPerPage);
+      return makeUrl(query, start, resultsPerPage);
     }
 
     std::string expectedHeader() const
     {
       if ( totalResultCount == 0 ) {
-        return "\n        No results were found for <b>\"" + pattern + "\"</b>";
+        return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
       }
 
       std::string header = R"(  Results
@@ -1649,7 +1659,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
       header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
       header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
-      header = replace(header, "PATTERN",     pattern);
+      header = replace(header, "PATTERN",     getPattern());
       return header;
     }
 
@@ -1677,7 +1687,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       std::ostringstream oss;
       oss << "\n        <ul>\n";
       for ( const auto& p : pagination ) {
-        const auto url = makeUrl(pattern, p.start, resultsPerPage);
+        const auto url = makeUrl(query, p.start, resultsPerPage);
         oss << "            <li>\n";
         oss << "              <a ";
         if ( p.selected ) {
@@ -1695,7 +1705,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
     std::string expectedHtml() const
     {
       return makeSearchResultsHtml(
-               pattern,
+               getPattern(),
                expectedHeader(),
                expectedResultsString(),
                expectedFooter()
@@ -1768,7 +1778,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
   const TestData testData[] = {
     {
-      /* pattern */          "velomanyunkan",
+      /* query */          "pattern=velomanyunkan&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
@@ -1778,7 +1788,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
     },
 
     {
-      /* pattern */          "razaf",
+      /* query */          "pattern=razaf&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 1,
@@ -1797,7 +1807,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "yellow",
+      /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
@@ -1825,7 +1835,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
@@ -1835,7 +1845,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1859,7 +1869,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            5,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1884,7 +1894,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            10,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1910,7 +1920,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            15,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1937,7 +1947,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */            "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            20,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1964,7 +1974,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            25,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1991,7 +2001,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            30,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -2017,7 +2027,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            35,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -2042,7 +2052,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            40,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -2065,7 +2075,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            21,
       /* resultsPerPage */   3,
       /* totalResultCount */ 44,
@@ -2094,7 +2104,7 @@ R"SEARCHRESULT(
     // This test-point only documents how the current implementation
     // works, not how it should work!
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            45,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
