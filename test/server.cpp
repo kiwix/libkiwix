@@ -156,6 +156,7 @@ protected:
   const int PORT = 8001;
   const ZimFileServer::FilePathCollection ZIMFILES {
     "./test/zimfile.zim",
+    "./test/example.zim",
     "./test/poor.zim",
     "./test/corner_cases.zim"
   };
@@ -1591,6 +1592,7 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
 }
 
 #define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
+#define  EXAMPLEZIMID    "5dc0b3af-5df2-0925-f0ca-d2bf75e78af6"
 
 TEST_F(TaskbarlessServerTest, searchResults)
 {
@@ -2119,6 +2121,37 @@ R"SEARCHRESULT(
         { "9", 40, false  },
       }
     },
+
+    {
+      /* query */          "pattern=travel"
+                           "&books.id=" RAYCHARLESZIMID
+                           "&books.id=" EXAMPLEZIMID,
+      /* start */            0,
+      /* resultsPerPage */   10,
+      /* totalResultCount */ 2,
+      /* firstResultIndex */ 1,
+      /* results */          {
+R"SEARCHRESULT(
+            <a href="/ROOT/zimfile/A/If_You_Go_Away">
+              If You Go Away
+            </a>
+              <cite>...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......</cite>
+              <div class="book-title">from Ray Charles</div>
+              <div class="informations">204 words</div>
+)SEARCHRESULT",
+
+R"SEARCHRESULT(
+            <a href="/ROOT/example/Wikibooks.html">
+              Wikibooks
+            </a>
+              <cite>...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......</cite>
+              <div class="book-title">from Wikibooks</div>
+              <div class="informations">538 words</div>
+)SEARCHRESULT"
+      },
+      /* pagination */       {}
+    },
+
   };
 
   for ( const auto& t : testData ) {
