@@ -189,18 +189,6 @@ std::string RequestContext::get_header(const std::string& name) const {
   return headers.at(lcAll(name));
 }
 
-std::string RequestContext::get_query() const {
-  std::string q;
-  const char* sep = "";
-  for ( const auto& a : arguments ) {
-    for (const auto& v: a.second) {
-      q += sep + a.first + '=' + v;
-      sep = "&";
-    }
-  }
-  return q;
-}
-
 std::string RequestContext::get_user_language() const
 {
   try {
