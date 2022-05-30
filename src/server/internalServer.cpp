@@ -237,6 +237,14 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
     if (id_vec.empty()) {
       throw Error(noValueForArgMsg("books.id"));
     }
+    for(const auto& bookId: id_vec) {
+      try {
+        // This is a silly way to check that bookId exists
+        mp_nameMapper->getNameForId(bookId);
+      } catch (const std::out_of_range&) {
+        throw Error(noSuchBookErrorMsg(bookId));
+      }
+    }
     const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
     const auto queryString = request.get_query([&](const std::string& key){return key == "books.id";}, true);
     return {queryString, bookIds};
