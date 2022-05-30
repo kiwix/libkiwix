@@ -81,9 +81,9 @@ class SearchRenderer
   void setSearchPattern(const std::string& pattern);
 
   /**
-   * Set the book names used to do the search.
+   * Set the querystring used to select books
    */
-  void setSearchBookIds(const std::set<std::string>& bookIds);
+  void setSearchBookQuery(const std::string& bookQuery);
 
   /**
    * Set protocol prefix.
@@ -112,7 +112,7 @@ class SearchRenderer
   zim::SearchResultSet m_srs;
   NameMapper* mp_nameMapper;
   Library* mp_library;
-  std::set<std::string> searchBookIds;
+  std::string searchBookQuery;
   std::string searchPattern;
   std::string protocolPrefix;
   std::string searchProtocolPrefix;

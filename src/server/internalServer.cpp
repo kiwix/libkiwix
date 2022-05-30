@@ -214,13 +214,15 @@ void checkBookNumber(const Library::BookIdSet& bookIds, size_t limit) {
 
 } // unnamed namespace
 
-Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) const
+std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const RequestContext& request) const
 {
   // Try old API
   try {
     auto bookName = request.get_argument("content");
     try {
-      return {mp_nameMapper->getIdForName(bookName)};
+      const auto bookIds = Library::BookIdSet{mp_nameMapper->getIdForName(bookName)};
+      const auto queryString = request.get_query([&](const std::string& key){return key == "content";});
+      return {queryString, bookIds};
     } catch (const std::out_of_range&) {
       throw Error(noSuchBookErrorMsg(bookName));
     }
@@ -236,7 +238,8 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
       throw Error(noValueForArgMsg("books.id"));
     }
     const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
-    return bookIds;
+    const auto queryString = request.get_query([&](const std::string& key){return key == "books.id";});
+    return {queryString, bookIds};
   } catch(const std::out_of_range&) {}
 
   // Use the names
@@ -253,7 +256,8 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
         throw Error(noSuchBookErrorMsg(bookName));
       }
     }
-    return bookIds;
+    const auto queryString = request.get_query([&](const std::string& key){return key == "books.name";});
+    return {queryString, bookIds};
   } catch(const std::out_of_range&) {}
 
   // Check for filtering
@@ -263,13 +267,14 @@ Library::BookIdSet InternalServer::selectBooks(const RequestContext& request) co
     throw Error(nonParameterizedMessage("no-book-found"));
   }
   const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
-  return bookIds;
+  const auto queryString = request.get_query([&](const std::string& key){return startsWith(key, "books.filter.");});
+  return {queryString, bookIds};
 }
 
 SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
 {
   auto bookIds = selectBooks(request);
-  checkBookNumber(bookIds, m_multizimSearchLimit);
+  checkBookNumber(bookIds.second, m_multizimSearchLimit);
   auto pattern = request.get_optional_param<std::string>("pattern", "");
   GeoQuery geoQuery;
 
@@ -286,13 +291,14 @@ SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
     throw Error(nonParameterizedMessage("no-query"));
   }
 
-  return SearchInfo(pattern, geoQuery, bookIds);
+  return SearchInfo(pattern, geoQuery, bookIds.second, bookIds.first);
 }
 
-SearchInfo::SearchInfo(const std::string& pattern, GeoQuery geoQuery, const Library::BookIdSet& bookIds)
+SearchInfo::SearchInfo(const std::string& pattern, GeoQuery geoQuery, const Library::BookIdSet& bookIds, const std::string& bookFilterQuery)
   : pattern(pattern),
     geoQuery(geoQuery),
-    bookIds(bookIds)
+    bookIds(bookIds),
+    bookFilterQuery(bookFilterQuery)
 {}
 
 zim::Query SearchInfo::getZimQuery(bool verbose) const {
@@ -751,7 +757,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
-    renderer.setSearchBookIds(bookIds);
+    renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);

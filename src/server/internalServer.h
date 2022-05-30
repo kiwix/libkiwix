@@ -68,7 +68,7 @@ struct GeoQuery {
 
 class SearchInfo {
   public:
-    SearchInfo(const std::string& pattern, GeoQuery geoQuery, const Library::BookIdSet& bookIds);
+    SearchInfo(const std::string& pattern, GeoQuery geoQuery, const Library::BookIdSet& bookIds, const std::string& bookFilterString);
 
     zim::Query getZimQuery(bool verbose) const;
     const Library::BookIdSet& getBookIds() const { return bookIds; }
@@ -83,6 +83,7 @@ class SearchInfo {
     std::string pattern;
     GeoQuery geoQuery;
     Library::BookIdSet bookIds;
+    std::string bookFilterQuery;
 };
 
 
@@ -149,7 +150,7 @@ class InternalServer {
 
     bool etag_not_needed(const RequestContext& r) const;
     ETag get_matching_if_none_match_etag(const RequestContext& request) const;
-    Library::BookIdSet selectBooks(const RequestContext& r) const;
+    std::pair<std::string, Library::BookIdSet> selectBooks(const RequestContext& r) const;
     SearchInfo getSearchInfo(const RequestContext& r) const;
 
   private: // data
