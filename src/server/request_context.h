@@ -92,20 +92,21 @@ class RequestContext {
     std::string get_url_part(int part) const;
     std::string get_full_url() const;
 
-    std::string get_query() const {
-      return get_query([](const std::string& key) {return true;});
+    std::string get_query(bool mustEncode = false) const {
+      return get_query([](const std::string& key) {return true;}, mustEncode);
     }
 
     template<class F>
-    std::string get_query(F filter) const {
+    std::string get_query(F filter, bool mustEncode) const {
       std::string q;
       const char* sep = "";
+      auto encode = [=](const std::string& value) { return mustEncode?urlEncode(value, true):value; };
       for ( const auto& a : arguments ) {
         if (!filter(a.first)) {
           continue;
         }
         for (const auto& v: a.second) {
-          q += sep + a.first + '=' + v;
+          q += sep + encode(a.first) + '=' + encode(v);
           sep = "&";
         }
       }
