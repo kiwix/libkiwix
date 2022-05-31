@@ -133,6 +133,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   server->setNbThreads(2);
   server->setVerbose(false);
   server->setTaskbar(withTaskbar, withTaskbar);
+  server->setMultiZimSearchLimit(3);
   if (!indexTemplateString.empty()) {
     server->setIndexTemplateString(indexTemplateString);
   }
@@ -395,6 +396,10 @@ const char* urls400[] = {
   "/ROOT/search?content=zimfile",
   "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT/search?content=non-existing-book&pattern=asd<qwerty",
+  "/ROOT/search?books.name=non-exsitent-book&pattern=asd<qwerty",
+  "/ROOT/search?books.id=non-exsitent-id&pattern=asd<qwerty",
+  "/ROOT/search?books.filter.lang=unk&pattern=asd<qwerty",
+  "/ROOT/search?pattern=foo",
   "/ROOT/search?pattern"
 };
 
@@ -900,7 +905,7 @@ TEST_F(ServerTest, 400WithBodyTesting)
       The requested URL "/ROOT/search" is not a valid request.
     </p>
     <p>
-      No query provided.
+      Too many books requested (4) where limit is 3
     </p>
 )"  },
     { /* url */ "/ROOT/search?content=zimfile",
@@ -935,14 +940,24 @@ TEST_F(ServerTest, 400WithBodyTesting)
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate
     // between `pattern` and `pattern=`
-    { /* url */ "/ROOT/search?pattern",
+    { /* url */ "/ROOT/search?books.filter.lang=eng&pattern",
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?pattern=" is not a valid request.
+      The requested URL "/ROOT/search?books.filter.lang=eng&pattern=" is not a valid request.
     </p>
     <p>
       No query provided.
+    </p>
+)"  },
+    { /* url */ "/ROOT/search?pattern=foo",
+      expected_body==R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search?pattern=foo" is not a valid request.
+    </p>
+    <p>
+      Too many books requested (4) where limit is 3
     </p>
 )"  },
   };
@@ -2122,6 +2137,7 @@ R"SEARCHRESULT(
       }
     },
 
+    // We must return results from the two books
     {
       /* query */          "pattern=travel"
                            "&books.id=" RAYCHARLESZIMID
@@ -2152,6 +2168,116 @@ R"SEARCHRESULT(
       /* pagination */       {}
     },
 
+    // Only RayCharles is in English.
+    // [TODO] We should extend our test data to have another zim file in english returning results.
+    {
+          /* query */          "pattern=travel"
+                               "&books.filter.lang=eng",
+          /* start */            0,
+          /* resultsPerPage */   10,
+          /* totalResultCount */ 1,
+          /* firstResultIndex */ 1,
+          /* results */          {
+R"SEARCHRESULT(
+            <a href="/ROOT/zimfile/A/If_You_Go_Away">
+              If You Go Away
+            </a>
+              <cite>...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......</cite>
+              <div class="book-title">from Ray Charles</div>
+              <div class="informations">204 words</div>
+)SEARCHRESULT",
+          },
+          /* pagination */       {}
+        },
+
+    // Adding a book (without match) doesn't change the results
+    {
+      /* query */          "pattern=jazz"
+                           "&books.id=" RAYCHARLESZIMID
+                           "&books.id=" EXAMPLEZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   100,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
+    },
+
+    {
+      /* query */          "pattern=jazz"
+                           "&books.filter.lang=eng",
+      /* start */            -1,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* query */          "pattern=jazz"
+                           "&books.filter.tag=wikipedia",
+      /* start */            -1,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* query */          "pattern=jazz"
+                           "&books.filter.lang=eng"
+                           "&books.filter.title=Ray%20Charles",
+      /* start */            -1,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
+      }
+    },
   };
 
   for ( const auto& t : testData ) {

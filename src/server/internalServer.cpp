@@ -177,8 +177,8 @@ ParameterizedMessage tooManyBooksMsg(size_t nbBooks, size_t limit)
 {
   return ParameterizedMessage("too-many-books",
                               {
-                                {"NB_BOOKS", nbBooks},
-                                {"LIMIT", limit},
+                                {"NB_BOOKS", beautifyInteger(nbBooks)},
+                                {"LIMIT", beautifyInteger(limit)},
                               }
   );
 }
