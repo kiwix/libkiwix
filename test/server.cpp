@@ -310,7 +310,7 @@ enum ExpectedResponseDataType
 
 // Operator overloading is used as a means of defining a mini-DSL for
 // defining test data in a concise way (see usage in
-// TEST_F(ServerTest, 404WithBodyTesting))
+// TEST_F(ServerTest, Http404HtmlError))
 ExpectedResponseData operator==(ExpectedResponseDataType t, std::string s)
 {
   switch (t)
@@ -545,7 +545,7 @@ std::string TestContentIn400HtmlResponse::pageTitle() const {
 
 } // namespace TestingOfHtmlResponses
 
-TEST_F(ServerTest, 404WithBodyTesting)
+TEST_F(ServerTest, Http404HtmlError)
 {
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn404HtmlResponse> testData{
@@ -735,7 +735,7 @@ TEST_F(ServerTest, 404WithBodyTesting)
   }
 }
 
-TEST_F(ServerTest, 400WithBodyTesting)
+TEST_F(ServerTest, Http400HtmlError)
 {
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn400HtmlResponse> testData{
@@ -808,6 +808,85 @@ TEST_F(ServerTest, 400WithBodyTesting)
     const auto r = zfs1_->GET(t.url.c_str());
     EXPECT_EQ(r->status, 400) << ctx;
     EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
+  }
+}
+
+TEST_F(ServerTest, HttpXmlError)
+{
+  struct TestData
+  {
+    std::string url;
+    int expectedStatusCode;
+    std::string expectedXml;
+
+    std::string fullExpectedXml() const
+    {
+      return R"(<?xml version="1.0" encoding="UTF-8">)" + expectedXml;
+    }
+
+    TestContext ctx() const
+    {
+      return TestContext{ {"url", url} };
+    }
+  };
+
+  const std::vector<TestData> testData{
+    { /* url */ "/ROOT/search?format=xml",
+      /* HTTP status code */ 400,
+      /* expected response XML */ R"(
+<error>Invalid request</error>
+<detail>The requested URL "/ROOT/search?format=xml" is not a valid request.</detail>
+<detail>Too many books requested (4) where limit is 3</detail>
+)"  },
+    { /* url */ "/ROOT/search?format=xml&content=zimfile",
+      /* HTTP status code */ 400,
+      /* expected response XML */ R"(
+<error>Invalid request</error>
+<detail>The requested URL "/ROOT/search?content=zimfile&format=xml" is not a valid request.</detail>
+<detail>No query provided.</detail>
+)"  },
+    { /* url */ "/ROOT/search?format=xml&content=non-existing-book&pattern=asdfqwerty",
+      /* HTTP status code */ 400,
+      /* expected response XML */ R"(
+<error>Invalid request</error>
+<detail>The requested URL "/ROOT/search?content=non-existing-book&format=xml&pattern=asdfqwerty" is not a valid request.</detail>
+<detail>No such book: non-existing-book</detail>
+)"  },
+    { /* url */ "/ROOT/search?format=xml&content=non-existing-book&pattern=a\"<script foo>",
+      /* HTTP status code */ 400,
+      /* expected response XML */ R"(
+<error>Invalid request</error>
+<detail>The requested URL "/ROOT/search?content=non-existing-book&format=xml&pattern=a"&lt;script foo&gt;" is not a valid request.</detail>
+<detail>No such book: non-existing-book</detail>
+)"  },
+    // There is a flaw in our way to handle query string, we cannot differenciate
+    // between `pattern` and `pattern=`
+    { /* url */ "/ROOT/search?format=xml&books.filter.lang=eng&pattern",
+      /* HTTP status code */ 400,
+      /* expected response XML */ R"(
+<error>Invalid request</error>
+<detail>The requested URL "/ROOT/search?books.filter.lang=eng&format=xml&pattern=" is not a valid request.</detail>
+<detail>No query provided.</detail>
+)"  },
+    { /* url */ "/ROOT/search?format=xml&pattern=foo",
+      /* HTTP status code */ 400,
+      /* expected response XML */ R"(
+<error>Invalid request</error>
+<detail>The requested URL "/ROOT/search?format=xml&pattern=foo" is not a valid request.</detail>
+<detail>Too many books requested (4) where limit is 3</detail>
+)"  },
+    { /* url */ "/ROOT/search?format=xml&content=poor&pattern=whatever",
+      /* HTTP status code */ 404,
+      /* expected response XML */ R"(
+<error>Fulltext search unavailable</error>
+<detail>The fulltext search engine is not available for this content.</detail>
+)"  },
+  };
+
+  for ( const auto& t : testData ) {
+    const auto r = zfs1_->GET(t.url.c_str());
+    EXPECT_EQ(r->status, t.expectedStatusCode) << t.ctx();
+    EXPECT_EQ(r->body, t.fullExpectedXml()) << t.ctx();
   }
 }
 
