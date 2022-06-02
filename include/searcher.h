@@ -76,10 +76,10 @@ class Searcher
    * @return true if the reader has been added.
    *         false if the reader cannot be added (no embedded fulltext index present)
    */
-  bool add_reader(Reader* reader);
+  bool add_reader(std::shared_ptr<Reader> reader);
 
 
-  Reader* get_reader(int index);
+  std::shared_ptr<Reader> get_reader(int index);
 
   /**
    * Start a search on the zim associated to the Searcher.
@@ -161,7 +161,7 @@ class Searcher
                      const unsigned int maxResultCount,
                      const bool verbose = false);
 
-  std::vector<Reader*> readers;
+  std::vector<std::shared_ptr<Reader>> readers;
   std::unique_ptr<SearcherInternal> internal;
   std::unique_ptr<SuggestionInternal> suggestionInternal;
   std::string searchPattern;

@@ -40,11 +40,12 @@ namespace kiwix
 /* Constructor */
 SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
     : SearchRenderer(
-        searcher->getSearchResultSet(),
-        mapper,
-        nullptr,
-        searcher->getEstimatedResultCount(),
-        searcher->getResultStart())
+        /* srs */ searcher->getSearchResultSet(),
+        /* mapper */ mapper,
+        /* library */ nullptr,
+        /* start */ searcher->getResultStart(),
+        /* estimatedResultCount */ searcher->getEstimatedResultCount()
+        )
 {}
 
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,

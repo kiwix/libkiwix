@@ -89,13 +89,13 @@ Searcher::~Searcher()
 {
 }
 
-bool Searcher::add_reader(Reader* reader)
+bool Searcher::add_reader(std::shared_ptr<Reader> reader)
 {
   if (!reader->hasFulltextIndex()) {
       return false;
   }
 
-  for ( const Reader* const existing_reader : readers ) {
+  for ( auto existing_reader : readers ) {
     if ( existing_reader->getZimArchive()->getUuid() == reader->getZimArchive()->getUuid() )
       return false;
   }
@@ -105,7 +105,7 @@ bool Searcher::add_reader(Reader* reader)
 }
 
 
-Reader* Searcher::get_reader(int readerIndex)
+std::shared_ptr<Reader> Searcher::get_reader(int readerIndex)
 {
   return readers.at(readerIndex);
 }
