@@ -68,27 +68,26 @@ struct GeoQuery {
 
 class SearchInfo {
   public:
-    SearchInfo(const std::string& pattern);
-    SearchInfo(const std::string& pattern, GeoQuery geoQuery);
-    SearchInfo(const RequestContext& request);
+    SearchInfo(const std::string& pattern, GeoQuery geoQuery, const Library::BookIdSet& bookIds, const std::string& bookFilterString);
 
     zim::Query getZimQuery(bool verbose) const;
+    const Library::BookIdSet& getBookIds() const { return bookIds; }
 
     friend bool operator<(const SearchInfo& l, const SearchInfo& r)
     {
-        return std::tie(l.bookName, l.pattern, l.geoQuery)
-             < std::tie(r.bookName, r.pattern, r.geoQuery); // keep the same order
+        return std::tie(l.bookIds, l.pattern, l.geoQuery)
+             < std::tie(r.bookIds, r.pattern, r.geoQuery); // keep the same order
     }
 
   public: //data
     std::string pattern;
     GeoQuery geoQuery;
-    std::string bookName;
+    Library::BookIdSet bookIds;
+    std::string bookFilterQuery;
 };
 
 
 typedef kainjow::mustache::data MustacheData;
-typedef ConcurrentCache<string, std::shared_ptr<zim::Searcher>> SearcherCache;
 typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
 typedef ConcurrentCache<string, std::shared_ptr<zim::SuggestionSearcher>> SuggestionSearcherCache;
 
@@ -103,6 +102,7 @@ class InternalServer {
                    int port,
                    std::string root,
                    int nbThreads,
+                   unsigned int multizimSearchLimit,
                    bool verbose,
                    bool withTaskbar,
                    bool withLibraryButton,
@@ -150,12 +150,15 @@ class InternalServer {
 
     bool etag_not_needed(const RequestContext& r) const;
     ETag get_matching_if_none_match_etag(const RequestContext& request) const;
+    std::pair<std::string, Library::BookIdSet> selectBooks(const RequestContext& r) const;
+    SearchInfo getSearchInfo(const RequestContext& r) const;
 
   private: // data
     std::string m_addr;
     int m_port;
     std::string m_root;
     int m_nbThreads;
+    unsigned int m_multizimSearchLimit;
     std::atomic_bool m_verbose;
     bool m_withTaskbar;
     bool m_withLibraryButton;
@@ -167,7 +170,6 @@ class InternalServer {
     Library* mp_library;
     NameMapper* mp_nameMapper;
 
-    SearcherCache searcherCache;
     SearchCache searchCache;
     SuggestionSearcherCache suggestionSearcherCache;
 

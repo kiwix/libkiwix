@@ -106,7 +106,7 @@ MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
                                          const char *key, const char* value)
 {
   RequestContext *_this = static_cast<RequestContext*>(__this);
-  _this->arguments[key] = value == nullptr ? "" : value;
+  _this->arguments[key].push_back(value == nullptr ? "" : value);
   return MHD_YES;
 }
 
@@ -121,8 +121,14 @@ void RequestContext::print_debug_info() const {
     printf(" - %s : '%s'\n", it->first.c_str(), it->second.c_str());
   }
   printf("arguments :\n");
-  for (auto it=arguments.begin(); it!=arguments.end(); it++) {
-    printf(" - %s : '%s'\n", it->first.c_str(), it->second.c_str());
+  for (auto& pair:arguments) {
+    printf(" - %s :", pair.first.c_str());
+    bool first = true;
+    for (auto& v: pair.second) {
+      printf("%s %s", first?"":",", v.c_str());
+      first = false;
+    }
+    printf("\n");
   }
   printf("Parsed : \n");
   printf("full_url: %s\n", full_url.c_str());
@@ -176,21 +182,11 @@ ByteRange RequestContext::get_range() const {
 
 template<>
 std::string RequestContext::get_argument(const std::string& name) const {
-  return arguments.at(name);
+  return arguments.at(name)[0];
 }
 
 std::string RequestContext::get_header(const std::string& name) const {
   return headers.at(lcAll(name));
-}
-
-std::string RequestContext::get_query() const {
-  std::string q;
-  const char* sep = "";
-  for ( const auto& a : arguments ) {
-    q += sep + a.first + '=' + a.second;
-    sep = "&";
-  }
-  return q;
 }
 
 std::string RequestContext::get_user_language() const

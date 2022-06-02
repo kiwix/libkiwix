@@ -45,6 +45,7 @@ bool Server::start() {
     m_port,
     m_root,
     m_nbThreads,
+    m_multizimSearchLimit,
     m_verbose,
     m_withTaskbar,
     m_withLibraryButton,

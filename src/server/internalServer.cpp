@@ -95,35 +95,197 @@ inline std::string normalizeRootUrl(std::string rootUrl)
   return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
-// Returns the value of env var `name` if found, otherwise returns defaultVal
-unsigned int getCacheLength(const char* name, unsigned int defaultVal) {
-  try {
-    const char* envString = std::getenv(name);
-    if (envString == nullptr) {
-      throw std::runtime_error("Environment variable not set");
-    }
-    return extractFromString<unsigned int>(envString);
-  } catch (...) {}
-
-  return defaultVal;
+Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
+{
+    auto filter = kiwix::Filter().valid(true).local(true);
+    try {
+      filter.query(request.get_argument(prefix+"q"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.maxSize(request.get_argument<unsigned long>(prefix+"maxsize"));
+    } catch (...) {}
+    try {
+      filter.name(request.get_argument(prefix+"name"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.category(request.get_argument(prefix+"category"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.lang(request.get_argument(prefix+"lang"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.acceptTags(kiwix::split(request.get_argument(prefix+"tag"), ";"));
+    } catch (...) {}
+    try {
+      filter.rejectTags(kiwix::split(request.get_argument(prefix+"notag"), ";"));
+    } catch (...) {}
+    return filter;
 }
+
+template<class T>
+std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
+{
+  const size_t e = std::min(v.size(), s+n);
+  return std::vector<T>(v.begin()+std::min(v.size(), s), v.begin()+e);
+}
+
+std::string renderUrl(const std::string& root, const std::string& urlTemplate)
+{
+  MustacheData data;
+  data.set("root", root);
+  auto url = kainjow::mustache::mustache(urlTemplate).render(data);
+  if ( url.back() == '\n' )
+    url.pop_back();
+  return url;
+}
+
+std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
+{
+  return i18n::expandParameterizedString(lang, "suggest-full-text-search",
+               {
+                  {"SEARCH_TERMS", queryString}
+               }
+         );
+}
+
+ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
+{
+  return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
+}
+
+ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
+{
+  return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
+}
+
+ParameterizedMessage noValueForArgMsg(const std::string& argument)
+{
+  return ParameterizedMessage("no-value-for-arg", { {"ARGUMENT", argument} });
+}
+
+ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::string& entry)
+{
+  return ParameterizedMessage("raw-entry-not-found",
+                              {
+                                {"DATATYPE", dt},
+                                {"ENTRY", entry},
+                              }
+  );
+}
+
+ParameterizedMessage tooManyBooksMsg(size_t nbBooks, size_t limit)
+{
+  return ParameterizedMessage("too-many-books",
+                              {
+                                {"NB_BOOKS", beautifyInteger(nbBooks)},
+                                {"LIMIT", beautifyInteger(limit)},
+                              }
+  );
+}
+
+ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
+{
+  const ParameterizedMessage::Parameters noParams;
+  return ParameterizedMessage(msgId, noParams);
+}
+
+struct Error : public std::runtime_error {
+  explicit Error(const ParameterizedMessage& message)
+    : std::runtime_error("Error while handling request"),
+      _message(message)
+  {}
+
+  const ParameterizedMessage& message() const
+  {
+    return _message;
+  }
+
+  const ParameterizedMessage _message;
+};
+
+void checkBookNumber(const Library::BookIdSet& bookIds, size_t limit) {
+  if (bookIds.empty()) {
+    throw Error(nonParameterizedMessage("no-book-found"));
+  }
+  if (limit > 0 && bookIds.size() > limit) {
+    throw Error(tooManyBooksMsg(bookIds.size(), limit));
+  }
+}
+
 } // unnamed namespace
 
-SearchInfo::SearchInfo(const std::string& pattern)
-  : pattern(pattern),
-    geoQuery()
-{}
-
-SearchInfo::SearchInfo(const std::string& pattern, GeoQuery geoQuery)
-  : pattern(pattern),
-    geoQuery(geoQuery)
-{}
-
-SearchInfo::SearchInfo(const RequestContext& request)
-  : pattern(request.get_optional_param<std::string>("pattern", "")),
-    geoQuery(),
-    bookName(request.get_optional_param<std::string>("content", ""))
+std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const RequestContext& request) const
 {
+  // Try old API
+  try {
+    auto bookName = request.get_argument("content");
+    try {
+      const auto bookIds = Library::BookIdSet{mp_nameMapper->getIdForName(bookName)};
+      const auto queryString = request.get_query([&](const std::string& key){return key == "content";}, true);
+      return {queryString, bookIds};
+    } catch (const std::out_of_range&) {
+      throw Error(noSuchBookErrorMsg(bookName));
+    }
+  } catch(const std::out_of_range&) {
+    // We've catch the out_of_range of get_argument
+    // continue
+  }
+
+  // Does user directly gives us ids ?
+  try {
+    auto id_vec = request.get_arguments("books.id");
+    if (id_vec.empty()) {
+      throw Error(noValueForArgMsg("books.id"));
+    }
+    for(const auto& bookId: id_vec) {
+      try {
+        // This is a silly way to check that bookId exists
+        mp_nameMapper->getNameForId(bookId);
+      } catch (const std::out_of_range&) {
+        throw Error(noSuchBookErrorMsg(bookId));
+      }
+    }
+    const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
+    const auto queryString = request.get_query([&](const std::string& key){return key == "books.id";}, true);
+    return {queryString, bookIds};
+  } catch(const std::out_of_range&) {}
+
+  // Use the names
+  try {
+    auto name_vec = request.get_arguments("books.name");
+    if (name_vec.empty()) {
+      throw Error(noValueForArgMsg("books.name"));
+    }
+    Library::BookIdSet bookIds;
+    for(const auto& bookName: name_vec) {
+      try {
+        bookIds.insert(mp_nameMapper->getIdForName(bookName));
+      } catch(const std::out_of_range&) {
+        throw Error(noSuchBookErrorMsg(bookName));
+      }
+    }
+    const auto queryString = request.get_query([&](const std::string& key){return key == "books.name";}, true);
+    return {queryString, bookIds};
+  } catch(const std::out_of_range&) {}
+
+  // Check for filtering
+  Filter filter = get_search_filter(request, "books.filter.");
+  auto id_vec = mp_library->filter(filter);
+  if (id_vec.empty()) {
+    throw Error(nonParameterizedMessage("no-book-found"));
+  }
+  const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
+  const auto queryString = request.get_query([&](const std::string& key){return startsWith(key, "books.filter.");}, true);
+  return {queryString, bookIds};
+}
+
+SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
+{
+  auto bookIds = selectBooks(request);
+  checkBookNumber(bookIds.second, m_multizimSearchLimit);
+  auto pattern = request.get_optional_param<std::string>("pattern", "");
+  GeoQuery geoQuery;
+
   /* Retrive geo search */
   try {
     auto latitude = request.get_argument<float>("latitude");
@@ -134,9 +296,18 @@ SearchInfo::SearchInfo(const RequestContext& request)
     catch(const std::invalid_argument&) {}
 
   if (!geoQuery && pattern.empty()) {
-    throw std::invalid_argument("No query provided.");
+    throw Error(nonParameterizedMessage("no-query"));
   }
+
+  return SearchInfo(pattern, geoQuery, bookIds.second, bookIds.first);
 }
+
+SearchInfo::SearchInfo(const std::string& pattern, GeoQuery geoQuery, const Library::BookIdSet& bookIds, const std::string& bookFilterQuery)
+  : pattern(pattern),
+    geoQuery(geoQuery),
+    bookIds(bookIds),
+    bookFilterQuery(bookFilterQuery)
+{}
 
 zim::Query SearchInfo::getZimQuery(bool verbose) const {
   zim::Query query;
@@ -175,6 +346,7 @@ InternalServer::InternalServer(Library* library,
                                int port,
                                std::string root,
                                int nbThreads,
+                               unsigned int multizimSearchLimit,
                                bool verbose,
                                bool withTaskbar,
                                bool withLibraryButton,
@@ -185,6 +357,7 @@ InternalServer::InternalServer(Library* library,
   m_port(port),
   m_root(normalizeRootUrl(root)),
   m_nbThreads(nbThreads),
+  m_multizimSearchLimit(multizimSearchLimit),
   m_verbose(verbose),
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
@@ -194,9 +367,8 @@ InternalServer::InternalServer(Library* library,
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
-  searcherCache(getCacheLength("SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
-  searchCache(getCacheLength("SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
-  suggestionSearcherCache(getCacheLength("SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U)))
+  searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
+  suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U)))
 {}
 
 bool InternalServer::start() {
@@ -439,56 +611,6 @@ SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Arch
   return suggestions;
 }
 
-namespace
-{
-
-std::string renderUrl(const std::string& root, const std::string& urlTemplate)
-{
-  MustacheData data;
-  data.set("root", root);
-  auto url = kainjow::mustache::mustache(urlTemplate).render(data);
-  if ( url.back() == '\n' )
-    url.pop_back();
-  return url;
-}
-
-std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
-{
-  return i18n::expandParameterizedString(lang, "suggest-full-text-search",
-               {
-                  {"SEARCH_TERMS", queryString}
-               }
-         );
-}
-
-ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
-{
-  return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
-}
-
-ParameterizedMessage invalidRawAccessMsg(const std::string& dt)
-{
-  return ParameterizedMessage("invalid-raw-data-type", { {"DATATYPE", dt} });
-}
-
-ParameterizedMessage rawEntryNotFoundMsg(const std::string& dt, const std::string& entry)
-{
-  return ParameterizedMessage("raw-entry-not-found",
-                              {
-                                {"DATATYPE", dt},
-                                {"ENTRY", entry},
-                              }
-  );
-}
-
-ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
-{
-  const ParameterizedMessage::Parameters noParams;
-  return ParameterizedMessage(msgId, noParams);
-}
-
-} // unnamed namespace
-
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -591,41 +713,18 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   }
 
   try {
-    auto searchInfo = SearchInfo(request);
-
-    std::string bookId;
-    std::shared_ptr<zim::Archive> archive;
-    if (!searchInfo.bookName.empty()) {
-      try {
-        bookId = mp_nameMapper->getIdForName(searchInfo.bookName);
-        archive = mp_library->getArchiveById(bookId);
-      } catch (const std::out_of_range&) {
-        throw std::invalid_argument("The requested book doesn't exist.");
-      }
-    }
-
+    auto searchInfo = getSearchInfo(request);
+    auto bookIds = searchInfo.getBookIds();
 
     /* Make the search */
     // Try to get a search from the searchInfo, else build it
+    auto searcher = mp_library->getSearcherByIds(bookIds);
+    auto lock(searcher->getLock());
+
     std::shared_ptr<zim::Search> search;
     try {
       search = searchCache.getOrPut(searchInfo,
         [=](){
-          std::shared_ptr<zim::Searcher> searcher;
-          if (archive) {
-            searcher = searcherCache.getOrPut(bookId, [=](){ return std::make_shared<zim::Searcher>(*archive);});
-          } else {
-            for (auto& bookId: mp_library->filter(kiwix::Filter().local(true).valid(true))) {
-              auto currentArchive = mp_library->getArchiveById(bookId);
-              if (currentArchive) {
-                if (! searcher) {
-                  searcher = std::make_shared<zim::Searcher>(*currentArchive);
-                } else {
-                  searcher->addArchive(*currentArchive);
-                }
-              }
-           }
-          }
           return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
         }
       );
@@ -638,10 +737,13 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
                                      "404-page-heading",
                                      cssUrl);
       response += nonParameterizedMessage("no-search-results");
-      response += TaskbarInfo(searchInfo.bookName, archive.get());
+      if(bookIds.size() == 1) {
+        auto bookId = *bookIds.begin();
+        auto bookName = mp_nameMapper->getNameForId(bookId);
+        response += TaskbarInfo(bookName, mp_library->getArchiveById(bookId).get());
+      }
       return response;
     }
-
 
     auto start = 0;
     try {
@@ -663,17 +765,21 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
-    renderer.setSearchContent(searchInfo.bookName);
+    renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
     renderer.setProtocolPrefix(m_root + "/");
     renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
-    response->set_taskbar(searchInfo.bookName, archive.get());
+    if(bookIds.size() == 1) {
+      auto bookId = *bookIds.begin();
+      auto bookName = mp_nameMapper->getNameForId(bookId);
+      response->set_taskbar(bookName, mp_library->getArchiveById(bookId).get());
+    }
     return std::move(response);
-  } catch (const std::invalid_argument& e) {
+  } catch (const Error& e) {
     return HTTP400HtmlResponse(*this, request)
       + invalidUrlMsg
-      + std::string(e.what());
+      + e.message();
   }
 }
 
@@ -775,45 +881,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
       "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
   return std::move(response);
 }
-
-namespace
-{
-
-Filter get_search_filter(const RequestContext& request)
-{
-    auto filter = kiwix::Filter().valid(true).local(true);
-    try {
-      filter.query(request.get_argument("q"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.maxSize(request.get_argument<unsigned long>("maxsize"));
-    } catch (...) {}
-    try {
-      filter.name(request.get_argument("name"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.category(request.get_argument("category"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.lang(request.get_argument("lang"));
-    } catch (const std::out_of_range&) {}
-    try {
-      filter.acceptTags(kiwix::split(request.get_argument("tag"), ";"));
-    } catch (...) {}
-    try {
-      filter.rejectTags(kiwix::split(request.get_argument("notag"), ";"));
-    } catch (...) {}
-    return filter;
-}
-
-template<class T>
-std::vector<T> subrange(const std::vector<T>& v, size_t s, size_t n)
-{
-  const size_t e = std::min(v.size(), s+n);
-  return std::vector<T>(v.begin()+std::min(v.size(), s), v.begin()+e);
-}
-
-} // unnamed namespace
 
 std::vector<std::string>
 InternalServer::search_catalog(const RequestContext& request,

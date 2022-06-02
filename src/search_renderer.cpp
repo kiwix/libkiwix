@@ -71,9 +71,9 @@ void SearchRenderer::setSearchPattern(const std::string& pattern)
   searchPattern = pattern;
 }
 
-void SearchRenderer::setSearchContent(const std::string& content)
+void SearchRenderer::setSearchBookQuery(const std::string& bookQuery)
 {
-  searchContent = content;
+  searchBookQuery = bookQuery;
 }
 
 void SearchRenderer::setProtocolPrefix(const std::string& prefix)
@@ -90,13 +90,13 @@ kainjow::mustache::data buildQueryData
 (
   const std::string& searchProtocolPrefix,
   const std::string& pattern,
-  const std::string& searchContent
+  const std::string& bookQuery
 ) {
   kainjow::mustache::data query;
   query.set("pattern", kiwix::encodeDiples(pattern));
   std::ostringstream ss;
   ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern, true);
-  ss << "&content=" << urlEncode(searchContent, true);
+  ss << "&" << bookQuery;
   query.set("unpaginatedQuery", ss.str());
   return query;
 }
@@ -197,7 +197,7 @@ std::string SearchRenderer::getHtml()
   kainjow::mustache::data query = buildQueryData(
     searchProtocolPrefix,
     searchPattern,
-    searchContent
+    searchBookQuery
   );
 
   std::string template_str = RESOURCE::templates::search_result_html;

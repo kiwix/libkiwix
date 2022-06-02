@@ -54,6 +54,7 @@ namespace kiwix
        void setAddress(const std::string& addr) { m_addr = addr; }
        void setPort(int port) { m_port = port; }
        void setNbThreads(int threads) { m_nbThreads = threads; }
+       void setMultiZimSearchLimit(unsigned int limit) { m_multizimSearchLimit = limit; }
        void setIpConnectionLimit(int limit) { m_ipConnectionLimit = limit; }
        void setVerbose(bool verbose) { m_verbose = verbose; }
        void setIndexTemplateString(const std::string& indexTemplateString) { m_indexTemplateString = indexTemplateString; }
@@ -63,7 +64,7 @@ namespace kiwix
         { m_blockExternalLinks = blockExternalLinks; }
        int getPort();
        std::string getAddress();
-       
+
      protected:
        Library* mp_library;
        NameMapper* mp_nameMapper;
@@ -72,6 +73,7 @@ namespace kiwix
        std::string m_indexTemplateString = "";
        int m_port = 80;
        int m_nbThreads = 1;
+       unsigned int m_multizimSearchLimit = 0;
        bool m_verbose = false;
        bool m_withTaskbar = true;
        bool m_withLibraryButton = true;

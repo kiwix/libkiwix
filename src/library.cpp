@@ -27,10 +27,13 @@
 #include "tools/regexTools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
+#include "tools/otherTools.h"
+#include "tools/concurrent_cache.h"
 
 #include <pugixml.hpp>
 #include <algorithm>
 #include <set>
+#include <cmath>
 #include <unicode/locid.h>
 #include <xapian.h>
 
@@ -56,6 +59,27 @@ bool booksReferToTheSameArchive(const Book& book1, const Book& book2)
       && book1.getPath() == book2.getPath();
 }
 
+template<typename Key, typename Value>
+class MultiKeyCache: public ConcurrentCache<std::set<Key>, Value>
+{
+  public:
+    explicit MultiKeyCache(size_t maxEntries)
+      : ConcurrentCache<std::set<Key>, Value>(maxEntries)
+    {}
+
+    bool drop(const Key& key)
+    {
+      std::unique_lock<std::mutex> l(this->lock_);
+      bool removed = false;
+      for(auto& cache_key: this->impl_.keys()) {
+        if(cache_key.find(key)!=cache_key.end()) {
+          removed |= this->impl_.drop(cache_key);
+        }
+      }
+      return removed;
+    }
+};
+
 } // unnamed namespace
 
 struct Library::Impl
@@ -63,15 +87,14 @@ struct Library::Impl
   struct Entry : Book
   {
     Library::Revision lastUpdatedRevision = 0;
-
-    // May also keep the Archive and Reader pointers here and get
-    // rid of the m_readers and m_archives data members in Library
   };
 
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
-  std::map<std::string, std::shared_ptr<Reader>> m_readers;
-  std::map<std::string, std::shared_ptr<zim::Archive>> m_archives;
+  using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
+  std::unique_ptr<ArchiveCache> mp_archiveCache;
+  using SearcherCache = MultiKeyCache<std::string, std::shared_ptr<ZimSearcher>>;
+  std::unique_ptr<SearcherCache> mp_searcherCache;
   std::vector<kiwix::Bookmark> m_bookmarks;
   Xapian::WritableDatabase m_bookDB;
 
@@ -85,7 +108,9 @@ struct Library::Impl
 };
 
 Library::Impl::Impl()
-  : m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
+  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 1), 1))),
+    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", 1), 1))),
+    m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
 {
 }
 
@@ -139,7 +164,7 @@ bool Library::addBook(const Book& book)
   try {
     auto& oldbook = mp_impl->m_books.at(book.getId());
     if ( ! booksReferToTheSameArchive(oldbook, book) ) {
-      dropReader(book.getId());
+      dropCache(book.getId());
     }
     oldbook.update(book); // XXX: This may have no effect if oldbook is readonly
                           // XXX: Then m_bookDB will become out-of-sync with
@@ -150,6 +175,13 @@ bool Library::addBook(const Book& book)
     auto& newEntry = mp_impl->m_books[book.getId()];
     static_cast<Book&>(newEntry) = book;
     newEntry.lastUpdatedRevision = mp_impl->m_revision;
+    size_t new_cache_size = std::ceil(mp_impl->getBookCount(true, true)*0.1);
+    if (getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", -1) <= 0) {
+      mp_impl->mp_archiveCache->setMaxSize(new_cache_size);
+    }
+    if (getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", -1) <= 0) {
+      mp_impl->mp_searcherCache->setMaxSize(new_cache_size);
+    }
     return true;
   }
 }
@@ -173,17 +205,23 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 }
 
 
-void Library::dropReader(const std::string& id)
+void Library::dropCache(const std::string& id)
 {
-  mp_impl->m_readers.erase(id);
-  mp_impl->m_archives.erase(id);
+  mp_impl->mp_archiveCache->drop(id);
+  mp_impl->mp_searcherCache->drop(id);
 }
 
 bool Library::removeBookById(const std::string& id)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
   mp_impl->m_bookDB.delete_document("Q" + id);
-  dropReader(id);
+  dropCache(id);
+  // We do not change the cache size here
+  // Most of the time, the book is remove in case of library refresh, it is
+  // often associated with addBook calls (which will properly set the cache size)
+  // Having a too big cache is not a problem here (or it would have been before)
+  // (And setMaxSize doesn't actually reduce the cache size, extra cached items
+  //  will be removed in put or getOrPut).
   return mp_impl->m_books.erase(id) == 1;
 }
 
@@ -242,35 +280,49 @@ const Book& Library::getBookByPath(const std::string& path) const
 
 std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
-  try {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return mp_impl->m_readers.at(id);
-  } catch (std::out_of_range& e) {}
-
-  const auto archive = getArchiveById(id);
-  if ( !archive )
+  auto archive = getArchiveById(id);
+  if(archive) {
+    return std::make_shared<Reader>(archive);
+  } else {
     return nullptr;
-
-  const shared_ptr<Reader> reader(new Reader(archive, true));
-  std::lock_guard<std::mutex> lock(m_mutex);
-  mp_impl->m_readers[id] = reader;
-  return reader;
+  }
 }
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
   try {
-    return mp_impl->m_archives.at(id);
-  } catch (std::out_of_range& e) {}
-
-  auto book = getBookById(id);
-  if (!book.isPathValid())
+    return mp_impl->mp_archiveCache->getOrPut(id,
+    [&](){
+      auto book = getBookById(id);
+      if (!book.isPathValid()) {
+        throw std::invalid_argument("");
+      }
+      return std::make_shared<zim::Archive>(book.getPath());
+    });
+  } catch (std::invalid_argument&) {
     return nullptr;
+  }
+}
 
-  auto sptr = make_shared<zim::Archive>(book.getPath());
-  mp_impl->m_archives[id] = sptr;
-  return sptr;
+std::shared_ptr<ZimSearcher> Library::getSearcherByIds(const BookIdSet& ids)
+{
+  assert(!ids.empty());
+  try {
+    return mp_impl->mp_searcherCache->getOrPut(ids,
+    [&](){
+      std::vector<zim::Archive> archives;
+      for(auto& id:ids) {
+        auto archive = getArchiveById(id);
+        if(!archive) {
+          throw std::invalid_argument("");
+        }
+        archives.push_back(*archive);
+      }
+      return std::make_shared<ZimSearcher>(zim::Searcher(archives));
+    });
+  } catch (std::invalid_argument&) {
+    return nullptr;
+  }
 }
 
 unsigned int Library::getBookCount(const bool localBooks,

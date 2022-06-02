@@ -26,6 +26,7 @@
 #include <memory>
 #include <mutex>
 #include <zim/archive.h>
+#include <zim/search.h>
 
 #include "book.h"
 #include "bookmark.h"
@@ -140,6 +141,22 @@ private: // functions
     bool accept(const Book& book) const;
 };
 
+
+class ZimSearcher : public zim::Searcher
+{
+  public:
+    explicit ZimSearcher(zim::Searcher&& searcher)
+      : zim::Searcher(searcher)
+    {}
+
+    std::unique_lock<std::mutex> getLock() {
+      return std::unique_lock<std::mutex>(m_mutex);
+    }
+    virtual ~ZimSearcher() = default;
+  private:
+    std::mutex m_mutex;
+};
+
 /**
  * A Library store several books.
  */
@@ -152,6 +169,7 @@ class Library
   typedef uint64_t Revision;
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
+  typedef std::set<std::string> BookIdSet;
 
  public:
   Library();
@@ -207,6 +225,10 @@ class Library
 
   DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
+  std::shared_ptr<ZimSearcher> getSearcherById(const std::string& id) {
+    return getSearcherByIds(BookIdSet{id});
+  }
+  std::shared_ptr<ZimSearcher> getSearcherByIds(const BookIdSet& ids);
 
   /**
    * Remove a book from the library.
@@ -338,7 +360,7 @@ private: // functions
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
   void updateBookDB(const Book& book);
-  void dropReader(const std::string& bookId);
+  void dropCache(const std::string& bookId);
 
 private: //data
   std::unique_ptr<Impl> mp_impl;

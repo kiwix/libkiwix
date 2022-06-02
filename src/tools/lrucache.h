@@ -40,6 +40,7 @@
 
 #include <map>
 #include <list>
+#include <set>
 #include <cstddef>
 #include <stdexcept>
 #include <cassert>
@@ -138,12 +139,26 @@ public: // functions
     return _cache_items_map.size();
   }
 
+  size_t setMaxSize(size_t new_size) {
+    size_t previous = _max_size;
+    _max_size = new_size;
+    return previous;
+  }
+
+  std::set<key_t> keys() const  {
+    std::set<key_t> keys;
+    for(auto& item:_cache_items_map) {
+      keys.insert(item.first);
+    }
+    return keys;
+  }
+
 private: // functions
   void putMissing(const key_t& key, const value_t& value) {
     assert(_cache_items_map.find(key) == _cache_items_map.end());
     _cache_items_list.push_front(key_value_pair_t(key, value));
     _cache_items_map[key] = _cache_items_list.begin();
-    if (_cache_items_map.size() > _max_size) {
+    while (_cache_items_map.size() > _max_size) {
       _cache_items_map.erase(_cache_items_list.back().first);
       _cache_items_list.pop_back();
     }

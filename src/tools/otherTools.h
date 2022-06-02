@@ -23,8 +23,11 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdlib>
 #include <zim/zim.h>
 #include <mustache.hpp>
+
+#include "stringTools.h"
 
 namespace pugi {
   class xml_node;
@@ -53,6 +56,20 @@ namespace kiwix
   kainjow::mustache::data onlyAsNonEmptyMustacheValue(const std::string& s);
 
   std::string render_template(const std::string& template_str, kainjow::mustache::data data);
+
+  template<typename T>
+  T getEnvVar(const char* name, const T& defaultValue)
+  {
+    try {
+      const char* envString = std::getenv(name);
+      if (envString == nullptr) {
+        throw std::runtime_error("Environment variable not set");
+      }
+      return extractFromString<T>(envString);
+    } catch (...) {}
+
+    return defaultValue;
+  }
 }
 
 #endif

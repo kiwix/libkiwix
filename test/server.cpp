@@ -133,6 +133,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   server->setNbThreads(2);
   server->setVerbose(false);
   server->setTaskbar(withTaskbar, withTaskbar);
+  server->setMultiZimSearchLimit(3);
   if (!indexTemplateString.empty()) {
     server->setIndexTemplateString(indexTemplateString);
   }
@@ -156,6 +157,7 @@ protected:
   const int PORT = 8001;
   const ZimFileServer::FilePathCollection ZIMFILES {
     "./test/zimfile.zim",
+    "./test/example.zim",
     "./test/poor.zim",
     "./test/corner_cases.zim"
   };
@@ -394,6 +396,10 @@ const char* urls400[] = {
   "/ROOT/search?content=zimfile",
   "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT/search?content=non-existing-book&pattern=asd<qwerty",
+  "/ROOT/search?books.name=non-exsitent-book&pattern=asd<qwerty",
+  "/ROOT/search?books.id=non-exsitent-id&pattern=asd<qwerty",
+  "/ROOT/search?books.filter.lang=unk&pattern=asd<qwerty",
+  "/ROOT/search?pattern=foo",
   "/ROOT/search?pattern"
 };
 
@@ -899,7 +905,7 @@ TEST_F(ServerTest, 400WithBodyTesting)
       The requested URL "/ROOT/search" is not a valid request.
     </p>
     <p>
-      No query provided.
+      Too many books requested (4) where limit is 3
     </p>
 )"  },
     { /* url */ "/ROOT/search?content=zimfile",
@@ -919,7 +925,7 @@ TEST_F(ServerTest, 400WithBodyTesting)
       The requested URL "/ROOT/search?content=non-existing-book&pattern=asdfqwerty" is not a valid request.
     </p>
     <p>
-      The requested book doesn't exist.
+      No such book: non-existing-book
     </p>
 )"  },
     { /* url */ "/ROOT/search?content=non-existing-book&pattern=a\"<script foo>",
@@ -929,19 +935,29 @@ TEST_F(ServerTest, 400WithBodyTesting)
       The requested URL "/ROOT/search?content=non-existing-book&pattern=a"&lt;script foo&gt;" is not a valid request.
     </p>
     <p>
-      The requested book doesn't exist.
+      No such book: non-existing-book
     </p>
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate
     // between `pattern` and `pattern=`
-    { /* url */ "/ROOT/search?pattern",
+    { /* url */ "/ROOT/search?books.filter.lang=eng&pattern",
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?pattern=" is not a valid request.
+      The requested URL "/ROOT/search?books.filter.lang=eng&pattern=" is not a valid request.
     </p>
     <p>
       No query provided.
+    </p>
+)"  },
+    { /* url */ "/ROOT/search?pattern=foo",
+      expected_body==R"(
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL "/ROOT/search?pattern=foo" is not a valid request.
+    </p>
+    <p>
+      Too many books requested (4) where limit is 3
     </p>
 )"  },
   };
@@ -1590,6 +1606,9 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
   return true;
 }
 
+#define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
+#define  EXAMPLEZIMID    "5dc0b3af-5df2-0925-f0ca-d2bf75e78af6"
+
 TEST_F(TaskbarlessServerTest, searchResults)
 {
   struct TestData
@@ -1601,7 +1620,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       bool selected;
     };
 
-    std::string pattern;
+    std::string query;
     int start;
     size_t resultsPerPage;
     size_t totalResultCount;
@@ -1609,9 +1628,9 @@ TEST_F(TaskbarlessServerTest, searchResults)
     std::vector<std::string> results;
     std::vector<PaginationEntry> pagination;
 
-    static std::string makeUrl(const std::string pattern, int start, size_t resultsPerPage)
+    static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
     {
-      std::string url = "/ROOT/search?pattern=" + pattern + "&content=zimfile";
+      std::string url = "/ROOT/search?" + query;
 
       if ( start >= 0 ) {
         url += "&start=" + to_string(start);
@@ -1624,15 +1643,23 @@ TEST_F(TaskbarlessServerTest, searchResults)
       return url;
     }
 
+    std::string getPattern() const
+    {
+      const std::string p = "pattern=";
+      const size_t i = query.find(p);
+      std::string r = query.substr(i + p.size());
+      return r.substr(0, r.find("&"));
+    }
+
     std::string url() const
     {
-      return makeUrl(pattern, start, resultsPerPage);
+      return makeUrl(query, start, resultsPerPage);
     }
 
     std::string expectedHeader() const
     {
       if ( totalResultCount == 0 ) {
-        return "\n        No results were found for <b>\"" + pattern + "\"</b>";
+        return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
       }
 
       std::string header = R"(  Results
@@ -1649,7 +1676,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
       header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
       header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
-      header = replace(header, "PATTERN",     pattern);
+      header = replace(header, "PATTERN",     getPattern());
       return header;
     }
 
@@ -1677,7 +1704,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       std::ostringstream oss;
       oss << "\n        <ul>\n";
       for ( const auto& p : pagination ) {
-        const auto url = makeUrl(pattern, p.start, resultsPerPage);
+        const auto url = makeUrl(query, p.start, resultsPerPage);
         oss << "            <li>\n";
         oss << "              <a ";
         if ( p.selected ) {
@@ -1695,7 +1722,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
     std::string expectedHtml() const
     {
       return makeSearchResultsHtml(
-               pattern,
+               getPattern(),
                expectedHeader(),
                expectedResultsString(),
                expectedFooter()
@@ -1768,7 +1795,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
   const TestData testData[] = {
     {
-      /* pattern */          "velomanyunkan",
+      /* query */          "pattern=velomanyunkan&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
@@ -1778,7 +1805,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
     },
 
     {
-      /* pattern */          "razaf",
+      /* query */          "pattern=razaf&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 1,
@@ -1797,7 +1824,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "yellow",
+      /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
@@ -1825,7 +1852,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
@@ -1835,7 +1862,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1859,7 +1886,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            5,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1884,7 +1911,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            10,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1910,7 +1937,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            15,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1937,7 +1964,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */            "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            20,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1964,7 +1991,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            25,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -1991,7 +2018,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            30,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -2017,7 +2044,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            35,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -2042,7 +2069,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            40,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -2065,7 +2092,7 @@ R"SEARCHRESULT(
     },
 
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            21,
       /* resultsPerPage */   3,
       /* totalResultCount */ 44,
@@ -2094,7 +2121,7 @@ R"SEARCHRESULT(
     // This test-point only documents how the current implementation
     // works, not how it should work!
     {
-      /* pattern */          "jazz",
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            45,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
@@ -2107,6 +2134,148 @@ R"SEARCHRESULT(
         { "7", 30, false },
         { "8", 35, false },
         { "9", 40, false  },
+      }
+    },
+
+    // We must return results from the two books
+    {
+      /* query */          "pattern=travel"
+                           "&books.id=" RAYCHARLESZIMID
+                           "&books.id=" EXAMPLEZIMID,
+      /* start */            0,
+      /* resultsPerPage */   10,
+      /* totalResultCount */ 2,
+      /* firstResultIndex */ 1,
+      /* results */          {
+R"SEARCHRESULT(
+            <a href="/ROOT/zimfile/A/If_You_Go_Away">
+              If You Go Away
+            </a>
+              <cite>...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......</cite>
+              <div class="book-title">from Ray Charles</div>
+              <div class="informations">204 words</div>
+)SEARCHRESULT",
+
+R"SEARCHRESULT(
+            <a href="/ROOT/example/Wikibooks.html">
+              Wikibooks
+            </a>
+              <cite>...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......</cite>
+              <div class="book-title">from Wikibooks</div>
+              <div class="informations">538 words</div>
+)SEARCHRESULT"
+      },
+      /* pagination */       {}
+    },
+
+    // Only RayCharles is in English.
+    // [TODO] We should extend our test data to have another zim file in english returning results.
+    {
+          /* query */          "pattern=travel"
+                               "&books.filter.lang=eng",
+          /* start */            0,
+          /* resultsPerPage */   10,
+          /* totalResultCount */ 1,
+          /* firstResultIndex */ 1,
+          /* results */          {
+R"SEARCHRESULT(
+            <a href="/ROOT/zimfile/A/If_You_Go_Away">
+              If You Go Away
+            </a>
+              <cite>...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......</cite>
+              <div class="book-title">from Ray Charles</div>
+              <div class="informations">204 words</div>
+)SEARCHRESULT",
+          },
+          /* pagination */       {}
+        },
+
+    // Adding a book (without match) doesn't change the results
+    {
+      /* query */          "pattern=jazz"
+                           "&books.id=" RAYCHARLESZIMID
+                           "&books.id=" EXAMPLEZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   100,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
+    },
+
+    {
+      /* query */          "pattern=jazz"
+                           "&books.filter.lang=eng",
+      /* start */            -1,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* query */          "pattern=jazz"
+                           "&books.filter.tag=wikipedia",
+      /* start */            -1,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
+      }
+    },
+
+    {
+      /* query */          "pattern=jazz"
+                           "&books.filter.lang=eng"
+                           "&books.filter.title=Ray%20Charles",
+      /* start */            -1,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
       }
     },
   };

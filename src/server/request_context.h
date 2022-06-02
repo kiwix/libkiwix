@@ -25,6 +25,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <vector>
 #include <stdexcept>
 
 #include "byte_range.h"
@@ -69,7 +70,11 @@ class RequestContext {
     std::string get_header(const std::string& name) const;
     template<typename T=std::string>
     T get_argument(const std::string& name) const {
-        return extractFromString<T>(arguments.at(name));
+        return extractFromString<T>(get_argument(name));
+    }
+
+    std::vector<std::string> get_arguments(const std::string& name) const {
+      return arguments.at(name);
     }
 
     template<class T>
@@ -86,7 +91,27 @@ class RequestContext {
     std::string get_url() const;
     std::string get_url_part(int part) const;
     std::string get_full_url() const;
-    std::string get_query() const;
+
+    std::string get_query(bool mustEncode = false) const {
+      return get_query([](const std::string& key) {return true;}, mustEncode);
+    }
+
+    template<class F>
+    std::string get_query(F filter, bool mustEncode) const {
+      std::string q;
+      const char* sep = "";
+      auto encode = [=](const std::string& value) { return mustEncode?urlEncode(value, true):value; };
+      for ( const auto& a : arguments ) {
+        if (!filter(a.first)) {
+          continue;
+        }
+        for (const auto& v: a.second) {
+          q += sep + encode(a.first) + '=' + encode(v);
+          sep = "&";
+        }
+      }
+      return q;
+    }
 
     ByteRange get_range() const;
 
@@ -105,7 +130,7 @@ class RequestContext {
 
     ByteRange byteRange_;
     std::map<std::string, std::string> headers;
-    std::map<std::string, std::string> arguments;
+    std::map<std::string, std::vector<std::string>> arguments;
 
   private: // functions
     static MHD_Result fill_header(void *, enum MHD_ValueKind, const char*, const char*);
