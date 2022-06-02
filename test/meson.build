@@ -15,7 +15,10 @@ tests = [
 ]
 
 if build_machine.system() != 'windows'
-  tests += ['server']
+  tests += [
+      'server',
+      'server_html_search'
+  ]
 endif
 
 
