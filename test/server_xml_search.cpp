@@ -499,12 +499,25 @@ TEST_F(TaskbarlessServerTest, searchResults)
       return url;
     }
 
-    std::string getPattern() const
+    std::string extractQueryValue(const std::string& key) const
     {
-      const std::string p = "pattern=";
+      const std::string p = key + "=";
       const size_t i = query.find(p);
+      if (i == std::string::npos) {
+        return "";
+      }
       std::string r = query.substr(i + p.size());
       return r.substr(0, r.find("&"));
+    }
+
+    std::string getPattern() const
+    {
+      return extractQueryValue("pattern");
+    }
+
+    std::string getLang() const
+    {
+      return extractQueryValue("books.filter.lang");
     }
 
     std::string url() const
@@ -522,7 +535,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
     <opensearch:itemsPerPage>ITEMCOUNT</opensearch:itemsPerPage>
     <atom:link rel="search" type="application/opensearchdescription+xml" href="/ROOT/search/searchdescription.xml"/>
     <opensearch:Query role="request"
-      searchTerms="PATTERN"
+      searchTerms="PATTERN"LANGQUERY
       startIndex="FIRSTRESULT"
       count="ITEMCOUNT"
     />)";
@@ -533,6 +546,12 @@ TEST_F(TaskbarlessServerTest, searchResults)
       header = replace(header, "ITEMCOUNT",  to_string(realResultsPerPage));
       header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
       header = replace(header, "PATTERN",     getPattern());
+      auto queryLang = getLang();
+      if (queryLang.empty()) {
+        header = replace(header, "LANGQUERY", "");
+      } else {
+        header = replace(header, "LANGQUERY", "\n      language=\""+queryLang+"\"");
+      }
       return header;
     }
 

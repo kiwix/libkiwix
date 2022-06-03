@@ -87,6 +87,16 @@ void SearchRenderer::setSearchProtocolPrefix(const std::string& prefix)
   this->searchProtocolPrefix = prefix;
 }
 
+std::string extractValueFromQuery(const std::string& query, const std::string& key) {
+  const std::string p = key + "=";
+  const size_t i = query.find(p);
+  if (i == std::string::npos) {
+    return "";
+  }
+  std::string r = query.substr(i + p.size());
+  return r.substr(0, r.find("&"));
+}
+
 kainjow::mustache::data buildQueryData
 (
   const std::string& searchProtocolPrefix,
@@ -99,6 +109,10 @@ kainjow::mustache::data buildQueryData
   ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern, true);
   ss << "&" << bookQuery;
   query.set("unpaginatedQuery", ss.str());
+  auto lang = extractValueFromQuery(bookQuery, "books.filter.lang");
+  if(!lang.empty()) {
+    query.set("lang", lang);
+  }
   return query;
 }
 
