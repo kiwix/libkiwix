@@ -753,10 +753,11 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       return response;
     }
 
-    auto start = 0;
+    auto start = 1;
     try {
       start = request.get_argument<unsigned int>("start");
     } catch (const std::exception&) {}
+    start = max(1, start);
 
     auto pageLength = 25;
     try {
@@ -770,7 +771,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     }
 
     /* Get the results */
-    SearchRenderer renderer(search->getResults(start, pageLength), mp_nameMapper, mp_library, start,
+    SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
     renderer.setSearchBookQuery(searchInfo.bookFilterQuery);

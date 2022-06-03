@@ -773,7 +773,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
-      /* firstResultIndex */ 0,
+      /* firstResultIndex */ 1,
       /* results */          {},
       /* pagination */       {}
     },
@@ -799,6 +799,58 @@ TEST_F(TaskbarlessServerTest, searchResults)
     {
       /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 2,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        SEARCH_RESULT(
+          /*link*/       "/ROOT/zimfile/A/Eleanor_Rigby",
+          /*title*/      "Eleanor Rigby",
+          /*snippet*/    R"SNIPPET(...-side "<b>Yellow</b> Submarine" (double A-side) Released 5 August 1966 (1966-08-05) Format 7-inch single Recorded 28–29 April &amp; 6 June 1966 Studio EMI, London Genre Baroque pop, art rock Length 2:08 Label Parlophone (UK), Capitol (US) Songwriter(s) Lennon–McCartney Producer(s) George Martin The Beatles singles chronology "Paperback Writer" (1966) "Eleanor Rigby" / "<b>Yellow</b> Submarine" (1966) "Strawberry Fields Forever" / "Penny Lane" (1967) Music video "Eleanor Rigby" on YouTube The song continued the......)SNIPPET",
+          /*bookTitle*/  "Ray Charles",
+          /*wordCount*/  "201"
+        ),
+
+        SEARCH_RESULT(
+          /*link*/       "/ROOT/zimfile/A/If_You_Go_Away",
+          /*title*/      "If You Go Away",
+          /*snippet*/    R"SNIPPET(...standard and has been recorded by many artists, including Greta Keller, for whom some say McKuen wrote the lyrics. "If You Go Away" Single by Damita Jo from the album If You Go Away B-side "<b>Yellow</b> Days" Released 1966 Genre Jazz Length 3:49 Label Epic Records Songwriter(s) Jacques Brel, Rod McKuen Producer(s) Bob Morgan Damita Jo singles chronology "Gotta Travel On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the......)SNIPPET",
+          /*bookTitle*/  "Ray Charles",
+          /*wordCount*/  "204"
+        )
+      },
+      /* pagination */ {}
+    },
+
+    {
+      /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
+      /* start */            0,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 2,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        SEARCH_RESULT(
+          /*link*/       "/ROOT/zimfile/A/Eleanor_Rigby",
+          /*title*/      "Eleanor Rigby",
+          /*snippet*/    R"SNIPPET(...-side "<b>Yellow</b> Submarine" (double A-side) Released 5 August 1966 (1966-08-05) Format 7-inch single Recorded 28–29 April &amp; 6 June 1966 Studio EMI, London Genre Baroque pop, art rock Length 2:08 Label Parlophone (UK), Capitol (US) Songwriter(s) Lennon–McCartney Producer(s) George Martin The Beatles singles chronology "Paperback Writer" (1966) "Eleanor Rigby" / "<b>Yellow</b> Submarine" (1966) "Strawberry Fields Forever" / "Penny Lane" (1967) Music video "Eleanor Rigby" on YouTube The song continued the......)SNIPPET",
+          /*bookTitle*/  "Ray Charles",
+          /*wordCount*/  "201"
+        ),
+
+        SEARCH_RESULT(
+          /*link*/       "/ROOT/zimfile/A/If_You_Go_Away",
+          /*title*/      "If You Go Away",
+          /*snippet*/    R"SNIPPET(...standard and has been recorded by many artists, including Greta Keller, for whom some say McKuen wrote the lyrics. "If You Go Away" Single by Damita Jo from the album If You Go Away B-side "<b>Yellow</b> Days" Released 1966 Genre Jazz Length 3:49 Label Epic Records Songwriter(s) Jacques Brel, Rod McKuen Producer(s) Bob Morgan Damita Jo singles chronology "Gotta Travel On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the......)SNIPPET",
+          /*bookTitle*/  "Ray Charles",
+          /*wordCount*/  "204"
+        )
+      },
+      /* pagination */ {}
+    },
+
+    {
+      /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
+      /* start */            1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 1,
@@ -858,7 +910,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            5,
+      /* start */            6,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 6,
@@ -883,7 +935,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            10,
+      /* start */            11,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 11,
@@ -909,7 +961,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            15,
+      /* start */            16,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 16,
@@ -936,7 +988,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */            "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            20,
+      /* start */            21,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 21,
@@ -963,7 +1015,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            25,
+      /* start */            26,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 26,
@@ -990,7 +1042,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            30,
+      /* start */            31,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 31,
@@ -1016,7 +1068,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            35,
+      /* start */            36,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 36,
@@ -1041,7 +1093,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            40,
+      /* start */            41,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 41,
@@ -1064,7 +1116,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            21,
+      /* start */            22,
       /* resultsPerPage */   3,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 22,
@@ -1093,7 +1145,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
     // works, not how it should work!
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            45,
+      /* start */            46,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 46,
