@@ -118,6 +118,7 @@ class RequestContext {
     bool can_compress() const { return acceptEncodingGzip; }
 
     std::string get_user_language() const;
+    std::string get_requested_format() const;
 
   private: // data
     std::string full_url;

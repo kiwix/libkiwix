@@ -146,17 +146,17 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
   return r;
 }
 
-HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
-                                             const RequestContext& request,
-                                             int httpStatusCode,
-                                             const std::string& pageTitleMsgId,
-                                             const std::string& headingMsgId,
-                                             const std::string& cssUrl)
+HTTPErrorResponse::HTTPErrorResponse(const InternalServer& server,
+                                     const RequestContext& request,
+                                     int httpStatusCode,
+                                     const std::string& pageTitleMsgId,
+                                     const std::string& headingMsgId,
+                                     const std::string& cssUrl)
   : ContentResponseBlueprint(&server,
                              &request,
                              httpStatusCode,
-                             "text/html; charset=utf-8",
-                             RESOURCE::templates::error_html)
+                             request.get_requested_format() == "html" ? "text/html; charset=utf-8" : "application/xml; charset=utf-8",
+                             request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml)
 {
   kainjow::mustache::list emptyList;
   this->m_data = kainjow::mustache::object{
@@ -167,51 +167,51 @@ HTTPErrorHtmlResponse::HTTPErrorHtmlResponse(const InternalServer& server,
   };
 }
 
-HTTP404HtmlResponse::HTTP404HtmlResponse(const InternalServer& server,
-                                             const RequestContext& request)
-  : HTTPErrorHtmlResponse(server,
-                          request,
-                          MHD_HTTP_NOT_FOUND,
-                          "404-page-title",
-                          "404-page-heading")
+HTTP404Response::HTTP404Response(const InternalServer& server,
+                                 const RequestContext& request)
+  : HTTPErrorResponse(server,
+                      request,
+                      MHD_HTTP_NOT_FOUND,
+                      "404-page-title",
+                      "404-page-heading")
 {
 }
 
-HTTPErrorHtmlResponse& HTTP404HtmlResponse::operator+(UrlNotFoundMsg /*unused*/)
+HTTPErrorResponse& HTTP404Response::operator+(UrlNotFoundMsg /*unused*/)
 {
   const std::string requestUrl = m_request.get_full_url();
   return *this + ParameterizedMessage("url-not-found", {{"url", requestUrl}});
 }
 
-HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const std::string& msg)
+HTTPErrorResponse& HTTPErrorResponse::operator+(const std::string& msg)
 {
   m_data["details"].push_back({"p", msg});
   return *this;
 }
 
-HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+(const ParameterizedMessage& details)
+HTTPErrorResponse& HTTPErrorResponse::operator+(const ParameterizedMessage& details)
 {
   return *this + details.getText(m_request.get_user_language());
 }
 
-HTTPErrorHtmlResponse& HTTPErrorHtmlResponse::operator+=(const ParameterizedMessage& details)
+HTTPErrorResponse& HTTPErrorResponse::operator+=(const ParameterizedMessage& details)
 {
   // operator+() is already a state-modifying operator (akin to operator+=)
   return *this + details;
 }
 
 
-HTTP400HtmlResponse::HTTP400HtmlResponse(const InternalServer& server,
-                                         const RequestContext& request)
-  : HTTPErrorHtmlResponse(server,
-                          request,
-                          MHD_HTTP_BAD_REQUEST,
-                          "400-page-title",
-                          "400-page-heading")
+HTTP400Response::HTTP400Response(const InternalServer& server,
+                                 const RequestContext& request)
+  : HTTPErrorResponse(server,
+                      request,
+                      MHD_HTTP_BAD_REQUEST,
+                      "400-page-title",
+                      "400-page-heading")
 {
 }
 
-HTTPErrorHtmlResponse& HTTP400HtmlResponse::operator+(InvalidUrlMsg /*unused*/)
+HTTPErrorResponse& HTTP400Response::operator+(InvalidUrlMsg /*unused*/)
 {
   std::string requestUrl = m_request.get_full_url();
   const auto query = m_request.get_query();
@@ -222,19 +222,19 @@ HTTPErrorHtmlResponse& HTTP400HtmlResponse::operator+(InvalidUrlMsg /*unused*/)
   return *this + msgTmpl.render({"url", requestUrl});
 }
 
-HTTP500HtmlResponse::HTTP500HtmlResponse(const InternalServer& server,
-                                         const RequestContext& request)
-  : HTTPErrorHtmlResponse(server,
-                          request,
-                          MHD_HTTP_INTERNAL_SERVER_ERROR,
-                          "500-page-title",
-                          "500-page-heading")
+HTTP500Response::HTTP500Response(const InternalServer& server,
+                                 const RequestContext& request)
+  : HTTPErrorResponse(server,
+                      request,
+                      MHD_HTTP_INTERNAL_SERVER_ERROR,
+                      "500-page-title",
+                      "500-page-heading")
 {
   // operator+() is a state-modifying operator (akin to operator+=)
   *this + "An internal server error occured. We are sorry about that :/";
 }
 
-std::unique_ptr<ContentResponse> HTTP500HtmlResponse::generateResponseObject() const
+std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
 {
   // We want a 500 response to be a minimalistic one (so that the server doesn't
   // have to provide additional resources required for its proper rendering)

@@ -87,6 +87,16 @@ void SearchRenderer::setSearchProtocolPrefix(const std::string& prefix)
   this->searchProtocolPrefix = prefix;
 }
 
+std::string extractValueFromQuery(const std::string& query, const std::string& key) {
+  const std::string p = key + "=";
+  const size_t i = query.find(p);
+  if (i == std::string::npos) {
+    return "";
+  }
+  std::string r = query.substr(i + p.size());
+  return r.substr(0, r.find("&"));
+}
+
 kainjow::mustache::data buildQueryData
 (
   const std::string& searchProtocolPrefix,
@@ -99,6 +109,10 @@ kainjow::mustache::data buildQueryData
   ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern, true);
   ss << "&" << bookQuery;
   query.set("unpaginatedQuery", ss.str());
+  auto lang = extractValueFromQuery(bookQuery, "books.filter.lang");
+  if(!lang.empty()) {
+    query.set("lang", lang);
+  }
   return query;
 }
 
@@ -162,7 +176,7 @@ kainjow::mustache::data buildPagination(
   return pagination;
 }
 
-std::string SearchRenderer::getHtml()
+std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
 {
   // Build the results list
   kainjow::mustache::data items{kainjow::mustache::data::type::list};
@@ -185,8 +199,8 @@ std::string SearchRenderer::getHtml()
   results.set("items", items);
   results.set("count", kiwix::beautifyInteger(estimatedResultCount));
   results.set("hasResults", estimatedResultCount != 0);
-  results.set("start", kiwix::beautifyInteger(resultStart+1));
-  results.set("end", kiwix::beautifyInteger(min(resultStart+pageLength, estimatedResultCount)));
+  results.set("start", kiwix::beautifyInteger(resultStart));
+  results.set("end", kiwix::beautifyInteger(min(resultStart+pageLength-1, estimatedResultCount)));
 
   // pagination
   auto pagination = buildPagination(
@@ -201,13 +215,14 @@ std::string SearchRenderer::getHtml()
     searchBookQuery
   );
 
-  std::string template_str = RESOURCE::templates::search_result_html;
-  kainjow::mustache::mustache tmpl(template_str);
 
   kainjow::mustache::data allData;
+  allData.set("protocolPrefix", protocolPrefix);
   allData.set("results", results);
   allData.set("pagination", pagination);
   allData.set("query", query);
+
+  kainjow::mustache::mustache tmpl(tmpl_str);
 
   std::stringstream ss;
   tmpl.render(allData, [&ss](const std::string& str) { ss << str; });
@@ -216,5 +231,16 @@ std::string SearchRenderer::getHtml()
   }
   return ss.str();
 }
+
+std::string SearchRenderer::getHtml()
+{
+  return renderTemplate(RESOURCE::templates::search_result_html);
+}
+
+std::string SearchRenderer::getXml()
+{
+  return renderTemplate(RESOURCE::templates::search_result_xml);
+}
+
 
 }

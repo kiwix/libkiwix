@@ -43,7 +43,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   try {
     url  = request.get_url_part(2);
   } catch (const std::out_of_range&) {
-    return HTTP404HtmlResponse(*this, request)
+    return HTTP404Response(*this, request)
            + urlNotFoundMsg;
   }
 
@@ -70,7 +70,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   } else if (url == "illustration") {
     return handle_catalog_v2_illustration(request);
   } else {
-    return HTTP404HtmlResponse(*this, request)
+    return HTTP404Response(*this, request)
            + urlNotFoundMsg;
   }
 }
@@ -112,7 +112,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   try {
     mp_library->getBookById(entryId);
   } catch (const std::out_of_range&) {
-    return HTTP404HtmlResponse(*this, request)
+    return HTTP404Response(*this, request)
            + urlNotFoundMsg;
   }
 
@@ -161,7 +161,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
     auto illustration = book.getIllustration(size);
     return ContentResponse::build(*this, illustration->getData(), illustration->mimeType);
   } catch(...) {
-    return HTTP404HtmlResponse(*this, request)
+    return HTTP404Response(*this, request)
            + urlNotFoundMsg;
   }
 }
