@@ -50,4 +50,5 @@ templates/catalog_v2_categories.xml
 templates/catalog_v2_languages.xml
 templates/url_of_search_results_css
 opensearchdescription.xml
+ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml

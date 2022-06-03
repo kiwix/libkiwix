@@ -519,6 +519,14 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (request.get_url() == "/search")
       return handle_search(request);
 
+    if (request.get_url() == "/search/searchdescription.xml") {
+      return ContentResponse::build(
+        *this,
+        RESOURCE::ft_opensearchdescription_xml,
+        get_default_data(),
+        "application/opensearchdescription+xml");
+    }
+
     if (request.get_url() == "/suggest")
      return handle_suggest(request);
 
