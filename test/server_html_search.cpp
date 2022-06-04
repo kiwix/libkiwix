@@ -528,7 +528,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 //
 // 1. Snippets are excluded from the plain-text comparison of actual and
 //    expected HTML strings. This is done with the help of the
-//    function maskSnippetsInSearchResults()
+//    function maskSnippetsInHtmlSearchResults()
 //
 // 2. Snippets are checked separately. If a plain-text comparison fails
 //    then a weaker comparison is attempted. Currently it works by testing
@@ -546,7 +546,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 //    - Non-overlapping snippets can be joined with a " ... " in between.
 //
 
-std::string maskSnippetsInSearchResults(std::string s)
+std::string maskSnippetsInHtmlSearchResults(std::string s)
 {
   return replace(s, "<cite>.+</cite>", "<cite>SNIPPET TEXT WAS MASKED</cite>");
 }
@@ -645,7 +645,7 @@ struct TestData
     return makeUrl(query, start, resultsPerPage);
   }
 
-  std::string expectedHeader() const
+  std::string expectedHtmlHeader() const
   {
     if ( totalResultCount == 0 ) {
       return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
@@ -669,7 +669,7 @@ struct TestData
     return header;
   }
 
-  std::string expectedResultsString() const
+  std::string expectedHtmlResultsString() const
   {
     if ( results.empty() ) {
       return "\n        ";
@@ -678,13 +678,13 @@ struct TestData
     std::string s;
     for ( const auto& r : results ) {
       s += "\n          <li>";
-      s += maskSnippetsInSearchResults(r.getHtml());
+      s += maskSnippetsInHtmlSearchResults(r.getHtml());
       s += "          </li>";
     }
     return s;
   }
 
-  std::string expectedFooter() const
+  std::string expectedHtmlFooter() const
   {
     if ( pagination.empty() ) {
       return "\n      ";
@@ -712,9 +712,9 @@ struct TestData
   {
     return makeSearchResultsHtml(
              getPattern(),
-             expectedHeader(),
-             expectedResultsString(),
-             expectedFooter()
+             expectedHtmlHeader(),
+             expectedHtmlResultsString(),
+             expectedHtmlFooter()
     );
   }
 
@@ -723,17 +723,17 @@ struct TestData
     return TestContext{ { "url", url() } };
   }
 
-  void check(const std::string& html) const
+  void checkHtml(const std::string& html) const
   {
-    EXPECT_EQ(maskSnippetsInSearchResults(html), expectedHtml())
+    EXPECT_EQ(maskSnippetsInHtmlSearchResults(html), expectedHtml())
       << testContext();
 
-    checkSnippets(extractSearchResultSnippets(html));
+    checkSnippets(extractSearchResultSnippetsFromHtml(html));
   }
 
   typedef std::vector<std::string> Snippets;
 
-  static Snippets extractSearchResultSnippets(const std::string& html)
+  static Snippets extractSearchResultSnippetsFromHtml(const std::string& html)
   {
     Snippets snippets;
     const std::regex snippetRegex("<cite>(.*)</cite>");
@@ -1313,8 +1313,9 @@ TEST_F(ServerTest, searchResults)
   };
 
   for ( const auto& t : testData ) {
-    const auto r = taskbarlessZimFileServer().GET(t.url().c_str());
-    EXPECT_EQ(r->status, 200);
-    t.check(r->body);
+    const std::string htmlSearchUrl = t.url();
+    const auto htmlRes = taskbarlessZimFileServer().GET(htmlSearchUrl.c_str());
+    EXPECT_EQ(htmlRes->status, 200);
+    t.checkHtml(htmlRes->body);
   }
 }
