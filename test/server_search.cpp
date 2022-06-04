@@ -137,6 +137,25 @@ std::string makeSearchResultsHtml(const std::string& pattern,
   return html;
 }
 
+std::string makeSearchResultsXml(const std::string& header,
+                                 const std::string& results)
+{
+  const char SEARCHRESULTS_XML_TEMPLATE[] = R"XML(<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    %HEADER%%RESULTS%
+  </channel>
+</rss>
+)XML";
+
+  std::string html = removeEOLWhitespaceMarkers(SEARCHRESULTS_XML_TEMPLATE);
+  html = replace(html, "%HEADER%", header);
+  html = replace(html, "%RESULTS%", results);
+  return html;
+}
+
 struct SearchResult
 {
   std::string link;
@@ -154,6 +173,18 @@ struct SearchResult
       + "              <cite>" + snippet + "</cite>\n"
       + "              <div class=\"book-title\">from " + bookTitle + "</div>\n"
       + "              <div class=\"informations\">" + wordCount + " words</div>\n";
+  }
+
+  std::string getXml() const
+  {
+    return std::string()
+      + "      <title>" + title + "</title>\n"
+      + "      <link>" + replace(link, "'", "&apos;") + "</link>\n"
+      + "        <description>" + snippet + "</description>\n"
+      + "        <book>\n"
+      + "          <title>" + bookTitle + "</title>\n"
+      + "        </book>\n"
+      + "        <wordCount>" + wordCount + "</wordCount>";
   }
 };
 
@@ -569,6 +600,27 @@ Snippets extractSearchResultSnippetsFromHtml(const std::string& html)
   return snippets;
 }
 
+const char SNIPPET_REGEX_FOR_XML[] = "<description>(?!Search result for)(.+)</description>";
+
+std::string maskSnippetsInXmlSearchResults(std::string s)
+{
+  return replace(s, SNIPPET_REGEX_FOR_XML, "<description>SNIPPET TEXT WAS MASKED</description>");
+}
+
+Snippets extractSearchResultSnippetsFromXml(const std::string& xml)
+{
+  Snippets snippets;
+  const std::regex snippetRegex(SNIPPET_REGEX_FOR_XML);
+  std::sregex_iterator snippetIt(xml.begin(), xml.end(), snippetRegex);
+  const std::sregex_iterator end;
+  for ( ; snippetIt != end; ++snippetIt)
+  {
+    const std::smatch snippetMatch = *snippetIt;
+    snippets.push_back(snippetMatch[1].str());
+  }
+  return snippets;
+}
+
 bool isValidSnippet(const std::string& s)
 {
   return s.size() >= 250
@@ -650,17 +702,35 @@ struct TestData
     return url;
   }
 
-  std::string getPattern() const
+  std::string extractQueryValue(const std::string& key) const
   {
-    const std::string p = "pattern=";
+    const std::string p = key + "=";
     const size_t i = query.find(p);
+    if (i == std::string::npos) {
+      return "";
+    }
     std::string r = query.substr(i + p.size());
     return r.substr(0, r.find("&"));
+  }
+
+  std::string getPattern() const
+  {
+    return extractQueryValue("pattern");
+  }
+
+  std::string getLang() const
+  {
+    return extractQueryValue("books.filter.lang");
   }
 
   std::string url() const
   {
     return makeUrl(query, start, resultsPerPage);
+  }
+
+  std::string xmlSearchUrl() const
+  {
+    return url() + "&format=xml";
   }
 
   std::string expectedHtmlHeader() const
@@ -736,9 +806,68 @@ struct TestData
     );
   }
 
+    std::string expectedXmlHeader() const
+    {
+      std::string header = R"(<title>Search: PATTERN</title>
+    <link>URL</link>
+    <description>Search result for PATTERN</description>
+    <opensearch:totalResults>RESULTCOUNT</opensearch:totalResults>
+    <opensearch:startIndex>FIRSTRESULT</opensearch:startIndex>
+    <opensearch:itemsPerPage>ITEMCOUNT</opensearch:itemsPerPage>
+    <atom:link rel="search" type="application/opensearchdescription+xml" href="/ROOT/search/searchdescription.xml"/>
+    <opensearch:Query role="request"
+      searchTerms="PATTERN"LANGQUERY
+      startIndex="FIRSTRESULT"
+      count="ITEMCOUNT"
+    />)";
+
+      const auto realResultsPerPage = resultsPerPage?resultsPerPage:25;
+      const auto url = makeUrl(query + "&format=xml", firstResultIndex, realResultsPerPage);
+      header = replace(header, "URL", replace(url, "&", "&amp;"));
+      header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
+      header = replace(header, "ITEMCOUNT",  to_string(realResultsPerPage));
+      header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
+      header = replace(header, "PATTERN",     getPattern());
+      auto queryLang = getLang();
+      if (queryLang.empty()) {
+        header = replace(header, "LANGQUERY", "");
+      } else {
+        header = replace(header, "LANGQUERY", "\n      language=\""+queryLang+"\"");
+      }
+      return header;
+    }
+
+    std::string expectedXmlResultsString() const
+    {
+      if ( results.empty() ) {
+        return "\n    ";
+      }
+
+      std::string s;
+      for ( const auto& r : results ) {
+        s += "\n    <item>\n";
+        s += maskSnippetsInXmlSearchResults(r.getXml());
+        s += "\n    </item>";
+      }
+      return s;
+    }
+
+  std::string expectedXml() const
+  {
+    return makeSearchResultsXml(
+             expectedXmlHeader(),
+             expectedXmlResultsString()
+    );
+  }
+
   TestContext testContext() const
   {
     return TestContext{ { "url", url() } };
+  }
+
+  TestContext xmlTestContext() const
+  {
+    return TestContext{ { "url", xmlSearchUrl() } };
   }
 
   void checkHtml(const std::string& html) const
@@ -747,6 +876,14 @@ struct TestData
       << testContext();
 
     checkSnippets(extractSearchResultSnippetsFromHtml(html));
+  }
+
+  void checkXml(const std::string& xml) const
+  {
+    EXPECT_EQ(maskSnippetsInXmlSearchResults(xml), expectedXml())
+      << xmlTestContext();
+
+    checkSnippets(extractSearchResultSnippetsFromXml(xml));
   }
 
   void checkSnippets(const Snippets& snippets) const
@@ -1319,5 +1456,13 @@ TEST_F(ServerTest, searchResults)
     const auto htmlRes = taskbarlessZimFileServer().GET(htmlSearchUrl.c_str());
     EXPECT_EQ(htmlRes->status, 200);
     t.checkHtml(htmlRes->body);
+
+    const std::string xmlSearchUrl = t.xmlSearchUrl();
+    const auto xmlRes1 = zfs1_->GET(xmlSearchUrl.c_str());
+    const auto xmlRes2 = taskbarlessZimFileServer().GET(xmlSearchUrl.c_str());
+    EXPECT_EQ(xmlRes1->status, 200);
+    EXPECT_EQ(xmlRes2->status, 200);
+    EXPECT_EQ(xmlRes1->body, xmlRes2->body);
+    t.checkXml(xmlRes1->body);
   }
 }
