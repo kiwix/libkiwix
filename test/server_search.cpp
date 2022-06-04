@@ -548,15 +548,17 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 
 typedef std::vector<std::string> Snippets;
 
+const char SNIPPET_REGEX_FOR_HTML[] = "<cite>(.+)</cite>";
+
 std::string maskSnippetsInHtmlSearchResults(std::string s)
 {
-  return replace(s, "<cite>.+</cite>", "<cite>SNIPPET TEXT WAS MASKED</cite>");
+  return replace(s, SNIPPET_REGEX_FOR_HTML, "<cite>SNIPPET TEXT WAS MASKED</cite>");
 }
 
 Snippets extractSearchResultSnippetsFromHtml(const std::string& html)
 {
   Snippets snippets;
-  const std::regex snippetRegex("<cite>(.*)</cite>");
+  const std::regex snippetRegex(SNIPPET_REGEX_FOR_HTML);
   std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
   const std::sregex_iterator end;
   for ( ; snippetIt != end; ++snippetIt)
