@@ -546,9 +546,25 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 //    - Non-overlapping snippets can be joined with a " ... " in between.
 //
 
+typedef std::vector<std::string> Snippets;
+
 std::string maskSnippetsInHtmlSearchResults(std::string s)
 {
   return replace(s, "<cite>.+</cite>", "<cite>SNIPPET TEXT WAS MASKED</cite>");
+}
+
+Snippets extractSearchResultSnippetsFromHtml(const std::string& html)
+{
+  Snippets snippets;
+  const std::regex snippetRegex("<cite>(.*)</cite>");
+  std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
+  const std::sregex_iterator end;
+  for ( ; snippetIt != end; ++snippetIt)
+  {
+    const std::smatch snippetMatch = *snippetIt;
+    snippets.push_back(snippetMatch[1].str());
+  }
+  return snippets;
 }
 
 bool isValidSnippet(const std::string& s)
@@ -729,22 +745,6 @@ struct TestData
       << testContext();
 
     checkSnippets(extractSearchResultSnippetsFromHtml(html));
-  }
-
-  typedef std::vector<std::string> Snippets;
-
-  static Snippets extractSearchResultSnippetsFromHtml(const std::string& html)
-  {
-    Snippets snippets;
-    const std::regex snippetRegex("<cite>(.*)</cite>");
-    std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
-    const std::sregex_iterator end;
-    for ( ; snippetIt != end; ++snippetIt)
-    {
-      const std::smatch snippetMatch = *snippetIt;
-      snippets.push_back(snippetMatch[1].str());
-    }
-    return snippets;
   }
 
   void checkSnippets(const Snippets& snippets) const
