@@ -109,7 +109,7 @@ class InternalServer {
                    bool blockExternalLinks,
                    std::string indexTemplateString,
                    int ipConnectionLimit);
-    virtual ~InternalServer() = default;
+    virtual ~InternalServer();
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
                                const char* url,
@@ -142,6 +142,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_captured_external(const RequestContext& request);
     std::unique_ptr<Response> handle_content(const RequestContext& request);
     std::unique_ptr<Response> handle_raw(const RequestContext& request);
+    std::unique_ptr<Response> handle_locally_customized_resource(const RequestContext& request);
 
     std::vector<std::string> search_catalog(const RequestContext& request,
                                             kiwix::OPDSDumper& opdsDumper);
@@ -152,6 +153,8 @@ class InternalServer {
     ETag get_matching_if_none_match_etag(const RequestContext& request) const;
     std::pair<std::string, Library::BookIdSet> selectBooks(const RequestContext& r) const;
     SearchInfo getSearchInfo(const RequestContext& r) const;
+
+    bool isLocallyCustomizedResource(const std::string& url) const;
 
   private: // data
     std::string m_addr;
@@ -175,6 +178,9 @@ class InternalServer {
 
     std::string m_server_id;
     std::string m_library_id;
+
+    class CustomizedResources;
+    std::unique_ptr<CustomizedResources> m_customizedResources;
 
     friend std::unique_ptr<Response> Response::build(const InternalServer& server);
     friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage, bool raw);
