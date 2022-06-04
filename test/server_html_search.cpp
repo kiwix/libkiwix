@@ -583,60 +583,58 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
 #define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
 #define  EXAMPLEZIMID    "5dc0b3af-5df2-0925-f0ca-d2bf75e78af6"
 
-TEST_F(ServerTest, searchResults)
+struct TestData
 {
-  struct TestData
+  struct PaginationEntry
   {
-    struct PaginationEntry
-    {
-      std::string label;
-      size_t start;
-      bool selected;
-    };
+    std::string label;
+    size_t start;
+    bool selected;
+  };
 
-    std::string query;
-    int start;
-    size_t resultsPerPage;
-    size_t totalResultCount;
-    size_t firstResultIndex;
-    std::vector<std::string> results;
-    std::vector<PaginationEntry> pagination;
+  std::string query;
+  int start;
+  size_t resultsPerPage;
+  size_t totalResultCount;
+  size_t firstResultIndex;
+  std::vector<std::string> results;
+  std::vector<PaginationEntry> pagination;
 
-    static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
-    {
-      std::string url = "/ROOT/search?" + query;
+  static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
+  {
+    std::string url = "/ROOT/search?" + query;
 
-      if ( start >= 0 ) {
-        url += "&start=" + to_string(start);
-      }
-
-      if ( resultsPerPage != 0 ) {
-        url += "&pageLength=" + to_string(resultsPerPage);
-      }
-
-      return url;
+    if ( start >= 0 ) {
+      url += "&start=" + to_string(start);
     }
 
-    std::string getPattern() const
-    {
-      const std::string p = "pattern=";
-      const size_t i = query.find(p);
-      std::string r = query.substr(i + p.size());
-      return r.substr(0, r.find("&"));
+    if ( resultsPerPage != 0 ) {
+      url += "&pageLength=" + to_string(resultsPerPage);
     }
 
-    std::string url() const
-    {
-      return makeUrl(query, start, resultsPerPage);
+    return url;
+  }
+
+  std::string getPattern() const
+  {
+    const std::string p = "pattern=";
+    const size_t i = query.find(p);
+    std::string r = query.substr(i + p.size());
+    return r.substr(0, r.find("&"));
+  }
+
+  std::string url() const
+  {
+    return makeUrl(query, start, resultsPerPage);
+  }
+
+  std::string expectedHeader() const
+  {
+    if ( totalResultCount == 0 ) {
+      return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
     }
 
-    std::string expectedHeader() const
-    {
-      if ( totalResultCount == 0 ) {
-        return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
-      }
-
-      std::string header = R"(  Results
+    std::string header = R"(  Results
         <b>
           FIRSTRESULT-LASTRESULT
         </b> of <b>
@@ -646,127 +644,129 @@ TEST_F(ServerTest, searchResults)
         </b>
       )";
 
-      const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
-      header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
-      header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
-      header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
-      header = replace(header, "PATTERN",     getPattern());
-      return header;
+    const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
+    header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
+    header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
+    header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
+    header = replace(header, "PATTERN",     getPattern());
+    return header;
+  }
+
+  std::string expectedResultsString() const
+  {
+    if ( results.empty() ) {
+      return "\n        ";
     }
 
-    std::string expectedResultsString() const
-    {
-      if ( results.empty() ) {
-        return "\n        ";
+    std::string s;
+    for ( const auto& r : results ) {
+      s += "\n          <li>";
+      s += maskSnippetsInSearchResults(r);
+      s += "          </li>";
+    }
+    return s;
+  }
+
+  std::string expectedFooter() const
+  {
+    if ( pagination.empty() ) {
+      return "\n      ";
+    }
+
+    std::ostringstream oss;
+    oss << "\n        <ul>\n";
+    for ( const auto& p : pagination ) {
+      const auto url = makeUrl(query, p.start, resultsPerPage);
+      oss << "            <li>\n";
+      oss << "              <a ";
+      if ( p.selected ) {
+        oss << "class=\"selected\"";
       }
-
-      std::string s;
-      for ( const auto& r : results ) {
-        s += "\n          <li>";
-        s += maskSnippetsInSearchResults(r);
-        s += "          </li>";
-      }
-      return s;
+      oss << "\n                 href=\"" << url << "\">\n";
+      oss << "                " << p.label << "\n";
+      oss << "              </a>\n";
+      oss << "            </li>\n";
     }
+    oss << "        </ul>";
+    return oss.str();
+  }
 
-    std::string expectedFooter() const
+  std::string expectedHtml() const
+  {
+    return makeSearchResultsHtml(
+             getPattern(),
+             expectedHeader(),
+             expectedResultsString(),
+             expectedFooter()
+    );
+  }
+
+  TestContext testContext() const
+  {
+    return TestContext{ { "url", url() } };
+  }
+
+  void check(const std::string& html) const
+  {
+    EXPECT_EQ(maskSnippetsInSearchResults(html), expectedHtml())
+      << testContext();
+
+    checkSnippets(extractSearchResultSnippets(html));
+  }
+
+  typedef std::vector<std::string> Snippets;
+
+  static Snippets extractSearchResultSnippets(const std::string& html)
+  {
+    Snippets snippets;
+    const std::regex snippetRegex("<cite>(.*)</cite>");
+    std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
+    const std::sregex_iterator end;
+    for ( ; snippetIt != end; ++snippetIt)
     {
-      if ( pagination.empty() ) {
-        return "\n      ";
-      }
-
-      std::ostringstream oss;
-      oss << "\n        <ul>\n";
-      for ( const auto& p : pagination ) {
-        const auto url = makeUrl(query, p.start, resultsPerPage);
-        oss << "            <li>\n";
-        oss << "              <a ";
-        if ( p.selected ) {
-          oss << "class=\"selected\"";
-        }
-        oss << "\n                 href=\"" << url << "\">\n";
-        oss << "                " << p.label << "\n";
-        oss << "              </a>\n";
-        oss << "            </li>\n";
-      }
-      oss << "        </ul>";
-      return oss.str();
+      const std::smatch snippetMatch = *snippetIt;
+      snippets.push_back(snippetMatch[1].str());
     }
+    return snippets;
+  }
 
-    std::string expectedHtml() const
+  void checkSnippets(const Snippets& snippets) const
+  {
+    ASSERT_EQ(snippets.size(), results.size());
+    for ( size_t i = 0; i < results.size(); ++i )
     {
-      return makeSearchResultsHtml(
-               getPattern(),
-               expectedHeader(),
-               expectedResultsString(),
-               expectedFooter()
-      );
-    }
+      const auto& r = results[i];
+      const auto expectedSnippet = extractSearchResultSnippets(r);
+      ASSERT_EQ(1u, expectedSnippet.size())
+        << "Multiple snippets in test data:"
+        << "\n" << r;
 
-    TestContext testContext() const
-    {
-      return TestContext{ { "url", url() } };
-    }
-
-    void check(const std::string& html) const
-    {
-      EXPECT_EQ(maskSnippetsInSearchResults(html), expectedHtml())
-        << testContext();
-
-      checkSnippets(extractSearchResultSnippets(html));
-    }
-
-    typedef std::vector<std::string> Snippets;
-
-    static Snippets extractSearchResultSnippets(const std::string& html)
-    {
-      Snippets snippets;
-      const std::regex snippetRegex("<cite>(.*)</cite>");
-      std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
-      const std::sregex_iterator end;
-      for ( ; snippetIt != end; ++snippetIt)
-      {
-        const std::smatch snippetMatch = *snippetIt;
-        snippets.push_back(snippetMatch[1].str());
-      }
-      return snippets;
-    }
-
-    void checkSnippets(const Snippets& snippets) const
-    {
-      ASSERT_EQ(snippets.size(), results.size());
-      for ( size_t i = 0; i < results.size(); ++i )
-      {
-        const auto& r = results[i];
-        const auto expectedSnippet = extractSearchResultSnippets(r);
-        ASSERT_EQ(1u, expectedSnippet.size())
-          << "Multiple snippets in test data:"
-          << "\n" << r;
-
-        if ( snippets[i] != expectedSnippet[0] ) {
-          std::cout << "Trying a weaker check for a mismatching snippet...\n";
-          checkMismatchingSnippet(snippets[i], expectedSnippet[0]);
-        }
-      }
-    }
-
-    void checkMismatchingSnippet(std::string actual, std::string expected) const
-    {
-      TestContext testContext{
-                        { "url", url() },
-                        { "actual snippet", actual },
-                        { "expected snippet", expected }
-      };
-
-      ASSERT_TRUE(isValidSnippet(actual))   << testContext;
-      ASSERT_TRUE(isValidSnippet(expected)) << testContext;
-
-      if ( !isSubSnippet(actual, expected) ) {
-        EXPECT_EQ(actual, expected) << testContext;
+      if ( snippets[i] != expectedSnippet[0] ) {
+        std::cout << "Trying a weaker check for a mismatching snippet...\n";
+        checkMismatchingSnippet(snippets[i], expectedSnippet[0]);
       }
     }
-  };
+  }
 
+  void checkMismatchingSnippet(std::string actual, std::string expected) const
+  {
+    TestContext testContext{
+                      { "url", url() },
+                      { "actual snippet", actual },
+                      { "expected snippet", expected }
+    };
+
+    ASSERT_TRUE(isValidSnippet(actual))   << testContext;
+    ASSERT_TRUE(isValidSnippet(expected)) << testContext;
+
+    if ( !isSubSnippet(actual, expected) ) {
+      EXPECT_EQ(actual, expected) << testContext;
+    }
+  }
+};
+
+TEST_F(ServerTest, searchResults)
+{
   const TestData testData[] = {
     {
       /* query */          "pattern=velomanyunkan&books.id=" RAYCHARLESZIMID,
