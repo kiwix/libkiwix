@@ -137,15 +137,32 @@ std::string makeSearchResultsHtml(const std::string& pattern,
   return html;
 }
 
-#define SEARCH_RESULT(LINK, TITLE, SNIPPET, BOOK_TITLE, WORDCOUNT) \
-"\n            <a href=\"" LINK "\">\n"\
-"              " TITLE "\n"\
-"            </a>\n"\
-"              <cite>" SNIPPET "</cite>\n"\
-"              <div class=\"book-title\">from " BOOK_TITLE "</div>\n"\
-"              <div class=\"informations\">" WORDCOUNT " words</div>\n"
+struct SearchResult
+{
+  std::string link;
+  std::string title;
+  std::string snippet;
+  std::string bookTitle;
+  std::string wordCount;
 
-const std::vector<std::string> LARGE_SEARCH_RESULTS = {
+  std::string getHtml() const
+  {
+    return std::string()
+      + "\n            <a href=\"" + link +  "\">\n"
+      + "              " + title + "\n"
+      + "            </a>\n"
+      + "              <cite>" + snippet + "</cite>\n"
+      + "              <div class=\"book-title\">from " + bookTitle + "</div>\n"
+      + "              <div class=\"informations\">" + wordCount + " words</div>\n";
+  }
+};
+
+#define SEARCH_RESULT(LINK, TITLE, SNIPPET, BOOK_TITLE, WORDCOUNT) \
+        SearchResult{LINK, TITLE, SNIPPET, BOOK_TITLE, WORDCOUNT}
+
+
+
+const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
   SEARCH_RESULT(
     /*link*/       "/ROOT/zimfile/A/Genius_+_Soul_=_Jazz",
     /*title*/      "Genius + Soul = Jazz",
@@ -597,7 +614,7 @@ struct TestData
   size_t resultsPerPage;
   size_t totalResultCount;
   size_t firstResultIndex;
-  std::vector<std::string> results;
+  std::vector<SearchResult> results;
   std::vector<PaginationEntry> pagination;
 
   static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
@@ -661,7 +678,7 @@ struct TestData
     std::string s;
     for ( const auto& r : results ) {
       s += "\n          <li>";
-      s += maskSnippetsInSearchResults(r);
+      s += maskSnippetsInSearchResults(r.getHtml());
       s += "          </li>";
     }
     return s;
@@ -736,14 +753,9 @@ struct TestData
     for ( size_t i = 0; i < results.size(); ++i )
     {
       const auto& r = results[i];
-      const auto expectedSnippet = extractSearchResultSnippets(r);
-      ASSERT_EQ(1u, expectedSnippet.size())
-        << "Multiple snippets in test data:"
-        << "\n" << r;
-
-      if ( snippets[i] != expectedSnippet[0] ) {
+      if ( snippets[i] != r.snippet ) {
         std::cout << "Trying a weaker check for a mismatching snippet...\n";
-        checkMismatchingSnippet(snippets[i], expectedSnippet[0]);
+        checkMismatchingSnippet(snippets[i], r.snippet);
       }
     }
   }
