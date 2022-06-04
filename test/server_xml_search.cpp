@@ -473,7 +473,7 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
 #define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
 #define  EXAMPLEZIMID    "5dc0b3af-5df2-0925-f0ca-d2bf75e78af6"
 
-TEST_F(TaskbarlessServerTest, searchResults)
+TEST_F(ServerTest, searchResultsXML)
 {
   struct TestData
   {
