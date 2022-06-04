@@ -507,7 +507,7 @@ const std::vector<std::string> LARGE_SEARCH_RESULTS = {
 //
 // In order to be able to share the same expected output data
 // LARGE_SEARCH_RESULTS between multiple build platforms and test-points
-// of the TaskbarlessServerTest.searchResults test-case
+// of the ServerTest.searchResults test-case
 //
 // 1. Snippets are excluded from the plain-text comparison of actual and
 //    expected HTML strings. This is done with the help of the
@@ -583,7 +583,7 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
 #define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
 #define  EXAMPLEZIMID    "5dc0b3af-5df2-0925-f0ca-d2bf75e78af6"
 
-TEST_F(TaskbarlessServerTest, searchResults)
+TEST_F(ServerTest, searchResults)
 {
   struct TestData
   {
@@ -1301,7 +1301,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
   };
 
   for ( const auto& t : testData ) {
-    const auto r = zfs1_->GET(t.url().c_str());
+    const auto r = taskbarlessZimFileServer().GET(t.url().c_str());
     EXPECT_EQ(r->status, 200);
     t.check(r->body);
   }
