@@ -175,7 +175,7 @@ bool Library::addBook(const Book& book)
     auto& newEntry = mp_impl->m_books[book.getId()];
     static_cast<Book&>(newEntry) = book;
     newEntry.lastUpdatedRevision = mp_impl->m_revision;
-    size_t new_cache_size = std::ceil(mp_impl->getBookCount(true, true)*0.1);
+    size_t new_cache_size = static_cast<size_t>(std::ceil(mp_impl->getBookCount(true, true)*0.1));
     if (getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", -1) <= 0) {
       mp_impl->mp_archiveCache->setMaxSize(new_cache_size);
     }
