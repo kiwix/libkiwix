@@ -1,4 +1,4 @@
-option('wrapper', type:'array', choices:['java', 'android'], value:[],
-  description: 'The wrapper to generate.')
+option('static-linkage', type : 'boolean', value : false,
+  description : 'Link statically with the dependencies.')
 option('doc', type : 'boolean', value : false,
   description : 'Build the documentations.')
