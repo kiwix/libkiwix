@@ -5,22 +5,13 @@ project('libkiwix', 'cpp',
 
 compiler = meson.get_compiler('cpp')
 
-wrapper = get_option('wrapper')
-
-static_deps = wrapper.contains('android') or wrapper.contains('java') or get_option('default_library') == 'static'
-if wrapper.contains('android')
-  extra_libs = ['-llog']
-else
-  extra_libs = []
-endif
-
-if wrapper.contains('java')
-  add_languages('java')
-endif
+static_deps = get_option('static-linkage') or get_option('default_library') == 'static'
 
 # See https://github.com/kiwix/libkiwix/issues/371
 if ['arm', 'mips', 'm68k', 'ppc', 'sh4'].contains(host_machine.cpu_family())
-  extra_libs += '-latomic'
+  extra_libs = ['-latomic']
+else
+  extra_libs = []
 endif
 
 if (compiler.get_id() == 'gcc' and build_machine.system() == 'linux') or host_machine.system() == 'freebsd'
