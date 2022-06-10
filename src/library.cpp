@@ -282,7 +282,7 @@ std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
 {
   auto archive = getArchiveById(id);
   if(archive) {
-    return std::make_shared<Reader>(archive);
+    return std::shared_ptr<Reader>(new Reader(archive, true));
   } else {
     return nullptr;
   }
