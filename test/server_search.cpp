@@ -3,8 +3,139 @@
 #include "./httplib.h"
 #include "gtest/gtest.h"
 
-#define SERVER_PORT 8201
+#define SERVER_PORT 8101
 #include "server_testing_tools.h"
+
+std::string makeSearchResultsHtml(const std::string& pattern,
+                                  const std::string& header,
+                                  const std::string& results,
+                                  const std::string& footer)
+{
+  const char SEARCHRESULTS_HTML_TEMPLATE[] = R"HTML(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+
+    //EOLWHITESPACEMARKER
+    <style type="text/css">
+      body{
+      color: #000000;
+      font: small/normal Arial,Helvetica,Sans-Serif;
+      margin-top: 0.5em;
+      font-size: 90%;
+      }
+
+      a{
+      color: #04c;
+      }
+
+      a:visited {
+      color: #639
+      }
+
+      a:hover {
+      text-decoration: underline
+      }
+
+      .header {
+      font-size: 120%;
+      }
+
+      ul {
+      margin:0;
+      padding:0
+      }
+
+      .results {
+      font-size: 110%;
+      }
+
+      .results li {
+      list-style-type:none;
+      margin-top: 0.5em;
+      }
+
+      .results a {
+      font-size: 110%;
+      text-decoration: underline
+      }
+
+      cite {
+      font-style:normal;
+      word-wrap:break-word;
+      display: block;
+      font-size: 100%;
+      }
+
+      .informations {
+      color: #388222;
+      font-size: 100%;
+      }
+
+      .book-title {
+      color: #662200;
+      font-size: 100%;
+      }
+
+      .footer {
+      padding: 0;
+      margin-top: 1em;
+      width: 100%;
+      float: left
+      }
+
+      .footer a, .footer span {
+      display: block;
+      padding: .3em .7em;
+      margin: 0 .38em 0 0;
+      text-align:center;
+      text-decoration: none;
+      }
+
+      .footer a:hover {
+      background: #ededed;
+      }
+
+      .footer ul, .footer li {
+      list-style:none;
+      margin: 0;
+      padding: 0;
+      }
+
+      .footer li {
+      float: left;
+      }
+
+      .selected {
+      background: #ededed;
+      }
+
+    </style>
+    <title>Search: %PATTERN%</title>
+  <link type="root" href="/ROOT"></head>
+  <body bgcolor="white">
+    <div class="header">
+      %HEADER%
+    </div>
+
+    <div class="results">
+      <ul>%RESULTS%
+      </ul>
+    </div>
+
+    <div class="footer">%FOOTER%
+    </div>
+  </body>
+</html>
+)HTML";
+
+  std::string html = removeEOLWhitespaceMarkers(SEARCHRESULTS_HTML_TEMPLATE);
+  html = replace(html, "%PATTERN%", pattern);
+  html = replace(html, "%HEADER%", header);
+  html = replace(html, "%RESULTS%", results);
+  html = replace(html, "%FOOTER%", footer);
+  return html;
+}
 
 std::string makeSearchResultsXml(const std::string& header,
                                  const std::string& results)
@@ -25,17 +156,44 @@ std::string makeSearchResultsXml(const std::string& header,
   return html;
 }
 
+struct SearchResult
+{
+  std::string link;
+  std::string title;
+  std::string snippet;
+  std::string bookTitle;
+  std::string wordCount;
+
+  std::string getHtml() const
+  {
+    return std::string()
+      + "\n            <a href=\"" + link +  "\">\n"
+      + "              " + title + "\n"
+      + "            </a>\n"
+      + "              <cite>" + snippet + "</cite>\n"
+      + "              <div class=\"book-title\">from " + bookTitle + "</div>\n"
+      + "              <div class=\"informations\">" + wordCount + " words</div>\n";
+  }
+
+  std::string getXml() const
+  {
+    return std::string()
+      + "      <title>" + title + "</title>\n"
+      + "      <link>" + replace(link, "'", "&apos;") + "</link>\n"
+      + "        <description>" + snippet + "</description>\n"
+      + "        <book>\n"
+      + "          <title>" + bookTitle + "</title>\n"
+      + "        </book>\n"
+      + "        <wordCount>" + wordCount + "</wordCount>";
+  }
+};
+
 #define SEARCH_RESULT(LINK, TITLE, SNIPPET, BOOK_TITLE, WORDCOUNT) \
-"      <title>" TITLE "</title>\n"\
-"      <link>" LINK "</link>\n"\
-"        <description>" SNIPPET "</description>\n"\
-"        <book>\n"\
-"          <title>" BOOK_TITLE "</title>\n"\
-"        </book>\n"\
-"        <wordCount>" WORDCOUNT "</wordCount>"
+        SearchResult{LINK, TITLE, SNIPPET, BOOK_TITLE, WORDCOUNT}
 
 
-const std::vector<std::string> LARGE_SEARCH_RESULTS = {
+
+const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
   SEARCH_RESULT(
     /*link*/       "/ROOT/zimfile/A/Genius_+_Soul_=_Jazz",
     /*title*/      "Genius + Soul = Jazz",
@@ -77,7 +235,7 @@ const std::vector<std::string> LARGE_SEARCH_RESULTS = {
 ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/zimfile/A/Catchin&apos;_Some_Rays:_The_Music_of_Ray_Charles",
+    /*link*/       "/ROOT/zimfile/A/Catchin'_Some_Rays:_The_Music_of_Ray_Charles",
     /*title*/      "Catchin&apos; Some Rays: The Music of Ray Charles",
     /*snippet*/    R"SNIPPET(...<b>jazz</b> singer Roseanna Vitro, released in August 1997 on the Telarc <b>Jazz</b> label. Catchin' Some Rays: The Music of Ray Charles Studio album by Roseanna Vitro Released August 1997 Recorded March 26, 1997 at Sound on Sound, NYC April 4,1997 at Quad Recording Studios, NYC Genre Vocal <b>jazz</b> Length 61:00 Label Telarc <b>Jazz</b> CD-83419 Producer Paul Wickliffe Roseanna Vitro chronology Passion Dance (1996) Catchin' Some Rays: The Music of Ray Charles (1997) The Time of My Life: Roseanna Vitro Sings the Songs of......)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -85,7 +243,7 @@ const std::vector<std::string> LARGE_SEARCH_RESULTS = {
 ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/zimfile/A/That&apos;s_What_I_Say:_John_Scofield_Plays_the_Music_of_Ray_Charles",
+    /*link*/       "/ROOT/zimfile/A/That's_What_I_Say:_John_Scofield_Plays_the_Music_of_Ray_Charles",
     /*title*/      "That&apos;s What I Say: John Scofield Plays the Music of Ray Charles",
     /*snippet*/    R"SNIPPET(That's What I Say: John Scofield Plays the Music of Ray Charles Studio album by John Scofield Released June 7, 2005 (2005-06-07) Recorded December 2004 Studio Avatar Studios, New York City Genre <b>Jazz</b> Length 65:21 Label Verve Producer Steve Jordan John Scofield chronology EnRoute: John Scofield Trio LIVE (2004) That's What I Say: John Scofield Plays the Music of Ray Charles (2005) Out Louder (2006) Professional ratings Review scores Source Rating Allmusic All About <b>Jazz</b> All About <b>Jazz</b>...)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -325,7 +483,7 @@ const std::vector<std::string> LARGE_SEARCH_RESULTS = {
   ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/zimfile/A/Don&apos;t_Let_the_Sun_Catch_You_Cryin&apos;",
+    /*link*/       "/ROOT/zimfile/A/Don't_Let_the_Sun_Catch_You_Cryin'",
     /*title*/      "Don&apos;t Let the Sun Catch You Cryin&apos;",
     /*snippet*/    R"SNIPPET(...R&amp;B Sides" and No. 95 on the Billboard Hot 100. It was also recorded by Jackie DeShannon on her 1965 album This is Jackie De Shannon, Paul McCartney on his 1990 live album Tripping the Live Fantastic, Jex Saarelaht and Kate Ceberano on their album Open the Door - Live at Mietta's (1992) and <b>jazz</b> singer Roseanna Vitro on her 1997 album Catchin’ Some Rays: The Music of Ray Charles. Karin Krog and Steve Kuhn include it on their 2005 album, Together Again. Steve Alaimo released a version in 1963...)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -333,7 +491,7 @@ const std::vector<std::string> LARGE_SEARCH_RESULTS = {
   ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/zimfile/A/I_Don&apos;t_Need_No_Doctor",
+    /*link*/       "/ROOT/zimfile/A/I_Don't_Need_No_Doctor",
     /*title*/      "I Don&apos;t Need No Doctor",
     /*snippet*/    R"SNIPPET(...<b>jazz</b> guitar player John Scofield recorded a version for his album That's What I Say: John Scofield Plays the Music of Ray Charles in 2005, featuring the blues guitarist John Mayer on additional guitar and vocals. Mayer covered the song again with his band during his tour in summer 2007. A recorded live version from a Los Angeles show during that tour is available on Mayer's CD/DVD release Where the Light Is. A Ray Charles tribute album also provided the impetus for <b>jazz</b> singer Roseanna Vitro's......)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -397,11 +555,11 @@ const std::vector<std::string> LARGE_SEARCH_RESULTS = {
 //
 // In order to be able to share the same expected output data
 // LARGE_SEARCH_RESULTS between multiple build platforms and test-points
-// of the TaskbarlessServerTest.searchResults test-case
+// of the ServerTest.searchResults test-case
 //
 // 1. Snippets are excluded from the plain-text comparison of actual and
 //    expected HTML strings. This is done with the help of the
-//    function maskSnippetsInSearchResults()
+//    function maskSnippetsInHtmlSearchResults()
 //
 // 2. Snippets are checked separately. If a plain-text comparison fails
 //    then a weaker comparison is attempted. Currently it works by testing
@@ -419,9 +577,48 @@ const std::vector<std::string> LARGE_SEARCH_RESULTS = {
 //    - Non-overlapping snippets can be joined with a " ... " in between.
 //
 
-std::string maskSnippetsInSearchResults(std::string s)
+typedef std::vector<std::string> Snippets;
+
+const char SNIPPET_REGEX_FOR_HTML[] = "<cite>(.+)</cite>";
+
+std::string maskSnippetsInHtmlSearchResults(std::string s)
 {
-  return replace(s, "<description>(?!Search result for).+</description>", "<description>SNIPPET TEXT WAS MASKED</description>");
+  return replace(s, SNIPPET_REGEX_FOR_HTML, "<cite>SNIPPET TEXT WAS MASKED</cite>");
+}
+
+Snippets extractSearchResultSnippetsFromHtml(const std::string& html)
+{
+  Snippets snippets;
+  const std::regex snippetRegex(SNIPPET_REGEX_FOR_HTML);
+  std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
+  const std::sregex_iterator end;
+  for ( ; snippetIt != end; ++snippetIt)
+  {
+    const std::smatch snippetMatch = *snippetIt;
+    snippets.push_back(snippetMatch[1].str());
+  }
+  return snippets;
+}
+
+const char SNIPPET_REGEX_FOR_XML[] = "<description>(?!Search result for)(.+)</description>";
+
+std::string maskSnippetsInXmlSearchResults(std::string s)
+{
+  return replace(s, SNIPPET_REGEX_FOR_XML, "<description>SNIPPET TEXT WAS MASKED</description>");
+}
+
+Snippets extractSearchResultSnippetsFromXml(const std::string& xml)
+{
+  Snippets snippets;
+  const std::regex snippetRegex(SNIPPET_REGEX_FOR_XML);
+  std::sregex_iterator snippetIt(xml.begin(), xml.end(), snippetRegex);
+  const std::sregex_iterator end;
+  for ( ; snippetIt != end; ++snippetIt)
+  {
+    const std::smatch snippetMatch = *snippetIt;
+    snippets.push_back(snippetMatch[1].str());
+  }
+  return snippets;
 }
 
 bool isValidSnippet(const std::string& s)
@@ -473,59 +670,143 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
 #define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
 #define  EXAMPLEZIMID    "5dc0b3af-5df2-0925-f0ca-d2bf75e78af6"
 
-TEST_F(TaskbarlessServerTest, searchResults)
+struct TestData
 {
-  struct TestData
+  struct PaginationEntry
   {
-    std::string query;
-    int start;
-    size_t resultsPerPage;
-    size_t totalResultCount;
-    size_t firstResultIndex;
-    std::vector<std::string> results;
+    std::string label;
+    size_t start;
+    bool selected;
+  };
 
-    static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
-    {
-      std::string url = "/ROOT/search?" + query + "&format=xml";
+  std::string query;
+  int start;
+  size_t resultsPerPage;
+  size_t totalResultCount;
+  size_t firstResultIndex;
+  std::vector<SearchResult> results;
+  std::vector<PaginationEntry> pagination;
 
-      if (start >= 0) {
-        url += "&start=" + to_string(start);
+  static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
+  {
+    std::string url = "/ROOT/search?" + query;
+
+    if ( start >= 0 ) {
+      url += "&start=" + to_string(start);
+    }
+
+    if ( resultsPerPage != 0 ) {
+      url += "&pageLength=" + to_string(resultsPerPage);
+    }
+
+    return url;
+  }
+
+  std::string extractQueryValue(const std::string& key) const
+  {
+    const std::string p = key + "=";
+    const size_t i = query.find(p);
+    if (i == std::string::npos) {
+      return "";
+    }
+    std::string r = query.substr(i + p.size());
+    return r.substr(0, r.find("&"));
+  }
+
+  std::string getPattern() const
+  {
+    return extractQueryValue("pattern");
+  }
+
+  std::string getLang() const
+  {
+    return extractQueryValue("books.filter.lang");
+  }
+
+  std::string url() const
+  {
+    return makeUrl(query, start, resultsPerPage);
+  }
+
+  std::string xmlSearchUrl() const
+  {
+    return url() + "&format=xml";
+  }
+
+  std::string expectedHtmlHeader() const
+  {
+    if ( totalResultCount == 0 ) {
+      return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
+    }
+
+    std::string header = R"(  Results
+        <b>
+          FIRSTRESULT-LASTRESULT
+        </b> of <b>
+          RESULTCOUNT
+        </b> for <b>
+          "PATTERN"
+        </b>
+      )";
+
+    const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
+    header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
+    header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
+    header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
+    header = replace(header, "PATTERN",     getPattern());
+    return header;
+  }
+
+  std::string expectedHtmlResultsString() const
+  {
+    if ( results.empty() ) {
+      return "\n        ";
+    }
+
+    std::string s;
+    for ( const auto& r : results ) {
+      s += "\n          <li>";
+      s += maskSnippetsInHtmlSearchResults(r.getHtml());
+      s += "          </li>";
+    }
+    return s;
+  }
+
+  std::string expectedHtmlFooter() const
+  {
+    if ( pagination.empty() ) {
+      return "\n      ";
+    }
+
+    std::ostringstream oss;
+    oss << "\n        <ul>\n";
+    for ( const auto& p : pagination ) {
+      const auto url = makeUrl(query, p.start, resultsPerPage);
+      oss << "            <li>\n";
+      oss << "              <a ";
+      if ( p.selected ) {
+        oss << "class=\"selected\"";
       }
-
-      if ( resultsPerPage != 0 ) {
-        url += "&pageLength=" + to_string(resultsPerPage);
-      }
-
-      return url;
+      oss << "\n                 href=\"" << url << "\">\n";
+      oss << "                " << p.label << "\n";
+      oss << "              </a>\n";
+      oss << "            </li>\n";
     }
+    oss << "        </ul>";
+    return oss.str();
+  }
 
-    std::string extractQueryValue(const std::string& key) const
-    {
-      const std::string p = key + "=";
-      const size_t i = query.find(p);
-      if (i == std::string::npos) {
-        return "";
-      }
-      std::string r = query.substr(i + p.size());
-      return r.substr(0, r.find("&"));
-    }
+  std::string expectedHtml() const
+  {
+    return makeSearchResultsHtml(
+             getPattern(),
+             expectedHtmlHeader(),
+             expectedHtmlResultsString(),
+             expectedHtmlFooter()
+    );
+  }
 
-    std::string getPattern() const
-    {
-      return extractQueryValue("pattern");
-    }
-
-    std::string getLang() const
-    {
-      return extractQueryValue("books.filter.lang");
-    }
-
-    std::string url() const
-    {
-      return makeUrl(query, start, resultsPerPage);
-    }
-
-    std::string expectedHeader() const
+    std::string expectedXmlHeader() const
     {
       std::string header = R"(<title>Search: PATTERN</title>
     <link>URL</link>
@@ -540,8 +821,9 @@ TEST_F(TaskbarlessServerTest, searchResults)
       count="ITEMCOUNT"
     />)";
 
-      auto realResultsPerPage = resultsPerPage?resultsPerPage:25;
-      header = replace(header, "URL", replace(makeUrl(query, firstResultIndex, realResultsPerPage), "&", "&amp;"));
+      const auto realResultsPerPage = resultsPerPage?resultsPerPage:25;
+      const auto url = makeUrl(query + "&format=xml", firstResultIndex, realResultsPerPage);
+      header = replace(header, "URL", replace(url, "&", "&amp;"));
       header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
       header = replace(header, "ITEMCOUNT",  to_string(realResultsPerPage));
       header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
@@ -555,7 +837,7 @@ TEST_F(TaskbarlessServerTest, searchResults)
       return header;
     }
 
-    std::string expectedResultsString() const
+    std::string expectedXmlResultsString() const
     {
       if ( results.empty() ) {
         return "\n    ";
@@ -564,84 +846,78 @@ TEST_F(TaskbarlessServerTest, searchResults)
       std::string s;
       for ( const auto& r : results ) {
         s += "\n    <item>\n";
-        s += maskSnippetsInSearchResults(r);
+        s += maskSnippetsInXmlSearchResults(r.getXml());
         s += "\n    </item>";
       }
       return s;
     }
 
-    std::string expectedXml() const
+  std::string expectedXml() const
+  {
+    return makeSearchResultsXml(
+             expectedXmlHeader(),
+             expectedXmlResultsString()
+    );
+  }
+
+  TestContext testContext() const
+  {
+    return TestContext{ { "url", url() } };
+  }
+
+  TestContext xmlTestContext() const
+  {
+    return TestContext{ { "url", xmlSearchUrl() } };
+  }
+
+  void checkHtml(const std::string& html) const
+  {
+    EXPECT_EQ(maskSnippetsInHtmlSearchResults(html), expectedHtml())
+      << testContext();
+
+    checkSnippets(extractSearchResultSnippetsFromHtml(html));
+  }
+
+  void checkXml(const std::string& xml) const
+  {
+    EXPECT_EQ(maskSnippetsInXmlSearchResults(xml), expectedXml())
+      << xmlTestContext();
+
+    checkSnippets(extractSearchResultSnippetsFromXml(xml));
+  }
+
+  void checkSnippets(const Snippets& snippets) const
+  {
+    ASSERT_EQ(snippets.size(), results.size());
+    for ( size_t i = 0; i < results.size(); ++i )
     {
-      return makeSearchResultsXml(
-               expectedHeader(),
-               expectedResultsString()
-      );
-    }
-
-    TestContext testContext() const
-    {
-      return TestContext{ { "url", url() } };
-    }
-
-    void check(const std::string& html) const
-    {
-      EXPECT_EQ(maskSnippetsInSearchResults(html), expectedXml())
-        << testContext();
-
-      checkSnippets(extractSearchResultSnippets(html));
-    }
-
-    typedef std::vector<std::string> Snippets;
-
-    static Snippets extractSearchResultSnippets(const std::string& html)
-    {
-      Snippets snippets;
-      const std::regex snippetRegex("<description>(?!Search result for)(.*)</description>");
-      std::sregex_iterator snippetIt(html.begin(), html.end(), snippetRegex);
-      const std::sregex_iterator end;
-      for ( ; snippetIt != end; ++snippetIt)
-      {
-        const std::smatch snippetMatch = *snippetIt;
-        snippets.push_back(snippetMatch[1].str());
-      }
-      return snippets;
-    }
-
-    void checkSnippets(const Snippets& snippets) const
-    {
-      ASSERT_EQ(snippets.size(), results.size());
-      for ( size_t i = 0; i < results.size(); ++i )
-      {
-        const auto& r = results[i];
-        const auto expectedSnippet = extractSearchResultSnippets(r);
-        ASSERT_EQ(1u, expectedSnippet.size())
-          << "Multiple snippets in test data:"
-          << "\n" << r;
-
-        if ( snippets[i] != expectedSnippet[0] ) {
-          std::cout << "Trying a weaker check for a mismatching snippet...\n";
-          checkMismatchingSnippet(snippets[i], expectedSnippet[0]);
-        }
+      const auto& r = results[i];
+      if ( snippets[i] != r.snippet ) {
+        std::cout << "Trying a weaker check for a mismatching snippet...\n";
+        checkMismatchingSnippet(snippets[i], r.snippet);
       }
     }
+  }
 
-    void checkMismatchingSnippet(std::string actual, std::string expected) const
-    {
-      TestContext testContext{
-                        { "url", url() },
-                        { "actual snippet", actual },
-                        { "expected snippet", expected }
-      };
+  void checkMismatchingSnippet(std::string actual, std::string expected) const
+  {
+    TestContext testContext{
+                      { "url", url() },
+                      { "actual snippet", actual },
+                      { "expected snippet", expected }
+    };
 
-      ASSERT_TRUE(isValidSnippet(actual))   << testContext;
-      ASSERT_TRUE(isValidSnippet(expected)) << testContext;
+    ASSERT_TRUE(isValidSnippet(actual))   << testContext;
+    ASSERT_TRUE(isValidSnippet(expected)) << testContext;
 
-      if ( !isSubSnippet(actual, expected) ) {
-        EXPECT_EQ(actual, expected) << testContext;
-      }
+    if ( !isSubSnippet(actual, expected) ) {
+      EXPECT_EQ(actual, expected) << testContext;
     }
-  };
+  }
+};
 
+TEST_F(ServerTest, searchResults)
+{
   const TestData testData[] = {
     {
       /* query */          "pattern=velomanyunkan&books.id=" RAYCHARLESZIMID,
@@ -649,7 +925,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
       /* firstResultIndex */ 1,
-      /* results */          {}
+      /* results */          {},
+      /* pagination */       {}
     },
 
     {
@@ -666,7 +943,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
           /*bookTitle*/  "Ray Charles",
           /*wordCount*/  "93"
         )
-      }
+      },
+      /* pagination */ {}
     },
 
     {
@@ -691,7 +969,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
           /*bookTitle*/  "Ray Charles",
           /*wordCount*/  "204"
         )
-      }
+      },
+      /* pagination */ {}
     },
 
     {
@@ -716,7 +995,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
           /*bookTitle*/  "Ray Charles",
           /*wordCount*/  "204"
         )
-      }
+      },
+      /* pagination */ {}
     },
 
     {
@@ -741,7 +1021,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
           /*bookTitle*/  "Ray Charles",
           /*wordCount*/  "204"
         )
-      }
+      },
+      /* pagination */ {}
     },
 
     {
@@ -750,7 +1031,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 1,
-      /* results */ LARGE_SEARCH_RESULTS
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
     },
 
     {
@@ -765,6 +1047,15 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[2],
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
       }
     },
 
@@ -780,6 +1071,16 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[7],
         LARGE_SEARCH_RESULTS[8],
         LARGE_SEARCH_RESULTS[9],
+      },
+
+      /* pagination */ {
+        { "1", 0,  false },
+        { "2", 5,  true  },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "▶", 40, false },
       }
     },
 
@@ -795,6 +1096,17 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[12],
         LARGE_SEARCH_RESULTS[13],
         LARGE_SEARCH_RESULTS[14],
+      },
+
+      /* pagination */ {
+        { "1", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, true  },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "▶", 40, false },
       }
     },
 
@@ -810,6 +1122,18 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[17],
         LARGE_SEARCH_RESULTS[18],
         LARGE_SEARCH_RESULTS[19],
+      },
+
+      /* pagination */ {
+        { "1", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, true  },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "▶", 40, false },
       }
     },
 
@@ -825,6 +1149,18 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[22],
         LARGE_SEARCH_RESULTS[23],
         LARGE_SEARCH_RESULTS[24],
+      },
+
+      /* pagination */ {
+        { "1", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, true  },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, false },
       }
     },
 
@@ -840,6 +1176,18 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[27],
         LARGE_SEARCH_RESULTS[28],
         LARGE_SEARCH_RESULTS[29],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, true  },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, false },
       }
     },
 
@@ -855,6 +1203,17 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[32],
         LARGE_SEARCH_RESULTS[33],
         LARGE_SEARCH_RESULTS[34],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, true  },
+        { "8", 35, false },
+        { "9", 40, false },
       }
     },
 
@@ -870,6 +1229,16 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[37],
         LARGE_SEARCH_RESULTS[38],
         LARGE_SEARCH_RESULTS[39],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, true  },
+        { "9", 40, false },
       }
     },
 
@@ -884,6 +1253,15 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[41],
         LARGE_SEARCH_RESULTS[42],
         LARGE_SEARCH_RESULTS[43],
+      },
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "5", 20, false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, true  },
       }
     },
 
@@ -897,6 +1275,20 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[21],
         LARGE_SEARCH_RESULTS[22],
         LARGE_SEARCH_RESULTS[23],
+      },
+
+      /* pagination */ {
+        {  "◀", 0,  false },
+        {  "4", 9,  false },
+        {  "5", 12, false },
+        {  "6", 15, false },
+        {  "7", 18, false },
+        {  "8", 21, true  },
+        {  "9", 24, false },
+        { "10", 27, false },
+        { "11", 30, false },
+        { "12", 33, false },
+        {  "▶", 42, false },
       }
     },
 
@@ -908,7 +1300,15 @@ TEST_F(TaskbarlessServerTest, searchResults)
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 46,
-      /* results */ {}
+      /* results */ {},
+
+      /* pagination */ {
+        { "◀", 0,  false },
+        { "6", 25, false },
+        { "7", 30, false },
+        { "8", 35, false },
+        { "9", 40, false  },
+      }
     },
 
     // We must return results from the two books
@@ -936,7 +1336,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
           /*bookTitle*/  "Wikibooks",
           /*wordCount*/  "538"
         )
-      }
+      },
+      /* pagination */       {}
     },
 
     // Only RayCharles is in English.
@@ -956,7 +1357,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
            /*bookTitle*/  "Ray Charles",
            /*wordCount*/  "204"
          ),
-      }
+      },
+      /* pagination */       {}
     },
 
     // Adding a book (without match) doesn't change the results
@@ -968,7 +1370,8 @@ TEST_F(TaskbarlessServerTest, searchResults)
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
       /* firstResultIndex */ 1,
-      /* results */ LARGE_SEARCH_RESULTS
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
     },
 
     {
@@ -984,6 +1387,15 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[2],
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
       }
     },
 
@@ -1000,6 +1412,15 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[2],
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
       }
     },
 
@@ -1017,13 +1438,31 @@ TEST_F(TaskbarlessServerTest, searchResults)
         LARGE_SEARCH_RESULTS[2],
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
       }
     },
   };
 
   for ( const auto& t : testData ) {
-    const auto r = zfs1_->GET(t.url().c_str());
-    EXPECT_EQ(r->status, 200);
-    t.check(r->body);
+    const std::string htmlSearchUrl = t.url();
+    const auto htmlRes = taskbarlessZimFileServer().GET(htmlSearchUrl.c_str());
+    EXPECT_EQ(htmlRes->status, 200);
+    t.checkHtml(htmlRes->body);
+
+    const std::string xmlSearchUrl = t.xmlSearchUrl();
+    const auto xmlRes1 = zfs1_->GET(xmlSearchUrl.c_str());
+    const auto xmlRes2 = taskbarlessZimFileServer().GET(xmlSearchUrl.c_str());
+    EXPECT_EQ(xmlRes1->status, 200);
+    EXPECT_EQ(xmlRes2->status, 200);
+    EXPECT_EQ(xmlRes1->body, xmlRes2->body);
+    t.checkXml(xmlRes1->body);
   }
 }

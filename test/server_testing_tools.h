@@ -134,6 +134,9 @@ ZimFileServer::~ZimFileServer()
 
 class ServerTest : public ::testing::Test
 {
+private:
+  std::unique_ptr<ZimFileServer>   taskbarlessZfs_;
+
 protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
 
@@ -149,16 +152,16 @@ protected:
     zfs1_.reset(new ZimFileServer(SERVER_PORT, /*withTaskbar=*/true, ZIMFILES));
   }
 
+  ZimFileServer& taskbarlessZimFileServer()
+  {
+    if ( ! taskbarlessZfs_ ) {
+      taskbarlessZfs_.reset(new ZimFileServer(SERVER_PORT+1, /*withTaskbar=*/false, ZIMFILES));
+    }
+    return *taskbarlessZfs_;
+  }
+
   void TearDown() override {
     zfs1_.reset();
+    taskbarlessZfs_.reset();
   }
 };
-
-class TaskbarlessServerTest : public ServerTest
-{
-protected:
-  void SetUp() override {
-    zfs1_.reset(new ZimFileServer(SERVER_PORT, /*withTaskbar=*/false, ZIMFILES));
-  }
-};
-
