@@ -81,15 +81,15 @@ TEST(CacheTest, DropValue) {
 TEST(CacheTest1, KeepsAllValuesWithinCapacity) {
     kiwix::lru_cache<int, int> cache_lru(TEST2_CACHE_CAPACITY);
 
-    for (uint i = 0; i < NUM_OF_TEST2_RECORDS; ++i) {
+    for (unsigned int i = 0; i < NUM_OF_TEST2_RECORDS; ++i) {
         cache_lru.put(i, i);
     }
 
-    for (uint i = 0; i < NUM_OF_TEST2_RECORDS - TEST2_CACHE_CAPACITY; ++i) {
+    for (unsigned int i = 0; i < NUM_OF_TEST2_RECORDS - TEST2_CACHE_CAPACITY; ++i) {
         EXPECT_FALSE(cache_lru.exists(i));
     }
 
-    for (uint i = NUM_OF_TEST2_RECORDS - TEST2_CACHE_CAPACITY; i < NUM_OF_TEST2_RECORDS; ++i) {
+    for (unsigned int i = NUM_OF_TEST2_RECORDS - TEST2_CACHE_CAPACITY; i < NUM_OF_TEST2_RECORDS; ++i) {
         EXPECT_TRUE(cache_lru.exists(i));
         EXPECT_EQ((int)i, cache_lru.get(i));
     }
