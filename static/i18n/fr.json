@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Gomoko",
 			"Thibaut120094",
 			"Verdy p"
 		]
@@ -8,10 +9,14 @@
 	"name": "français",
 	"suggest-full-text-search": "contenant « {{{SEARCH_TERMS}}} »...",
 	"no-such-book": "Aucun livre avec ce nom : {{BOOK_NAME}}",
+	"too-many-books": "Trop de livres demandés ({{NB_BOOKS}}) alors que la limite est de {{LIMIT}}",
+	"no-book-found": "Aucun livre ne correspond à ces critères de sélection",
 	"url-not-found": "L’URL demandée « {{url}} » est introuvable sur ce serveur.",
 	"suggest-search": "Faire une recherche en texte intégral de « <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> »",
 	"random-article-failure": "Oups ! Échec de sélection d’un article aléatoire :(",
 	"invalid-raw-data-type": "{{DATATYPE}} n’est pas une requête valide pour du contenu brut.",
+	"no-value-for-arg": "Aucune valeur fournie pour l’argument {{ARGUMENT}}",
+	"no-query": "Aucune requête fournie.",
 	"raw-entry-not-found": "Impossible de trouver l’entrée « {{ENTRY}} » de type « {{DATATYPE}} »",
 	"400-page-title": "Requête non valide",
 	"400-page-heading": "Requête non valide",
