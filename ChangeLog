@@ -1,3 +1,21 @@
+libkiwix 11.0.0
+===============
+
+ * [server] Add support for internationalization (@veloman-yunkan #679)
+ * [server] Use gzip compression instead of deflat (mgautierfr #757)
+ * [server] Version the static resources. This allow better invalidating
+   browser cache when resources are changed (@veloman-yunkan #712)
+ * [server|front] Use integer to query the host for page length (@juuz #772)
+ * [server] Improve multizim search API:
+   - Improvement of the cache system
+   - Better API to select on which books to search in.
+   - SysAdmin is now able to limit the number of book we search in for a multizim search
+ * [server] Introduce a opensearch API for multizim fulltext search
+ * [wrapper] Remove java wrapper
+ * Testing:
+   - Testing of search result pages content (@veloman-yunkan #765)
+   - Better testing structure of xml search result (@veloman-yunkan #780)
+
 libkiwix 10.1.1
 ===============
 
