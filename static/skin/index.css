@@ -113,7 +113,7 @@ body {
     background-size: 15px;
 }
 
-.searchButton {
+.kiwixButton {
     margin: 0 17px;
     height: 35px;
     width: 100px;
@@ -123,7 +123,7 @@ body {
     border: solid 1px #b5b2b2;
 }
 
-.searchButton:hover {
+.kiwixButton:hover {
     background-color: #858585;
 }
 
@@ -434,7 +434,7 @@ body {
         margin-top: 11px;
     }
     
-    .searchButton {
+    .kiwixButton {
         margin: 19px 0;
         width: 229px;
     }
