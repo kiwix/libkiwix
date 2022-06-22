@@ -68,6 +68,7 @@ extern "C" {
 #include <string>
 #include <vector>
 #include <chrono>
+#include <fstream>
 #include "kiwixlib-resources.h"
 
 #ifndef _WIN32
@@ -212,6 +213,12 @@ void checkBookNumber(const Library::BookIdSet& bookIds, size_t limit) {
   }
 }
 
+struct CustomizedResourceData
+{
+  std::string mimeType;
+  std::string resourceFilePath;
+};
+
 } // unnamed namespace
 
 std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const RequestContext& request) const
@@ -327,7 +334,6 @@ zim::Query SearchInfo::getZimQuery(bool verbose) const {
   return query;
 }
 
-
 static IdNameMapper defaultNameMapper;
 
 static MHD_Result staticHandlerCallback(void* cls,
@@ -338,6 +344,27 @@ static MHD_Result staticHandlerCallback(void* cls,
                                         const char* upload_data,
                                         size_t* upload_data_size,
                                         void** cont_cls);
+
+class InternalServer::CustomizedResources : public std::map<std::string, CustomizedResourceData>
+{
+public:
+  CustomizedResources()
+  {
+    const char* fname = ::getenv("KIWIX_SERVE_CUSTOMIZED_RESOURCES");
+    if ( fname )
+    {
+      std::cout << "Populating customized resources" << std::endl;
+      std::ifstream file(fname);
+      std::string url, mimeType, resourceFilePath;
+      while ( file >> url >> mimeType >> resourceFilePath )
+      {
+        std::cout << "Got " << url << " " << mimeType << " " << resourceFilePath << std::endl;
+        (*this)[url] = CustomizedResourceData{mimeType, resourceFilePath};
+      }
+      std::cout << "Done populating customized resources" << std::endl;
+    }
+  }
+};
 
 
 InternalServer::InternalServer(Library* library,
@@ -368,8 +395,11 @@ InternalServer::InternalServer(Library* library,
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
-  suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U)))
+  suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
+  m_customizedResources(new CustomizedResources)
 {}
+
+InternalServer::~InternalServer() = default;
 
 bool InternalServer::start() {
 #ifdef _WIN32
@@ -506,6 +536,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     const ETag etag = get_matching_if_none_match_etag(request);
     if ( etag )
       return Response::build_304(*this, etag);
+
+    if ( isLocallyCustomizedResource(request.get_url()) )
+      return handle_locally_customized_resource(request);
 
     if (startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
@@ -1065,6 +1098,36 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
            + urlNotFoundMsg
            + rawEntryNotFoundMsg(kind, itemPath);
   }
+}
+
+bool InternalServer::isLocallyCustomizedResource(const std::string& url) const
+{
+  return m_customizedResources->find(url) != m_customizedResources->end();
+}
+
+std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_locally_customized_resource\n");
+  }
+
+  const CustomizedResourceData& crd = m_customizedResources->at(request.get_url());
+
+  if (m_verbose.load()) {
+    std::cout << "Reading " <<  crd.resourceFilePath << std::endl;
+  }
+  const auto resourceData = getFileContent(crd.resourceFilePath);
+
+  auto byteRange = request.get_range().resolve(resourceData.size());
+  if (byteRange.kind() != ByteRange::RESOLVED_FULL_CONTENT) {
+    return Response::build_416(*this, resourceData.size());
+  }
+
+  return ContentResponse::build(*this,
+                                resourceData,
+                                crd.mimeType,
+                                /*isHomePage=*/false,
+                                /*raw=*/true);
 }
 
 }

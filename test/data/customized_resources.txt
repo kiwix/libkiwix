@@ -1,0 +1,5 @@
+/non-existent-item      text/plain          ./test/helloworld.txt
+/                       text/html           ./test/welcome.html
+/skin/index.css         application/json    ./test/helloworld.txt
+/zimfile/A/Ray_Charles  ray/charles         ./test/welcome.html
+/search                 text/html           ./test/helloworld.txt
