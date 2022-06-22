@@ -287,6 +287,68 @@ TEST_F(ServerTest, 404)
   }
 }
 
+struct CustomizedServerTest : ServerTest
+{
+  void SetUp()
+  {
+    setenv("KIWIX_SERVE_CUSTOMIZED_RESOURCES", "./test/customized_resources.txt", 1);
+    ServerTest::SetUp();
+  }
+};
+
+typedef std::vector<std::string> StringCollection;
+
+std::string getHeaderValue(const Headers& headers, const std::string& name)
+{
+  const auto er = headers.equal_range(name);
+  const auto n = std::distance(er.first, er.second);
+  if (n == 0)
+    throw std::runtime_error("Missing header: " + name);
+  if (n > 1)
+    throw std::runtime_error("Multiple occurrences of header: " + name);
+  return er.first->second;
+}
+
+TEST_F(CustomizedServerTest, NewResourcesCanBeAdded)
+{
+  // ServerTest.404 verifies that "/ROOT/non-existent-item" doesn't exist
+  const auto r = zfs1_->GET("/ROOT/non-existent-item");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/plain");
+  EXPECT_EQ(r->body, "Hello world!\n");
+}
+
+TEST_F(CustomizedServerTest, ContentOfAnyServableUrlCanBeOverriden)
+{
+  {
+    const auto r = zfs1_->GET("/ROOT/");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/html");
+    EXPECT_EQ(r->body, "<html><head></head><body>Welcome</body></html>\n");
+  }
+
+  {
+    const auto r = zfs1_->GET("/ROOT/skin/index.css");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "application/json");
+    EXPECT_EQ(r->body, "Hello world!\n");
+  }
+
+  {
+    const auto r = zfs1_->GET("/ROOT/zimfile/A/Ray_Charles");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "ray/charles");
+    EXPECT_EQ(r->body, "<html><head></head><body>Welcome</body></html>\n");
+  }
+
+  {
+    const auto r = zfs1_->GET("/ROOT/search?pattern=la+femme");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/html");
+    EXPECT_EQ(r->body, "Hello world!\n");
+  }
+}
+
 namespace TestingOfHtmlResponses
 {
 

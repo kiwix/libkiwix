@@ -36,7 +36,10 @@ if gtest_dep.found() and not meson.is_cross_build()
       'zimfile&other.zim',
       'corner_cases.zim',
       'poor.zim',
-      'library.xml'
+      'library.xml',
+      'customized_resources.txt',
+      'helloworld.txt',
+      'welcome.html',
     ]
     foreach file : data_files
         # configure_file(input : 'data/' + file,
