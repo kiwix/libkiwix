@@ -17,6 +17,7 @@ tests = [
 if build_machine.system() != 'windows'
   tests += [
       'server',
+      'library_server',
       'server_search'
   ]
 endif
