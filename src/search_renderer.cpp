@@ -130,7 +130,7 @@ kainjow::mustache::data buildPagination(
   auto nbPages = lastPage + 1;
 
   auto firstPageGenerated = currentPage > 4 ? currentPage-4 : 0;
-  auto lastPageGenerated = min(currentPage+4, lastPage);
+  auto lastPageGenerated = std::min(currentPage+4, lastPage);
 
   if (nbPages != 1) {
     if (firstPageGenerated!=0) {
@@ -188,7 +188,7 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
   results.set("count", kiwix::beautifyInteger(estimatedResultCount));
   results.set("hasResults", estimatedResultCount != 0);
   results.set("start", kiwix::beautifyInteger(resultStart));
-  results.set("end", kiwix::beautifyInteger(min(resultStart+pageLength-1, estimatedResultCount)));
+  results.set("end", kiwix::beautifyInteger(std::min(resultStart+pageLength-1, estimatedResultCount)));
 
   // pagination
   auto pagination = buildPagination(

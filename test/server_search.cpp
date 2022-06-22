@@ -692,11 +692,11 @@ struct TestData
     std::string url = "/ROOT/search?" + query;
 
     if ( start >= 0 ) {
-      url += "&start=" + to_string(start);
+      url += "&start=" + std::to_string(start);
     }
 
     if ( resultsPerPage != 0 ) {
-      url += "&pageLength=" + to_string(resultsPerPage);
+      url += "&pageLength=" + std::to_string(resultsPerPage);
     }
 
     return url;
@@ -750,9 +750,9 @@ struct TestData
       )";
 
     const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
-    header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
-    header = replace(header, "LASTRESULT",  to_string(lastResultIndex));
-    header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
+    header = replace(header, "FIRSTRESULT", std::to_string(firstResultIndex));
+    header = replace(header, "LASTRESULT",  std::to_string(lastResultIndex));
+    header = replace(header, "RESULTCOUNT", std::to_string(totalResultCount));
     header = replace(header, "PATTERN",     getPattern());
     return header;
   }
@@ -824,9 +824,9 @@ struct TestData
       const auto realResultsPerPage = resultsPerPage?resultsPerPage:25;
       const auto url = makeUrl(query + "&format=xml", firstResultIndex, realResultsPerPage);
       header = replace(header, "URL", replace(url, "&", "&amp;"));
-      header = replace(header, "FIRSTRESULT", to_string(firstResultIndex));
-      header = replace(header, "ITEMCOUNT",  to_string(realResultsPerPage));
-      header = replace(header, "RESULTCOUNT", to_string(totalResultCount));
+      header = replace(header, "FIRSTRESULT", std::to_string(firstResultIndex));
+      header = replace(header, "ITEMCOUNT",  std::to_string(realResultsPerPage));
+      header = replace(header, "RESULTCOUNT", std::to_string(totalResultCount));
       header = replace(header, "PATTERN",     getPattern());
       auto queryLang = getLang();
       if (queryLang.empty()) {

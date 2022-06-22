@@ -53,18 +53,18 @@ std::string get_mime_type(const zim::Item& item)
 {
   try {
     return item.getMimetype();
-  } catch (exception& e) {
+  } catch (std::exception& e) {
     return "application/octet-stream";
   }
 }
 
 bool is_compressible_mime_type(const std::string& mimeType)
 {
-  return mimeType.find("text/") != string::npos
-      || mimeType.find("application/javascript") != string::npos
-      || mimeType.find("application/atom") != string::npos
-      || mimeType.find("application/opensearchdescription") != string::npos
-      || mimeType.find("application/json") != string::npos;
+  return mimeType.find("text/") != std::string::npos
+      || mimeType.find("application/javascript") != std::string::npos
+      || mimeType.find("application/atom") != std::string::npos
+      || mimeType.find("application/opensearchdescription") != std::string::npos
+      || mimeType.find("application/json") != std::string::npos;
 }
 
 bool compress(std::string &content) {
@@ -307,7 +307,7 @@ static ssize_t callback_reader_from_item(void* cls,
 {
   RunningResponse* response = static_cast<RunningResponse*>(cls);
 
-  size_t max_size_to_set = min<size_t>(
+  size_t max_size_to_set = std::min<size_t>(
     max,
     response->item.getSize() - pos - response->range_start);
 
