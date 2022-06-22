@@ -358,19 +358,13 @@
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
             setCookie(filterCookieName, params.toString());
         }
-        document.querySelectorAll('.filter').forEach(filter => {
-            if (filter.value) {
-                filter.style = 'background-color: #858585; color: #fff';
-            } else {
-                filter.style = 'background-color: #ffffff; color: black';
-            }
-        });
+        updateFilterColors();
         await loadAndDisplayBooks(true);
     }
 
     window.addEventListener('popstate', async () => {
         await resetAndFilter();
-        document.querySelectorAll('.filter').forEach(filter => {filter.value = params.get(filter.name) || ''});
+        updateVisibleParams();
     });
 
     async function loadSubset() {
@@ -382,6 +376,21 @@
                 fadeOutDiv.style.display = 'none';
             }
         }
+    }
+
+    function updateFilterColors() {
+        document.querySelectorAll('.filter').forEach(filter => {
+            if (filter.value) {
+                filter.style = 'background-color: #858585; color: #fff';
+            } else {
+                filter.style = 'background-color: #ffffff; color: black';
+            }
+        });
+    }
+
+    function updateVisibleParams() {
+        document.querySelectorAll('.filter').forEach(filter => {filter.value = params.get(filter.name) || ''});
+        updateFilterColors();
     }
 
     window.addEventListener('resize', (event) => {
@@ -422,12 +431,7 @@
         if (filters) {
             window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
         }
-        params.forEach((value, key) => {
-            const selectBox = document.getElementsByName(key)[0];
-            if (selectBox) {
-                selectBox.value = value
-            }
-        });
+        updateVisibleParams();
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
         if (!window.location.search) {
             const browserLang = navigator.language.split('-')[0];
@@ -438,13 +442,7 @@
                 langFilter.dispatchEvent(new Event('change'));
             }
         }
-        document.querySelectorAll('.filter').forEach(filter => {
-            if (filter.value) {
-                filter.style = 'background-color: #858585; color: #fff';
-            } else {
-                filter.style = 'background-color: #ffffff; color: black';
-            }
-        });
         setCookie(filterCookieName, params.toString());
     }
 })();
+
