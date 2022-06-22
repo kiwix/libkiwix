@@ -21,8 +21,6 @@
 #include <cmath>
 
 #include "search_renderer.h"
-#include "searcher.h"
-#include "reader.h"
 #include "library.h"
 #include "name_mapper.h"
 
@@ -38,16 +36,6 @@ namespace kiwix
 {
 
 /* Constructor */
-SearchRenderer::SearchRenderer(Searcher* searcher, NameMapper* mapper)
-    : SearchRenderer(
-        /* srs */ searcher->getSearchResultSet(),
-        /* mapper */ mapper,
-        /* library */ nullptr,
-        /* start */ searcher->getResultStart(),
-        /* estimatedResultCount */ searcher->getEstimatedResultCount()
-        )
-{}
-
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
                       unsigned int start, unsigned int estimatedResultCount)
     : SearchRenderer(srs, mapper, nullptr, start, estimatedResultCount)

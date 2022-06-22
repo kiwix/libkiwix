@@ -51,8 +51,6 @@ extern "C" {
 #include "tools/networkTools.h"
 #include "library.h"
 #include "name_mapper.h"
-#include "entry.h"
-#include "searcher.h"
 #include "search_renderer.h"
 #include "opds_dumper.h"
 #include "i18n.h"
@@ -61,6 +59,7 @@ extern "C" {
 #include <zim/error.h>
 #include <zim/entry.h>
 #include <zim/item.h>
+#include <zim/suggestion.h>
 
 #include <mustache.hpp>
 
@@ -618,40 +617,6 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
  * Archive and Zim handlers begin
  **/
 
-SuggestionsList_t getSuggestions(SuggestionSearcherCache& cache, const zim::Archive* const archive,
-                  const std::string& bookId, const std::string& queryString, int start, int suggestionCount)
-{
-  SuggestionsList_t suggestions;
-  std::shared_ptr<zim::SuggestionSearcher> searcher;
-  searcher = cache.getOrPut(bookId, [=](){ return make_shared<zim::SuggestionSearcher>(*archive); });
-
-  if (archive->hasTitleIndex()) {
-    auto search = searcher->suggest(queryString);
-    auto srs = search.getResults(start, suggestionCount);
-
-    for (auto it : srs) {
-      SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
-                                it.getPath(), it.getSnippet());
-      suggestions.push_back(suggestion);
-    }
-  } else {
-    // TODO: This case should be handled by libzim
-    std::vector<std::string> variants = getTitleVariants(queryString);
-    int currCount = 0;
-    for (auto it = variants.begin(); it != variants.end() && currCount < suggestionCount; it++) {
-      auto search = searcher->suggest(queryString);
-      auto srs = search.getResults(0, suggestionCount);
-      for (auto it : srs) {
-        SuggestionItem suggestion(it.getTitle(), kiwix::normalize(it.getTitle()),
-                                  it.getPath());
-        suggestions.push_back(suggestion);
-        currCount++;
-      }
-    }
-  }
-  return suggestions;
-}
-
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -690,9 +655,13 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   bool first = true;
 
   /* Get the suggestions */
-  SuggestionsList_t suggestions = getSuggestions(suggestionSearcherCache, archive.get(),
-                                                  bookId, queryString, start, count);
-  for(auto& suggestion:suggestions) {
+  auto searcher = suggestionSearcherCache.getOrPut(bookId,
+    [=](){ return make_shared<zim::SuggestionSearcher>(*archive); }
+  );
+  auto search = searcher->suggest(queryString);
+  auto srs = search.getResults(start, count);
+
+  for(auto& suggestion: srs) {
     MustacheData result;
     result.set("label", suggestion.getTitle());
 

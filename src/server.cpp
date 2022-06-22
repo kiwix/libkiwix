@@ -24,6 +24,7 @@
 
 #include <string>
 
+#include <zim/item.h>
 #include "server/internalServer.h"
 
 namespace kiwix {

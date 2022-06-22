@@ -223,7 +223,6 @@ class Library
 
   Book getBookByIdThreadSafe(const std::string& id) const;
 
-  DEPRECATED std::shared_ptr<Reader> getReaderById(const std::string& id);
   std::shared_ptr<zim::Archive> getArchiveById(const std::string& id);
   std::shared_ptr<ZimSearcher> getSearcherById(const std::string& id) {
     return getSearcherByIds(BookIdSet{id});

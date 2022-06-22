@@ -27,7 +27,6 @@
 namespace kiwix
 {
 
-class Searcher;
 class NameMapper;
 /**
  * The SearcherRenderer class is used to render a search result to a html page.
@@ -35,17 +34,6 @@ class NameMapper;
 class SearchRenderer
 {
  public:
-  /**
-   * Construct a SearchRenderer from a Searcher.
-   *
-   * This method is now deprecated. Construct the renderer from a
-   * `zim::SearchResultSet`
-   *
-   * @param searcher The `Searcher` to render.
-   * @param mapper The `NameMapper` to use to do the rendering.
-   */
-  DEPRECATED SearchRenderer(Searcher* searcher, NameMapper* mapper);
-
   /**
    * Construct a SearchRenderer from a SearchResultSet.
    *

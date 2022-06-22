@@ -26,9 +26,10 @@
 
 #include <mustache.hpp>
 #include "byte_range.h"
-#include "entry.h"
 #include "etag.h"
 #include "i18n.h"
+
+#include <zim/item.h>
 
 extern "C" {
 #include "microhttpd_wrapper.h"

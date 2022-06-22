@@ -18,7 +18,6 @@
  */
 
 #include "book.h"
-#include "reader.h"
 
 #include "tools.h"
 #include "tools/base64.h"
@@ -30,7 +29,7 @@
 #include "tools/archiveTools.h"
 
 #include <zim/archive.h>
-
+#include <zim/item.h>
 #include <pugixml.hpp>
 
 namespace kiwix
@@ -62,11 +61,6 @@ bool Book::update(const kiwix::Book& other)
 
   *this = other;
   return true;
-}
-
-void Book::update(const kiwix::Reader& reader)
-{
-  update(*reader.getZimArchive());
 }
 
 void Book::update(const zim::Archive& archive) {

@@ -38,7 +38,6 @@ namespace kiwix
 {
 
 class OPDSDumper;
-class Reader;
 
 /**
  * A class to store information about a book (a zim file)
@@ -69,7 +68,6 @@ class Book
   ~Book();
 
   bool update(const Book& other);
-  DEPRECATED void update(const Reader& reader);
   void update(const zim::Archive& archive);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);

@@ -27,7 +27,6 @@
 #include <pugixml.hpp>
 
 #include "library.h"
-#include "reader.h"
 
 using namespace std;
 

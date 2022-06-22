@@ -91,7 +91,6 @@ typedef kainjow::mustache::data MustacheData;
 typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
 typedef ConcurrentCache<string, std::shared_ptr<zim::SuggestionSearcher>> SuggestionSearcherCache;
 
-class Entry;
 class OPDSDumper;
 
 class InternalServer {
