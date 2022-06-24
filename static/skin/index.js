@@ -282,7 +282,7 @@
                     kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
                     divTag.getElementsByTagName('a')[0].onclick = (event) => {
                         event.preventDefault();
-                        window.history.pushState({}, null, `${window.location.href.split('?')[0]}?lang=`);
+                        window.history.pushState({}, null, `?lang=`);
                         setCookie(filterCookieName, 'lang=');
                         resetAndFilter();
                         document.querySelectorAll('.filter').forEach(filter => {
@@ -355,7 +355,7 @@
         params = new URLSearchParams(window.location.search);
         if (filterType) {
             params.set(filterType, filterValue);
-            window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
+            window.history.pushState({}, null, `?${params.toString()}`);
             setCookie(filterCookieName, params.toString());
         }
         updateFilterColors();
@@ -429,7 +429,7 @@
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
         if (filters) {
-            window.history.pushState({}, null, `${window.location.href.split('?')[0]}?${params.toString()}`);
+            window.history.pushState({}, null, `?${params.toString()}`);
         }
         updateVisibleParams();
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
