@@ -267,6 +267,16 @@
         });
     }
 
+    function setNoResultsContent() {
+        const kiwixHomeBody = document.querySelector('.kiwixHomeBody');
+        const divTag = document.createElement('div');
+        divTag.setAttribute('class', 'noResults');
+        divTag.innerHTML = `No result. Would you like to <a href="?lang=">reset filter</a>?`;
+        kiwixHomeBody.append(divTag);
+        kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
+        loader.setAttribute('style', 'position: absolute; top: 50%');
+    }
+
     function checkAndInjectEmptyMessage() {
         const kiwixHomeBody = document.querySelector('.kiwixHomeBody');
         if (!bookOrderMap.size) {
@@ -274,14 +284,7 @@
                 noResultInjected = true;
                 iso.remove(document.getElementsByClassName('book__list')[0].getElementsByTagName('div'));
                 iso.layout();
-                setTimeout(() => {
-                    const divTag = document.createElement('div');
-                    divTag.setAttribute('class', 'noResults');
-                    divTag.innerHTML = `No result. Would you like to <a href="?lang=">reset filter</a>?`;
-                    kiwixHomeBody.append(divTag);
-                    kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
-                    loader.setAttribute('style', 'position: absolute; top: 50%');
-                }, 300);
+                setTimeout(setNoResultsContent, 300);
             }
             return true;
         } else if (noResultInjected) {
