@@ -429,7 +429,11 @@
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
         if (filters) {
-            window.history.pushState({}, null, `?${params.toString()}`);
+            const currentLink = window.location.search;
+            const newLink = `?${params.toString()}`;
+            if (currentLink != newLink) {
+                window.history.pushState({}, null, newLink);       
+            }
         }
         updateVisibleParams();
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
