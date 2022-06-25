@@ -19,7 +19,7 @@ import os
 
 project = 'libkiwix'
 copyright = '2022, libkiwix-team'
-author = 'libzim-team'
+author = 'libkiwix-team'
 
 
 # -- General configuration ---------------------------------------------------
