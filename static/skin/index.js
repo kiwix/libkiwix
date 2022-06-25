@@ -277,23 +277,9 @@
                 setTimeout(() => {
                     const divTag = document.createElement('div');
                     divTag.setAttribute('class', 'noResults');
-                    divTag.innerHTML = `No result. Would you like to <a href="/?lang=">reset filter</a>?`;
+                    divTag.innerHTML = `No result. Would you like to <a href="?lang=">reset filter</a>?`;
                     kiwixHomeBody.append(divTag);
                     kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
-                    divTag.getElementsByTagName('a')[0].onclick = (event) => {
-                        event.preventDefault();
-                        window.history.pushState({}, null, `?lang=`);
-                        setCookie(filterCookieName, 'lang=');
-                        resetAndFilter();
-                        document.querySelectorAll('.filter').forEach(filter => {
-                            filter.value = params.get(filter.name) || '';
-                            if (filter.value) {
-                                filter.style = 'background-color: #858585; color: #fff';
-                            } else {
-                                filter.style = 'background-color: #ffffff; color: black';
-                            }
-                        })
-                    };
                     loader.setAttribute('style', 'position: absolute; top: 50%');
                 }, 300);
             }
