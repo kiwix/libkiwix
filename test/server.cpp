@@ -6,6 +6,8 @@
 #define SERVER_PORT 8001
 #include "server_testing_tools.h"
 
+#include "../src/tools/stringTools.h"
+
 
 bool is_valid_etag(const std::string& etag)
 {
@@ -56,6 +58,9 @@ const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/ROOT/zimfile/A/index" },
   { WITH_ETAG, "/ROOT/zimfile/A/Ray_Charles" },
 
+  { WITH_ETAG, "/ROOT/content/zimfile/A/index" },
+  { WITH_ETAG, "/ROOT/content/zimfile/A/Ray_Charles" },
+
   { WITH_ETAG, "/ROOT/raw/zimfile/content/A/index" },
   { WITH_ETAG, "/ROOT/raw/zimfile/content/A/Ray_Charles" },
 };
@@ -75,10 +80,16 @@ const ResourceCollection resources200Uncompressible{
   { NO_ETAG, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
   { WITH_ETAG, "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
+  { WITH_ETAG, "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
   { WITH_ETAG, "/ROOT/corner_cases/A/empty.html" },
   { WITH_ETAG, "/ROOT/corner_cases/-/empty.css" },
   { WITH_ETAG, "/ROOT/corner_cases/-/empty.js" },
+
+  { WITH_ETAG, "/ROOT/content/corner_cases/A/empty.html" },
+  { WITH_ETAG, "/ROOT/content/corner_cases/-/empty.css" },
+  { WITH_ETAG, "/ROOT/content/corner_cases/-/empty.js" },
+
 
   // The following url's responses are too small to be compressed
   { NO_ETAG,   "/ROOT/catalog/root.xml" },
@@ -202,6 +213,15 @@ R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROO
 )EXPECTEDRESULT"
     },
     {
+      /* url */ "/ROOT/content/zimfile/A/index",
+R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
+<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
+        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
+)EXPECTEDRESULT"
+    },
+    {
       // Searching in a ZIM file without a full-text index returns
       // a page rendered from static/templates/no_search_result_html
       /* url */ "/ROOT/search?content=poor&pattern=whatever",
@@ -265,6 +285,7 @@ const char* urls404[] = {
   "/ROOT/suggest?content=non-existent-book&term=abcd",
   "/ROOT/catch/external",
   "/ROOT/zimfile/A/non-existent-article",
+  "/ROOT/content/zimfile/A/non-existent-article",
 
   "/ROOT/raw/non-existent-book/meta/Title",
   "/ROOT/raw/zimfile/wrong-kind/Foo",
@@ -332,6 +353,13 @@ TEST_F(CustomizedServerTest, ContentOfAnyServableUrlCanBeOverriden)
     const auto r = zfs1_->GET("/ROOT/zimfile/A/Ray_Charles");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "ray/charles");
+    EXPECT_EQ(r->body, "<html><head></head><body>Welcome</body></html>\n");
+  }
+
+  {
+    const auto r = zfs1_->GET("/ROOT/content/zimfile/A/Ray_Charles");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "charles/ray");
     EXPECT_EQ(r->body, "<html><head></head><body>Welcome</body></html>\n");
   }
 
@@ -685,6 +713,19 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
+    { /* url */ "/ROOT/content/zimfile/invalid-article",
+      book_name=="zimfile" &&
+      book_title=="Ray Charles" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/content/zimfile/invalid-article" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
+    </p>
+)"  },
+
     { /* url */ R"(/ROOT/"><svg onload=alert(1)>)",
       expected_body==R"(
     <h1>Not Found</h1>
@@ -709,6 +750,19 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
+    { /* url */ R"(/ROOT/content/zimfile/"><svg onload=alert(1)>)",
+      book_name=="zimfile" &&
+      book_title=="Ray Charles" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT/content/zimfile/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
+    </p>
+    <p>
+      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
+    </p>
+)"  },
+
     { /* url */ "/ROOT/zimfile/invalid-article?userlang=hy",
       expected_page_title=="Սխալ հասցե" &&
       book_name=="zimfile" &&
@@ -717,6 +771,20 @@ TEST_F(ServerTest, Http404HtmlError)
     <h1>Սխալ հասցե</h1>
     <p>
       Սխալ հասցե՝ /ROOT/zimfile/invalid-article
+    </p>
+    <p>
+      Որոնել <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
+    </p>
+)"  },
+
+    { /* url */ "/ROOT/content/zimfile/invalid-article?userlang=hy",
+      expected_page_title=="Սխալ հասցե" &&
+      book_name=="zimfile" &&
+      book_title=="Ray Charles" &&
+      expected_body==R"(
+    <h1>Սխալ հասցե</h1>
+    <p>
+      Սխալ հասցե՝ /ROOT/content/zimfile/invalid-article
     </p>
     <p>
       Որոնել <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
@@ -964,9 +1032,17 @@ TEST_F(ServerTest, 500)
 </html>
 )";
 
+  {
   const auto r = zfs1_->GET("/ROOT/poor/A/redirect_loop.html");
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
+  }
+
+  {
+  const auto r = zfs1_->GET("/ROOT/content/poor/A/redirect_loop.html");
+  EXPECT_EQ(r->status, 500);
+  EXPECT_EQ(r->body, expectedBody);
+  }
 }
 
 TEST_F(ServerTest, UserLanguageControl)
@@ -1047,15 +1123,24 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   auto g = zfs1_->GET("/ROOT/random?content=zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_TRUE(g->get_header_value("Location").find("/zimfile/A/") != std::string::npos);
+  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
 }
 
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
 {
+  {
   auto g = zfs1_->GET("/ROOT/zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ("/ROOT/zimfile/A/index", g->get_header_value("Location"));
+  ASSERT_EQ("/ROOT/content/zimfile/A/index", g->get_header_value("Location"));
+  }
+
+  {
+  auto g = zfs1_->GET("/ROOT/content/zimfile");
+  ASSERT_EQ(302, g->status);
+  ASSERT_TRUE(g->has_header("Location"));
+  ASSERT_EQ("/ROOT/content/zimfile/A/index", g->get_header_value("Location"));
+  }
 }
 
 
@@ -1079,6 +1164,12 @@ TEST_F(ServerTest, RawEntry)
 
   // ... but the "normal" content is not
   p = zfs1_->GET("/ROOT/zimfile/A/Ray_Charles");
+  EXPECT_EQ(200, p->status);
+  EXPECT_NE(std::string(p->body), std::string(entry.getItem(true).getData()));
+  EXPECT_TRUE(p->body.find("taskbar") != std::string::npos);
+
+  // ... but the "normal" content is not
+  p = zfs1_->GET("/ROOT/content/zimfile/A/Ray_Charles");
   EXPECT_EQ(200, p->status);
   EXPECT_NE(std::string(p->body), std::string(entry.getItem(true).getData()));
   EXPECT_TRUE(p->body.find("taskbar") != std::string::npos);

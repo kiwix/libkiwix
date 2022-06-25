@@ -545,6 +545,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
 
+    if (startsWith(request.get_url(), "/content/"))
+      return handle_content(request);
+
     if (startsWith(request.get_url(), "/catalog/"))
       return handle_catalog(request);
 
@@ -922,15 +925,6 @@ InternalServer::search_catalog(const RequestContext& request,
 namespace
 {
 
-std::string get_book_name(const RequestContext& request)
-{
-  try {
-    return request.get_url_part(0);
-  } catch (const std::out_of_range& e) {
-    return std::string();
-  }
-}
-
 ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::string& pattern)
 {
   return ParameterizedMessage("suggest-search",
@@ -945,7 +939,8 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(item.getPath());
+  const auto path = kiwix::urlEncode(item.getPath());
+  const auto redirectUrl = m_root + "/content/" + bookName + "/" + path;
   return Response::build_redirect(*this, redirectUrl);
 }
 
@@ -957,7 +952,10 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     printf("** running handle_content\n");
   }
 
-  const std::string bookName = get_book_name(request);
+  const std::string contentPrefix = "/content/";
+  const bool isContentPrefixedUrl = startsWith(url, contentPrefix);
+  const size_t prefixLength = isContentPrefixedUrl ? contentPrefix.size() : 1;
+  const std::string bookName = request.get_url_part(isContentPrefixedUrl);
 
   std::shared_ptr<zim::Archive> archive;
   try {
@@ -973,7 +971,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
            + TaskbarInfo(bookName);
   }
 
-  auto urlStr = request.get_url().substr(bookName.size()+1);
+  auto urlStr = url.substr(prefixLength + bookName.size());
   if (urlStr[0] == '/') {
     urlStr = urlStr.substr(1);
   }
