@@ -539,6 +539,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if ( isLocallyCustomizedResource(request.get_url()) )
       return handle_locally_customized_resource(request);
 
+    if (request.get_url() == "/" )
+      return build_homepage(request);
+
     if (startsWith(request.get_url(), "/skin/"))
       return handle_skin(request);
 
@@ -955,8 +958,6 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   const std::string bookName = get_book_name(request);
-  if (bookName.empty())
-    return build_homepage(request);
 
   std::shared_ptr<zim::Archive> archive;
   try {
