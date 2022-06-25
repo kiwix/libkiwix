@@ -198,7 +198,7 @@ To use JS provided by kiwix-serve you can use the following template to start wi
     ```
         <form id='kiwixSearchForm'>
         <input type="text" name="q" placeholder="Search" id="searchFilter" class='kiwixSearch filter'>
-        <input type="submit" class="searchButton" value="Search"/>
+        <input type="submit" class="kiwixButton" value="Search"/>
         </form>
     ```
 
