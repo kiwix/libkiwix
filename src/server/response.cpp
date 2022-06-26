@@ -140,9 +140,6 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
 {
   auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
-  if ( m_taskbarInfo ) {
-    r->set_taskbar(m_taskbarInfo->bookName, m_taskbarInfo->archive);
-  }
   return r;
 }
 
@@ -245,19 +242,6 @@ std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
   r->set_code(m_httpStatusCode);
   return r;
 }
-
-ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo& taskbarInfo)
-{
-  this->m_taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
-  return *this;
-}
-
-ContentResponseBlueprint& ContentResponseBlueprint::operator+=(const TaskbarInfo& taskbarInfo)
-{
-  // operator+() is already a state-modifying operator (akin to operator+=)
-  return *this + taskbarInfo;
-}
-
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
 {
@@ -430,22 +414,13 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-void ContentResponse::set_taskbar(const std::string& bookName, const zim::Archive* archive)
-{
-  m_bookName = bookName;
-  m_bookTitle = archive ? getArchiveTitle(*archive) : "";
-}
-
-
 ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool /*withTaskbar*/, bool /*withLibraryButton*/, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
   Response(verbose),
   m_root(root),
   m_content(content),
   m_mimeType(mimetype),
   m_raw(raw),
-  m_blockExternalLinks(blockExternalLinks),
-  m_bookName(""),
-  m_bookTitle("")
+  m_blockExternalLinks(blockExternalLinks)
 {
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }

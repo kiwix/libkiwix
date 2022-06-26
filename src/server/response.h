@@ -102,8 +102,6 @@ class ContentResponse : public Response {
       const std::string& mimetype,
       bool isHomePage = false);
 
-    void set_taskbar(const std::string& bookName, const zim::Archive* archive);
-
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
 
@@ -119,20 +117,7 @@ class ContentResponse : public Response {
     std::string m_mimeType;
     bool m_raw;
     bool m_blockExternalLinks;
-    std::string m_bookName;
-    std::string m_bookTitle;
  };
-
-struct TaskbarInfo
-{
-  const std::string bookName;
-  const zim::Archive* const archive;
-
-  TaskbarInfo(const std::string& bookName, const zim::Archive* a = nullptr)
-    : bookName(bookName)
-    , archive(a)
-  {}
-};
 
 class ContentResponseBlueprint
 {
@@ -162,9 +147,6 @@ public: // functions
   }
 
 
-  ContentResponseBlueprint& operator+(const TaskbarInfo& taskbarInfo);
-  ContentResponseBlueprint& operator+=(const TaskbarInfo& taskbarInfo);
-
 protected: // functions
   std::string getMessage(const std::string& msgId) const;
   virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
@@ -176,7 +158,6 @@ public: //data
   const std::string m_mimeType;
   const std::string m_template;
   kainjow::mustache::data m_data;
-  std::unique_ptr<TaskbarInfo> m_taskbarInfo;
 };
 
 struct HTTPErrorResponse : ContentResponseBlueprint
@@ -188,8 +169,6 @@ struct HTTPErrorResponse : ContentResponseBlueprint
                     const std::string& headingMsgId,
                     const std::string& cssUrl = "");
 
-  using ContentResponseBlueprint::operator+;
-  using ContentResponseBlueprint::operator+=;
   HTTPErrorResponse& operator+(const std::string& msg);
   HTTPErrorResponse& operator+(const ParameterizedMessage& errorDetails);
   HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);
