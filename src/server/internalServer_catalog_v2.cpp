@@ -104,7 +104,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
              *this,
              opdsFeed,
              "application/atom+xml;profile=opds-catalog;kind=acquisition",
-             /*isHomePage*/ false,
              /*raw*/ true
   );
 }
@@ -126,7 +125,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
              *this,
              opdsFeed,
              "application/atom+xml;type=entry;profile=opds-catalog",
-             /*isHomePage*/ false,
              /*raw*/ true
   );
 }
@@ -140,7 +138,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
              *this,
              opdsDumper.categoriesOPDSFeed(),
              "application/atom+xml;profile=opds-catalog;kind=navigation",
-             /*isHomePage*/ false,
              /*raw*/ true
   );
 }
@@ -154,7 +151,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
              *this,
              opdsDumper.languagesOPDSFeed(),
              "application/atom+xml;profile=opds-catalog;kind=navigation",
-             /*isHomePage*/ false,
              /*raw*/ true
   );
 }
@@ -170,7 +166,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
                *this,
                illustration->getData(),
                illustration->mimeType,
-               /*isHomePage*/ false,
                /*raw*/ true
     );
   } catch(...) {

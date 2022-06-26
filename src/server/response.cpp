@@ -429,7 +429,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const InternalServer& server,
   const std::string& content,
   const std::string& mimetype,
-  bool isHomePage,
   bool raw)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
@@ -448,7 +447,7 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const std::string& mimetype)
 {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype, /*isHomePage*/false, /*raw*/false);
+  return ContentResponse::build(server, content, mimetype, /*raw*/false);
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
@@ -468,7 +467,7 @@ std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, cons
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    auto response = ContentResponse::build(server, item.getData(), mimetype, /*isHomePage=*/false, raw);
+    auto response = ContentResponse::build(server, item.getData(), mimetype, raw);
     response->set_cacheable();
     response->m_byteRange = byteRange;
     return std::move(response);

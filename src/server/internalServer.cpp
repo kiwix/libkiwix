@@ -728,7 +728,6 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
         *this,
         getResource(resourceName),
         getMimeTypeForFile(resourceName),
-        /*isHomePage=*/false,
         /*raw=*/true);
     response->set_cacheable();
     return std::move(response);
@@ -820,11 +819,9 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setPageLength(pageLength);
     if (request.get_requested_format() == "xml") {
       return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8",
-      /*isHomePage =*/false,
       /*raw =*/true);
     }
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8",
-                                           /*isHomePage =*/false,
                                            /*raw =*/false);
     // XXX: Now this has to be handled by the iframe-based viewer which
     // XXX: has to resolve if the book selection resulted in a single book.
@@ -956,7 +953,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
       *this,
       opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
       "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8",
-      /*isHomePage*/ false,
       /*raw*/ true);
   return std::move(response);
 }
@@ -1146,7 +1142,6 @@ std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(con
   return ContentResponse::build(*this,
                                 resourceData,
                                 crd.mimeType,
-                                /*isHomePage=*/false,
                                 /*raw=*/true);
 }
 
