@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Setup python 3.10
         uses: actions/setup-python@v2
         with:
@@ -99,7 +99,7 @@ jobs:
           'git', 'clone',
           'https://github.com/${{github.repository}}',
           '--depth=1',
-          '--branch', '${{steps.extract_branch.outputs.branch}}'
+          '--branch', ${{steps.extract_branch.outputs.branch}}'
         ]
         check_call(command, cwd=environ['HOME'])
     - name: Install deps
