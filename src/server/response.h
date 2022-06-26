@@ -99,8 +99,7 @@ class ContentResponse : public Response {
       const InternalServer& server,
       const std::string& template_str,
       kainjow::mustache::data data,
-      const std::string& mimetype,
-      bool isHomePage = false);
+      const std::string& mimetype);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);

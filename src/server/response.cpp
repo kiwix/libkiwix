@@ -445,11 +445,10 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const InternalServer& server,
   const std::string& template_str,
   kainjow::mustache::data data,
-  const std::string& mimetype,
-  bool isHomePage)
+  const std::string& mimetype)
 {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype, isHomePage);
+  return ContentResponse::build(server, content, mimetype);
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
