@@ -414,7 +414,7 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool /*withTaskbar*/, bool /*withLibraryButton*/, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
+ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
   Response(verbose),
   m_root(root),
   m_content(content),
@@ -436,8 +436,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
         server.m_root,
         server.m_verbose.load(),
         raw,
-        /*server.m_withTaskbar && !isHomePage*/ false, // XXX
-        /*server.m_withLibraryButton*/ false, // XXX
         server.m_blockExternalLinks,
         content,
         mimetype));

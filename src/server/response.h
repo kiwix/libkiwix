@@ -84,17 +84,17 @@ class ContentResponse : public Response {
       const std::string& root,
       bool verbose,
       bool raw,
-      bool withTaskbar,
-      bool withLibraryButton,
       bool blockExternalLinks,
       const std::string& content,
       const std::string& mimetype);
+
     static std::unique_ptr<ContentResponse> build(
       const InternalServer& server,
       const std::string& content,
       const std::string& mimetype,
       bool isHomePage = false,
       bool raw = false);
+
     static std::unique_ptr<ContentResponse> build(
       const InternalServer& server,
       const std::string& template_str,
