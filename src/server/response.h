@@ -92,8 +92,8 @@ class ContentResponse : public Response {
       const InternalServer& server,
       const std::string& content,
       const std::string& mimetype,
-      bool isHomePage = false,
-      bool raw = false);
+      bool isHomePage,
+      bool raw);
 
     static std::unique_ptr<ContentResponse> build(
       const InternalServer& server,

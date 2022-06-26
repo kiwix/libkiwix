@@ -103,7 +103,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
   return ContentResponse::build(
              *this,
              opdsFeed,
-             "application/atom+xml;profile=opds-catalog;kind=acquisition"
+             "application/atom+xml;profile=opds-catalog;kind=acquisition",
+             /*isHomePage*/ false,
+             /*raw*/ true
   );
 }
 
@@ -123,7 +125,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   return ContentResponse::build(
              *this,
              opdsFeed,
-             "application/atom+xml;type=entry;profile=opds-catalog"
+             "application/atom+xml;type=entry;profile=opds-catalog",
+             /*isHomePage*/ false,
+             /*raw*/ true
   );
 }
 
@@ -135,7 +139,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
   return ContentResponse::build(
              *this,
              opdsDumper.categoriesOPDSFeed(),
-             "application/atom+xml;profile=opds-catalog;kind=navigation"
+             "application/atom+xml;profile=opds-catalog;kind=navigation",
+             /*isHomePage*/ false,
+             /*raw*/ true
   );
 }
 
@@ -147,7 +153,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
   return ContentResponse::build(
              *this,
              opdsDumper.languagesOPDSFeed(),
-             "application/atom+xml;profile=opds-catalog;kind=navigation"
+             "application/atom+xml;profile=opds-catalog;kind=navigation",
+             /*isHomePage*/ false,
+             /*raw*/ true
   );
 }
 
@@ -158,7 +166,13 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
     auto book = mp_library->getBookByIdThreadSafe(bookId);
     auto size = request.get_argument<unsigned int>("size");
     auto illustration = book.getIllustration(size);
-    return ContentResponse::build(*this, illustration->getData(), illustration->mimeType);
+    return ContentResponse::build(
+               *this,
+               illustration->getData(),
+               illustration->mimeType,
+               /*isHomePage*/ false,
+               /*raw*/ true
+    );
   } catch(...) {
     return HTTP404Response(*this, request)
            + urlNotFoundMsg;
