@@ -83,7 +83,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    <link type=\"text/html\" href=\"/ROOT/zimfile%26other\" />\n"               \
+    "    <link type=\"text/html\" href=\"/ROOT/content/zimfile%26other\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
     "    </author>\n"                                                   \
@@ -110,7 +110,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
     "          href=\"/ROOT/catalog/v2/illustration/raycharles/?size=48\"\n" \
     "          type=\"image/png;width=48;height=48;scale=1\"/>\n"               \
-    "    <link type=\"text/html\" href=\"/ROOT/zimfile\" />\n"               \
+    "    <link type=\"text/html\" href=\"/ROOT/content/zimfile\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
     "    </author>\n"                                                   \
@@ -134,7 +134,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    <link type=\"text/html\" href=\"/ROOT/zimfile\" />\n"               \
+    "    <link type=\"text/html\" href=\"/ROOT/content/zimfile\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
     "    </author>\n"                                                   \
