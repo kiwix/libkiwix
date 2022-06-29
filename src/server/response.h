@@ -83,8 +83,6 @@ class ContentResponse : public Response {
     ContentResponse(
       const std::string& root,
       bool verbose,
-      bool raw,
-      bool blockExternalLinks,
       const std::string& content,
       const std::string& mimetype);
 
@@ -104,15 +102,12 @@ class ContentResponse : public Response {
     MHD_Response* create_mhd_response(const RequestContext& request);
 
     bool can_compress(const RequestContext& request) const;
-    bool contentDecorationAllowed() const;
 
 
   private:
     std::string m_root;
     std::string m_content;
     std::string m_mimeType;
-    bool m_raw;
-    bool m_blockExternalLinks;
  };
 
 class ContentResponseBlueprint

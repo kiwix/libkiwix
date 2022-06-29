@@ -329,16 +329,6 @@ ContentResponse::can_compress(const RequestContext& request) const
       && (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_COMPRESS);
 }
 
-bool
-ContentResponse::contentDecorationAllowed() const
-{
-  if (m_raw) {
-    return false;
-  }
-  return (startsWith(m_mimeType, "text/html")
-    && m_mimeType.find(";raw=true") == std::string::npos);
-}
-
 MHD_Response*
 Response::create_mhd_response(const RequestContext& request)
 {
@@ -388,13 +378,11 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
+ContentResponse::ContentResponse(const std::string& root, bool verbose, const std::string& content, const std::string& mimetype) :
   Response(verbose),
   m_root(root),
   m_content(content),
-  m_mimeType(mimetype),
-  m_raw(raw),
-  m_blockExternalLinks(blockExternalLinks)
+  m_mimeType(mimetype)
 {
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
@@ -408,8 +396,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
    return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
         server.m_verbose.load(),
-        raw,
-        server.m_blockExternalLinks,
         content,
         mimetype));
 }
