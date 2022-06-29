@@ -321,13 +321,6 @@ void print_response_info(int retCode, MHD_Response* response)
 }
 
 
-void ContentResponse::inject_root_link(){
-  m_content = prependToFirstOccurence(
-    m_content,
-    "</head[ \\t]*>",
-    "<link type=\"root\" href=\"" + m_root + "\">");
-}
-
 bool
 ContentResponse::can_compress(const RequestContext& request) const
 {
@@ -356,10 +349,6 @@ Response::create_mhd_response(const RequestContext& request)
 MHD_Response*
 ContentResponse::create_mhd_response(const RequestContext& request)
 {
-  if (contentDecorationAllowed()) {
-    inject_root_link();
-  }
-
   const bool isCompressed = can_compress(request) && compress(m_content);
 
   MHD_Response* response = MHD_create_response_from_buffer(

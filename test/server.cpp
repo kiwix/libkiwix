@@ -121,7 +121,6 @@ TEST(indexTemplateStringTest, indexTemplateCheck) {
   "</html>");
   EXPECT_EQ("<!DOCTYPE html><head>"
     "<title>Welcome to kiwix library</title>"
-    "<link type=\"root\" href=\"/ROOT\">"
     "</head>"
   "</html>", zfs.GET("/ROOT/")->body);
 }
@@ -447,7 +446,7 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 )FRAG",
 
     R"FRAG(
-  <link type="root" href="/ROOT"></head>
+  </head>
   <body>)FRAG",
 
   R"FRAG(  </body>
@@ -1028,11 +1027,13 @@ TEST_F(ServerTest, RawEntry)
   EXPECT_EQ(200, p->status);
   EXPECT_EQ(std::string(p->body), std::string(entry.getItem(true).getData()));
 
+  /* Now normal content is not decorated in any way, either
   // ... but the "normal" content is not
   p = zfs1_->GET("/ROOT/content/zimfile/A/Ray_Charles");
   EXPECT_EQ(200, p->status);
   EXPECT_NE(std::string(p->body), std::string(entry.getItem(true).getData()));
   EXPECT_TRUE(p->body.find("<link type=\"root\" href=\"/ROOT\">") != std::string::npos);
+  */
 }
 
 TEST_F(ServerTest, HeadMethodIsSupported)

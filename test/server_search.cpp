@@ -112,7 +112,7 @@ std::string makeSearchResultsHtml(const std::string& pattern,
 
     </style>
     <title>Search: %PATTERN%</title>
-  <link type="root" href="/ROOT"></head>
+  </head>
   <body bgcolor="white">
     <div class="header">
       %HEADER%

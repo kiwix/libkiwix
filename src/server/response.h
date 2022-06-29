@@ -103,7 +103,6 @@ class ContentResponse : public Response {
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
 
-    void inject_root_link();
     bool can_compress(const RequestContext& request) const;
     bool contentDecorationAllowed() const;
 
