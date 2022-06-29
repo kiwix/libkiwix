@@ -179,6 +179,88 @@ function handle_content_url_change() {
   updateCurrentBookIfNeeded(newHash);
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// External link blocking
+////////////////////////////////////////////////////////////////////////////////
+
+function matchingAncestorElement(el, context, selector) {
+  while (el && el.matches && el !== context) {
+    if ( el.matches(selector) )
+      return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+
+const block_path = `${root}/catch/external`;
+
+function blockLink(target) {
+  const encodedHref = encodeURIComponent(target.href);
+  target.setAttribute("href", block_path + "?source=" + encodedHref);
+  target.setAttribute("target", "_top");
+}
+
+function isExternalUrl(url) {
+  if ( url.startsWith(window.location.origin) )
+    return false;
+
+  return url.startsWith("//")
+      || url.startsWith("http:")
+      || url.startsWith("https:");
+}
+
+function onClickEvent(e) {
+  const iframeDocument = contentIframe.contentDocument;
+  const target = matchingAncestorElement(e.target, iframeDocument, "a");
+  if (target !== null && "href" in target) {
+    if ( isExternalUrl(target.href) )
+      return blockLink(target);
+  }
+}
+
+// helper for enabling IE 8 event bindings
+function addEventHandler(el, eventType, handler) {
+  if (el.attachEvent)
+    el.attachEvent('on'+eventType, handler);
+  else
+    el.addEventListener(eventType, handler);
+}
+
+function setupEventHandler(context, selector, eventType, callback) {
+  addEventHandler(context, eventType, function(e) {
+    const eventElement = e.target || e.srcElement;
+    const el = matchingAncestorElement(eventElement, context, selector);
+    if (el)
+      callback.call(el, e);
+  });
+}
+
+// matches polyfill
+this.Element && function(ElementPrototype) {
+    ElementPrototype.matches = ElementPrototype.matches ||
+    ElementPrototype.matchesSelector ||
+    ElementPrototype.webkitMatchesSelector ||
+    ElementPrototype.msMatchesSelector ||
+    function(selector) {
+        var node = this, nodes = (node.parentNode || node.document).querySelectorAll(selector), i = -1;
+        while (nodes[++i] && nodes[i] != node);
+        return !!nodes[i];
+    }
+}(Element.prototype);
+
+function setup_external_link_blocker() {
+  setupEventHandler(contentIframe.contentDocument, 'a', 'click', onClickEvent);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// End of external link blocking
+////////////////////////////////////////////////////////////////////////////////
+
+function on_content_load() {
+  handle_content_url_change();
+  setup_external_link_blocker();
+}
+
 window.onresize = handle_visual_viewport_change;
 window.onhashchange = handle_location_hash_change;
 

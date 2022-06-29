@@ -321,17 +321,6 @@ void print_response_info(int retCode, MHD_Response* response)
 }
 
 
-void ContentResponse::inject_externallinks_blocker()
-{
-  kainjow::mustache::data data;
-  data.set("root", m_root);
-  auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
-  m_content = prependToFirstOccurence(
-    m_content,
-    "</head[ \\t]*>",
-    script_tag);
-}
-
 void ContentResponse::inject_root_link(){
   m_content = prependToFirstOccurence(
     m_content,
@@ -369,10 +358,6 @@ ContentResponse::create_mhd_response(const RequestContext& request)
 {
   if (contentDecorationAllowed()) {
     inject_root_link();
-
-    if (m_blockExternalLinks) {
-      inject_externallinks_blocker();
-    }
   }
 
   const bool isCompressed = can_compress(request) && compress(m_content);

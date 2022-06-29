@@ -46,7 +46,6 @@ const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/ROOT/skin/autoComplete.min.js" },
   { WITH_ETAG, "/ROOT/skin/css/autoComplete.css" },
   { WITH_ETAG, "/ROOT/skin/taskbar.css" },
-  { WITH_ETAG, "/ROOT/skin/block_external.js" },
 
   { NO_ETAG,   "/ROOT/catalog/search" },
 
