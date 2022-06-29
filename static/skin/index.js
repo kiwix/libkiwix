@@ -449,10 +449,9 @@
                 }
             },
             sortBy: 'weight',
-            layoutMode: 'cellsByRow',
-            cellsByRow: {
-                columnWidth: '.book',
-                rowHeight: '.book'
+            layoutMode: 'masonry',
+            masonry: {
+                fitWidth: true
             }
         });
         footer = document.getElementById('kiwixfooter');
