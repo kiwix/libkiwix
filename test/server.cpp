@@ -179,7 +179,7 @@ R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cache
       src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff"
       href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3"
       href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9"
-      href="/ROOT/skin/index.css?cacheid=dff64da8"
+      href="/ROOT/skin/index.css?cacheid=56e818cd"
         src: url("/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>

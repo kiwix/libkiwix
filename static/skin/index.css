@@ -23,8 +23,7 @@ body {
 .kiwixNav {
     background-color: #f4f6f8;
     width: 100%;
-    padding: 20px 11vw 25px;
-    height: 140px;
+    padding: 20px;
 }
 
 .kiwixHomeBody__results {
@@ -41,7 +40,7 @@ body {
     display: grid;
     grid-gap: 20px;
     grid-template-columns: 231px 231px;
-    margin: 10px 0;
+    margin: 0 0 10px;
 }
 
 .kiwixNav__kiwixFilter {
@@ -102,7 +101,7 @@ body {
 
 .kiwixSearch {
     height: 35px;
-    width: 229px;
+    width: 231px;
     border-radius: 10px;
     border: solid 1px #b5b2b2;
     padding: 10px;
