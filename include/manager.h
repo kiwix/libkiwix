@@ -22,7 +22,6 @@
 
 #include "book.h"
 #include "library.h"
-#include "reader.h"
 
 #include <string>
 #include <vector>

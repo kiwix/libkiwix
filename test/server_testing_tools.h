@@ -3,6 +3,8 @@
 #include "../include/server.h"
 #include "../include/name_mapper.h"
 #include "../include/tools.h"
+#include <zim/entry.h>
+#include <zim/item.h>
 
 // Output generated via mustache templates sometimes contains end-of-line
 // whitespace. This complicates representing the expected output of a unit-test

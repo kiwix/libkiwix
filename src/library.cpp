@@ -19,7 +19,6 @@
 
 #include "library.h"
 #include "book.h"
-#include "reader.h"
 #include "libxml_dumper.h"
 
 #include "tools.h"
@@ -276,16 +275,6 @@ const Book& Library::getBookByPath(const std::string& path) const
   std::ostringstream ss;
   ss << "No book with path " << path << " in the library." << std::endl;
   throw std::out_of_range(ss.str());
-}
-
-std::shared_ptr<Reader> Library::getReaderById(const std::string& id)
-{
-  auto archive = getArchiveById(id);
-  if(archive) {
-    return std::shared_ptr<Reader>(new Reader(archive, true));
-  } else {
-    return nullptr;
-  }
 }
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
