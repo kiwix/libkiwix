@@ -111,7 +111,9 @@
             downloadLink = '';
         }
         const bookName = link.split('/').pop();
-        const viewerLink = `${root}/viewer#${bookName}`;
+        const viewerLink = enableViewer
+                         ? `${root}/viewer#${bookName}`
+                         : link;
 
         const humanFriendlyZimSize = humanFriendlySize(zimSize);
 

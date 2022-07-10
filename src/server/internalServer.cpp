@@ -626,7 +626,9 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(*this, m_indexTemplateString, get_default_data(), "text/html; charset=utf-8");
+  auto data = get_default_data();
+  data.set("enable_viewer", m_withTaskbar ? "true" : "false");
+  return ContentResponse::build(*this, m_indexTemplateString, data, "text/html; charset=utf-8");
 }
 
 /**
