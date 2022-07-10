@@ -577,6 +577,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
+    if (isEndpointUrl(url, "widget"))
+      return handle_widget(request);
+
     std::string contentUrl = m_root + "/content" + url;
     const std::string query = request.get_query();
     if ( ! query.empty() )
@@ -864,6 +867,11 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
            + nonParameterizedMessage("random-article-failure")
            + TaskbarInfo(bookName, archive.get());
   }
+}
+
+std::unique_ptr<Response> InternalServer::handle_widget(const RequestContext& request)
+{
+  return ContentResponse::build(*this, RESOURCE::templates::widget_html, get_default_data(), "text/html; charset=utf-8", true);
 }
 
 std::unique_ptr<Response> InternalServer::handle_captured_external(const RequestContext& request)
