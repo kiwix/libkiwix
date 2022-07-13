@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         keys: ['label'],
       },
+      submit: true,
       searchEngine: (query, record) => {
         // We accept all records
         return true;
@@ -36,15 +37,32 @@ document.addEventListener('DOMContentLoaded', function () {
         noResults: true,
         /* We must display 10 results (requested) + 1 potential link to do a full text search. */
         maxResults: 11,
-        highlight: true
       },
       resultItem: {
         element: (item, data) => {
-          item.innerHTML = `${htmlDecode(data.value.label)}`;
+          let searchLink;
+          if (data.value.kind == "path") {
+            searchLink = `${root}/${bookName}/${htmlDecode(data.value.path)}`;
+          } else {
+            searchLink = `${root}/search?content=${encodeURIComponent(bookName)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
           }
-        }
+          item.innerHTML = `<a class="suggest" href="${searchLink}">${htmlDecode(data.value.label)}</a>`;
+        },
+        highlight: "autoComplete_highlight",
+        selected: "autoComplete_selected"
       }
-    );
+    }
+  );
+
+  document.querySelector('#kiwixsearchform').addEventListener('submit', function(event) {
+    try {
+      const selectedElemLink = document.querySelector('.autoComplete_selected > a').href;
+      if (selectedElemLink) {
+        event.preventDefault();
+        window.location = selectedElemLink;
+      }
+    } catch (err) {}
+  });
 
   /*
         // cybook hack
