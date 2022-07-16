@@ -429,13 +429,15 @@
         }
     }
 
-    window.addEventListener('resize', (event) => {
+    function updateBookCount(event) {
         if (timer) {clearTimeout(timer)}
         timer = setTimeout(() => {
             incrementalLoadingParams.count = incrementalLoadingParams.count && viewPortToCount();
             loadSubset();
         }, 100, event);
-    });
+    }
+
+    window.addEventListener('resize', (event) => updateBookCount(event));
 
     window.addEventListener('scroll', loadSubset);
 
