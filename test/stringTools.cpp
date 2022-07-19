@@ -31,6 +31,32 @@ using namespace kiwix;
 
 namespace
 {
+
+// Some unit-tests may fail because of partial/missing ICU data. This test
+// is intended to pinpoint to the root cause in such build environments.
+TEST(stringTools, ICULanguageInfo)
+{
+  ASSERT_GE(ICULanguageInfo("en").selfName(),  "English");
+  ASSERT_GE(ICULanguageInfo("eng").selfName(), "English");
+  ASSERT_GE(ICULanguageInfo("fr").selfName(),  "français");
+  ASSERT_GE(ICULanguageInfo("fra").selfName(), "français");
+  ASSERT_GE(ICULanguageInfo("de").selfName(),  "Deutsch");
+  ASSERT_GE(ICULanguageInfo("deu").selfName(), "Deutsch");
+  ASSERT_GE(ICULanguageInfo("es").selfName(),  "español");
+  ASSERT_GE(ICULanguageInfo("spa").selfName(), "español");
+  ASSERT_GE(ICULanguageInfo("it").selfName(),  "italiano");
+  ASSERT_GE(ICULanguageInfo("ita").selfName(), "italiano");
+  ASSERT_GE(ICULanguageInfo("ru").selfName(),  "русский");
+  ASSERT_GE(ICULanguageInfo("rus").selfName(), "русский");
+  ASSERT_GE(ICULanguageInfo("hy").selfName(),  "հայերեն");
+  ASSERT_GE(ICULanguageInfo("hye").selfName(), "հայերեն");
+  ASSERT_GE(ICULanguageInfo("zh").selfName(),  "中文");
+  ASSERT_GE(ICULanguageInfo("zho").selfName(), "中文");
+  ASSERT_GE(ICULanguageInfo("ar").selfName(),  "العربية");
+  ASSERT_GE(ICULanguageInfo("ara").selfName(), "العربية");
+  ASSERT_GE(ICULanguageInfo("c++").selfName(), "c++");
+}
+
 TEST(stringTools, join)
 {
   std::vector<std::string> list = { "a", "b", "c" };

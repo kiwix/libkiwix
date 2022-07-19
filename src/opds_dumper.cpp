@@ -22,7 +22,6 @@
 
 #include "kiwixlib-resources.h"
 #include <mustache.hpp>
-#include <unicode/locid.h>
 
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
@@ -163,14 +162,8 @@ std::once_flag fillLanguagesFlag;
 void fillLanguagesMap()
 {
   for (auto icuLangPtr = icu::Locale::getISOLanguages(); *icuLangPtr != NULL; ++icuLangPtr) {
-    auto lang = *icuLangPtr;
-    const icu::Locale locale(lang);
-    icu::UnicodeString ustring;
-    locale.getDisplayLanguage(locale, ustring);
-    std::string displayLanguage;
-    ustring.toUTF8String(displayLanguage);
-    std::string iso3LangCode = locale.getISO3Language();
-    iso639_3.insert({iso3LangCode, displayLanguage});
+    const ICULanguageInfo lang(*icuLangPtr);
+    iso639_3.insert({lang.iso3Code(), lang.selfName()});
   }
 }
 

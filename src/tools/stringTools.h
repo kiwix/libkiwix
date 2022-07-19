@@ -21,6 +21,7 @@
 #define KIWIX_STRINGTOOLS_H
 
 #include <unicode/unistr.h>
+#include <unicode/locid.h>
 
 #include <string>
 #include <vector>
@@ -40,6 +41,19 @@ std::string encodeDiples(const std::string& str);
 
 std::string removeAccents(const std::string& text);
 void loadICUExternalTables();
+
+class ICULanguageInfo
+{
+public:
+  explicit ICULanguageInfo(const std::string& langCode);
+
+  std::string iso3Code() const;
+  std::string selfName() const;
+
+private:
+  const icu::Locale locale;
+};
+
 
 std::string urlEncode(const std::string& value, bool encodeReserved = false);
 std::string urlDecode(const std::string& value, bool component = false);

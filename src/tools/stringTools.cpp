@@ -49,6 +49,24 @@ void kiwix::loadICUExternalTables()
 #endif
 }
 
+kiwix::ICULanguageInfo::ICULanguageInfo(const std::string& langCode)
+  : locale(langCode.c_str())
+{}
+
+std::string kiwix::ICULanguageInfo::iso3Code() const
+{
+  return locale.getISO3Language();
+}
+
+std::string kiwix::ICULanguageInfo::selfName() const
+{
+  icu::UnicodeString langSelfNameICUString;
+  locale.getDisplayLanguage(locale, langSelfNameICUString);
+  std::string langSelfName;
+  langSelfNameICUString.toUTF8String(langSelfName);
+  return langSelfName;
+}
+
 std::string kiwix::removeAccents(const std::string& text)
 {
   loadICUExternalTables();
