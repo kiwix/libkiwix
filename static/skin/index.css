@@ -23,15 +23,14 @@ body {
 .kiwixNav {
     background-color: #f4f6f8;
     width: 100%;
-    padding: 20px 11vw 25px;
-    height: 140px;
+    padding: 20px;
 }
 
 .kiwixHomeBody__results {
     font-size: 1.6rem;
     color: #333333;
     font-family: poppins;
-    margin: 10px 0 -5px;
+    margin: -10px 0 -5px;
     position: relative;
     top: -10px;
     left: 13px;
@@ -41,7 +40,7 @@ body {
     display: grid;
     grid-gap: 20px;
     grid-template-columns: 231px 231px;
-    margin: 10px 0;
+    margin: 0 0 10px;
 }
 
 .kiwixNav__kiwixFilter {
@@ -102,7 +101,7 @@ body {
 
 .kiwixSearch {
     height: 35px;
-    width: 229px;
+    width: 231px;
     border-radius: 10px;
     border: solid 1px #b5b2b2;
     padding: 10px;
@@ -129,9 +128,12 @@ body {
 }
 
 .kiwixHomeBody {
-    padding: 20px 15vw;
+    padding: 20px 0;
     min-height: calc(100vh - 170px);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .tagFilterLabel {
@@ -157,6 +159,8 @@ body {
 
 .book__list {
     position: relative;
+    margin: 0 auto;
+    padding-top: 20px;
 }
 
 .book {
@@ -440,12 +444,15 @@ body {
 @media screen and (max-width: 1100px) {
 
     .kiwixHomeBody {
-        padding: 20px 10vw;
         min-height: calc(100vh - 170px);
     }
 
     .kiwixNav__filters {
         grid-template-columns: repeat(4, 1fr);
+    }
+
+    .book__wrapper {
+        margin: 10px;
     }
 }
 
@@ -474,11 +481,5 @@ body {
 
     .kiwixNav__filters {
         grid-template-columns: 1fr;
-    }
-}
-
-@media screen and (max-width: 340px) {
-    .kiwixHomeBody {
-        padding: 20px 5vw;
     }
 }
