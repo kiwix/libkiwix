@@ -439,6 +439,12 @@
 
     window.addEventListener('scroll', loadSubset);
 
+    window.addEventListener('keydown', function (event) {
+        if (event.key === "Escape" ) {
+            closeModal();
+        }
+    });
+
     window.onload = async () => {
         iso = new Isotope( '.book__list', {
             itemSelector: '.book',
