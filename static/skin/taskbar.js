@@ -3,6 +3,39 @@ function htmlDecode(input) {
     return doc.documentElement.textContent;
 }
 
+function setupAutoHidingOfTheToolbar() {
+  let lastScrollTop = 0;
+  const delta = 5;
+  let didScroll = false;
+  const kiwixToolBar = document.querySelector('#kiwixtoolbar');
+
+  window.addEventListener('scroll', () => {
+    didScroll = true;
+  });
+
+  setInterval(function() {
+    if (didScroll) {
+      hasScrolled();
+      didScroll = false;
+    }
+  }, 250);
+
+  function hasScrolled() {
+    const st = document.documentElement.scrollTop || document.body.scrollTop;
+    if (Math.abs(lastScrollTop - st) <= delta)
+        return;
+
+    if (st > lastScrollTop) {
+        kiwixToolBar.style.top = '-100%';
+    } else {
+        kiwixToolBar.style.top = '0';
+    }
+
+    lastScrollTop = st;
+  }
+
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const root = document.querySelector(`link[type='root']`).getAttribute("href");
   const bookName = (window.location.pathname == `${root}/search`)
@@ -64,57 +97,26 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (err) {}
   });
 
-  /*
-        // cybook hack
-        if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
-            $("html").addClass("cybook");
-        }
-    
-        if ($(window).width() < 520) {
-            var didScroll;
-            var lastScrollTop = 0;
-            var delta = 5;
-            // on scroll, let the interval function know the user has scrolled
-            $(window).scroll(function (event) {
-                didScroll = true;
-            });
-            // run hasScrolled() and reset didScroll status
-            setInterval(function () {
-                if (didScroll) {
-                    hasScrolled();
-                    didScroll = false;
-                }
-            }, 250);
-            function hasScrolled() {
-                var st = $(this).scrollTop();
-    
-                // Make sure they scroll more than delta
-                if (Math.abs(lastScrollTop - st) <= delta)
-                    return;
-    
-                // If they scrolled down and are past the navbar, add class .nav-up.
-                // This is necessary so you never see what is "behind" the navbar.
-                if (st > lastScrollTop) {
-                    // Scroll Down
-                    $('#kiwixtoolbar').css({ top: '-100%' });
-                } else {
-                    // Scroll Up
-                    $('#kiwixtoolbar').css({ top: '0' });
-                }
-    
-                lastScrollTop = st;
-            }
-        }
-    
-        $('#kiwixsearchbox').on({
-            focus: function () {
-                $('.kiwix_searchform').addClass('full_width');
-                $('label[for="kiwix_button_show_toggle"], .kiwix_button_cont').addClass('searching');
-            },
-            blur: function () {
-                $('.kiwix_searchform').removeClass('full_width');
-                $('label[for="kiwix_button_show_toggle"], .kiwix_button_cont').removeClass('searching');
-            }
-        });
-    };*/
+  const kiwixSearchBox = document.querySelector('#kiwixsearchbox');
+  const kiwixSearchForm = document.querySelector('.kiwix_searchform');
+  kiwixSearchBox.addEventListener('focus', () => {
+      kiwixSearchForm.classList.add('full_width');
+      document.querySelector('label[for="kiwix_button_show_toggle"]').classList.add('searching');
+      document.querySelector('.kiwix_button_cont').classList.add('searching');
+  });
+  kiwixSearchBox.addEventListener('blur', () => {
+      kiwixSearchForm.classList.remove('full_width');
+      document.querySelector('label[for="kiwix_button_show_toggle"]').classList.remove('searching');
+      document.querySelector('.kiwix_button_cont').classList.remove('searching');
+  });
+
+  // cybook hack
+  if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
+      document.querySelector('html').classList.add('cybook');
+  }
+
+  if (document.body.clientWidth < 520) {
+    setupAutoHidingOfTheToolbar();
+  }
+  
 });
