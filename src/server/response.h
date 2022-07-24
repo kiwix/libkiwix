@@ -89,8 +89,7 @@ class ContentResponse : public Response {
     static std::unique_ptr<ContentResponse> build(
       const InternalServer& server,
       const std::string& content,
-      const std::string& mimetype,
-      bool raw);
+      const std::string& mimetype);
 
     static std::unique_ptr<ContentResponse> build(
       const InternalServer& server,
@@ -205,7 +204,7 @@ private: // overrides
 class ItemResponse : public Response {
   public:
     ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
-    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw = false);
+    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);

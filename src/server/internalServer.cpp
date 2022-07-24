@@ -727,8 +727,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     auto response = ContentResponse::build(
         *this,
         getResource(resourceName),
-        getMimeTypeForFile(resourceName),
-        /*raw=*/true);
+        getMimeTypeForFile(resourceName));
     response->set_cacheable();
     return std::move(response);
   } catch (const ResourceNotFound& e) {
@@ -818,11 +817,9 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     if (request.get_requested_format() == "xml") {
-      return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8",
-      /*raw =*/true);
+      return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
     }
-    auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8",
-                                           /*raw =*/false);
+    auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
     // XXX: Now this has to be handled by the iframe-based viewer which
     // XXX: has to resolve if the book selection resulted in a single book.
     /*
@@ -952,8 +949,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   auto response = ContentResponse::build(
       *this,
       opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
-      "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8",
-      /*raw*/ true);
+      "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
   return std::move(response);
 }
 
@@ -1098,13 +1094,13 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   try {
     if (kind == "meta") {
       auto item = archive->getMetadataItem(itemPath);
-      return ItemResponse::build(*this, request, item, /*raw=*/true);
+      return ItemResponse::build(*this, request, item);
     } else {
       auto entry = archive->getEntryByPath(itemPath);
       if (entry.isRedirect()) {
         return build_redirect(bookName, entry.getItem(true));
       }
-      return ItemResponse::build(*this, request, entry.getItem(), /*raw=*/true);
+      return ItemResponse::build(*this, request, entry.getItem());
     }
   } catch (zim::EntryNotFound& e ) {
     if (m_verbose.load()) {
@@ -1141,8 +1137,7 @@ std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(con
 
   return ContentResponse::build(*this,
                                 resourceData,
-                                crd.mimeType,
-                                /*raw=*/true);
+                                crd.mimeType);
 }
 
 }

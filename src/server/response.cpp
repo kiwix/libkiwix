@@ -233,11 +233,7 @@ HTTP500Response::HTTP500Response(const InternalServer& server,
 
 std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
 {
-  // We want a 500 response to be a minimalistic one (so that the server doesn't
-  // have to provide additional resources required for its proper rendering)
-  // ";raw=true" in the MIME-type below disables response decoration
-  // (see ContentResponse::contentDecorationAllowed())
-  const std::string mimeType = "text/html;charset=utf-8;raw=true";
+  const std::string mimeType = "text/html;charset=utf-8";
   auto r = ContentResponse::build(m_server, m_template, m_data, mimeType);
   r->set_code(m_httpStatusCode);
   return r;
@@ -390,8 +386,7 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, const st
 std::unique_ptr<ContentResponse> ContentResponse::build(
   const InternalServer& server,
   const std::string& content,
-  const std::string& mimetype,
-  bool raw)
+  const std::string& mimetype)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
@@ -407,7 +402,7 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const std::string& mimetype)
 {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype, /*raw*/false);
+  return ContentResponse::build(server, content, mimetype);
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
@@ -420,14 +415,14 @@ ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::strin
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw)
+std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item)
 {
   const std::string mimetype = get_mime_type(item);
   auto byteRange = request.get_range().resolve(item.getSize());
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    auto response = ContentResponse::build(server, item.getData(), mimetype, raw);
+    auto response = ContentResponse::build(server, item.getData(), mimetype);
     response->set_cacheable();
     response->m_byteRange = byteRange;
     return std::move(response);

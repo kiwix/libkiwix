@@ -103,8 +103,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
   return ContentResponse::build(
              *this,
              opdsFeed,
-             "application/atom+xml;profile=opds-catalog;kind=acquisition",
-             /*raw*/ true
+             "application/atom+xml;profile=opds-catalog;kind=acquisition"
   );
 }
 
@@ -124,8 +123,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   return ContentResponse::build(
              *this,
              opdsFeed,
-             "application/atom+xml;type=entry;profile=opds-catalog",
-             /*raw*/ true
+             "application/atom+xml;type=entry;profile=opds-catalog"
   );
 }
 
@@ -137,8 +135,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
   return ContentResponse::build(
              *this,
              opdsDumper.categoriesOPDSFeed(),
-             "application/atom+xml;profile=opds-catalog;kind=navigation",
-             /*raw*/ true
+             "application/atom+xml;profile=opds-catalog;kind=navigation"
   );
 }
 
@@ -150,8 +147,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
   return ContentResponse::build(
              *this,
              opdsDumper.languagesOPDSFeed(),
-             "application/atom+xml;profile=opds-catalog;kind=navigation",
-             /*raw*/ true
+             "application/atom+xml;profile=opds-catalog;kind=navigation"
   );
 }
 
@@ -165,8 +161,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
     return ContentResponse::build(
                *this,
                illustration->getData(),
-               illustration->mimeType,
-               /*raw*/ true
+               illustration->mimeType
     );
   } catch(...) {
     return HTTP404Response(*this, request)
