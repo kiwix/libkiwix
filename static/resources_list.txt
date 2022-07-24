@@ -27,6 +27,7 @@ skin/taskbar.js
 skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
+skin/autoComplete.min.js
 skin/taskbar.css
 skin/index.css
 skin/fonts/Poppins.ttf
@@ -53,3 +54,5 @@ templates/url_of_search_results_css
 opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
+skin/css/autoComplete.css
+skin/css/images/search.svg
