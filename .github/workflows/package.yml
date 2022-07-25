@@ -9,7 +9,6 @@ jobs:
       matrix:
         distro:
           - ubuntu-jammy
-          - ubuntu-impish
           - ubuntu-focal
           - ubuntu-bionic
     steps:
@@ -38,14 +37,6 @@ jobs:
         if: matrix.distro == 'ubuntu-jammy'
         name: Build package for ubuntu-jammy
         id: build-ubuntu-jammy
-        with:
-          args: --no-sign
-          ppa: ${{ steps.ppa.outputs.ppa }}
-
-      - uses: legoktm/gh-action-build-deb@ubuntu-impish
-        if: matrix.distro == 'ubuntu-impish'
-        name: Build package for ubuntu-impish
-        id: build-ubuntu-impish
         with:
           args: --no-sign
           ppa: ${{ steps.ppa.outputs.ppa }}
