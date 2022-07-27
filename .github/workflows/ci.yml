@@ -1,13 +1,17 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   Macos:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Setup python 3.10
         uses: actions/setup-python@v2
         with:
@@ -82,10 +86,6 @@ jobs:
     container:
       image: "kiwix/kiwix-build_ci:${{matrix.image_variant}}-31"
     steps:
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
     - name: Checkout code
       shell: python
       run: |
@@ -95,7 +95,7 @@ jobs:
           'git', 'clone',
           'https://github.com/${{github.repository}}',
           '--depth=1',
-          '--branch', '${{steps.extract_branch.outputs.branch}}'
+          '--branch', '${{ github.head_ref || github.ref_name }}'
         ]
         check_call(command, cwd=environ['HOME'])
     - name: Install deps
