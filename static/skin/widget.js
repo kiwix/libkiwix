@@ -55,6 +55,25 @@ function insertNewCssRules(stylesheet, ruleList) {
     }
 }
 
+function addCustomCss(cssCode) {
+    let customCSS = document.createElement('style');
+    customCSS.innerHTML = cssCode;
+    document.head.appendChild(customCSS);
+}
+
+function addCustomJs(jsCode) {
+    new Function(`"use strict";${jsCode}`)();
+}
+
+function handleMessages(event) {
+    if ('css' in event.data) {
+        addCustomCss(event.data.css);
+    }
+    if ('js' in event.data) {
+        addCustomJs(event.data.js);
+    }
+}
+
 function handleWidget() {
     const params = new URLSearchParams(window.location.search || filters || '');
     const widgetStyleElem = document.createElement('style');
@@ -84,4 +103,5 @@ function handleWidget() {
     kiwixServe.updateBookCount();
 }
 
+window.addEventListener('message', handleMessages);
 handleWidget();
