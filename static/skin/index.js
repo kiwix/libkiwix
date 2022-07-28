@@ -1,4 +1,4 @@
-(function() {
+const kiwixServe = (function() {
     const root = document.querySelector(`link[type='root']`).getAttribute('href');
     const incrementalLoadingParams = {
         start: 0,
@@ -492,6 +492,9 @@
             }
         }
         setCookie(filterCookieName, params.toString());
+    }
+    return {
+        updateBookCount
     }
 })();
 
