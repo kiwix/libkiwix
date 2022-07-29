@@ -550,9 +550,11 @@ TEST_F(LibraryTest, filterByQuery)
 
   // by default, filtering by query assumes partial query
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki"),
+    "An example ZIM archive", // due to the "wikibooks" tag
     "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
+    "Mathématiques", // due to the "wikipedia" tag
     "Ray Charles",
     "Wikiquote"
   );
@@ -714,6 +716,7 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia"),
     "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
+    "Mathématiques", // due to the "wikipedia" tag
     "Ray Charles"
   );
 

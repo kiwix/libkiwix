@@ -104,7 +104,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <name>wikipedia_en_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category>wikipedia</category>\n"                              \
-    "    <tags>unittest;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
     "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
@@ -131,7 +131,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <name>wikipedia_ru_ray_charles</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
     "    <category></category>\n"                                \
-    "    <tags>unittest;wikipedia;_pictures:no;_videos:no;_details:no</tags>\n" \
+    "    <tags>public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
     "    <link type=\"text/html\" href=\"/ROOT/zimfile\" />\n"               \
@@ -711,3 +711,73 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
     "</feed>\n"
   );
 }
+
+#define EXPECT_SEARCH_RESULTS(SEARCH_TERM, RESULT_COUNT, OPDS_ENTRIES)      \
+  {                                                                         \
+    const auto r = zfs1_->GET("/ROOT/catalog/search?q=" SEARCH_TERM);       \
+    EXPECT_EQ(r->status, 200);                                              \
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),                            \
+      OPDS_FEED_TAG                                                         \
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"                   \
+      "  <title>Filtered zims (q=" SEARCH_TERM ")</title>\n"                \
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                         \
+      "  <totalResults>" #RESULT_COUNT "</totalResults>\n"                  \
+      "  <startIndex>0</startIndex>\n"                                      \
+      "  <itemsPerPage>" #RESULT_COUNT "</itemsPerPage>\n"                  \
+      CATALOG_LINK_TAGS                                                     \
+                                                                            \
+      OPDS_ENTRIES                                                          \
+                                                                            \
+      "</feed>\n"                                                           \
+    );                                                                      \
+  }
+
+TEST_F(LibraryServerTest, catalog_search_includes_public_tags)
+{
+  EXPECT_SEARCH_RESULTS("public_tag_without_a_value",
+                        1,
+                        RAY_CHARLES_CATALOG_ENTRY
+  );
+
+  EXPECT_SEARCH_RESULTS("public_tag_with_a_value",
+                        1,
+                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+  );
+
+  // prefix search works on tag names
+  EXPECT_SEARCH_RESULTS("public_tag",
+                        2,
+                        RAY_CHARLES_CATALOG_ENTRY
+                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+  );
+
+  EXPECT_SEARCH_RESULTS("value_of_a_public_tag",
+                        1,
+                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+  );
+
+  // prefix search works on tag values
+  EXPECT_SEARCH_RESULTS("value_of",
+                        1,
+                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+  );
+}
+
+#define EXPECT_ZERO_RESULTS(SEARCH_TERM) EXPECT_SEARCH_RESULTS(SEARCH_TERM, 0, )
+
+TEST_F(LibraryServerTest, catalog_search_on_tags_is_not_an_any_substring_match)
+{
+  EXPECT_ZERO_RESULTS("tag_with")
+  EXPECT_ZERO_RESULTS("alue_of_a_public_tag")
+}
+
+TEST_F(LibraryServerTest, catalog_search_excludes_hidden_tags)
+{
+  EXPECT_ZERO_RESULTS("_private_tag_without_a_value");
+  EXPECT_ZERO_RESULTS("private_tag_without_a_value");
+  EXPECT_ZERO_RESULTS("value_of_a_private_tag");
+
+#undef EXPECT_ZERO_RESULTS
+}
+
+#undef EXPECT_SEARCH_RESULTS
