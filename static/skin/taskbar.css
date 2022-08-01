@@ -9,6 +9,8 @@
     transition: 0.3s;
     width: 100%;
     box-sizing: border-box;
+    background: #e3e3e3;
+    border-bottom: 1px solid #aaa;
 }
 
 #kiwixtoolbar>a {
@@ -100,7 +102,6 @@ label[for="kiwix_button_show_toggle"],
 }
 
 .kiwix #kiwixtoolbar #kiwixsearchform input[type='text'] {
-    position: absolute;
     left: 0;
     box-sizing: border-box !important;
     width: 100%;
@@ -123,20 +124,19 @@ label[for=kiwixsearchbox] {
     vertical-align: middle;
 }
 
-body {
-    padding-top: calc(3em - 5px) !important;
+a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
+    display: block;
+    text-decoration: none;
+    color: inherit;
 }
 
-/* Try to fix buggy stuff in jquery-ui autocomplete */
-#ui-id-1,
-.ui-autocomplete {
-    background: white !important;
-    border: solid 1px grey !important;
+.autoComplete_wrapper > ul {
+    max-height: none !important;
     column-count: 1 !important;
 }
 
-li.ui-state-focus {
-    font-weight: bold;
+body {
+    padding-top: calc(3em - 5px) !important;
 }
 
 @media(min-width:420px) {
@@ -154,6 +154,11 @@ li.ui-state-focus {
 }
 
 @media (max-width: 645px) {
+
+    .autoComplete_wrapper > ul {
+        max-height: none !important;
+        column-count: 1 !important;
+    }
 
     #kiwix_button_show_toggle~label~.kiwix_button_cont.searching {
         display: none !important;

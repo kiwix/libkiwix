@@ -1,5 +1,5 @@
 (function() {
-    const root = $(`link[type='root']`).attr('href');
+    const root = document.querySelector(`link[type='root']`).getAttribute('href');
     const incrementalLoadingParams = {
         start: 0,
         count: viewPortToCount()
@@ -320,7 +320,7 @@
         const booksToFilter = new Set();
         const booksToDelete = new Set();
         iso.arrange({
-            filter: function (idx, elem) {
+            filter: function (elem) {
                 const id = elem.getAttribute('data-id');
                 const retVal = bookOrderMap.has(id);
                 if (retVal) {

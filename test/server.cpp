@@ -41,11 +41,6 @@ typedef std::vector<Resource> ResourceCollection;
 const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/ROOT/" },
 
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.structure.min.css" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.min.js" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/external/jquery/jquery.js" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.theme.min.css" },
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/jquery-ui.min.css" },
   { WITH_ETAG, "/ROOT/skin/taskbar.js" },
   { WITH_ETAG, "/ROOT/skin/taskbar.css" },
   { WITH_ETAG, "/ROOT/skin/block_external.js" },
@@ -66,7 +61,6 @@ const ResourceCollection resources200Compressible{
 };
 
 const ResourceCollection resources200Uncompressible{
-  { WITH_ETAG, "/ROOT/skin/jquery-ui/images/animated-overlay.gif" },
   { WITH_ETAG, "/ROOT/skin/caret.png" },
 
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
@@ -175,16 +169,12 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT/",
-R"EXPECTEDRESULT(      src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3"
-      src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff"
-      href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3"
-      href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9"
-      href="/ROOT/skin/index.css?cacheid=56e818cd"
+R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=56e818cd"
         src: url("/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=a0307d03" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=76440e7a" defer></script>
 )EXPECTEDRESULT"
     },
     {
@@ -197,12 +187,10 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
     },
     {
       /* url */ "/ROOT/zimfile/A/index",
-R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
+<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
         <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
     },
@@ -211,12 +199,10 @@ R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROO
       // a page rendered from static/templates/no_search_result_html
       /* url */ "/ROOT/search?content=poor&pattern=whatever",
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
+<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
         <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
     },
@@ -443,12 +429,10 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 )FRAG",
 
     R"FRAG(
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.min.css?cacheid=e1de77b3" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/jquery-ui/jquery-ui.theme.min.css?cacheid=2a5841f9" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=49365e9c" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/external/jquery/jquery.js?cacheid=1d85f0f3" defer></script>
-<script type="text/javascript" src="/ROOT/skin/jquery-ui/jquery-ui.min.js?cacheid=d927c2ff" defer></script>
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=5982280c" defer></script>
+  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
+<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
+<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
+<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
 </head>
   <body><span class="kiwix">
   <span id="kiwixtoolbar" class="ui-widget-header">
@@ -531,10 +515,9 @@ std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
 std::string TestContentIn404HtmlResponse::searchPatternInput() const
 {
   const std::string searchboxTooltip = isTranslatedVersion()
-                                     ? "Որոնել '" + bookTitle + "'֊ում"
-                                     : "Search '" + bookTitle + "'";
-
-  return R"(          <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title=")"
+                                    ? "Որոնել '" + bookTitle + "'֊ում"
+                                    : "Search '" + bookTitle + "'";
+  return R"(          <input autocomplete="off" id="kiwixsearchbox" name="pattern" type="text" size="50" title=")"
        + searchboxTooltip
        + R"(" aria-label=")"
        + searchboxTooltip

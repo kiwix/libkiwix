@@ -173,14 +173,6 @@ To use JS provided by kiwix-serve you can use the following template to start wi
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title><-- Custom Tittle --></title>
-    <script
-      type="text/javascript"
-      src="{{root}}/skin/jquery-ui/external/jquery/jquery.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="{{root}}/skin/jquery-ui/jquery-ui.min.js"
-    ></script>
     <script src="{{root}}/skin/isotope.pkgd.min.js" defer></script>
     <script src="{{root}}/skin/iso6391To3.js"></script>
     <script type="text/javascript" src="{{root}}/skin/index.js" defer></script>
