@@ -37,3 +37,17 @@ ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
 skin/css/autoComplete.css
 skin/css/images/search.svg
+skin/favicon/android-chrome-192x192.png
+skin/favicon/android-chrome-512x512.png
+skin/favicon/apple-touch-icon.png
+skin/favicon/browserconfig.xml
+skin/favicon/favicon-16x16.png
+skin/favicon/favicon-32x32.png
+skin/favicon/favicon.ico
+skin/favicon/mstile-70x70.png
+skin/favicon/mstile-144x144.png
+skin/favicon/mstile-150x150.png
+skin/favicon/mstile-310x150.png
+skin/favicon/mstile-310x310.png
+skin/favicon/safari-pinned-tab.svg
+skin/favicon/site.webmanifest
