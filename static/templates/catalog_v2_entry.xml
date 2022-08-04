@@ -16,7 +16,7 @@
     <articleCount>{{article_count}}</articleCount>
     <mediaCount>{{media_count}}</mediaCount>
     {{#icons}}<link rel="http://opds-spec.org/image/thumbnail"
-          href="{{root}}/catalog/v2/illustration/{{{content_id}}}/?size={{icon_size}}"
+          href="{{root}}/catalog/v2/illustration/{{{id}}}/?size={{icon_size}}"
           type="{{icon_mimetype}};width={{icon_size}};height={{icon_size}};scale=1"/>
     {{/icons}}<link type="text/html" href="{{root}}/{{{content_id}}}" />
     <author>

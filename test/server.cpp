@@ -72,7 +72,7 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Publisher" },
 
-  { NO_ETAG, "/ROOT/catalog/v2/illustration/zimfile?size=48" },
+  { NO_ETAG, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
   { WITH_ETAG, "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
@@ -253,7 +253,8 @@ const char* urls404[] = {
   "/ROOT/catalog",
   "/ROOT/catalog/non-existent-item",
   "/ROOT/catalogBLABLABLA/root.xml",
-  "/ROOT/catalog/v2/illustration/zimfile?size=96",
+  "/ROOT/catalog/v2/illustration/zimfile?size=48",
+  "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=96",
   "/ROOT/meta",
   "/ROOT/meta?content=zimfile",
   "/ROOT/meta?content=zimfile&name=non-existent-item",

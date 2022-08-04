@@ -154,8 +154,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const RequestContext& request)
 {
   try {
-    const auto bookName  = request.get_url_part(3);
-    const auto bookId = mp_nameMapper->getIdForName(bookName);
+    const auto bookId  = request.get_url_part(3);
     auto book = mp_library->getBookByIdThreadSafe(bookId);
     auto size = request.get_argument<unsigned int>("size");
     auto illustration = book.getIllustration(size);
