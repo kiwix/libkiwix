@@ -55,9 +55,6 @@ const ResourceCollection resources200Compressible{
 
   { NO_ETAG,   "/ROOT/catch/external?source=www.example.com" },
 
-  { WITH_ETAG, "/ROOT/zimfile/A/index" },
-  { WITH_ETAG, "/ROOT/zimfile/A/Ray_Charles" },
-
   { WITH_ETAG, "/ROOT/content/zimfile/A/index" },
   { WITH_ETAG, "/ROOT/content/zimfile/A/Ray_Charles" },
 
@@ -79,12 +76,7 @@ const ResourceCollection resources200Uncompressible{
 
   { NO_ETAG, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
-  { WITH_ETAG, "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
   { WITH_ETAG, "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
-
-  { WITH_ETAG, "/ROOT/corner_cases/A/empty.html" },
-  { WITH_ETAG, "/ROOT/corner_cases/-/empty.css" },
-  { WITH_ETAG, "/ROOT/corner_cases/-/empty.js" },
 
   { WITH_ETAG, "/ROOT/content/corner_cases/A/empty.html" },
   { WITH_ETAG, "/ROOT/content/corner_cases/-/empty.css" },
@@ -204,15 +196,6 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
 )EXPECTEDRESULT"
     },
     {
-      /* url */ "/ROOT/zimfile/A/index",
-R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
-<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
-        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
-)EXPECTEDRESULT"
-    },
-    {
       /* url */ "/ROOT/content/zimfile/A/index",
 R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
 <link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
@@ -268,18 +251,12 @@ TEST_F(ServerTest, 400)
 const char* urls404[] = {
   "/",
   "/zimfile",
-  "/ROOT/non-existent-item",
   "/ROOT/skin/non-existent-skin-resource",
   "/ROOT/catalog",
   "/ROOT/catalog/",
   "/ROOT/catalog/non-existent-item",
-  "/ROOT/catalogBLABLABLA/root.xml",
   "/ROOT/catalog/v2/illustration/zimfile?size=48",
   "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=96",
-  "/ROOT/meta",
-  "/ROOT/meta?content=zimfile",
-  "/ROOT/meta?content=zimfile&name=non-existent-item",
-  "/ROOT/meta?content=non-existent-book&name=title",
   "/ROOT/random",
   "/ROOT/random?content=non-existent-book",
   "/ROOT/random/",
@@ -294,7 +271,6 @@ const char* urls404[] = {
   "/ROOT/catch/external", // missing ?source=URL
   "/ROOT/catch/external?source=",
   "/ROOT/catch/anythingotherthanexternal",
-  "/ROOT/zimfile/A/non-existent-article",
   "/ROOT/content/zimfile/A/non-existent-article",
 
   "/ROOT/raw/non-existent-book/meta/Title",
@@ -699,27 +675,14 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/invalid-book/whatever",
+    { /* url */ "/ROOT/content/invalid-book/whatever",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/invalid-book/whatever" was not found on this server.
+      The requested URL "/ROOT/content/invalid-book/whatever" was not found on this server.
     </p>
     <p>
       Make a full text search for <a href="/ROOT/search?pattern=whatever">whatever</a>
-    </p>
-)"  },
-
-    { /* url */ "/ROOT/zimfile/invalid-article",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT/zimfile/invalid-article" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
@@ -736,27 +699,14 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ R"(/ROOT/"><svg onload=alert(1)>)",
+    { /* url */ R"(/ROOT/content/"><svg onload=alert(1)>)",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
+      The requested URL "/ROOT/content/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
     </p>
     <p>
       Make a full text search for <a href="/ROOT/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
-    </p>
-)"  },
-
-    { /* url */ R"(/ROOT/zimfile/"><svg onload=alert(1)>)",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT/zimfile/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
     </p>
 )"  },
 
@@ -770,20 +720,6 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
     <p>
       Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
-    </p>
-)"  },
-
-    { /* url */ "/ROOT/zimfile/invalid-article?userlang=hy",
-      expected_page_title=="Սխալ հասցե" &&
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_body==R"(
-    <h1>Սխալ հասցե</h1>
-    <p>
-      Սխալ հասցե՝ /ROOT/zimfile/invalid-article
-    </p>
-    <p>
-      Որոնել <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
@@ -1043,12 +979,6 @@ TEST_F(ServerTest, 500)
 )";
 
   {
-  const auto r = zfs1_->GET("/ROOT/poor/A/redirect_loop.html");
-  EXPECT_EQ(r->status, 500);
-  EXPECT_EQ(r->body, expectedBody);
-  }
-
-  {
   const auto r = zfs1_->GET("/ROOT/content/poor/A/redirect_loop.html");
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
@@ -1074,33 +1004,33 @@ TEST_F(ServerTest, UserLanguageControl)
 
   const TestData testData[] = {
     {
-      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /* expected <h1> */ "Not Found"
     },
     {
-      /*url*/ "/ROOT/zimfile/invalid-article?userlang=en",
+      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /* expected <h1> */ "Not Found"
     },
     {
-      /*url*/ "/ROOT/zimfile/invalid-article?userlang=hy",
+      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=hy",
       /*Accept-Language:*/ "",
       /* expected <h1> */ "Սխալ հասցե"
     },
     {
-      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
       /* expected <h1> */ "Not Found"
     },
     {
-      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "hy",
       /* expected <h1> */ "Սխալ հասցե"
     },
     {
       // userlang query parameter takes precedence over Accept-Language
-      /*url*/ "/ROOT/zimfile/invalid-article?userlang=en",
+      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "hy",
       /* expected <h1> */ "Not Found"
     },
@@ -1108,7 +1038,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // The value of the Accept-Language header is not currently parsed.
       // In case of a comma separated list of languages (optionally weighted
       // with quality values) the default (en) language is used instead.
-      /*url*/ "/ROOT/zimfile/invalid-article",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "hy;q=0.9, en;q=0.2",
       /* expected <h1> */ "Not Found"
     },
@@ -1136,15 +1066,52 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
 }
 
+TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
+{
+  const std::string paths[] = {
+    "/zimfile",
+    "/zimfile/A/index",
+    "/some/path",
+    "/non-existent-item",
+
+    // Validate that paths starting with a string matching an endpoint name
+    // are not misinterpreted as endpoint URLs
+    "/catalogarithm",
+    "/catalogistics/root.xml",
+    "/catch22",
+    "/catchy/song",
+    "/contention",
+    "/contents/is/not/the/same/as/content",
+    "/randomize",
+    "/randomestic/animals",
+    "/rawman",
+    "/rawkward/url",
+    "/searcheology",
+    "/searchitecture/history",
+    "/skinhead",
+    "/skineffect/formula",
+    "/suggesture",
+    "/suggestonia/tallinn",
+
+    // The /meta endpoint has been replaced with /raw/<book>/meta
+    "/meta",
+
+    // Make sure that the query is preserved in the redirect URL
+    "/does?P=NP"
+  };
+
+  for ( const std::string& p : paths )
+  {
+    auto g = zfs1_->GET(("/ROOT" + p).c_str());
+    const TestContext ctx{ { "path", p } };
+    ASSERT_EQ(302, g->status) << ctx;
+    ASSERT_TRUE(g->has_header("Location")) << ctx;
+    ASSERT_EQ("/ROOT/content" + p, g->get_header_value("Location")) << ctx;
+  }
+}
+
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
 {
-  {
-  auto g = zfs1_->GET("/ROOT/zimfile");
-  ASSERT_EQ(302, g->status);
-  ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ("/ROOT/content/zimfile/A/index", g->get_header_value("Location"));
-  }
-
   {
   auto g = zfs1_->GET("/ROOT/content/zimfile");
   ASSERT_EQ(302, g->status);
@@ -1171,12 +1138,6 @@ TEST_F(ServerTest, RawEntry)
   p = zfs1_->GET("/ROOT/raw/zimfile/content/A/Ray_Charles");
   EXPECT_EQ(200, p->status);
   EXPECT_EQ(std::string(p->body), std::string(entry.getItem(true).getData()));
-
-  // ... but the "normal" content is not
-  p = zfs1_->GET("/ROOT/zimfile/A/Ray_Charles");
-  EXPECT_EQ(200, p->status);
-  EXPECT_NE(std::string(p->body), std::string(entry.getItem(true).getData()));
-  EXPECT_TRUE(p->body.find("taskbar") != std::string::npos);
 
   // ... but the "normal" content is not
   p = zfs1_->GET("/ROOT/content/zimfile/A/Ray_Charles");
@@ -1343,7 +1304,7 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
 
 TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
 {
-  const char url[] = "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
   const auto full = zfs1_->GET(url);
   EXPECT_FALSE(full->has_header("Content-Range"));
   EXPECT_EQ("bytes", full->get_header_value("Accept-Ranges"));
@@ -1393,7 +1354,7 @@ TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
 
 TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 {
-  const char url[] = "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
 
   const char* invalidRanges[] = {
     "0-10", "bytes=", "bytes=123", "bytes=-10-20", "bytes=10-20xxx",
@@ -1414,7 +1375,7 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 
 TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
 {
-  const char url[] = "/ROOT/corner_cases/-/empty.js";
+  const char url[] = "/ROOT/content/corner_cases/-/empty.js";
 
   const char* ranges[] = {
     "bytes=0-",
@@ -1433,7 +1394,7 @@ TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
 
 TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
 {
-  const char url[] = "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
 
   const Headers onlyRange{ {"Range", "bytes=123-456"} };
   Headers rangeAndCompression(onlyRange);
@@ -1448,7 +1409,7 @@ TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
 
 TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
 {
-  const char url[] = "/ROOT/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
   const auto r0 = zfs1_->GET(url, { {"Range", "bytes=100-200"} } );
 
   const char* header_variations[] = { "RANGE", "range", "rAnGe", "RaNgE" };

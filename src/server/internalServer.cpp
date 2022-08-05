@@ -577,7 +577,11 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
-    return handle_content(request);
+    std::string contentUrl = m_root + "/content" + url;
+    const std::string query = request.get_query();
+    if ( ! query.empty() )
+      contentUrl += "?" + query;
+    return Response::build_redirect(*this, contentUrl);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
     return HTTP500Response(*this, request)
