@@ -524,6 +524,16 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   return ret;
 }
 
+namespace
+{
+
+bool isEndpointUrl(const std::string& url, const std::string& endpoint)
+{
+  return startsWith(url, "/" + endpoint + "/") || url == "/" + endpoint;
+};
+
+} // unnamed namespace
+
 std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& request)
 {
   try {
@@ -536,43 +546,36 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if ( etag )
       return Response::build_304(*this, etag);
 
-    if ( isLocallyCustomizedResource(request.get_url()) )
+    const auto url = request.get_url();
+    if ( isLocallyCustomizedResource(url) )
       return handle_locally_customized_resource(request);
 
-    if (request.get_url() == "/" )
+    if (url == "/" )
       return build_homepage(request);
 
-    if (startsWith(request.get_url(), "/skin/"))
+    if (isEndpointUrl(url, "skin"))
       return handle_skin(request);
 
-    if (startsWith(request.get_url(), "/content/"))
+    if (isEndpointUrl(url, "content"))
       return handle_content(request);
 
-    if (startsWith(request.get_url(), "/catalog/"))
+    if (isEndpointUrl(url, "catalog"))
       return handle_catalog(request);
 
-    if (startsWith(request.get_url(), "/raw/"))
+    if (isEndpointUrl(url, "raw"))
       return handle_raw(request);
 
-    if (request.get_url() == "/search")
+    if (isEndpointUrl(url, "search"))
       return handle_search(request);
 
-    if (request.get_url() == "/search/searchdescription.xml") {
-      return ContentResponse::build(
-        *this,
-        RESOURCE::ft_opensearchdescription_xml,
-        get_default_data(),
-        "application/opensearchdescription+xml");
-    }
-
-    if (request.get_url() == "/suggest")
+    if (isEndpointUrl(url, "suggest"))
      return handle_suggest(request);
 
-    if (request.get_url() == "/random")
+    if (isEndpointUrl(url, "random"))
       return handle_random(request);
 
-    if (request.get_url() == "/catch/external")
-      return handle_captured_external(request);
+    if (isEndpointUrl(url, "catch"))
+      return handle_catch(request);
 
     return handle_content(request);
   } catch (std::exception& e) {
@@ -627,6 +630,11 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 {
   if (m_verbose.load()) {
     printf("** running handle_suggest\n");
+  }
+
+  if ( startsWith(request.get_url(), "/suggest/") ) {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
   }
 
   std::string bookName, bookId;
@@ -728,6 +736,18 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     printf("** running handle_search\n");
   }
 
+  if ( startsWith(request.get_url(), "/search/") ) {
+    if (request.get_url() == "/search/searchdescription.xml") {
+      return ContentResponse::build(
+        *this,
+        RESOURCE::ft_opensearchdescription_xml,
+        get_default_data(),
+        "application/opensearchdescription+xml");
+    }
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
   try {
     auto searchInfo = getSearchInfo(request);
     auto bookIds = searchInfo.getBookIds();
@@ -811,6 +831,11 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     printf("** running handle_random\n");
   }
 
+  if ( startsWith(request.get_url(), "/random/") ) {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
   std::string bookName;
   std::shared_ptr<zim::Archive> archive;
   try {
@@ -852,6 +877,20 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
   auto data = get_default_data();
   data.set("source", source);
   return ContentResponse::build(*this, RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
+}
+
+std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_catch\n");
+  }
+
+  if ( request.get_url() == "/catch/external" ) {
+    return handle_captured_external(request);
+  }
+
+  return HTTP404Response(*this, request)
+         + urlNotFoundMsg;
 }
 
 std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
