@@ -27,10 +27,18 @@
       // iframe url: the URL to be loaded in the viewer iframe.
 
       function userUrl2IframeUrl(url) {
+        if ( url == '' ) {
+          return '/skin/blank.html';
+        }
+
         return `/content/${url}`;
       }
 
       function iframeUrl2UserUrl(url) {
+        if ( url == '/skin/blank.html' ) {
+          return '';
+        }
+
         return url.split('/').slice(2).join('/');
       }
 
