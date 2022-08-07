@@ -59,12 +59,20 @@
       //
       // iframe url: the URL to be loaded in the viewer iframe.
 
+      function getRootLocation() {
+        const p = location.pathname;
+        return p.slice(0, p.length - '/viewer'.length);
+      }
+
+      const root = getRootLocation();
+      const blankPageUrl = `${root}/skin/blank.html`;
+
       function userUrl2IframeUrl(url) {
         if ( url == '' ) {
-          return '/skin/blank.html';
+          return blankPageUrl;
         }
 
-        return `/content/${url}`;
+        return `${root}/content/${url}`;
       }
 
       function getBookFromUserUrl(url) {
@@ -125,9 +133,11 @@
       }
 
       function iframeUrl2UserUrl(url) {
-        if ( url == '/skin/blank.html' ) {
+        if ( url == blankPageUrl ) {
           return '';
         }
+
+        url = url.slice(root.length);
 
         return url.split('/').slice(2).join('/');
       }
