@@ -42,7 +42,7 @@
         const iframeContentUrl = userUrl2IframeUrl(hash.slice(1));
         console.log("handle_location_hash_change: " + hash);
         if ( iframeContentUrl != cf.contentWindow.location.pathname ) {
-          cf.src = iframeContentUrl;
+          cf.contentWindow.location.replace(iframeContentUrl);
         }
       }
 
@@ -53,7 +53,9 @@
         document.title = cf.contentDocument.title;
         const iframeContentUrl = cf.contentWindow.location.pathname;
         console.log('handle_content_url_change: ' + iframeContentUrl);
-        window.location.hash = iframeUrl2UserUrl(iframeContentUrl);
+        const newHash = '#' + iframeUrl2UserUrl(iframeContentUrl);
+        const viewerURL = location.origin + location.pathname + location.search;
+        window.location.replace(viewerURL + newHash);
       };
 
     </script>
