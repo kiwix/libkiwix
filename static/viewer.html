@@ -32,10 +32,12 @@
                    title="Go to the main page of the current book"
                    aria-label="Go to the main page of the current book"
                    onclick="gotoMainPageOfCurrentBook()"></a>
-              <!--
-              <a id="kiwix_serve_taskbar_random_button" title="Go to a randomly selected page" aria-label="Go to a randomly selected page"
-                href="{{root}}/random?content={{#urlencoded}}{{{content}}}{{/urlencoded}}"><button>&#x1F3B2;</button></a>
-              -->
+                <a id="kiwix_serve_taskbar_random_button"
+                   title="Go to a randomly selected page"
+                   aria-label="Go to a randomly selected page"
+                   onclick="gotoRandomPage()">
+                  <button>&#x1F3B2;</button>
+                </a>
               </span>
             </div>
         </div>
@@ -91,6 +93,10 @@
 
       function gotoMainPageOfCurrentBook() {
         location.hash = currentBook + '/';
+      }
+
+      function gotoRandomPage() {
+        cf.src = `${root}/random?content=${currentBook}`;
       }
 
       function setCurrentBook(book, title) {
