@@ -462,8 +462,13 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(normalizeText(book.getName()),      1, "XN");
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
 
-  for ( const auto& tag : split(normalizeText(book.getTags()), ";") )
+  for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
     doc.add_boolean_term("XT" + tag);
+    if ( tag[0] != '_' ) {
+      indexer.increase_termpos();
+      indexer.index_text(tag);
+    }
+  }
 
   const std::string idterm = "Q" + book.getId();
   doc.add_boolean_term(idterm);
