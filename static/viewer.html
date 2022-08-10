@@ -14,15 +14,12 @@
     <span class="kiwix">
       <span id="kiwixtoolbar" class="ui-widget-header">
         <div class="kiwix_centered">
-          <!--
           <div class="kiwix_searchform">
-            <form class="kiwixsearch" method="GET" action="{{root}}/search" id="kiwixsearchform">
-              {{#hascontent}}<input type="hidden" name="content" value="{{content}}" />{{/hascontent}}
+            <form class="kiwixsearch" method="GET" action="javascript:performSearch()" id="kiwixsearchform">
               <label for="kiwixsearchbox">&#x1f50d;</label>
               <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search '{{title}}'" aria-label="Search '{{title}}'">
             </form>
           </div>
-          -->
             <input type="checkbox" id="kiwix_button_show_toggle">
             <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?KIWIXCACHEID" alt=""></label>
             <div class="kiwix_button_cont">
@@ -74,6 +71,10 @@
           return blankPageUrl;
         }
 
+        if ( url.startsWith('search?') ) {
+          return `${root}/${url}`;
+        }
+
         return `${root}/content/${url}`;
       }
 
@@ -82,6 +83,10 @@
           return null;
         }
 
+        if ( url.startsWith('search?') ) {
+          const p = new URLSearchParams(url.slice("search?".length));
+          return p.get('books.name');
+        }
         return url.split('/')[0];
       }
 
@@ -95,8 +100,18 @@
         location.hash = currentBook + '/';
       }
 
+      function gotoUrl(url) {
+        cf.src = url;
+      }
+
       function gotoRandomPage() {
-        cf.src = `${root}/random?content=${currentBook}`;
+        gotoUrl(`${root}/random?content=${currentBook}`);
+      }
+
+      function performSearch() {
+        const searchbox = document.getElementById('kiwixsearchbox');
+        const q = encodeURIComponent(searchbox.value);
+        gotoUrl(`${root}/search?books.name=${currentBook}&pattern=${q}`);
       }
 
       function setCurrentBook(book, title) {
@@ -105,6 +120,9 @@
         homeButton.title = `Go to the main page of '${title}'`;
         homeButton.setAttribute("aria-label", homeButton.title);
         homeButton.innerHTML = `<button>${title}</button>`;
+        const searchbox = document.getElementById('kiwixsearchbox');
+        searchbox.title = `Search '${title}'`;
+        searchbox.setAttribute("aria-label", searchbox.title);
         bookUIGroup.style.display = 'inline';
       }
 
@@ -138,9 +156,13 @@
         }
       }
 
-      function iframeUrl2UserUrl(url) {
+      function iframeUrl2UserUrl(url, query) {
         if ( url == blankPageUrl ) {
           return '';
+        }
+
+        if ( url == `${root}/search` ) {
+          return `search${query}`;
         }
 
         url = url.slice(root.length);
@@ -171,8 +193,9 @@
       function handle_content_url_change() {
         document.title = cf.contentDocument.title;
         const iframeContentUrl = cf.contentWindow.location.pathname;
-        console.log('handle_content_url_change: ' + iframeContentUrl);
-        const newHash = '#' + iframeUrl2UserUrl(iframeContentUrl);
+        const iframeContentQuery = cf.contentWindow.location.search;
+        console.log('handle_content_url_change: ' + cf.contentWindow.location.href);
+        const newHash = '#' + iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
         const viewerURL = location.origin + location.pathname + location.search;
         window.location.replace(viewerURL + newHash);
       };

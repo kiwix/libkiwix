@@ -42,11 +42,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const bookName = location.hash.slice(1).split('/')[0];
 
-/*
+  const kiwixSearchBox = document.querySelector('#kiwixsearchbox');
+  const kiwixSearchFormWrapper = document.querySelector('.kiwix_searchform');
+
   const autoCompleteJS = new autoComplete(
     {
       selector: "#kiwixsearchbox",
-      placeHolder: document.querySelector("#kiwixsearchbox").title,
+      placeHolder: kiwixSearchBox.title,
       threshold: 1,
       debounce: 300,
       data : {
@@ -80,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
           } else {
             searchLink = `${root}/search?content=${encodeURIComponent(bookName)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
           }
-          item.innerHTML = `<a class="suggest" href="${searchLink}">${htmlDecode(data.value.label)}</a>`;
+          item.innerHTML = `<a class="suggest" href="javascript:gotoUrl('${searchLink}')">${htmlDecode(data.value.label)}</a>`;
         },
         highlight: "autoComplete_highlight",
         selected: "autoComplete_selected"
@@ -90,23 +92,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelector('#kiwixsearchform').addEventListener('submit', function(event) {
     try {
-      const selectedElemLink = document.querySelector('.autoComplete_selected > a').href;
-      if (selectedElemLink) {
+      const selectedElem = document.querySelector('.autoComplete_selected > a');
+      if (selectedElem) {
         event.preventDefault();
-        window.location = selectedElemLink;
+        selectedElem.click();
       }
     } catch (err) {}
   });
 
-  const kiwixSearchBox = document.querySelector('#kiwixsearchbox');
-  const kiwixSearchForm = document.querySelector('.kiwix_searchform');
   kiwixSearchBox.addEventListener('focus', () => {
-      kiwixSearchForm.classList.add('full_width');
+      kiwixSearchFormWrapper.classList.add('full_width');
       document.querySelector('label[for="kiwix_button_show_toggle"]').classList.add('searching');
       document.querySelector('.kiwix_button_cont').classList.add('searching');
   });
   kiwixSearchBox.addEventListener('blur', () => {
-      kiwixSearchForm.classList.remove('full_width');
+      kiwixSearchFormWrapper.classList.remove('full_width');
       document.querySelector('label[for="kiwix_button_show_toggle"]').classList.remove('searching');
       document.querySelector('.kiwix_button_cont').classList.remove('searching');
   });
@@ -119,5 +119,4 @@ document.addEventListener('DOMContentLoaded', function () {
   if (document.body.clientWidth < 520) {
     setupAutoHidingOfTheToolbar();
   }
-  */
 });
