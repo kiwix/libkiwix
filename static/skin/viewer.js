@@ -125,7 +125,17 @@ function getSearchPattern() {
   return null;
 }
 
+
+let autoCompleteJS = null;
+
+function closeSuggestions() {
+  if ( autoCompleteJS ) {
+    autoCompleteJS.close();
+  }
+}
+
 function updateSearchBoxForLocationChange() {
+  closeSuggestions();
   document.getElementById("kiwixsearchbox").value = getSearchPattern();
 }
 
@@ -217,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const kiwixSearchBox = document.querySelector('#kiwixsearchbox');
   const kiwixSearchFormWrapper = document.querySelector('.kiwix_searchform');
 
-  const autoCompleteJS = new autoComplete(
+  autoCompleteJS = new autoComplete(
     {
       selector: "#kiwixsearchbox",
       placeHolder: kiwixSearchBox.title,
@@ -263,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
   );
 
   document.querySelector('#kiwixsearchform').addEventListener('submit', function(event) {
+    closeSuggestions();
     try {
       const selectedElem = document.querySelector('.autoComplete_selected > a');
       if (selectedElem) {
