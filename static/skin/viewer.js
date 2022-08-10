@@ -35,13 +35,15 @@ let currentBookTitle = null;
 
 const bookUIGroup = document.getElementById('kiwix_serve_taskbar_book_ui_group');
 const homeButton = document.getElementById('kiwix_serve_taskbar_home_button');
+const contentIframe = document.getElementById('content_iframe');
+
 
 function gotoMainPageOfCurrentBook() {
   location.hash = currentBook + '/';
 }
 
 function gotoUrl(url) {
-  cf.src = url;
+  contentIframe.src = url;
 }
 
 function gotoRandomPage() {
@@ -110,27 +112,26 @@ function iframeUrl2UserUrl(url, query) {
   return url.split('/').slice(2).join('/');
 }
 
-const cf = document.getElementById('content_iframe');
-
 function handle_visual_viewport_change() {
-  cf.height = window.visualViewport.height - cf.offsetTop - 4;
+  contentIframe.height = window.visualViewport.height - contentIframe.offsetTop - 4;
 }
 
 function handle_location_hash_change() {
   const hash = window.location.hash.slice(1);
+  console.log("handle_location_hash_change: " + hash);
   updateCurrentBookIfNeeded(hash);
   const iframeContentUrl = userUrl2IframeUrl(hash);
-  console.log("handle_location_hash_change: " + hash);
-  if ( iframeContentUrl != cf.contentWindow.location.pathname ) {
-    cf.contentWindow.location.replace(iframeContentUrl);
+  if ( iframeContentUrl != contentIframe.contentWindow.location.pathname ) {
+    contentIframe.contentWindow.location.replace(iframeContentUrl);
   }
 }
 
 function handle_content_url_change() {
-  document.title = cf.contentDocument.title;
-  const iframeContentUrl = cf.contentWindow.location.pathname;
-  const iframeContentQuery = cf.contentWindow.location.search;
-  console.log('handle_content_url_change: ' + cf.contentWindow.location.href);
+  const iframeLocation = contentIframe.contentWindow.location;
+  console.log('handle_content_url_change: ' + iframeLocation.href);
+  document.title = contentIframe.contentDocument.title;
+  const iframeContentUrl = iframeLocation.pathname;
+  const iframeContentQuery = iframeLocation.search;
   const newHash = '#' + iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
   const viewerURL = location.origin + location.pathname + location.search;
   window.location.replace(viewerURL + newHash);
