@@ -126,6 +126,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_request(const RequestContext& request);
     std::unique_ptr<Response> build_redirect(const std::string& bookName, const zim::Item& item) const;
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
+    std::unique_ptr<Response> handle_viewer_settings(const RequestContext& request);
     std::unique_ptr<Response> handle_skin(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog_v2(const RequestContext& request);

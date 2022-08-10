@@ -556,6 +556,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "viewer") || isEndpointUrl(url, "skin"))
       return handle_skin(request);
 
+    if (url == "/viewer_settings.js")
+      return handle_viewer_settings(request);
+
     if (isEndpointUrl(url, "content"))
       return handle_content(request);
 
@@ -711,6 +714,19 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   auto response = ContentResponse::build(*this, RESOURCE::templates::suggestion_json, data, "application/json; charset=utf-8");
   return std::move(response);
+}
+
+std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_viewer_settings\n");
+  }
+
+  const kainjow::mustache::object data{
+    {"enable_link_blocking", m_blockExternalLinks ? "true" : "false" },
+    {"enable_library_button", m_withLibraryButton ? "true" : "false" }
+  };
+  return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& request)

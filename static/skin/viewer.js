@@ -197,7 +197,6 @@ const block_path = `${root}/catch/external`;
 function blockLink(target) {
   const encodedHref = encodeURIComponent(target.href);
   target.setAttribute("href", block_path + "?source=" + encodedHref);
-  target.setAttribute("target", "_top");
 }
 
 function isExternalUrl(url) {
@@ -213,8 +212,12 @@ function onClickEvent(e) {
   const iframeDocument = contentIframe.contentDocument;
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
   if (target !== null && "href" in target) {
-    if ( isExternalUrl(target.href) )
-      return blockLink(target);
+    if ( isExternalUrl(target.href) ) {
+      target.setAttribute("target", "_top");
+      if ( viewerSettings.linkBlockingEnabled ) {
+        return blockLink(target);
+      }
+    }
   }
 }
 
@@ -263,6 +266,10 @@ function on_content_load() {
 
 window.onresize = handle_visual_viewport_change;
 window.onhashchange = handle_location_hash_change;
+
+if ( ! viewerSettings.libraryButtonEnabled ) {
+  document.getElementById("kiwix_serve_taskbar_library_button").remove();
+}
 
 updateCurrentBook(currentBook);
 handle_location_hash_change();
