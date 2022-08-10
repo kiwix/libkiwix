@@ -187,7 +187,7 @@ R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=76440e7a" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=2f5a81ac" defer></script>
 )EXPECTEDRESULT"
     },
     {
@@ -204,8 +204,8 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=2608
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/viewer_taskbar.js?cacheid=9d78a751" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
-            <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
       const blankPageUrl = `${root}/skin/blank.html`;
+            <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
     },
     {
