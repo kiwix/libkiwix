@@ -25,12 +25,12 @@ function getBookFromUserUrl(url) {
 
   if ( url.startsWith('search?') ) {
     const p = new URLSearchParams(url.slice("search?".length));
-    return p.get('books.name');
+    return p.get('books.name') || p.get('content');
   }
   return url.split('/')[0];
 }
 
-let currentBook = null;
+let currentBook = getBookFromUserUrl(location.hash.slice(1));
 let currentBookTitle = null;
 
 const bookUIGroup = document.getElementById('kiwix_serve_taskbar_book_ui_group');
@@ -56,22 +56,26 @@ function performSearch() {
   gotoUrl(`${root}/search?books.name=${currentBook}&pattern=${q}`);
 }
 
+function suggestionsApiURL()
+{
+  return `${root}/suggest?content=${encodeURIComponent(currentBook)}`;
+}
+
 function setCurrentBook(book, title) {
   currentBook = book;
   currentBookTitle = title;
   homeButton.title = `Go to the main page of '${title}'`;
   homeButton.setAttribute("aria-label", homeButton.title);
   homeButton.innerHTML = `<button>${title}</button>`;
-  const searchbox = document.getElementById('kiwixsearchbox');
-  searchbox.title = `Search '${title}'`;
-  searchbox.setAttribute("aria-label", searchbox.title);
   bookUIGroup.style.display = 'inline';
+  updateSearchBoxForBookChange();
 }
 
 function noCurrentBook() {
   currentBook = null;
   currentBookTitle = null;
   bookUIGroup.style.display = 'none';
+  updateSearchBoxForBookChange();
 }
 
 function updateCurrentBookIfNeeded(userUrl) {
@@ -112,6 +116,32 @@ function iframeUrl2UserUrl(url, query) {
   return url.split('/').slice(2).join('/');
 }
 
+function getSearchPattern() {
+  const url = window.location.hash.slice(1);
+  if ( url.startsWith('search?') ) {
+    const p = new URLSearchParams(url.slice("search?".length));
+    return p.get("pattern");
+  }
+  return null;
+}
+
+function updateSearchBoxForLocationChange() {
+  document.getElementById("kiwixsearchbox").value = getSearchPattern();
+}
+
+function updateSearchBoxForBookChange() {
+  const searchbox = document.getElementById('kiwixsearchbox');
+  const kiwixSearchFormWrapper = document.querySelector('.kiwix_searchform');
+  if ( currentBookTitle ) {
+    searchbox.title = `Search '${currentBookTitle}'`;
+    searchbox.placeholder = searchbox.title;
+    searchbox.setAttribute("aria-label", searchbox.title);
+    kiwixSearchFormWrapper.style.display = 'inline';
+  } else {
+    kiwixSearchFormWrapper.style.display = 'none';
+  }
+}
+
 function handle_visual_viewport_change() {
   contentIframe.height = window.visualViewport.height - contentIframe.offsetTop - 4;
 }
@@ -124,6 +154,7 @@ function handle_location_hash_change() {
   if ( iframeContentUrl != contentIframe.contentWindow.location.pathname ) {
     contentIframe.contentWindow.location.replace(iframeContentUrl);
   }
+  updateSearchBoxForLocationChange();
 }
 
 function handle_content_url_change() {
@@ -132,14 +163,16 @@ function handle_content_url_change() {
   document.title = contentIframe.contentDocument.title;
   const iframeContentUrl = iframeLocation.pathname;
   const iframeContentQuery = iframeLocation.search;
-  const newHash = '#' + iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
+  const newHash = iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
   const viewerURL = location.origin + location.pathname + location.search;
-  window.location.replace(viewerURL + newHash);
+  window.location.replace(viewerURL + '#' + newHash);
+  updateCurrentBookIfNeeded(newHash);
 };
 
 window.onresize = handle_visual_viewport_change;
 window.onhashchange = handle_location_hash_change;
 
+updateCurrentBook(currentBook);
 handle_location_hash_change();
 
 function htmlDecode(input) {
@@ -181,11 +214,6 @@ function setupAutoHidingOfTheToolbar() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  const p = location.pathname;
-  const root = p.slice(0, p.length - '/viewer'.length);
-
-  const bookName = location.hash.slice(1).split('/')[0];
-
   const kiwixSearchBox = document.querySelector('#kiwixsearchbox');
   const kiwixSearchFormWrapper = document.querySelector('.kiwix_searchform');
 
@@ -199,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
         src: async (query) => {
           try {
             // Fetch Data from external Source
-            const source = await fetch(`${root}/suggest?content=${encodeURIComponent(bookName)}&term=${encodeURIComponent(query)}`);
+            const source = await fetch(`${suggestionsApiURL()}&term=${encodeURIComponent(query)}`);
             const data = await source.json();
             return data;
           } catch (error) {
@@ -222,9 +250,9 @@ document.addEventListener('DOMContentLoaded', function () {
         element: (item, data) => {
           let searchLink;
           if (data.value.kind == "path") {
-            searchLink = `${root}/${bookName}/${htmlDecode(data.value.path)}`;
+            searchLink = `${root}/${currentBook}/${htmlDecode(data.value.path)}`;
           } else {
-            searchLink = `${root}/search?content=${encodeURIComponent(bookName)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
+            searchLink = `${root}/search?content=${encodeURIComponent(currentBook)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
           }
           item.innerHTML = `<a class="suggest" href="javascript:gotoUrl('${searchLink}')">${htmlDecode(data.value.label)}</a>`;
         },
