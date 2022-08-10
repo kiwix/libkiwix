@@ -16,7 +16,7 @@ skin/fonts/Roboto.ttf
 skin/block_external.js
 skin/search_results.css
 skin/blank.html
-skin/viewer_taskbar.js
+skin/viewer.js
 viewer.html
 templates/search_result.html
 templates/search_result.xml

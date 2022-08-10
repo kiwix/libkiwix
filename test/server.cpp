@@ -202,7 +202,7 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
       /* url */ "/ROOT/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="text/javascript" src="./skin/viewer_taskbar.js?cacheid=9d78a751" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=9d78a751" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = `${root}/skin/blank.html`;
             <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
