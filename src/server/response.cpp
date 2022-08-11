@@ -337,34 +337,6 @@ void print_response_info(int retCode, MHD_Response* response)
 }
 
 
-void ContentResponse::introduce_taskbar(const std::string& lang)
-{
-  i18n::GetTranslatedString t(lang);
-  kainjow::mustache::object data{
-    {"root", m_root},
-    {"content", m_bookName},
-    {"hascontent", (!m_bookName.empty() && !m_bookTitle.empty())},
-    {"title", m_bookTitle},
-    {"withlibrarybutton", m_withLibraryButton},
-    {"LIBRARY_BUTTON_TEXT", t("library-button-text")},
-    {"HOME_BUTTON_TEXT", t("home-button-text", {{"BOOK_TITLE", m_bookTitle}}) },
-    {"RANDOM_PAGE_BUTTON_TEXT", t("random-page-button-text") },
-    {"SEARCHBOX_TOOLTIP", t("searchbox-tooltip", {{"BOOK_TITLE", m_bookTitle}}) },
-  };
-  auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
-  m_content = prependToFirstOccurence(
-    m_content,
-    "</head[ \\t]*>",
-    head_content);
-
-  auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
-  m_content = appendToFirstOccurence(
-    m_content,
-    "<body[^>]*>",
-    taskbar_part);
-}
-
-
 void ContentResponse::inject_externallinks_blocker()
 {
   kainjow::mustache::data data;
@@ -414,9 +386,6 @@ ContentResponse::create_mhd_response(const RequestContext& request)
   if (contentDecorationAllowed()) {
     inject_root_link();
 
-    if (m_withTaskbar) {
-      introduce_taskbar(request.get_user_language());
-    }
     if (m_blockExternalLinks) {
       inject_externallinks_blocker();
     }
@@ -468,14 +437,12 @@ void ContentResponse::set_taskbar(const std::string& bookName, const zim::Archiv
 }
 
 
-ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
+ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool /*withTaskbar*/, bool /*withLibraryButton*/, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
   Response(verbose),
   m_root(root),
   m_content(content),
   m_mimeType(mimetype),
   m_raw(raw),
-  m_withTaskbar(withTaskbar),
-  m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
   m_bookName(""),
   m_bookTitle("")
@@ -494,8 +461,8 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
         server.m_root,
         server.m_verbose.load(),
         raw,
-        server.m_withTaskbar && !isHomePage,
-        server.m_withLibraryButton,
+        /*server.m_withTaskbar && !isHomePage*/ false, // XXX
+        /*server.m_withLibraryButton*/ false, // XXX
         server.m_blockExternalLinks,
         content,
         mimetype));

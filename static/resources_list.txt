@@ -4,7 +4,6 @@ skin/magnet.png
 skin/download.png
 skin/hash.png
 skin/search-icon.svg
-skin/taskbar.js
 skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
@@ -24,8 +23,6 @@ templates/error.html
 templates/error.xml
 templates/index.html
 templates/suggestion.json
-templates/head_taskbar.html
-templates/taskbar_part.html
 templates/external_blocker_part.html
 templates/captured_external.html
 templates/catalog_entries.xml
