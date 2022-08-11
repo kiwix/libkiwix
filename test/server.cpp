@@ -44,6 +44,8 @@ const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/ROOT/" },
 
   { WITH_ETAG, "/ROOT/skin/taskbar.js" },
+  { WITH_ETAG, "/ROOT/skin/autoComplete.min.js" },
+  { WITH_ETAG, "/ROOT/skin/css/autoComplete.css" },
   { WITH_ETAG, "/ROOT/skin/taskbar.css" },
   { WITH_ETAG, "/ROOT/skin/block_external.js" },
 
@@ -64,6 +66,7 @@ const ResourceCollection resources200Compressible{
 
 const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/skin/caret.png" },
+  { WITH_ETAG, "/ROOT/skin/css/images/search.svg" },
 
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Description" },
