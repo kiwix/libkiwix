@@ -138,6 +138,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_search(const RequestContext& request);
     std::unique_ptr<Response> handle_suggest(const RequestContext& request);
     std::unique_ptr<Response> handle_random(const RequestContext& request);
+    std::unique_ptr<Response> handle_catch(const RequestContext& request);
     std::unique_ptr<Response> handle_captured_external(const RequestContext& request);
     std::unique_ptr<Response> handle_content(const RequestContext& request);
     std::unique_ptr<Response> handle_raw(const RequestContext& request);

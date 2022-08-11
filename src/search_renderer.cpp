@@ -166,13 +166,14 @@ kainjow::mustache::data buildPagination(
 
 std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
 {
+  const std::string absPathPrefix = protocolPrefix + "content/";
   // Build the results list
   kainjow::mustache::data items{kainjow::mustache::data::type::list};
   for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
     kainjow::mustache::data result;
     std::string zim_id(it.getZimId());
     result.set("title", it.getTitle());
-    result.set("absolutePath", protocolPrefix + urlEncode(mp_nameMapper->getNameForId(zim_id), true) + "/" + urlEncode(it.getPath()));
+    result.set("absolutePath", absPathPrefix + urlEncode(mp_nameMapper->getNameForId(zim_id), true) + "/" + urlEncode(it.getPath()));
     result.set("snippet", it.getSnippet());
     if (mp_library) {
       result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());

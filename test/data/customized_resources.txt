@@ -2,4 +2,5 @@
 /                       text/html           ./test/welcome.html
 /skin/index.css         application/json    ./test/helloworld.txt
 /zimfile/A/Ray_Charles  ray/charles         ./test/welcome.html
+/content/zimfile/A/Ray_Charles  charles/ray ./test/welcome.html
 /search                 text/html           ./test/helloworld.txt

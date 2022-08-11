@@ -524,6 +524,16 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   return ret;
 }
 
+namespace
+{
+
+bool isEndpointUrl(const std::string& url, const std::string& endpoint)
+{
+  return startsWith(url, "/" + endpoint + "/") || url == "/" + endpoint;
+};
+
+} // unnamed namespace
+
 std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& request)
 {
   try {
@@ -536,39 +546,42 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if ( etag )
       return Response::build_304(*this, etag);
 
-    if ( isLocallyCustomizedResource(request.get_url()) )
+    const auto url = request.get_url();
+    if ( isLocallyCustomizedResource(url) )
       return handle_locally_customized_resource(request);
 
-    if (startsWith(request.get_url(), "/skin/"))
+    if (url == "/" )
+      return build_homepage(request);
+
+    if (isEndpointUrl(url, "skin"))
       return handle_skin(request);
 
-    if (startsWith(request.get_url(), "/catalog/"))
+    if (isEndpointUrl(url, "content"))
+      return handle_content(request);
+
+    if (isEndpointUrl(url, "catalog"))
       return handle_catalog(request);
 
-    if (startsWith(request.get_url(), "/raw/"))
+    if (isEndpointUrl(url, "raw"))
       return handle_raw(request);
 
-    if (request.get_url() == "/search")
+    if (isEndpointUrl(url, "search"))
       return handle_search(request);
 
-    if (request.get_url() == "/search/searchdescription.xml") {
-      return ContentResponse::build(
-        *this,
-        RESOURCE::ft_opensearchdescription_xml,
-        get_default_data(),
-        "application/opensearchdescription+xml");
-    }
-
-    if (request.get_url() == "/suggest")
+    if (isEndpointUrl(url, "suggest"))
      return handle_suggest(request);
 
-    if (request.get_url() == "/random")
+    if (isEndpointUrl(url, "random"))
       return handle_random(request);
 
-    if (request.get_url() == "/catch/external")
-      return handle_captured_external(request);
+    if (isEndpointUrl(url, "catch"))
+      return handle_catch(request);
 
-    return handle_content(request);
+    std::string contentUrl = m_root + "/content" + url;
+    const std::string query = request.get_query();
+    if ( ! query.empty() )
+      contentUrl += "?" + query;
+    return Response::build_redirect(*this, contentUrl);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
     return HTTP500Response(*this, request)
@@ -621,6 +634,11 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 {
   if (m_verbose.load()) {
     printf("** running handle_suggest\n");
+  }
+
+  if ( startsWith(request.get_url(), "/suggest/") ) {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
   }
 
   std::string bookName, bookId;
@@ -722,6 +740,18 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     printf("** running handle_search\n");
   }
 
+  if ( startsWith(request.get_url(), "/search/") ) {
+    if (request.get_url() == "/search/searchdescription.xml") {
+      return ContentResponse::build(
+        *this,
+        RESOURCE::ft_opensearchdescription_xml,
+        get_default_data(),
+        "application/opensearchdescription+xml");
+    }
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
   try {
     auto searchInfo = getSearchInfo(request);
     auto bookIds = searchInfo.getBookIds();
@@ -805,6 +835,11 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     printf("** running handle_random\n");
   }
 
+  if ( startsWith(request.get_url(), "/random/") ) {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
   std::string bookName;
   std::shared_ptr<zim::Archive> archive;
   try {
@@ -846,6 +881,20 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
   auto data = get_default_data();
   data.set("source", source);
   return ContentResponse::build(*this, RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
+}
+
+std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_catch\n");
+  }
+
+  if ( request.get_url() == "/catch/external" ) {
+    return handle_captured_external(request);
+  }
+
+  return HTTP404Response(*this, request)
+         + urlNotFoundMsg;
 }
 
 std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
@@ -919,15 +968,6 @@ InternalServer::search_catalog(const RequestContext& request,
 namespace
 {
 
-std::string get_book_name(const RequestContext& request)
-{
-  try {
-    return request.get_url_part(0);
-  } catch (const std::out_of_range& e) {
-    return std::string();
-  }
-}
-
 ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::string& pattern)
 {
   return ParameterizedMessage("suggest-search",
@@ -942,7 +982,8 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  auto redirectUrl = m_root + "/" + bookName + "/" + kiwix::urlEncode(item.getPath());
+  const auto path = kiwix::urlEncode(item.getPath());
+  const auto redirectUrl = m_root + "/content/" + bookName + "/" + path;
   return Response::build_redirect(*this, redirectUrl);
 }
 
@@ -954,9 +995,10 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     printf("** running handle_content\n");
   }
 
-  const std::string bookName = get_book_name(request);
-  if (bookName.empty())
-    return build_homepage(request);
+  const std::string contentPrefix = "/content/";
+  const bool isContentPrefixedUrl = startsWith(url, contentPrefix);
+  const size_t prefixLength = isContentPrefixedUrl ? contentPrefix.size() : 1;
+  const std::string bookName = request.get_url_part(isContentPrefixedUrl);
 
   std::shared_ptr<zim::Archive> archive;
   try {
@@ -972,7 +1014,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
            + TaskbarInfo(bookName);
   }
 
-  auto urlStr = request.get_url().substr(bookName.size()+1);
+  auto urlStr = url.substr(prefixLength + bookName.size());
   if (urlStr[0] == '/') {
     urlStr = urlStr.substr(1);
   }
