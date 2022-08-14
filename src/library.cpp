@@ -521,6 +521,16 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   return queryParser.parse_query(normalizeText(filter.getQuery()), flags);
 }
 
+Xapian::Query parseQuery(const std::string& query, const std::string& prefix)
+{
+  Xapian::QueryParser queryParser;
+  queryParser.set_default_op(Xapian::Query::OP_OR);
+  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
+  const auto flags = 0;
+  const auto q = queryParser.parse_query(normalizeText(query), flags, prefix);
+  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+}
+
 Xapian::Query nameQuery(const std::string& name)
 {
   return Xapian::Query("XN" + normalizeText(name));
@@ -538,22 +548,12 @@ Xapian::Query langQuery(const std::string& lang)
 
 Xapian::Query publisherQuery(const std::string& publisher)
 {
-  Xapian::QueryParser queryParser;
-  queryParser.set_default_op(Xapian::Query::OP_OR);
-  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
-  const auto flags = 0;
-  const auto q = queryParser.parse_query(normalizeText(publisher), flags, "XP");
-  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+  return parseQuery(publisher, "XP");
 }
 
 Xapian::Query creatorQuery(const std::string& creator)
 {
-  Xapian::QueryParser queryParser;
-  queryParser.set_default_op(Xapian::Query::OP_OR);
-  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
-  const auto flags = 0;
-  const auto q = queryParser.parse_query(normalizeText(creator), flags, "A");
-  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+  return parseQuery(creator, "A");
 }
 
 Xapian::Query tagsQuery(const Filter::Tags& acceptTags, const Filter::Tags& rejectTags)
