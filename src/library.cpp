@@ -545,9 +545,16 @@ Xapian::Query categoryQuery(const std::string& category)
   return Xapian::Query("XC" + normalizeText(category));
 }
 
-Xapian::Query aliasNameQuery(const std::string& fileName)
+Xapian::Query aliasNamesQuery(const Filter::AliasNames& aliasNames)
 {
-  return parseQuery(fileName, "XF");
+  Xapian::Query q = Xapian::Query(std::string());
+  std::vector<Xapian::Query> queryVec;
+  for (const auto& aliasName : aliasNames) {
+    queryVec.push_back(parseQuery(aliasName, "XF"));
+  }
+  Xapian::Query combinedQuery(Xapian::Query::OP_OR, queryVec.begin(), queryVec.end());
+  q = Xapian::Query(Xapian::Query::OP_FILTER, q, combinedQuery);
+  return q;
 }
 
 Xapian::Query langQuery(const std::string& lang)
@@ -602,8 +609,8 @@ Xapian::Query buildXapianQuery(const Filter& filter)
     const auto tq = tagsQuery(filter.getAcceptTags(), filter.getRejectTags());
     q = Xapian::Query(Xapian::Query::OP_AND, q, tq);;
   }
-  if ( filter.hasAliasName() ) {
-    q = Xapian::Query(Xapian::Query::OP_AND, q, aliasNameQuery(filter.getAliasName()));
+  if ( !filter.getAliasNames().empty() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, aliasNamesQuery(filter.getAliasNames()));
   }
   return q;
 }
@@ -754,7 +761,7 @@ enum filterTypes {
   QUERY = FLAG(12),
   NAME = FLAG(13),
   CATEGORY = FLAG(14),
-  ALIASNAME = FLAG(15),
+  ALIASNAMES = FLAG(15),
 };
 
 Filter& Filter::local(bool accept)
@@ -857,10 +864,10 @@ Filter& Filter::name(std::string name)
   return *this;
 }
 
-Filter& Filter::aliasName(std::string aliasName)
+Filter& Filter::aliasNames(const AliasNames& aliasNames)
 {
-  _aliasName = aliasName;
-  activeFilters |= ALIASNAME;  
+  _aliasNames = aliasNames;
+  activeFilters |= ALIASNAMES;  
   return *this;
 }
 
@@ -874,11 +881,6 @@ bool Filter::hasQuery() const
 bool Filter::hasName() const
 {
   return ACTIVE(NAME);
-}
-
-bool Filter::hasAliasName() const
-{
-  return ACTIVE(ALIASNAME);
 }
 
 bool Filter::hasCategory() const

@@ -54,6 +54,7 @@ enum supportedListMode {
 class Filter {
   public: // types
     using Tags = std::vector<std::string>;
+    using AliasNames = std::vector<std::string>;
 
   private: // data
     uint64_t activeFilters;
@@ -67,7 +68,7 @@ class Filter {
     std::string _query;
     bool _queryIsPartial;
     std::string _name;
-    std::string _aliasName;
+    AliasNames _aliasNames;
 
   public: // functions
     Filter();
@@ -113,7 +114,7 @@ class Filter {
     Filter& maxSize(size_t size);
     Filter& query(std::string query, bool partial=true);
     Filter& name(std::string name);
-    Filter& aliasName(std::string aliasName);
+    Filter& aliasNames(const AliasNames& aliasNames);
 
     bool hasQuery() const;
     const std::string& getQuery() const { return _query; }
@@ -137,8 +138,7 @@ class Filter {
     const Tags& getAcceptTags() const { return _acceptTags; }
     const Tags& getRejectTags() const { return _rejectTags; }
 
-    bool hasAliasName() const;
-    const std::string& getAliasName() const { return _aliasName; }
+    const AliasNames& getAliasNames() const { return _aliasNames; }
 
 private: // functions
     friend class Library;

@@ -120,7 +120,7 @@ Filter get_search_filter(const RequestContext& request, const std::string& prefi
       filter.rejectTags(kiwix::split(request.get_argument(prefix+"notag"), ";"));
     } catch (...) {}
     try {
-      filter.aliasName(request.get_argument(prefix + "book"));
+      filter.aliasNames(request.get_arguments(prefix + "book"));
     } catch (...) {}
     return filter;
 }
