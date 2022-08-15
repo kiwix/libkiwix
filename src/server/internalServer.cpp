@@ -119,6 +119,9 @@ Filter get_search_filter(const RequestContext& request, const std::string& prefi
     try {
       filter.rejectTags(kiwix::split(request.get_argument(prefix+"notag"), ";"));
     } catch (...) {}
+    try {
+      filter.aliasName(request.get_argument(prefix + "book"));
+    } catch (...) {}
     return filter;
 }
 

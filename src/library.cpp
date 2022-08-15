@@ -461,6 +461,9 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
   indexer.index_text(normalizeText(book.getName()),      1, "XN");
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
+  const auto bookName = book.getHumanReadableIdFromPath();
+  const auto aliasName = replaceRegex(bookName, "", "_[[:digit:]]{4}-[[:digit:]]{2}$");
+  indexer.index_text(normalizeText(aliasName), 1, "XF");
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
     doc.add_boolean_term("XT" + tag);
@@ -505,6 +508,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("publisher", "XP");
   queryParser.add_prefix("creator", "A");
   queryParser.add_prefix("tag", "XT");
+  queryParser.add_prefix("filename", "XF");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -539,6 +543,11 @@ Xapian::Query nameQuery(const std::string& name)
 Xapian::Query categoryQuery(const std::string& category)
 {
   return Xapian::Query("XC" + normalizeText(category));
+}
+
+Xapian::Query aliasNameQuery(const std::string& fileName)
+{
+  return parseQuery(fileName, "XF");
 }
 
 Xapian::Query langQuery(const std::string& lang)
@@ -592,6 +601,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   if ( !filter.getAcceptTags().empty() || !filter.getRejectTags().empty() ) {
     const auto tq = tagsQuery(filter.getAcceptTags(), filter.getRejectTags());
     q = Xapian::Query(Xapian::Query::OP_AND, q, tq);;
+  }
+  if ( filter.hasAliasName() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, aliasNameQuery(filter.getAliasName()));
   }
   return q;
 }
@@ -742,6 +754,7 @@ enum filterTypes {
   QUERY = FLAG(12),
   NAME = FLAG(13),
   CATEGORY = FLAG(14),
+  ALIASNAME = FLAG(15),
 };
 
 Filter& Filter::local(bool accept)
@@ -844,6 +857,13 @@ Filter& Filter::name(std::string name)
   return *this;
 }
 
+Filter& Filter::aliasName(std::string aliasName)
+{
+  _aliasName = aliasName;
+  activeFilters |= ALIASNAME;  
+  return *this;
+}
+
 #define ACTIVE(X) (activeFilters & (X))
 #define FILTER(TAG, TEST) if (ACTIVE(TAG) && !(TEST)) { return false; }
 bool Filter::hasQuery() const
@@ -854,6 +874,11 @@ bool Filter::hasQuery() const
 bool Filter::hasName() const
 {
   return ACTIVE(NAME);
+}
+
+bool Filter::hasAliasName() const
+{
+  return ACTIVE(ALIASNAME);
 }
 
 bool Filter::hasCategory() const
