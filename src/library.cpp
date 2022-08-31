@@ -525,7 +525,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   return queryParser.parse_query(normalizeText(filter.getQuery()), flags);
 }
 
-Xapian::Query parseQuery(const std::string& query, const std::string& prefix)
+Xapian::Query makePhraseQuery(const std::string& query, const std::string& prefix)
 {
   Xapian::QueryParser queryParser;
   queryParser.set_default_op(Xapian::Query::OP_OR);
@@ -550,7 +550,7 @@ Xapian::Query aliasNamesQuery(const Filter::AliasNames& aliasNames)
   Xapian::Query q = Xapian::Query(std::string());
   std::vector<Xapian::Query> queryVec;
   for (const auto& aliasName : aliasNames) {
-    queryVec.push_back(parseQuery(aliasName, "XF"));
+    queryVec.push_back(makePhraseQuery(aliasName, "XF"));
   }
   Xapian::Query combinedQuery(Xapian::Query::OP_OR, queryVec.begin(), queryVec.end());
   q = Xapian::Query(Xapian::Query::OP_FILTER, q, combinedQuery);
@@ -564,12 +564,12 @@ Xapian::Query langQuery(const std::string& lang)
 
 Xapian::Query publisherQuery(const std::string& publisher)
 {
-  return parseQuery(publisher, "XP");
+  return makePhraseQuery(publisher, "XP");
 }
 
 Xapian::Query creatorQuery(const std::string& creator)
 {
-  return parseQuery(creator, "A");
+  return makePhraseQuery(creator, "A");
 }
 
 Xapian::Query tagsQuery(const Filter::Tags& acceptTags, const Filter::Tags& rejectTags)
