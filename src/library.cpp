@@ -28,6 +28,7 @@
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
 #include "tools/concurrent_cache.h"
+#include "name_mapper.h"
 
 #include <pugixml.hpp>
 #include <algorithm>
@@ -462,7 +463,7 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(normalizeText(book.getName()),      1, "XN");
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
   const auto bookName = book.getHumanReadableIdFromPath();
-  const auto aliasName = replaceRegex(bookName, "", "_[[:digit:]]{4}-[[:digit:]]{2}$");
+  const auto aliasName = HumanReadableNameMapper::removeDateFromBookId(bookName);
   indexer.index_text(normalizeText(aliasName), 1, "XF");
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
