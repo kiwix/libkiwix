@@ -384,11 +384,17 @@ function setupSuggestions() {
 }
 
 function setupViewer() {
+  setInterval(handle_visual_viewport_change, 0);
+
+  const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
+  if ( ! viewerSettings.toolbarEnabled ) {
+    return;
+  }
+
+  kiwixToolBarWrapper.style.display = 'block';
   if ( ! viewerSettings.libraryButtonEnabled ) {
     document.getElementById("kiwix_serve_taskbar_library_button").remove();
   }
-
-  handle_visual_viewport_change();
 
   setupSuggestions();
 
