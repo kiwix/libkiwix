@@ -1,11 +1,5 @@
 #kiwixtoolbar {
-    position: fixed;
     padding: .5em;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: 100;
-    background-position-y: 0;
     transition: 0.3s;
     width: 100%;
     box-sizing: border-box;
@@ -133,10 +127,6 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
 .autoComplete_wrapper > ul {
     max-height: none !important;
     column-count: 1 !important;
-}
-
-body {
-    padding-top: calc(3em - 5px) !important;
 }
 
 @media(min-width:420px) {

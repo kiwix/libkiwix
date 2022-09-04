@@ -281,7 +281,7 @@ function setupAutoHidingOfTheToolbar() {
   let didScroll = false;
   const kiwixToolBar = document.querySelector('#kiwixtoolbar');
 
-  window.addEventListener('scroll', () => {
+  contentIframe.contentWindow.addEventListener('scroll', () => {
     didScroll = true;
   });
 
@@ -293,13 +293,16 @@ function setupAutoHidingOfTheToolbar() {
   }, 250);
 
   function hasScrolled() {
-    const st = document.documentElement.scrollTop || document.body.scrollTop;
+    const iframeDoc = contentIframe.contentDocument;
+    const st = iframeDoc.documentElement.scrollTop || iframeDoc.body.scrollTop;
     if (Math.abs(lastScrollTop - st) <= delta)
         return;
 
     if (st > lastScrollTop) {
+        kiwixToolBar.style.position = 'fixed';
         kiwixToolBar.style.top = '-100%';
     } else {
+        kiwixToolBar.style.position = 'static';
         kiwixToolBar.style.top = '0';
     }
 
