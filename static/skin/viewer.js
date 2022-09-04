@@ -312,7 +312,7 @@ function setupAutoHidingOfTheToolbar() {
 
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function setupSuggestions() {
   const kiwixSearchBox = document.querySelector('#kiwixsearchbox');
   const kiwixSearchFormWrapper = document.querySelector('.kiwix_searchform');
 
@@ -382,6 +382,12 @@ document.addEventListener('DOMContentLoaded', function () {
       document.querySelector('label[for="kiwix_button_show_toggle"]').classList.remove('searching');
       document.querySelector('.kiwix_button_cont').classList.remove('searching');
   });
+}
+
+function setupViewer() {
+  handle_visual_viewport_change();
+
+  setupSuggestions();
 
   // cybook hack
   if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
@@ -391,4 +397,4 @@ document.addEventListener('DOMContentLoaded', function () {
   if (document.body.clientWidth < 520) {
     setupAutoHidingOfTheToolbar();
   }
-});
+}
