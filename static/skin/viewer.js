@@ -267,10 +267,6 @@ function on_content_load() {
 window.onresize = handle_visual_viewport_change;
 window.onhashchange = handle_location_hash_change;
 
-if ( ! viewerSettings.libraryButtonEnabled ) {
-  document.getElementById("kiwix_serve_taskbar_library_button").remove();
-}
-
 updateCurrentBook(currentBook);
 handle_location_hash_change();
 
@@ -385,6 +381,10 @@ function setupSuggestions() {
 }
 
 function setupViewer() {
+  if ( ! viewerSettings.libraryButtonEnabled ) {
+    document.getElementById("kiwix_serve_taskbar_library_button").remove();
+  }
+
   handle_visual_viewport_change();
 
   setupSuggestions();
