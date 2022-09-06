@@ -172,7 +172,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT/",
-R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=56e818cd"
+R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
