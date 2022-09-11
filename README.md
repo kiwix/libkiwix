@@ -101,6 +101,29 @@ meson . build -Dwrapper=android -Dwerror=false
 ninja -C build
 ```
 
+Static files compilation
+------------------------
+
+Libkiwix has a few static files 'compiled' within the binary
+code. This is mostly Javascript/HTML/pictures necessary for the HTTP
+daemon.
+
+These static files are available in the `static` directory and are
+compiled by custom Python code available in this repository `scripts`
+directory. This happens automatically at compilation time without any
+additional command to run.
+
+To avoid HTTP caching issue, the URLs (to the static content) are
+appended with a `cacheid` parameter (this is called "cache
+busting"). This `cacheid` value derived from the SHA1SUM of each
+targeted static file. As a consequence, each time you change a static
+file, the corresponding `cacheid` value will change. To properly test
+this feature, this `cacheid` needs to be added manually to the
+automated test and has to be commited. To know what are the expected
+`cacheid` values, you can build once the libkiwix and then run `grep
+-r cacheid build/static/`. Finally update `test/server.cpp` with the
+appropriate `cacheid` values which have changed.
+
 Testing
 -------
 
