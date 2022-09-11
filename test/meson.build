@@ -69,7 +69,7 @@ if gtest_dep.found() and not meson.is_cross_build()
         test_exe = executable(test_name, [test_name+'.cpp'],
                               implicit_include_directories: false,
                               include_directories : inc,
-                              link_with : kiwixlib,
+                              link_with : libkiwix,
                               link_args: extra_link_args,
                               dependencies : all_deps + [gtest_dep],
                              build_rpath : '$ORIGIN')

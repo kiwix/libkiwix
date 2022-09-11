@@ -68,7 +68,7 @@ extern "C" {
 #include <vector>
 #include <chrono>
 #include <fstream>
-#include "kiwixlib-resources.h"
+#include "libkiwix-resources.h"
 
 #ifndef _WIN32
 # include <arpa/inet.h>
