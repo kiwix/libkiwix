@@ -124,7 +124,7 @@ where you want to install the libraries. After the installation
 succeeded, you may need to run `ldconfig` (as `root`).
 
 Uninstallation
-------------
+--------------
 
 If you want to uninstall the Kiwix library:
 ```bash
@@ -133,28 +133,6 @@ ninja -C build uninstall
 
 Like for the installation, you might need to run the command as `root`
 (or using `sudo`).
-
-Troubleshooting
----------------
-
-If you need to install Meson "manually":
-```bash
-virtualenv -p python3 ./ # Create virtualenv
-source bin/activate      # Activate the virtualenv
-pip3 install meson       # Install Meson
-hash -r                  # Refresh bash paths
-```
-
-If you need to install Ninja "manually":
-```bash
-git clone git://github.com/ninja-build/ninja.git
-cd ninja
-git checkout release
-./configure.py --bootstrap
-mkdir ../bin
-cp ninja ../bin
-cd ..
-```
 
 Custom Index Page
 -----------------
@@ -204,6 +182,28 @@ version of a dependency than the one packaged by your Linux
 distribution. Try then with a source tarball distributed by the
 problematic upstream project or even directly from the source code
 repository.
+
+Troubleshooting
+---------------
+
+If you need to install Meson "manually":
+```bash
+virtualenv -p python3 ./ # Create virtualenv
+source bin/activate      # Activate the virtualenv
+pip3 install meson       # Install Meson
+hash -r                  # Refresh bash paths
+```
+
+If you need to install Ninja "manually":
+```bash
+git clone git://github.com/ninja-build/ninja.git
+cd ninja
+git checkout release
+./configure.py --bootstrap
+mkdir ../bin
+cp ninja ../bin
+cd ..
+```
 
 License
 -------
