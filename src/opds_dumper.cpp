@@ -20,7 +20,7 @@
 #include "opds_dumper.h"
 #include "book.h"
 
-#include "kiwixlib-resources.h"
+#include "libkiwix-resources.h"
 #include <mustache.hpp>
 
 #include "tools/stringTools.h"

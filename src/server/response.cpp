@@ -20,7 +20,7 @@
 #include "response.h"
 #include "request_context.h"
 #include "internalServer.h"
-#include "kiwixlib-resources.h"
+#include "libkiwix-resources.h"
 
 #include "tools/regexTools.h"
 #include "tools/stringTools.h"

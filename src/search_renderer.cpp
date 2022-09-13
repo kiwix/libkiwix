@@ -29,7 +29,7 @@
 #include <zim/search.h>
 
 #include <mustache.hpp>
-#include "kiwixlib-resources.h"
+#include "libkiwix-resources.h"
 #include "tools/stringTools.h"
 
 namespace kiwix

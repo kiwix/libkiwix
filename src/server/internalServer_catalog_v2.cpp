@@ -24,7 +24,7 @@
 #include "request_context.h"
 #include "response.h"
 #include "tools/otherTools.h"
-#include "kiwixlib-resources.h"
+#include "libkiwix-resources.h"
 
 #include <mustache.hpp>
 

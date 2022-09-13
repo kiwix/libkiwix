@@ -45,7 +45,7 @@ config_h = configure_file(output : 'kiwix_config.h',
                input : 'config.h.in')
 install_headers(config_h, subdir:'kiwix')
 
-kiwixlib = library('kiwix',
+libkiwix = library('kiwix',
                    kiwix_sources,
                    include_directories : inc,
                    dependencies : all_deps,
