@@ -113,16 +113,20 @@ compiled by custom Python code available in this repository `scripts`
 directory. This happens automatically at compilation time without any
 additional command to run.
 
-To avoid HTTP caching issue, the URLs (to the static content) are
+To avoid HTTP caching issues, the URLs (to the static content) are
 appended with a `cacheid` parameter (this is called "cache
-busting"). This `cacheid` value derived from the SHA1SUM of each
-targeted static file. As a consequence, each time you change a static
-file, the corresponding `cacheid` value will change. To properly test
-this feature, this `cacheid` needs to be added manually to the
-automated test and has to be commited. To know what are the expected
-`cacheid` values, you can build once the libkiwix and then run `grep
--r cacheid build/static/`. Finally update `test/server.cpp` with the
-appropriate `cacheid` values which have changed.
+busting"). This `cacheid` value derived from the
+[sha1sum](https://en.wikipedia.org/wiki/Sha1sum) of each targeted
+static file. As a consequence, each time you change a static file, the
+corresponding `cacheid` value will change.
+
+To properly test this feature, this `cacheid` needs to be added
+manually to the automated tests and has to be commited. After
+modifying the needed static file, [run the automated
+tests](#Testing). They will fail, but the inspection of the testing
+log will give you the new `cacheid` value(s). Finally update
+`test/server.cpp` with the appropriate `cacheid` value(s) which have
+changed.
 
 Testing
 -------
