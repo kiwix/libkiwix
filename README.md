@@ -101,6 +101,33 @@ meson . build -Dwrapper=android -Dwerror=false
 ninja -C build
 ```
 
+Static files compilation
+------------------------
+
+Libkiwix has a few static files 'compiled' within the binary
+code. This is mostly Javascript/HTML/pictures necessary for the HTTP
+daemon.
+
+These static files are available in the `static` directory and are
+compiled by custom Python code available in this repository `scripts`
+directory. This happens automatically at compilation time without any
+additional command to run.
+
+To avoid HTTP caching issues, the URLs (to the static content) are
+appended with a `cacheid` parameter (this is called "cache
+busting"). This `cacheid` value derived from the
+[sha1sum](https://en.wikipedia.org/wiki/Sha1sum) of each targeted
+static file. As a consequence, each time you change a static file, the
+corresponding `cacheid` value will change.
+
+To properly test this feature, this `cacheid` needs to be added
+manually to the automated tests and has to be commited. After
+modifying the needed static file, [run the automated
+tests](#Testing). They will fail, but the inspection of the testing
+log will give you the new `cacheid` value(s). Finally update
+`test/server.cpp` with the appropriate `cacheid` value(s) which have
+changed.
+
 Testing
 -------
 
@@ -124,7 +151,7 @@ where you want to install the libraries. After the installation
 succeeded, you may need to run `ldconfig` (as `root`).
 
 Uninstallation
-------------
+--------------
 
 If you want to uninstall the Kiwix library:
 ```bash
@@ -133,28 +160,6 @@ ninja -C build uninstall
 
 Like for the installation, you might need to run the command as `root`
 (or using `sudo`).
-
-Troubleshooting
----------------
-
-If you need to install Meson "manually":
-```bash
-virtualenv -p python3 ./ # Create virtualenv
-source bin/activate      # Activate the virtualenv
-pip3 install meson       # Install Meson
-hash -r                  # Refresh bash paths
-```
-
-If you need to install Ninja "manually":
-```bash
-git clone git://github.com/ninja-build/ninja.git
-cd ninja
-git checkout release
-./configure.py --bootstrap
-mkdir ../bin
-cp ninja ../bin
-cd ..
-```
 
 Custom Index Page
 -----------------
@@ -204,6 +209,28 @@ version of a dependency than the one packaged by your Linux
 distribution. Try then with a source tarball distributed by the
 problematic upstream project or even directly from the source code
 repository.
+
+Troubleshooting
+---------------
+
+If you need to install Meson "manually":
+```bash
+virtualenv -p python3 ./ # Create virtualenv
+source bin/activate      # Activate the virtualenv
+pip3 install meson       # Install Meson
+hash -r                  # Refresh bash paths
+```
+
+If you need to install Ninja "manually":
+```bash
+git clone git://github.com/ninja-build/ninja.git
+cd ninja
+git checkout release
+./configure.py --bootstrap
+mkdir ../bin
+cp ninja ../bin
+cd ..
+```
 
 License
 -------
