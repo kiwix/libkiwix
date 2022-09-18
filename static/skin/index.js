@@ -1,4 +1,4 @@
-(function() {
+const kiwixServe = (function() {
     const root = document.querySelector(`link[type='root']`).getAttribute('href');
     const incrementalLoadingParams = {
         start: 0,
@@ -17,6 +17,7 @@
     let params = new URLSearchParams(window.location.search || filters || '');
     let timer;
     let languages = {};
+    let allowBookClick = true;
 
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
@@ -85,7 +86,7 @@
     }
 
     function generateBookHtml(book, sort = false) {
-        const link = book.querySelector('link[type="text/html"]').getAttribute('href');
+        let link = book.querySelector('link[type="text/html"]').getAttribute('href');
         let iconUrl;
         book.querySelectorAll('link[rel="http://opds-spec.org/image/thumbnail"]').forEach(link => {
             if (link.getAttribute('type').split(';')[1] == 'width=48' && !iconUrl) {
@@ -120,6 +121,9 @@
         }
         const faviconAttr = iconUrl != undefined ? `style="background-image: url('${iconUrl}')"` : '';
         const languageAttr = langCode != '' ? `title="${language}" aria-label="${language}"` : 'style="background-color: transparent"';
+        if (!allowBookClick) {
+            link = "javascript:void(0)";
+        }
         divTag.innerHTML = `
             <div class="book__wrapper">
             <a class="book__link" href="${link}" data-hover="Preview">
@@ -247,14 +251,16 @@
                 toggleFooter();
             }
             const kiwixResultText = document.querySelector('.kiwixHomeBody__results')
-            if (results) {
-                let resultText = `${results} books`;
-                if (results === 1) {
-                    resultText = `${results} book`;
+            if (kiwixResultText) {
+                if (results) {
+                    let resultText = `${results} books`;
+                    if (results === 1) {
+                        resultText = `${results} book`;
+                    }
+                    kiwixResultText.innerHTML = resultText;
+                } else {
+                    kiwixResultText.innerHTML = ``;
                 }
-                kiwixResultText.innerHTML = resultText;
-            } else {
-                kiwixResultText.innerHTML = ``;
             }
             loader.style.display = 'none';
             return books;
@@ -265,16 +271,20 @@
         await fetch(query).then(async (resp) => {
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
             let optionStr = '';
-            data.querySelectorAll('entry').forEach(entry => {
-                const title = getInnerHtml(entry, 'title');
-                const value = getInnerHtml(entry, valueEntryNode);
-                const hfTitle = humanFriendlyTitle(title);
-                if (valueEntryNode == 'language') {
-                    languages[value] = hfTitle;
-                }
-                optionStr += (hfTitle != '') ? `<option value="${value}">${hfTitle}</option>` : '';
-            });
-            document.querySelector(nodeQuery).innerHTML += optionStr;
+            const entryList = data.querySelectorAll('entry');
+            const nodeQueryElem = document.querySelector(nodeQuery);
+            if (entryList && nodeQueryElem) {
+                entryList.forEach(entry => {
+                    const title = getInnerHtml(entry, 'title');
+                    const value = getInnerHtml(entry, valueEntryNode);
+                    const hfTitle = humanFriendlyTitle(title);
+                    if (valueEntryNode == 'language') {
+                        languages[value] = hfTitle;
+                    }
+                    optionStr += (hfTitle != '') ? `<option value="${value}">${hfTitle}</option>` : '';
+                });
+                nodeQueryElem.innerHTML += optionStr;
+            }
         });
     }
 
@@ -388,6 +398,10 @@
             }
         });
     }
+
+    function disableBookClick() {
+        allowBookClick = false;
+    }
     
     function addTagElement(tagValue, resetFilter) {
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
@@ -429,13 +443,15 @@
         }
     }
 
-    window.addEventListener('resize', (event) => {
+    function updateBookCount(event) {
         if (timer) {clearTimeout(timer)}
         timer = setTimeout(() => {
             incrementalLoadingParams.count = incrementalLoadingParams.count && viewPortToCount();
             loadSubset();
         }, 100, event);
-    });
+    }
+
+    window.addEventListener('resize', (event) => updateBookCount(event));
 
     window.addEventListener('scroll', loadSubset);
 
@@ -479,6 +495,7 @@
             }
         }
         updateVisibleParams();
+        updateBookCount();
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
         if (!window.location.search) {
             const browserLang = navigator.language.split('-')[0];
@@ -491,5 +508,10 @@
         }
         setCookie(filterCookieName, params.toString());
     }
+    
+    return {
+        updateBookCount,
+        disableBookClick
+    };
 })();
 

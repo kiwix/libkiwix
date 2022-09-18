@@ -9,6 +9,7 @@ skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
 skin/autoComplete.min.js
+skin/widget.js
 skin/taskbar.css
 skin/index.css
 skin/fonts/Poppins.ttf
@@ -20,6 +21,7 @@ templates/search_result.xml
 templates/error.html
 templates/error.xml
 templates/index.html
+templates/widget.html
 templates/suggestion.json
 templates/head_taskbar.html
 templates/taskbar_part.html

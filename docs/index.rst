@@ -12,3 +12,4 @@ Welcome to libkiwix's documentation!
 
    usage
    api/ref_api
+   widget

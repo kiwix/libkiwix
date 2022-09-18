@@ -184,7 +184,7 @@ R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=76440e7a" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=2fcc4ac4" defer></script>
 )EXPECTEDRESULT"
     },
     {
