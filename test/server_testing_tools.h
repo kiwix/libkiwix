@@ -54,10 +54,23 @@ public: // types
   typedef std::shared_ptr<httplib::Response>  Response;
   typedef std::vector<std::string> FilePathCollection;
 
+  enum Options
+  {
+    NO_TASKBAR_NO_LINK_BLOCKING = 0,
+
+    WITH_TASKBAR         = 1 << 1,
+    WITH_LIBRARY_BUTTON  = 1 << 2,
+    BLOCK_EXTERNAL_LINKS = 1 << 3,
+
+    WITH_TASKBAR_AND_LIBRARY_BUTTON = WITH_TASKBAR | WITH_LIBRARY_BUTTON,
+
+    DEFAULT_OPTIONS = WITH_TASKBAR | WITH_LIBRARY_BUTTON
+  };
+
 public: // functions
   ZimFileServer(int serverPort, std::string libraryFilePath);
   ZimFileServer(int serverPort,
-                bool withTaskbar,
+                Options options,
                 const FilePathCollection& zimpaths,
                 std::string indexTemplateString = "");
   ~ZimFileServer();
@@ -81,7 +94,7 @@ private: // data
   std::unique_ptr<kiwix::HumanReadableNameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
-  const bool withTaskbar = true;
+  const Options options = DEFAULT_OPTIONS;
 };
 
 ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
@@ -94,11 +107,11 @@ ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
 }
 
 ZimFileServer::ZimFileServer(int serverPort,
-                             bool _withTaskbar,
+                             Options _options,
                              const FilePathCollection& zimpaths,
                              std::string indexTemplateString)
 : manager(&this->library)
-, withTaskbar(_withTaskbar)
+, options(_options)
 {
   for ( const auto& zimpath : zimpaths ) {
     if (!manager.addBookFromPath(zimpath, zimpath, "", false))
@@ -117,7 +130,8 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   server->setPort(serverPort);
   server->setNbThreads(2);
   server->setVerbose(false);
-  server->setTaskbar(withTaskbar, withTaskbar);
+  server->setTaskbar(options & WITH_TASKBAR, options & WITH_LIBRARY_BUTTON);
+  server->setBlockExternalLinks(options & BLOCK_EXTERNAL_LINKS);
   server->setMultiZimSearchLimit(3);
   if (!indexTemplateString.empty()) {
     server->setIndexTemplateString(indexTemplateString);
@@ -148,7 +162,12 @@ protected:
 
 protected:
   void SetUp() override {
-    zfs1_.reset(new ZimFileServer(SERVER_PORT, /*withTaskbar=*/true, ZIMFILES));
+    resetServer(ZimFileServer::DEFAULT_OPTIONS);
+  }
+
+  void resetServer(ZimFileServer::Options options) {
+    zfs1_.reset();
+    zfs1_.reset(new ZimFileServer(SERVER_PORT, options, ZIMFILES));
   }
 
   void TearDown() override {

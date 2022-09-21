@@ -104,7 +104,7 @@ TEST(indexTemplateStringTest, emptyIndexTemplate) {
     "./test/corner_cases.zim"
   };
 
-  ZimFileServer zfs(PORT, /*withTaskbar=*/true, ZIMFILES, "");
+  ZimFileServer zfs(PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES, "");
   EXPECT_EQ(200, zfs.GET("/ROOT/")->status);
 }
 
@@ -115,7 +115,7 @@ TEST(indexTemplateStringTest, indexTemplateCheck) {
     "./test/corner_cases.zim"
   };
 
-  ZimFileServer zfs(PORT, /*withTaskbar=*/true, ZIMFILES, "<!DOCTYPE html><head>"
+  ZimFileServer zfs(PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES, "<!DOCTYPE html><head>"
       "<title>Welcome to kiwix library</title>"
     "</head>"
   "</html>");
@@ -1090,7 +1090,7 @@ TEST_F(ServerTest, ETagIsTheSameAcrossHeadAndGet)
 
 TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
 {
-  ZimFileServer zfs2(SERVER_PORT + 1, /*withTaskbar=*/true, ZIMFILES);
+  ZimFileServer zfs2(SERVER_PORT + 1, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
   for ( const Resource& res : all200Resources() ) {
     if ( !res.etag_expected ) continue;
     const auto h1 = zfs1_->HEAD(res.url);
@@ -1479,5 +1479,56 @@ TEST_F(ServerTest, suggestions_in_range)
     std::string body = r->body;
     int currCount = std::count(body.begin(), body.end(), '{') - 1;
     ASSERT_EQ(currCount, 0);
+  }
+}
+
+TEST_F(ServerTest, viewerSettings)
+{
+  const auto JS_CONTENT_TYPE = "application/javascript; charset=utf-8";
+  {
+    resetServer(ZimFileServer::NO_TASKBAR_NO_LINK_BLOCKING);
+    const auto r = zfs1_->GET("/ROOT/viewer_settings.js");
+    ASSERT_EQ(r->status, 200);
+    ASSERT_EQ(getHeaderValue(r->headers, "Content-Type"), JS_CONTENT_TYPE);
+    ASSERT_EQ(r->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       false,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: false
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::BLOCK_EXTERNAL_LINKS);
+    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       false,
+  linkBlockingEnabled:  true,
+  libraryButtonEnabled: false
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR);
+    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: false
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true
+}
+)");
   }
 }
