@@ -140,9 +140,6 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
 {
   auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
-  if ( m_taskbarInfo ) {
-    r->set_taskbar(m_taskbarInfo->bookName, m_taskbarInfo->archive);
-  }
   return r;
 }
 
@@ -236,28 +233,11 @@ HTTP500Response::HTTP500Response(const InternalServer& server,
 
 std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
 {
-  // We want a 500 response to be a minimalistic one (so that the server doesn't
-  // have to provide additional resources required for its proper rendering)
-  // ";raw=true" in the MIME-type below disables response decoration
-  // (see ContentResponse::contentDecorationAllowed())
-  const std::string mimeType = "text/html;charset=utf-8;raw=true";
+  const std::string mimeType = "text/html;charset=utf-8";
   auto r = ContentResponse::build(m_server, m_template, m_data, mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
-
-ContentResponseBlueprint& ContentResponseBlueprint::operator+(const TaskbarInfo& taskbarInfo)
-{
-  this->m_taskbarInfo.reset(new TaskbarInfo(taskbarInfo));
-  return *this;
-}
-
-ContentResponseBlueprint& ContentResponseBlueprint::operator+=(const TaskbarInfo& taskbarInfo)
-{
-  // operator+() is already a state-modifying operator (akin to operator+=)
-  return *this + taskbarInfo;
-}
-
 
 std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
 {
@@ -337,68 +317,12 @@ void print_response_info(int retCode, MHD_Response* response)
 }
 
 
-void ContentResponse::introduce_taskbar(const std::string& lang)
-{
-  i18n::GetTranslatedString t(lang);
-  kainjow::mustache::object data{
-    {"root", m_root},
-    {"content", m_bookName},
-    {"hascontent", (!m_bookName.empty() && !m_bookTitle.empty())},
-    {"title", m_bookTitle},
-    {"withlibrarybutton", m_withLibraryButton},
-    {"LIBRARY_BUTTON_TEXT", t("library-button-text")},
-    {"HOME_BUTTON_TEXT", t("home-button-text", {{"BOOK_TITLE", m_bookTitle}}) },
-    {"RANDOM_PAGE_BUTTON_TEXT", t("random-page-button-text") },
-    {"SEARCHBOX_TOOLTIP", t("searchbox-tooltip", {{"BOOK_TITLE", m_bookTitle}}) },
-  };
-  auto head_content = render_template(RESOURCE::templates::head_taskbar_html, data);
-  m_content = prependToFirstOccurence(
-    m_content,
-    "</head[ \\t]*>",
-    head_content);
-
-  auto taskbar_part = render_template(RESOURCE::templates::taskbar_part_html, data);
-  m_content = appendToFirstOccurence(
-    m_content,
-    "<body[^>]*>",
-    taskbar_part);
-}
-
-
-void ContentResponse::inject_externallinks_blocker()
-{
-  kainjow::mustache::data data;
-  data.set("root", m_root);
-  auto script_tag = render_template(RESOURCE::templates::external_blocker_part_html, data);
-  m_content = prependToFirstOccurence(
-    m_content,
-    "</head[ \\t]*>",
-    script_tag);
-}
-
-void ContentResponse::inject_root_link(){
-  m_content = prependToFirstOccurence(
-    m_content,
-    "</head[ \\t]*>",
-    "<link type=\"root\" href=\"" + m_root + "\">");
-}
-
 bool
 ContentResponse::can_compress(const RequestContext& request) const
 {
   return request.can_compress()
       && is_compressible_mime_type(m_mimeType)
       && (m_content.size() > KIWIX_MIN_CONTENT_SIZE_TO_COMPRESS);
-}
-
-bool
-ContentResponse::contentDecorationAllowed() const
-{
-  if (m_raw) {
-    return false;
-  }
-  return (startsWith(m_mimeType, "text/html")
-    && m_mimeType.find(";raw=true") == std::string::npos);
 }
 
 MHD_Response*
@@ -411,17 +335,6 @@ Response::create_mhd_response(const RequestContext& request)
 MHD_Response*
 ContentResponse::create_mhd_response(const RequestContext& request)
 {
-  if (contentDecorationAllowed()) {
-    inject_root_link();
-
-    if (m_withTaskbar) {
-      introduce_taskbar(request.get_user_language());
-    }
-    if (m_blockExternalLinks) {
-      inject_externallinks_blocker();
-    }
-  }
-
   const bool isCompressed = can_compress(request) && compress(m_content);
 
   MHD_Response* response = MHD_create_response_from_buffer(
@@ -461,24 +374,11 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-void ContentResponse::set_taskbar(const std::string& bookName, const zim::Archive* archive)
-{
-  m_bookName = bookName;
-  m_bookTitle = archive ? getArchiveTitle(*archive) : "";
-}
-
-
-ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw, bool withTaskbar, bool withLibraryButton, bool blockExternalLinks, const std::string& content, const std::string& mimetype) :
+ContentResponse::ContentResponse(const std::string& root, bool verbose, const std::string& content, const std::string& mimetype) :
   Response(verbose),
   m_root(root),
   m_content(content),
-  m_mimeType(mimetype),
-  m_raw(raw),
-  m_withTaskbar(withTaskbar),
-  m_withLibraryButton(withLibraryButton),
-  m_blockExternalLinks(blockExternalLinks),
-  m_bookName(""),
-  m_bookTitle("")
+  m_mimeType(mimetype)
 {
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
@@ -486,17 +386,11 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, bool raw
 std::unique_ptr<ContentResponse> ContentResponse::build(
   const InternalServer& server,
   const std::string& content,
-  const std::string& mimetype,
-  bool isHomePage,
-  bool raw)
+  const std::string& mimetype)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
         server.m_verbose.load(),
-        raw,
-        server.m_withTaskbar && !isHomePage,
-        server.m_withLibraryButton,
-        server.m_blockExternalLinks,
         content,
         mimetype));
 }
@@ -505,11 +399,10 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const InternalServer& server,
   const std::string& template_str,
   kainjow::mustache::data data,
-  const std::string& mimetype,
-  bool isHomePage)
+  const std::string& mimetype)
 {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype, isHomePage);
+  return ContentResponse::build(server, content, mimetype);
 }
 
 ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
@@ -522,14 +415,14 @@ ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::strin
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw)
+std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item)
 {
   const std::string mimetype = get_mime_type(item);
   auto byteRange = request.get_range().resolve(item.getSize());
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    auto response = ContentResponse::build(server, item.getData(), mimetype, /*isHomePage=*/false, raw);
+    auto response = ContentResponse::build(server, item.getData(), mimetype);
     response->set_cacheable();
     response->m_byteRange = byteRange;
     return std::move(response);

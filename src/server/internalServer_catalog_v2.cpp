@@ -158,7 +158,11 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
     auto book = mp_library->getBookByIdThreadSafe(bookId);
     auto size = request.get_argument<unsigned int>("size");
     auto illustration = book.getIllustration(size);
-    return ContentResponse::build(*this, illustration->getData(), illustration->mimeType);
+    return ContentResponse::build(
+               *this,
+               illustration->getData(),
+               illustration->mimeType
+    );
   } catch(...) {
     return HTTP404Response(*this, request)
            + urlNotFoundMsg;

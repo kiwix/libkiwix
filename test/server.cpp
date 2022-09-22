@@ -43,17 +43,15 @@ typedef std::vector<Resource> ResourceCollection;
 const ResourceCollection resources200Compressible{
   { WITH_ETAG, "/ROOT/" },
 
-  { WITH_ETAG, "/ROOT/skin/taskbar.js" },
+  { WITH_ETAG, "/ROOT/skin/autoComplete.min.js" },
+  { WITH_ETAG, "/ROOT/skin/css/autoComplete.css" },
   { WITH_ETAG, "/ROOT/skin/taskbar.css" },
-  { WITH_ETAG, "/ROOT/skin/block_external.js" },
 
   { NO_ETAG,   "/ROOT/catalog/search" },
 
   { NO_ETAG,   "/ROOT/search?content=zimfile&pattern=a" },
 
   { NO_ETAG,   "/ROOT/suggest?content=zimfile&term=ray" },
-
-  { NO_ETAG,   "/ROOT/catch/external?source=www.example.com" },
 
   { WITH_ETAG, "/ROOT/content/zimfile/A/index" },
   { WITH_ETAG, "/ROOT/content/zimfile/A/Ray_Charles" },
@@ -64,6 +62,7 @@ const ResourceCollection resources200Compressible{
 
 const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/skin/caret.png" },
+  { WITH_ETAG, "/ROOT/skin/css/images/search.svg" },
 
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Description" },
@@ -75,6 +74,8 @@ const ResourceCollection resources200Uncompressible{
   { WITH_ETAG, "/ROOT/raw/zimfile/meta/Publisher" },
 
   { NO_ETAG, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
+
+  { NO_ETAG,   "/ROOT/catch/external?source=www.example.com" },
 
   { WITH_ETAG, "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
@@ -103,7 +104,7 @@ TEST(indexTemplateStringTest, emptyIndexTemplate) {
     "./test/corner_cases.zim"
   };
 
-  ZimFileServer zfs(PORT, /*withTaskbar=*/true, ZIMFILES, "");
+  ZimFileServer zfs(PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES, "");
   EXPECT_EQ(200, zfs.GET("/ROOT/")->status);
 }
 
@@ -114,13 +115,12 @@ TEST(indexTemplateStringTest, indexTemplateCheck) {
     "./test/corner_cases.zim"
   };
 
-  ZimFileServer zfs(PORT, /*withTaskbar=*/true, ZIMFILES, "<!DOCTYPE html><head>"
+  ZimFileServer zfs(PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES, "<!DOCTYPE html><head>"
       "<title>Welcome to kiwix library</title>"
     "</head>"
   "</html>");
   EXPECT_EQ("<!DOCTYPE html><head>"
     "<title>Welcome to kiwix library</title>"
-    "<link type=\"root\" href=\"/ROOT\">"
     "</head>"
   "</html>", zfs.GET("/ROOT/")->body);
 }
@@ -184,7 +184,7 @@ R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
           src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=76440e7a" defer></script>
+    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=2f5a81ac" defer></script>
 )EXPECTEDRESULT"
     },
     {
@@ -196,24 +196,24 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
 )EXPECTEDRESULT"
     },
     {
-      /* url */ "/ROOT/content/zimfile/A/index",
-R"EXPECTEDRESULT(<link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
-<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
-        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
+      /* url */ "/ROOT/viewer",
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=216d6b5d" rel="Stylesheet" />
+    <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=9a336712" defer></script>
+    <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
+      const blankPageUrl = `${root}/skin/blank.html`;
+            <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
+    },
+    {
+      /* url */ "/ROOT/content/zimfile/A/index",
+      ""
     },
     {
       // Searching in a ZIM file without a full-text index returns
       // a page rendered from static/templates/no_search_result_html
       /* url */ "/ROOT/search?content=poor&pattern=whatever",
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
-<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
-        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
 )EXPECTEDRESULT"
     },
   };
@@ -429,13 +429,8 @@ public:
   std::string expectedResponse() const;
 
 private:
-  bool isTranslatedVersion() const;
   virtual std::string pageTitle() const;
   std::string pageCssLink() const;
-  std::string hiddenBookNameInput() const;
-  std::string searchPatternInput() const;
-  std::string taskbarLinks() const;
-  std::string goToWelcomePageText() const;
 };
 
 std::string TestContentIn404HtmlResponse::expectedResponse() const
@@ -451,40 +446,8 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 )FRAG",
 
     R"FRAG(
-  <link type="root" href="/ROOT"><link type="text/css" href="/ROOT/skin/taskbar.css?cacheid=26082885" rel="Stylesheet" />
-<link type="text/css" href="/ROOT/skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-<script type="text/javascript" src="/ROOT/skin/taskbar.js?cacheid=1aec4a68" defer></script>
-<script type="text/javascript" src="/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf"></script>
-</head>
-  <body><span class="kiwix">
-  <span id="kiwixtoolbar" class="ui-widget-header">
-    <div class="kiwix_centered">
-      <div class="kiwix_searchform">
-        <form class="kiwixsearch" method="GET" action="/ROOT/search" id="kiwixsearchform">
-          )FRAG",
-
-  R"FRAG(
-          <label for="kiwixsearchbox">&#x1f50d;</label>
-)FRAG",
-
-  R"FRAG(        </form>
-      </div>
-        <input type="checkbox" id="kiwix_button_show_toggle">
-        <label for="kiwix_button_show_toggle"><img src="/ROOT/skin/caret.png?cacheid=22b942b4" alt=""></label>
-        <div class="kiwix_button_cont">
-            <a id="kiwix_serve_taskbar_library_button" title=")FRAG",
-
-  R"FRAG(" aria-label=")FRAG",
-
-  R"FRAG(" href="/ROOT/"><button>&#x1f3e0;</button></a>
-          )FRAG",
-
-  R"FRAG(
-        </div>
-    </div>
-  </span>
-</span>
-)FRAG",
+  </head>
+  <body>)FRAG",
 
   R"FRAG(  </body>
 </html>
@@ -496,18 +459,8 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
        + frag[1]
        + pageCssLink()
        + frag[2]
-       + hiddenBookNameInput()
-       + frag[3]
-       + searchPatternInput()
-       + frag[4]
-       + goToWelcomePageText()
-       + frag[5]
-       + goToWelcomePageText()
-       + frag[6]
-       + taskbarLinks()
-       + frag[7]
        + expectedBody
-       + frag[8];
+       + frag[3];
 }
 
 std::string TestContentIn404HtmlResponse::pageTitle() const
@@ -526,71 +479,6 @@ std::string TestContentIn404HtmlResponse::pageCssLink() const
        + expectedCssUrl
        + R"(" rel="Stylesheet" />)";
 }
-
-std::string TestContentIn404HtmlResponse::hiddenBookNameInput() const
-{
-  return bookName.empty()
-       ? ""
-       : R"(<input type="hidden" name="content" value=")" + bookName + R"(" />)";
-}
-
-std::string TestContentIn404HtmlResponse::searchPatternInput() const
-{
-  const std::string searchboxTooltip = isTranslatedVersion()
-                                    ? "Որոնել '" + bookTitle + "'֊ում"
-                                    : "Search '" + bookTitle + "'";
-  return R"(          <input autocomplete="off" id="kiwixsearchbox" name="pattern" type="text" size="50" title=")"
-       + searchboxTooltip
-       + R"(" aria-label=")"
-       + searchboxTooltip
-       + R"(">
-)";
-}
-
-std::string TestContentIn404HtmlResponse::taskbarLinks() const
-{
-  if ( bookName.empty() )
-    return "";
-
-  const auto goToMainPageOfBook = isTranslatedVersion()
-                                ? "Դեպի '" + bookTitle + "'֊ի գլխավոր էջը"
-                                : "Go to the main page of '" + bookTitle + "'";
-
-  const std::string goToRandomPage = isTranslatedVersion()
-                                   ? "Բացել պատահական էջ"
-                                   : "Go to a randomly selected page";
-
-  return R"(<a id="kiwix_serve_taskbar_home_button" title=")"
-       + goToMainPageOfBook
-       + R"(" aria-label=")"
-       + goToMainPageOfBook
-       + R"(" href="/ROOT/)"
-       + bookName
-       + R"(/"><button>)"
-       + bookTitle
-       + R"(</button></a>
-          <a id="kiwix_serve_taskbar_random_button" title=")"
-       + goToRandomPage
-       + R"(" aria-label=")"
-       + goToRandomPage
-       + R"("
-            href="/ROOT/random?content=)"
-       + bookName
-       + R"("><button>&#x1F3B2;</button></a>)";
-}
-
-bool TestContentIn404HtmlResponse::isTranslatedVersion() const
-{
-  return url.find("userlang=hy") != std::string::npos;
-}
-
-std::string TestContentIn404HtmlResponse::goToWelcomePageText() const
-{
-  return isTranslatedVersion()
-       ? "Գրադարանի էջ"
-       : "Go to welcome page";
-}
-
 
 class TestContentIn400HtmlResponse : public TestContentIn404HtmlResponse
 {
@@ -1139,11 +1027,13 @@ TEST_F(ServerTest, RawEntry)
   EXPECT_EQ(200, p->status);
   EXPECT_EQ(std::string(p->body), std::string(entry.getItem(true).getData()));
 
+  /* Now normal content is not decorated in any way, either
   // ... but the "normal" content is not
   p = zfs1_->GET("/ROOT/content/zimfile/A/Ray_Charles");
   EXPECT_EQ(200, p->status);
   EXPECT_NE(std::string(p->body), std::string(entry.getItem(true).getData()));
-  EXPECT_TRUE(p->body.find("taskbar") != std::string::npos);
+  EXPECT_TRUE(p->body.find("<link type=\"root\" href=\"/ROOT\">") != std::string::npos);
+  */
 }
 
 TEST_F(ServerTest, HeadMethodIsSupported)
@@ -1200,7 +1090,7 @@ TEST_F(ServerTest, ETagIsTheSameAcrossHeadAndGet)
 
 TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
 {
-  ZimFileServer zfs2(SERVER_PORT + 1, /*withTaskbar=*/true, ZIMFILES);
+  ZimFileServer zfs2(SERVER_PORT + 1, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
   for ( const Resource& res : all200Resources() ) {
     if ( !res.etag_expected ) continue;
     const auto h1 = zfs1_->HEAD(res.url);
@@ -1589,5 +1479,56 @@ TEST_F(ServerTest, suggestions_in_range)
     std::string body = r->body;
     int currCount = std::count(body.begin(), body.end(), '{') - 1;
     ASSERT_EQ(currCount, 0);
+  }
+}
+
+TEST_F(ServerTest, viewerSettings)
+{
+  const auto JS_CONTENT_TYPE = "application/javascript; charset=utf-8";
+  {
+    resetServer(ZimFileServer::NO_TASKBAR_NO_LINK_BLOCKING);
+    const auto r = zfs1_->GET("/ROOT/viewer_settings.js");
+    ASSERT_EQ(r->status, 200);
+    ASSERT_EQ(getHeaderValue(r->headers, "Content-Type"), JS_CONTENT_TYPE);
+    ASSERT_EQ(r->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       false,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: false
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::BLOCK_EXTERNAL_LINKS);
+    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       false,
+  linkBlockingEnabled:  true,
+  libraryButtonEnabled: false
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR);
+    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: false
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true
+}
+)");
   }
 }

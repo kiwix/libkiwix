@@ -553,8 +553,11 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (url == "/" )
       return build_homepage(request);
 
-    if (isEndpointUrl(url, "skin"))
+    if (isEndpointUrl(url, "viewer") || isEndpointUrl(url, "skin"))
       return handle_skin(request);
+
+    if (url == "/viewer_settings.js")
+      return handle_viewer_settings(request);
 
     if (isEndpointUrl(url, "content"))
       return handle_content(request);
@@ -623,7 +626,7 @@ InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(*this, m_indexTemplateString, get_default_data(), "text/html; charset=utf-8", true);
+  return ContentResponse::build(*this, m_indexTemplateString, get_default_data(), "text/html; charset=utf-8");
 }
 
 /**
@@ -653,8 +656,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   if (archive == nullptr) {
     return HTTP404Response(*this, request)
-           + noSuchBookErrorMsg(bookName)
-           + TaskbarInfo(bookName);
+           + noSuchBookErrorMsg(bookName);
   }
 
   const auto queryString = request.get_optional_param("term", std::string());
@@ -714,13 +716,30 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   return std::move(response);
 }
 
+std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_viewer_settings\n");
+  }
+
+  const kainjow::mustache::object data{
+    {"enable_toolbar", m_withTaskbar ? "true" : "false" },
+    {"enable_link_blocking", m_blockExternalLinks ? "true" : "false" },
+    {"enable_library_button", m_withLibraryButton ? "true" : "false" }
+  };
+  return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
+}
+
 std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& request)
 {
   if (m_verbose.load()) {
     printf("** running handle_skin\n");
   }
 
-  auto resourceName = request.get_url().substr(1);
+  const bool isRequestForViewer = request.get_url() == "/viewer";
+  auto resourceName = isRequestForViewer
+                    ? "viewer.html"
+                    : request.get_url().substr(1);
   try {
     auto response = ContentResponse::build(
         *this,
@@ -777,11 +796,15 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
                                  "404-page-heading",
                                  cssUrl);
       response += nonParameterizedMessage("no-search-results");
+      // XXX: Now this has to be handled by the iframe-based viewer which
+      // XXX: has to resolve if the book selection resulted in a single book.
+      /*
       if(bookIds.size() == 1) {
         auto bookId = *bookIds.begin();
         auto bookName = mp_nameMapper->getNameForId(bookId);
         response += TaskbarInfo(bookName, mp_library->getArchiveById(bookId).get());
       }
+      */
       return response;
     }
 
@@ -811,16 +834,18 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     if (request.get_requested_format() == "xml") {
-      return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8",
-      /*isHomePage =*/false,
-      /*raw =*/true);
+      return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
     }
     auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
+    // XXX: Now this has to be handled by the iframe-based viewer which
+    // XXX: has to resolve if the book selection resulted in a single book.
+    /*
     if(bookIds.size() == 1) {
       auto bookId = *bookIds.begin();
       auto bookName = mp_nameMapper->getNameForId(bookId);
       response->set_taskbar(bookName, mp_library->getArchiveById(bookId).get());
     }
+    */
     return std::move(response);
   } catch (const Error& e) {
     return HTTP400Response(*this, request)
@@ -852,8 +877,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
 
   if (archive == nullptr) {
     return HTTP404Response(*this, request)
-           + noSuchBookErrorMsg(bookName)
-           + TaskbarInfo(bookName);
+           + noSuchBookErrorMsg(bookName);
   }
 
   try {
@@ -861,8 +885,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
     return build_redirect(bookName, getFinalItem(*archive, entry));
   } catch(zim::EntryNotFound& e) {
     return HTTP404Response(*this, request)
-           + nonParameterizedMessage("random-article-failure")
-           + TaskbarInfo(bookName, archive.get());
+           + nonParameterizedMessage("random-article-failure");
   }
 }
 
@@ -1010,8 +1033,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
-           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern))
-           + TaskbarInfo(bookName);
+           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
   }
 
   auto urlStr = url.substr(prefixLength + bookName.size());
@@ -1027,9 +1049,6 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
       return build_redirect(bookName, getFinalItem(*archive, entry));
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
-    try {
-      dynamic_cast<ContentResponse&>(*response).set_taskbar(bookName, archive.get());
-    } catch (std::bad_cast& e) {}
 
     if (m_verbose.load()) {
       printf("Found %s\n", entry.getPath().c_str());
@@ -1044,8 +1063,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
-           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern))
-           + TaskbarInfo(bookName, archive.get());
+           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
   }
 }
 
@@ -1093,13 +1111,13 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   try {
     if (kind == "meta") {
       auto item = archive->getMetadataItem(itemPath);
-      return ItemResponse::build(*this, request, item, /*raw=*/true);
+      return ItemResponse::build(*this, request, item);
     } else {
       auto entry = archive->getEntryByPath(itemPath);
       if (entry.isRedirect()) {
         return build_redirect(bookName, entry.getItem(true));
       }
-      return ItemResponse::build(*this, request, entry.getItem(), /*raw=*/true);
+      return ItemResponse::build(*this, request, entry.getItem());
     }
   } catch (zim::EntryNotFound& e ) {
     if (m_verbose.load()) {
@@ -1136,9 +1154,7 @@ std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(con
 
   return ContentResponse::build(*this,
                                 resourceData,
-                                crd.mimeType,
-                                /*isHomePage=*/false,
-                                /*raw=*/true);
+                                crd.mimeType);
 }
 
 }

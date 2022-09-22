@@ -83,59 +83,31 @@ class ContentResponse : public Response {
     ContentResponse(
       const std::string& root,
       bool verbose,
-      bool raw,
-      bool withTaskbar,
-      bool withLibraryButton,
-      bool blockExternalLinks,
       const std::string& content,
       const std::string& mimetype);
+
     static std::unique_ptr<ContentResponse> build(
       const InternalServer& server,
       const std::string& content,
-      const std::string& mimetype,
-      bool isHomePage = false,
-      bool raw = false);
+      const std::string& mimetype);
+
     static std::unique_ptr<ContentResponse> build(
       const InternalServer& server,
       const std::string& template_str,
       kainjow::mustache::data data,
-      const std::string& mimetype,
-      bool isHomePage = false);
-
-    void set_taskbar(const std::string& bookName, const zim::Archive* archive);
+      const std::string& mimetype);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
 
-    void introduce_taskbar(const std::string& lang);
-    void inject_externallinks_blocker();
-    void inject_root_link();
     bool can_compress(const RequestContext& request) const;
-    bool contentDecorationAllowed() const;
 
 
   private:
     std::string m_root;
     std::string m_content;
     std::string m_mimeType;
-    bool m_raw;
-    bool m_withTaskbar;
-    bool m_withLibraryButton;
-    bool m_blockExternalLinks;
-    std::string m_bookName;
-    std::string m_bookTitle;
  };
-
-struct TaskbarInfo
-{
-  const std::string bookName;
-  const zim::Archive* const archive;
-
-  TaskbarInfo(const std::string& bookName, const zim::Archive* a = nullptr)
-    : bookName(bookName)
-    , archive(a)
-  {}
-};
 
 class ContentResponseBlueprint
 {
@@ -165,9 +137,6 @@ public: // functions
   }
 
 
-  ContentResponseBlueprint& operator+(const TaskbarInfo& taskbarInfo);
-  ContentResponseBlueprint& operator+=(const TaskbarInfo& taskbarInfo);
-
 protected: // functions
   std::string getMessage(const std::string& msgId) const;
   virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
@@ -179,7 +148,6 @@ public: //data
   const std::string m_mimeType;
   const std::string m_template;
   kainjow::mustache::data m_data;
-  std::unique_ptr<TaskbarInfo> m_taskbarInfo;
 };
 
 struct HTTPErrorResponse : ContentResponseBlueprint
@@ -191,8 +159,6 @@ struct HTTPErrorResponse : ContentResponseBlueprint
                     const std::string& headingMsgId,
                     const std::string& cssUrl = "");
 
-  using ContentResponseBlueprint::operator+;
-  using ContentResponseBlueprint::operator+=;
   HTTPErrorResponse& operator+(const std::string& msg);
   HTTPErrorResponse& operator+(const ParameterizedMessage& errorDetails);
   HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);
@@ -238,7 +204,7 @@ private: // overrides
 class ItemResponse : public Response {
   public:
     ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
-    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw = false);
+    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);

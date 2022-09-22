@@ -112,7 +112,7 @@ std::string makeSearchResultsHtml(const std::string& pattern,
 
     </style>
     <title>Search: %PATTERN%</title>
-  <link type="root" href="/ROOT"></head>
+  </head>
   <body bgcolor="white">
     <div class="header">
       %HEADER%
@@ -1453,16 +1453,13 @@ TEST_F(ServerTest, searchResults)
 
   for ( const auto& t : testData ) {
     const std::string htmlSearchUrl = t.url();
-    const auto htmlRes = taskbarlessZimFileServer().GET(htmlSearchUrl.c_str());
+    const auto htmlRes = zfs1_->GET(htmlSearchUrl.c_str());
     EXPECT_EQ(htmlRes->status, 200);
     t.checkHtml(htmlRes->body);
 
     const std::string xmlSearchUrl = t.xmlSearchUrl();
-    const auto xmlRes1 = zfs1_->GET(xmlSearchUrl.c_str());
-    const auto xmlRes2 = taskbarlessZimFileServer().GET(xmlSearchUrl.c_str());
-    EXPECT_EQ(xmlRes1->status, 200);
-    EXPECT_EQ(xmlRes2->status, 200);
-    EXPECT_EQ(xmlRes1->body, xmlRes2->body);
-    t.checkXml(xmlRes1->body);
+    const auto xmlRes = zfs1_->GET(xmlSearchUrl.c_str());
+    EXPECT_EQ(xmlRes->status, 200);
+    t.checkXml(xmlRes->body);
   }
 }

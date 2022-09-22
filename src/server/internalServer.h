@@ -126,6 +126,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_request(const RequestContext& request);
     std::unique_ptr<Response> build_redirect(const std::string& bookName, const zim::Item& item) const;
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
+    std::unique_ptr<Response> handle_viewer_settings(const RequestContext& request);
     std::unique_ptr<Response> handle_skin(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog_v2(const RequestContext& request);
@@ -183,8 +184,8 @@ class InternalServer {
     std::unique_ptr<CustomizedResources> m_customizedResources;
 
     friend std::unique_ptr<Response> Response::build(const InternalServer& server);
-    friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype, bool isHomePage, bool raw);
-    friend std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item, bool raw);
+    friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype);
+    friend std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
 };
 
 }

@@ -73,31 +73,4 @@ TEST(ReplaceRegex, middle)
   EXPECT_EQ(replaceRegex("abcdefghij", "----", "F"), "abcde----ghij");
 }
 
-TEST(append, beggining)
-{
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "abcd", "----"), "abcd----efghij");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "abcde", "----"), "abcde----fghij");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "a.*i", "----"), "abcdefghi----j");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "AbCd", "----"), "abcd----efghij");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij",  "A", "----"), "a----bcdefghij");
-}
-
-TEST(append, end)
-{
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "ghij", "----"), "abcdefghij----");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "fghij", "----"), "abcdefghij----");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "c.*j", "----"), "abcdefghij----");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "GhIj", "----"), "abcdefghij----");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "J", "----"), "abcdefghij----");
-}
-
-TEST(append, middle)
-{
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "cdef", "----"), "abcdef----ghij");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "cdefgh", "----"), "abcdefgh----ij");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "c.*f", "----"), "abcdef----ghij");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij", "DeFg", "----"), "abcdefg----hij");
-  EXPECT_EQ(appendToFirstOccurence("abcdefghij",  "F", "----"), "abcdef----ghij");
-}
-
 };

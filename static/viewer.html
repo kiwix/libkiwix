@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>ZIM Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="./skin/taskbar.css?KIWIXCACHEID" rel="Stylesheet" />
+    <link type="text/css" href="./skin/css/autoComplete.css?KIWIXCACHEID" rel="Stylesheet" />
+    <script type="text/javascript" src="./viewer_settings.js"></script>
+    <script type="text/javascript" src="./skin/viewer.js?KIWIXCACHEID" defer></script>
+    <script type="text/javascript" src="./skin/autoComplete.min.js?KIWIXCACHEID"></script>
+    <script>
+      function getRootLocation() {
+        const p = location.pathname;
+        return p.slice(0, p.length - '/viewer'.length);
+      }
+
+      const root = getRootLocation();
+      const blankPageUrl = `${root}/skin/blank.html`;
+
+      if ( location.hash == '' ) {
+        location.href = root + '/';
+      }
+    </script>
+  </head>
+
+  <body style="margin:0" onload="setupViewer()">
+    <div class="kiwix" style="display:none" id="kiwixtoolbarwrapper">
+      <div id="kiwixtoolbar" class="ui-widget-header">
+        <div class="kiwix_centered">
+          <div class="kiwix_searchform">
+            <form class="kiwixsearch" method="GET" action="javascript:performSearch()" id="kiwixsearchform">
+              <label for="kiwixsearchbox">&#x1f50d;</label>
+              <input autocomplete="off" class="ui-autocomplete-input" id="kiwixsearchbox" name="pattern" type="text" title="Search '{{title}}'" aria-label="Search '{{title}}'">
+            </form>
+          </div>
+            <input type="checkbox" id="kiwix_button_show_toggle">
+            <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?KIWIXCACHEID" alt=""></label>
+            <div class="kiwix_button_cont">
+                <a id="kiwix_serve_taskbar_library_button" title="Go to welcome page" aria-label="Go to welcome page" href="./"><button>&#x1f3e0;</button></a>
+              <span id="kiwix_serve_taskbar_book_ui_group">
+                <a id="kiwix_serve_taskbar_home_button"
+                   title="Go to the main page of the current book"
+                   aria-label="Go to the main page of the current book"
+                   onclick="gotoMainPageOfCurrentBook()"></a>
+                <a id="kiwix_serve_taskbar_random_button"
+                   title="Go to a randomly selected page"
+                   aria-label="Go to a randomly selected page"
+                   onclick="gotoRandomPage()">
+                  <button>&#x1F3B2;</button>
+                </a>
+              </span>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <iframe id="content_iframe"
+            referrerpolicy="same-origin"
+            onload="on_content_load()"
+            src="skin/blank.html" title="ZIM content" width="100%"
+            style="border:0px">
+    </iframe>
+
+    <script>
+    </script>
+  </body>
+</html>

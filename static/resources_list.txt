@@ -4,7 +4,6 @@ skin/magnet.png
 skin/download.png
 skin/hash.png
 skin/search-icon.svg
-skin/taskbar.js
 skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
@@ -13,17 +12,16 @@ skin/taskbar.css
 skin/index.css
 skin/fonts/Poppins.ttf
 skin/fonts/Roboto.ttf
-skin/block_external.js
 skin/search_results.css
+skin/blank.html
+skin/viewer.js
+viewer.html
 templates/search_result.html
 templates/search_result.xml
 templates/error.html
 templates/error.xml
 templates/index.html
 templates/suggestion.json
-templates/head_taskbar.html
-templates/taskbar_part.html
-templates/external_blocker_part.html
 templates/captured_external.html
 templates/catalog_entries.xml
 templates/catalog_v2_root.xml
@@ -32,6 +30,7 @@ templates/catalog_v2_entry.xml
 templates/catalog_v2_categories.xml
 templates/catalog_v2_languages.xml
 templates/url_of_search_results_css
+templates/viewer_settings.js
 opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
