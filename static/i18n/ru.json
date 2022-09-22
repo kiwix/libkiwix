@@ -3,15 +3,22 @@
 		"authors": [
 			"Fenixs-ru",
 			"Kareyac",
+			"Okras",
 			"Pacha Tchernof"
 		]
 	},
 	"name": "русский",
 	"suggest-full-text-search": "содержащее '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Такой книги нет: {{BOOK_NAME}}",
+	"too-many-books": "Запрошено слишком много книг ({{NB_BOOKS}}), максимальное количество — {{LIMIT}}.",
+	"no-book-found": "Ни одна книга не соответствует критериям отбора",
 	"url-not-found": "Запрошенный URL \"{{url}}\" не найден на этом сервере.",
 	"suggest-search": "Выполните полнотекстовый поиск для <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Ой! Не удалось выбрать случайную статью :(",
+	"invalid-raw-data-type": "{{DATATYPE}} не является допустимым запросом необработанного контента.",
+	"no-value-for-arg": "Не указано значение для аргумента {{ARGUMENT}}",
+	"no-query": "Не предоставлен запрос.",
+	"raw-entry-not-found": "Не удаётся найти запись {{ENTRY}} типа {{DATATYPE}}",
 	"400-page-title": "Недействительный запрос",
 	"400-page-heading": "Недействительный запрос",
 	"404-page-title": "Содержание не найдено",

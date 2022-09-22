@@ -1,11 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"WikiPhoenix"
 		]
 	},
+	"name": "Svenska",
 	"suggest-full-text-search": "innehåller '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Ingen sådan bok: {{BOOK_NAME}}",
+	"too-many-books": "För många böcker begärda ({{NB_BOOKS}}) där gränsen är {{LIMIT}}",
 	"url-not-found": "Den begärda webbadressen \"{{url}}\" hittades inte på denna server.",
 	"suggest-search": "Utför en fulltextsökning för <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Hoppsan! Kunde inte välja en slumpartikel :(",

@@ -1,15 +1,32 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kly",
 			"Winston Sung"
 		]
 	},
 	"name": "繁體中文",
+	"suggest-full-text-search": "正在包含「{{{SEARCH_TERMS}}}」…",
+	"no-such-book": "沒有這樣的書籍：{{BOOK_NAME}}",
+	"too-many-books": "請求太多個書籍（{{NB_BOOKS}}），上限是 {{LIMIT}} 個",
+	"no-book-found": "沒有書籍符合選擇標準",
+	"url-not-found": "在此伺服器上找不到請求的 URL「{{url}}」。",
+	"suggest-search": "建立 <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> 使用的全文搜尋",
+	"random-article-failure": "哎呀！隨機挑選條目失敗 :(",
+	"invalid-raw-data-type": "{{DATATYPE}}不是原始內容的有效請求。",
+	"no-value-for-arg": "沒有為引數 {{ARGUMENT}} 提供內容",
+	"no-query": "未提供查詢。",
+	"raw-entry-not-found": "找不到{{DATATYPE}}項目{{ENTRY}}",
 	"400-page-title": "無效請求",
 	"400-page-heading": "無效請求",
 	"404-page-title": "查無內容",
 	"404-page-heading": "查無頁面",
 	"500-page-title": "內部伺服器錯誤",
 	"500-page-heading": "內部伺服器錯誤",
+	"fulltext-search-unavailable": "全文搜尋無效",
+	"no-search-results": "全文搜尋引擎不適用此內容。",
+	"library-button-text": "前往歡迎首頁",
+	"home-button-text": "前往「{{BOOK_TITLE}}」的首頁",
+	"random-page-button-text": "前往隨機選取頁面",
 	"searchbox-tooltip": "在{{BOOK_TITLE}}搜尋"
 }
