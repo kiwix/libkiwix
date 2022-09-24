@@ -384,7 +384,10 @@ function setupSuggestions() {
 }
 
 function setupViewer() {
-  setInterval(handle_visual_viewport_change, 0);
+  // Defer the call of handle_visual_viewport_change() until after the
+  // presence or absence of the taskbar as determined by this function
+  // has been settled.
+  setTimeout(handle_visual_viewport_change, 0);
 
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
