@@ -152,6 +152,27 @@ function updateSearchBoxForBookChange() {
   }
 }
 
+let previousScrollTop = Infinity;
+
+function updateToolbarVisibilityState() {
+  const iframeDoc = contentIframe.contentDocument;
+  const st = iframeDoc.documentElement.scrollTop || iframeDoc.body.scrollTop;
+  if ( Math.abs(previousScrollTop - st) <= 5 )
+      return;
+
+  const kiwixToolBar = document.querySelector('#kiwixtoolbar');
+
+  if (st > previousScrollTop) {
+      kiwixToolBar.style.position = 'fixed';
+      kiwixToolBar.style.top = '-100%';
+  } else {
+      kiwixToolBar.style.position = 'static';
+      kiwixToolBar.style.top = '0';
+  }
+
+  previousScrollTop = st;
+}
+
 function handle_visual_viewport_change() {
   contentIframe.height = window.visualViewport.height - contentIframe.offsetTop - 4;
 }
@@ -165,6 +186,7 @@ function handle_location_hash_change() {
     contentIframe.contentWindow.location.replace(iframeContentUrl);
   }
   updateSearchBoxForLocationChange();
+  previousScrollTop = Infinity;
 }
 
 function handle_content_url_change() {
@@ -276,39 +298,7 @@ function htmlDecode(input) {
 }
 
 function setupAutoHidingOfTheToolbar() {
-  let lastScrollTop = 0;
-  const delta = 5;
-  let didScroll = false;
-  const kiwixToolBar = document.querySelector('#kiwixtoolbar');
-
-  contentIframe.contentWindow.addEventListener('scroll', () => {
-    didScroll = true;
-  });
-
-  setInterval(function() {
-    if (didScroll) {
-      hasScrolled();
-      didScroll = false;
-    }
-  }, 250);
-
-  function hasScrolled() {
-    const iframeDoc = contentIframe.contentDocument;
-    const st = iframeDoc.documentElement.scrollTop || iframeDoc.body.scrollTop;
-    if (Math.abs(lastScrollTop - st) <= delta)
-        return;
-
-    if (st > lastScrollTop) {
-        kiwixToolBar.style.position = 'fixed';
-        kiwixToolBar.style.top = '-100%';
-    } else {
-        kiwixToolBar.style.position = 'static';
-        kiwixToolBar.style.top = '0';
-    }
-
-    lastScrollTop = st;
-  }
-
+  setInterval(updateToolbarVisibilityState, 250);
 }
 
 function setupSuggestions() {
