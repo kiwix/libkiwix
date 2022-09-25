@@ -1,38 +1,18 @@
 #!/usr/bin/bash
 
-files=(
-"include/library.h"
-"include/common/stringTools.h"
-"include/common/pathTools.h"
-"include/common/otherTools.h"
-"include/common/regexTools.h"
-"include/common/networkTools.h"
-"include/common/archiveTools.h"
-"include/manager.h"
-"include/reader.h"
-"include/kiwix.h"
-"include/xapianSearcher.h"
-"include/searcher.h"
-"src/library.cpp"
-"src/android/kiwix.cpp"
-"src/android/org/kiwix/kiwixlib/JNIKiwixBool.java"
-"src/android/org/kiwix/kiwixlib/JNIKiwix.java"
-"src/android/org/kiwix/kiwixlib/JNIKiwixString.java"
-"src/android/org/kiwix/kiwixlib/JNIKiwixInt.java"
-"src/searcher.cpp"
-"src/common/pathTools.cpp"
-"src/common/regexTools.cpp"
-"src/common/otherTools.cpp"
-"src/common/archiveTools.cpp"
-"src/common/networkTools.cpp"
-"src/common/stringTools.cpp"
-"src/xapianSearcher.cpp"
-"src/manager.cpp"
-"src/reader.cpp"
-)
+# Print usage() if no argument given
+if [ $# -eq 0 ]
+then
+    echo "./format_code.sh MY_DIR_TO_FORMAT"
+    exit 1
+fi
 
-for i in "${files[@]}"
+# Retrieve directory to parse
+DIR=$1
+
+# Apply formating to all *.cpp and *.h files
+for FILE in `find "$DIR" -name '*.h' -o -name '*.cpp'`
 do
-  echo $i
-  clang-format -i -style=file $i
+  echo $FILE
+  clang-format -i -style=file "$FILE"
 done
