@@ -830,7 +830,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
     renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
-    renderer.setProtocolPrefix(m_root + "/");
+    renderer.setProtocolPrefix(m_root + "/content/");
     renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     if (request.get_requested_format() == "xml") {

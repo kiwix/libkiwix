@@ -166,7 +166,7 @@ kainjow::mustache::data buildPagination(
 
 std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
 {
-  const std::string absPathPrefix = protocolPrefix + "content/";
+  const std::string absPathPrefix = protocolPrefix;
   // Build the results list
   kainjow::mustache::data items{kainjow::mustache::data::type::list};
   for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
@@ -206,7 +206,7 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
 
 
   kainjow::mustache::data allData;
-  allData.set("protocolPrefix", protocolPrefix);
+  allData.set("searchProtocolPrefix", searchProtocolPrefix);
   allData.set("results", results);
   allData.set("pagination", pagination);
   allData.set("query", query);
