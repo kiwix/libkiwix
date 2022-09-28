@@ -9,7 +9,7 @@
     <opensearch:totalResults>{{results.count}}</opensearch:totalResults>
     <opensearch:startIndex>{{results.start}}</opensearch:startIndex>
     <opensearch:itemsPerPage>{{pagination.itemsPerPage}}</opensearch:itemsPerPage>
-    <atom:link rel="search" type="application/opensearchdescription+xml" href="{{protocolPrefix}}search/searchdescription.xml"/>
+    <atom:link rel="search" type="application/opensearchdescription+xml" href="{{searchProtocolPrefix}}/searchdescription.xml"/>
     <opensearch:Query role="request"
       searchTerms="{{query.pattern}}"{{#query.lang}}
       language="{{query.lang}}"{{/query.lang}}
