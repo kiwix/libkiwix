@@ -1,17 +1,12 @@
 #!/usr/bin/bash
 
-# Print usage() if no argument given
-if [ $# -eq 0 ]
-then
-    echo "./format_code.sh MY_DIR_TO_FORMAT"
-    exit 1
-fi
-
-# Retrieve directory to parse
-DIR=$1
+# Compute 'src' path
+SCRIPT_DIR=$(dirname "$0")
+REPO_DIR=$(readlink -f "$SCRIPT_DIR"/..)
+DIRS="$REPO_DIR/src $REPO_DIR/include"
 
 # Apply formating to all *.cpp and *.h files
-for FILE in `find "$DIR" -name '*.h' -o -name '*.cpp'`
+for FILE in $(find $DIRS -name '*.h' -o -name '*.cpp')
 do
   echo $FILE
   clang-format -i -style=file "$FILE"
