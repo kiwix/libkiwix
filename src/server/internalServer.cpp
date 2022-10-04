@@ -1043,9 +1043,14 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   try {
     auto entry = getEntryFromPath(*archive, urlStr);
-    if (entry.isRedirect() || urlStr.empty()) {
-      // If urlStr is empty, we want to mainPage.
-      // We must do a redirection to the real page.
+    if (entry.isRedirect() || urlStr != entry.getPath()) {
+      // In the condition above, the second case (an entry with a different
+      // URL was returned) can occur in the following situations:
+      // 1. urlStr is empty or equal to "/" and the ZIM file doesn't contain
+      //    such an entry, in which case the main entry is returned instead.
+      // 2. The ZIM file uses old namespace scheme, and the resource at urlStr
+      //    is not present but can be found under one of the 'A', 'I', 'J' or
+      //    '-' namespaces, in which case that resource is returned instead.
       return build_redirect(bookName, getFinalItem(*archive, entry));
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
