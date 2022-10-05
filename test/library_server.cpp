@@ -19,7 +19,7 @@ protected:
 
 protected:
   void SetUp() override {
-    zfs1_.reset(new ZimFileServer(PORT, "./test/library.xml"));
+    zfs1_.reset(new ZimFileServer(PORT, ZimFileServer::DEFAULT_OPTIONS, "./test/library.xml"));
   }
 
   void TearDown() override {
@@ -773,5 +773,68 @@ TEST_F(LibraryServerTest, catalog_search_excludes_hidden_tags)
 
 #undef EXPECT_ZERO_RESULTS
 }
+
+
+// Same as CHARLES_RAY_CATALOG_ENTRY but with link using the uuid (charlesray).
+#define NO_MAPPER_CHARLES_RAY_CATALOG_ENTRY \
+    "  <entry>\n"                                                       \
+    "    <id>urn:uuid:charlesray</id>\n"                                \
+    "    <title>Charles, Ray</title>\n"                                 \
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
+    "    <summary>Wikipedia articles about Ray Charles</summary>\n"     \
+    "    <language>fra</language>\n"                                    \
+    "    <name>wikipedia_fr_ray_charles</name>\n"                       \
+    "    <flavour></flavour>\n"                                         \
+    "    <category>jazz</category>\n"                                   \
+    "    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>\n" \
+    "    <articleCount>284</articleCount>\n"                            \
+    "    <mediaCount>2</mediaCount>\n"                                  \
+    "    <link type=\"text/html\" href=\"/ROOT/content/charlesray\" />\n"               \
+    "    <author>\n"                                                    \
+    "      <name>Wikipedia</name>\n"                                    \
+    "    </author>\n"                                                   \
+    "    <publisher>\n"                                                 \
+    "      <name>Kiwix</name>\n"                                        \
+    "    </publisher>\n"                                                \
+    "    <dc:issued>2020-03-31T00:00:00Z</dc:issued>\n"                 \
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim\" length=\"569344\" />\n" \
+    "  </entry>\n"
+
+class NoMapperLibraryServerTest : public ::testing::Test
+{
+protected:
+  std::unique_ptr<ZimFileServer>   zfs1_;
+
+  const int PORT = 8002;
+
+protected:
+  void SetUp() override {
+    zfs1_.reset(new ZimFileServer(PORT, ZimFileServer::NO_NAME_MAPPER, "./test/library.xml"));
+  }
+
+  void TearDown() override {
+    zfs1_.reset();
+  }
+};
+
+TEST_F(NoMapperLibraryServerTest, returned_catalog_use_uuid_in_link)
+{
+  const auto r = zfs1_->GET("/ROOT/catalog/search?tag=_category:jazz");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Filtered zims (tag=_category:jazz)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    NO_MAPPER_CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+
 
 #undef EXPECT_SEARCH_RESULTS

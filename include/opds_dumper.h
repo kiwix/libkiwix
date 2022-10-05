@@ -27,6 +27,7 @@
 #include <pugixml.hpp>
 
 #include "library.h"
+#include "name_mapper.h"
 
 using namespace std;
 
@@ -41,7 +42,7 @@ class OPDSDumper
 {
  public:
   OPDSDumper() = default;
-  OPDSDumper(Library* library);
+  OPDSDumper(Library* library, NameMapper* NameMapper);
   ~OPDSDumper();
 
   /**
@@ -110,6 +111,7 @@ class OPDSDumper
 
  protected:
   kiwix::Library* library;
+  kiwix::NameMapper* nameMapper;
   std::string libraryId;
   std::string rootLocation;
   int m_totalResults;
