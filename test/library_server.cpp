@@ -18,8 +18,13 @@ protected:
   const int PORT = 8002;
 
 protected:
+  void resetServer(ZimFileServer::Options options) {
+    zfs1_.reset();
+    zfs1_.reset(new ZimFileServer(PORT, options, "./test/library.xml"));
+  }
+
   void SetUp() override {
-    zfs1_.reset(new ZimFileServer(PORT, "./test/library.xml"));
+    zfs1_.reset(new ZimFileServer(PORT, ZimFileServer::DEFAULT_OPTIONS, "./test/library.xml"));
   }
 
   void TearDown() override {
@@ -95,7 +100,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  </entry>\n"
 
 
-#define CHARLES_RAY_CATALOG_ENTRY CATALOG_ENTRY(  \
+#define _CHARLES_RAY_CATALOG_ENTRY(CONTENT_NAME) CATALOG_ENTRY(  \
   "charlesray",   \
   "Charles, Ray", \
   "Wikipedia articles about Ray Charles", \
@@ -104,12 +109,15 @@ std::string maskVariableOPDSFeedData(std::string s)
   "jazz",\
   "unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes",\
   "", \
-  "zimfile%26other", \
+  CONTENT_NAME, \
   "zimfile%26other", \
   "569344" \
 )
 
-#define RAY_CHARLES_CATALOG_ENTRY CATALOG_ENTRY(\
+#define CHARLES_RAY_CATALOG_ENTRY _CHARLES_RAY_CATALOG_ENTRY("zimfile%26other")
+#define CHARLES_RAY_CATALOG_ENTRY_NO_MAPPER _CHARLES_RAY_CATALOG_ENTRY("charlesray")
+
+#define _RAY_CHARLES_CATALOG_ENTRY(CONTENT_NAME) CATALOG_ENTRY(\
   "raycharles",\
   "Ray Charles",\
   "Wikipedia articles about Ray Charles",\
@@ -120,10 +128,13 @@ std::string maskVariableOPDSFeedData(std::string s)
   "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
   "          href=\"/ROOT/catalog/v2/illustration/raycharles/?size=48\"\n" \
   "          type=\"image/png;width=48;height=48;scale=1\"/>\n    ", \
-  "zimfile", \
+  CONTENT_NAME, \
   "zimfile", \
   "569344"\
 )
+
+#define RAY_CHARLES_CATALOG_ENTRY _RAY_CHARLES_CATALOG_ENTRY("zimfile")
+#define RAY_CHARLES_CATALOG_ENTRY_NO_MAPPER _RAY_CHARLES_CATALOG_ENTRY("raycharles")
 
 #define UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY CATALOG_ENTRY(\
   "raycharles_uncategorized",\
@@ -773,5 +784,41 @@ TEST_F(LibraryServerTest, catalog_search_excludes_hidden_tags)
 
 #undef EXPECT_ZERO_RESULTS
 }
+
+TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
+{
+  resetServer(ZimFileServer::NO_NAME_MAPPER);
+  const auto r = zfs1_->GET("/ROOT/catalog/search?tag=_category:jazz");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    OPDS_FEED_TAG
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "  <title>Filtered zims (tag=_category:jazz)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    CATALOG_LINK_TAGS
+    CHARLES_RAY_CATALOG_ENTRY_NO_MAPPER
+    "</feed>\n"
+  );
+}
+
+
+TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
+{
+  resetServer(ZimFileServer::NO_NAME_MAPPER);
+  const auto r = zfs1_->GET("/ROOT/catalog/v2/entry/raycharles");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    RAY_CHARLES_CATALOG_ENTRY_NO_MAPPER
+  );
+
+  const auto r1 = zfs1_->GET("/ROOT/catalog/v2/entry/non-existent-entry");
+  EXPECT_EQ(r1->status, 404);
+}
+
+
 
 #undef EXPECT_SEARCH_RESULTS

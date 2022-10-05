@@ -992,7 +992,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper(mp_library);
+  kiwix::OPDSDumper opdsDumper(mp_library, mp_nameMapper);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   std::vector<std::string> bookIdsToDump;
