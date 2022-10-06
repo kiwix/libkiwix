@@ -71,10 +71,11 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
     return illustrations;
 }
 
-kainjow::mustache::object getSingleBookData(const Book& book)
+std::string fullEntryXML(const Book& book, const std::string& rootLocation)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
-    return kainjow::mustache::object{
+    const kainjow::mustache::object data{
+      {"root",  rootLocation},
       {"id", book.getId()},
       {"name", book.getName()},
       {"title", book.getTitle()},
@@ -94,17 +95,21 @@ kainjow::mustache::object getSingleBookData(const Book& book)
       {"size", to_string(book.getSize())},
       {"icons", getBookIllustrationInfo(book)},
     };
+    return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
 }
 
-std::string getSingleBookEntryXML(const Book& book, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
+std::string partialEntryXML(const Book& book, const std::string& rootLocation, const std::string& endpointRoot)
 {
-  auto data = getSingleBookData(book);
-  data["endpoint_root"] = endpointRoot;
-  data["root"] = rootLocation;
-  const auto xmlTemplate = partial
-                         ? RESOURCE::templates::catalog_v2_partial_entry_xml
-                         : RESOURCE::templates::catalog_v2_entry_xml;
-  return render_template(xmlTemplate, data);
+    const auto bookDate = book.getDate() + "T00:00:00Z";
+    const kainjow::mustache::object data{
+      {"root",  rootLocation},
+      {"endpoint_root", endpointRoot},
+      {"id", book.getId()},
+      {"title", book.getTitle()},
+      {"updated", bookDate}, // XXX: this should be the entry update datetime
+    };
+    const auto xmlTemplate = RESOURCE::templates::catalog_v2_partial_entry_xml;
+    return render_template(xmlTemplate, data);
 }
 
 BooksData getBooksData(const Library* library, const std::vector<std::string>& bookIds, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
@@ -113,9 +118,10 @@ BooksData getBooksData(const Library* library, const std::vector<std::string>& b
   for ( const auto& bookId : bookIds ) {
     try {
       const Book book = library->getBookByIdThreadSafe(bookId);
-      booksData.push_back(kainjow::mustache::object{
-          {"entry", getSingleBookEntryXML(book, rootLocation, endpointRoot, partial)}
-      });
+      const auto entryXML = partial
+                          ? partialEntryXML(book, rootLocation, endpointRoot)
+                          : fullEntryXML(book, rootLocation);
+      booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
       // ignore it
@@ -224,7 +230,7 @@ std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
   const auto book = library->getBookById(bookId);
   return XML_HEADER
          + "\n"
-         + getSingleBookEntryXML(book, rootLocation, "", false);
+         + fullEntryXML(book, rootLocation);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const
