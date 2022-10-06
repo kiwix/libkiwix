@@ -98,12 +98,12 @@ std::string fullEntryXML(const Book& book, const std::string& rootLocation)
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
 }
 
-std::string partialEntryXML(const Book& book, const std::string& rootLocation, const std::string& endpointRoot)
+std::string partialEntryXML(const Book& book, const std::string& rootLocation)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
       {"root",  rootLocation},
-      {"endpoint_root", endpointRoot},
+      {"endpoint_root", rootLocation + "/catalog/v2"},
       {"id", book.getId()},
       {"title", book.getTitle()},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
@@ -112,14 +112,14 @@ std::string partialEntryXML(const Book& book, const std::string& rootLocation, c
     return render_template(xmlTemplate, data);
 }
 
-BooksData getBooksData(const Library* library, const std::vector<std::string>& bookIds, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
+BooksData getBooksData(const Library* library, const std::vector<std::string>& bookIds, const std::string& rootLocation, bool partial)
 {
   BooksData booksData;
   for ( const auto& bookId : bookIds ) {
     try {
       const Book book = library->getBookByIdThreadSafe(bookId);
       const auto entryXML = partial
-                          ? partialEntryXML(book, rootLocation, endpointRoot)
+                          ? partialEntryXML(book, rootLocation)
                           : fullEntryXML(book, rootLocation);
       booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
@@ -188,7 +188,7 @@ std::string getLanguageSelfName(const std::string& lang) {
 
 string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
 {
-  const auto booksData = getBooksData(library, bookIds, rootLocation, "", false);
+  const auto booksData = getBooksData(library, bookIds, rootLocation, false);
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
      {"root", rootLocation},
@@ -206,7 +206,7 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
   const auto endpointRoot = rootLocation + "/catalog/v2";
-  const auto booksData = getBooksData(library, bookIds, rootLocation, endpointRoot, partial);
+  const auto booksData = getBooksData(library, bookIds, rootLocation, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const kainjow::mustache::object template_data{
