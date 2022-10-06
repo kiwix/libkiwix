@@ -99,10 +99,12 @@ kainjow::mustache::object getSingleBookData(const Book& book)
 std::string getSingleBookEntryXML(const Book& book, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
 {
   auto data = getSingleBookData(book);
-  data["dump_partial_entries"] = MustacheData(partial);
   data["endpoint_root"] = endpointRoot;
   data["root"] = rootLocation;
-  return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
+  const auto xmlTemplate = partial
+                         ? RESOURCE::templates::catalog_v2_partial_entry_xml
+                         : RESOURCE::templates::catalog_v2_entry_xml;
+  return render_template(xmlTemplate, data);
 }
 
 BooksData getBooksData(const Library* library, const std::vector<std::string>& bookIds, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
