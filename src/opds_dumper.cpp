@@ -30,7 +30,7 @@ namespace kiwix
 {
 
 /* Constructor */
-OPDSDumper::OPDSDumper(Library* library, NameMapper* nameMapper)
+OPDSDumper::OPDSDumper(std::shared_ptr<Library> library, NameMapper* nameMapper)
   : library(library),
     nameMapper(nameMapper)
 {
@@ -113,12 +113,12 @@ std::string partialEntryXML(const Book& book, const std::string& rootLocation)
     return render_template(xmlTemplate, data);
 }
 
-BooksData getBooksData(const Library* library, const NameMapper& nameMapper, const std::vector<std::string>& bookIds, const std::string& rootLocation, bool partial)
+BooksData getBooksData(const Library& library, const NameMapper& nameMapper, const std::vector<std::string>& bookIds, const std::string& rootLocation, bool partial)
 {
   BooksData booksData;
   for ( const auto& bookId : bookIds ) {
     try {
-      const Book book = library->getBookByIdThreadSafe(bookId);
+      const Book book = library.getBookByIdThreadSafe(bookId);
       const std::string bookName = nameMapper.getNameForId(bookId);
       const auto entryXML = partial
                           ? partialEntryXML(book, rootLocation)
@@ -190,7 +190,7 @@ std::string getLanguageSelfName(const std::string& lang) {
 
 string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
 {
-  const auto booksData = getBooksData(library, *nameMapper, bookIds, rootLocation, false);
+  const auto booksData = getBooksData(*library, *nameMapper, bookIds, rootLocation, false);
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
      {"root", rootLocation},
@@ -208,7 +208,7 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
   const auto endpointRoot = rootLocation + "/catalog/v2";
-  const auto booksData = getBooksData(library, *nameMapper, bookIds, rootLocation, partial);
+  const auto booksData = getBooksData(*library, *nameMapper, bookIds, rootLocation, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const kainjow::mustache::object template_data{

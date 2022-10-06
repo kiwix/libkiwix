@@ -42,7 +42,7 @@ class OPDSDumper
 {
  public:
   OPDSDumper() = default;
-  OPDSDumper(Library* library, NameMapper* NameMapper);
+  OPDSDumper(std::shared_ptr<Library> library, NameMapper* NameMapper);
   ~OPDSDumper();
 
   /**
@@ -110,7 +110,7 @@ class OPDSDumper
   void setOpenSearchInfo(int totalResult, int startIndex, int count);
 
  protected:
-  kiwix::Library* library;
+  std::shared_ptr<kiwix::Library> library;
   kiwix::NameMapper* nameMapper;
   std::string libraryId;
   std::string rootLocation;

@@ -41,8 +41,8 @@ struct NoDelete
 // LibraryManipulator
 ////////////////////////////////////////////////////////////////////////////////
 
-LibraryManipulator::LibraryManipulator(Library* library)
-  : library(*library)
+LibraryManipulator::LibraryManipulator(std::shared_ptr<Library> library)
+  : library(library)
 {}
 
 LibraryManipulator::~LibraryManipulator()
@@ -50,7 +50,7 @@ LibraryManipulator::~LibraryManipulator()
 
 bool LibraryManipulator::addBookToLibrary(const Book& book)
 {
-  const auto ret = library.addBook(book);
+  const auto ret = library->addBook(book);
   if ( ret ) {
     bookWasAddedToLibrary(book);
   }
@@ -59,13 +59,13 @@ bool LibraryManipulator::addBookToLibrary(const Book& book)
 
 void LibraryManipulator::addBookmarkToLibrary(const Bookmark& bookmark)
 {
-  library.addBookmark(bookmark);
+  library->addBookmark(bookmark);
   bookmarkWasAddedToLibrary(bookmark);
 }
 
 uint32_t LibraryManipulator::removeBooksNotUpdatedSince(Library::Revision rev)
 {
-  const auto n = library.removeBooksNotUpdatedSince(rev);
+  const auto n = library->removeBooksNotUpdatedSince(rev);
   if ( n != 0 ) {
     booksWereRemovedFromLibrary();
   }
@@ -95,7 +95,7 @@ Manager::Manager(LibraryManipulator* manipulator):
 {
 }
 
-Manager::Manager(Library* library) :
+Manager::Manager(std::shared_ptr<Library> library) :
   writableLibraryPath(""),
   manipulator(new LibraryManipulator(library))
 {

@@ -90,7 +90,7 @@ private:
   void run(int serverPort, std::string indexTemplateString = "");
 
 private: // data
-  kiwix::Library library;
+  std::shared_ptr<kiwix::Library> library;
   kiwix::Manager manager;
   std::unique_ptr<kiwix::NameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
@@ -99,8 +99,9 @@ private: // data
 };
 
 ZimFileServer::ZimFileServer(int serverPort, Options _options, std::string libraryFilePath)
-: manager(&this->library)
-, options(_options)
+: library(new kiwix::Library()),
+  manager(library),
+  options(_options)
 {
   if ( kiwix::isRelativePath(libraryFilePath) )
     libraryFilePath = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), libraryFilePath);
@@ -112,8 +113,9 @@ ZimFileServer::ZimFileServer(int serverPort,
                              Options _options,
                              const FilePathCollection& zimpaths,
                              std::string indexTemplateString)
-: manager(&this->library)
-, options(_options)
+: library(new kiwix::Library()),
+  manager(library),
+  options(_options)
 {
   for ( const auto& zimpath : zimpaths ) {
     if (!manager.addBookFromPath(zimpath, zimpath, "", false))
@@ -128,9 +130,9 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   if (options & NO_NAME_MAPPER) {
     nameMapper.reset(new kiwix::IdNameMapper());
   } else {
-    nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
+    nameMapper.reset(new kiwix::HumanReadableNameMapper(*library, false));
   }
-  kiwix::Server::Configuration configuration(&library, nameMapper.get());
+  kiwix::Server::Configuration configuration(library, nameMapper.get());
   configuration.setRoot("ROOT")
                .setAddress(address)
                .setPort(serverPort)

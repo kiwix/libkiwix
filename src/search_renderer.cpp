@@ -41,7 +41,7 @@ SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
     : SearchRenderer(srs, mapper, nullptr, start, estimatedResultCount)
 {}
 
-SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Library* library,
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, std::shared_ptr<Library> library,
                       unsigned int start, unsigned int estimatedResultCount)
     : m_srs(srs),
       mp_nameMapper(mapper),

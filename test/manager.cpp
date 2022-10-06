@@ -8,18 +8,18 @@
 
 TEST(ManagerTest, addBookFromPathAndGetIdTest)
 {
-    kiwix::Library lib;
-    kiwix::Manager manager = kiwix::Manager(&lib);
+    auto lib = std::make_shared<kiwix::Library>();
+    kiwix::Manager manager = kiwix::Manager(lib);
 
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim");
     ASSERT_NE(bookId, "");
-    kiwix::Book book = lib.getBookById(bookId);
+    kiwix::Book book = lib->getBookById(bookId);
     EXPECT_EQ(book.getPath(), kiwix::computeAbsolutePath("", "./test/example.zim"));
 
     const std::string pathToSave = "./pathToSave";
     const std::string url = "url";
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave, url, true);
-    book = lib.getBookById(bookId);
+    book = lib->getBookById(bookId);
     auto savedPath = kiwix::computeAbsolutePath(kiwix::removeLastPathElement(manager.writableLibraryPath), pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
     EXPECT_EQ(book.getUrl(), url);
@@ -48,11 +48,11 @@ const char sampleLibraryXML[] = R"(
 
 TEST(ManagerTest, readXml)
 {
-    kiwix::Library lib;
-    kiwix::Manager manager = kiwix::Manager(&lib);
+    auto lib = std::make_shared<kiwix::Library>();
+    kiwix::Manager manager = kiwix::Manager(lib);
 
     EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, "/data/lib.xml", true));
-    kiwix::Book book = lib.getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
+    kiwix::Book book = lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
     EXPECT_EQ("/data/zimfiles/unittest.zim", book.getPath());
     EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl());
     EXPECT_EQ("Unit Test", book.getTitle());
@@ -70,24 +70,24 @@ TEST(ManagerTest, readXml)
 
 TEST(Manager, reload)
 {
-  kiwix::Library lib;
-  kiwix::Manager manager(&lib);
+  auto lib = std::make_shared<kiwix::Library>();
+  kiwix::Manager manager(lib);
 
   manager.reload({ "./test/library.xml" });
-  EXPECT_EQ(lib.getBooksIds(), (kiwix::Library::BookIdCollection{
+  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
         "raycharles",
         "raycharles_uncategorized"
   }));
 
-  lib.removeBookById("raycharles");
-  EXPECT_EQ(lib.getBooksIds(), (kiwix::Library::BookIdCollection{
+  lib->removeBookById("raycharles");
+  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
         "raycharles_uncategorized"
   }));
 
   manager.reload({ "./test/library.xml" });
-  EXPECT_EQ(lib.getBooksIds(), kiwix::Library::BookIdCollection({
+  EXPECT_EQ(lib->getBooksIds(), kiwix::Library::BookIdCollection({
         "charlesray",
         "raycharles",
         "raycharles_uncategorized"

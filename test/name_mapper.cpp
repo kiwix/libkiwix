@@ -18,18 +18,23 @@ const char libraryXML[] = R"(
 )";
 
 class NameMapperTest : public ::testing::Test {
+ public:
+  explicit NameMapperTest() :
+   lib(std::make_shared<kiwix::Library>())
+  {}
+
  protected:
   void SetUp() override {
-     kiwix::Manager manager(&lib);
+     kiwix::Manager manager(lib);
      manager.readXml(libraryXML, false, "./library.xml", true);
-     for ( const std::string& id : lib.getBooksIds() ) {
-       kiwix::Book bookCopy = lib.getBookById(id);
+     for ( const std::string& id : lib->getBooksIds() ) {
+       kiwix::Book bookCopy = lib->getBookById(id);
        bookCopy.setPathValid(true);
-       lib.addBook(bookCopy);
+       lib->addBook(bookCopy);
      }
   }
 
-  kiwix::Library lib;
+  std::shared_ptr<kiwix::Library> lib;
 };
 
 class CapturedStderr
@@ -73,13 +78,13 @@ void checkUnaliasedEntriesInNameMapper(const kiwix::NameMapper& nm)
 TEST_F(NameMapperTest, HumanReadableNameMapperWithoutAliases)
 {
   CapturedStderr stderror;
-  kiwix::HumanReadableNameMapper nm(lib, false);
+  kiwix::HumanReadableNameMapper nm(*lib, false);
   EXPECT_EQ("", std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
 
-  lib.removeBookById("04-2021-10");
+  lib->removeBookById("04-2021-10");
   EXPECT_EQ("zero_four_2021-10",  nm.getNameForId("04-2021-10"));
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four_2021-10"));
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
@@ -88,7 +93,7 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithoutAliases)
 TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
 {
   CapturedStderr stderror;
-  kiwix::HumanReadableNameMapper nm(lib, true);
+  kiwix::HumanReadableNameMapper nm(*lib, true);
   EXPECT_EQ(
       "Path collision: /data/zero_four_2021-10.zim and"
       " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
@@ -99,7 +104,7 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
 
-  lib.removeBookById("04-2021-10");
+  lib->removeBookById("04-2021-10");
   EXPECT_EQ("zero_four_2021-10",  nm.getNameForId("04-2021-10"));
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four_2021-10"));
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
@@ -114,7 +119,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithoutAliases)
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
 
-  lib.removeBookById("04-2021-10");
+  lib->removeBookById("04-2021-10");
   nm.update();
   EXPECT_THROW(nm.getNameForId("04-2021-10"), std::out_of_range);
   EXPECT_THROW(nm.getIdForName("zero_four_2021-10"), std::out_of_range);
@@ -137,7 +142,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithAliases)
 
   {
     CapturedStderr nmUpdateStderror;
-    lib.removeBookById("04-2021-10");
+    lib->removeBookById("04-2021-10");
     nm.update();
     EXPECT_EQ("", std::string(nmUpdateStderror));
   }
