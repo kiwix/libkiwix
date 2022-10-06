@@ -114,7 +114,7 @@ Response::Response(bool verbose)
 
 std::unique_ptr<Response> Response::build(const InternalServer& server)
 {
-  return std::unique_ptr<Response>(new Response(server.m_verbose.load()));
+  return std::unique_ptr<Response>(new Response(server.m_configuration.m_verbose));
 }
 
 std::unique_ptr<Response> Response::build_304(const InternalServer& server, const ETag& etag)
@@ -389,8 +389,8 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const std::string& mimetype)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
-        server.m_root,
-        server.m_verbose.load(),
+        server.m_configuration.m_root,
+        server.m_configuration.m_verbose,
         content,
         mimetype));
 }
@@ -435,7 +435,7 @@ std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, cons
   }
 
   return std::unique_ptr<Response>(new ItemResponse(
-        server.m_verbose.load(),
+        server.m_configuration.m_verbose,
         item,
         mimetype,
         byteRange));

@@ -27,6 +27,7 @@ extern "C" {
 
 #include "library.h"
 #include "name_mapper.h"
+#include "server.h"
 
 #include <zim/search.h>
 #include <zim/suggestion.h>
@@ -92,19 +93,7 @@ class OPDSDumper;
 
 class InternalServer {
   public:
-    InternalServer(Library* library,
-                   NameMapper* nameMapper,
-                   std::string addr,
-                   int port,
-                   std::string root,
-                   int nbThreads,
-                   unsigned int multizimSearchLimit,
-                   bool verbose,
-                   bool withTaskbar,
-                   bool withLibraryButton,
-                   bool blockExternalLinks,
-                   std::string indexTemplateString,
-                   int ipConnectionLimit);
+    InternalServer(const ServerConfiguration& configuration);
     virtual ~InternalServer();
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
@@ -117,7 +106,7 @@ class InternalServer {
     bool start();
     void stop();
     std::string getAddress() { return m_addr; }
-    int getPort() { return m_port; }
+    int getPort() { return m_configuration.m_port; }
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
@@ -160,21 +149,12 @@ class InternalServer {
     typedef ConcurrentCache<std::string, std::shared_ptr<LockableSuggestionSearcher>> SuggestionSearcherCache;
 
   private: // data
+    ServerConfiguration m_configuration;
     std::string m_addr;
-    int m_port;
     std::string m_root;
-    int m_nbThreads;
-    unsigned int m_multizimSearchLimit;
-    std::atomic_bool m_verbose;
-    bool m_withTaskbar;
-    bool m_withLibraryButton;
-    bool m_blockExternalLinks;
     std::string m_indexTemplateString;
-    int m_ipConnectionLimit;
-    struct MHD_Daemon* mp_daemon;
-
-    Library* mp_library;
     NameMapper* mp_nameMapper;
+    struct MHD_Daemon* mp_daemon;
 
     SearchCache searchCache;
     SuggestionSearcherCache suggestionSearcherCache;

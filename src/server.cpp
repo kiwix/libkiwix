@@ -29,9 +29,8 @@
 
 namespace kiwix {
 
-Server::Server(Library* library, NameMapper* nameMapper) :
-  mp_library(library),
-  mp_nameMapper(nameMapper),
+Server::Server(const ServerConfiguration& configuration) :
+  m_configuration(configuration),
   mp_server(nullptr)
 {
 }
@@ -39,20 +38,7 @@ Server::Server(Library* library, NameMapper* nameMapper) :
 Server::~Server() = default;
 
 bool Server::start() {
-  mp_server.reset(new InternalServer(
-    mp_library,
-    mp_nameMapper,
-    m_addr,
-    m_port,
-    m_root,
-    m_nbThreads,
-    m_multizimSearchLimit,
-    m_verbose,
-    m_withTaskbar,
-    m_withLibraryButton,
-    m_blockExternalLinks,
-    m_indexTemplateString,
-    m_ipConnectionLimit));
+  mp_server.reset(new InternalServer(m_configuration));
   return mp_server->start();
 }
 
@@ -63,7 +49,7 @@ void Server::stop() {
   }
 }
 
-void Server::setRoot(const std::string& root)
+ServerConfiguration& ServerConfiguration::setRoot(const std::string& root)
 {
   m_root = root;
   if (m_root[0] != '/') {
@@ -72,6 +58,7 @@ void Server::setRoot(const std::string& root)
   if (m_root.back() == '/') {
     m_root.erase(m_root.size() - 1);
   }
+  return *this;
 }
 
 int Server::getPort()

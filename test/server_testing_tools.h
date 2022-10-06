@@ -130,18 +130,20 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   } else {
     nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   }
-  server.reset(new kiwix::Server(&library, nameMapper.get()));
-  server->setRoot("ROOT");
-  server->setAddress(address);
-  server->setPort(serverPort);
-  server->setNbThreads(2);
-  server->setVerbose(false);
-  server->setTaskbar(options & WITH_TASKBAR, options & WITH_LIBRARY_BUTTON);
-  server->setBlockExternalLinks(options & BLOCK_EXTERNAL_LINKS);
-  server->setMultiZimSearchLimit(3);
+  kiwix::ServerConfiguration configuration(&library, nameMapper.get());
+  configuration.setRoot("ROOT")
+               .setAddress(address)
+               .setPort(serverPort)
+               .setNbThreads(2)
+               .setVerbose(false)
+               .setTaskbar(options & WITH_TASKBAR, options & WITH_LIBRARY_BUTTON)
+               .setBlockExternalLinks(options & BLOCK_EXTERNAL_LINKS)
+               .setMultiZimSearchLimit(3);
+
   if (!indexTemplateString.empty()) {
-    server->setIndexTemplateString(indexTemplateString);
+    configuration.setIndexTemplateString(indexTemplateString);
   }
+  server.reset(new kiwix::Server(configuration));
 
   if ( !server->start() )
     throw std::runtime_error("ZimFileServer failed to start");
