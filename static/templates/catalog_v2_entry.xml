@@ -1,5 +1,4 @@
-{{#with_xml_header}}<?xml version="1.0" encoding="UTF-8"?>
-{{/with_xml_header}}  <entry>
+  <entry>
     <id>urn:uuid:{{id}}</id>
     <title>{{title}}</title>
     <updated>{{updated}}</updated>

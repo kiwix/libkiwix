@@ -49,6 +49,8 @@ void OPDSDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
 namespace
 {
 
+const std::string XML_HEADER(R"(<?xml version="1.0" encoding="UTF-8"?>)");
+
 typedef kainjow::mustache::data MustacheData;
 typedef kainjow::mustache::list BooksData;
 typedef kainjow::mustache::list IllustrationInfo;
@@ -94,10 +96,9 @@ kainjow::mustache::object getSingleBookData(const Book& book)
     };
 }
 
-std::string getSingleBookEntryXML(const Book& book, bool withXMLHeader, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
+std::string getSingleBookEntryXML(const Book& book, const std::string& rootLocation, const std::string& endpointRoot, bool partial)
 {
   auto data = getSingleBookData(book);
-  data["with_xml_header"] = MustacheData(withXMLHeader);
   data["dump_partial_entries"] = MustacheData(partial);
   data["endpoint_root"] = endpointRoot;
   data["root"] = rootLocation;
@@ -111,7 +112,7 @@ BooksData getBooksData(const Library* library, const std::vector<std::string>& b
     try {
       const Book book = library->getBookByIdThreadSafe(bookId);
       booksData.push_back(kainjow::mustache::object{
-          {"entry", getSingleBookEntryXML(book, false, rootLocation, endpointRoot, partial)}
+          {"entry", getSingleBookEntryXML(book, rootLocation, endpointRoot, partial)}
       });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -218,7 +219,10 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
 
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
 {
-  return getSingleBookEntryXML(library->getBookById(bookId), true, rootLocation, "", false);
+  const auto book = library->getBookById(bookId);
+  return XML_HEADER
+         + "\n"
+         + getSingleBookEntryXML(book, rootLocation, "", false);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const
