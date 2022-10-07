@@ -73,7 +73,7 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
     return illustrations;
 }
 
-std::string fullEntryXML(const Server::Configuration& configuration, const Book& book, const std::string& bookName)
+std::string fullEntryXML(const Server::Configuration& configuration, const Book& book)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
@@ -83,7 +83,7 @@ std::string fullEntryXML(const Server::Configuration& configuration, const Book&
       {"title", book.getTitle()},
       {"description", book.getDescription()},
       {"language", book.getLanguage()},
-      {"content_id",  urlEncode(bookName, true)},
+      {"content_id",  urlEncode(configuration.mp_nameMapper->getNameForId(book.getId()), true)},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
       {"book_date", bookDate},
       {"category", book.getCategory()},
@@ -120,10 +120,9 @@ BooksData getBooksData(const Server::Configuration& configuration, const std::ve
   for ( const auto& bookId : bookIds ) {
     try {
       const Book book = configuration.mp_library->getBookByIdThreadSafe(bookId);
-      const std::string bookName = configuration.mp_nameMapper->getNameForId(bookId);
       const auto entryXML = partial
                           ? partialEntryXML(configuration, book)
-                          : fullEntryXML(configuration, book, bookName);
+                          : fullEntryXML(configuration, book);
       booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -231,10 +230,9 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
 {
   const auto book = m_configuration.mp_library->getBookById(bookId);
-  const std::string bookName = m_configuration.mp_nameMapper->getNameForId(bookId);
   return XML_HEADER
          + "\n"
-         + fullEntryXML(m_configuration, book, bookName);
+         + fullEntryXML(m_configuration, book);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const
