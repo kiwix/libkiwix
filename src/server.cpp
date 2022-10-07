@@ -26,6 +26,7 @@
 
 #include <zim/item.h>
 #include "server/internalServer.h"
+#include "tools/otherTools.h"
 
 namespace kiwix {
 
@@ -51,13 +52,7 @@ void Server::stop() {
 
 Server::Configuration& Server::Configuration::setRoot(const std::string& root)
 {
-  m_root = root;
-  if (m_root[0] != '/') {
-    m_root = "/" + m_root;
-  }
-  if (m_root.back() == '/') {
-    m_root.erase(m_root.size() - 1);
-  }
+  m_root = normalizeRootUrl(root);
   return *this;
 }
 

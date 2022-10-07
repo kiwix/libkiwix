@@ -85,16 +85,6 @@ namespace kiwix {
 namespace
 {
 
-inline std::string normalizeRootUrl(std::string rootUrl)
-{
-  while ( !rootUrl.empty() && rootUrl.back() == '/' )
-    rootUrl.pop_back();
-
-  while ( !rootUrl.empty() && rootUrl.front() == '/' )
-    rootUrl = rootUrl.substr(1);
-  return rootUrl.empty() ? rootUrl : "/" + rootUrl;
-}
-
 Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
 {
     auto filter = kiwix::Filter().valid(true).local(true);
@@ -368,7 +358,6 @@ public:
 
 InternalServer::InternalServer(const Server::Configuration& configuration) :
   m_configuration(configuration),
-  m_root(normalizeRootUrl(configuration.m_root)),
   m_indexTemplateString(configuration.m_indexTemplateString.empty() ? RESOURCE::templates::index_html : configuration.m_indexTemplateString),
   mp_nameMapper(configuration.mp_nameMapper ? configuration.mp_nameMapper : defaultNameMapper),
   mp_daemon(nullptr),
@@ -465,7 +454,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     printf("Requesting : \n");
     printf("full_url  : %s\n", url);
   }
-  RequestContext request(connection, m_root, url, method, version);
+  RequestContext request(connection, m_configuration.m_root, url, method, version);
 
   if (m_configuration.m_verbose) {
     request.print_debug_info();
@@ -559,7 +548,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
-    std::string contentUrl = m_root + "/content" + url;
+    std::string contentUrl = m_configuration.m_root + "/content" + url;
     const std::string query = request.get_query();
     if ( ! query.empty() )
       contentUrl += "?" + query;
@@ -578,7 +567,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
 MustacheData InternalServer::get_default_data() const
 {
   MustacheData data;
-  data.set("root", m_root);
+  data.set("root", m_configuration.m_root);
   return data;
 }
 
@@ -785,7 +774,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     } catch(std::runtime_error& e) {
       // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
       // (in case of zim file not containing a index)
-      const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css);
+      const auto cssUrl = renderUrl(m_configuration.m_root, RESOURCE::templates::url_of_search_results_css);
       HTTPErrorResponse response(*this, request, MHD_HTTP_NOT_FOUND,
                                  "fulltext-search-unavailable",
                                  "404-page-heading",
@@ -825,8 +814,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
     renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
-    renderer.setProtocolPrefix(m_root + "/content/");
-    renderer.setSearchProtocolPrefix(m_root + "/search");
+    renderer.setProtocolPrefix(m_configuration.m_root + "/content/");
+    renderer.setSearchProtocolPrefix(m_configuration.m_root + "/search");
     renderer.setPageLength(pageLength);
     if (request.get_requested_format() == "xml") {
       return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
@@ -1001,7 +990,7 @@ std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
   const auto path = kiwix::urlEncode(item.getPath());
-  const auto redirectUrl = m_root + "/content/" + bookName + "/" + path;
+  const auto redirectUrl = m_configuration.m_root + "/content/" + bookName + "/" + path;
   return Response::build_redirect(*this, redirectUrl);
 }
 
@@ -1025,7 +1014,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
-    const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true);
+    const std::string searchURL = m_configuration.m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
@@ -1060,7 +1049,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     if (m_configuration.m_verbose)
       printf("Failed to find %s\n", urlStr.c_str());
 
-    std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
+    std::string searchURL = m_configuration.m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));

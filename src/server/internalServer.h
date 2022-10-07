@@ -151,7 +151,6 @@ class InternalServer {
   private: // data
     Server::Configuration m_configuration;
     std::string m_addr;
-    std::string m_root;
     std::string m_indexTemplateString;
     std::shared_ptr<NameMapper> mp_nameMapper;
     struct MHD_Daemon* mp_daemon;
