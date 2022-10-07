@@ -117,6 +117,11 @@ namespace kiwix
         */
        void stop();
 
+       /**
+        * Tell if the server is running or not.
+        */
+       bool isRunning();
+
        int getPort();
        std::string getAddress();
 

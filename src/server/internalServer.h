@@ -104,6 +104,7 @@ class InternalServer : Server::Configuration {
                                void** cont_cls);
     bool start();
     void stop();
+    bool isRunning() const;
     std::string getAddress() { return m_addr; }
     int getPort() { return m_port; }
 

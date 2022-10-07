@@ -61,6 +61,13 @@ void Server::stop() {
   }
 }
 
+bool Server::isRunning() {
+  if (!mp_server) {
+    return false;
+  }
+  return mp_server->isRunning();
+}
+
 int Server::getPort()
 {
   return mp_server->getPort();
