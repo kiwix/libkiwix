@@ -932,8 +932,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper(mp_library, mp_nameMapper);
-  opdsDumper.setRootLocation(m_root);
+  kiwix::OPDSDumper opdsDumper(*this);
   opdsDumper.setLibraryId(m_library_id);
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {

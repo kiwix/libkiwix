@@ -23,11 +23,11 @@
 #include <time.h>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include <pugixml.hpp>
 
-#include "library.h"
-#include "name_mapper.h"
+#include "server.h"
 
 using namespace std;
 
@@ -41,8 +41,7 @@ namespace kiwix
 class OPDSDumper
 {
  public:
-  OPDSDumper() = default;
-  OPDSDumper(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> NameMapper);
+  OPDSDumper(Server::Configuration configuration);
   ~OPDSDumper();
 
   /**
@@ -94,13 +93,6 @@ class OPDSDumper
   void setLibraryId(const std::string& id) { this->libraryId = id;}
 
   /**
-   * Set the root location used when generating url.
-   *
-   * @param rootLocation the root location to use.
-   */
-  void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
-
-  /**
    * Set some informations about the search results.
    *
    * @param totalResult the total number of results of the search.
@@ -110,10 +102,8 @@ class OPDSDumper
   void setOpenSearchInfo(int totalResult, int startIndex, int count);
 
  protected:
-  std::shared_ptr<kiwix::Library> library;
-  std::shared_ptr<kiwix::NameMapper> nameMapper;
+  Server::Configuration m_configuration;
   std::string libraryId;
-  std::string rootLocation;
   int m_totalResults;
   int m_startIndex;
   int m_count;

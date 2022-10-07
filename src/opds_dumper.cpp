@@ -19,6 +19,8 @@
 
 #include "opds_dumper.h"
 #include "book.h"
+#include "library.h"
+#include "name_mapper.h"
 
 #include "libkiwix-resources.h"
 #include <mustache.hpp>
@@ -30,9 +32,8 @@ namespace kiwix
 {
 
 /* Constructor */
-OPDSDumper::OPDSDumper(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper)
-  : library(library),
-    nameMapper(nameMapper)
+OPDSDumper::OPDSDumper(Server::Configuration configuration)
+  : m_configuration(configuration)
 {
 }
 /* Destructor */
@@ -72,11 +73,11 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
     return illustrations;
 }
 
-std::string fullEntryXML(const Book& book, const std::string& rootLocation, const std::string& bookName)
+std::string fullEntryXML(const Server::Configuration& configuration, const Book& book, const std::string& bookName)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
-      {"root",  rootLocation},
+      {"root", configuration.m_root},
       {"id", book.getId()},
       {"name", book.getName()},
       {"title", book.getTitle()},
@@ -99,12 +100,12 @@ std::string fullEntryXML(const Book& book, const std::string& rootLocation, cons
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
 }
 
-std::string partialEntryXML(const Book& book, const std::string& rootLocation)
+std::string partialEntryXML(const Server::Configuration& configuration, const Book& book)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
-      {"root",  rootLocation},
-      {"endpoint_root", rootLocation + "/catalog/v2"},
+      {"root",  configuration.m_root},
+      {"endpoint_root", configuration.m_root + "/catalog/v2"},
       {"id", book.getId()},
       {"title", book.getTitle()},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
@@ -113,16 +114,16 @@ std::string partialEntryXML(const Book& book, const std::string& rootLocation)
     return render_template(xmlTemplate, data);
 }
 
-BooksData getBooksData(const Library& library, const NameMapper& nameMapper, const std::vector<std::string>& bookIds, const std::string& rootLocation, bool partial)
+BooksData getBooksData(const Server::Configuration& configuration, const std::vector<std::string>& bookIds, bool partial)
 {
   BooksData booksData;
   for ( const auto& bookId : bookIds ) {
     try {
-      const Book book = library.getBookByIdThreadSafe(bookId);
-      const std::string bookName = nameMapper.getNameForId(bookId);
+      const Book book = configuration.mp_library->getBookByIdThreadSafe(bookId);
+      const std::string bookName = configuration.mp_nameMapper->getNameForId(bookId);
       const auto entryXML = partial
-                          ? partialEntryXML(book, rootLocation)
-                          : fullEntryXML(book, rootLocation, bookName);
+                          ? partialEntryXML(configuration, book)
+                          : fullEntryXML(configuration, book, bookName);
       booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -190,10 +191,10 @@ std::string getLanguageSelfName(const std::string& lang) {
 
 string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
 {
-  const auto booksData = getBooksData(*library, *nameMapper, bookIds, rootLocation, false);
+  const auto booksData = getBooksData(m_configuration, bookIds, false);
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
-     {"root", rootLocation},
+     {"root", m_configuration.m_root},
      {"feed_id", gen_uuid(libraryId + "/catalog/search?"+query)},
      {"filter", onlyAsNonEmptyMustacheValue(query)},
      {"totalResults", to_string(m_totalResults)},
@@ -207,8 +208,8 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
 
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
-  const auto endpointRoot = rootLocation + "/catalog/v2";
-  const auto booksData = getBooksData(*library, *nameMapper, bookIds, rootLocation, partial);
+  const auto endpointRoot = m_configuration.m_root + "/catalog/v2";
+  const auto booksData = getBooksData(m_configuration, bookIds, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const kainjow::mustache::object template_data{
@@ -229,18 +230,18 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
 
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
 {
-  const auto book = library->getBookById(bookId);
-  const std::string bookName = nameMapper->getNameForId(bookId);
+  const auto book = m_configuration.mp_library->getBookById(bookId);
+  const std::string bookName = m_configuration.mp_nameMapper->getNameForId(bookId);
   return XML_HEADER
          + "\n"
-         + fullEntryXML(book, rootLocation, bookName);
+         + fullEntryXML(m_configuration, book, bookName);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const
 {
   const auto now = gen_date_str();
   kainjow::mustache::list categoryData;
-  for ( const auto& category : library->getBooksCategories() ) {
+  for ( const auto& category : m_configuration.mp_library->getBooksCategories() ) {
     const auto urlencodedCategoryName = urlEncode(category);
     categoryData.push_back(kainjow::mustache::object{
       {"name", category},
@@ -254,7 +255,7 @@ std::string OPDSDumper::categoriesOPDSFeed() const
              RESOURCE::templates::catalog_v2_categories_xml,
              kainjow::mustache::object{
                {"date", now},
-               {"endpoint_root", rootLocation + "/catalog/v2"},
+               {"endpoint_root", m_configuration.m_root + "/catalog/v2"},
                {"feed_id", gen_uuid(libraryId + "/categories")},
                {"categories", categoryData }
              }
@@ -266,7 +267,7 @@ std::string OPDSDumper::languagesOPDSFeed() const
   const auto now = gen_date_str();
   kainjow::mustache::list languageData;
   std::call_once(fillLanguagesFlag, fillLanguagesMap);
-  for ( const auto& langAndBookCount : library->getBooksLanguagesWithCounts() ) {
+  for ( const auto& langAndBookCount : m_configuration.mp_library->getBooksLanguagesWithCounts() ) {
     const std::string languageCode = langAndBookCount.first;
     const int bookCount = langAndBookCount.second;
     const auto languageSelfName = getLanguageSelfName(languageCode);
@@ -283,7 +284,7 @@ std::string OPDSDumper::languagesOPDSFeed() const
              RESOURCE::templates::catalog_v2_languages_xml,
              kainjow::mustache::object{
                {"date", now},
-               {"endpoint_root", rootLocation + "/catalog/v2"},
+               {"endpoint_root", m_configuration.m_root + "/catalog/v2"},
                {"feed_id", gen_uuid(libraryId + "/languages")},
                {"languages", languageData }
              }
