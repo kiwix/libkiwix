@@ -32,7 +32,7 @@ namespace kiwix {
 
 Server::Configuration::Configuration(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper) :
   mp_library(library),
-  mp_nameMapper(nameMapper ? nameMapper : std::make_shared<IdNameMapper>())
+  mp_nameMapper(nameMapper ? nameMapper : std::make_shared<HumanReadableNameMapper>(*library, true))
 {}
 
 Server::Configuration& Server::Configuration::setRoot(const std::string& root)
