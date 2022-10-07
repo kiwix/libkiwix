@@ -42,29 +42,21 @@ Server::Configuration& Server::Configuration::setRoot(const std::string& root)
 }
 
 Server::Server(const Server::Configuration& configuration) :
-  m_configuration(configuration),
-  mp_server(nullptr)
+  mp_server(new InternalServer(configuration))
 {
 }
 
 Server::~Server() = default;
 
 bool Server::start() {
-  mp_server.reset(new InternalServer(m_configuration));
   return mp_server->start();
 }
 
 void Server::stop() {
-  if (mp_server) {
-    mp_server->stop();
-    mp_server.reset(nullptr);
-  }
+  mp_server->stop();
 }
 
 bool Server::isRunning() {
-  if (!mp_server) {
-    return false;
-  }
   return mp_server->isRunning();
 }
 

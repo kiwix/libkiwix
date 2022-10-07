@@ -104,7 +104,6 @@ namespace kiwix
         * @param library The library to serve.
         */
        explicit Server(const Configuration& configuration);
-
        virtual ~Server();
 
        /**
@@ -122,11 +121,17 @@ namespace kiwix
         */
        bool isRunning();
 
+       /**
+        * Get the port of the server
+        */
        int getPort();
+
+       /**
+        * Get the ipAddress of the server
+        */
        std::string getAddress();
 
      protected:
-       Configuration m_configuration;
        std::unique_ptr<InternalServer> mp_server;
   };
 }
