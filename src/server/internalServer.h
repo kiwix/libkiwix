@@ -26,7 +26,6 @@ extern "C" {
 }
 
 #include "library.h"
-#include "name_mapper.h"
 #include "server.h"
 
 #include <zim/search.h>
@@ -152,7 +151,6 @@ class InternalServer {
     Server::Configuration m_configuration;
     std::string m_addr;
     std::string m_indexTemplateString;
-    std::shared_ptr<NameMapper> mp_nameMapper;
     struct MHD_Daemon* mp_daemon;
 
     SearchCache searchCache;

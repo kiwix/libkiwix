@@ -216,7 +216,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
   try {
     auto bookName = request.get_argument("content");
     try {
-      const auto bookIds = Library::BookIdSet{mp_nameMapper->getIdForName(bookName)};
+      const auto bookIds = Library::BookIdSet{m_configuration.mp_nameMapper->getIdForName(bookName)};
       const auto queryString = request.get_query([&](const std::string& key){return key == "content";}, true);
       return {queryString, bookIds};
     } catch (const std::out_of_range&) {
@@ -236,7 +236,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
     for(const auto& bookId: id_vec) {
       try {
         // This is a silly way to check that bookId exists
-        mp_nameMapper->getNameForId(bookId);
+        m_configuration.mp_nameMapper->getNameForId(bookId);
       } catch (const std::out_of_range&) {
         throw Error(noSuchBookErrorMsg(bookId));
       }
@@ -255,7 +255,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
     Library::BookIdSet bookIds;
     for(const auto& bookName: name_vec) {
       try {
-        bookIds.insert(mp_nameMapper->getIdForName(bookName));
+        bookIds.insert(m_configuration.mp_nameMapper->getIdForName(bookName));
       } catch(const std::out_of_range&) {
         throw Error(noSuchBookErrorMsg(bookName));
       }
@@ -323,8 +323,6 @@ zim::Query SearchInfo::getZimQuery(bool verbose) const {
   return query;
 }
 
-static std::shared_ptr<NameMapper> defaultNameMapper = std::make_shared<IdNameMapper>();
-
 static MHD_Result staticHandlerCallback(void* cls,
                                         struct MHD_Connection* connection,
                                         const char* url,
@@ -359,7 +357,6 @@ public:
 InternalServer::InternalServer(const Server::Configuration& configuration) :
   m_configuration(configuration),
   m_indexTemplateString(configuration.m_indexTemplateString.empty() ? RESOURCE::templates::index_html : configuration.m_indexTemplateString),
-  mp_nameMapper(configuration.mp_nameMapper ? configuration.mp_nameMapper : defaultNameMapper),
   mp_daemon(nullptr),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (m_configuration.mp_library->getBookCount(true, true)*0.1), 1U))),
@@ -631,7 +628,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    bookId = mp_nameMapper->getIdForName(bookName);
+    bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
     archive = m_configuration.mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     // error handled by the archive == nullptr check below
@@ -785,7 +782,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       /*
       if(bookIds.size() == 1) {
         auto bookId = *bookIds.begin();
-        auto bookName = mp_nameMapper->getNameForId(bookId);
+        auto bookName = m_configuration.mp_nameMapper->getNameForId(bookId);
         response += TaskbarInfo(bookName, m_configuration.mp_library->getArchiveById(bookId).get());
       }
       */
@@ -810,7 +807,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     }
 
     /* Get the results */
-    SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, m_configuration.mp_library, start,
+    SearchRenderer renderer(search->getResults(start-1, pageLength), m_configuration.mp_nameMapper, m_configuration.mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
     renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
@@ -826,7 +823,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     /*
     if(bookIds.size() == 1) {
       auto bookId = *bookIds.begin();
-      auto bookName = mp_nameMapper->getNameForId(bookId);
+      auto bookName = m_configuration.mp_nameMapper->getNameForId(bookId);
       response->set_taskbar(bookName, m_configuration.mp_library->getArchiveById(bookId).get());
     }
     */
@@ -853,7 +850,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    const std::string bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
     archive = m_configuration.mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     // error handled by the archive == nullptr check below
@@ -935,8 +932,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper(m_configuration.mp_library, mp_nameMapper);
-  opdsDumper.setRootLocation(m_root);
+  kiwix::OPDSDumper opdsDumper(m_configuration.mp_library, m_configuration.mp_nameMapper);
+  opdsDumper.setRootLocation(m_configuration.m_root);
   opdsDumper.setLibraryId(m_library_id);
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
@@ -1009,7 +1006,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   std::shared_ptr<zim::Archive> archive;
   try {
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    const std::string bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
     archive = m_configuration.mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {}
 
@@ -1081,7 +1078,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
 
   std::shared_ptr<zim::Archive> archive;
   try {
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    const std::string bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
     archive = m_configuration.mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {}
 

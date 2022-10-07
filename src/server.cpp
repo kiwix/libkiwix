@@ -30,6 +30,17 @@
 
 namespace kiwix {
 
+Server::Configuration::Configuration(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper) :
+  mp_library(library),
+  mp_nameMapper(nameMapper ? nameMapper : std::make_shared<IdNameMapper>())
+{}
+
+Server::Configuration& Server::Configuration::setRoot(const std::string& root)
+{
+  m_root = normalizeRootUrl(root);
+  return *this;
+}
+
 Server::Server(const Server::Configuration& configuration) :
   m_configuration(configuration),
   mp_server(nullptr)
@@ -48,12 +59,6 @@ void Server::stop() {
     mp_server->stop();
     mp_server.reset(nullptr);
   }
-}
-
-Server::Configuration& Server::Configuration::setRoot(const std::string& root)
-{
-  m_root = normalizeRootUrl(root);
-  return *this;
 }
 
 int Server::getPort()
