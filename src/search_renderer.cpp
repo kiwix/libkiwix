@@ -36,12 +36,12 @@ namespace kiwix
 {
 
 /* Constructor */
-SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, std::shared_ptr<NameMapper> mapper,
                       unsigned int start, unsigned int estimatedResultCount)
     : SearchRenderer(srs, mapper, nullptr, start, estimatedResultCount)
 {}
 
-SearchRenderer::SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, std::shared_ptr<Library> library,
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs, std::shared_ptr<NameMapper> mapper, std::shared_ptr<Library> library,
                       unsigned int start, unsigned int estimatedResultCount)
     : m_srs(srs),
       mp_nameMapper(mapper),

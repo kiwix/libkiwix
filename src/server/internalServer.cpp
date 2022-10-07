@@ -333,7 +333,7 @@ zim::Query SearchInfo::getZimQuery(bool verbose) const {
   return query;
 }
 
-static IdNameMapper defaultNameMapper;
+static std::shared_ptr<NameMapper> defaultNameMapper = std::make_shared<IdNameMapper>();
 
 static MHD_Result staticHandlerCallback(void* cls,
                                         struct MHD_Connection* connection,
@@ -370,7 +370,7 @@ InternalServer::InternalServer(const Server::Configuration& configuration) :
   m_configuration(configuration),
   m_root(normalizeRootUrl(configuration.m_root)),
   m_indexTemplateString(configuration.m_indexTemplateString.empty() ? RESOURCE::templates::index_html : configuration.m_indexTemplateString),
-  mp_nameMapper(configuration.mp_nameMapper ? configuration.mp_nameMapper : &defaultNameMapper),
+  mp_nameMapper(configuration.mp_nameMapper ? configuration.mp_nameMapper : defaultNameMapper),
   mp_daemon(nullptr),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (m_configuration.mp_library->getBookCount(true, true)*0.1), 1U))),

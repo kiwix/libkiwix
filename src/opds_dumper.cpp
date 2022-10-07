@@ -30,7 +30,7 @@ namespace kiwix
 {
 
 /* Constructor */
-OPDSDumper::OPDSDumper(std::shared_ptr<Library> library, NameMapper* nameMapper)
+OPDSDumper::OPDSDumper(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper)
   : library(library),
     nameMapper(nameMapper)
 {

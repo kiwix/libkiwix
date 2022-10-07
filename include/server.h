@@ -34,7 +34,7 @@ namespace kiwix
     public:
       class Configuration {
         public:
-          explicit Configuration(std::shared_ptr<Library> library, NameMapper* nameMapper=nullptr)
+          explicit Configuration(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper=nullptr)
             : mp_library(library),
               mp_nameMapper(nameMapper)
           {}
@@ -87,7 +87,7 @@ namespace kiwix
           }
 
           std::shared_ptr<Library> mp_library;
-          NameMapper* mp_nameMapper;
+          std::shared_ptr<NameMapper> mp_nameMapper;
           std::string m_root = "";
           std::string m_addr = "";
           std::string m_indexTemplateString = "";
