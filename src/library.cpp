@@ -221,7 +221,11 @@ bool Library::removeBookById(const std::string& id)
   // Having a too big cache is not a problem here (or it would have been before)
   // (And setMaxSize doesn't actually reduce the cache size, extra cached items
   //  will be removed in put or getOrPut).
-  return mp_impl->m_books.erase(id) == 1;
+  const bool bookWasRemoved = mp_impl->m_books.erase(id) == 1;
+  if ( bookWasRemoved ) {
+    ++mp_impl->m_revision;
+  }
+  return bookWasRemoved;
 }
 
 Library::Revision Library::getRevision() const
