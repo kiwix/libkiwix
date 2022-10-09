@@ -218,11 +218,11 @@ struct CustomizedResourceData
   std::string resourceFilePath;
 };
 
-bool etag_not_needed(const RequestContext& request)
+bool responseMustBeETaggedWithLibraryId(const Response& response, const RequestContext& request)
 {
-  const std::string url = request.get_url();
-  return kiwix::startsWith(url, "/skin")
-      || url == "/random";
+  return response.getReturnCode() == MHD_HTTP_OK
+      && response.get_kind() == Response::DYNAMIC_CONTENT
+      && request.get_url() != "/random";
 }
 
 ETag
@@ -528,10 +528,9 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     }
   }
 
-  if (response->getReturnCode() == MHD_HTTP_OK
-      && response->get_kind() == Response::DYNAMIC_CONTENT
-      && !etag_not_needed(request))
+  if ( responseMustBeETaggedWithLibraryId(*response, request) ) {
     response->set_etag_body(getLibraryId());
+  }
 
   auto ret = response->send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
