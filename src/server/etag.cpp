@@ -41,7 +41,7 @@ const char all_options[] = "Zz";
 
 static_assert(ETag::OPTION_COUNT == sizeof(all_options) - 1, "");
 
-bool isValidServerId(const std::string& s)
+bool isValidETagBody(const std::string& s)
 {
   return !s.empty() && s.find_first_of("\"/") == std::string::npos;
 }
@@ -83,17 +83,17 @@ bool ETag::get_option(Option opt) const
 
 std::string ETag::get_etag() const
 {
-  if ( m_serverId.empty() )
+  if ( m_body.empty() )
     return std::string();
 
-  return "\"" + m_serverId + "/" + m_options + "\"";
+  return "\"" + m_body + "/" + m_options + "\"";
 }
 
-ETag::ETag(const std::string& serverId, const std::string& options)
+ETag::ETag(const std::string& body, const std::string& options)
 {
-  if ( isValidServerId(serverId) && isValidOptionsString(options) )
+  if ( isValidETagBody(body) && isValidOptionsString(options) )
   {
-    m_serverId = serverId;
+    m_body = body;
     m_options = options;
   }
 }
@@ -115,7 +115,7 @@ ETag ETag::parse(std::string s)
   return ETag(s.substr(0, i), s.substr(i+1));
 }
 
-ETag ETag::match(const std::string& etags, const std::string& server_id)
+ETag ETag::match(const std::string& etags, const std::string& body)
 {
   std::istringstream ss(etags);
   std::string etag_str;
@@ -125,7 +125,7 @@ ETag ETag::match(const std::string& etags, const std::string& server_id)
       etag_str.pop_back();
 
     const ETag etag = parse(etag_str);
-    if ( etag && etag.m_serverId == server_id )
+    if ( etag && etag.m_body == body )
       return etag;
   }
 
