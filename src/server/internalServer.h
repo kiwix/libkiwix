@@ -147,8 +147,6 @@ class InternalServer {
 
     MustacheData get_default_data() const;
 
-    bool etag_not_needed(const RequestContext& r) const;
-    ETag get_matching_if_none_match_etag(const RequestContext& request, const std::string& etagBody) const;
     std::pair<std::string, Library::BookIdSet> selectBooks(const RequestContext& r) const;
     SearchInfo getSearchInfo(const RequestContext& r) const;
 

@@ -218,6 +218,24 @@ struct CustomizedResourceData
   std::string resourceFilePath;
 };
 
+bool etag_not_needed(const RequestContext& request)
+{
+  const std::string url = request.get_url();
+  return kiwix::startsWith(url, "/skin")
+      || url == "/random";
+}
+
+ETag
+get_matching_if_none_match_etag(const RequestContext& r, const std::string& etagBody)
+{
+  try {
+    const std::string etag_list = r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
+    return ETag::match(etag_list, etagBody);
+  } catch (const std::out_of_range&) {
+    return ETag();
+  }
+}
+
 } // unnamed namespace
 
 std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const RequestContext& request) const
@@ -603,24 +621,6 @@ MustacheData InternalServer::get_default_data() const
   MustacheData data;
   data.set("root", m_root);
   return data;
-}
-
-bool InternalServer::etag_not_needed(const RequestContext& request) const
-{
-  const std::string url = request.get_url();
-  return kiwix::startsWith(url, "/skin")
-      || url == "/random";
-}
-
-ETag
-InternalServer::get_matching_if_none_match_etag(const RequestContext& r, const std::string& etagBody) const
-{
-  try {
-    const std::string etag_list = r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
-    return ETag::match(etag_list, etagBody);
-  } catch (const std::out_of_range&) {
-    return ETag();
-  }
 }
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
