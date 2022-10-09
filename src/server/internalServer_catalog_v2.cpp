@@ -77,17 +77,18 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestContext& request)
 {
+  const std::string libraryId = getLibraryId();
   return ContentResponse::build(
              *this,
              RESOURCE::templates::catalog_v2_root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
                {"endpoint_root", m_root + "/catalog/v2"},
-               {"feed_id", gen_uuid(m_library_id)},
-               {"all_entries_feed_id", gen_uuid(m_library_id + "/entries")},
-               {"partial_entries_feed_id", gen_uuid(m_library_id + "/partial_entries")},
-               {"category_list_feed_id", gen_uuid(m_library_id + "/categories")},
-               {"language_list_feed_id", gen_uuid(m_library_id + "/languages")}
+               {"feed_id", gen_uuid(libraryId)},
+               {"all_entries_feed_id", gen_uuid(libraryId + "/entries")},
+               {"partial_entries_feed_id", gen_uuid(libraryId + "/partial_entries")},
+               {"category_list_feed_id", gen_uuid(libraryId + "/categories")},
+               {"language_list_feed_id", gen_uuid(libraryId + "/languages")}
              },
              "application/atom+xml;profile=opds-catalog;kind=navigation"
   );
@@ -97,7 +98,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
 {
   OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(m_library_id);
+  opdsDumper.setLibraryId(getLibraryId());
   const auto bookIds = search_catalog(request, opdsDumper);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
   return ContentResponse::build(
@@ -118,7 +119,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
 
   OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(m_library_id);
+  opdsDumper.setLibraryId(getLibraryId());
   const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
              *this,
@@ -131,7 +132,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
 {
   OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(m_library_id);
+  opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
              *this,
              opdsDumper.categoriesOPDSFeed(),
@@ -143,7 +144,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
 {
   OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(m_library_id);
+  opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
              *this,
              opdsDumper.languagesOPDSFeed(),

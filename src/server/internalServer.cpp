@@ -461,7 +461,6 @@ bool InternalServer::start() {
   }
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
   m_server_id = kiwix::to_string(server_start_time.count());
-  m_library_id = m_server_id;
   return true;
 }
 
@@ -532,7 +531,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   if (response->getReturnCode() == MHD_HTTP_OK
       && response->get_kind() == Response::DYNAMIC_CONTENT
       && !etag_not_needed(request))
-    response->set_etag_body(m_server_id);
+    response->set_etag_body(getLibraryId());
 
   auto ret = response->send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
@@ -554,6 +553,11 @@ bool isEndpointUrl(const std::string& url, const std::string& endpoint)
 
 } // unnamed namespace
 
+std::string InternalServer::getLibraryId() const
+{
+  return m_server_id + "." + kiwix::to_string(mp_library->getRevision());
+}
+
 std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& request)
 {
   try {
@@ -562,7 +566,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
              + urlNotFoundMsg;
     }
 
-    const ETag etag = get_matching_if_none_match_etag(request, m_server_id);
+    const ETag etag = get_matching_if_none_match_etag(request, getLibraryId());
     if ( etag )
       return Response::build_304(*this, etag);
 
@@ -968,7 +972,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   zim::Uuid uuid;
   kiwix::OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(m_library_id);
+  opdsDumper.setLibraryId(getLibraryId());
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
     uuid = zim::Uuid::generate(host);

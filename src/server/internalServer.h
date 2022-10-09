@@ -152,6 +152,8 @@ class InternalServer {
 
     bool isLocallyCustomizedResource(const std::string& url) const;
 
+    std::string getLibraryId() const;
+
   private: // types
     class LockableSuggestionSearcher;
     typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
@@ -178,7 +180,6 @@ class InternalServer {
     SuggestionSearcherCache suggestionSearcherCache;
 
     std::string m_server_id;
-    std::string m_library_id;
 
     class CustomizedResources;
     std::unique_ptr<CustomizedResources> m_customizedResources;
