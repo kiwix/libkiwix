@@ -66,7 +66,8 @@ class Response {
 
     void set_code(int code) { m_returnCode = code; }
     void set_kind(Kind k);
-    void set_server_id(const std::string& id) { m_etag.set_body(id); }
+    Kind get_kind() const { return m_kind; }
+    void set_etag_body(const std::string& id) { m_etag.set_body(id); }
     void add_header(const std::string& name, const std::string& value) { m_customHeaders[name] = value; }
 
     int getReturnCode() const { return m_returnCode; }

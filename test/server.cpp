@@ -1136,14 +1136,25 @@ TEST_F(ServerTest, ETagIsTheSameAcrossHeadAndGet)
   }
 }
 
-TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
+TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETagsForDynamicContent)
 {
   ZimFileServer zfs2(SERVER_PORT + 1, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
   for ( const Resource& res : all200Resources() ) {
-    if ( !res.etag_expected() ) continue;
+    if ( res.kind != DYNAMIC_CONTENT ) continue;
     const auto h1 = zfs1_->HEAD(res.url);
     const auto h2 = zfs2.HEAD(res.url);
     EXPECT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
+  }
+}
+
+TEST_F(ServerTest, DifferentServerInstancesProduceIdenticalETagsForZimContent)
+{
+  ZimFileServer zfs2(SERVER_PORT + 1, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind != ZIM_CONTENT ) continue;
+    const auto h1 = zfs1_->HEAD(res.url);
+    const auto h2 = zfs2.HEAD(res.url);
+    EXPECT_EQ(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
   }
 }
 

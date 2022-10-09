@@ -511,8 +511,10 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     }
   }
 
-  if (response->getReturnCode() == MHD_HTTP_OK && !etag_not_needed(request))
-    response->set_server_id(m_server_id);
+  if (response->getReturnCode() == MHD_HTTP_OK
+      && response->get_kind() == Response::DYNAMIC_CONTENT
+      && !etag_not_needed(request))
+    response->set_etag_body(m_server_id);
 
   auto ret = response->send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
@@ -542,7 +544,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
              + urlNotFoundMsg;
     }
 
-    const ETag etag = get_matching_if_none_match_etag(request);
+    const ETag etag = get_matching_if_none_match_etag(request, m_server_id);
     if ( etag )
       return Response::build_304(*this, etag);
 
@@ -611,11 +613,11 @@ bool InternalServer::etag_not_needed(const RequestContext& request) const
 }
 
 ETag
-InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
+InternalServer::get_matching_if_none_match_etag(const RequestContext& r, const std::string& etagBody) const
 {
   try {
     const std::string etag_list = r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
-    return ETag::match(etag_list, m_server_id);
+    return ETag::match(etag_list, etagBody);
   } catch (const std::out_of_range&) {
     return ETag();
   }
@@ -1049,6 +1051,11 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
   }
 
+  const std::string archiveUuid(archive->getUuid());
+  const ETag etag = get_matching_if_none_match_etag(request, archiveUuid);
+  if ( etag )
+    return Response::build_304(*this, etag);
+
   auto urlStr = url.substr(prefixLength + bookName.size());
   if (urlStr[0] == '/') {
     urlStr = urlStr.substr(1);
@@ -1067,6 +1074,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
       return build_redirect(bookName, getFinalItem(*archive, entry));
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
+    response->set_etag_body(archiveUuid);
 
     if (m_verbose.load()) {
       printf("Found %s\n", entry.getPath().c_str());
@@ -1120,6 +1128,11 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
            + noSuchBookErrorMsg(bookName);
   }
 
+  const std::string archiveUuid(archive->getUuid());
+  const ETag etag = get_matching_if_none_match_etag(request, archiveUuid);
+  if ( etag )
+    return Response::build_304(*this, etag);
+
   // Remove the beggining of the path:
   // /raw/<bookName>/<kind>/foo
   // ^^^^^          ^      ^
@@ -1129,13 +1142,17 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   try {
     if (kind == "meta") {
       auto item = archive->getMetadataItem(itemPath);
-      return ItemResponse::build(*this, request, item);
+      auto response = ItemResponse::build(*this, request, item);
+      response->set_etag_body(archiveUuid);
+      return response;
     } else {
       auto entry = archive->getEntryByPath(itemPath);
       if (entry.isRedirect()) {
         return build_redirect(bookName, entry.getItem(true));
       }
-      return ItemResponse::build(*this, request, entry.getItem());
+      auto response = ItemResponse::build(*this, request, entry.getItem());
+      response->set_etag_body(archiveUuid);
+      return response;
     }
   } catch (zim::EntryNotFound& e ) {
     if (m_verbose.load()) {
