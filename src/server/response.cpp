@@ -102,6 +102,14 @@ bool compress(std::string &content) {
 }
 
 
+const char* getCacheControlHeader(Response::Kind k)
+{
+  switch(k) {
+    case Response::STATIC_RESOURCE: return "max-age=31536000, immutable";
+    case Response::ZIM_CONTENT:     return "max-age=3600, must-revalidate";
+    default:                        return "max-age=0, must-revalidate";
+  }
+}
 
 } // unnamed namespace
 
@@ -110,6 +118,13 @@ Response::Response(bool verbose)
     m_returnCode(MHD_HTTP_OK)
 {
   add_header(MHD_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+}
+
+void Response::set_kind(Kind k)
+{
+  m_kind = k;
+  if ( k == ZIM_CONTENT )
+    m_etag.set_option(ETag::ZIM_CONTENT);
 }
 
 std::unique_ptr<Response> Response::build(const InternalServer& server)
@@ -122,6 +137,9 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   auto response = Response::build(server);
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->m_etag = etag;
+  if ( etag.get_option(ETag::ZIM_CONTENT) ) {
+    response->set_kind(Response::ZIM_CONTENT);
+  }
   if ( etag.get_option(ETag::COMPRESSED_CONTENT) ) {
     response->add_header(MHD_HTTP_HEADER_VARY, "Accept-Encoding");
   }
@@ -355,7 +373,7 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   MHD_Response* response = create_mhd_response(request);
 
   MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
-    m_etag.get_option(ETag::CACHEABLE_ENTITY) ? "max-age=2723040, public" : "no-cache, no-store, must-revalidate");
+                          getCacheControlHeader(m_kind));
   const std::string etag = m_etag.get_etag();
   if ( ! etag.empty() )
     MHD_add_response_header(response, MHD_HTTP_HEADER_ETAG, etag.c_str());
@@ -411,7 +429,7 @@ ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::strin
   m_mimeType(mimetype)
 {
   m_byteRange = byterange;
-  set_cacheable();
+  set_kind(Response::ZIM_CONTENT);
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
@@ -423,14 +441,14 @@ std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, cons
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
     auto response = ContentResponse::build(server, item.getData(), mimetype);
-    response->set_cacheable();
+    response->set_kind(Response::ZIM_CONTENT);
     response->m_byteRange = byteRange;
     return std::move(response);
   }
 
   if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
     auto response = Response::build_416(server, item.getSize());
-    response->set_cacheable();
+    response->set_kind(Response::ZIM_CONTENT);
     return response;
   }
 

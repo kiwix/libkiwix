@@ -606,11 +606,8 @@ MustacheData InternalServer::get_default_data() const
 bool InternalServer::etag_not_needed(const RequestContext& request) const
 {
   const std::string url = request.get_url();
-  return kiwix::startsWith(url, "/catalog")
-      || url == "/search"
-      || url == "/suggest"
-      || url == "/random"
-      || url == "/catch/external";
+  return kiwix::startsWith(url, "/skin")
+      || url == "/random";
 }
 
 ETag
@@ -761,7 +758,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
         *this,
         getResource(resourceName),
         getMimeTypeForFile(resourceName));
-    response->set_cacheable();
+    response->set_kind(Response::STATIC_RESOURCE);
     return std::move(response);
   } catch (const ResourceNotFound& e) {
     return HTTP404Response(*this, request)

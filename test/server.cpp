@@ -35,7 +35,7 @@ struct Resource
   ResourceKind kind;
   const char* url;
 
-  bool etag_expected() const { return kind != DYNAMIC_CONTENT; }
+  bool etag_expected() const { return kind != STATIC_CONTENT; }
 };
 
 std::ostream& operator<<(std::ostream& out, const Resource& r)
@@ -47,7 +47,7 @@ std::ostream& operator<<(std::ostream& out, const Resource& r)
 typedef std::vector<Resource> ResourceCollection;
 
 const ResourceCollection resources200Compressible{
-  { STATIC_CONTENT,  "/ROOT/" },
+  { DYNAMIC_CONTENT, "/ROOT/" },
 
   { STATIC_CONTENT,  "/ROOT/skin/autoComplete.min.js" },
   { STATIC_CONTENT,  "/ROOT/skin/css/autoComplete.css" },

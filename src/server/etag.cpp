@@ -37,7 +37,7 @@ namespace {
 // into the ETag for ETag::Option opt.
 // IMPORTANT: The characters in all_options must come in sorted order (so that
 // IMPORTANT: isValidOptionsString() works correctly).
-const char all_options[] = "cz";
+const char all_options[] = "Zz";
 
 static_assert(ETag::OPTION_COUNT == sizeof(all_options) - 1, "");
 

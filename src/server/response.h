@@ -46,6 +46,14 @@ class RequestContext;
 
 class Response {
   public:
+    enum Kind
+    {
+      STATIC_RESOURCE,
+      ZIM_CONTENT,
+      DYNAMIC_CONTENT
+    };
+
+  public:
     Response(bool verbose);
     virtual ~Response() = default;
 
@@ -57,7 +65,7 @@ class Response {
     MHD_Result send(const RequestContext& request, MHD_Connection* connection);
 
     void set_code(int code) { m_returnCode = code; }
-    void set_cacheable() { m_etag.set_option(ETag::CACHEABLE_ENTITY); }
+    void set_kind(Kind k);
     void set_server_id(const std::string& id) { m_etag.set_server_id(id); }
     void add_header(const std::string& name, const std::string& value) { m_customHeaders[name] = value; }
 
@@ -68,6 +76,7 @@ class Response {
     MHD_Response* create_error_response(const RequestContext& request) const;
 
   protected: // data
+    Kind m_kind = DYNAMIC_CONTENT;
     bool m_verbose;
     int m_returnCode;
     ByteRange m_byteRange;

@@ -51,7 +51,7 @@ class ETag
 {
   public: // types
     enum Option {
-      CACHEABLE_ENTITY,
+      ZIM_CONTENT,
       COMPRESSED_CONTENT,
       OPTION_COUNT
     };
