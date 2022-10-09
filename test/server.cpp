@@ -316,6 +316,11 @@ std::string getHeaderValue(const Headers& headers, const std::string& name)
   return er.first->second;
 }
 
+std::string getCacheControlHeader(const httplib::Response& r)
+{
+  return getHeaderValue(r.headers, "Cache-Control");
+}
+
 TEST_F(CustomizedServerTest, NewResourcesCanBeAdded)
 {
   // ServerTest.404 verifies that "/ROOT/non-existent-item" doesn't exist
@@ -958,6 +963,8 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
   ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
+  ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
+  ASSERT_FALSE(g->has_header("ETag"));
 }
 
 TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
@@ -1001,6 +1008,8 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
     ASSERT_EQ(302, g->status) << ctx;
     ASSERT_TRUE(g->has_header("Location")) << ctx;
     ASSERT_EQ("/ROOT/content" + p, g->get_header_value("Location")) << ctx;
+    ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
+    ASSERT_FALSE(g->has_header("ETag"));
   }
 }
 
@@ -1062,6 +1071,39 @@ TEST_F(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
     httplib::Headers g = zfs1_->GET(res.url)->headers;
     httplib::Headers h = zfs1_->HEAD(res.url)->headers;
     EXPECT_EQ(invariantHeaders(g), invariantHeaders(h)) << res;
+  }
+}
+
+TEST_F(ServerTest, CacheControlOfZimContent)
+{
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind == ZIM_CONTENT ) {
+      const auto g = zfs1_->GET(res.url);
+      EXPECT_EQ(getCacheControlHeader(*g), "max-age=3600, must-revalidate") << res;
+      EXPECT_TRUE(g->has_header("ETag")) << res;
+    }
+  }
+}
+
+TEST_F(ServerTest, CacheControlOfStaticContent)
+{
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind == STATIC_CONTENT ) {
+      const auto g = zfs1_->GET(res.url);
+      EXPECT_EQ(getCacheControlHeader(*g), "max-age=31536000, immutable") << res;
+      EXPECT_FALSE(g->has_header("ETag")) << res;
+    }
+  }
+}
+
+TEST_F(ServerTest, CacheControlOfDynamicContent)
+{
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind == DYNAMIC_CONTENT ) {
+      const auto g = zfs1_->GET(res.url);
+      EXPECT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate") << res;
+      EXPECT_TRUE(g->has_header("ETag")) << res;
+    }
   }
 }
 
@@ -1193,8 +1235,8 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
     const auto etag2 = etag.substr(0, etag.size() - 1) + "x\"";
     const auto h = zfs1_->HEAD(res.url, { {"If-None-Match", etag2} } );
     const auto g2 = zfs1_->GET(res.url, { {"If-None-Match", etag2} } );
-    EXPECT_EQ(200, h->status);
-    EXPECT_EQ(200, g2->status);
+    EXPECT_EQ(200, h->status) << res;
+    EXPECT_EQ(200, g2->status) << res;
   }
 }
 
