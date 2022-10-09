@@ -23,13 +23,19 @@ T1 concat(T1 a, const T2& b)
   return a;
 }
 
-const bool WITH_ETAG = true;
-const bool NO_ETAG = false;
+enum ResourceKind
+{
+  ZIM_CONTENT,
+  STATIC_CONTENT,
+  DYNAMIC_CONTENT,
+};
 
 struct Resource
 {
-  bool etag_expected;
+  ResourceKind kind;
   const char* url;
+
+  bool etag_expected() const { return kind != DYNAMIC_CONTENT; }
 };
 
 std::ostream& operator<<(std::ostream& out, const Resource& r)
@@ -41,55 +47,55 @@ std::ostream& operator<<(std::ostream& out, const Resource& r)
 typedef std::vector<Resource> ResourceCollection;
 
 const ResourceCollection resources200Compressible{
-  { WITH_ETAG, "/ROOT/" },
+  { STATIC_CONTENT,  "/ROOT/" },
 
-  { WITH_ETAG, "/ROOT/skin/autoComplete.min.js" },
-  { WITH_ETAG, "/ROOT/skin/css/autoComplete.css" },
-  { WITH_ETAG, "/ROOT/skin/taskbar.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/autoComplete.min.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/css/autoComplete.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/taskbar.css" },
 
-  { NO_ETAG,   "/ROOT/catalog/search" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
 
-  { NO_ETAG,   "/ROOT/search?content=zimfile&pattern=a" },
+  { DYNAMIC_CONTENT, "/ROOT/search?content=zimfile&pattern=a" },
 
-  { NO_ETAG,   "/ROOT/suggest?content=zimfile&term=ray" },
+  { DYNAMIC_CONTENT, "/ROOT/suggest?content=zimfile&term=ray" },
 
-  { WITH_ETAG, "/ROOT/content/zimfile/A/index" },
-  { WITH_ETAG, "/ROOT/content/zimfile/A/Ray_Charles" },
+  { ZIM_CONTENT,     "/ROOT/content/zimfile/A/index" },
+  { ZIM_CONTENT,     "/ROOT/content/zimfile/A/Ray_Charles" },
 
-  { WITH_ETAG, "/ROOT/raw/zimfile/content/A/index" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/content/A/Ray_Charles" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/content/A/index" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/content/A/Ray_Charles" },
 };
 
 const ResourceCollection resources200Uncompressible{
-  { WITH_ETAG, "/ROOT/skin/caret.png" },
-  { WITH_ETAG, "/ROOT/skin/css/images/search.svg" },
+  { STATIC_CONTENT,  "/ROOT/skin/caret.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/css/images/search.svg" },
 
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Description" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Language" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Name" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Tags" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Date" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Publisher" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Description" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Language" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Name" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Tags" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Date" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Creator" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Publisher" },
 
-  { NO_ETAG, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
-  { NO_ETAG,   "/ROOT/catch/external?source=www.example.com" },
+  { DYNAMIC_CONTENT, "/ROOT/catch/external?source=www.example.com" },
 
-  { WITH_ETAG, "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
+  { ZIM_CONTENT,     "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
-  { WITH_ETAG, "/ROOT/content/corner_cases/A/empty.html" },
-  { WITH_ETAG, "/ROOT/content/corner_cases/-/empty.css" },
-  { WITH_ETAG, "/ROOT/content/corner_cases/-/empty.js" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/A/empty.html" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.css" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.js" },
 
 
   // The following url's responses are too small to be compressed
-  { NO_ETAG,   "/ROOT/catalog/root.xml" },
-  { NO_ETAG,   "/ROOT/catalog/searchdescription.xml" },
-  { NO_ETAG,   "/ROOT/suggest?content=zimfile" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/suggest?content=zimfile" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Creator" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
 };
 
 ResourceCollection all200Resources()
@@ -1063,8 +1069,8 @@ TEST_F(ServerTest, ETagHeaderIsSetAsNeeded)
 {
   for ( const Resource& res : all200Resources() ) {
     const auto responseToGet = zfs1_->GET(res.url);
-    EXPECT_EQ(res.etag_expected, responseToGet->has_header("ETag")) << res;
-    if ( res.etag_expected ) {
+    EXPECT_EQ(res.etag_expected(), responseToGet->has_header("ETag")) << res;
+    if ( res.etag_expected() ) {
       EXPECT_TRUE(is_valid_etag(responseToGet->get_header_value("ETag")));
     }
   }
@@ -1092,7 +1098,7 @@ TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
 {
   ZimFileServer zfs2(SERVER_PORT + 1, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
   for ( const Resource& res : all200Resources() ) {
-    if ( !res.etag_expected ) continue;
+    if ( !res.etag_expected() ) continue;
     const auto h1 = zfs1_->HEAD(res.url);
     const auto h2 = zfs2.HEAD(res.url);
     EXPECT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
@@ -1102,7 +1108,7 @@ TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
 TEST_F(ServerTest, CompressionInfluencesETag)
 {
   for ( const Resource& res : resources200Compressible ) {
-    if ( ! res.etag_expected ) continue;
+    if ( ! res.etag_expected() ) continue;
     const auto g1 = zfs1_->GET(res.url);
     const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
     const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} } );
@@ -1115,7 +1121,7 @@ TEST_F(ServerTest, CompressionInfluencesETag)
 TEST_F(ServerTest, ETagOfUncompressibleContentIsNotAffectedByAcceptEncoding)
 {
   for ( const Resource& res : resources200Uncompressible ) {
-    if ( ! res.etag_expected ) continue;
+    if ( ! res.etag_expected() ) continue;
     const auto g1 = zfs1_->GET(res.url);
     const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
     const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} } );
@@ -1160,7 +1166,7 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMatchingETagResultIn304Responses)
   const char* const encodings[] = { "", "gzip" };
   for ( const Resource& res : all200Resources() ) {
     for ( const char* enc: encodings ) {
-      if ( ! res.etag_expected ) continue;
+      if ( ! res.etag_expected() ) continue;
       const TestContext ctx{ {"url", res.url}, {"encoding", enc} };
 
       const auto g = zfs1_->GET(res.url, { {"Accept-Encoding", enc} });
