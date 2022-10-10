@@ -49,9 +49,17 @@ typedef std::vector<Resource> ResourceCollection;
 const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT/" },
 
+  { STATIC_CONTENT,  "/ROOT/viewer" },
+
   { STATIC_CONTENT,  "/ROOT/skin/autoComplete.min.js" },
   { STATIC_CONTENT,  "/ROOT/skin/css/autoComplete.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon.ico" },
+  { STATIC_CONTENT,  "/ROOT/skin/index.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/index.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/iso6391To3.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT/skin/taskbar.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/viewer.js" },
 
   { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
 
@@ -67,8 +75,30 @@ const ResourceCollection resources200Compressible{
 };
 
 const ResourceCollection resources200Uncompressible{
+  { STATIC_CONTENT,  "/ROOT/skin/bittorrent.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/blank.html" },
   { STATIC_CONTENT,  "/ROOT/skin/caret.png" },
   { STATIC_CONTENT,  "/ROOT/skin/css/images/search.svg" },
+  { STATIC_CONTENT,  "/ROOT/skin/download.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/android-chrome-192x192.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/android-chrome-512x512.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/apple-touch-icon.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/browserconfig.xml" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon-16x16.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon-32x32.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-144x144.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-150x150.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-310x150.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-310x310.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-70x70.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/safari-pinned-tab.svg" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/site.webmanifest" },
+  { STATIC_CONTENT,  "/ROOT/skin/fonts/Poppins.ttf" },
+  { STATIC_CONTENT,  "/ROOT/skin/fonts/Roboto.ttf" },
+  { STATIC_CONTENT,  "/ROOT/skin/hash.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/magnet.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/search-icon.svg" },
+  { STATIC_CONTENT,  "/ROOT/skin/search_results.css" },
 
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Description" },
