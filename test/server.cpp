@@ -63,6 +63,11 @@ const ResourceCollection resources200Compressible{
 
   { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
 
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/languages" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/entries" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/partial_entries" },
+
   { DYNAMIC_CONTENT, "/ROOT/search?content=zimfile&pattern=a" },
 
   { DYNAMIC_CONTENT, "/ROOT/suggest?content=zimfile&term=ray" },
@@ -109,6 +114,11 @@ const ResourceCollection resources200Uncompressible{
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Creator" },
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Publisher" },
 
+  { DYNAMIC_CONTENT, "/ROOT/catalog/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
+
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/categories" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/searchdescription.xml" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
   { DYNAMIC_CONTENT, "/ROOT/catch/external?source=www.example.com" },
