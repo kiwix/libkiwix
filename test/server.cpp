@@ -222,7 +222,7 @@ R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
-    <link rel="manifest" href="/ROOT/skin/favicon/site.webmanifest">
+    <link rel="manifest" href="/ROOT/skin/favicon/site.webmanifest?cacheid=bc396efb">
     <link rel="mask-icon" href="/ROOT/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27">
     <meta name="msapplication-config" content="/ROOT/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
@@ -247,8 +247,9 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=216d
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/viewer.js?cacheid=51e745c2" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
-      const blankPageUrl = `${root}/skin/blank.html`;
+      const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
             <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
+            src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
     },
     {
