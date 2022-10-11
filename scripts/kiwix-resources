@@ -112,7 +112,10 @@ def copy_resource_list_file(src_path, dst_path):
 def preprocess_resources(resource_file_path):
     resource_filename = os.path.basename(resource_file_path)
     for resource in read_resource_file(resource_file_path):
-        preprocess_resource(resource)
+        if resource.startswith('skin/'):
+            get_resource_revision(resource)
+        else:
+            preprocess_resource(resource)
     copy_resource_list_file(resource_file_path, os.path.join(OUT_DIR, resource_filename))
 
 if __name__ == "__main__":
