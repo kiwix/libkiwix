@@ -52,15 +52,21 @@ resource_getter_template = """
         return RESOURCE::{identifier};
 """
 
+resource_cacheid_getter_template = """
+    if (name == "{common_name}")
+        return "{cacheid}";
+"""
+
 resource_decl_template = """{namespaces_open}
 extern const std::string {identifier};
 {namespaces_close}"""
 
 class Resource:
-    def __init__(self, base_dirs, filename):
-        filename = filename.strip()
+    def __init__(self, base_dirs, filename, cacheid=None):
+        filename = filename
         self.filename = filename
         self.identifier = full_identifier(filename)
+        self.cacheid = cacheid
         found = False
         for base_dir in base_dirs:
             try:
@@ -71,7 +77,7 @@ class Resource:
             except FileNotFoundError:
                 continue
         if not found:
-            raise Exception("Impossible to found {}".format(filename))
+            raise Exception("Resource not found: {}".format(filename))
 
     def dump_impl(self):
         nb_row = len(self.data)//16 + (1 if len(self.data) % 16 else 0)
@@ -91,6 +97,12 @@ class Resource:
         return resource_getter_template.format(
             common_name=self.filename,
             identifier="::".join(self.identifier)
+        )
+
+    def dump_cacheid_getter(self):
+        return resource_cacheid_getter_template.format(
+            common_name=self.filename,
+            cacheid=self.cacheid
         )
 
     def dump_decl(self):
@@ -123,7 +135,12 @@ static std::string init_resource(const char* name, const unsigned char* content,
 
 const std::string& getResource_{basename}(const std::string& name) {{
 {RESOURCES_GETTER}
-    throw ResourceNotFound("Resource not found.");
+    throw ResourceNotFound("Resource not found: " + name);
+}}
+
+const char* getResourceCacheId_{basename}(const std::string& name) {{
+{RESOURCE_CACHEID_GETTER}
+    return nullptr;
 }}
 
 {RESOURCES}
@@ -134,6 +151,7 @@ def gen_c_file(resources, basename):
     return master_c_template.format(
        RESOURCES="\n\n".join(r.dump_impl() for r in resources),
        RESOURCES_GETTER="\n\n".join(r.dump_getter() for r in resources),
+       RESOURCE_CACHEID_GETTER="\n\n".join(r.dump_cacheid_getter() for r in resources if r.cacheid is not None),
        include_file=basename,
        basename=to_identifier(basename)
     )
@@ -159,8 +177,10 @@ class ResourceNotFound : public std::runtime_error {{
 }};
 
 const std::string& getResource_{basename}(const std::string& name);
+const char* getResourceCacheId_{basename}(const std::string& name);
 
 #define getResource(a) (getResource_{basename}(a))
+#define getResourceCacheId(a) (getResourceCacheId_{basename}(a))
 
 #endif // KIWIX_{BASENAME}
 
@@ -189,8 +209,8 @@ if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.realpath(args.resource_file))
     source_dir = args.source_dir or []
     with open(args.resource_file, 'r') as f:
-        resources = [Resource([base_dir]+source_dir, filename)
-                        for filename in f.readlines()]
+        resources = [Resource([base_dir]+source_dir, *line.strip().split())
+                        for line in f.readlines()]
 
     h_identifier = to_identifier(os.path.basename(args.hfile))
     with open(args.hfile, 'w') as f:

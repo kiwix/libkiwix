@@ -99,16 +99,21 @@ def preprocess_resource(resource_path):
             print(preprocessed_content, end='', file=target)
 
 
-def copy_file(src_path, dst_path):
-    with open(src_path, 'rb') as src:
-        with open(dst_path, 'wb') as dst:
-            dst.write(src.read())
+def copy_resource_list_file(src_path, dst_path):
+    with open(src_path, 'r') as src:
+        with open(dst_path, 'w') as dst:
+            for line in src:
+                res = line.strip()
+                if line.startswith("skin/") and res in resource_revisions:
+                    dst.write(res + " " + resource_revisions[res] + "\n")
+                else:
+                    dst.write(line)
 
 def preprocess_resources(resource_file_path):
     resource_filename = os.path.basename(resource_file_path)
     for resource in read_resource_file(resource_file_path):
         preprocess_resource(resource)
-    copy_file(resource_file_path, os.path.join(OUT_DIR, resource_filename))
+    copy_resource_list_file(resource_file_path, os.path.join(OUT_DIR, resource_filename))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -748,6 +748,25 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
   return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
 
+namespace
+{
+
+Response::Kind staticResourceAccessType(const RequestContext& req, const char* expectedCacheid)
+{
+  if ( expectedCacheid == nullptr )
+    return Response::DYNAMIC_CONTENT;
+
+  try {
+    if ( expectedCacheid != req.get_argument("cacheid") )
+      throw ResourceNotFound("Wrong cacheid");
+    return Response::STATIC_RESOURCE;
+  } catch( const std::out_of_range& ) {
+    return Response::DYNAMIC_CONTENT;
+  }
+}
+
+} // unnamed namespace
+
 std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -758,12 +777,16 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
   auto resourceName = isRequestForViewer
                     ? "viewer.html"
                     : request.get_url().substr(1);
+
+  const char* const resourceCacheId = getResourceCacheId(resourceName);
+
   try {
+    const auto accessType = staticResourceAccessType(request, resourceCacheId);
     auto response = ContentResponse::build(
         *this,
         getResource(resourceName),
         getMimeTypeForFile(resourceName));
-    response->set_kind(Response::STATIC_RESOURCE);
+    response->set_kind(accessType);
     return std::move(response);
   } catch (const ResourceNotFound& e) {
     return HTTP404Response(*this, request)
