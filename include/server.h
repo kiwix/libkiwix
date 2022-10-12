@@ -29,85 +29,84 @@ namespace kiwix
   class NameMapper;
   class InternalServer;
 
-  class ServerConfiguration {
-    public:
-      ServerConfiguration(Library* library, NameMapper* nameMapper=nullptr)
-        : mp_library(library),
-          mp_nameMapper(nameMapper)
-      {}
-
-      ServerConfiguration& setRoot(const std::string& root);
-      ServerConfiguration& setAddress(const std::string& addr) {
-        m_addr = addr;
-        return *this;
-      }
-
-      ServerConfiguration& setPort(int port) {
-        m_port = port;
-        return *this;
-      }
-
-      ServerConfiguration& setNbThreads(int threads) {
-        m_nbThreads = threads;
-        return *this;
-      }
-
-      ServerConfiguration& setMultiZimSearchLimit(unsigned int limit) {
-        m_multizimSearchLimit = limit;
-        return *this;
-      }
-
-      ServerConfiguration& setIpConnectionLimit(int limit) {
-        m_ipConnectionLimit = limit;
-        return *this;
-      }
-
-      ServerConfiguration& setVerbose(bool verbose) {
-        m_verbose = verbose;
-        return *this;
-      }
-
-      ServerConfiguration& setIndexTemplateString(const std::string& indexTemplateString) {
-        m_indexTemplateString = indexTemplateString;
-        return *this;
-      }
-
-      ServerConfiguration& setTaskbar(bool withTaskbar, bool withLibraryButton) {
-        m_withTaskbar = withTaskbar;
-        m_withLibraryButton = withLibraryButton;
-        return *this;
-      }
-
-      ServerConfiguration& setBlockExternalLinks(bool blockExternalLinks) {
-        m_blockExternalLinks = blockExternalLinks;
-        return *this;
-      }
-
-      Library* mp_library;
-      NameMapper* mp_nameMapper;
-      std::string m_root = "";
-      std::string m_addr = "";
-      std::string m_indexTemplateString = "";
-      int m_port = 80;
-      int m_nbThreads = 1;
-      unsigned int m_multizimSearchLimit = 0;
-      bool m_verbose = false;
-      bool m_withTaskbar = true;
-      bool m_withLibraryButton = true;
-      bool m_blockExternalLinks = false;
-      int m_ipConnectionLimit = 0;
-  };
-
-
 
   class Server {
-     public:
+    public:
+      class Configuration {
+        public:
+          explicit Configuration(Library* library, NameMapper* nameMapper=nullptr)
+            : mp_library(library),
+              mp_nameMapper(nameMapper)
+          {}
+
+          Configuration& setRoot(const std::string& root);
+          Configuration& setAddress(const std::string& addr) {
+            m_addr = addr;
+            return *this;
+          }
+
+          Configuration& setPort(int port) {
+            m_port = port;
+            return *this;
+          }
+
+          Configuration& setNbThreads(int threads) {
+            m_nbThreads = threads;
+            return *this;
+          }
+
+          Configuration& setMultiZimSearchLimit(unsigned int limit) {
+            m_multizimSearchLimit = limit;
+            return *this;
+          }
+
+          Configuration& setIpConnectionLimit(int limit) {
+            m_ipConnectionLimit = limit;
+            return *this;
+          }
+
+          Configuration& setVerbose(bool verbose) {
+            m_verbose = verbose;
+            return *this;
+          }
+
+          Configuration& setIndexTemplateString(const std::string& indexTemplateString) {
+            m_indexTemplateString = indexTemplateString;
+            return *this;
+          }
+
+          Configuration& setTaskbar(bool withTaskbar, bool withLibraryButton) {
+            m_withTaskbar = withTaskbar;
+            m_withLibraryButton = withLibraryButton;
+            return *this;
+          }
+
+          Configuration& setBlockExternalLinks(bool blockExternalLinks) {
+            m_blockExternalLinks = blockExternalLinks;
+            return *this;
+          }
+
+          Library* mp_library;
+          NameMapper* mp_nameMapper;
+          std::string m_root = "";
+          std::string m_addr = "";
+          std::string m_indexTemplateString = "";
+          int m_port = 80;
+          int m_nbThreads = 1;
+          unsigned int m_multizimSearchLimit = 0;
+          bool m_verbose = false;
+          bool m_withTaskbar = true;
+          bool m_withLibraryButton = true;
+          bool m_blockExternalLinks = false;
+          int m_ipConnectionLimit = 0;
+       };
+
        /**
         * The default constructor.
         *
         * @param library The library to serve.
         */
-       Server(const ServerConfiguration& configuration);
+       explicit Server(const Configuration& configuration);
 
        virtual ~Server();
 
@@ -125,7 +124,7 @@ namespace kiwix
        std::string getAddress();
 
      protected:
-       ServerConfiguration m_configuration;
+       Configuration m_configuration;
        std::unique_ptr<InternalServer> mp_server;
   };
 }

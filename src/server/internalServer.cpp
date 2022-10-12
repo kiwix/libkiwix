@@ -366,7 +366,7 @@ public:
 };
 
 
-InternalServer::InternalServer(const ServerConfiguration& configuration) :
+InternalServer::InternalServer(const Server::Configuration& configuration) :
   m_configuration(configuration),
   m_root(normalizeRootUrl(configuration.m_root)),
   m_indexTemplateString(configuration.m_indexTemplateString.empty() ? RESOURCE::templates::index_html : configuration.m_indexTemplateString),

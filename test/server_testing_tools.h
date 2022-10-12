@@ -130,7 +130,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   } else {
     nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   }
-  kiwix::ServerConfiguration configuration(&library, nameMapper.get());
+  kiwix::Server::Configuration configuration(&library, nameMapper.get());
   configuration.setRoot("ROOT")
                .setAddress(address)
                .setPort(serverPort)

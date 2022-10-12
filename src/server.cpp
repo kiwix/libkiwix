@@ -29,7 +29,7 @@
 
 namespace kiwix {
 
-Server::Server(const ServerConfiguration& configuration) :
+Server::Server(const Server::Configuration& configuration) :
   m_configuration(configuration),
   mp_server(nullptr)
 {
@@ -49,7 +49,7 @@ void Server::stop() {
   }
 }
 
-ServerConfiguration& ServerConfiguration::setRoot(const std::string& root)
+Server::Configuration& Server::Configuration::setRoot(const std::string& root)
 {
   m_root = root;
   if (m_root[0] != '/') {

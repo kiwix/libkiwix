@@ -93,7 +93,7 @@ class OPDSDumper;
 
 class InternalServer {
   public:
-    InternalServer(const ServerConfiguration& configuration);
+    InternalServer(const Server::Configuration& configuration);
     virtual ~InternalServer();
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
@@ -149,7 +149,7 @@ class InternalServer {
     typedef ConcurrentCache<std::string, std::shared_ptr<LockableSuggestionSearcher>> SuggestionSearcherCache;
 
   private: // data
-    ServerConfiguration m_configuration;
+    Server::Configuration m_configuration;
     std::string m_addr;
     std::string m_root;
     std::string m_indexTemplateString;
