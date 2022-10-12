@@ -6,6 +6,8 @@
 #include <zim/entry.h>
 #include <zim/item.h>
 
+#include "testing_tools.h"
+
 // Output generated via mustache templates sometimes contains end-of-line
 // whitespace. This complicates representing the expected output of a unit-test
 // as C++ raw strings in editors that are configured to delete EOL whitespace.
@@ -90,7 +92,7 @@ private:
   void run(int serverPort, std::string indexTemplateString = "");
 
 private: // data
-  std::shared_ptr<kiwix::Library> library;
+  kiwix::Library library;
   kiwix::Manager manager;
   std::unique_ptr<kiwix::NameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
@@ -99,8 +101,7 @@ private: // data
 };
 
 ZimFileServer::ZimFileServer(int serverPort, Options _options, std::string libraryFilePath)
-: library(new kiwix::Library()),
-  manager(library),
+: manager(NotOwned<kiwix::Library>(library)),
   options(_options)
 {
   if ( kiwix::isRelativePath(libraryFilePath) )
@@ -113,8 +114,7 @@ ZimFileServer::ZimFileServer(int serverPort,
                              Options _options,
                              const FilePathCollection& zimpaths,
                              std::string indexTemplateString)
-: library(new kiwix::Library()),
-  manager(library),
+: manager(NotOwned<kiwix::Library>(library)),
   options(_options)
 {
   for ( const auto& zimpath : zimpaths ) {
@@ -130,9 +130,9 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   if (options & NO_NAME_MAPPER) {
     nameMapper.reset(new kiwix::IdNameMapper());
   } else {
-    nameMapper.reset(new kiwix::HumanReadableNameMapper(*library, false));
+    nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   }
-  kiwix::Server::Configuration configuration(library, nameMapper.get());
+  kiwix::Server::Configuration configuration(NotOwned<kiwix::Library>(library), nameMapper.get());
   configuration.setRoot("ROOT")
                .setAddress(address)
                .setPort(serverPort)
