@@ -216,7 +216,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
   try {
     auto bookName = request.get_argument("content");
     try {
-      const auto bookIds = Library::BookIdSet{m_configuration.mp_nameMapper->getIdForName(bookName)};
+      const auto bookIds = Library::BookIdSet{mp_nameMapper->getIdForName(bookName)};
       const auto queryString = request.get_query([&](const std::string& key){return key == "content";}, true);
       return {queryString, bookIds};
     } catch (const std::out_of_range&) {
@@ -236,7 +236,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
     for(const auto& bookId: id_vec) {
       try {
         // This is a silly way to check that bookId exists
-        m_configuration.mp_nameMapper->getNameForId(bookId);
+        mp_nameMapper->getNameForId(bookId);
       } catch (const std::out_of_range&) {
         throw Error(noSuchBookErrorMsg(bookId));
       }
@@ -255,7 +255,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
     Library::BookIdSet bookIds;
     for(const auto& bookName: name_vec) {
       try {
-        bookIds.insert(m_configuration.mp_nameMapper->getIdForName(bookName));
+        bookIds.insert(mp_nameMapper->getIdForName(bookName));
       } catch(const std::out_of_range&) {
         throw Error(noSuchBookErrorMsg(bookName));
       }
@@ -266,7 +266,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
 
   // Check for filtering
   Filter filter = get_search_filter(request, "books.filter.");
-  auto id_vec = m_configuration.mp_library->filter(filter);
+  auto id_vec = mp_library->filter(filter);
   if (id_vec.empty()) {
     throw Error(nonParameterizedMessage("no-book-found"));
   }
@@ -278,7 +278,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
 SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
 {
   auto bookIds = selectBooks(request);
-  checkBookNumber(bookIds.second, m_configuration.m_multizimSearchLimit);
+  checkBookNumber(bookIds.second, m_multizimSearchLimit);
   auto pattern = request.get_optional_param<std::string>("pattern", "");
   GeoQuery geoQuery;
 
@@ -355,11 +355,11 @@ public:
 
 
 InternalServer::InternalServer(const Server::Configuration& configuration) :
-  m_configuration(configuration),
+  Server::Configuration(configuration),
   m_indexTemplateString(configuration.m_indexTemplateString.empty() ? RESOURCE::templates::index_html : configuration.m_indexTemplateString),
   mp_daemon(nullptr),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
-  suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (m_configuration.mp_library->getBookCount(true, true)*0.1), 1U))),
+  suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources)
 {}
 
@@ -371,13 +371,13 @@ bool InternalServer::start() {
 #else
   int flags = MHD_USE_POLL_INTERNALLY;
 #endif
-  if (m_configuration.m_verbose)
+  if (m_verbose)
     flags |= MHD_USE_DEBUG;
 
   struct sockaddr_in sockAddr;
   memset(&sockAddr, 0, sizeof(sockAddr));
   sockAddr.sin_family = AF_INET;
-  sockAddr.sin_port = htons(m_configuration.m_port);
+  sockAddr.sin_port = htons(m_port);
   if (m_addr.empty()) {
     if (0 != INADDR_ANY) {
       sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -390,17 +390,17 @@ bool InternalServer::start() {
     }
   }
   mp_daemon = MHD_start_daemon(flags,
-                            m_configuration.m_port,
+                            m_port,
                             NULL,
                             NULL,
                             &staticHandlerCallback,
                             this,
                             MHD_OPTION_SOCK_ADDR, &sockAddr,
-                            MHD_OPTION_THREAD_POOL_SIZE, m_configuration.m_nbThreads,
-                            MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_configuration.m_ipConnectionLimit,
+                            MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
+                            MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);
   if (mp_daemon == nullptr) {
-    std::cerr << "Unable to instantiate the HTTP daemon. The port " << m_configuration.m_port
+    std::cerr << "Unable to instantiate the HTTP daemon. The port " << m_port
               << " is maybe already occupied or need more permissions to be open. "
                  "Please try as root or with a port number higher or equal to 1024."
               << std::endl;
@@ -446,14 +446,14 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
                                            void** cont_cls)
 {
   auto start_time = std::chrono::steady_clock::now();
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("======================\n");
     printf("Requesting : \n");
     printf("full_url  : %s\n", url);
   }
-  RequestContext request(connection, m_configuration.m_root, url, method, version);
+  RequestContext request(connection, m_root, url, method, version);
 
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     request.print_debug_info();
   }
   /* Unexpected method */
@@ -469,7 +469,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
 
   if (response->getReturnCode() == MHD_HTTP_INTERNAL_SERVER_ERROR) {
     printf("========== INTERNAL ERROR !! ============\n");
-    if (!m_configuration.m_verbose) {
+    if (!m_verbose) {
       printf("Requesting : \n");
       printf("full_url : %s\n", url);
       request.print_debug_info();
@@ -482,7 +482,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   auto ret = response->send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
   auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("Request time : %fs\n", time_span.count());
     printf("----------------------\n");
   }
@@ -545,7 +545,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
-    std::string contentUrl = m_configuration.m_root + "/content" + url;
+    std::string contentUrl = m_root + "/content" + url;
     const std::string query = request.get_query();
     if ( ! query.empty() )
       contentUrl += "?" + query;
@@ -564,7 +564,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
 MustacheData InternalServer::get_default_data() const
 {
   MustacheData data;
-  data.set("root", m_configuration.m_root);
+  data.set("root", m_root);
   return data;
 }
 
@@ -615,7 +615,7 @@ class InternalServer::LockableSuggestionSearcher : public zim::SuggestionSearche
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_suggest\n");
   }
 
@@ -628,8 +628,8 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
-    archive = m_configuration.mp_library->getArchiveById(bookId);
+    bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     // error handled by the archive == nullptr check below
   }
@@ -646,7 +646,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     count = 10;
   }
 
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
 
@@ -699,21 +699,21 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
 std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_viewer_settings\n");
   }
 
   const kainjow::mustache::object data{
-    {"enable_toolbar", m_configuration.m_withTaskbar ? "true" : "false" },
-    {"enable_link_blocking", m_configuration.m_blockExternalLinks ? "true" : "false" },
-    {"enable_library_button", m_configuration.m_withLibraryButton ? "true" : "false" }
+    {"enable_toolbar", m_withTaskbar ? "true" : "false" },
+    {"enable_link_blocking", m_blockExternalLinks ? "true" : "false" },
+    {"enable_library_button", m_withLibraryButton ? "true" : "false" }
   };
   return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_skin\n");
   }
 
@@ -736,7 +736,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
 
 std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_search\n");
   }
 
@@ -758,20 +758,20 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
     /* Make the search */
     // Try to get a search from the searchInfo, else build it
-    auto searcher = m_configuration.mp_library->getSearcherByIds(bookIds);
+    auto searcher = mp_library->getSearcherByIds(bookIds);
     auto lock(searcher->getLock());
 
     std::shared_ptr<zim::Search> search;
     try {
       search = searchCache.getOrPut(searchInfo,
         [=](){
-          return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_configuration.m_verbose)));
+          return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose)));
         }
       );
     } catch(std::runtime_error& e) {
       // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
       // (in case of zim file not containing a index)
-      const auto cssUrl = renderUrl(m_configuration.m_root, RESOURCE::templates::url_of_search_results_css);
+      const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css);
       HTTPErrorResponse response(*this, request, MHD_HTTP_NOT_FOUND,
                                  "fulltext-search-unavailable",
                                  "404-page-heading",
@@ -782,8 +782,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
       /*
       if(bookIds.size() == 1) {
         auto bookId = *bookIds.begin();
-        auto bookName = m_configuration.mp_nameMapper->getNameForId(bookId);
-        response += TaskbarInfo(bookName, m_configuration.mp_library->getArchiveById(bookId).get());
+        auto bookName = mp_nameMapper->getNameForId(bookId);
+        response += TaskbarInfo(bookName, mp_library->getArchiveById(bookId).get());
       }
       */
       return response;
@@ -807,12 +807,12 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     }
 
     /* Get the results */
-    SearchRenderer renderer(search->getResults(start-1, pageLength), m_configuration.mp_nameMapper, m_configuration.mp_library, start,
+    SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
                             search->getEstimatedMatches());
     renderer.setSearchPattern(searchInfo.pattern);
     renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
-    renderer.setProtocolPrefix(m_configuration.m_root + "/content/");
-    renderer.setSearchProtocolPrefix(m_configuration.m_root + "/search");
+    renderer.setProtocolPrefix(m_root + "/content/");
+    renderer.setSearchProtocolPrefix(m_root + "/search");
     renderer.setPageLength(pageLength);
     if (request.get_requested_format() == "xml") {
       return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
@@ -823,8 +823,8 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     /*
     if(bookIds.size() == 1) {
       auto bookId = *bookIds.begin();
-      auto bookName = m_configuration.mp_nameMapper->getNameForId(bookId);
-      response->set_taskbar(bookName, m_configuration.mp_library->getArchiveById(bookId).get());
+      auto bookName = mp_nameMapper->getNameForId(bookId);
+      response->set_taskbar(bookName, mp_library->getArchiveById(bookId).get());
     }
     */
     return std::move(response);
@@ -837,7 +837,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
 std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_random\n");
   }
 
@@ -850,8 +850,8 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
   std::shared_ptr<zim::Archive> archive;
   try {
     bookName = request.get_argument("content");
-    const std::string bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
-    archive = m_configuration.mp_library->getArchiveById(bookId);
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range&) {
     // error handled by the archive == nullptr check below
   }
@@ -889,7 +889,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
 
 std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_catch\n");
   }
 
@@ -903,7 +903,7 @@ std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& req
 
 std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_catalog");
   }
 
@@ -932,13 +932,13 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper(m_configuration.mp_library, m_configuration.mp_nameMapper);
-  opdsDumper.setRootLocation(m_configuration.m_root);
+  kiwix::OPDSDumper opdsDumper(mp_library, mp_nameMapper);
+  opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
     uuid = zim::Uuid::generate(host);
-    bookIdsToDump = m_configuration.mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
+    bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
   } else if (url == "search") {
     bookIdsToDump = search_catalog(request, opdsDumper);
     uuid = zim::Uuid::generate();
@@ -959,7 +959,7 @@ InternalServer::search_catalog(const RequestContext& request,
     const std::string q = filter.hasQuery()
                         ? filter.getQuery()
                         : "<Empty query>";
-    std::vector<std::string> bookIdsToDump = m_configuration.mp_library->filter(filter);
+    std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
     const size_t count = request.get_optional_param("count", 10UL);
     const size_t startIndex = request.get_optional_param("start", 0UL);
@@ -987,7 +987,7 @@ std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
   const auto path = kiwix::urlEncode(item.getPath());
-  const auto redirectUrl = m_configuration.m_root + "/content/" + bookName + "/" + path;
+  const auto redirectUrl = m_root + "/content/" + bookName + "/" + path;
   return Response::build_redirect(*this, redirectUrl);
 }
 
@@ -995,7 +995,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 {
   const std::string url = request.get_url();
   const std::string pattern = url.substr((url.find_last_of('/'))+1);
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_content\n");
   }
 
@@ -1006,12 +1006,12 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   std::shared_ptr<zim::Archive> archive;
   try {
-    const std::string bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
-    archive = m_configuration.mp_library->getArchiveById(bookId);
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
-    const std::string searchURL = m_configuration.m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true);
+    const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
@@ -1036,17 +1036,17 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
 
-    if (m_configuration.m_verbose) {
+    if (m_verbose) {
       printf("Found %s\n", entry.getPath().c_str());
       printf("mimeType: %s\n", entry.getItem(true).getMimetype().c_str());
     }
 
     return response;
   } catch(zim::EntryNotFound& e) {
-    if (m_configuration.m_verbose)
+    if (m_verbose)
       printf("Failed to find %s\n", urlStr.c_str());
 
-    std::string searchURL = m_configuration.m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
+    std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
@@ -1056,7 +1056,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
 std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_raw\n");
   }
 
@@ -1078,8 +1078,8 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
 
   std::shared_ptr<zim::Archive> archive;
   try {
-    const std::string bookId = m_configuration.mp_nameMapper->getIdForName(bookName);
-    archive = m_configuration.mp_library->getArchiveById(bookId);
+    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
@@ -1106,7 +1106,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
       return ItemResponse::build(*this, request, entry.getItem());
     }
   } catch (zim::EntryNotFound& e ) {
-    if (m_configuration.m_verbose) {
+    if (m_verbose) {
       printf("Failed to find %s\n", itemPath.c_str());
     }
     return HTTP404Response(*this, request)
@@ -1122,13 +1122,13 @@ bool InternalServer::isLocallyCustomizedResource(const std::string& url) const
 
 std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_locally_customized_resource\n");
   }
 
   const CustomizedResourceData& crd = m_customizedResources->at(request.get_url());
 
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     std::cout << "Reading " <<  crd.resourceFilePath << std::endl;
   }
   const auto resourceData = getFileContent(crd.resourceFilePath);

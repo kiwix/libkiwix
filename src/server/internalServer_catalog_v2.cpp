@@ -35,7 +35,7 @@ namespace kiwix {
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
 {
-  if (m_configuration.m_verbose) {
+  if (m_verbose) {
     printf("** running handle_catalog_v2");
   }
 
@@ -50,7 +50,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
   } else if (url == "searchdescription.xml") {
-    const std::string endpoint_root = m_configuration.m_root + "/catalog/v2";
+    const std::string endpoint_root = m_root + "/catalog/v2";
     return ContentResponse::build(*this,
         RESOURCE::catalog_v2_searchdescription_xml,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
@@ -82,7 +82,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
              RESOURCE::templates::catalog_v2_root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
-               {"endpoint_root", m_configuration.m_root + "/catalog/v2"},
+               {"endpoint_root", m_root + "/catalog/v2"},
                {"feed_id", gen_uuid(m_library_id)},
                {"all_entries_feed_id", gen_uuid(m_library_id + "/entries")},
                {"partial_entries_feed_id", gen_uuid(m_library_id + "/partial_entries")},
@@ -95,8 +95,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
 {
-  OPDSDumper opdsDumper(m_configuration.mp_library, m_configuration.mp_nameMapper);
-  opdsDumper.setRootLocation(m_configuration.m_root);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
+  opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   const auto bookIds = search_catalog(request, opdsDumper);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
@@ -110,14 +110,14 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const RequestContext& request, const std::string& entryId)
 {
   try {
-    m_configuration.mp_library->getBookById(entryId);
+    mp_library->getBookById(entryId);
   } catch (const std::out_of_range&) {
     return HTTP404Response(*this, request)
            + urlNotFoundMsg;
   }
 
-  OPDSDumper opdsDumper(m_configuration.mp_library, m_configuration.mp_nameMapper);
-  opdsDumper.setRootLocation(m_configuration.m_root);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
+  opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
@@ -129,8 +129,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(m_configuration.mp_library, m_configuration.mp_nameMapper);
-  opdsDumper.setRootLocation(m_configuration.m_root);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
+  opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   return ContentResponse::build(
              *this,
@@ -141,8 +141,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(m_configuration.mp_library, m_configuration.mp_nameMapper);
-  opdsDumper.setRootLocation(m_configuration.m_root);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
+  opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(m_library_id);
   return ContentResponse::build(
              *this,
@@ -155,7 +155,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
 {
   try {
     const auto bookId  = request.get_url_part(3);
-    auto book = m_configuration.mp_library->getBookByIdThreadSafe(bookId);
+    auto book = mp_library->getBookByIdThreadSafe(bookId);
     auto size = request.get_argument<unsigned int>("size");
     auto illustration = book.getIllustration(size);
     return ContentResponse::build(

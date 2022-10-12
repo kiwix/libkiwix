@@ -90,7 +90,7 @@ class SearchInfo {
 typedef kainjow::mustache::data MustacheData;
 class OPDSDumper;
 
-class InternalServer {
+class InternalServer : Server::Configuration {
   public:
     InternalServer(const Server::Configuration& configuration);
     virtual ~InternalServer();
@@ -105,7 +105,7 @@ class InternalServer {
     bool start();
     void stop();
     std::string getAddress() { return m_addr; }
-    int getPort() { return m_configuration.m_port; }
+    int getPort() { return m_port; }
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
@@ -148,7 +148,6 @@ class InternalServer {
     typedef ConcurrentCache<std::string, std::shared_ptr<LockableSuggestionSearcher>> SuggestionSearcherCache;
 
   private: // data
-    Server::Configuration m_configuration;
     std::string m_addr;
     std::string m_indexTemplateString;
     struct MHD_Daemon* mp_daemon;
