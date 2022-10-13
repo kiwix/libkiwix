@@ -96,8 +96,6 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT/skin/blank.html?cacheid=6b1fa032" },
   { DYNAMIC_CONTENT, "/ROOT/skin/caret.png" },
   { STATIC_CONTENT,  "/ROOT/skin/caret.png?cacheid=22b942b4" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/css/images/search.svg" },
-  { STATIC_CONTENT,  "/ROOT/skin/css/images/search.svg?cacheid=f0bbdb80" },
   { DYNAMIC_CONTENT, "/ROOT/skin/download.png" },
   { STATIC_CONTENT,  "/ROOT/skin/download.png?cacheid=a39aa502" },
   { DYNAMIC_CONTENT, "/ROOT/skin/favicon/android-chrome-192x192.png" },
