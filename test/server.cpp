@@ -59,7 +59,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon.ico" },
   { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT/skin/index.css?cacheid=3b470cee" },
+  { STATIC_CONTENT,  "/ROOT/skin/index.css?cacheid=0f9ba34e" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.js" },
   { STATIC_CONTENT,  "/ROOT/skin/index.js?cacheid=2f5a81ac" },
   { DYNAMIC_CONTENT, "/ROOT/skin/iso6391To3.js" },
@@ -250,7 +250,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT/",
-R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
+R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=0f9ba34e"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -263,6 +263,11 @@ R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=2f5a81ac" defer></script>
+)EXPECTEDRESULT"
+    },
+    {
+      /* url */ "/ROOT/skin/index.css",
+R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10ae7ed');
 )EXPECTEDRESULT"
     },
     {

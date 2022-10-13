@@ -105,7 +105,7 @@ body {
     border-radius: 10px;
     border: solid 1px #b5b2b2;
     padding: 10px;
-    background-image: url('./search-icon.svg');
+    background-image: url('../skin/search-icon.svg?KIWIXCACHEID');
     background-repeat: no-repeat;
     background-position: right center;
     background-origin: content-box;
