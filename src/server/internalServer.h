@@ -88,9 +88,6 @@ class SearchInfo {
 
 
 typedef kainjow::mustache::data MustacheData;
-typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
-typedef ConcurrentCache<std::string, std::shared_ptr<zim::SuggestionSearcher>> SuggestionSearcherCache;
-
 class OPDSDumper;
 
 class InternalServer {
@@ -156,6 +153,11 @@ class InternalServer {
     SearchInfo getSearchInfo(const RequestContext& r) const;
 
     bool isLocallyCustomizedResource(const std::string& url) const;
+
+  private: // types
+    class LockableSuggestionSearcher;
+    typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
+    typedef ConcurrentCache<std::string, std::shared_ptr<LockableSuggestionSearcher>> SuggestionSearcherCache;
 
   private: // data
     std::string m_addr;
