@@ -46,7 +46,7 @@ class SearchRenderer
    * @param start The start offset used for the srs.
    * @param estimatedResultCount The estimatedResultCount of the whole search
    */
-  SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+  SearchRenderer(zim::SearchResultSet srs, std::shared_ptr<NameMapper> mapper,
                  unsigned int start, unsigned int estimatedResultCount);
 
   /**
@@ -58,7 +58,7 @@ class SearchRenderer
    * @param start The start offset used for the srs.
    * @param estimatedResultCount The estimatedResultCount of the whole search
    */
-  SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Library* library,
+  SearchRenderer(zim::SearchResultSet srs, std::shared_ptr<NameMapper> mapper, std::shared_ptr<Library> library,
                  unsigned int start, unsigned int estimatedResultCount);
 
   ~SearchRenderer();
@@ -106,8 +106,8 @@ class SearchRenderer
  protected:
   std::string beautifyInteger(const unsigned int number);
   zim::SearchResultSet m_srs;
-  NameMapper* mp_nameMapper;
-  Library* mp_library;
+  std::shared_ptr<NameMapper> mp_nameMapper;
+  std::shared_ptr<Library> mp_library;
   std::string searchBookQuery;
   std::string searchPattern;
   std::string protocolPrefix;

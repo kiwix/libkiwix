@@ -26,7 +26,7 @@ extern "C" {
 }
 
 #include "library.h"
-#include "name_mapper.h"
+#include "server.h"
 
 #include <zim/search.h>
 #include <zim/suggestion.h>
@@ -90,21 +90,9 @@ class SearchInfo {
 typedef kainjow::mustache::data MustacheData;
 class OPDSDumper;
 
-class InternalServer {
+class InternalServer : Server::Configuration {
   public:
-    InternalServer(Library* library,
-                   NameMapper* nameMapper,
-                   std::string addr,
-                   int port,
-                   std::string root,
-                   int nbThreads,
-                   unsigned int multizimSearchLimit,
-                   bool verbose,
-                   bool withTaskbar,
-                   bool withLibraryButton,
-                   bool blockExternalLinks,
-                   std::string indexTemplateString,
-                   int ipConnectionLimit);
+    InternalServer(const Server::Configuration& configuration);
     virtual ~InternalServer();
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
@@ -116,6 +104,7 @@ class InternalServer {
                                void** cont_cls);
     bool start();
     void stop();
+    bool isRunning() const;
     std::string getAddress() { return m_addr; }
     int getPort() { return m_port; }
 
@@ -161,20 +150,8 @@ class InternalServer {
 
   private: // data
     std::string m_addr;
-    int m_port;
-    std::string m_root;
-    int m_nbThreads;
-    unsigned int m_multizimSearchLimit;
-    std::atomic_bool m_verbose;
-    bool m_withTaskbar;
-    bool m_withLibraryButton;
-    bool m_blockExternalLinks;
     std::string m_indexTemplateString;
-    int m_ipConnectionLimit;
     struct MHD_Daemon* mp_daemon;
-
-    Library* mp_library;
-    NameMapper* mp_nameMapper;
 
     SearchCache searchCache;
     SuggestionSearcherCache suggestionSearcherCache;

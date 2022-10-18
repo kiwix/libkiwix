@@ -24,7 +24,7 @@
 
 namespace kiwix {
 
-HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool withAlias) {
+HumanReadableNameMapper::HumanReadableNameMapper(const kiwix::Library& library, bool withAlias) {
   for (auto& bookId: library.filter(kiwix::Filter().local(true).valid(true))) {
     auto& currentBook = library.getBookById(bookId);
     auto bookName = currentBook.getHumanReadableIdFromPath();
@@ -63,7 +63,7 @@ std::string HumanReadableNameMapper::getIdForName(const std::string& name) const
 // UpdatableNameMapper
 ////////////////////////////////////////////////////////////////////////////////
 
-UpdatableNameMapper::UpdatableNameMapper(Library& lib, bool withAlias)
+UpdatableNameMapper::UpdatableNameMapper(std::shared_ptr<Library> lib, bool withAlias)
   : library(lib)
   , withAlias(withAlias)
 {
@@ -72,7 +72,7 @@ UpdatableNameMapper::UpdatableNameMapper(Library& lib, bool withAlias)
 
 void UpdatableNameMapper::update()
 {
-  const auto newNameMapper = new HumanReadableNameMapper(library, withAlias);
+  const auto newNameMapper = new HumanReadableNameMapper(*library, withAlias);
   std::lock_guard<std::mutex> lock(mutex);
   nameMapper.reset(newNameMapper);
 }

@@ -6,6 +6,8 @@
 #include <zim/entry.h>
 #include <zim/item.h>
 
+#include "testing_tools.h"
+
 // Output generated via mustache templates sometimes contains end-of-line
 // whitespace. This complicates representing the expected output of a unit-test
 // as C++ raw strings in editors that are configured to delete EOL whitespace.
@@ -61,6 +63,7 @@ public: // types
     WITH_TASKBAR         = 1 << 1,
     WITH_LIBRARY_BUTTON  = 1 << 2,
     BLOCK_EXTERNAL_LINKS = 1 << 3,
+    NO_NAME_MAPPER       = 1 << 4,
 
     WITH_TASKBAR_AND_LIBRARY_BUTTON = WITH_TASKBAR | WITH_LIBRARY_BUTTON,
 
@@ -68,7 +71,7 @@ public: // types
   };
 
 public: // functions
-  ZimFileServer(int serverPort, std::string libraryFilePath);
+  ZimFileServer(int serverPort, Options options, std::string libraryFilePath);
   ZimFileServer(int serverPort,
                 Options options,
                 const FilePathCollection& zimpaths,
@@ -91,14 +94,15 @@ private:
 private: // data
   kiwix::Library library;
   kiwix::Manager manager;
-  std::unique_ptr<kiwix::HumanReadableNameMapper> nameMapper;
+  std::shared_ptr<kiwix::NameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
   const Options options = DEFAULT_OPTIONS;
 };
 
-ZimFileServer::ZimFileServer(int serverPort, std::string libraryFilePath)
-: manager(&this->library)
+ZimFileServer::ZimFileServer(int serverPort, Options _options, std::string libraryFilePath)
+: manager(NotOwned<kiwix::Library>(library)),
+  options(_options)
 {
   if ( kiwix::isRelativePath(libraryFilePath) )
     libraryFilePath = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), libraryFilePath);
@@ -110,8 +114,8 @@ ZimFileServer::ZimFileServer(int serverPort,
                              Options _options,
                              const FilePathCollection& zimpaths,
                              std::string indexTemplateString)
-: manager(&this->library)
-, options(_options)
+: manager(NotOwned<kiwix::Library>(library)),
+  options(_options)
 {
   for ( const auto& zimpath : zimpaths ) {
     if (!manager.addBookFromPath(zimpath, zimpath, "", false))
@@ -123,19 +127,25 @@ ZimFileServer::ZimFileServer(int serverPort,
 void ZimFileServer::run(int serverPort, std::string indexTemplateString)
 {
   const std::string address = "127.0.0.1";
-  nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
-  server.reset(new kiwix::Server(&library, nameMapper.get()));
-  server->setRoot("ROOT");
-  server->setAddress(address);
-  server->setPort(serverPort);
-  server->setNbThreads(2);
-  server->setVerbose(false);
-  server->setTaskbar(options & WITH_TASKBAR, options & WITH_LIBRARY_BUTTON);
-  server->setBlockExternalLinks(options & BLOCK_EXTERNAL_LINKS);
-  server->setMultiZimSearchLimit(3);
-  if (!indexTemplateString.empty()) {
-    server->setIndexTemplateString(indexTemplateString);
+  if (options & NO_NAME_MAPPER) {
+    nameMapper.reset(new kiwix::IdNameMapper());
+  } else {
+    nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   }
+  kiwix::Server::Configuration configuration(NotOwned<kiwix::Library>(library), nameMapper);
+  configuration.setRoot("ROOT")
+               .setAddress(address)
+               .setPort(serverPort)
+               .setNbThreads(2)
+               .setVerbose(false)
+               .setTaskbar(options & WITH_TASKBAR, options & WITH_LIBRARY_BUTTON)
+               .setBlockExternalLinks(options & BLOCK_EXTERNAL_LINKS)
+               .setMultiZimSearchLimit(3);
+
+  if (!indexTemplateString.empty()) {
+    configuration.setIndexTemplateString(indexTemplateString);
+  }
+  server.reset(new kiwix::Server(configuration));
 
   if ( !server->start() )
     throw std::runtime_error("ZimFileServer failed to start");

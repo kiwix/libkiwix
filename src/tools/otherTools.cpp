@@ -370,6 +370,16 @@ std::string kiwix::gen_uuid(const std::string& s)
   return kiwix::to_string(zim::Uuid::generate(s));
 }
 
+std::string kiwix::normalizeRootUrl(std::string rootUrl)
+{
+  while ( !rootUrl.empty() && rootUrl.back() == '/' )
+    rootUrl.pop_back();
+
+  while ( !rootUrl.empty() && rootUrl.front() == '/' )
+    rootUrl = rootUrl.substr(1);
+  return rootUrl.empty() ? rootUrl : "/" + rootUrl;
+}
+
 kainjow::mustache::data kiwix::onlyAsNonEmptyMustacheValue(const std::string& s)
 {
   return s.empty()

@@ -26,52 +26,38 @@
 
 #include <zim/item.h>
 #include "server/internalServer.h"
+#include "tools/otherTools.h"
 
 namespace kiwix {
 
-Server::Server(Library* library, NameMapper* nameMapper) :
+Server::Configuration::Configuration(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper) :
   mp_library(library),
-  mp_nameMapper(nameMapper),
-  mp_server(nullptr)
+  mp_nameMapper(nameMapper ? nameMapper : std::make_shared<HumanReadableNameMapper>(*library, true))
+{}
+
+Server::Configuration& Server::Configuration::setRoot(const std::string& root)
+{
+  m_root = normalizeRootUrl(root);
+  return *this;
+}
+
+Server::Server(const Server::Configuration& configuration) :
+  mp_server(new InternalServer(configuration))
 {
 }
 
 Server::~Server() = default;
 
 bool Server::start() {
-  mp_server.reset(new InternalServer(
-    mp_library,
-    mp_nameMapper,
-    m_addr,
-    m_port,
-    m_root,
-    m_nbThreads,
-    m_multizimSearchLimit,
-    m_verbose,
-    m_withTaskbar,
-    m_withLibraryButton,
-    m_blockExternalLinks,
-    m_indexTemplateString,
-    m_ipConnectionLimit));
   return mp_server->start();
 }
 
 void Server::stop() {
-  if (mp_server) {
-    mp_server->stop();
-    mp_server.reset(nullptr);
-  }
+  mp_server->stop();
 }
 
-void Server::setRoot(const std::string& root)
-{
-  m_root = root;
-  if (m_root[0] != '/') {
-    m_root = "/" + m_root;
-  }
-  if (m_root.back() == '/') {
-    m_root.erase(m_root.size() - 1);
-  }
+bool Server::isRunning() {
+  return mp_server->isRunning();
 }
 
 int Server::getPort()

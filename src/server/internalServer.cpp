@@ -85,16 +85,6 @@ namespace kiwix {
 namespace
 {
 
-inline std::string normalizeRootUrl(std::string rootUrl)
-{
-  while ( !rootUrl.empty() && rootUrl.back() == '/' )
-    rootUrl.pop_back();
-
-  while ( !rootUrl.empty() && rootUrl.front() == '/' )
-    rootUrl = rootUrl.substr(1);
-  return rootUrl.empty() ? rootUrl : "/" + rootUrl;
-}
-
 Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
 {
     auto filter = kiwix::Filter().valid(true).local(true);
@@ -333,8 +323,6 @@ zim::Query SearchInfo::getZimQuery(bool verbose) const {
   return query;
 }
 
-static IdNameMapper defaultNameMapper;
-
 static MHD_Result staticHandlerCallback(void* cls,
                                         struct MHD_Connection* connection,
                                         const char* url,
@@ -366,33 +354,10 @@ public:
 };
 
 
-InternalServer::InternalServer(Library* library,
-                               NameMapper* nameMapper,
-                               std::string addr,
-                               int port,
-                               std::string root,
-                               int nbThreads,
-                               unsigned int multizimSearchLimit,
-                               bool verbose,
-                               bool withTaskbar,
-                               bool withLibraryButton,
-                               bool blockExternalLinks,
-                               std::string indexTemplateString,
-                               int ipConnectionLimit) :
-  m_addr(addr),
-  m_port(port),
-  m_root(normalizeRootUrl(root)),
-  m_nbThreads(nbThreads),
-  m_multizimSearchLimit(multizimSearchLimit),
-  m_verbose(verbose),
-  m_withTaskbar(withTaskbar),
-  m_withLibraryButton(withLibraryButton),
-  m_blockExternalLinks(blockExternalLinks),
-  m_indexTemplateString(indexTemplateString.empty() ? RESOURCE::templates::index_html : indexTemplateString),
-  m_ipConnectionLimit(ipConnectionLimit),
+InternalServer::InternalServer(const Server::Configuration& configuration) :
+  Server::Configuration(configuration),
+  m_indexTemplateString(configuration.m_indexTemplateString.empty() ? RESOURCE::templates::index_html : configuration.m_indexTemplateString),
   mp_daemon(nullptr),
-  mp_library(library),
-  mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources)
@@ -406,7 +371,7 @@ bool InternalServer::start() {
 #else
   int flags = MHD_USE_POLL_INTERNALLY;
 #endif
-  if (m_verbose.load())
+  if (m_verbose)
     flags |= MHD_USE_DEBUG;
 
   struct sockaddr_in sockAddr;
@@ -450,8 +415,13 @@ bool InternalServer::start() {
 void InternalServer::stop()
 {
   MHD_stop_daemon(mp_daemon);
+  mp_daemon = nullptr;
 }
 
+bool InternalServer::isRunning() const
+{
+  return mp_daemon != nullptr;
+}
 static MHD_Result staticHandlerCallback(void* cls,
                                         struct MHD_Connection* connection,
                                         const char* url,
@@ -481,14 +451,14 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
                                            void** cont_cls)
 {
   auto start_time = std::chrono::steady_clock::now();
-  if (m_verbose.load() ) {
+  if (m_verbose) {
     printf("======================\n");
     printf("Requesting : \n");
     printf("full_url  : %s\n", url);
   }
   RequestContext request(connection, m_root, url, method, version);
 
-  if (m_verbose.load() ) {
+  if (m_verbose) {
     request.print_debug_info();
   }
   /* Unexpected method */
@@ -504,7 +474,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
 
   if (response->getReturnCode() == MHD_HTTP_INTERNAL_SERVER_ERROR) {
     printf("========== INTERNAL ERROR !! ============\n");
-    if (!m_verbose.load()) {
+    if (!m_verbose) {
       printf("Requesting : \n");
       printf("full_url : %s\n", url);
       request.print_debug_info();
@@ -517,7 +487,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   auto ret = response->send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
   auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("Request time : %fs\n", time_span.count());
     printf("----------------------\n");
   }
@@ -650,7 +620,7 @@ class InternalServer::LockableSuggestionSearcher : public zim::SuggestionSearche
 
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_suggest\n");
   }
 
@@ -681,7 +651,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     count = 10;
   }
 
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
 
@@ -734,7 +704,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
 std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_viewer_settings\n");
   }
 
@@ -748,7 +718,7 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
 
 std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_skin\n");
   }
 
@@ -771,7 +741,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
 
 std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_search\n");
   }
 
@@ -800,7 +770,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     try {
       search = searchCache.getOrPut(searchInfo,
         [=](){
-          return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
+          return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose)));
         }
       );
     } catch(std::runtime_error& e) {
@@ -872,7 +842,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
 
 std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_random\n");
   }
 
@@ -924,7 +894,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
 
 std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_catch\n");
   }
 
@@ -938,7 +908,7 @@ std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& req
 
 std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_catalog");
   }
 
@@ -967,8 +937,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper(mp_library);
-  opdsDumper.setRootLocation(m_root);
+  kiwix::OPDSDumper opdsDumper(*this);
   opdsDumper.setLibraryId(m_library_id);
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
@@ -1030,7 +999,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 {
   const std::string url = request.get_url();
   const std::string pattern = url.substr((url.find_last_of('/'))+1);
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_content\n");
   }
 
@@ -1071,14 +1040,14 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
 
-    if (m_verbose.load()) {
+    if (m_verbose) {
       printf("Found %s\n", entry.getPath().c_str());
       printf("mimeType: %s\n", entry.getItem(true).getMimetype().c_str());
     }
 
     return response;
   } catch(zim::EntryNotFound& e) {
-    if (m_verbose.load())
+    if (m_verbose)
       printf("Failed to find %s\n", urlStr.c_str());
 
     std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
@@ -1091,7 +1060,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
 std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_raw\n");
   }
 
@@ -1141,7 +1110,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
       return ItemResponse::build(*this, request, entry.getItem());
     }
   } catch (zim::EntryNotFound& e ) {
-    if (m_verbose.load()) {
+    if (m_verbose) {
       printf("Failed to find %s\n", itemPath.c_str());
     }
     return HTTP404Response(*this, request)
@@ -1157,13 +1126,13 @@ bool InternalServer::isLocallyCustomizedResource(const std::string& url) const
 
 std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_locally_customized_resource\n");
   }
 
   const CustomizedResourceData& crd = m_customizedResources->at(request.get_url());
 
-  if (m_verbose.load()) {
+  if (m_verbose) {
     std::cout << "Reading " <<  crd.resourceFilePath << std::endl;
   }
   const auto resourceData = getFileContent(crd.resourceFilePath);

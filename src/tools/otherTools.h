@@ -51,6 +51,8 @@ namespace kiwix
   std::string gen_date_str();
   std::string gen_uuid(const std::string& s);
 
+  std::string normalizeRootUrl(std::string rootUrl);
+
   // if s is empty then returns kainjow::mustache::data(false)
   // otherwise kainjow::mustache::data(value)
   kainjow::mustache::data onlyAsNonEmptyMustacheValue(const std::string& s);

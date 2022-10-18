@@ -35,7 +35,7 @@ namespace kiwix {
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
 {
-  if (m_verbose.load()) {
+  if (m_verbose) {
     printf("** running handle_catalog_v2");
   }
 
@@ -95,8 +95,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
 {
-  OPDSDumper opdsDumper(mp_library);
-  opdsDumper.setRootLocation(m_root);
+  OPDSDumper opdsDumper(*this);
   opdsDumper.setLibraryId(m_library_id);
   const auto bookIds = search_catalog(request, opdsDumper);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
@@ -116,8 +115,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
            + urlNotFoundMsg;
   }
 
-  OPDSDumper opdsDumper(mp_library);
-  opdsDumper.setRootLocation(m_root);
+  OPDSDumper opdsDumper(*this);
   opdsDumper.setLibraryId(m_library_id);
   const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
@@ -129,8 +127,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(mp_library);
-  opdsDumper.setRootLocation(m_root);
+  OPDSDumper opdsDumper(*this);
   opdsDumper.setLibraryId(m_library_id);
   return ContentResponse::build(
              *this,
@@ -141,8 +138,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(mp_library);
-  opdsDumper.setRootLocation(m_root);
+  OPDSDumper opdsDumper(*this);
   opdsDumper.setLibraryId(m_library_id);
   return ContentResponse::build(
              *this,

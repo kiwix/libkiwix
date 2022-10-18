@@ -20,6 +20,7 @@
 #include "gtest/gtest.h"
 #include <string>
 
+#include "testing_tools.h"
 
 const char * sampleOpdsStream = R"(
 <feed xmlns="http://www.w3.org/2005/Atom"
@@ -237,7 +238,7 @@ namespace
 TEST(LibraryOpdsImportTest, allInOne)
 {
   kiwix::Library lib;
-  kiwix::Manager manager(&lib);
+  kiwix::Manager manager{NotOwned<kiwix::Library>(lib)};
   manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
 
   EXPECT_EQ(10U, lib.getBookCount(true, true));
@@ -297,8 +298,11 @@ class LibraryTest : public ::testing::Test {
   typedef kiwix::Library::BookIdCollection BookIdCollection;
   typedef std::vector<std::string> TitleCollection;
 
+  explicit LibraryTest()
+  {}
+
   void SetUp() override {
-     kiwix::Manager manager(&lib);
+     kiwix::Manager manager{NotOwned<kiwix::Library>(lib)};
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }

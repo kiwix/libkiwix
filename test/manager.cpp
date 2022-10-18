@@ -6,10 +6,12 @@
 #include <iostream>
 #include <fstream>
 
+#include "testing_tools.h"
+
 TEST(ManagerTest, addBookFromPathAndGetIdTest)
 {
     kiwix::Library lib;
-    kiwix::Manager manager = kiwix::Manager(&lib);
+    kiwix::Manager manager = kiwix::Manager(NotOwned<kiwix::Library>(lib));
 
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim");
     ASSERT_NE(bookId, "");
@@ -49,7 +51,7 @@ const char sampleLibraryXML[] = R"(
 TEST(ManagerTest, readXml)
 {
     kiwix::Library lib;
-    kiwix::Manager manager = kiwix::Manager(&lib);
+    kiwix::Manager manager = kiwix::Manager(NotOwned<kiwix::Library>(lib));
 
     EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, "/data/lib.xml", true));
     kiwix::Book book = lib.getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
@@ -71,7 +73,7 @@ TEST(ManagerTest, readXml)
 TEST(Manager, reload)
 {
   kiwix::Library lib;
-  kiwix::Manager manager(&lib);
+  kiwix::Manager manager = kiwix::Manager(NotOwned<kiwix::Library>(lib));
 
   manager.reload({ "./test/library.xml" });
   EXPECT_EQ(lib.getBooksIds(), (kiwix::Library::BookIdCollection{

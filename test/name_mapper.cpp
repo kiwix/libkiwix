@@ -4,8 +4,11 @@
 #include "../include/manager.h"
 #include "gtest/gtest.h"
 
+#include "testing_tools.h"
+
 namespace
 {
+
 
 const char libraryXML[] = R"(
 <library version="1.0">
@@ -18,9 +21,13 @@ const char libraryXML[] = R"(
 )";
 
 class NameMapperTest : public ::testing::Test {
+ public:
+  explicit NameMapperTest()
+  {}
+
  protected:
   void SetUp() override {
-     kiwix::Manager manager(&lib);
+     kiwix::Manager manager{NotOwned<kiwix::Library>(lib)};
      manager.readXml(libraryXML, false, "./library.xml", true);
      for ( const std::string& id : lib.getBooksIds() ) {
        kiwix::Book bookCopy = lib.getBookById(id);
@@ -108,7 +115,7 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
 TEST_F(NameMapperTest, UpdatableNameMapperWithoutAliases)
 {
   CapturedStderr stderror;
-  kiwix::UpdatableNameMapper nm(lib, false);
+  kiwix::UpdatableNameMapper nm(NotOwned<kiwix::Library>(lib), false);
   EXPECT_EQ("", std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
@@ -124,7 +131,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithoutAliases)
 TEST_F(NameMapperTest, UpdatableNameMapperWithAliases)
 {
   CapturedStderr stderror;
-  kiwix::UpdatableNameMapper nm(lib, true);
+  kiwix::UpdatableNameMapper nm(NotOwned<kiwix::Library>(lib), true);
   EXPECT_EQ(
       "Path collision: /data/zero_four_2021-10.zim and"
       " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
