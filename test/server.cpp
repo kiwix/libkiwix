@@ -134,8 +134,8 @@ TEST_F(ServerTest, 200)
 TEST_F(ServerTest, 200_IdNameMapper)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
-  EXPECT_EQ(200, zfs1_->GET("/ROOT/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status) << "url: /ROOT/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index";
-  EXPECT_EQ(404, zfs1_->GET("/ROOT/content/zimfile/A/index")->status) << "url: /ROOT/content/zimfile/A/index";
+  EXPECT_EQ(200, zfs1_->GET("/ROOT/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status);
+  EXPECT_EQ(404, zfs1_->GET("/ROOT/content/zimfile/A/index")->status);
 }
 
 TEST_F(ServerTest, CompressibleContentIsCompressedIfAcceptable)
