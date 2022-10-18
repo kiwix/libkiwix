@@ -633,6 +633,21 @@ std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& r
  * Archive and Zim handlers begin
  **/
 
+class InternalServer::LockableSuggestionSearcher : public zim::SuggestionSearcher
+{
+  public:
+    explicit LockableSuggestionSearcher(const zim::Archive& archive)
+      : zim::SuggestionSearcher(archive)
+    {}
+
+    std::unique_lock<std::mutex> getLock() {
+      return std::unique_lock<std::mutex>(m_mutex);
+    }
+    virtual ~LockableSuggestionSearcher() = default;
+  private:
+    std::mutex m_mutex;
+};
+
 std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -676,8 +691,9 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   /* Get the suggestions */
   auto searcher = suggestionSearcherCache.getOrPut(bookId,
-    [=](){ return make_shared<zim::SuggestionSearcher>(*archive); }
+    [=](){ return make_shared<LockableSuggestionSearcher>(*archive); }
   );
+  const auto lock(searcher->getLock());
   auto search = searcher->suggest(queryString);
   auto srs = search.getResults(start, count);
 
