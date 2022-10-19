@@ -2,7 +2,6 @@ tests = [
     'library',
     'regex',
     'tagParsing',
-    'counterParsing',
     'stringTools',
     'pathTools',
     'kiwixserve',
