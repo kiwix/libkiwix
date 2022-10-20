@@ -28,10 +28,11 @@ namespace kiwix {
 // The ETag string used by Kiwix server (more precisely, its value inside the
 // double quotes) consists of two parts:
 //
-// 1. ServerId - The string obtained on server start up
+// 1. Body    -  A string uniquely identifying the object or state from which
+//               the resource has been obtained.
 //
-// 2. Options -  Zero or more characters encoding the values of some of the
-//               headers of the response
+// 2. Options -  Zero or more characters encoding the type of the ETag and/or
+//               the values of some of the headers of the response
 //
 // The two parts are separated with a slash (/) symbol (which is always present,
 // even when the the options part is empty). Neither portion of a Kiwix ETag
@@ -40,7 +41,7 @@ namespace kiwix {
 //
 //   "abcdefghijklmn/"
 //   "1234567890/z"
-//   "1234567890/cz"
+//   "6f1d19d0-633f-087b-fb55-7ac324ff9baf/Zz"
 //
 // The options part of the Kiwix ETag allows to correctly set the required
 // headers when responding to a conditional If-None-Match request with a 304
@@ -51,7 +52,7 @@ class ETag
 {
   public: // types
     enum Option {
-      CACHEABLE_ENTITY,
+      ZIM_CONTENT,
       COMPRESSED_CONTENT,
       OPTION_COUNT
     };
@@ -59,10 +60,10 @@ class ETag
   public: // functions
     ETag() {}
 
-    void set_server_id(const std::string& id) { m_serverId = id; }
+    void set_body(const std::string& s) { m_body = s; }
     void set_option(Option opt);
 
-    explicit operator bool() const { return !m_serverId.empty(); }
+    explicit operator bool() const { return !m_body.empty(); }
 
     bool get_option(Option opt) const;
     std::string get_etag() const;
@@ -76,7 +77,7 @@ class ETag
     static ETag parse(std::string s);
 
   private: // data
-    std::string m_serverId;
+    std::string m_body;
     std::string m_options;
 };
 

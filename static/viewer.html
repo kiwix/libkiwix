@@ -16,7 +16,7 @@
       }
 
       const root = getRootLocation();
-      const blankPageUrl = `${root}/skin/blank.html`;
+      const blankPageUrl = root + "/skin/blank.html?KIWIXCACHEID";
 
       if ( location.hash == '' ) {
         location.href = root + '/';
@@ -58,7 +58,7 @@
     <iframe id="content_iframe"
             referrerpolicy="same-origin"
             onload="on_content_load()"
-            src="skin/blank.html" title="ZIM content" width="100%"
+            src="./skin/blank.html?KIWIXCACHEID" title="ZIM content" width="100%"
             style="border:0px">
     </iframe>
 

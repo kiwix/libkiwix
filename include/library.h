@@ -332,8 +332,8 @@ class Library
   /**
    * Return the current revision of the library.
    *
-   * The revision of the library is updated (incremented by one) only by
-   * the addBook() operation.
+   * The revision of the library is updated (incremented by one) by
+   * the addBook() and removeBookById() operations.
    *
    * @return Current revision of the library.
    */

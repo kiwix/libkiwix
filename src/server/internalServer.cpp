@@ -218,6 +218,24 @@ struct CustomizedResourceData
   std::string resourceFilePath;
 };
 
+bool responseMustBeETaggedWithLibraryId(const Response& response, const RequestContext& request)
+{
+  return response.getReturnCode() == MHD_HTTP_OK
+      && response.get_kind() == Response::DYNAMIC_CONTENT
+      && request.get_url() != "/random";
+}
+
+ETag
+get_matching_if_none_match_etag(const RequestContext& r, const std::string& etagBody)
+{
+  try {
+    const std::string etag_list = r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
+    return ETag::match(etag_list, etagBody);
+  } catch (const std::out_of_range&) {
+    return ETag();
+  }
+}
+
 } // unnamed namespace
 
 std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const RequestContext& request) const
@@ -443,7 +461,6 @@ bool InternalServer::start() {
   }
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
   m_server_id = kiwix::to_string(server_start_time.count());
-  m_library_id = m_server_id;
   return true;
 }
 
@@ -511,8 +528,9 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     }
   }
 
-  if (response->getReturnCode() == MHD_HTTP_OK && !etag_not_needed(request))
-    response->set_server_id(m_server_id);
+  if ( responseMustBeETaggedWithLibraryId(*response, request) ) {
+    response->set_etag_body(getLibraryId());
+  }
 
   auto ret = response->send(request, connection);
   auto end_time = std::chrono::steady_clock::now();
@@ -534,6 +552,11 @@ bool isEndpointUrl(const std::string& url, const std::string& endpoint)
 
 } // unnamed namespace
 
+std::string InternalServer::getLibraryId() const
+{
+  return m_server_id + "." + kiwix::to_string(mp_library->getRevision());
+}
+
 std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& request)
 {
   try {
@@ -542,7 +565,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
              + urlNotFoundMsg;
     }
 
-    const ETag etag = get_matching_if_none_match_etag(request);
+    const ETag etag = get_matching_if_none_match_etag(request, getLibraryId());
     if ( etag )
       return Response::build_304(*this, etag);
 
@@ -601,27 +624,6 @@ MustacheData InternalServer::get_default_data() const
   MustacheData data;
   data.set("root", m_root);
   return data;
-}
-
-bool InternalServer::etag_not_needed(const RequestContext& request) const
-{
-  const std::string url = request.get_url();
-  return kiwix::startsWith(url, "/catalog")
-      || url == "/search"
-      || url == "/suggest"
-      || url == "/random"
-      || url == "/catch/external";
-}
-
-ETag
-InternalServer::get_matching_if_none_match_etag(const RequestContext& r) const
-{
-  try {
-    const std::string etag_list = r.get_header(MHD_HTTP_HEADER_IF_NONE_MATCH);
-    return ETag::match(etag_list, m_server_id);
-  } catch (const std::out_of_range&) {
-    return ETag();
-  }
 }
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
@@ -746,6 +748,25 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
   return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
 
+namespace
+{
+
+Response::Kind staticResourceAccessType(const RequestContext& req, const char* expectedCacheid)
+{
+  if ( expectedCacheid == nullptr )
+    return Response::DYNAMIC_CONTENT;
+
+  try {
+    if ( expectedCacheid != req.get_argument("cacheid") )
+      throw ResourceNotFound("Wrong cacheid");
+    return Response::STATIC_RESOURCE;
+  } catch( const std::out_of_range& ) {
+    return Response::DYNAMIC_CONTENT;
+  }
+}
+
+} // unnamed namespace
+
 std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -756,12 +777,16 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
   auto resourceName = isRequestForViewer
                     ? "viewer.html"
                     : request.get_url().substr(1);
+
+  const char* const resourceCacheId = getResourceCacheId(resourceName);
+
   try {
+    const auto accessType = staticResourceAccessType(request, resourceCacheId);
     auto response = ContentResponse::build(
         *this,
         getResource(resourceName),
         getMimeTypeForFile(resourceName));
-    response->set_cacheable();
+    response->set_kind(accessType);
     return std::move(response);
   } catch (const ResourceNotFound& e) {
     return HTTP404Response(*this, request)
@@ -969,7 +994,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   zim::Uuid uuid;
   kiwix::OPDSDumper opdsDumper(mp_library);
   opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(m_library_id);
+  opdsDumper.setLibraryId(getLibraryId());
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
     uuid = zim::Uuid::generate(host);
@@ -1052,6 +1077,11 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
   }
 
+  const std::string archiveUuid(archive->getUuid());
+  const ETag etag = get_matching_if_none_match_etag(request, archiveUuid);
+  if ( etag )
+    return Response::build_304(*this, etag);
+
   auto urlStr = url.substr(prefixLength + bookName.size());
   if (urlStr[0] == '/') {
     urlStr = urlStr.substr(1);
@@ -1070,6 +1100,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
       return build_redirect(bookName, getFinalItem(*archive, entry));
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
+    response->set_etag_body(archiveUuid);
 
     if (m_verbose.load()) {
       printf("Found %s\n", entry.getPath().c_str());
@@ -1123,6 +1154,11 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
            + noSuchBookErrorMsg(bookName);
   }
 
+  const std::string archiveUuid(archive->getUuid());
+  const ETag etag = get_matching_if_none_match_etag(request, archiveUuid);
+  if ( etag )
+    return Response::build_304(*this, etag);
+
   // Remove the beggining of the path:
   // /raw/<bookName>/<kind>/foo
   // ^^^^^          ^      ^
@@ -1132,13 +1168,17 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   try {
     if (kind == "meta") {
       auto item = archive->getMetadataItem(itemPath);
-      return ItemResponse::build(*this, request, item);
+      auto response = ItemResponse::build(*this, request, item);
+      response->set_etag_body(archiveUuid);
+      return response;
     } else {
       auto entry = archive->getEntryByPath(itemPath);
       if (entry.isRedirect()) {
         return build_redirect(bookName, entry.getItem(true));
       }
-      return ItemResponse::build(*this, request, entry.getItem());
+      auto response = ItemResponse::build(*this, request, entry.getItem());
+      response->set_etag_body(archiveUuid);
+      return response;
     }
   } catch (zim::EntryNotFound& e ) {
     if (m_verbose.load()) {

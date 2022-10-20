@@ -23,13 +23,19 @@ T1 concat(T1 a, const T2& b)
   return a;
 }
 
-const bool WITH_ETAG = true;
-const bool NO_ETAG = false;
+enum ResourceKind
+{
+  ZIM_CONTENT,
+  STATIC_CONTENT,
+  DYNAMIC_CONTENT,
+};
 
 struct Resource
 {
-  bool etag_expected;
+  ResourceKind kind;
   const char* url;
+
+  bool etag_expected() const { return kind != STATIC_CONTENT; }
 };
 
 std::ostream& operator<<(std::ostream& out, const Resource& r)
@@ -41,55 +47,127 @@ std::ostream& operator<<(std::ostream& out, const Resource& r)
 typedef std::vector<Resource> ResourceCollection;
 
 const ResourceCollection resources200Compressible{
-  { WITH_ETAG, "/ROOT/" },
+  { DYNAMIC_CONTENT, "/ROOT/" },
 
-  { WITH_ETAG, "/ROOT/skin/autoComplete.min.js" },
-  { WITH_ETAG, "/ROOT/skin/css/autoComplete.css" },
-  { WITH_ETAG, "/ROOT/skin/taskbar.css" },
+  { DYNAMIC_CONTENT, "/ROOT/viewer" },
+  { DYNAMIC_CONTENT, "/ROOT/viewer?cacheid=whatever" },
 
-  { NO_ETAG,   "/ROOT/catalog/search" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/autoComplete.min.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/css/autoComplete.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/css/autoComplete.css?cacheid=08951e06" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon.ico" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/index.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/index.css?cacheid=0f9ba34e" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/index.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/index.js?cacheid=2f5a81ac" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/iso6391To3.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/isotope.pkgd.min.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/taskbar.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/taskbar.css?cacheid=216d6b5d" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/viewer.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/viewer.js?cacheid=51e745c2" },
 
-  { NO_ETAG,   "/ROOT/search?content=zimfile&pattern=a" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
 
-  { NO_ETAG,   "/ROOT/suggest?content=zimfile&term=ray" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/languages" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/entries" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/partial_entries" },
 
-  { WITH_ETAG, "/ROOT/content/zimfile/A/index" },
-  { WITH_ETAG, "/ROOT/content/zimfile/A/Ray_Charles" },
+  { DYNAMIC_CONTENT, "/ROOT/search?content=zimfile&pattern=a" },
 
-  { WITH_ETAG, "/ROOT/raw/zimfile/content/A/index" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/content/A/Ray_Charles" },
+  { DYNAMIC_CONTENT, "/ROOT/suggest?content=zimfile&term=ray" },
+
+  { ZIM_CONTENT,     "/ROOT/content/zimfile/A/index" },
+  { ZIM_CONTENT,     "/ROOT/content/zimfile/A/Ray_Charles" },
+
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/content/A/index" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/content/A/Ray_Charles" },
 };
 
 const ResourceCollection resources200Uncompressible{
-  { WITH_ETAG, "/ROOT/skin/caret.png" },
-  { WITH_ETAG, "/ROOT/skin/css/images/search.svg" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/bittorrent.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/bittorrent.png?cacheid=4f5c6882" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/blank.html" },
+  { STATIC_CONTENT,  "/ROOT/skin/blank.html?cacheid=6b1fa032" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/caret.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/caret.png?cacheid=22b942b4" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/download.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/download.png?cacheid=a39aa502" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/android-chrome-192x192.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/android-chrome-192x192.png?cacheid=bfac158b" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/android-chrome-512x512.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/android-chrome-512x512.png?cacheid=380c3653" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/apple-touch-icon.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/browserconfig.xml" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/browserconfig.xml?cacheid=f29a7c4a" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon-16x16.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon-16x16.png?cacheid=a986fedc" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon-32x32.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon-32x32.png?cacheid=79ded625" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-144x144.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-144x144.png?cacheid=c25a7641" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-150x150.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-150x150.png?cacheid=6fa6f467" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-310x150.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-310x150.png?cacheid=e0ed9032" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-310x310.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-310x310.png?cacheid=26b20530" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-70x70.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-70x70.png?cacheid=64ffd9dc" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/safari-pinned-tab.svg" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/site.webmanifest" },
+  { STATIC_CONTENT,  "/ROOT/skin/favicon/site.webmanifest?cacheid=bc396efb" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Poppins.ttf" },
+  { STATIC_CONTENT,  "/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Roboto.ttf" },
+  { STATIC_CONTENT,  "/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/hash.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/hash.png?cacheid=f836e872" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/magnet.png" },
+  { STATIC_CONTENT,  "/ROOT/skin/magnet.png?cacheid=73b6bddf" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/search-icon.svg" },
+  { STATIC_CONTENT,  "/ROOT/skin/search-icon.svg?cacheid=b10ae7ed" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/search_results.css" },
+  { STATIC_CONTENT,  "/ROOT/skin/search_results.css?cacheid=76d39c84" },
 
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Description" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Language" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Name" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Tags" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Date" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Publisher" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Description" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Language" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Name" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Tags" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Date" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Creator" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Publisher" },
 
-  { NO_ETAG, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
 
-  { NO_ETAG,   "/ROOT/catch/external?source=www.example.com" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/categories" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/searchdescription.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
-  { WITH_ETAG, "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
+  { DYNAMIC_CONTENT, "/ROOT/catch/external?source=www.example.com" },
 
-  { WITH_ETAG, "/ROOT/content/corner_cases/A/empty.html" },
-  { WITH_ETAG, "/ROOT/content/corner_cases/-/empty.css" },
-  { WITH_ETAG, "/ROOT/content/corner_cases/-/empty.js" },
+  { ZIM_CONTENT,     "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
+
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/A/empty.html" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.css" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.js" },
 
 
   // The following url's responses are too small to be compressed
-  { NO_ETAG,   "/ROOT/catalog/root.xml" },
-  { NO_ETAG,   "/ROOT/catalog/searchdescription.xml" },
-  { NO_ETAG,   "/ROOT/suggest?content=zimfile" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Creator" },
-  { WITH_ETAG, "/ROOT/raw/zimfile/meta/Title" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
+  { DYNAMIC_CONTENT, "/ROOT/suggest?content=zimfile" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Creator" },
+  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
 };
 
 ResourceCollection all200Resources()
@@ -172,11 +250,11 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT/",
-R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
+R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=0f9ba34e"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
-    <link rel="manifest" href="/ROOT/skin/favicon/site.webmanifest">
+    <link rel="manifest" href="/ROOT/skin/favicon/site.webmanifest?cacheid=bc396efb">
     <link rel="mask-icon" href="/ROOT/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27">
     <meta name="msapplication-config" content="/ROOT/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
@@ -185,6 +263,11 @@ R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=3b470cee"
     <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=2f5a81ac" defer></script>
+)EXPECTEDRESULT"
+    },
+    {
+      /* url */ "/ROOT/skin/index.css",
+R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10ae7ed');
 )EXPECTEDRESULT"
     },
     {
@@ -201,8 +284,9 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=216d
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/viewer.js?cacheid=51e745c2" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
-      const blankPageUrl = `${root}/skin/blank.html`;
+      const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
             <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
+            src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
     },
     {
@@ -252,6 +336,7 @@ const char* urls404[] = {
   "/",
   "/zimfile",
   "/ROOT/skin/non-existent-skin-resource",
+  "/ROOT/skin/autoComplete.min.js?cacheid=wrongcacheid",
   "/ROOT/catalog",
   "/ROOT/catalog/",
   "/ROOT/catalog/non-existent-item",
@@ -308,6 +393,11 @@ std::string getHeaderValue(const Headers& headers, const std::string& name)
   if (n > 1)
     throw std::runtime_error("Multiple occurrences of header: " + name);
   return er.first->second;
+}
+
+std::string getCacheControlHeader(const httplib::Response& r)
+{
+  return getHeaderValue(r.headers, "Cache-Control");
 }
 
 TEST_F(CustomizedServerTest, NewResourcesCanBeAdded)
@@ -952,6 +1042,8 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
   ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
+  ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
+  ASSERT_FALSE(g->has_header("ETag"));
 }
 
 TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
@@ -995,6 +1087,8 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
     ASSERT_EQ(302, g->status) << ctx;
     ASSERT_TRUE(g->has_header("Location")) << ctx;
     ASSERT_EQ("/ROOT/content" + p, g->get_header_value("Location")) << ctx;
+    ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
+    ASSERT_FALSE(g->has_header("ETag"));
   }
 }
 
@@ -1059,12 +1153,45 @@ TEST_F(ServerTest, HeadersAreTheSameInResponsesToHeadAndGetRequests)
   }
 }
 
+TEST_F(ServerTest, CacheControlOfZimContent)
+{
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind == ZIM_CONTENT ) {
+      const auto g = zfs1_->GET(res.url);
+      EXPECT_EQ(getCacheControlHeader(*g), "max-age=3600, must-revalidate") << res;
+      EXPECT_TRUE(g->has_header("ETag")) << res;
+    }
+  }
+}
+
+TEST_F(ServerTest, CacheControlOfStaticContent)
+{
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind == STATIC_CONTENT ) {
+      const auto g = zfs1_->GET(res.url);
+      EXPECT_EQ(getCacheControlHeader(*g), "max-age=31536000, immutable") << res;
+      EXPECT_FALSE(g->has_header("ETag")) << res;
+    }
+  }
+}
+
+TEST_F(ServerTest, CacheControlOfDynamicContent)
+{
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind == DYNAMIC_CONTENT ) {
+      const auto g = zfs1_->GET(res.url);
+      EXPECT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate") << res;
+      EXPECT_TRUE(g->has_header("ETag")) << res;
+    }
+  }
+}
+
 TEST_F(ServerTest, ETagHeaderIsSetAsNeeded)
 {
   for ( const Resource& res : all200Resources() ) {
     const auto responseToGet = zfs1_->GET(res.url);
-    EXPECT_EQ(res.etag_expected, responseToGet->has_header("ETag")) << res;
-    if ( res.etag_expected ) {
+    EXPECT_EQ(res.etag_expected(), responseToGet->has_header("ETag")) << res;
+    if ( res.etag_expected() ) {
       EXPECT_TRUE(is_valid_etag(responseToGet->get_header_value("ETag")));
     }
   }
@@ -1088,21 +1215,32 @@ TEST_F(ServerTest, ETagIsTheSameAcrossHeadAndGet)
   }
 }
 
-TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETags)
+TEST_F(ServerTest, DifferentServerInstancesProduceDifferentETagsForDynamicContent)
 {
   ZimFileServer zfs2(SERVER_PORT + 1, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
   for ( const Resource& res : all200Resources() ) {
-    if ( !res.etag_expected ) continue;
+    if ( res.kind != DYNAMIC_CONTENT ) continue;
     const auto h1 = zfs1_->HEAD(res.url);
     const auto h2 = zfs2.HEAD(res.url);
     EXPECT_NE(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
   }
 }
 
+TEST_F(ServerTest, DifferentServerInstancesProduceIdenticalETagsForZimContent)
+{
+  ZimFileServer zfs2(SERVER_PORT + 1, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind != ZIM_CONTENT ) continue;
+    const auto h1 = zfs1_->HEAD(res.url);
+    const auto h2 = zfs2.HEAD(res.url);
+    EXPECT_EQ(h1->get_header_value("ETag"), h2->get_header_value("ETag"));
+  }
+}
+
 TEST_F(ServerTest, CompressionInfluencesETag)
 {
   for ( const Resource& res : resources200Compressible ) {
-    if ( ! res.etag_expected ) continue;
+    if ( ! res.etag_expected() ) continue;
     const auto g1 = zfs1_->GET(res.url);
     const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
     const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} } );
@@ -1115,7 +1253,7 @@ TEST_F(ServerTest, CompressionInfluencesETag)
 TEST_F(ServerTest, ETagOfUncompressibleContentIsNotAffectedByAcceptEncoding)
 {
   for ( const Resource& res : resources200Uncompressible ) {
-    if ( ! res.etag_expected ) continue;
+    if ( ! res.etag_expected() ) continue;
     const auto g1 = zfs1_->GET(res.url);
     const auto g2 = zfs1_->GET(res.url, { {"Accept-Encoding", ""} } );
     const auto g3 = zfs1_->GET(res.url, { {"Accept-Encoding", "gzip"} } );
@@ -1160,7 +1298,7 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMatchingETagResultIn304Responses)
   const char* const encodings[] = { "", "gzip" };
   for ( const Resource& res : all200Resources() ) {
     for ( const char* enc: encodings ) {
-      if ( ! res.etag_expected ) continue;
+      if ( ! res.etag_expected() ) continue;
       const TestContext ctx{ {"url", res.url}, {"encoding", enc} };
 
       const auto g = zfs1_->GET(res.url, { {"Accept-Encoding", enc} });
@@ -1187,8 +1325,8 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
     const auto etag2 = etag.substr(0, etag.size() - 1) + "x\"";
     const auto h = zfs1_->HEAD(res.url, { {"If-None-Match", etag2} } );
     const auto g2 = zfs1_->GET(res.url, { {"If-None-Match", etag2} } );
-    EXPECT_EQ(200, h->status);
-    EXPECT_EQ(200, g2->status);
+    EXPECT_EQ(200, h->status) << res;
+    EXPECT_EQ(200, g2->status) << res;
   }
 }
 

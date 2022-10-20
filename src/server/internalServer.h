@@ -147,12 +147,12 @@ class InternalServer {
 
     MustacheData get_default_data() const;
 
-    bool etag_not_needed(const RequestContext& r) const;
-    ETag get_matching_if_none_match_etag(const RequestContext& request) const;
     std::pair<std::string, Library::BookIdSet> selectBooks(const RequestContext& r) const;
     SearchInfo getSearchInfo(const RequestContext& r) const;
 
     bool isLocallyCustomizedResource(const std::string& url) const;
+
+    std::string getLibraryId() const;
 
   private: // types
     class LockableSuggestionSearcher;
@@ -180,7 +180,6 @@ class InternalServer {
     SuggestionSearcherCache suggestionSearcherCache;
 
     std::string m_server_id;
-    std::string m_library_id;
 
     class CustomizedResources;
     std::unique_ptr<CustomizedResources> m_customizedResources;

@@ -36,7 +36,6 @@ opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
 skin/css/autoComplete.css
-skin/css/images/search.svg
 skin/favicon/android-chrome-192x192.png
 skin/favicon/android-chrome-512x512.png
 skin/favicon/apple-touch-icon.png

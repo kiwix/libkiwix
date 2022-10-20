@@ -801,7 +801,13 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
     lib.addBook(lib.getBookByIdThreadSafe(id));
   }
 
+  EXPECT_GT(lib.getRevision(), rev);
+
+  const uint64_t rev2 = lib.getRevision();
+
   EXPECT_EQ(9u, lib.removeBooksNotUpdatedSince(rev));
+
+  EXPECT_GT(lib.getRevision(), rev2);
 
   EXPECT_FILTER_RESULTS(kiwix::Filter(),
     "Islam Stack Exchange",
