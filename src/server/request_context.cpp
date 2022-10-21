@@ -107,6 +107,14 @@ MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
 {
   RequestContext *_this = static_cast<RequestContext*>(__this);
   _this->arguments[key].push_back(value == nullptr ? "" : value);
+  if ( ! _this->queryString.empty() ) {
+    _this->queryString += "&";
+  }
+  _this->queryString += key;
+  if ( value ) {
+    _this->queryString += "=";
+    _this->queryString += value;
+  }
   return MHD_YES;
 }
 

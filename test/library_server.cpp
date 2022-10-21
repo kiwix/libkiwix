@@ -359,7 +359,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Filtered zims (count=1&amp;start=1)</title>\n"
+      "  <title>Filtered zims (start=1&amp;count=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
@@ -375,7 +375,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Filtered zims (count=10&amp;start=100)</title>\n"
+      "  <title>Filtered zims (start=100&amp;count=10)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>100</startIndex>\n"
@@ -638,8 +638,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
     const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?start=1&count=1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-      CATALOG_V2_ENTRIES_PREAMBLE("?count=1&start=1")
-      "  <title>Filtered Entries (count=1&amp;start=1)</title>\n"
+      CATALOG_V2_ENTRIES_PREAMBLE("?start=1&count=1")
+      "  <title>Filtered Entries (start=1&amp;count=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"

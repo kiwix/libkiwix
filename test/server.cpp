@@ -839,7 +839,7 @@ TEST_F(ServerTest, Http400HtmlError)
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?books.filter.lang=eng&pattern=" is not a valid request.
+      The requested URL "/ROOT/search?books.filter.lang=eng&pattern" is not a valid request.
     </p>
     <p>
       No query provided.
@@ -896,21 +896,21 @@ TEST_F(ServerTest, HttpXmlError)
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?content=zimfile&format=xml" is not a valid request.</detail>
+<detail>The requested URL "/ROOT/search?format=xml&content=zimfile" is not a valid request.</detail>
 <detail>No query provided.</detail>
 )"  },
     { /* url */ "/ROOT/search?format=xml&content=non-existing-book&pattern=asdfqwerty",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?content=non-existing-book&format=xml&pattern=asdfqwerty" is not a valid request.</detail>
+<detail>The requested URL "/ROOT/search?format=xml&content=non-existing-book&pattern=asdfqwerty" is not a valid request.</detail>
 <detail>No such book: non-existing-book</detail>
 )"  },
     { /* url */ "/ROOT/search?format=xml&content=non-existing-book&pattern=a\"<script foo>",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?content=non-existing-book&format=xml&pattern=a"&lt;script foo&gt;" is not a valid request.</detail>
+<detail>The requested URL "/ROOT/search?format=xml&content=non-existing-book&pattern=a"&lt;script foo&gt;" is not a valid request.</detail>
 <detail>No such book: non-existing-book</detail>
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate
@@ -919,7 +919,7 @@ TEST_F(ServerTest, HttpXmlError)
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?books.filter.lang=eng&format=xml&pattern=" is not a valid request.</detail>
+<detail>The requested URL "/ROOT/search?format=xml&books.filter.lang=eng&pattern" is not a valid request.</detail>
 <detail>No query provided.</detail>
 )"  },
     { /* url */ "/ROOT/search?format=xml&pattern=foo",
