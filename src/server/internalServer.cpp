@@ -211,6 +211,16 @@ void checkBookNumber(const Library::BookIdSet& bookIds, size_t limit) {
   }
 }
 
+typedef std::set<std::string> Languages;
+
+Languages getLanguages(const Library& lib, const Library::BookIdSet& bookIds) {
+  Languages langs;
+  for ( const auto& b : bookIds ) {
+    langs.insert(lib.getBookById(b).getLanguage());
+  }
+  return langs;
+}
+
 struct CustomizedResourceData
 {
   std::string mimeType;
@@ -306,6 +316,10 @@ SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
 {
   auto bookIds = selectBooks(request);
   checkBookNumber(bookIds.second, m_multizimSearchLimit);
+  if ( getLanguages(*mp_library, bookIds.second).size() != 1 ) {
+    throw Error(nonParameterizedMessage("confusion-of-tongues"));
+  }
+
   auto pattern = request.get_optional_param<std::string>("pattern", "");
   GeoQuery geoQuery;
 

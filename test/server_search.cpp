@@ -6,6 +6,17 @@
 #define SERVER_PORT 8101
 #include "server_testing_tools.h"
 
+
+class ServerSearchTest : public ServerTest
+{
+  void SetUp() override {
+    zfs1_.reset(new ZimFileServer(SERVER_PORT,
+                                  ZimFileServer::DEFAULT_OPTIONS,
+                                  "./test/lib_for_server_search_test.xml")
+    );
+  }
+};
+
 std::string makeSearchResultsHtml(const std::string& pattern,
                                   const std::string& header,
                                   const std::string& results,
@@ -555,7 +566,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 //
 // In order to be able to share the same expected output data
 // LARGE_SEARCH_RESULTS between multiple build platforms and test-points
-// of the ServerTest.searchResults test-case
+// of the ServerSearchTest.searchResults test-case
 //
 // 1. Snippets are excluded from the plain-text comparison of actual and
 //    expected HTML strings. This is done with the help of the
@@ -916,7 +927,7 @@ struct TestData
   }
 };
 
-TEST_F(ServerTest, searchResults)
+TEST_F(ServerSearchTest, searchResults)
 {
   const TestData testData[] = {
     {
@@ -1340,14 +1351,12 @@ TEST_F(ServerTest, searchResults)
       /* pagination */       {}
     },
 
-    // Only RayCharles is in English.
-    // [TODO] We should extend our test data to have another zim file in english returning results.
     {
        /* query */          "pattern=travel"
                             "&books.filter.lang=eng",
        /* start */            0,
        /* resultsPerPage */   10,
-       /* totalResultCount */ 1,
+       /* totalResultCount */ 2,
        /* firstResultIndex */ 1,
        /* results */          {
          SEARCH_RESULT(
@@ -1357,6 +1366,14 @@ TEST_F(ServerTest, searchResults)
            /*bookTitle*/  "Ray Charles",
            /*wordCount*/  "204"
          ),
+
+        SEARCH_RESULT(
+          /*link*/   "/ROOT/content/example/Wikibooks.html",
+          /*title*/  "Wikibooks",
+          /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
+          /*bookTitle*/  "Wikibooks",
+          /*wordCount*/  "538"
+        )
       },
       /* pagination */       {}
     },

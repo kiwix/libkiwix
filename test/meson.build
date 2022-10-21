@@ -37,6 +37,7 @@ if gtest_dep.found() and not meson.is_cross_build()
       'corner_cases.zim',
       'poor.zim',
       'library.xml',
+      'lib_for_server_search_test.xml',
       'customized_resources.txt',
       'helloworld.txt',
       'welcome.html',
