@@ -813,6 +813,16 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   }
 
   try {
+    return handle_search_request(request);
+  } catch (const Error& e) {
+    return HTTP400Response(*this, request)
+      + invalidUrlMsg
+      + e.message();
+  }
+}
+
+std::unique_ptr<Response> InternalServer::handle_search_request(const RequestContext& request)
+{
     auto searchInfo = getSearchInfo(request);
     auto bookIds = searchInfo.getBookIds();
 
@@ -888,11 +898,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     }
     */
     return std::move(response);
-  } catch (const Error& e) {
-    return HTTP400Response(*this, request)
-      + invalidUrlMsg
-      + e.message();
-  }
 }
 
 std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& request)
