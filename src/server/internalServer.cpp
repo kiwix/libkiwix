@@ -77,7 +77,6 @@ extern "C" {
 #include "request_context.h"
 #include "response.h"
 
-#define MAX_SEARCH_LEN 140
 #define DEFAULT_CACHE_SIZE 2
 
 namespace kiwix {
@@ -821,6 +820,22 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   }
 }
 
+namespace
+{
+
+unsigned getSearchPageSize(const RequestContext& r)
+{
+  const auto DEFAULT_PAGE_LEN = 25u;
+  const auto MAX_PAGE_LEN = 140u;
+
+  const auto pageLength = r.get_optional_param("pageLength", DEFAULT_PAGE_LEN);
+  return pageLength == 0
+       ? DEFAULT_PAGE_LEN
+       : min(MAX_PAGE_LEN, pageLength);
+}
+
+} // unnamed namespace
+
 std::unique_ptr<Response> InternalServer::handle_search_request(const RequestContext& request)
 {
   auto searchInfo = getSearchInfo(request);
@@ -859,22 +874,8 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
     return response;
   }
 
-  auto start = 1;
-  try {
-    start = request.get_argument<unsigned int>("start");
-  } catch (const std::exception&) {}
-  start = max(1, start);
-
-  auto pageLength = 25;
-  try {
-    pageLength = request.get_argument<unsigned int>("pageLength");
-  } catch (const std::exception&) {}
-  if (pageLength > MAX_SEARCH_LEN) {
-    pageLength = MAX_SEARCH_LEN;
-  }
-  if (pageLength == 0) {
-    pageLength = 25;
-  }
+  const auto start = max(1u, request.get_optional_param("start", 1u));
+  const auto pageLength = getSearchPageSize(request);
 
   /* Get the results */
   SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
