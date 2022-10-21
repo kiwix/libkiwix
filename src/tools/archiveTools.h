@@ -40,7 +40,6 @@ namespace kiwix
     std::string getMetaCreator(const zim::Archive& archive);
     std::string getMetaPublisher(const zim::Archive& archive);
     std::string getMetaFlavour(const zim::Archive& archive);
-    std::string getArchiveId(const zim::Archive& archive);
 
     bool getArchiveFavicon(const zim::Archive& archive, unsigned size,
                            std::string& content, std::string& mimeType);
