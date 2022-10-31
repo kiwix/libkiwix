@@ -317,6 +317,42 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
   );
 }
 
+TEST_F(LibraryServerTest, catalog_search_by_language)
+{
+  {
+    const auto r = zfs1_->GET("/ROOT/catalog/search?lang=eng");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Filtered zims (lang=eng)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>1</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
+    const auto r = zfs1_->GET("/ROOT/catalog/search?lang=eng,fra");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Filtered zims (lang=eng,fra)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>0</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>0</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      "</feed>\n"
+    );
+  }
+}
+
 TEST_F(LibraryServerTest, catalog_search_results_pagination)
 {
   {
@@ -665,6 +701,38 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
     CHARLES_RAY_CATALOG_ENTRY
     "</feed>\n"
   );
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
+{
+  {
+    const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?lang=eng");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng")
+      "  <title>Filtered Entries (lang=eng)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>1</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
+    const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?lang=eng,fra");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng,fra")
+      "  <title>Filtered Entries (lang=eng,fra)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>0</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>0</itemsPerPage>\n"
+      "</feed>\n"
+    );
+  }
 }
 
 TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
