@@ -106,7 +106,15 @@ class Filter {
     Filter& rejectTags(const Tags& tags);
 
     Filter& category(std::string category);
+
+    /**
+     *  Set the filter to only accept books in the specified language.
+     *
+     *  Multiple languages can be specified as a comma-separated list (in
+     *  which case a book in any of those languages will match).
+     */
     Filter& lang(std::string lang);
+
     Filter& publisher(std::string publisher);
     Filter& creator(std::string creator);
     Filter& maxSize(size_t size);

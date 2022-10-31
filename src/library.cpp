@@ -535,9 +535,20 @@ Xapian::Query categoryQuery(const std::string& category)
   return Xapian::Query("XC" + normalizeText(category));
 }
 
-Xapian::Query langQuery(const std::string& lang)
+Xapian::Query langQuery(const std::string& commaSeparatedLanguageList)
 {
-  return Xapian::Query("L" + normalizeText(lang));
+  Xapian::Query q;
+  bool firstIteration = true;
+  for ( const auto& lang : kiwix::split(commaSeparatedLanguageList, ",") ) {
+    const Xapian::Query singleLangQuery("L" + normalizeText(lang));
+    if ( firstIteration ) {
+      q = singleLangQuery;
+      firstIteration = false;
+    } else {
+      q = Xapian::Query(Xapian::Query::OP_OR, q, singleLangQuery);
+    }
+  }
+  return q;
 }
 
 Xapian::Query publisherQuery(const std::string& publisher)
