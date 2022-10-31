@@ -209,6 +209,15 @@ TEST_F(ServerTest, 200)
     EXPECT_EQ(200, zfs1_->GET(res.url)->status) << "res.url: " << res.url;
 }
 
+TEST_F(ServerTest, 200_IdNameMapper)
+{
+  EXPECT_EQ(404, zfs1_->GET("/ROOT/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status);
+  EXPECT_EQ(200, zfs1_->GET("/ROOT/content/zimfile/A/index")->status);
+  resetServer(ZimFileServer::NO_NAME_MAPPER);
+  EXPECT_EQ(200, zfs1_->GET("/ROOT/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status);
+  EXPECT_EQ(404, zfs1_->GET("/ROOT/content/zimfile/A/index")->status);
+}
+
 TEST_F(ServerTest, CompressibleContentIsCompressedIfAcceptable)
 {
   for ( const Resource& res : resources200Compressible ) {

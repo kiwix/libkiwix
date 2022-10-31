@@ -96,7 +96,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
 {
-  OPDSDumper opdsDumper(mp_library);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   const auto bookIds = search_catalog(request, opdsDumper);
@@ -117,7 +117,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
            + urlNotFoundMsg;
   }
 
-  OPDSDumper opdsDumper(mp_library);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
@@ -130,7 +130,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(mp_library);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
@@ -142,7 +142,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(mp_library);
+  OPDSDumper opdsDumper(mp_library, mp_nameMapper);
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
