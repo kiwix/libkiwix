@@ -34,7 +34,7 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
     if (!withAlias)
       continue;
 
-    auto aliasName = replaceRegex(bookName, "", "_[[:digit:]]{4}-[[:digit:]]{2}$");
+    auto aliasName = removeDateFromBookId(bookName);
     if (aliasName == bookName) {
       continue;
     }
@@ -49,6 +49,10 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
                 << " will be served." << std::endl;
     }
   }
+}
+
+std::string HumanReadableNameMapper::removeDateFromBookId(const std::string& bookId) {
+  return replaceRegex(bookId, "", "_[[:digit:]]{4}-[[:digit:]]{2}$");
 }
 
 std::string HumanReadableNameMapper::getNameForId(const std::string& id) const {

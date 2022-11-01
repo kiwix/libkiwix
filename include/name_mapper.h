@@ -54,6 +54,7 @@ class HumanReadableNameMapper : public NameMapper {
     virtual ~HumanReadableNameMapper() = default;
     virtual std::string getNameForId(const std::string& id) const;
     virtual std::string getIdForName(const std::string& name) const;
+    static std::string removeDateFromBookId(const std::string& bookId);
 };
 
 class UpdatableNameMapper : public NameMapper {

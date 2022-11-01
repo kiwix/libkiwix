@@ -500,6 +500,24 @@ TEST_F(LibraryTest, filterByTags)
   );
 }
 
+TEST_F(LibraryTest, filterByAliasNames)
+{
+  // filtering for one book
+  EXPECT_FILTER_RESULTS(kiwix::Filter().aliasNames({"zimfile"}),
+  "Ray Charles"
+  );
+
+  // filerting for more than one book
+  EXPECT_FILTER_RESULTS(kiwix::Filter().aliasNames({"zimfile", "example"}),
+  "An example ZIM archive",
+  "Ray Charles"
+  );
+
+  // filtering by alias name requires full text match
+  EXPECT_FILTER_RESULTS(kiwix::Filter().aliasNames({"wrong_name"}),
+  /* no results */
+  );
+}
 
 TEST_F(LibraryTest, filterByQuery)
 {

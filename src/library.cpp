@@ -28,6 +28,7 @@
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
 #include "tools/concurrent_cache.h"
+#include "name_mapper.h"
 
 #include <pugixml.hpp>
 #include <algorithm>
@@ -465,6 +466,9 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
   indexer.index_text(normalizeText(book.getName()),      1, "XN");
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
+  const auto bookName = book.getHumanReadableIdFromPath();
+  const auto aliasName = HumanReadableNameMapper::removeDateFromBookId(bookName);
+  indexer.index_text(normalizeText(aliasName), 1, "XF");
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
     doc.add_boolean_term("XT" + tag);
@@ -509,6 +513,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("publisher", "XP");
   queryParser.add_prefix("creator", "A");
   queryParser.add_prefix("tag", "XT");
+  queryParser.add_prefix("filename", "XF");
   const auto partialQueryFlag = filter.queryIsPartial()
                               ? Xapian::QueryParser::FLAG_PARTIAL
                               : 0;
@@ -525,6 +530,16 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   return queryParser.parse_query(normalizeText(filter.getQuery()), flags);
 }
 
+Xapian::Query makePhraseQuery(const std::string& query, const std::string& prefix)
+{
+  Xapian::QueryParser queryParser;
+  queryParser.set_default_op(Xapian::Query::OP_OR);
+  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
+  const auto flags = 0;
+  const auto q = queryParser.parse_query(normalizeText(query), flags, prefix);
+  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+}
+
 Xapian::Query nameQuery(const std::string& name)
 {
   return Xapian::Query("XN" + normalizeText(name));
@@ -535,6 +550,18 @@ Xapian::Query categoryQuery(const std::string& category)
   return Xapian::Query("XC" + normalizeText(category));
 }
 
+Xapian::Query aliasNamesQuery(const Filter::AliasNames& aliasNames)
+{
+  Xapian::Query q = Xapian::Query(std::string());
+  std::vector<Xapian::Query> queryVec;
+  for (const auto& aliasName : aliasNames) {
+    queryVec.push_back(makePhraseQuery(aliasName, "XF"));
+  }
+  Xapian::Query combinedQuery(Xapian::Query::OP_OR, queryVec.begin(), queryVec.end());
+  q = Xapian::Query(Xapian::Query::OP_FILTER, q, combinedQuery);
+  return q;
+}
+
 Xapian::Query langQuery(const std::string& lang)
 {
   return Xapian::Query("L" + normalizeText(lang));
@@ -542,22 +569,12 @@ Xapian::Query langQuery(const std::string& lang)
 
 Xapian::Query publisherQuery(const std::string& publisher)
 {
-  Xapian::QueryParser queryParser;
-  queryParser.set_default_op(Xapian::Query::OP_OR);
-  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
-  const auto flags = 0;
-  const auto q = queryParser.parse_query(normalizeText(publisher), flags, "XP");
-  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+  return makePhraseQuery(publisher, "XP");
 }
 
 Xapian::Query creatorQuery(const std::string& creator)
 {
-  Xapian::QueryParser queryParser;
-  queryParser.set_default_op(Xapian::Query::OP_OR);
-  queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_NONE);
-  const auto flags = 0;
-  const auto q = queryParser.parse_query(normalizeText(creator), flags, "A");
-  return Xapian::Query(Xapian::Query::OP_PHRASE, q.get_terms_begin(), q.get_terms_end(), q.get_length());
+  return makePhraseQuery(creator, "A");
 }
 
 Xapian::Query tagsQuery(const Filter::Tags& acceptTags, const Filter::Tags& rejectTags)
@@ -596,6 +613,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   if ( !filter.getAcceptTags().empty() || !filter.getRejectTags().empty() ) {
     const auto tq = tagsQuery(filter.getAcceptTags(), filter.getRejectTags());
     q = Xapian::Query(Xapian::Query::OP_AND, q, tq);;
+  }
+  if ( !filter.getAliasNames().empty() ) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, aliasNamesQuery(filter.getAliasNames()));
   }
   return q;
 }
@@ -746,6 +766,7 @@ enum filterTypes {
   QUERY = FLAG(12),
   NAME = FLAG(13),
   CATEGORY = FLAG(14),
+  ALIASNAMES = FLAG(15),
 };
 
 Filter& Filter::local(bool accept)
@@ -845,6 +866,13 @@ Filter& Filter::name(std::string name)
 {
   _name = name;
   activeFilters |= NAME;
+  return *this;
+}
+
+Filter& Filter::aliasNames(const AliasNames& aliasNames)
+{
+  _aliasNames = aliasNames;
+  activeFilters |= ALIASNAMES;  
   return *this;
 }
 
