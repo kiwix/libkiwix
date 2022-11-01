@@ -92,9 +92,7 @@ class RequestContext {
     std::string get_url_part(int part) const;
     std::string get_full_url() const;
 
-    std::string get_query(bool mustEncode = false) const {
-      return get_query([](const std::string& key) {return true;}, mustEncode);
-    }
+    std::string get_query() const { return queryString; }
 
     template<class F>
     std::string get_query(F filter, bool mustEncode) const {
@@ -132,6 +130,7 @@ class RequestContext {
     ByteRange byteRange_;
     std::map<std::string, std::string> headers;
     std::map<std::string, std::vector<std::string>> arguments;
+    std::string queryString;
 
   private: // functions
     static MHD_Result fill_header(void *, enum MHD_ValueKind, const char*, const char*);

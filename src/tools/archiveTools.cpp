@@ -93,10 +93,6 @@ std::string getMetaFlavour(const zim::Archive& archive) {
   return getMetadata(archive, "Flavour");
 }
 
-std::string getArchiveId(const zim::Archive& archive) {
-  return (std::string) archive.getUuid();
-}
-
 bool getArchiveFavicon(const zim::Archive& archive, unsigned size,
                            std::string& content, std::string& mimeType){
   try {

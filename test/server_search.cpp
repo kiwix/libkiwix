@@ -6,6 +6,7 @@
 #define SERVER_PORT 8101
 #include "server_testing_tools.h"
 
+
 std::string makeSearchResultsHtml(const std::string& pattern,
                                   const std::string& header,
                                   const std::string& results,
@@ -555,7 +556,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 //
 // In order to be able to share the same expected output data
 // LARGE_SEARCH_RESULTS between multiple build platforms and test-points
-// of the ServerTest.searchResults test-case
+// of the ServerSearchTest.searchResults test-case
 //
 // 1. Snippets are excluded from the plain-text comparison of actual and
 //    expected HTML strings. This is done with the help of the
@@ -916,7 +917,7 @@ struct TestData
   }
 };
 
-TEST_F(ServerTest, searchResults)
+TEST(ServerSearchTest, searchResults)
 {
   const TestData testData[] = {
     {
@@ -1340,14 +1341,12 @@ TEST_F(ServerTest, searchResults)
       /* pagination */       {}
     },
 
-    // Only RayCharles is in English.
-    // [TODO] We should extend our test data to have another zim file in english returning results.
     {
        /* query */          "pattern=travel"
                             "&books.filter.lang=eng",
        /* start */            0,
        /* resultsPerPage */   10,
-       /* totalResultCount */ 1,
+       /* totalResultCount */ 2,
        /* firstResultIndex */ 1,
        /* results */          {
          SEARCH_RESULT(
@@ -1357,6 +1356,14 @@ TEST_F(ServerTest, searchResults)
            /*bookTitle*/  "Ray Charles",
            /*wordCount*/  "204"
          ),
+
+        SEARCH_RESULT(
+          /*link*/   "/ROOT/content/example/Wikibooks.html",
+          /*title*/  "Wikibooks",
+          /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
+          /*bookTitle*/  "Wikibooks",
+          /*wordCount*/  "538"
+        )
       },
       /* pagination */       {}
     },
@@ -1451,15 +1458,86 @@ TEST_F(ServerTest, searchResults)
     },
   };
 
+  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS,
+                    "./test/lib_for_server_search_test.xml");
+
   for ( const auto& t : testData ) {
     const std::string htmlSearchUrl = t.url();
-    const auto htmlRes = zfs1_->GET(htmlSearchUrl.c_str());
+    const auto htmlRes = zfs.GET(htmlSearchUrl.c_str());
     EXPECT_EQ(htmlRes->status, 200);
     t.checkHtml(htmlRes->body);
 
     const std::string xmlSearchUrl = t.xmlSearchUrl();
-    const auto xmlRes = zfs1_->GET(xmlSearchUrl.c_str());
+    const auto xmlRes = zfs.GET(xmlSearchUrl.c_str());
     EXPECT_EQ(xmlRes->status, 200);
     t.checkXml(xmlRes->body);
+  }
+}
+
+std::string expectedConfusionOfTonguesErrorHtml(std::string url)
+{
+  return R"(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <title>Invalid request</title>
+
+  </head>
+  <body>
+    <h1>Invalid request</h1>
+    <p>
+      The requested URL ")" + url + R"(" is not a valid request.
+    </p>
+    <p>
+      Two or more books in different languages would participate in search, which may lead to confusing results.
+    </p>
+  </body>
+</html>
+)";
+}
+
+std::string expectedConfusionOfTonguesErrorXml(std::string url)
+{
+  return R"(<?xml version="1.0" encoding="UTF-8">
+<error>Invalid request</error>
+<detail>The requested URL ")" + url + R"(" is not a valid request.</detail>
+<detail>Two or more books in different languages would participate in search, which may lead to confusing results.</detail>
+)";
+}
+
+TEST(ServerSearchTest, searchInMultilanguageBookSetIsDenied)
+{
+  const std::string testQueries[] = {
+      "pattern=towerofbabel",
+      "pattern=babylon&books.filter.maxsize=1000000",
+      "pattern=baby&books.id=" RAYCHARLESZIMID "&books.id=" EXAMPLEZIMID,
+  };
+
+  // The default limit on the number of books in a multi-zim search is 3
+  const ZimFileServer::FilePathCollection ZIMFILES{
+    "./test/zimfile.zim",       // eng
+    "./test/example.zim",       // en
+    "./test/corner_cases.zim"   // =en
+  };
+
+  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
+  for ( const auto& q : testQueries ) {
+    {
+      // HTML mode
+      const std::string url = "/ROOT/search?" + q;
+      const auto r = zfs.GET(url.c_str());
+      const TestContext ctx{ {"url", url} };
+      EXPECT_EQ(r->status, 400) << ctx;
+      EXPECT_EQ(r->body, expectedConfusionOfTonguesErrorHtml(url)) << ctx;
+    }
+
+    {
+      // XML mode
+      const std::string url = "/ROOT/search?" + q + "&format=xml";
+      const auto r = zfs.GET(url.c_str());
+      const TestContext ctx{ {"url", url} };
+      EXPECT_EQ(r->status, 400) << ctx;
+      EXPECT_EQ(r->body, expectedConfusionOfTonguesErrorXml(url)) << ctx;
+    }
   }
 }

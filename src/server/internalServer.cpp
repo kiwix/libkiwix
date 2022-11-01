@@ -77,7 +77,6 @@ extern "C" {
 #include "request_context.h"
 #include "response.h"
 
-#define MAX_SEARCH_LEN 140
 #define DEFAULT_CACHE_SIZE 2
 
 namespace kiwix {
@@ -212,6 +211,16 @@ void checkBookNumber(const Library::BookIdSet& bookIds, size_t limit) {
   }
 }
 
+typedef std::set<std::string> Languages;
+
+Languages getLanguages(const Library& lib, const Library::BookIdSet& bookIds) {
+  Languages langs;
+  for ( const auto& b : bookIds ) {
+    langs.insert(lib.getBookById(b).getLanguage());
+  }
+  return langs;
+}
+
 struct CustomizedResourceData
 {
   std::string mimeType;
@@ -307,6 +316,10 @@ SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
 {
   auto bookIds = selectBooks(request);
   checkBookNumber(bookIds.second, m_multizimSearchLimit);
+  if ( getLanguages(*mp_library, bookIds.second).size() != 1 ) {
+    throw Error(nonParameterizedMessage("confusion-of-tongues"));
+  }
+
   auto pattern = request.get_optional_param<std::string>("pattern", "");
   GeoQuery geoQuery;
 
@@ -813,86 +826,93 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   }
 
   try {
-    auto searchInfo = getSearchInfo(request);
-    auto bookIds = searchInfo.getBookIds();
+    return handle_search_request(request);
+  } catch (const Error& e) {
+    return HTTP400Response(*this, request)
+      + invalidUrlMsg
+      + e.message();
+  }
+}
 
-    /* Make the search */
-    // Try to get a search from the searchInfo, else build it
-    auto searcher = mp_library->getSearcherByIds(bookIds);
-    auto lock(searcher->getLock());
+namespace
+{
 
-    std::shared_ptr<zim::Search> search;
-    try {
-      search = searchCache.getOrPut(searchInfo,
-        [=](){
-          return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
-        }
-      );
-    } catch(std::runtime_error& e) {
-      // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
-      // (in case of zim file not containing a index)
-      const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css);
-      HTTPErrorResponse response(*this, request, MHD_HTTP_NOT_FOUND,
-                                 "fulltext-search-unavailable",
-                                 "404-page-heading",
-                                 cssUrl);
-      response += nonParameterizedMessage("no-search-results");
-      // XXX: Now this has to be handled by the iframe-based viewer which
-      // XXX: has to resolve if the book selection resulted in a single book.
-      /*
-      if(bookIds.size() == 1) {
-        auto bookId = *bookIds.begin();
-        auto bookName = mp_nameMapper->getNameForId(bookId);
-        response += TaskbarInfo(bookName, mp_library->getArchiveById(bookId).get());
+unsigned getSearchPageSize(const RequestContext& r)
+{
+  const auto DEFAULT_PAGE_LEN = 25u;
+  const auto MAX_PAGE_LEN = 140u;
+
+  const auto pageLength = r.get_optional_param("pageLength", DEFAULT_PAGE_LEN);
+  return pageLength == 0
+       ? DEFAULT_PAGE_LEN
+       : min(MAX_PAGE_LEN, pageLength);
+}
+
+} // unnamed namespace
+
+std::unique_ptr<Response> InternalServer::handle_search_request(const RequestContext& request)
+{
+  auto searchInfo = getSearchInfo(request);
+  auto bookIds = searchInfo.getBookIds();
+
+  /* Make the search */
+  // Try to get a search from the searchInfo, else build it
+  auto searcher = mp_library->getSearcherByIds(bookIds);
+  auto lock(searcher->getLock());
+
+  std::shared_ptr<zim::Search> search;
+  try {
+    search = searchCache.getOrPut(searchInfo,
+      [=](){
+        return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
       }
-      */
-      return response;
-    }
-
-    auto start = 1;
-    try {
-      start = request.get_argument<unsigned int>("start");
-    } catch (const std::exception&) {}
-    start = max(1, start);
-
-    auto pageLength = 25;
-    try {
-      pageLength = request.get_argument<unsigned int>("pageLength");
-    } catch (const std::exception&) {}
-    if (pageLength > MAX_SEARCH_LEN) {
-      pageLength = MAX_SEARCH_LEN;
-    }
-    if (pageLength == 0) {
-      pageLength = 25;
-    }
-
-    /* Get the results */
-    SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
-                            search->getEstimatedMatches());
-    renderer.setSearchPattern(searchInfo.pattern);
-    renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
-    renderer.setProtocolPrefix(m_root + "/content/");
-    renderer.setSearchProtocolPrefix(m_root + "/search");
-    renderer.setPageLength(pageLength);
-    if (request.get_requested_format() == "xml") {
-      return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
-    }
-    auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
+    );
+  } catch(std::runtime_error& e) {
+    // Searcher->search will throw a runtime error if there is no valid xapian database to do the search.
+    // (in case of zim file not containing a index)
+    const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css);
+    HTTPErrorResponse response(*this, request, MHD_HTTP_NOT_FOUND,
+                               "fulltext-search-unavailable",
+                               "404-page-heading",
+                               cssUrl);
+    response += nonParameterizedMessage("no-search-results");
     // XXX: Now this has to be handled by the iframe-based viewer which
     // XXX: has to resolve if the book selection resulted in a single book.
     /*
     if(bookIds.size() == 1) {
       auto bookId = *bookIds.begin();
       auto bookName = mp_nameMapper->getNameForId(bookId);
-      response->set_taskbar(bookName, mp_library->getArchiveById(bookId).get());
+      response += TaskbarInfo(bookName, mp_library->getArchiveById(bookId).get());
     }
     */
-    return std::move(response);
-  } catch (const Error& e) {
-    return HTTP400Response(*this, request)
-      + invalidUrlMsg
-      + e.message();
+    return response;
   }
+
+  const auto start = max(1u, request.get_optional_param("start", 1u));
+  const auto pageLength = getSearchPageSize(request);
+
+  /* Get the results */
+  SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
+                          search->getEstimatedMatches());
+  renderer.setSearchPattern(searchInfo.pattern);
+  renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
+  renderer.setProtocolPrefix(m_root + "/content/");
+  renderer.setSearchProtocolPrefix(m_root + "/search");
+  renderer.setPageLength(pageLength);
+  if (request.get_requested_format() == "xml") {
+    return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
+  }
+  auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
+  // XXX: Now this has to be handled by the iframe-based viewer which
+  // XXX: has to resolve if the book selection resulted in a single book.
+  /*
+  if(bookIds.size() == 1) {
+    auto bookId = *bookIds.begin();
+    auto bookName = mp_nameMapper->getNameForId(bookId);
+    response->set_taskbar(bookName, mp_library->getArchiveById(bookId).get());
+  }
+  */
+  return std::move(response);
 }
 
 std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& request)

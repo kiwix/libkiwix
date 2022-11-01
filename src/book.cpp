@@ -66,7 +66,7 @@ bool Book::update(const kiwix::Book& other)
 void Book::update(const zim::Archive& archive) {
   m_path = archive.getFilename();
   m_pathValid = true;
-  m_id = getArchiveId(archive);
+  m_id = std::string(archive.getUuid());
   m_title = getArchiveTitle(archive);
   m_description = getMetaDescription(archive);
   m_language = getMetaLanguage(archive);
