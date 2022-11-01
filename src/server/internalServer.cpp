@@ -1036,9 +1036,6 @@ InternalServer::search_catalog(const RequestContext& request,
                                kiwix::OPDSDumper& opdsDumper)
 {
     const auto filter = get_search_filter(request);
-    const std::string q = filter.hasQuery()
-                        ? filter.getQuery()
-                        : "<Empty query>";
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
     const size_t count = request.get_optional_param("count", 10UL);
