@@ -51,9 +51,6 @@ namespace kiwix
     zim::Item getFinalItem(const zim::Archive& archive, const zim::Entry& entry);
 
     zim::Entry getEntryFromPath(const zim::Archive& archive, const std::string& path);
-
-    MimeCounterType parseArchiveCounter(const zim::Archive& archive);
-
 }
 
 #endif

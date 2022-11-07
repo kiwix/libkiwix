@@ -45,9 +45,6 @@ namespace kiwix
                                      const std::string& tagName);
   bool convertStrToBool(const std::string& value);
 
-  using MimeCounterType = std::map<const std::string, zim::entry_index_type>;
-  MimeCounterType parseMimetypeCounter(const std::string& counterData);
-
   std::string gen_date_str();
   std::string gen_uuid(const std::string& s);
 
