@@ -99,20 +99,20 @@ TEST(Suggestions, specialCharHandling)
 {
   // HTML special symbols (<, >, &, ", and ') must be HTML-escaped
   // Backslash symbols (\) must be duplicated.
-  const std::string SPECIAL_CHARS(R"(\<>&'")");
+  const std::string SYMBOLS(R"(\<>&'"~!@#$%^*()_+`-=[]{}|:;,.?)");
   {
     kiwix::Suggestions s;
-    s.add(zim::SuggestionItem("Title with "   + SPECIAL_CHARS,
-                              "Path with "    + SPECIAL_CHARS,
-                              "Snippet with " + SPECIAL_CHARS));
+    s.add(zim::SuggestionItem("Title with "   + SYMBOLS,
+                              "Path with "    + SYMBOLS,
+                              "Snippet with " + SYMBOLS));
 
     CHECK_SUGGESTIONS(s.getJSON(),
 R"EXPECTEDJSON([
   {
-    "value" : "Title with \\&lt;&gt;&amp;&apos;&quot;",
-    "label" : "Snippet with \\&lt;&gt;&amp;&apos;&quot;",
+    "value" : "Title with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
+    "label" : "Snippet with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
     "kind" : "path"
-      , "path" : "Path with \\&lt;&gt;&amp;&apos;&quot;"
+      , "path" : "Path with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?"
   }
 ]
 )EXPECTEDJSON"
@@ -121,16 +121,16 @@ R"EXPECTEDJSON([
 
   {
     kiwix::Suggestions s;
-    s.add(zim::SuggestionItem("Snippetless title with " + SPECIAL_CHARS,
-                              "Path with " + SPECIAL_CHARS));
+    s.add(zim::SuggestionItem("Snippetless title with " + SYMBOLS,
+                              "Path with " + SYMBOLS));
 
     CHECK_SUGGESTIONS(s.getJSON(),
 R"EXPECTEDJSON([
   {
-    "value" : "Snippetless title with \\&lt;&gt;&amp;&apos;&quot;",
-    "label" : "Snippetless title with \\&lt;&gt;&amp;&apos;&quot;",
+    "value" : "Snippetless title with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
+    "label" : "Snippetless title with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
     "kind" : "path"
-      , "path" : "Path with \\&lt;&gt;&amp;&apos;&quot;"
+      , "path" : "Path with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?"
   }
 ]
 )EXPECTEDJSON"
@@ -139,13 +139,13 @@ R"EXPECTEDJSON([
 
   {
     kiwix::Suggestions s;
-    s.addFTSearchSuggestion("eng", "text with " + SPECIAL_CHARS);
+    s.addFTSearchSuggestion("eng", "text with " + SYMBOLS);
 
     CHECK_SUGGESTIONS(s.getJSON(),
 R"EXPECTEDJSON([
   {
-    "value" : "text with \\&lt;&gt;&amp;&apos;&quot; ",
-    "label" : "containing &apos;text with \\&lt;&gt;&amp;&apos;&quot;&apos;...",
+    "value" : "text with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.? ",
+    "label" : "containing &apos;text with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?&apos;...",
     "kind" : "pattern"
     //EOLWHITESPACEMARKER
   }
