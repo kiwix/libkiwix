@@ -138,15 +138,6 @@ std::string renderUrl(const std::string& root, const std::string& urlTemplate)
   return url;
 }
 
-std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
-{
-  return i18n::expandParameterizedString(lang, "suggest-full-text-search",
-               {
-                  {"SEARCH_TERMS", queryString}
-               }
-         );
-}
-
 ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
 {
   return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
@@ -717,13 +708,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   /* Propose the fulltext search if possible */
   if (archive->hasFulltextIndex()) {
-    MustacheData result;
-    const auto lang = request.get_user_language();
-    result.set("label", makeFulltextSearchSuggestion(lang, queryString));
-    result.set("value", queryString + " ");
-    result.set("kind", "pattern");
-    result.set("first", results.is_empty_list());
-    results.push_back(result);
+    results.addFTSearchSuggestion(request.get_user_language(), queryString);
   }
 
   auto data = get_default_data();

@@ -78,6 +78,9 @@ namespace kiwix
     Suggestions();
 
     void add(const zim::SuggestionItem& suggestion);
+
+    void addFTSearchSuggestion(const std::string& uiLang,
+                               const std::string& query);
   };
 }
 

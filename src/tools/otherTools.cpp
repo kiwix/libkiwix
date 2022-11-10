@@ -32,6 +32,7 @@
 #endif
 
 #include "tools/stringTools.h"
+#include "server/i18n.h"
 
 #include <map>
 #include <sstream>
@@ -328,6 +329,21 @@ std::string kiwix::render_template(const std::string& template_str, kainjow::mus
   return ss.str();
 }
 
+namespace
+{
+
+std::string makeFulltextSearchSuggestion(const std::string& lang,
+                                         const std::string& queryString)
+{
+  return kiwix::i18n::expandParameterizedString(lang, "suggest-full-text-search",
+               {
+                  {"SEARCH_TERMS", queryString}
+               }
+         );
+}
+
+} // unnamed namespace
+
 kiwix::Suggestions::Suggestions()
   : kainjow::mustache::data(kainjow::mustache::data::type::list)
 {
@@ -345,6 +361,17 @@ void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
   result.set("value", suggestion.getTitle());
   result.set("kind", "path");
   result.set("path", suggestion.getPath());
+  result.set("first", this->is_empty_list());
+  this->push_back(result);
+}
+
+void kiwix::Suggestions::addFTSearchSuggestion(const std::string& uiLang,
+                                               const std::string& queryString)
+{
+  kainjow::mustache::data result;
+  result.set("label", makeFulltextSearchSuggestion(uiLang, queryString));
+  result.set("value", queryString + " ");
+  result.set("kind", "pattern");
   result.set("first", this->is_empty_list());
   this->push_back(result);
 }
