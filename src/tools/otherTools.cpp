@@ -38,6 +38,7 @@
 #include <pugixml.hpp>
 
 #include <zim/uuid.h>
+#include <zim/suggestion_iterator.h>
 
 
 static std::map<std::string, std::string> codeisomapping {
@@ -330,4 +331,20 @@ std::string kiwix::render_template(const std::string& template_str, kainjow::mus
 kiwix::Suggestions::Suggestions()
   : kainjow::mustache::data(kainjow::mustache::data::type::list)
 {
+}
+
+void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
+{
+  kainjow::mustache::data result;
+  result.set("label", suggestion.getTitle());
+
+  if (suggestion.hasSnippet()) {
+    result.set("label", suggestion.getSnippet());
+  }
+
+  result.set("value", suggestion.getTitle());
+  result.set("kind", "path");
+  result.set("path", suggestion.getPath());
+  result.set("first", this->is_empty_list());
+  this->push_back(result);
 }

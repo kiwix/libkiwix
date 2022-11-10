@@ -33,6 +33,10 @@ namespace pugi {
   class xml_node;
 }
 
+namespace zim {
+  class SuggestionItem;
+}
+
 namespace kiwix
 {
   std::string nodeToString(const pugi::xml_node& node);
@@ -72,6 +76,8 @@ namespace kiwix
   {
   public:
     Suggestions();
+
+    void add(const zim::SuggestionItem& suggestion);
   };
 }
 

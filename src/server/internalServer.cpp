@@ -711,18 +711,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   auto srs = search.getResults(start, count);
 
   for(auto& suggestion: srs) {
-    MustacheData result;
-    result.set("label", suggestion.getTitle());
-
-    if (suggestion.hasSnippet()) {
-      result.set("label", suggestion.getSnippet());
-    }
-
-    result.set("value", suggestion.getTitle());
-    result.set("kind", "path");
-    result.set("path", suggestion.getPath());
-    result.set("first", results.is_empty_list());
-    results.push_back(result);
+    results.add(suggestion);
   }
 
 
