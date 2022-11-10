@@ -326,3 +326,8 @@ std::string kiwix::render_template(const std::string& template_str, kainjow::mus
   tmpl.render(data, [&ss](const std::string& str) { ss << str; });
   return ss.str();
 }
+
+kiwix::Suggestions::Suggestions()
+  : kainjow::mustache::data(kainjow::mustache::data::type::list)
+{
+}

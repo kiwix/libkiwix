@@ -67,6 +67,12 @@ namespace kiwix
 
     return defaultValue;
   }
+
+  class Suggestions : public kainjow::mustache::data
+  {
+  public:
+    Suggestions();
+  };
 }
 
 #endif

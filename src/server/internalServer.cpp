@@ -700,7 +700,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
 
-  MustacheData results{MustacheData::type::list};
+  Suggestions results;
 
   bool first = true;
 
