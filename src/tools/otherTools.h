@@ -72,7 +72,7 @@ namespace kiwix
     return defaultValue;
   }
 
-  class Suggestions : public kainjow::mustache::data
+  class Suggestions
   {
   public:
     Suggestions();
@@ -83,6 +83,9 @@ namespace kiwix
                                const std::string& query);
 
     std::string getJSON() const;
+
+  private:
+    kainjow::mustache::data m_data;
   };
 }
 

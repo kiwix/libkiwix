@@ -346,7 +346,7 @@ std::string makeFulltextSearchSuggestion(const std::string& lang,
 } // unnamed namespace
 
 kiwix::Suggestions::Suggestions()
-  : kainjow::mustache::data(kainjow::mustache::data::type::list)
+  : m_data(kainjow::mustache::data::type::list)
 {
 }
 
@@ -362,8 +362,8 @@ void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
   result.set("value", suggestion.getTitle());
   result.set("kind", "path");
   result.set("path", suggestion.getPath());
-  result.set("first", this->is_empty_list());
-  this->push_back(result);
+  result.set("first", m_data.is_empty_list());
+  m_data.push_back(result);
 }
 
 void kiwix::Suggestions::addFTSearchSuggestion(const std::string& uiLang,
@@ -373,14 +373,14 @@ void kiwix::Suggestions::addFTSearchSuggestion(const std::string& uiLang,
   result.set("label", makeFulltextSearchSuggestion(uiLang, queryString));
   result.set("value", queryString + " ");
   result.set("kind", "pattern");
-  result.set("first", this->is_empty_list());
-  this->push_back(result);
+  result.set("first", m_data.is_empty_list());
+  m_data.push_back(result);
 }
 
 std::string kiwix::Suggestions::getJSON() const
 {
   kainjow::mustache::data data;
-  data.set("suggestions", *this);
+  data.set("suggestions", m_data);
 
   return render_template(RESOURCE::templates::suggestion_json, data);
 }
