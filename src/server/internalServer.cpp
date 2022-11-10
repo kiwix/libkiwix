@@ -702,8 +702,6 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
 
   Suggestions results;
 
-  bool first = true;
-
   /* Get the suggestions */
   auto searcher = suggestionSearcherCache.getOrPut(bookId,
     [=](){ return make_shared<LockableSuggestionSearcher>(*archive); }
@@ -723,8 +721,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     result.set("value", suggestion.getTitle());
     result.set("kind", "path");
     result.set("path", suggestion.getPath());
-    result.set("first", first);
-    first = false;
+    result.set("first", results.is_empty_list());
     results.push_back(result);
   }
 
@@ -736,7 +733,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     result.set("label", makeFulltextSearchSuggestion(lang, queryString));
     result.set("value", queryString + " ");
     result.set("kind", "pattern");
-    result.set("first", first);
+    result.set("first", results.is_empty_list());
     results.push_back(result);
   }
 
