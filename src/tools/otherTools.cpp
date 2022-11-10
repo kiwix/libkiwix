@@ -353,12 +353,12 @@ kiwix::Suggestions::Suggestions()
 void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
 {
   kainjow::mustache::data result;
-  result.set("label", suggestion.getTitle());
 
-  if (suggestion.hasSnippet()) {
-    result.set("label", suggestion.getSnippet());
-  }
+  const std::string label = suggestion.hasSnippet()
+                          ? suggestion.getSnippet()
+                          : suggestion.getTitle();
 
+  result.set("label", label);
   result.set("value", suggestion.getTitle());
   result.set("kind", "path");
   result.set("path", suggestion.getPath());
