@@ -711,11 +711,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     results.addFTSearchSuggestion(request.get_user_language(), queryString);
   }
 
-  auto data = get_default_data();
-  data.set("suggestions", results);
-
-  auto response = ContentResponse::build(*this, RESOURCE::templates::suggestion_json, data, "application/json; charset=utf-8");
-  return std::move(response);
+  return ContentResponse::build(*this, results.getJSON(), "application/json; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)

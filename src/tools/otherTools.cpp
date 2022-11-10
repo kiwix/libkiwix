@@ -33,6 +33,7 @@
 
 #include "tools/stringTools.h"
 #include "server/i18n.h"
+#include "libkiwix-resources.h"
 
 #include <map>
 #include <sstream>
@@ -374,4 +375,12 @@ void kiwix::Suggestions::addFTSearchSuggestion(const std::string& uiLang,
   result.set("kind", "pattern");
   result.set("first", this->is_empty_list());
   this->push_back(result);
+}
+
+std::string kiwix::Suggestions::getJSON() const
+{
+  kainjow::mustache::data data;
+  data.set("suggestions", *this);
+
+  return render_template(RESOURCE::templates::suggestion_json, data);
 }

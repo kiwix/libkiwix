@@ -81,6 +81,8 @@ namespace kiwix
 
     void addFTSearchSuggestion(const std::string& uiLang,
                                const std::string& query);
+
+    std::string getJSON() const;
   };
 }
 
