@@ -27,5 +27,6 @@
 	"library-button-text": "Оди на воведната страница",
 	"home-button-text": "Оди на главната страница на „{{BOOK_TITLE}}“",
 	"random-page-button-text": "Оди на случајно избрана страница",
-	"searchbox-tooltip": "Пребарај го „{{BOOK_TITLE}}“"
+	"searchbox-tooltip": "Пребарај го „{{BOOK_TITLE}}“",
+	"confusion-of-tongues": "Во пребарувањето ќе учествуваат две или повеќе книги на различни јазици, што може да довете до збунувачки исход."
 }

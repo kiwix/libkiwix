@@ -1,12 +1,16 @@
 {
 	"@metadata": {
-		"authors": []
+		"authors": [
+			"Kareyac"
+		]
 	},
 	"name": "Հայերեն",
 	"suggest-full-text-search": "որոնել '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Գիրքը բացակայում է՝ {{BOOK_NAME}}",
 	"url-not-found": "Սխալ հասցե՝ {{url}}",
 	"suggest-search": "Որոնել <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"400-page-title": "Անվավեր հարցում",
+	"400-page-heading": "Անվավեր հարցում",
 	"404-page-title": "Սխալ հասցե",
 	"404-page-heading": "Սխալ հասցե",
 	"library-button-text": "Գրադարանի էջ",

@@ -27,5 +27,6 @@
 	"library-button-text": "Bae a sa pàgina de bene bènnidu",
 	"home-button-text": "Bae a sa pàgina printzipale de '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Bae a una pàgina seletzionada a manera casuale",
-	"searchbox-tooltip": "Chirca '{{BOOK_TITLE}}'"
+	"searchbox-tooltip": "Chirca '{{BOOK_TITLE}}'",
+	"confusion-of-tongues": "Duos o prus libros in limbas diferentes diant pigare parte a sa chirca, cosa chi diat pòdere causare resurtados confusionosos."
 }

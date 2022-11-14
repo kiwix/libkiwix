@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Jopparn",
 			"Sabelöga",
 			"WikiPhoenix"
 		]
@@ -9,10 +10,13 @@
 	"suggest-full-text-search": "innehåller '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Ingen sådan bok: {{BOOK_NAME}}",
 	"too-many-books": "För många böcker begärda ({{NB_BOOKS}}) där gränsen är {{LIMIT}}",
+	"no-book-found": "Ingen bok matchar urvalskriterierna",
 	"url-not-found": "Den begärda webbadressen \"{{url}}\" hittades inte på denna server.",
 	"suggest-search": "Utför en fulltextsökning för <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Hoppsan! Kunde inte välja en slumpartikel :(",
 	"invalid-raw-data-type": "{{DATATYPE}} är ingen giltig begäran för oformaterat innehåll.",
+	"no-value-for-arg": "Inget värde angett för argumentet {{ARGUMENT}}",
+	"no-query": "Ingen fråga tillhandahålls.",
 	"raw-entry-not-found": "Kunde inte hitta {{DATATYPE}}-inlägget {{ENTRY}}",
 	"400-page-title": "Ogiltig begäran",
 	"400-page-heading": "Ogiltig begäran",
