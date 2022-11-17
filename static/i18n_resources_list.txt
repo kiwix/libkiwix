@@ -1,5 +1,6 @@
 i18n/bn.json
 i18n/cs.json
+i18n/de.json
 i18n/en.json
 i18n/fr.json
 i18n/he.json

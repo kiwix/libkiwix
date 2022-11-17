@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"YaronSh"
 		]
 	},
 	"name": "עברית",
@@ -27,5 +28,6 @@
 	"library-button-text": "מעבר לדף הבית \"ברוך בואך\"",
 	"home-button-text": "מעבר לדף הראשי של \"{{BOOK_TITLE}}\"",
 	"random-page-button-text": "מעבר לדף שנבחר אקראית",
-	"searchbox-tooltip": "חיפוש \"{{BOOK_TITLE}}\""
+	"searchbox-tooltip": "חיפוש \"{{BOOK_TITLE}}\"",
+	"confusion-of-tongues": "שני ספרים או יותר בשפות שונות ישתתפו בחיפוש, מה שעלול להוביל לתוצאות מבלבלות."
 }

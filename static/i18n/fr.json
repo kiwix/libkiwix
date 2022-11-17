@@ -29,5 +29,6 @@
 	"library-button-text": "Aller à la page de bienvenue",
 	"home-button-text": "Aller à la page principale de « {{BOOK_TITLE}} »",
 	"random-page-button-text": "Aller à une page sélectionnée aléatoirement",
-	"searchbox-tooltip": "Rechercher « {{BOOK_TITLE}} »"
+	"searchbox-tooltip": "Rechercher « {{BOOK_TITLE}} »",
+	"confusion-of-tongues": "Deux livres ou plus dans des langues différentes participeraient à la recherche, ce qui pourrait conduire à des résultats confus."
 }

@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"ThisCarthing"
+		]
+	},
+	"name": "Deutsch",
+	"400-page-title": "Ungültige Anfrage",
+	"400-page-heading": "Ungültige Anfrage",
+	"404-page-title": "Inhalt nicht gefunden",
+	"404-page-heading": "Nicht gefunden",
+	"500-page-title": "Interner Server-Fehler",
+	"500-page-heading": "Interner Server-Fehler",
+	"library-button-text": "Zur Willkommensseite gehen",
+	"home-button-text": "Zur Hauptseite von '{{BOOK_TITLE}}' gehen",
+	"random-page-button-text": "Zu einer zufällig ausgewählten Seite gehen"
+}
