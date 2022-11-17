@@ -4,6 +4,7 @@ tests = [
     'tagParsing',
     'stringTools',
     'pathTools',
+    'otherTools',
     'kiwixserve',
     'book',
     'manager',

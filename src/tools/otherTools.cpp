@@ -32,12 +32,15 @@
 #endif
 
 #include "tools/stringTools.h"
+#include "server/i18n.h"
+#include "libkiwix-resources.h"
 
 #include <map>
 #include <sstream>
 #include <pugixml.hpp>
 
 #include <zim/uuid.h>
+#include <zim/suggestion_iterator.h>
 
 
 static std::map<std::string, std::string> codeisomapping {
@@ -325,4 +328,73 @@ std::string kiwix::render_template(const std::string& template_str, kainjow::mus
   std::stringstream ss;
   tmpl.render(data, [&ss](const std::string& str) { ss << str; });
   return ss.str();
+}
+
+namespace
+{
+
+std::string escapeBackslashes(const std::string& s)
+{
+  std::string es;
+  es.reserve(s.size());
+  for (char c : s) {
+    if ( c == '\\' ) {
+      es.push_back('\\');
+    }
+    es.push_back(c);
+  }
+  return es;
+}
+
+std::string makeFulltextSearchSuggestion(const std::string& lang,
+                                         const std::string& queryString)
+{
+  return kiwix::i18n::expandParameterizedString(lang, "suggest-full-text-search",
+               {
+                  {"SEARCH_TERMS", queryString}
+               }
+         );
+}
+
+} // unnamed namespace
+
+kiwix::Suggestions::Suggestions()
+  : m_data(kainjow::mustache::data::type::list)
+{
+}
+
+void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
+{
+  kainjow::mustache::data result;
+
+  const std::string label = suggestion.hasSnippet()
+                          ? suggestion.getSnippet()
+                          : suggestion.getTitle();
+
+  result.set("label", escapeBackslashes(label));
+  result.set("value", escapeBackslashes(suggestion.getTitle()));
+  result.set("kind", "path");
+  result.set("path", escapeBackslashes(suggestion.getPath()));
+  result.set("first", m_data.is_empty_list());
+  m_data.push_back(result);
+}
+
+void kiwix::Suggestions::addFTSearchSuggestion(const std::string& uiLang,
+                                               const std::string& queryString)
+{
+  kainjow::mustache::data result;
+  const std::string label = makeFulltextSearchSuggestion(uiLang, queryString);
+  result.set("label", escapeBackslashes(label));
+  result.set("value", escapeBackslashes(queryString + " "));
+  result.set("kind", "pattern");
+  result.set("first", m_data.is_empty_list());
+  m_data.push_back(result);
+}
+
+std::string kiwix::Suggestions::getJSON() const
+{
+  kainjow::mustache::data data;
+  data.set("suggestions", m_data);
+
+  return render_template(RESOURCE::templates::suggestion_json, data);
 }

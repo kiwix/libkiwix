@@ -33,6 +33,10 @@ namespace pugi {
   class xml_node;
 }
 
+namespace zim {
+  class SuggestionItem;
+}
+
 namespace kiwix
 {
   std::string nodeToString(const pugi::xml_node& node);
@@ -67,6 +71,22 @@ namespace kiwix
 
     return defaultValue;
   }
+
+  class Suggestions
+  {
+  public:
+    Suggestions();
+
+    void add(const zim::SuggestionItem& suggestion);
+
+    void addFTSearchSuggestion(const std::string& uiLang,
+                               const std::string& query);
+
+    std::string getJSON() const;
+
+  private:
+    kainjow::mustache::data m_data;
+  };
 }
 
 #endif

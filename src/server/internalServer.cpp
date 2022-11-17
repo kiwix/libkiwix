@@ -138,15 +138,6 @@ std::string renderUrl(const std::string& root, const std::string& urlTemplate)
   return url;
 }
 
-std::string makeFulltextSearchSuggestion(const std::string& lang, const std::string& queryString)
-{
-  return i18n::expandParameterizedString(lang, "suggest-full-text-search",
-               {
-                  {"SEARCH_TERMS", queryString}
-               }
-         );
-}
-
 ParameterizedMessage noSuchBookErrorMsg(const std::string& bookName)
 {
   return ParameterizedMessage("no-such-book", { {"BOOK_NAME", bookName} });
@@ -700,9 +691,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     printf("Searching suggestions for: \"%s\"\n", queryString.c_str());
   }
 
-  MustacheData results{MustacheData::type::list};
-
-  bool first = true;
+  Suggestions results;
 
   /* Get the suggestions */
   auto searcher = suggestionSearcherCache.getOrPut(bookId,
@@ -713,38 +702,16 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   auto srs = search.getResults(start, count);
 
   for(auto& suggestion: srs) {
-    MustacheData result;
-    result.set("label", suggestion.getTitle());
-
-    if (suggestion.hasSnippet()) {
-      result.set("label", suggestion.getSnippet());
-    }
-
-    result.set("value", suggestion.getTitle());
-    result.set("kind", "path");
-    result.set("path", suggestion.getPath());
-    result.set("first", first);
-    first = false;
-    results.push_back(result);
+    results.add(suggestion);
   }
 
 
   /* Propose the fulltext search if possible */
   if (archive->hasFulltextIndex()) {
-    MustacheData result;
-    const auto lang = request.get_user_language();
-    result.set("label", makeFulltextSearchSuggestion(lang, queryString));
-    result.set("value", queryString + " ");
-    result.set("kind", "pattern");
-    result.set("first", first);
-    results.push_back(result);
+    results.addFTSearchSuggestion(request.get_user_language(), queryString);
   }
 
-  auto data = get_default_data();
-  data.set("suggestions", results);
-
-  auto response = ContentResponse::build(*this, RESOURCE::templates::suggestion_json, data, "application/json; charset=utf-8");
-  return std::move(response);
+  return ContentResponse::build(*this, results.getJSON(), "application/json; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)
