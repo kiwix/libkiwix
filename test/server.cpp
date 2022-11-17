@@ -135,6 +135,9 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT/skin/search-icon.svg?cacheid=b10ae7ed" },
   { DYNAMIC_CONTENT, "/ROOT/skin/search_results.css" },
   { STATIC_CONTENT,  "/ROOT/skin/search_results.css?cacheid=76d39c84" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/i18n/test.json" },
+  // TODO: implement cache management of i18n resources
+  //{ STATIC_CONTENT, "/ROOT/skin/i18n/test.json?cacheid=unknown" },
 
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Description" },

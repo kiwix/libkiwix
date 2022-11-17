@@ -202,15 +202,17 @@ if __name__ == "__main__":
     parser.add_argument('--source_dir',
                         help="Additional directory where to look for resources.",
                         action='append')
-    parser.add_argument('resource_file',
+    parser.add_argument('resource_files', nargs='+',
                         help='The list of resources to compile.')
     args = parser.parse_args()
 
-    base_dir = os.path.dirname(os.path.realpath(args.resource_file))
     source_dir = args.source_dir or []
-    with open(args.resource_file, 'r') as f:
-        resources = [Resource([base_dir]+source_dir, *line.strip().split())
-                        for line in f.readlines()]
+    resources = []
+    for resfile in args.resource_files:
+        base_dir = os.path.dirname(os.path.realpath(resfile))
+        with open(resfile, 'r') as f:
+            resources += [Resource([base_dir]+source_dir, *line.strip().split())
+                            for line in f.readlines()]
 
     h_identifier = to_identifier(os.path.basename(args.hfile))
     with open(args.hfile, 'w') as f:
