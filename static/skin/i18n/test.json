@@ -17,4 +17,5 @@
 	, "home-button-text": "[I18N TESTING] Jump to the main page of '{{BOOK_TITLE}}'"
 	, "random-page-button-text": "[I18N TESTING] I am tired of determinism"
 	, "searchbox-tooltip": "[I18N TESTING] Let's search in '{{BOOK_TITLE}}'"
+	, "welcome-page-overzealous-filter": "[I18N TESTING] Nothing found. <a href=\"?lang=\">Reset filter</a>"
 }

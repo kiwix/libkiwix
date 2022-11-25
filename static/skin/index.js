@@ -298,7 +298,7 @@
         const kiwixHomeBody = document.querySelector('.kiwixHomeBody');
         const divTag = document.createElement('div');
         divTag.setAttribute('class', 'noResults');
-        divTag.innerHTML = `No result. Would you like to <a href="?lang=">reset filter</a>?`;
+        divTag.innerHTML = $t("welcome-page-overzealous-filter");
         kiwixHomeBody.append(divTag);
         kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
         loader.setAttribute('style', 'position: absolute; top: 50%');
@@ -462,7 +462,7 @@
         }
     });
 
-    window.onload = async () => {
+    async function onload() {
         iso = new Isotope( '.book__list', {
             itemSelector: '.book',
             getSortData:{
@@ -508,6 +508,13 @@
         }
         updateFeedLink();
         setCookie(filterCookieName, params.toString());
+    };
+
+    // required by i18n.js:setUserLanguage()
+    window.setPermanentGlobalCookie = function(name, value) {
+      document.cookie = `${name}=${value};path=${root};max-age=31536000`;
     }
+
+    window.onload = () => { setUserLanguage(getUserLanguage(), onload); }
 })();
 
