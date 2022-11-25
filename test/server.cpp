@@ -612,11 +612,11 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT/random?content=non-existent-book&userlang=test",
-      expected_page_title=="Սխալ հասցե" &&
+      expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       expected_body==R"(
-    <h1>Սխալ հասցե</h1>
+    <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
-      Գիրքը բացակայում է՝ non-existent-book
+      [I18N TESTING] No such book: non-existent-book. Sorry.
     </p>
 )"  },
 
@@ -637,11 +637,11 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT/catalog/?userlang=test",
-      expected_page_title=="Սխալ հասցե" &&
+      expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       expected_body==R"(
-    <h1>Սխալ հասցե</h1>
+    <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
-      Սխալ հասցե՝ /ROOT/catalog/
+      [I18N TESTING] URL not found: /ROOT/catalog/
     </p>
 )"  },
 
@@ -654,11 +654,11 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT/catalog/invalid_endpoint?userlang=test",
-      expected_page_title=="Սխալ հասցե" &&
+      expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       expected_body==R"(
-    <h1>Սխալ հասցե</h1>
+    <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
-      Սխալ հասցե՝ /ROOT/catalog/invalid_endpoint
+      [I18N TESTING] URL not found: /ROOT/catalog/invalid_endpoint
     </p>
 )"  },
 
@@ -711,16 +711,16 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT/content/zimfile/invalid-article?userlang=test",
-      expected_page_title=="Սխալ հասցե" &&
+      expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
       expected_body==R"(
-    <h1>Սխալ հասցե</h1>
+    <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
-      Սխալ հասցե՝ /ROOT/content/zimfile/invalid-article
+      [I18N TESTING] URL not found: /ROOT/content/zimfile/invalid-article
     </p>
     <p>
-      Որոնել <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
+      [I18N TESTING] Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
@@ -1003,7 +1003,7 @@ TEST_F(ServerTest, UserLanguageControl)
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "Սխալ հասցե"
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
@@ -1013,7 +1013,7 @@ TEST_F(ServerTest, UserLanguageControl)
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
-      /* expected <h1> */ "Սխալ հասցե"
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       // userlang query parameter takes precedence over Accept-Language
@@ -1546,7 +1546,7 @@ R"EXPECTEDRESPONSE([
 R"EXPECTEDRESPONSE([
   {
     "value" : "abracadabra ",
-    "label" : "որոնել &apos;abracadabra&apos;...",
+    "label" : "[I18N TESTING] cOnTaInInG &apos;abracadabra&apos;...",
     "kind" : "pattern"
     //EOLWHITESPACEMARKER
   }

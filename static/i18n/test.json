@@ -4,17 +4,17 @@
 			"Kareyac"
 		]
 	},
-	"name": "Հայերեն",
-	"suggest-full-text-search": "որոնել '{{{SEARCH_TERMS}}}'...",
-	"no-such-book": "Գիրքը բացակայում է՝ {{BOOK_NAME}}",
-	"url-not-found": "Սխալ հասցե՝ {{url}}",
-	"suggest-search": "Որոնել <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
-	"400-page-title": "Անվավեր հարցում",
-	"400-page-heading": "Անվավեր հարցում",
-	"404-page-title": "Սխալ հասցե",
-	"404-page-heading": "Սխալ հասցե",
-	"library-button-text": "Գրադարանի էջ",
-	"home-button-text": "Դեպի '{{BOOK_TITLE}}'֊ի գլխավոր էջը",
-	"random-page-button-text": "Բացել պատահական էջ",
-	"searchbox-tooltip": "Որոնել '{{BOOK_TITLE}}'֊ում"
+	"name": "Fake language for i18n testing"
+	, "suggest-full-text-search": "[I18N TESTING] cOnTaInInG '{{{SEARCH_TERMS}}}'..."
+	, "no-such-book": "[I18N TESTING] No such book: {{BOOK_NAME}}. Sorry."
+	, "url-not-found": "[I18N TESTING] URL not found: {{url}}"
+	, "suggest-search": "[I18N TESTING] Make a full text search for <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>"
+	, "400-page-title": "[I18N TESTING] Invalid request ($400 fine must be paid)"
+	, "400-page-heading": "[I18N TESTING] -400 karma for an invalid request"
+	, "404-page-title": "[I18N TESTING] Not Found - Try Again"
+	, "404-page-heading": "[I18N TESTING] Content not found, but at least the server is alive"
+	, "library-button-text": "[I18N TESTING] Navigate to the welcome page"
+	, "home-button-text": "[I18N TESTING] Jump to the main page of '{{BOOK_TITLE}}'"
+	, "random-page-button-text": "[I18N TESTING] I am tired of determinism"
+	, "searchbox-tooltip": "[I18N TESTING] Let's search in '{{BOOK_TITLE}}'"
 }
