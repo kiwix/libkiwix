@@ -611,7 +611,7 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/random?content=non-existent-book&userlang=hy",
+    { /* url */ "/ROOT/random?content=non-existent-book&userlang=test",
       expected_page_title=="Սխալ հասցե" &&
       expected_body==R"(
     <h1>Սխալ հասցե</h1>
@@ -636,7 +636,7 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/catalog/?userlang=hy",
+    { /* url */ "/ROOT/catalog/?userlang=test",
       expected_page_title=="Սխալ հասցե" &&
       expected_body==R"(
     <h1>Սխալ հասցե</h1>
@@ -653,7 +653,7 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/catalog/invalid_endpoint?userlang=hy",
+    { /* url */ "/ROOT/catalog/invalid_endpoint?userlang=test",
       expected_page_title=="Սխալ հասցե" &&
       expected_body==R"(
     <h1>Սխալ հասցե</h1>
@@ -710,7 +710,7 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/content/zimfile/invalid-article?userlang=hy",
+    { /* url */ "/ROOT/content/zimfile/invalid-article?userlang=test",
       expected_page_title=="Սխալ հասցե" &&
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
@@ -1001,7 +1001,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /* expected <h1> */ "Not Found"
     },
     {
-      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=hy",
+      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
       /* expected <h1> */ "Սխալ հասցե"
     },
@@ -1012,13 +1012,13 @@ TEST_F(ServerTest, UserLanguageControl)
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "hy",
+      /*Accept-Language:*/ "test",
       /* expected <h1> */ "Սխալ հասցե"
     },
     {
       // userlang query parameter takes precedence over Accept-Language
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
-      /*Accept-Language:*/ "hy",
+      /*Accept-Language:*/ "test",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1026,7 +1026,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // In case of a comma separated list of languages (optionally weighted
       // with quality values) the default (en) language is used instead.
       /*url*/ "/ROOT/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "hy;q=0.9, en;q=0.2",
+      /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /* expected <h1> */ "Not Found"
     },
   };
@@ -1542,7 +1542,7 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
-    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra&userlang=hy",
+    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra&userlang=test",
 R"EXPECTEDRESPONSE([
   {
     "value" : "abracadabra ",
