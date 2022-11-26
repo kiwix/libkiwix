@@ -262,16 +262,10 @@
             } else {
                 toggleFooter();
             }
-            const kiwixResultText = document.querySelector('.kiwixHomeBody__results')
-            if (results) {
-                let resultText = `${results} books`;
-                if (results === 1) {
-                    resultText = `${results} book`;
-                }
-                kiwixResultText.innerHTML = resultText;
-            } else {
-                kiwixResultText.innerHTML = ``;
-            }
+            const text = results
+                       ? $t("count-of-matching-books", {COUNT: results})
+                       : '';
+            document.querySelector('.kiwixHomeBody__results').innerHTML = text;
             loader.style.display = 'none';
             return books;
         });

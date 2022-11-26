@@ -35,4 +35,5 @@
 	, "search": "A general search action (text displayed on search buttons or as aplaceholder in searchboxes)"
 	, "book-filtering-all-categories": "Choosing this filter will disable filtering of books by category"
 	, "book-filtering-all-languages": "Choosing this filter will disable filtering of books by language"
+	, "count-of-matching-books": "Reporting the count of books matching the filter"
 }

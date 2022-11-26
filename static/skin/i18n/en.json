@@ -33,4 +33,5 @@
 	, "search": "Search"
 	, "book-filtering-all-categories": "All categories"
 	, "book-filtering-all-languages": "All languages"
+	, "count-of-matching-books": "{{COUNT}} book(s)"
 }

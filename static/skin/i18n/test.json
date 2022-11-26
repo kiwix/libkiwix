@@ -22,4 +22,5 @@
 	, "search": "[I18N Search TESTING]"
 	, "book-filtering-all-categories": "All [I18N TESTING] categories"
 	, "book-filtering-all-languages": "All [I18N TESTING] languages"
+	, "count-of-matching-books": "[I18N TESTING] Number of matching books: {{COUNT}}"
 }
