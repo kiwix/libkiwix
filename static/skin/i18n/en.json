@@ -34,4 +34,13 @@
 	, "book-filtering-all-categories": "All categories"
 	, "book-filtering-all-languages": "All languages"
 	, "count-of-matching-books": "{{COUNT}} book(s)"
+	, "download": "Download"
+	, "direct-download-link-text": "Direct"
+	, "direct-download-alt-text": "direct download"
+	, "hash-download-link-text": "Sha256 hash"
+	, "hash-download-alt-text": "download hash"
+	, "magnet-link-text": "Magnet link"
+	, "magnet-alt-text": "download magnet"
+	, "torrent-download-link-text": "Torrent file"
+	, "torrent-download-alt-text": "download torrent"
 }

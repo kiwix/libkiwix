@@ -23,4 +23,13 @@
 	, "book-filtering-all-categories": "All [I18N TESTING] categories"
 	, "book-filtering-all-languages": "All [I18N TESTING] languages"
 	, "count-of-matching-books": "[I18N TESTING] Number of matching books: {{COUNT}}"
+	, "download": "[I18N Download TESTING]"
+	, "direct-download-link-text": "[I18N TESTING] HTTP(S)"
+	, "direct-download-alt-text": "[I18N TESTING] download directly"
+	, "hash-download-link-text": "Sha256 [I18N TESTING] hash"
+	, "hash-download-alt-text": "download [I18N TESTING] hash"
+	, "magnet-link-text": "Magnet [I18N TESTING] link"
+	, "magnet-alt-text": "download [I18N TESTING] magnet"
+	, "torrent-download-link-text": "Torrent [I18N TESTING] file"
+	, "torrent-download-alt-text": "download [I18N TESTING] torrent"
 }

@@ -63,7 +63,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=316dbc21" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=a1d9a5d5" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=1f5f1cce" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -283,7 +283,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=a1d9a5d5" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=1f5f1cce" defer></script>
       <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1" class="feedLogo" alt="Library OPDS Feed" aria-label="Library OPDS Feed" title="Library OPDS Feed">
 )EXPECTEDRESULT"
     },
@@ -294,10 +294,10 @@ R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10a
     },
     {
       /* url */ "/ROOT%23%3F/skin/index.js",
-R"EXPECTEDRESULT(                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="direct download" />
-                                <img src="${root}/skin/hash.png?cacheid=f836e872" alt="download hash" />
-                                <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="download magnet" />
-                                <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="download torrent" />
+R"EXPECTEDRESULT(                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
+                                <img src="${root}/skin/hash.png?cacheid=f836e872" alt="${$t("hash-download-alt-text")}" />
+                                <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="${$t("magnet-alt-text")}" />
+                                <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="${$t("torrent-download-alt-text")}" />
 )EXPECTEDRESULT"
     },
     {

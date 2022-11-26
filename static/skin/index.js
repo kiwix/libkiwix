@@ -143,7 +143,7 @@
             <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
                 <div id="book__title">${title}</div>
-                ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
+                ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">${$t("download")} ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
             </div>
@@ -209,27 +209,27 @@
                     <div class="modal-content">
                         <div class="modal-regular-download">
                             <a href="${downloadLink}" download>
-                                <img src="${root}/skin/download.png?KIWIXCACHEID" alt="direct download" />
-                                <div>Direct</div>
+                                <img src="${root}/skin/download.png?KIWIXCACHEID" alt="${$t("direct-download-alt-text")}" />
+                                <div>${$t("direct-download-link-text")}</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.sha256" download>
-                                <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="download hash" />
-                                <div>Sha256 hash</div>
+                                <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
+                                <div>${$t("hash-download-link-text")}</div>
                             </a>
                         </div>
                         ${magnetLink ?
                         `<div class="modal-regular-download">
                             <a href="${magnetLink}" target="_blank">
-                                <img src="${root}/skin/magnet.png?KIWIXCACHEID" alt="download magnet" />
-                                <div>Magnet link</div>
+                                <img src="${root}/skin/magnet.png?KIWIXCACHEID" alt="${$t("magnet-alt-text")}" />
+                                <div>${$t("magnet-link-text")}</div>
                             </a>
                         </div>` : ``}
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.torrent" download>
-                                <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="download torrent" />
-                                <div>Torrent file</div>
+                                <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
+                                <div>${$t("torrent-download-link-text")}</div>
                             </a>
                         </div>
                     </div>

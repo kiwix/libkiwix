@@ -36,4 +36,13 @@
 	, "book-filtering-all-categories": "Choosing this filter will disable filtering of books by category"
 	, "book-filtering-all-languages": "Choosing this filter will disable filtering of books by language"
 	, "count-of-matching-books": "Reporting the count of books matching the filter"
+	, "download": "A general download action"
+	, "direct-download-link-text": "Link text for a direct download"
+	, "direct-download-alt-text": "Hint for a direct download icon"
+	, "hash-download-link-text": "Link text for downloading the hash"
+	, "hash-download-alt-text": "Hint for the icon of hash download"
+	, "magnet-link-text": "Link text for a magnet link"
+	, "magnet-alt-text": "Hint for the icon of a magnet link"
+	, "torrent-download-link-text": "Link text for downloading the torrent file"
+	, "torrent-download-alt-text": "Hint for the icon of torrent download"
 }
