@@ -63,7 +63,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=316dbc21" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=ffc9a141" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=73356624" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -78,6 +78,9 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json" },
+  // TODO: implement cache management of i18n resources
+  //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
@@ -141,9 +144,6 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=b10ae7ed" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search_results.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json" },
-  // TODO: implement cache management of i18n resources
-  //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
   { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=fe100348" },
 
@@ -283,7 +283,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=ffc9a141" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=73356624" defer></script>
       <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1" class="feedLogo" alt="Library OPDS Feed" aria-label="Library OPDS Feed" title="Library OPDS Feed">
 )EXPECTEDRESULT"
     },

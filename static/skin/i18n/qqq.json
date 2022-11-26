@@ -29,5 +29,10 @@
 	"library-button-text": "Tooltip of the button leading to the welcome page",
 	"home-button-text": "Tooltip of the button leading to the main page of a book",
 	"random-page-button-text": "Tooltip of the button opening a randomly selected page",
+	"searchbox-tooltip": "Tooltip displayed for the search box in the viewer"
 	, "welcome-page-overzealous-filter": "Text shown when book filtering on the welcome page produces zero results"
+	, "powered-by-kiwix-html": "Link to Kiwix website"
+	, "search": "A general search action (text displayed on search buttons or as aplaceholder in searchboxes)"
+	, "book-filtering-all-categories": "Choosing this filter will disable filtering of books by category"
+	, "book-filtering-all-languages": "Choosing this filter will disable filtering of books by language"
 }

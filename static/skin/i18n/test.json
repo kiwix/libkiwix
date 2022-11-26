@@ -18,4 +18,8 @@
 	, "random-page-button-text": "[I18N TESTING] I am tired of determinism"
 	, "searchbox-tooltip": "[I18N TESTING] Let's search in '{{BOOK_TITLE}}'"
 	, "welcome-page-overzealous-filter": "[I18N TESTING] Nothing found. <a href=\"?lang=\">Reset filter</a>"
+	, "powered-by-kiwix-html": "[I18N TESTING] Powered by&nbsp;<a href=\"https://kiwix.org\">Kiwix</a> (nominal power: 1.23 kW)"
+	, "search": "[I18N Search TESTING]"
+	, "book-filtering-all-categories": "All [I18N TESTING] categories"
+	, "book-filtering-all-languages": "All [I18N TESTING] languages"
 }

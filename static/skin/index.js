@@ -462,6 +462,15 @@
         }
     });
 
+    function updateUIText() {
+      footer.innerHTML = $t("powered-by-kiwix-html");
+      const searchText = $t("search");
+      document.getElementById('searchFilter').placeholder = searchText;
+      document.getElementById('searchButton').value = searchText;
+      document.getElementById('categoryFilter').children[0].innerHTML = $t("book-filtering-all-categories");
+      document.getElementById('languageFilter').children[0].innerHTML = $t("book-filtering-all-languages");
+    }
+
     async function onload() {
         iso = new Isotope( '.book__list', {
             itemSelector: '.book',
@@ -478,6 +487,7 @@
             }
         });
         footer = document.getElementById('kiwixfooter');
+        updateUIText();
         fadeOutDiv = document.getElementById('fadeOut');
         loader = document.querySelector('.loader');
         await loadAndDisplayOptions('#languageFilter', `${root}/catalog/v2/languages`, 'language');
