@@ -978,47 +978,70 @@ TEST_F(ServerTest, UserLanguageControl)
   {
     const std::string url;
     const std::string acceptLanguageHeader;
+    const char* const requestCookie; // Cookie: header of the request
+    const char* const responseSetCookie; // Set-Cookie: header of the response
     const std::string expectedH1;
 
     operator TestContext() const
     {
-      return TestContext{
+      TestContext ctx{
           {"url", url},
           {"acceptLanguageHeader", acceptLanguageHeader},
       };
+
+      if ( requestCookie ) {
+        ctx.push_back({"requestCookie", requestCookie});
+      }
+
+      return ctx;
     }
   };
+
+  const char* const NO_COOKIE = nullptr;
+  const char* const NO_SET_COOKIE = nullptr;
 
   const TestData testData[] = {
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  NO_SET_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  NO_SET_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  NO_SET_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  NO_SET_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  NO_SET_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       // userlang query parameter takes precedence over Accept-Language
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  NO_SET_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1027,6 +1050,8 @@ TEST_F(ServerTest, UserLanguageControl)
       // with quality values) the default (en) language is used instead.
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  NO_SET_COOKIE,
       /* expected <h1> */ "Not Found"
     },
   };
@@ -1038,7 +1063,15 @@ TEST_F(ServerTest, UserLanguageControl)
     if ( !t.acceptLanguageHeader.empty() ) {
       headers.insert({"Accept-Language", t.acceptLanguageHeader});
     }
+    if ( t.requestCookie ) {
+      headers.insert({"Cookie", t.requestCookie});
+    }
     const auto r = zfs1_->GET(t.url.c_str(), headers);
+    if ( t.responseSetCookie ) {
+      EXPECT_EQ(t.responseSetCookie, getHeaderValue(r->headers, "Set-Cookie")) << t;
+    } else {
+      EXPECT_FALSE(r->has_header("Set-Cookie"));
+    }
     std::regex_search(r->body, h1Match, h1Regex);
     const std::string h1(h1Match[1]);
     EXPECT_EQ(h1, t.expectedH1) << t;
