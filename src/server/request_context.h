@@ -130,10 +130,15 @@ class RequestContext {
     ByteRange byteRange_;
     std::map<std::string, std::string> headers;
     std::map<std::string, std::vector<std::string>> arguments;
+    std::map<std::string, std::string> cookies;
     std::string queryString;
+    std::string userlang;
 
   private: // functions
+    std::string determine_user_language() const;
+
     static MHD_Result fill_header(void *, enum MHD_ValueKind, const char*, const char*);
+    static MHD_Result fill_cookie(void *, enum MHD_ValueKind, const char*, const char*);
     static MHD_Result fill_argument(void *, enum MHD_ValueKind, const char*, const char*);
 };
 

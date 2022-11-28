@@ -1043,10 +1043,66 @@ TEST_F(ServerTest, UserLanguageControl)
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
+      "userlang cookie is respected",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*Accept-Language:*/ "",
+      /*Request Cookie:*/       "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test",
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+    },
+    {
+      "userlang cookie is correctly parsed",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*Accept-Language:*/ "",
+      /*Request Cookie:*/       "anothercookie=123; userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test",
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+    },
+    {
+      "userlang cookie is correctly parsed",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*Accept-Language:*/ "",
+      /*Request Cookie:*/       "userlang=test; anothercookie=abc",
+      /*Response Set-Cookie:*/  "userlang=test",
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+    },
+    {
+      "userlang cookie is correctly parsed",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*Accept-Language:*/ "",
+      /*Request Cookie:*/       "cookie1=abc; userlang=test; cookie2=xyz",
+      /*Response Set-Cookie:*/  "userlang=test",
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+    },
+    {
+      "Multiple userlang cookies are not a problem",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*Accept-Language:*/ "",
+      /*Request Cookie:*/       "cookie1=abc; userlang=en; userlang=test; cookie2=xyz",
+      /*Response Set-Cookie:*/  "userlang=test",
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+    },
+    {
       "userlang query parameter takes precedence over Accept-Language",
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=en",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      "userlang query parameter takes precedence over its cookie counterpart",
+      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
+      /*Accept-Language:*/ "",
+      /*Request Cookie:*/       "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=en",
+      /* expected <h1> */ "Not Found"
+    },
+    {
+      "userlang in cookies takes precedence over Accept-Language",
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*Accept-Language:*/ "test",
+      /*Request Cookie:*/       "userlang=en",
       /*Response Set-Cookie:*/  "userlang=en",
       /* expected <h1> */ "Not Found"
     },

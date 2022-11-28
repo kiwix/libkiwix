@@ -97,6 +97,7 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
 {
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
+  MHD_get_connection_values(connection, MHD_COOKIE_KIND, &RequestContext::fill_cookie, this);
 
   try {
     acceptEncodingGzip =
@@ -106,6 +107,8 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   try {
     byteRange_ = ByteRange::parse(get_header(MHD_HTTP_HEADER_RANGE));
   } catch (const std::out_of_range&) {}
+
+  userlang = determine_user_language();
 }
 
 RequestContext::~RequestContext()
@@ -132,6 +135,14 @@ MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
     _this->queryString += "=";
     _this->queryString += value;
   }
+  return MHD_YES;
+}
+
+MHD_Result RequestContext::fill_cookie(void *__this, enum MHD_ValueKind kind,
+                                         const char *key, const char* value)
+{
+  RequestContext *_this = static_cast<RequestContext*>(__this);
+  _this->cookies[key] = value == nullptr ? "" : value;
   return MHD_YES;
 }
 
@@ -216,8 +227,17 @@ std::string RequestContext::get_header(const std::string& name) const {
 
 std::string RequestContext::get_user_language() const
 {
+  return userlang;
+}
+
+std::string RequestContext::determine_user_language() const
+{
   try {
     return get_argument("userlang");
+  } catch(const std::out_of_range&) {}
+
+  try {
+     return cookies.at("userlang");
   } catch(const std::out_of_range&) {}
 
   try {
