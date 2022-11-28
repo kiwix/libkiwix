@@ -25,6 +25,7 @@
 #include <sstream>
 #include <cstdio>
 #include <atomic>
+#include <cctype>
 
 #include "tools/stringTools.h"
 
@@ -61,6 +62,22 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
   } else {
     return "";
   }
+}
+
+std::string parseAcceptLanguageHeader(const std::string& s)
+{
+  // TODO: implement properly
+
+  if ( s.empty() )
+    return "en";
+
+  for ( const char c :  s ) {
+    if ( ! std::isalpha(c) ) {
+      return "en";
+    }
+  }
+
+  return s;
 }
 
 } // unnamed namespace
@@ -204,7 +221,7 @@ std::string RequestContext::get_user_language() const
   } catch(const std::out_of_range&) {}
 
   try {
-    return get_header("Accept-Language");
+    return parseAcceptLanguageHeader(get_header("Accept-Language"));
   } catch(const std::out_of_range&) {}
 
   return "en";

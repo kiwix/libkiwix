@@ -387,6 +387,9 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
     MHD_add_response_header(response, p.first.c_str(), p.second.c_str());
   }
 
+  const std::string cookie = "userlang=" + request.get_user_language();
+  MHD_add_response_header(response, MHD_HTTP_HEADER_SET_COOKIE, cookie.c_str());
+
   if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
 

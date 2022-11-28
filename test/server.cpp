@@ -998,42 +998,41 @@ TEST_F(ServerTest, UserLanguageControl)
   };
 
   const char* const NO_COOKIE = nullptr;
-  const char* const NO_SET_COOKIE = nullptr;
 
   const TestData testData[] = {
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  NO_SET_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=en",
       /* expected <h1> */ "Not Found"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  NO_SET_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=en",
       /* expected <h1> */ "Not Found"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  NO_SET_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=test",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  NO_SET_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=en",
       /* expected <h1> */ "Not Found"
     },
     {
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  NO_SET_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=test",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1041,7 +1040,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  NO_SET_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=en",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1051,7 +1050,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  NO_SET_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=en",
       /* expected <h1> */ "Not Found"
     },
   };
