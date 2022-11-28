@@ -1,10 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Lucas Werkmeister",
 			"ThisCarthing"
 		]
 	},
 	"name": "Deutsch",
+	"random-article-failure": "Hoppla! Konnte keinen zufälligen Artikel auswählen :(",
 	"400-page-title": "Ungültige Anfrage",
 	"400-page-heading": "Ungültige Anfrage",
 	"404-page-title": "Inhalt nicht gefunden",
@@ -13,5 +15,6 @@
 	"500-page-heading": "Interner Server-Fehler",
 	"library-button-text": "Zur Willkommensseite gehen",
 	"home-button-text": "Zur Hauptseite von '{{BOOK_TITLE}}' gehen",
-	"random-page-button-text": "Zu einer zufällig ausgewählten Seite gehen"
+	"random-page-button-text": "Zu einer zufällig ausgewählten Seite gehen",
+	"searchbox-tooltip": "Nach '{{BOOK_TITLE}}' suchen"
 }
