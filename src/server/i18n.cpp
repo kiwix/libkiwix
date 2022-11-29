@@ -70,6 +70,14 @@ public: // functions
     return s;
   }
 
+  size_t getStringCount(const std::string& lang) const {
+    try {
+      return lang2TableMap.at(lang)->entryCount;
+    } catch(const std::out_of_range&) {
+      return 0;
+    }
+  }
+
 private: // functions
   const I18nStringTable* getStringsFor(const std::string& lang) const {
     try {
@@ -84,13 +92,17 @@ private: // data
   const I18nStringTable* enStrings;
 };
 
+const I18nStringDB& getStringDb()
+{
+  static const I18nStringDB stringDb;
+  return stringDb;
+}
+
 } // unnamed namespace
 
 std::string getTranslatedString(const std::string& lang, const std::string& key)
 {
-  static const I18nStringDB stringDb;
-
-  return stringDb.get(lang, key);
+  return getStringDb().get(lang, key);
 }
 
 namespace i18n
@@ -130,8 +142,17 @@ UserLangPreferences parseUserLanguagePreferences(const std::string& s)
 
 std::string selectMostSuitableLanguage(const UserLangPreferences& prefs)
 {
-  // TOOD: implement properly
-  return prefs[0].lang;
+  std::string bestLangSoFar("en");
+  float bestScoreSoFar = 0;
+  const auto& stringDb = getStringDb();
+  for ( const auto& entry : prefs ) {
+    const float score = entry.preference * stringDb.getStringCount(entry.lang);
+    if ( score > bestScoreSoFar ) {
+      bestScoreSoFar = score;
+      bestLangSoFar = entry.lang;
+    }
+  }
+  return bestLangSoFar;
 }
 
 } // namespace kiwix
