@@ -227,7 +227,8 @@ std::string RequestContext::determine_user_language() const
 
   try {
     const std::string acceptLanguage = get_header("Accept-Language");
-    return parseUserLanguagePreferences(acceptLanguage)[0].lang;
+    const auto userLangPrefs = parseUserLanguagePreferences(acceptLanguage);
+    return selectMostSuitableLanguage(userLangPrefs);
   } catch(const std::out_of_range&) {}
 
   return "en";

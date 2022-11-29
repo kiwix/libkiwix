@@ -99,6 +99,8 @@ typedef std::vector<LangPreference> UserLangPreferences;
 
 UserLangPreferences parseUserLanguagePreferences(const std::string& s);
 
+std::string selectMostSuitableLanguage(const UserLangPreferences& prefs);
+
 } // namespace kiwix
 
 #endif // KIWIX_SERVER_I18N

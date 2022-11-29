@@ -128,4 +128,10 @@ UserLangPreferences parseUserLanguagePreferences(const std::string& s)
   return {{s, 1}};
 }
 
+std::string selectMostSuitableLanguage(const UserLangPreferences& prefs)
+{
+  // TOOD: implement properly
+  return prefs[0].lang;
+}
+
 } // namespace kiwix
