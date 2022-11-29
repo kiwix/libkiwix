@@ -64,20 +64,29 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
   }
 }
 
-std::string parseAcceptLanguageHeader(const std::string& s)
+struct LangPreference
+{
+  const std::string lang;
+  const float preference;
+};
+
+typedef std::vector<LangPreference> UserLangPreferences;
+
+UserLangPreferences parseUserLanguagePreferences(const std::string& s)
 {
   // TODO: implement properly
+  const UserLangPreferences defaultPref{{"en", 1}};
 
   if ( s.empty() )
-    return "en";
+    return defaultPref;
 
   for ( const char c :  s ) {
     if ( ! std::isalpha(c) ) {
-      return "en";
+      return defaultPref;
     }
   }
 
-  return s;
+  return {{s, 1}};
 }
 
 } // unnamed namespace
@@ -241,7 +250,8 @@ std::string RequestContext::determine_user_language() const
   } catch(const std::out_of_range&) {}
 
   try {
-    return parseAcceptLanguageHeader(get_header("Accept-Language"));
+    const std::string acceptLanguage = get_header("Accept-Language");
+    return parseUserLanguagePreferences(acceptLanguage)[0].lang;
   } catch(const std::out_of_range&) {}
 
   return "en";
