@@ -123,25 +123,59 @@ std::string ParameterizedMessage::getText(const std::string& lang) const
   return i18n::expandParameterizedString(lang, msgId, params);
 }
 
+namespace
+{
+
+LangPreference parseSingleLanguagePreference(const std::string& s)
+{
+  const size_t langStart = s.find_first_not_of(" \t\n");
+  if ( langStart == std::string::npos ) {
+    return {"", 0};
+  }
+
+  const size_t langEnd = s.find(';', langStart);
+  if ( langEnd == std::string::npos ) {
+    return {s.substr(langStart), 1};
+  }
+
+  const std::string lang = s.substr(langStart, langEnd - langStart);
+  // We don't care about langEnd == langStart which will result in an empty
+  // language name - it will be dismissed by parseUserLanguagePreferences()
+
+  float q = 1.0;
+  int nCharsScanned;
+  if ( 1 == sscanf(s.c_str() + langEnd + 1, "q=%f%n", &q, &nCharsScanned)
+       && langEnd + 1 + nCharsScanned == s.size() ) {
+    return {lang, q};
+  }
+
+  return {"", 0};
+}
+
+} // unnamed namespace
+
 UserLangPreferences parseUserLanguagePreferences(const std::string& s)
 {
-  // TODO: implement properly
-  const UserLangPreferences defaultPref{{"en", 1}};
-
-  if ( s.empty() )
-    return defaultPref;
-
-  for ( const char c :  s ) {
-    if ( ! std::isalpha(c) ) {
-      return defaultPref;
+  UserLangPreferences result;
+  std::istringstream iss(s);
+  std::string singleLangPrefStr;
+  while ( std::getline(iss, singleLangPrefStr, ',') )
+  {
+    const auto langPref = parseSingleLanguagePreference(singleLangPrefStr);
+    if ( !langPref.lang.empty() && langPref.preference > 0 ) {
+      result.push_back(langPref);
     }
   }
 
-  return {{s, 1}};
+  return result;
 }
 
 std::string selectMostSuitableLanguage(const UserLangPreferences& prefs)
 {
+  if ( prefs.empty() ) {
+    return "en";
+  }
+
   std::string bestLangSoFar("en");
   float bestScoreSoFar = 0;
   const auto& stringDb = getStringDb();

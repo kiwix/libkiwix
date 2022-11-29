@@ -20,6 +20,7 @@
 #include "gtest/gtest.h"
 #include "../src/tools/otherTools.h"
 #include "zim/suggestion_iterator.h"
+#include "../src/server/i18n.h"
 
 #include <regex>
 
@@ -170,5 +171,65 @@ R"EXPECTEDJSON([
   }
 ]
 )EXPECTEDJSON"
+  );
+}
+
+std::string toString(const kiwix::LangPreference& x)
+{
+  std::ostringstream oss;
+  oss << "{" << x.lang << ", " << x.preference << "}";
+  return oss.str();
+}
+
+std::string toString(const kiwix::UserLangPreferences& prefs) {
+  std::ostringstream oss;
+  for ( const auto& x : prefs )
+    oss << toString(x);
+  return oss.str();
+}
+
+TEST(I18n, parseUserLanguagePreferences)
+{
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("")),
+      ""
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("*")),
+      "{*, 1}"
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("fr")),
+      "{fr, 1}"
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("fr-CH")),
+      "{fr-CH, 1}"
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("fr, en-US")),
+      "{fr, 1}{en-US, 1}"
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("ru;q=0.5")),
+      "{ru, 0.5}"
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("fr-CH,ru;q=0.5")),
+      "{fr-CH, 1}{ru, 0.5}"
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("ru;q=0.5, *;q=0.1")),
+      "{ru, 0.5}{*, 0.1}"
+  );
+
+  // rejected input
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("ru;")),
+      ""
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("ru;q")),
+      ""
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("ru;q=")),
+      ""
+  );
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("ru;0.8")),
+      ""
+  );
+
+  EXPECT_EQ(toString(kiwix::parseUserLanguagePreferences("fr,ru;0.8,en;q=0.5")),
+      "{fr, 1}{en, 0.5}"
   );
 }

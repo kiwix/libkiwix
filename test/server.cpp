@@ -1113,8 +1113,8 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
-      /* expected <h1> */ "Not Found"
+      /*Response Set-Cookie:*/  "userlang=test",
+      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
   };
 
