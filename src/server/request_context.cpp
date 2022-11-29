@@ -28,6 +28,7 @@
 #include <cctype>
 
 #include "tools/stringTools.h"
+#include "i18n.h"
 
 namespace kiwix {
 
@@ -62,31 +63,6 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
   } else {
     return "";
   }
-}
-
-struct LangPreference
-{
-  const std::string lang;
-  const float preference;
-};
-
-typedef std::vector<LangPreference> UserLangPreferences;
-
-UserLangPreferences parseUserLanguagePreferences(const std::string& s)
-{
-  // TODO: implement properly
-  const UserLangPreferences defaultPref{{"en", 1}};
-
-  if ( s.empty() )
-    return defaultPref;
-
-  for ( const char c :  s ) {
-    if ( ! std::isalpha(c) ) {
-      return defaultPref;
-    }
-  }
-
-  return {{s, 1}};
 }
 
 } // unnamed namespace

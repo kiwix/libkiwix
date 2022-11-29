@@ -111,4 +111,21 @@ std::string ParameterizedMessage::getText(const std::string& lang) const
   return i18n::expandParameterizedString(lang, msgId, params);
 }
 
+UserLangPreferences parseUserLanguagePreferences(const std::string& s)
+{
+  // TODO: implement properly
+  const UserLangPreferences defaultPref{{"en", 1}};
+
+  if ( s.empty() )
+    return defaultPref;
+
+  for ( const char c :  s ) {
+    if ( ! std::isalpha(c) ) {
+      return defaultPref;
+    }
+  }
+
+  return {{s, 1}};
+}
+
 } // namespace kiwix
