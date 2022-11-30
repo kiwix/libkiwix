@@ -1,3 +1,43 @@
+libkiwix 12.0.0
+===============
+
+ * [API Break] Remove wrapper around libzim (@mgautierfr #789)
+ * Allow kiwix-serve to use custom resource files (@veloman-yunkan #779)
+ * Properly handle searchProtocolPrefix when rendering search result (@veloman-yunkan #823)
+ * Prevent search on multi language content (@veloman-yunkan #838)
+ * Use new `zim::Archive::getMediaCount` from libzim (@mgautierfr #836)
+ * Catalog:
+  - Include tags in free text catalog search (@veloman-yunkan #802)
+  - Illustration's url is based on book's uuid (@veloman-yunkan #804)
+  - Cleanup of the opds-dumper (@veloman-yunkan #829)
+  - Allow filtering of catalog content using multiple languages (@veloman-yunkan #841)
+  - Make opds-dumper respect the namemapper (@mgautierfr #837)
+ * Server:
+  - Correctly handle `\` in suggestion json generation (@veloman-yunkan #843)
+  - Better http caching (@veloman-yunkan #833)
+  - Make `/suggest` endpoint thread-safe (@veloman-yunkan #834)
+  - Better redirection of main page (@veloman-yunkan #827)
+  - Remove jquery (@mgautierfr @juuz0 #796)
+  - Better Viewer of zim content :
+    . Introduce `/content` endpoints (@veloman-yunkan #806)
+    . Switch to iframe based content viewer (@veloman-yunkan #716)
+  - Optimised design of the welcome page:
+    . Alignement (@juuz0 @kelson42 #786)
+    . Exit download modal on pressing escape key (@juzz0 #800)
+    . Add favicon for different devices (@juzz0 #805)
+    . Fix auto hidding of the toolbar (@veloman-yunkan #821)
+    . Allow user to filter books by tags in the front page (@juuz0 #711)
+ * CI :
+   - Trigger CI on pull_request (@kelson42 #791)
+   - Drop Ubuntu Impish packaging (@legoktm #825)
+   - Add Ubuntu Kinetic packaging (@legoktm #801)
+ * Testing:
+   - Test ICULanguageInfo (@veloman-yunkan #795)
+   - Introduce fake `test` language to test i18n (@veloman-yunkan #848)
+ * Fix documentation (@kelson42 #816)
+ * Udpate translation (#787 #839 #847)
+
+
 libkiwix 11.0.0
 ===============
 
@@ -5,7 +45,7 @@ libkiwix 11.0.0
  * [server] Use gzip compression instead of deflat (mgautierfr #757)
  * [server] Version the static resources. This allow better invalidating
    browser cache when resources are changed (@veloman-yunkan #712)
- * [server|front] Use integer to query the host for page length (@juuz #772)
+ * [server|front] Use integer to query the host for page length (@juuz0 #772)
  * [server] Improve multizim search API:
    - Improvement of the cache system
    - Better API to select on which books to search in.

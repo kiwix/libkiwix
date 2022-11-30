@@ -1,5 +1,5 @@
 project('libkiwix', 'cpp',
-  version : '11.0.0',
+  version : '12.0.0',
   license : 'GPLv3+',
   default_options : ['c_std=c11', 'cpp_std=c++11', 'werror=true'])
 
@@ -35,7 +35,7 @@ else
   error('Cannot found header mustache.hpp')
 endif
 
-libzim_dep = dependency('libzim', version : '>=7.2.0', static:static_deps)
+libzim_dep = dependency('libzim', version : '>=8.1.0', static:static_deps)
 if not compiler.has_header_symbol('zim/zim.h', 'LIBZIM_WITH_XAPIAN')
   error('Libzim seems to be compiled without xapian. Xapian support is mandatory.')
 endif
