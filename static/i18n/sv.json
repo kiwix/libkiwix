@@ -29,5 +29,6 @@
 	"library-button-text": "Gå till hemsidan",
 	"home-button-text": "Gå till huvudsidan för \"{{BOOK_TITLE}}\"",
 	"random-page-button-text": "Gå till en slumpmässigt utvald sida",
-	"searchbox-tooltip": "Sök efter \"{{BOOK_TITLE}}\""
+	"searchbox-tooltip": "Sök efter \"{{BOOK_TITLE}}\"",
+	"confusion-of-tongues": "Två eller fler böcker på olika språk skulle delta i sökningen, vilket kan ge förvirrande resultat."
 }

@@ -30,5 +30,6 @@
 	"library-button-text": "Перейти на страницу-приветствие",
 	"home-button-text": "Перейти на главную страницу '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Перейти на случайно выбранную страницу",
-	"searchbox-tooltip": "Искать '{{BOOK_TITLE}}'"
+	"searchbox-tooltip": "Искать '{{BOOK_TITLE}}'",
+	"confusion-of-tongues": "В поиске будут участвовать две или более книг на разных языках, что может привести к запутанным результатам."
 }
