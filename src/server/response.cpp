@@ -64,7 +64,13 @@ bool is_compressible_mime_type(const std::string& mimeType)
       || mimeType.find("application/javascript") != std::string::npos
       || mimeType.find("application/atom") != std::string::npos
       || mimeType.find("application/opensearchdescription") != std::string::npos
-      || mimeType.find("application/json") != std::string::npos;
+      || mimeType.find("application/json") != std::string::npos
+
+      // Web fonts
+      || mimeType.find("application/font-") != std::string::npos
+      || mimeType.find("application/x-font-") != std::string::npos
+      || mimeType.find("application/vnd.ms-fontobject") != std::string::npos
+      || mimeType.find("font/") != std::string::npos;
 }
 
 bool compress(std::string &content) {

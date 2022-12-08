@@ -1,6 +1,7 @@
 resource_files = run_command(res_manager,
                     '--list-all',
-                    files('resources_list.txt')
+                    files('resources_list.txt'),
+                    check: true
                  ).stdout().strip().split('\n')
 
 preprocessed_resources = custom_target('preprocessed_resource_files',
@@ -33,7 +34,8 @@ lib_resources = custom_target('resources',
 i18n_resource_files = run_command(find_program('python3'),
                                     '-c',
                                     'import sys; f=open(sys.argv[1]); print(f.read())',
-                                    files('i18n_resources_list.txt')
+                                    files('i18n_resources_list.txt'),
+                                    check: true
                                  ).stdout().strip().split('\n')
 
 i18n_resources = custom_target('i18n_resources',
