@@ -70,6 +70,10 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT/skin/taskbar.css?cacheid=216d6b5d" },
   { DYNAMIC_CONTENT, "/ROOT/skin/viewer.js" },
   { STATIC_CONTENT,  "/ROOT/skin/viewer.js?cacheid=51e745c2" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Poppins.ttf" },
+  { STATIC_CONTENT,  "/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Roboto.ttf" },
+  { STATIC_CONTENT,  "/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248" },
 
   { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
 
@@ -124,10 +128,6 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" },
   { DYNAMIC_CONTENT, "/ROOT/skin/favicon/site.webmanifest" },
   { STATIC_CONTENT,  "/ROOT/skin/favicon/site.webmanifest?cacheid=bc396efb" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Poppins.ttf" },
-  { STATIC_CONTENT,  "/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Roboto.ttf" },
-  { STATIC_CONTENT,  "/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248" },
   { DYNAMIC_CONTENT, "/ROOT/skin/hash.png" },
   { STATIC_CONTENT,  "/ROOT/skin/hash.png?cacheid=f836e872" },
   { DYNAMIC_CONTENT, "/ROOT/skin/magnet.png" },
