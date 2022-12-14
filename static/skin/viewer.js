@@ -342,7 +342,14 @@ function setupSuggestions() {
           } else {
             searchLink = `${root}/search?content=${encodeURIComponent(currentBook)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
           }
-          item.innerHTML = `<a class="suggest" href="javascript:gotoUrl('${searchLink}')">${htmlDecode(data.value.label)}</a>`;
+          const jsAction = `gotoUrl('${searchLink}')`;
+          // Values of the href attribute are assumed by the browser to be
+          // fully URI-encoded (no matter what the scheme is). Therefore, in
+          // order to prevent the browser from decoding the URI-encoded parts
+          // of searchLink we have to URI-encode a second time.
+          // (see https://stackoverflow.com/questions/33721510)
+          const jsActionURIEncoded = encodeURIComponent(jsAction);
+          item.innerHTML = `<a class="suggest" href="javascript:${jsActionURIEncoded}">${htmlDecode(data.value.label)}</a>`;
         },
         highlight: "autoComplete_highlight",
         selected: "autoComplete_selected"

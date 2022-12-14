@@ -69,7 +69,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT/skin/taskbar.css?cacheid=216d6b5d" },
   { DYNAMIC_CONTENT, "/ROOT/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/viewer.js?cacheid=51e745c2" },
+  { STATIC_CONTENT,  "/ROOT/skin/viewer.js?cacheid=0933a233" },
   { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Roboto.ttf" },
@@ -291,7 +291,7 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
       /* url */ "/ROOT/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=216d6b5d" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=51e745c2" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=0933a233" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
             <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
