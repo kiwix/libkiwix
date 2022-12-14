@@ -70,6 +70,14 @@ public: // functions
     return s;
   }
 
+  size_t getStringCount(const std::string& lang) const {
+    try {
+      return lang2TableMap.at(lang)->entryCount;
+    } catch(const std::out_of_range&) {
+      return 0;
+    }
+  }
+
 private: // functions
   const I18nStringTable* getStringsFor(const std::string& lang) const {
     try {
@@ -84,13 +92,17 @@ private: // data
   const I18nStringTable* enStrings;
 };
 
+const I18nStringDB& getStringDb()
+{
+  static const I18nStringDB stringDb;
+  return stringDb;
+}
+
 } // unnamed namespace
 
 std::string getTranslatedString(const std::string& lang, const std::string& key)
 {
-  static const I18nStringDB stringDb;
-
-  return stringDb.get(lang, key);
+  return getStringDb().get(lang, key);
 }
 
 namespace i18n
@@ -109,6 +121,72 @@ std::string expandParameterizedString(const std::string& lang,
 std::string ParameterizedMessage::getText(const std::string& lang) const
 {
   return i18n::expandParameterizedString(lang, msgId, params);
+}
+
+namespace
+{
+
+LangPreference parseSingleLanguagePreference(const std::string& s)
+{
+  const size_t langStart = s.find_first_not_of(" \t\n");
+  if ( langStart == std::string::npos ) {
+    return {"", 0};
+  }
+
+  const size_t langEnd = s.find(';', langStart);
+  if ( langEnd == std::string::npos ) {
+    return {s.substr(langStart), 1};
+  }
+
+  const std::string lang = s.substr(langStart, langEnd - langStart);
+  // We don't care about langEnd == langStart which will result in an empty
+  // language name - it will be dismissed by parseUserLanguagePreferences()
+
+  float q = 1.0;
+  int nCharsScanned;
+  if ( 1 == sscanf(s.c_str() + langEnd + 1, "q=%f%n", &q, &nCharsScanned)
+       && langEnd + 1 + nCharsScanned == s.size() ) {
+    return {lang, q};
+  }
+
+  return {"", 0};
+}
+
+} // unnamed namespace
+
+UserLangPreferences parseUserLanguagePreferences(const std::string& s)
+{
+  UserLangPreferences result;
+  std::istringstream iss(s);
+  std::string singleLangPrefStr;
+  while ( std::getline(iss, singleLangPrefStr, ',') )
+  {
+    const auto langPref = parseSingleLanguagePreference(singleLangPrefStr);
+    if ( !langPref.lang.empty() && langPref.preference > 0 ) {
+      result.push_back(langPref);
+    }
+  }
+
+  return result;
+}
+
+std::string selectMostSuitableLanguage(const UserLangPreferences& prefs)
+{
+  if ( prefs.empty() ) {
+    return "en";
+  }
+
+  std::string bestLangSoFar("en");
+  float bestScoreSoFar = 0;
+  const auto& stringDb = getStringDb();
+  for ( const auto& entry : prefs ) {
+    const float score = entry.preference * stringDb.getStringCount(entry.lang);
+    if ( score > bestScoreSoFar ) {
+      bestScoreSoFar = score;
+      bestLangSoFar = entry.lang;
+    }
+  }
+  return bestLangSoFar;
 }
 
 } // namespace kiwix
