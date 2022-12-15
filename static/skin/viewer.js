@@ -346,13 +346,19 @@ function setupSuggestions() {
       },
       resultItem: {
         element: (item, data) => {
-          let searchLink;
+          const uriEncodedBookName = encodeURIComponent(currentBook);
+          let url;
           if (data.value.kind == "path") {
-            searchLink = `/${currentBook}/${htmlDecode(data.value.path)}`;
+            const path = encodeURIComponent(htmlDecode(data.value.path));
+            url = `/${uriEncodedBookName}/${path}`;
           } else {
-            searchLink = `/search?content=${encodeURIComponent(currentBook)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
+            const pattern = encodeURIComponent(htmlDecode(data.value.value));
+            url = `/search?content=${uriEncodedBookName}&pattern=${pattern}`;
           }
-          const jsAction = `gotoUrl('${searchLink}')`;
+          // url can't contain any double quote and/or backslash symbols
+          // since they should have been URI-encoded. Therefore putting it
+          // inside double quotes should result in valid javascript.
+          const jsAction = `gotoUrl("${url}")`;
           const linkText = htmlDecode(data.value.label);
           item.innerHTML = makeJSLink(jsAction, linkText, 'class="suggest"');
         },
