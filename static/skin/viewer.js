@@ -43,17 +43,17 @@ function gotoMainPageOfCurrentBook() {
 }
 
 function gotoUrl(url) {
-  contentIframe.src = url;
+  contentIframe.src = root + url;
 }
 
 function gotoRandomPage() {
-  gotoUrl(`${root}/random?content=${currentBook}`);
+  gotoUrl(`/random?content=${currentBook}`);
 }
 
 function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
   const q = encodeURIComponent(searchbox.value);
-  gotoUrl(`${root}/search?books.name=${currentBook}&pattern=${q}`);
+  gotoUrl(`/search?books.name=${currentBook}&pattern=${q}`);
 }
 
 function suggestionsApiURL()
@@ -338,9 +338,9 @@ function setupSuggestions() {
         element: (item, data) => {
           let searchLink;
           if (data.value.kind == "path") {
-            searchLink = `${root}/${currentBook}/${htmlDecode(data.value.path)}`;
+            searchLink = `/${currentBook}/${htmlDecode(data.value.path)}`;
           } else {
-            searchLink = `${root}/search?content=${encodeURIComponent(currentBook)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
+            searchLink = `/search?content=${encodeURIComponent(currentBook)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
           }
           const jsAction = `gotoUrl('${searchLink}')`;
           // Values of the href attribute are assumed by the browser to be
