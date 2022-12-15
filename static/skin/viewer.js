@@ -56,6 +56,16 @@ function performSearch() {
   gotoUrl(`/search?books.name=${currentBook}&pattern=${q}`);
 }
 
+function makeJSLink(jsCodeString, linkText, linkAttr="") {
+  // Values of the href attribute are assumed by the browser to be
+  // fully URI-encoded (no matter what the scheme is). Therefore, in
+  // order to prevent the browser from decoding any URI-encoded parts
+  // in the JS code we have to URI-encode a second time.
+  // (see https://stackoverflow.com/questions/33721510)
+  const uriEncodedJSCode = encodeURIComponent(jsCodeString);
+  return `<a ${linkAttr} href="javascript:${uriEncodedJSCode}">${linkText}</a>`;
+}
+
 function suggestionsApiURL()
 {
   return `${root}/suggest?content=${encodeURIComponent(currentBook)}`;
@@ -343,13 +353,8 @@ function setupSuggestions() {
             searchLink = `/search?content=${encodeURIComponent(currentBook)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
           }
           const jsAction = `gotoUrl('${searchLink}')`;
-          // Values of the href attribute are assumed by the browser to be
-          // fully URI-encoded (no matter what the scheme is). Therefore, in
-          // order to prevent the browser from decoding the URI-encoded parts
-          // of searchLink we have to URI-encode a second time.
-          // (see https://stackoverflow.com/questions/33721510)
-          const jsActionURIEncoded = encodeURIComponent(jsAction);
-          item.innerHTML = `<a class="suggest" href="javascript:${jsActionURIEncoded}">${htmlDecode(data.value.label)}</a>`;
+          const linkText = htmlDecode(data.value.label);
+          item.innerHTML = makeJSLink(jsAction, linkText, 'class="suggest"');
         },
         highlight: "autoComplete_highlight",
         selected: "autoComplete_selected"
