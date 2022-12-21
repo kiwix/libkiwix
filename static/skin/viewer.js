@@ -43,17 +43,27 @@ function gotoMainPageOfCurrentBook() {
 }
 
 function gotoUrl(url) {
-  contentIframe.src = url;
+  contentIframe.src = root + url;
 }
 
 function gotoRandomPage() {
-  gotoUrl(`${root}/random?content=${currentBook}`);
+  gotoUrl(`/random?content=${currentBook}`);
 }
 
 function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
   const q = encodeURIComponent(searchbox.value);
-  gotoUrl(`${root}/search?books.name=${currentBook}&pattern=${q}`);
+  gotoUrl(`/search?books.name=${currentBook}&pattern=${q}`);
+}
+
+function makeJSLink(jsCodeString, linkText, linkAttr="") {
+  // Values of the href attribute are assumed by the browser to be
+  // fully URI-encoded (no matter what the scheme is). Therefore, in
+  // order to prevent the browser from decoding any URI-encoded parts
+  // in the JS code we have to URI-encode a second time.
+  // (see https://stackoverflow.com/questions/33721510)
+  const uriEncodedJSCode = encodeURIComponent(jsCodeString);
+  return `<a ${linkAttr} href="javascript:${uriEncodedJSCode}">${linkText}</a>`;
 }
 
 function suggestionsApiURL()
@@ -336,20 +346,21 @@ function setupSuggestions() {
       },
       resultItem: {
         element: (item, data) => {
-          let searchLink;
+          const uriEncodedBookName = encodeURIComponent(currentBook);
+          let url;
           if (data.value.kind == "path") {
-            searchLink = `${root}/${currentBook}/${htmlDecode(data.value.path)}`;
+            const path = encodeURIComponent(htmlDecode(data.value.path));
+            url = `/${uriEncodedBookName}/${path}`;
           } else {
-            searchLink = `${root}/search?content=${encodeURIComponent(currentBook)}&pattern=${encodeURIComponent(htmlDecode(data.value.value))}`;
+            const pattern = encodeURIComponent(htmlDecode(data.value.value));
+            url = `/search?content=${uriEncodedBookName}&pattern=${pattern}`;
           }
-          const jsAction = `gotoUrl('${searchLink}')`;
-          // Values of the href attribute are assumed by the browser to be
-          // fully URI-encoded (no matter what the scheme is). Therefore, in
-          // order to prevent the browser from decoding the URI-encoded parts
-          // of searchLink we have to URI-encode a second time.
-          // (see https://stackoverflow.com/questions/33721510)
-          const jsActionURIEncoded = encodeURIComponent(jsAction);
-          item.innerHTML = `<a class="suggest" href="javascript:${jsActionURIEncoded}">${htmlDecode(data.value.label)}</a>`;
+          // url can't contain any double quote and/or backslash symbols
+          // since they should have been URI-encoded. Therefore putting it
+          // inside double quotes should result in valid javascript.
+          const jsAction = `gotoUrl("${url}")`;
+          const linkText = htmlDecode(data.value.label);
+          item.innerHTML = makeJSLink(jsAction, linkText, 'class="suggest"');
         },
         highlight: "autoComplete_highlight",
         selected: "autoComplete_selected"
