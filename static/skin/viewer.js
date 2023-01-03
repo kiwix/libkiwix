@@ -350,7 +350,7 @@ function setupSuggestions() {
           let url;
           if (data.value.kind == "path") {
             const path = encodeURIComponent(htmlDecode(data.value.path));
-            url = `/${uriEncodedBookName}/${path}`;
+            url = `/content/${uriEncodedBookName}/${path}`;
           } else {
             const pattern = encodeURIComponent(htmlDecode(data.value.value));
             url = `/search?content=${uriEncodedBookName}&pattern=${pattern}`;
