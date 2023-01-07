@@ -78,7 +78,6 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
 
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/root.xml" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/entries" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/partial_entries" },
 
@@ -150,6 +149,7 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
 
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/categories" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/searchdescription.xml" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
