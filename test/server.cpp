@@ -1196,6 +1196,17 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
   }
 }
 
+TEST_F(ServerTest, RedirectionsToURLsWithSpecialSymbols)
+{
+  auto g = zfs1_->GET("/ROOT/content/corner_cases/wtf.html");
+  ASSERT_EQ(302, g->status);
+  ASSERT_TRUE(g->has_header("Location"));
+  ASSERT_EQ(g->get_header_value("Location"), "/ROOT/content/corner_cases/wtf?.html");
+  ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
+  ASSERT_FALSE(g->has_header("ETag"));
+}
+
+
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
 {
   {
