@@ -2,8 +2,9 @@
 
 cd "$(dirname "$0")"
 rm -f corner_cases.zim
-zimwriterfs -w empty.html \
-            -f empty.png \
+zimwriterfs --withoutFTIndex --dont-check-arguments \
+            -w empty.html \
+            -I empty.png \
             -l=en \
             -t="ZIM corner cases" \
             -d="" \

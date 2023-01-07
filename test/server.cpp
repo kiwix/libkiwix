@@ -157,9 +157,9 @@ const ResourceCollection resources200Uncompressible{
 
   { ZIM_CONTENT,     "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/A/empty.html" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.css" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.js" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.html" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.css" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.js" },
 
 
   // The following url's responses are too small to be compressed
@@ -1507,7 +1507,7 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 
 TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
 {
-  const char url[] = "/ROOT/content/corner_cases/-/empty.js";
+  const char url[] = "/ROOT/content/corner_cases/empty.js";
 
   const char* ranges[] = {
     "bytes=0-",
