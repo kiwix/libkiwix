@@ -1145,7 +1145,7 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   auto g = zfs1_->GET("/ROOT/random?content=zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
+  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A%2F"));
   ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
   ASSERT_FALSE(g->has_header("ETag"));
 }
@@ -1201,7 +1201,7 @@ TEST_F(ServerTest, RedirectionsToURLsWithSpecialSymbols)
   auto g = zfs1_->GET("/ROOT/content/corner_cases/wtf.html");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ(g->get_header_value("Location"), "/ROOT/content/corner_cases/wtf?.html");
+  ASSERT_EQ(g->get_header_value("Location"), "/ROOT/content/corner_cases/wtf%3F.html");
   ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
   ASSERT_FALSE(g->has_header("ETag"));
 }
@@ -1213,7 +1213,7 @@ TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
   auto g = zfs1_->GET("/ROOT/content/zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ("/ROOT/content/zimfile/A/index", g->get_header_value("Location"));
+  ASSERT_EQ("/ROOT/content/zimfile/A%2Findex", g->get_header_value("Location"));
   }
 }
 
