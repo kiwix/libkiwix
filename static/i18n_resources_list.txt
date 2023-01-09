@@ -1,3 +1,4 @@
+i18n/ar.json
 i18n/bn.json
 i18n/cs.json
 i18n/de.json
@@ -15,6 +16,7 @@ i18n/pl.json
 i18n/ru.json
 i18n/sc.json
 i18n/sk.json
+i18n/sl.json
 i18n/sv.json
 i18n/test.json
 i18n/tr.json

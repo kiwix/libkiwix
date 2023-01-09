@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"name": "slovenščina",
+	"suggest-full-text-search": "vsebuje »{{{SEARCH_TERMS}}}« ...",
+	"no-such-book": "Ni take knjige: {{BOOK_NAME}}",
+	"too-many-books": "Preveč zahtevanih knjig ({{NB_BOOKS}}), omejitev je {{LIMIT}}",
+	"no-book-found": "Izbirnim merilom ne ustreza nobena knjiga",
+	"url-not-found": "Zahtevanega URL-ja »{{url}}« v tem strežniku ni bilo mogoče najti.",
+	"suggest-search": "Preiščite celotno besedilo za <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "Ups! Ni bilo mogoče izbrati naključnega članka :(",
+	"invalid-raw-data-type": "{{DATATYPE}} ni veljaven zahtevek za neobdelano vsebino.",
+	"no-value-for-arg": "Argument {{ARGUMENT}} nima določene nobene vrednosti",
+	"no-query": "Poizvedba ni podana.",
+	"raw-entry-not-found": "Ni mogoče najti vnosa {{ENTRY}} vrste {{DATATYPE}}",
+	"400-page-title": "Neveljaven zahtevek",
+	"400-page-heading": "Neveljaven zahtevek",
+	"404-page-title": "Vsebine ni mogoče najti",
+	"404-page-heading": "Ni najdeno",
+	"500-page-title": "Notranja napaka strežnika",
+	"500-page-heading": "Notranja napaka strežnika",
+	"fulltext-search-unavailable": "Iskanje po celotnem besedilu ni na voljo",
+	"no-search-results": "Iskalnik po celotnem besedilu za to vsebino ni na voljo.",
+	"library-button-text": "Pojdite na pozdravno stran",
+	"home-button-text": "Pojdite na glavno stran »{{BOOK_TITLE}}«",
+	"random-page-button-text": "Pojdite na naključno izbrano stran",
+	"searchbox-tooltip": "Poiščite »{{BOOK_TITLE}}«",
+	"confusion-of-tongues": "V iskanju bi bili uporabljeni dve ali več knjig v različnih jezikih, kar lahko pripelje do nejasnih zadetkov."
+}

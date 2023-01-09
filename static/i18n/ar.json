@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"Asma",
+			"Ravan",
+			"محمد أحمد عبد الفتاح"
+		]
+	},
+	"name": "الإنجليزية",
+	"no-such-book": "لا يوجد مثل هذا الكتاب: {{BOOK_NAME}}",
+	"too-many-books": "طلب العديد من الكتب {{NB_BOOKS}} حيث الحد {{LIMIT}}",
+	"no-book-found": "لا يوجد كتاب يطابق معايير الاختيار",
+	"url-not-found": "لم يتم العثور على عنوان URL المطلوب \"{{url}}\" على هذا الخادم.",
+	"suggest-search": "قم بإجراء بحث عن النص الكامل لـ <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "مع الأسف! فشل اختيار مقال عشوائي :(",
+	"invalid-raw-data-type": "{{DATATYPE}} ليس طلبًا صالحًا للمحتوى الأولي.",
+	"no-value-for-arg": "لم يتم تقديم قيمة للوسيطة {{ARGUMENT}}",
+	"no-query": "لم يتم تقديم ملخص.",
+	"raw-entry-not-found": "لا يمكن العثور على إدخال {{DATATYPE}} {{ENTRY}}",
+	"400-page-title": "طلب غير صالح",
+	"400-page-heading": "طلب غير صالح",
+	"404-page-title": "المحتوى غير موجود",
+	"404-page-heading": "لم يتم العثور عليه",
+	"500-page-title": "خطأ في الخادم الداخلي",
+	"500-page-heading": "خطأ في الخادم الداخلي",
+	"fulltext-search-unavailable": "البحث عن النص الكامل غير متاح",
+	"no-search-results": "محرك البحث عن النص الكامل غير متاح لهذا المحتوى.",
+	"library-button-text": "اذهب لصفحة الترحيب",
+	"home-button-text": "انتقل إلى الصفحة الرئيسية لـ \"{{BOOK_TITLE}}\"",
+	"random-page-button-text": "اذهب إلى صفحة عشوائية",
+	"searchbox-tooltip": "بحث \"{{BOOK_TITLE}}\"",
+	"confusion-of-tongues": "قد يشارك في البحث كتابان أو أكثر بلغات مختلفة، مما قد يؤدي إلى نتائج محيرة."
+}

@@ -28,5 +28,6 @@
 	"library-button-text": "前往歡迎首頁",
 	"home-button-text": "前往「{{BOOK_TITLE}}」的首頁",
 	"random-page-button-text": "前往隨機選取頁面",
-	"searchbox-tooltip": "在{{BOOK_TITLE}}搜尋"
+	"searchbox-tooltip": "在{{BOOK_TITLE}}搜尋",
+	"confusion-of-tongues": "搜索裡有加入兩本或更多不同語言的書籍，這可能會導致混淆結果。"
 }
