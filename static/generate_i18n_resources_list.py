@@ -21,7 +21,7 @@ from pathlib import Path
 script_path = Path(__file__)
 
 resource_file = script_path.parent / "i18n_resources_list.txt"
-translation_dir = script_path.parent / "i18n"
+translation_dir = script_path.parent / "skin/i18n"
 
 json_files = translation_dir.glob("*.json")
 with open(resource_file, 'w', encoding="utf-8") as f:
