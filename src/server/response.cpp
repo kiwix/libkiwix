@@ -388,7 +388,9 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   }
 
   if ( ! request.user_language_comes_from_cookie() ) {
-    const std::string cookie = "userlang=" + request.get_user_language();
+    const std::string cookie = "userlang=" + request.get_user_language()
+                               + ";Path=" + request.get_root_path()
+                               + ";Max-Age=31536000";
     MHD_add_response_header(response, MHD_HTTP_HEADER_SET_COOKIE, cookie.c_str());
   }
 

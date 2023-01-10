@@ -68,12 +68,13 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
 } // unnamed namespace
 
 RequestContext::RequestContext(struct MHD_Connection* connection,
-                               std::string rootLocation,
+                               std::string _rootLocation,
                                const std::string& _url,
                                const std::string& _method,
                                const std::string& version) :
+  rootLocation(_rootLocation),
   full_url(_url),
-  url(fullURL2LocalURL(_url, rootLocation)),
+  url(fullURL2LocalURL(_url, _rootLocation)),
   method(str2RequestMethod(_method)),
   version(version),
   requestIndex(s_requestIndex++),
@@ -191,6 +192,10 @@ std::string RequestContext::get_url_part(int number) const {
 
 std::string RequestContext::get_full_url() const {
   return full_url;
+}
+
+std::string RequestContext::get_root_path() const {
+  return rootLocation.empty() ? "/" : rootLocation;
 }
 
 bool RequestContext::is_valid_url() const {

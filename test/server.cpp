@@ -1007,7 +1007,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1015,7 +1015,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1023,7 +1023,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1031,7 +1031,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1039,7 +1039,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1087,7 +1087,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1095,7 +1095,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1113,7 +1113,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1123,7 +1123,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
   };
