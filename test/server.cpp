@@ -1047,7 +1047,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1055,7 +1055,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "anothercookie=123; userlang=test",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1063,7 +1063,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test; anothercookie=abc",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1071,7 +1071,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "cookie1=abc; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1079,7 +1079,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "cookie1=abc; userlang=en; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1103,7 +1103,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       "userlang=en",
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {

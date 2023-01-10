@@ -118,6 +118,23 @@ class RequestContext {
     std::string get_user_language() const;
     std::string get_requested_format() const;
 
+    bool user_language_comes_from_cookie() const;
+
+  private: // types
+    struct UserLanguage
+    {
+      enum SelectorKind
+      {
+        QUERY_PARAM,
+        COOKIE,
+        ACCEPT_LANGUAGE_HEADER,
+        DEFAULT
+      };
+
+      SelectorKind selectedBy;
+      std::string  lang;
+    };
+
   private: // data
     std::string full_url;
     std::string url;
@@ -132,10 +149,10 @@ class RequestContext {
     std::map<std::string, std::vector<std::string>> arguments;
     std::map<std::string, std::string> cookies;
     std::string queryString;
-    std::string userlang;
+    UserLanguage userlang;
 
   private: // functions
-    std::string determine_user_language() const;
+    UserLanguage determine_user_language() const;
 
     static MHD_Result fill_header(void *, enum MHD_ValueKind, const char*, const char*);
     static MHD_Result fill_cookie(void *, enum MHD_ValueKind, const char*, const char*);
