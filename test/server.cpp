@@ -78,7 +78,6 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
 
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/root.xml" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/entries" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/partial_entries" },
 
@@ -150,6 +149,7 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
 
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/categories" },
+  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/searchdescription.xml" },
   { DYNAMIC_CONTENT, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
@@ -157,9 +157,9 @@ const ResourceCollection resources200Uncompressible{
 
   { ZIM_CONTENT,     "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/A/empty.html" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.css" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/-/empty.js" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.html" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.css" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.js" },
 
 
   // The following url's responses are too small to be compressed
@@ -1145,7 +1145,7 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   auto g = zfs1_->GET("/ROOT/random?content=zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
+  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A%2F"));
   ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
   ASSERT_FALSE(g->has_header("ETag"));
 }
@@ -1196,13 +1196,24 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
   }
 }
 
+TEST_F(ServerTest, RedirectionsToURLsWithSpecialSymbols)
+{
+  auto g = zfs1_->GET("/ROOT/content/corner_cases/wtf.html");
+  ASSERT_EQ(302, g->status);
+  ASSERT_TRUE(g->has_header("Location"));
+  ASSERT_EQ(g->get_header_value("Location"), "/ROOT/content/corner_cases/wtf%3F.html");
+  ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
+  ASSERT_FALSE(g->has_header("ETag"));
+}
+
+
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
 {
   {
   auto g = zfs1_->GET("/ROOT/content/zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ("/ROOT/content/zimfile/A/index", g->get_header_value("Location"));
+  ASSERT_EQ("/ROOT/content/zimfile/A%2Findex", g->get_header_value("Location"));
   }
 }
 
@@ -1507,7 +1518,7 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 
 TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
 {
-  const char url[] = "/ROOT/content/corner_cases/-/empty.js";
+  const char url[] = "/ROOT/content/corner_cases/empty.js";
 
   const char* ranges[] = {
     "bytes=0-",

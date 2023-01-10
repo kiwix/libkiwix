@@ -1030,7 +1030,7 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  const auto path = kiwix::urlEncode(item.getPath());
+  const auto path = kiwix::urlEncode(item.getPath(), true);
   const auto redirectUrl = m_root + "/content/" + bookName + "/" + path;
   return Response::build_redirect(*this, redirectUrl);
 }

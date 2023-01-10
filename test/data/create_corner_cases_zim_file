@@ -2,13 +2,14 @@
 
 cd "$(dirname "$0")"
 rm -f corner_cases.zim
-zimwriterfs -w empty.html \
-            -f empty.png \
-            -l=en \
-            -t="ZIM corner cases" \
-            -d="" \
-            -c="" \
-            -p="" \
+zimwriterfs --withoutFTIndex --dont-check-arguments \
+            -w empty.html \
+            -I empty.png \
+            -l en \
+            -t "ZIM corner cases" \
+            -d "" \
+            -c "" \
+            -p "" \
             corner_cases \
             corner_cases.zim \
 && echo 'corner_cases.zim was successfully created' \
