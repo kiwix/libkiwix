@@ -269,15 +269,15 @@ std::string kiwix::urlDecode(const std::string& value, bool component)
       int iHi = hexToInt(hi);
       int iLo = hexToInt(lo);
       if (iHi < 0 || iLo < 0) {
-	// Invalid escape sequence
-	os << '%' << hi << lo;
-	continue;
+        // Invalid escape sequence
+        os << '%' << hi << lo;
+        continue;
       }
       char c = (char)(iHi << 4 | iLo);
       if (!component && isReservedUrlChar(c)) {
-	os << '%' << hi << lo;
+        os << '%' << hi << lo;
       } else {
-	os << c;
+        os << c;
       }
     } else {
       os << *it;
