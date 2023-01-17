@@ -141,8 +141,7 @@ TEST(stringTools, urlEncode)
   EXPECT_EQ(urlEncode(otherSymbols), "%60%23%25%5E%5B%5D%7B%7D%5C%7C%22%3C%3E");
   EXPECT_EQ(urlEncode(otherSymbols), urlEncode(otherSymbols, true));
 
-  // XXX: there is a bug with formatting of single-digit hex values
-  EXPECT_EQ(urlEncode(whitespace), "%20% A% 9% D");
+  EXPECT_EQ(urlEncode(whitespace), "%20%0A%09%0D");
   EXPECT_EQ(urlEncode(whitespace), urlEncode(whitespace, true));
 
   EXPECT_EQ(urlEncode(someNonASCIIChars), "%CE%A3%E2%99%82%E2%99%80%E3%83%84");
