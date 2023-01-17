@@ -161,6 +161,9 @@ std::string kiwix::encodeDiples(const std::string& str)
   return result;
 }
 
+namespace
+{
+
 /* urlEncode() based on javascript encodeURI() &
    encodeURIComponent(). Mostly code from rstudio/httpuv (GPLv3) */
 
@@ -184,16 +187,15 @@ bool isReservedUrlChar(char c)
   }
 }
 
-bool needsEscape(char c, bool encodeReserved)
+bool isHarmlessUriChar(char c)
 {
   if (c >= 'a' && c <= 'z')
-    return false;
+    return true;
   if (c >= 'A' && c <= 'Z')
-    return false;
+    return true;
   if (c >= '0' && c <= '9')
-    return false;
-  if (isReservedUrlChar(c))
-    return encodeReserved;
+    return true;
+
   switch (c) {
   case '-':
   case '_':
@@ -204,8 +206,19 @@ bool needsEscape(char c, bool encodeReserved)
   case '\'':
   case '(':
   case ')':
-    return false;
+    return true;
   }
+  return false;
+}
+
+bool needsEscape(char c, bool encodeReserved)
+{
+  if (isHarmlessUriChar(c))
+    return false;
+
+  if (isReservedUrlChar(c))
+    return encodeReserved;
+
   return true;
 }
 
@@ -230,6 +243,8 @@ int hexToInt(char c) {
   default: return -1;
   }
 }
+
+} // unnamed namespace
 
 std::string kiwix::urlEncode(const std::string& value, bool encodeReserved)
 {
