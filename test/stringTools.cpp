@@ -105,4 +105,48 @@ TEST(stringTools, extractFromString)
   ASSERT_THROW(extractFromString<float>("3.14.5"), std::invalid_argument);
 }
 
+namespace URLEncoding
+{
+
+const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char digits[] = "0123456789";
+const char nonEncodableSymbols[] = ".-_~()*!";
+const char uriDelimSymbols[] = ":/@?=+&$;,";
+
+// XXX: # should belong to uriDelimSymbols!
+const char otherSymbols[] = R"(`#%^[]{}\|"<>)";
+
+const char whitespace[] = " \n\t\r";
+
+const char someNonASCIIChars[] = "Σ♂♀ツ";
+
+}
+
+TEST(stringTools, urlEncode)
+{
+  using namespace URLEncoding;
+
+  EXPECT_EQ(urlEncode(letters),       letters);
+  EXPECT_EQ(urlEncode(letters, true), letters);
+
+  EXPECT_EQ(urlEncode(digits),       digits);
+  EXPECT_EQ(urlEncode(digits, true), digits);
+
+  EXPECT_EQ(urlEncode(nonEncodableSymbols),       nonEncodableSymbols);
+  EXPECT_EQ(urlEncode(nonEncodableSymbols, true), nonEncodableSymbols);
+
+  EXPECT_EQ(urlEncode(uriDelimSymbols), uriDelimSymbols);
+  EXPECT_EQ(urlEncode(uriDelimSymbols, true), "%3A%2F%40%3F%3D%2B%26%24%3B%2C");
+
+  EXPECT_EQ(urlEncode(otherSymbols), "%60%23%25%5E%5B%5D%7B%7D%5C%7C%22%3C%3E");
+  EXPECT_EQ(urlEncode(otherSymbols), urlEncode(otherSymbols, true));
+
+  // XXX: there is a bug with formatting of single-digit hex values
+  EXPECT_EQ(urlEncode(whitespace), "%20% A% 9% D");
+  EXPECT_EQ(urlEncode(whitespace), urlEncode(whitespace, true));
+
+  EXPECT_EQ(urlEncode(someNonASCIIChars), "%CE%A3%E2%99%82%E2%99%80%E3%83%84");
+  EXPECT_EQ(urlEncode(someNonASCIIChars), urlEncode(someNonASCIIChars, true));
+}
+
 };
