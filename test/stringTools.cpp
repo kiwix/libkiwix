@@ -147,4 +147,26 @@ TEST(stringTools, urlEncode)
   EXPECT_EQ(urlEncode(someNonASCIIChars), urlEncode(someNonASCIIChars, true));
 }
 
+TEST(stringTools, urlDecode)
+{
+  using namespace URLEncoding;
+
+  const std::string allTestChars = std::string(letters)
+                                 + digits
+                                 + nonEncodableSymbols
+                                 + uriDelimSymbols
+                                 + otherSymbols
+                                 + whitespace
+                                 + someNonASCIIChars;
+
+  for ( const char c : allTestChars ) {
+    const std::string str(1, c);
+    EXPECT_EQ(urlDecode(urlEncode(str)), str);
+    EXPECT_EQ(urlDecode(urlEncode(str, true), true), str);
+  }
+
+  EXPECT_EQ(urlDecode(urlEncode(allTestChars)), allTestChars);
+  EXPECT_EQ(urlDecode(urlEncode(allTestChars, true), true), allTestChars);
+}
+
 };
