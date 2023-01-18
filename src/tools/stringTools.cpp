@@ -172,7 +172,6 @@ bool isReservedUrlChar(char c)
   switch (c) {
   case ';':
   case ',':
-  case '/':
   case '?':
   case ':':
   case '@':
@@ -206,6 +205,7 @@ bool isHarmlessUriChar(char c)
   case '\'':
   case '(':
   case ')':
+  case '/':
     return true;
   }
   return false;

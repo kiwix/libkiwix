@@ -110,8 +110,8 @@ namespace URLEncoding
 
 const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const char digits[] = "0123456789";
-const char nonEncodableSymbols[] = ".-_~()*!";
-const char uriDelimSymbols[] = ":/@?=+&#$;,";
+const char nonEncodableSymbols[] = ".-_~()*!/";
+const char uriDelimSymbols[] = ":@?=+&#$;,";
 
 const char otherSymbols[] = R"(`%^[]{}\|"<>)";
 
@@ -135,7 +135,7 @@ TEST(stringTools, urlEncode)
   EXPECT_EQ(urlEncode(nonEncodableSymbols, true), nonEncodableSymbols);
 
   EXPECT_EQ(urlEncode(uriDelimSymbols), uriDelimSymbols);
-  EXPECT_EQ(urlEncode(uriDelimSymbols, true), "%3A%2F%40%3F%3D%2B%26%23%24%3B%2C");
+  EXPECT_EQ(urlEncode(uriDelimSymbols, true), "%3A%40%3F%3D%2B%26%23%24%3B%2C");
 
   EXPECT_EQ(urlEncode(otherSymbols), "%60%25%5E%5B%5D%7B%7D%5C%7C%22%3C%3E");
   EXPECT_EQ(urlEncode(otherSymbols), urlEncode(otherSymbols, true));
