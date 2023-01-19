@@ -297,7 +297,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=216d
     <script type="text/javascript" src="./skin/viewer.js?cacheid=ab5374c5" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
-            <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
+          <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
             src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
     },
