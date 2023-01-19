@@ -30,7 +30,7 @@ function getBookFromUserUrl(url) {
   return url.split('/')[0];
 }
 
-let currentBook = getBookFromUserUrl(location.hash.slice(1));
+let currentBook = null;
 let currentBookTitle = null;
 
 const bookUIGroup = document.getElementById('kiwix_serve_taskbar_book_ui_group');
@@ -291,16 +291,14 @@ function setup_external_link_blocker() {
 // End of external link blocking
 ////////////////////////////////////////////////////////////////////////////////
 
+let viewerSetupComplete = false;
+
 function on_content_load() {
-  handle_content_url_change();
-  setup_external_link_blocker();
+  if ( viewerSetupComplete ) {
+    handle_content_url_change();
+    setup_external_link_blocker();
+  }
 }
-
-window.onresize = handle_visual_viewport_change;
-window.onhashchange = handle_location_hash_change;
-
-updateCurrentBook(currentBook);
-handle_location_hash_change();
 
 function htmlDecode(input) {
     var doc = new DOMParser().parseFromString(input, "text/html");
@@ -397,6 +395,8 @@ function setupViewer() {
   // has been settled.
   setTimeout(handle_visual_viewport_change, 0);
 
+  window.onresize = handle_visual_viewport_change;
+
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
     return;
@@ -417,4 +417,12 @@ function setupViewer() {
   if (document.body.clientWidth < 520) {
     setupAutoHidingOfTheToolbar();
   }
+
+  currentBook = getBookFromUserUrl(location.hash.slice(1));
+  updateCurrentBook(currentBook);
+  handle_location_hash_change();
+
+  window.onhashchange = handle_location_hash_change;
+
+  viewerSetupComplete = true;
 }
