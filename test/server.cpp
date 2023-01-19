@@ -59,7 +59,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon.ico" },
   { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27" },
   { DYNAMIC_CONTENT, "/ROOT/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/i18n.js?cacheid=eb41f5ce" },
+  { STATIC_CONTENT,  "/ROOT/skin/i18n.js?cacheid=dcf3d584" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT/skin/index.css?cacheid=0f9ba34e" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.js" },
@@ -300,7 +300,7 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
       /* url */ "/ROOT/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=2cbac34b" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="module" src="./skin/i18n.js?cacheid=eb41f5ce" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=dcf3d584" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=fe100348" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=b3c754ec" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>

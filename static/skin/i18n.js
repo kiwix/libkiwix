@@ -69,6 +69,17 @@ function $t(msgId, params={}) {
   }
 }
 
+function getCookie(cookieName) {
+    const name = cookieName + "=";
+    let result;
+    decodeURIComponent(document.cookie).split('; ').forEach(val => {
+        if (val.indexOf(name) === 0) {
+            result = val.substring(name.length);
+        }
+    });
+    return result;
+}
+
 
 const DEFAULT_UI_LANGUAGE = 'en';
 
@@ -76,10 +87,13 @@ Translations.load(DEFAULT_UI_LANGUAGE, /*asDefault=*/true);
 
 function getUserLanguage() {
   return new URLSearchParams(window.location.search).get('userlang')
+      || getCookie('userlang')
       || DEFAULT_UI_LANGUAGE;
 }
 
 function setUserLanguage(lang, callback) {
+  const rootPath = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
+  document.cookie = `userlang=${lang};path=${rootPath};max-age=31536000`;
   Translations.load(lang);
   Translations.whenReady(callback);
 }
