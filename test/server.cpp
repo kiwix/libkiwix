@@ -58,6 +58,8 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT/skin/css/autoComplete.css?cacheid=08951e06" },
   { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon.ico" },
   { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/i18n.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/i18n.js?cacheid=eb41f5ce" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT/skin/index.css?cacheid=0f9ba34e" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.js" },
