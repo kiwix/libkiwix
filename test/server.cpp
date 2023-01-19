@@ -66,6 +66,8 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/mustache.min.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT/skin/taskbar.css?cacheid=216d6b5d" },
   { DYNAMIC_CONTENT, "/ROOT/skin/viewer.js" },
