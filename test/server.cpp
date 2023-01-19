@@ -140,6 +140,8 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT/skin/i18n/test.json" },
   // TODO: implement cache management of i18n resources
   //{ STATIC_CONTENT, "/ROOT/skin/i18n/test.json?cacheid=unknown" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/languages.js" },
+  { STATIC_CONTENT, "/ROOT/skin/languages.js?cacheid=fe100348" },
 
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Description" },
@@ -975,6 +977,77 @@ TEST_F(ServerTest, 500)
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
   }
+}
+
+TEST_F(ServerTest, UserLanguageList)
+{
+  const auto r = zfs1_->GET("/ROOT/skin/languages.js");
+  EXPECT_EQ(r->body,
+R"EXPECTEDRESPONSE(const uiLanguages = [
+  {
+    "বাংলা": "bn"
+  },
+  {
+    "Čeština": "cs"
+  },
+  {
+    "Deutsch": "de"
+  },
+  {
+    "English": "en"
+  },
+  {
+    "français": "fr"
+  },
+  {
+    "עברית": "he"
+  },
+  {
+    "Հայերեն": "hy"
+  },
+  {
+    "italiano": "it"
+  },
+  {
+    "日本語": "ja"
+  },
+  {
+    "한국어": "ko"
+  },
+  {
+    "kurdî": "ku-latn"
+  },
+  {
+    "македонски": "mk"
+  },
+  {
+    "ߒߞߏ": "nqo"
+  },
+  {
+    "Polski": "pl"
+  },
+  {
+    "русский": "ru"
+  },
+  {
+    "Sardu": "sc"
+  },
+  {
+    "slovenčina": "sk"
+  },
+  {
+    "Svenska": "sv"
+  },
+  {
+    "Türkçe": "tr"
+  },
+  {
+    "英语": "zh-hans"
+  },
+  {
+    "繁體中文": "zh-hant"
+  }
+])EXPECTEDRESPONSE");
 }
 
 TEST_F(ServerTest, UserLanguageControl)
