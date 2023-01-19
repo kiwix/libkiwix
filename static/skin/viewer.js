@@ -2,9 +2,13 @@
 //
 // user url: identifier of the page that has to be displayed in the viewer
 //           and that is used as the hash component of the viewer URL. For
-//           book resources the address url is {book}/{resource} .
+//           book resources the user url is {book}/{resource} .
 //
 // iframe url: the URL to be loaded in the viewer iframe.
+
+let viewerState = {
+  uiLanguage: 'en',
+};
 
 function userUrl2IframeUrl(url) {
   if ( url == '' ) {
@@ -68,14 +72,24 @@ function makeJSLink(jsCodeString, linkText, linkAttr="") {
 
 function suggestionsApiURL()
 {
-  return `${root}/suggest?content=${encodeURIComponent(currentBook)}`;
+  const uriEncodedBookName = encodeURIComponent(currentBook);
+  const userLang = viewerState.uiLanguage;
+  return `${root}/suggest?userlang=${userLang}&content=${uriEncodedBookName}`;
+}
+
+function setTitle(element, text) {
+  if ( element ) {
+    element.title = text;
+    if ( element.hasAttribute("aria-label") ) {
+      element.setAttribute("aria-label", text);
+    }
+  }
 }
 
 function setCurrentBook(book, title) {
   currentBook = book;
   currentBookTitle = title;
-  homeButton.title = `Go to the main page of '${title}'`;
-  homeButton.setAttribute("aria-label", homeButton.title);
+  setTitle(homeButton, $t("home-button-text", {BOOK_TITLE: title}));
   homeButton.innerHTML = `<button>${title}</button>`;
   bookUIGroup.style.display = 'inline';
   updateSearchBoxForBookChange();
@@ -153,7 +167,7 @@ function updateSearchBoxForBookChange() {
   const searchbox = document.getElementById('kiwixsearchbox');
   const kiwixSearchFormWrapper = document.querySelector('.kiwix_searchform');
   if ( currentBookTitle ) {
-    searchbox.title = `Search '${currentBookTitle}'`;
+    searchbox.title = $t("searchbox-tooltip", {BOOK_TITLE : currentBookTitle});
     searchbox.placeholder = searchbox.title;
     searchbox.setAttribute("aria-label", searchbox.title);
     kiwixSearchFormWrapper.style.display = 'inline';
@@ -402,6 +416,10 @@ function setupViewer() {
     return;
   }
 
+  const lang = getUserLanguage();
+  setUserLanguage(lang, finishViewerSetupOnceTranslationsAreLoaded);
+  viewerState.uiLanguage = lang;
+
   kiwixToolBarWrapper.style.display = 'block';
   if ( ! viewerSettings.libraryButtonEnabled ) {
     document.getElementById("kiwix_serve_taskbar_library_button").remove();
@@ -417,9 +435,22 @@ function setupViewer() {
   if (document.body.clientWidth < 520) {
     setupAutoHidingOfTheToolbar();
   }
+}
 
+function updateUIText() {
   currentBook = getBookFromUserUrl(location.hash.slice(1));
   updateCurrentBook(currentBook);
+
+  setTitle(document.getElementById("kiwix_serve_taskbar_library_button"),
+           $t("library-button-text"));
+
+  setTitle(document.getElementById("kiwix_serve_taskbar_random_button"),
+           $t("random-page-button-text"));
+}
+
+function finishViewerSetupOnceTranslationsAreLoaded()
+{
+  updateUIText();
   handle_location_hash_change();
 
   window.onhashchange = handle_location_hash_change;
