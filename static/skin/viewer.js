@@ -468,6 +468,10 @@ function setupViewer() {
   const lang = getUserLanguage();
   setUserLanguage(lang, finishViewerSetupOnceTranslationsAreLoaded);
   viewerState.uiLanguage = lang;
+  const q = new URLSearchParams(window.location.search);
+  q.delete('userlang');
+  const rewrittenURL = makeURL(q.toString(), location.hash);
+  history.replaceState(viewerState, null, rewrittenURL);
 
   kiwixToolBarWrapper.style.display = 'block';
   if ( ! viewerSettings.libraryButtonEnabled ) {
