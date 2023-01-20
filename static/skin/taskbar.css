@@ -44,6 +44,10 @@
     margin: 0 auto;
 }
 
+#ui_language {
+  float: left
+}
+
 #kiwix_button_show_toggle {
     display: none;
 }

@@ -403,6 +403,25 @@ function setupSuggestions() {
   });
 }
 
+function initUILanguageSelector() {
+  const languageSelector = document.getElementById("ui_language");
+  for (const lang of uiLanguages ) {
+    const lang_name = Object.getOwnPropertyNames(lang)[0];
+    const lang_code = lang[lang_name];
+    const is_selected = lang_code == viewerState.uiLanguage;
+    languageSelector.appendChild(new Option(lang_name, lang_code, is_selected, is_selected));
+  }
+}
+
+function changeUILanguage() {
+  const s = document.getElementById("ui_language");
+  const lang = s.options[s.selectedIndex].value;
+  viewerState.uiLanguage = lang;
+  setUserLanguage(lang, () => {
+    updateUIText();
+  });
+}
+
 function setupViewer() {
   // Defer the call of handle_visual_viewport_change() until after the
   // presence or absence of the taskbar as determined by this function
@@ -425,6 +444,7 @@ function setupViewer() {
     document.getElementById("kiwix_serve_taskbar_library_button").remove();
   }
 
+  initUILanguageSelector();
   setupSuggestions();
 
   // cybook hack
