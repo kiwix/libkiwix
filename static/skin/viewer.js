@@ -211,6 +211,7 @@ function handle_location_hash_change() {
   }
   updateSearchBoxForLocationChange();
   previousScrollTop = Infinity;
+  history.replaceState(viewerState, null);
 }
 
 function handle_content_url_change() {
@@ -220,8 +221,7 @@ function handle_content_url_change() {
   const iframeContentUrl = iframeLocation.pathname;
   const iframeContentQuery = iframeLocation.search;
   const newHash = iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
-  const viewerURL = location.origin + location.pathname + location.search;
-  window.location.replace(viewerURL + '#' + newHash);
+  history.replaceState(viewerState, null, makeURL(location.search, newHash));
   updateCurrentBookIfNeeded(newHash);
 };
 
@@ -403,6 +403,16 @@ function setupSuggestions() {
   });
 }
 
+function makeURL(search, hash) {
+  let url = location.origin + location.pathname;
+  if (search != "") {
+    url += (search[0] == '?' ? search : '?' + search);
+  }
+
+  url += (hash[0] == '#' ? hash : '#' + hash);
+  return url;
+}
+
 function initUILanguageSelector() {
   const languageSelector = document.getElementById("ui_language");
   for (const lang of uiLanguages ) {
@@ -413,12 +423,32 @@ function initUILanguageSelector() {
   }
 }
 
+function updateUILanguageSelector(userLang) {
+  console.log(`updateUILanguageSelector(${userLang})`);
+  const languageSelector = document.getElementById("ui_language");
+  for (const opt of languageSelector.children ) {
+    if ( opt.value == userLang ) {
+      opt.selected = true;
+    }
+  }
+}
+
+function handle_history_state_change(event) {
+  console.log(`handle_history_state_change`);
+  if ( event.state ) {
+    viewerState = event.state;
+    updateUILanguageSelector(viewerState.uiLanguage);
+    setUserLanguage(viewerState.uiLanguage, updateUIText);
+  }
+}
+
 function changeUILanguage() {
   const s = document.getElementById("ui_language");
   const lang = s.options[s.selectedIndex].value;
   viewerState.uiLanguage = lang;
   setUserLanguage(lang, () => {
     updateUIText();
+    history.pushState(viewerState, null);
   });
 }
 
@@ -474,6 +504,7 @@ function finishViewerSetupOnceTranslationsAreLoaded()
   handle_location_hash_change();
 
   window.onhashchange = handle_location_hash_change;
+  window.onpopstate = handle_history_state_change;
 
   viewerSetupComplete = true;
 }
