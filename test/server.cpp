@@ -1007,7 +1007,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1015,7 +1015,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1023,7 +1023,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1031,7 +1031,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1039,7 +1039,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1047,7 +1047,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1055,7 +1055,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "anothercookie=123; userlang=test",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1063,7 +1063,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test; anothercookie=abc",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1071,7 +1071,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "cookie1=abc; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1079,7 +1079,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "cookie1=abc; userlang=en; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1087,7 +1087,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1095,7 +1095,7 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1103,18 +1103,28 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       "userlang=en",
-      /*Response Set-Cookie:*/  "userlang=en",
+      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {
-      "The value of the Accept-Language header is not currently parsed.",
+      "Most suitable language is selected from the Accept-Language header",
       // In case of a comma separated list of languages (optionally weighted
-      // with quality values) the default (en) language is used instead.
+      // with quality values) the most suitable language is selected.
       /*url*/ "/ROOT/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+    },
+    {
+      "Most suitable language is selected from the Accept-Language header",
+      // In case of a comma separated list of languages (optionally weighted
+      // with quality values) the most suitable language is selected.
+      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
+      /*Request Cookie:*/       NO_COOKIE,
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
+      /* expected <h1> */ "Not Found"
     },
   };
 
@@ -1130,6 +1140,7 @@ TEST_F(ServerTest, UserLanguageControl)
     }
     const auto r = zfs1_->GET(t.url.c_str(), headers);
     if ( t.responseSetCookie ) {
+      ASSERT_TRUE(r->has_header("Set-Cookie")) << t;
       EXPECT_EQ(t.responseSetCookie, getHeaderValue(r->headers, "Set-Cookie")) << t;
     } else {
       EXPECT_FALSE(r->has_header("Set-Cookie"));

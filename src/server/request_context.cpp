@@ -68,12 +68,13 @@ fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
 } // unnamed namespace
 
 RequestContext::RequestContext(struct MHD_Connection* connection,
-                               std::string rootLocation,
+                               std::string _rootLocation,
                                const std::string& _url,
                                const std::string& _method,
                                const std::string& version) :
+  rootLocation(_rootLocation),
   full_url(_url),
-  url(fullURL2LocalURL(_url, rootLocation)),
+  url(fullURL2LocalURL(_url, _rootLocation)),
   method(str2RequestMethod(_method)),
   version(version),
   requestIndex(s_requestIndex++),
@@ -193,6 +194,10 @@ std::string RequestContext::get_full_url() const {
   return full_url;
 }
 
+std::string RequestContext::get_root_path() const {
+  return rootLocation.empty() ? "/" : rootLocation;
+}
+
 bool RequestContext::is_valid_url() const {
   return !url.empty();
 }
@@ -212,26 +217,32 @@ std::string RequestContext::get_header(const std::string& name) const {
 
 std::string RequestContext::get_user_language() const
 {
-  return userlang;
+  return userlang.lang;
 }
 
-std::string RequestContext::determine_user_language() const
+bool RequestContext::user_language_comes_from_cookie() const
+{
+  return userlang.selectedBy == UserLanguage::SelectorKind::COOKIE;
+}
+
+RequestContext::UserLanguage RequestContext::determine_user_language() const
 {
   try {
-    return get_argument("userlang");
+    return {UserLanguage::SelectorKind::QUERY_PARAM, get_argument("userlang")};
   } catch(const std::out_of_range&) {}
 
   try {
-     return cookies.at("userlang");
+     return {UserLanguage::SelectorKind::COOKIE, cookies.at("userlang")};
   } catch(const std::out_of_range&) {}
 
   try {
     const std::string acceptLanguage = get_header("Accept-Language");
     const auto userLangPrefs = parseUserLanguagePreferences(acceptLanguage);
-    return selectMostSuitableLanguage(userLangPrefs);
+    const auto lang = selectMostSuitableLanguage(userLangPrefs);
+    return {UserLanguage::SelectorKind::ACCEPT_LANGUAGE_HEADER, lang};
   } catch(const std::out_of_range&) {}
 
-  return "en";
+  return {UserLanguage::SelectorKind::DEFAULT, "en"};
 }
 
 std::string RequestContext::get_requested_format() const
