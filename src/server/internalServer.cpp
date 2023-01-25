@@ -245,7 +245,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
     auto bookName = request.get_argument("content");
     try {
       const auto bookIds = Library::BookIdSet{mp_nameMapper->getIdForName(bookName)};
-      const auto queryString = request.get_query([&](const std::string& key){return key == "content";}, true);
+      const auto queryString = request.get_query([&](const std::string& key){return key == "content";});
       return {queryString, bookIds};
     } catch (const std::out_of_range&) {
       throw Error(noSuchBookErrorMsg(bookName));
@@ -270,7 +270,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
       }
     }
     const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
-    const auto queryString = request.get_query([&](const std::string& key){return key == "books.id";}, true);
+    const auto queryString = request.get_query([&](const std::string& key){return key == "books.id";});
     return {queryString, bookIds};
   } catch(const std::out_of_range&) {}
 
@@ -288,7 +288,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
         throw Error(noSuchBookErrorMsg(bookName));
       }
     }
-    const auto queryString = request.get_query([&](const std::string& key){return key == "books.name";}, true);
+    const auto queryString = request.get_query([&](const std::string& key){return key == "books.name";});
     return {queryString, bookIds};
   } catch(const std::out_of_range&) {}
 
@@ -299,7 +299,7 @@ std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const Req
     throw Error(nonParameterizedMessage("no-book-found"));
   }
   const auto bookIds = Library::BookIdSet(id_vec.begin(), id_vec.end());
-  const auto queryString = request.get_query([&](const std::string& key){return startsWith(key, "books.filter.");}, true);
+  const auto queryString = request.get_query([&](const std::string& key){return startsWith(key, "books.filter.");});
   return {queryString, bookIds};
 }
 
