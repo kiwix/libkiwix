@@ -163,4 +163,35 @@ TEST(stringTools, urlDecode)
   EXPECT_EQ(urlDecode(encodedUriDelimSymbols, false), encodedUriDelimSymbols);
 }
 
-};
+TEST(stringTools, uriEncode)
+{
+  const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH,  letters), letters);
+  EXPECT_EQ(uriEncode(URIComponentKind::QUERY, letters), letters);
+
+  const char digits[] = "0123456789";
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH,  digits), digits);
+  EXPECT_EQ(uriEncode(URIComponentKind::QUERY, digits), digits);
+
+  const char nonEncodableSymbols[] = ".-_~()*!/";
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH,  nonEncodableSymbols), nonEncodableSymbols);
+  EXPECT_EQ(uriEncode(URIComponentKind::QUERY, nonEncodableSymbols), nonEncodableSymbols);
+
+  const char uriDelimSymbols[] = ":@?=+&#$;,";
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH,  uriDelimSymbols), "%3A%40%3F=+&%23%24%3B%2C");
+  EXPECT_EQ(uriEncode(URIComponentKind::QUERY, uriDelimSymbols), ":@?%3D%2B%26%23%24%3B%2C");
+
+  const char otherSymbols[] = R"(`%^[]{}\|"<>)";
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH, otherSymbols), "%60%25%5E%5B%5D%7B%7D%5C%7C%22%3C%3E");
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH, otherSymbols), uriEncode(URIComponentKind::QUERY, otherSymbols));
+
+  const char whitespace[] = " \n\t\r";
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH, whitespace), "%20%0A%09%0D");
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH, whitespace), uriEncode(URIComponentKind::QUERY, whitespace));
+
+  const char someNonASCIIChars[] = "Σ♂♀ツ";
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH, someNonASCIIChars), "%CE%A3%E2%99%82%E2%99%80%E3%83%84");
+  EXPECT_EQ(uriEncode(URIComponentKind::PATH, someNonASCIIChars), uriEncode(URIComponentKind::QUERY, someNonASCIIChars));
+}
+
+} // unnamed namespace

@@ -60,6 +60,17 @@ private:
 std::string urlEncode(const std::string& value);
 std::string urlDecode(const std::string& value, bool component = false);
 
+// Only URI components that are of interest to libkiwix
+// are included in the below enumeration type
+enum class URIComponentKind
+{
+  PATH,
+  QUERY
+};
+
+// Encode 'value' for usage in a URI componenet specified by 'target'
+std::string uriEncode(URIComponentKind target, const std::string& value);
+
 std::string join(const std::vector<std::string>& list, const std::string& sep);
 
 std::string ucAll(const std::string& word);

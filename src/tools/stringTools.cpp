@@ -208,6 +208,43 @@ bool isHarmlessUriChar(char c)
   return false;
 }
 
+bool mustBeUriEncodedFor(kiwix::URIComponentKind target, char c)
+{
+  if (isHarmlessUriChar(c))
+    return false;
+
+  switch (c) {
+  case '/': // There is no reason to encode the path separator in the general
+            // case. It must be encoded only in a path component when its
+            // semantics of a path separator has to be suppressed.
+            return false;
+
+  case '@': // In a relative URL of the form abc@def/xyz (with no / in abc)
+            // a non-encoded @ will make "abc" and "def" to be interpreted as
+            // username and host components, respectively
+            return target == kiwix::URIComponentKind::PATH;
+
+  case ':': // In a relative URL of the form abc:def/xyz (with no / in abc)
+            // a non-encoded : will make "abc" and "def" to be interpreted as
+            // host and port components, respectively
+            return target == kiwix::URIComponentKind::PATH;
+
+  case '?': // A non-encoded '?' acts as a separator between the path
+            // and query components
+            return target == kiwix::URIComponentKind::PATH;
+
+  case '&': return target == kiwix::URIComponentKind::QUERY;
+  case '=': return target == kiwix::URIComponentKind::QUERY;
+  case '+': return target == kiwix::URIComponentKind::QUERY;
+
+  case '#': // A non-encoded '#' in either path or query-component
+            // would mark the beginning of the fragment component
+            return true;
+  }
+
+  return true;
+}
+
 int hexToInt(char c) {
   switch (c) {
   case '0': return 0;
@@ -246,6 +283,26 @@ std::string kiwix::urlEncode(const std::string& value)
   }
   return os.str();
 }
+
+namespace kiwix
+{
+
+std::string uriEncode(URIComponentKind target, const std::string& value)
+{
+  std::ostringstream os;
+  os << std::hex << std::uppercase;
+  for (const char c : value) {
+    if ( mustBeUriEncodedFor(target, c)  ) {
+      const unsigned int charVal = static_cast<unsigned char>(c);
+      os << '%' << std::setw(2) << std::setfill('0') << charVal;
+    } else {
+      os << c;
+    }
+  }
+  return os.str();
+}
+
+} // namespace kiwix
 
 std::string kiwix::urlDecode(const std::string& value, bool component)
 {
