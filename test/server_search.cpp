@@ -196,7 +196,7 @@ struct SearchResult
 
 const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
   SEARCH_RESULT(
-    /*link*/       "/ROOT/content/zimfile/A/Genius_+_Soul_=_Jazz",
+    /*link*/       "/ROOT/content/zimfile/A/Genius_%2B_Soul_%3D_Jazz",
     /*title*/      "Genius + Soul = Jazz",
     /*snippet*/    R"SNIPPET(...Grammy Hall of Fame in 2011. It was re-issued in the UK, first in 1989 on the Castle Communications "Essential Records" label, and by Rhino Records in 1997 on a single CD together with Charles' 1970 My Kind of <b>Jazz</b>. In 2010, Concord Records released a deluxe edition comprising digitally remastered versions of Genius + Soul = <b>Jazz</b>, My Kind of <b>Jazz</b>, <b>Jazz</b> Number II, and My Kind of <b>Jazz</b> Part 3. Professional ratings Review scores Source Rating Allmusic link Warr.org link Encyclopedia of Popular Music...)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -236,7 +236,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/content/zimfile/A/Catchin'_Some_Rays:_The_Music_of_Ray_Charles",
+    /*link*/       "/ROOT/content/zimfile/A/Catchin'_Some_Rays%3A_The_Music_of_Ray_Charles",
     /*title*/      "Catchin&apos; Some Rays: The Music of Ray Charles",
     /*snippet*/    R"SNIPPET(...<b>jazz</b> singer Roseanna Vitro, released in August 1997 on the Telarc <b>Jazz</b> label. Catchin' Some Rays: The Music of Ray Charles Studio album by Roseanna Vitro Released August 1997 Recorded March 26, 1997 at Sound on Sound, NYC April 4,1997 at Quad Recording Studios, NYC Genre Vocal <b>jazz</b> Length 61:00 Label Telarc <b>Jazz</b> CD-83419 Producer Paul Wickliffe Roseanna Vitro chronology Passion Dance (1996) Catchin' Some Rays: The Music of Ray Charles (1997) The Time of My Life: Roseanna Vitro Sings the Songs of......)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -244,7 +244,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/content/zimfile/A/That's_What_I_Say:_John_Scofield_Plays_the_Music_of_Ray_Charles",
+    /*link*/       "/ROOT/content/zimfile/A/That's_What_I_Say%3A_John_Scofield_Plays_the_Music_of_Ray_Charles",
     /*title*/      "That&apos;s What I Say: John Scofield Plays the Music of Ray Charles",
     /*snippet*/    R"SNIPPET(That's What I Say: John Scofield Plays the Music of Ray Charles Studio album by John Scofield Released June 7, 2005 (2005-06-07) Recorded December 2004 Studio Avatar Studios, New York City Genre <b>Jazz</b> Length 65:21 Label Verve Producer Steve Jordan John Scofield chronology EnRoute: John Scofield Trio LIVE (2004) That's What I Say: John Scofield Plays the Music of Ray Charles (2005) Out Louder (2006) Professional ratings Review scores Source Rating Allmusic All About <b>Jazz</b> All About <b>Jazz</b>...)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -284,7 +284,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
 ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/content/zimfile/A/Here_We_Go_Again:_Celebrating_the_Genius_of_Ray_Charles",
+    /*link*/       "/ROOT/content/zimfile/A/Here_We_Go_Again%3A_Celebrating_the_Genius_of_Ray_Charles",
     /*title*/      "Here We Go Again: Celebrating the Genius of Ray Charles",
     /*snippet*/    R"SNIPPET(...and <b>jazz</b> trumpeter Wynton Marsalis. It was recorded during concerts at the Rose Theater in New York City, on February 9 and 10, 2009. The album received mixed reviews, in which the instrumentation of Marsalis' orchestra was praised by the critics. Here We Go Again: Celebrating the Genius of Ray Charles Live album by Willie Nelson and Wynton Marsalis Released March 29, 2011 (2011-03-29) Recorded February 9 –10 2009 Venue Rose Theater, New York Genre <b>Jazz</b>, country Length 61:49 Label Blue Note......)SNIPPET",
     /*bookTitle*/  "Ray Charles",
@@ -356,7 +356,7 @@ const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
   ),
 
   SEARCH_RESULT(
-    /*link*/       "/ROOT/content/zimfile/A/Ray_Sings,_Basie_Swings",
+    /*link*/       "/ROOT/content/zimfile/A/Ray_Sings%2C_Basie_Swings",
     /*title*/      "Ray Sings, Basie Swings",
     /*snippet*/    R"SNIPPET(...from 1973 with newly recorded instrumental tracks by the contemporary Count Basie Orchestra. Professional ratings Review scores Source Rating AllMusic Ray Sings, Basie Swings Compilation album by Ray Charles, Count Basie Orchestra Released October 3, 2006 (2006-10-03) Recorded Mid-1970s, February - May 2006 Studio Los Angeles Genre Soul, <b>jazz</b>, Swing Label Concord/Hear Music Producer Gregg Field Ray Charles chronology Genius &amp; Friends (2005) Ray Sings, Basie Swings (2006) Rare Genius: The Undiscovered Masters (2010)...)SNIPPET",
     /*bookTitle*/  "Ray Charles",
