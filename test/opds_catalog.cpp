@@ -37,34 +37,34 @@ TEST(OpdsCatalog, getSearchUrl)
   }
   {
     Filter f;
-    f.query("abc def");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc%20def");
+    f.query("abc def#xyz");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc%20def#xyz");
   }
   {
     Filter f;
-    f.category("ted");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?category=ted");
+    f.category("ted&bob");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?category=ted&bob");
   }
   {
     Filter f;
-    f.lang("eng");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?lang=eng");
+    f.lang("eng,fra");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?lang=eng,fra");
   }
   {
     Filter f;
-    f.name("second");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?name=second");
+    f.name("second?");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?name=second?");
   }
   {
     Filter f;
-    f.acceptTags({"paper", "plastic"});
-    EXPECT_SEARCH_URL("/catalog/v2/entries?tag=paper;plastic");
+    f.acceptTags({"#paper", "#plastic"});
+    EXPECT_SEARCH_URL("/catalog/v2/entries?tag=#paper;#plastic");
   }
   {
     Filter f;
-    f.query("abc");
-    f.category("ted");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc&category=ted");
+    f.query("abc=123");
+    f.category("@ted");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc=123&category=@ted");
   }
   {
     Filter f;
