@@ -322,9 +322,6 @@ kainjow::mustache::data kiwix::onlyAsNonEmptyMustacheValue(const std::string& s)
 std::string kiwix::render_template(const std::string& template_str, kainjow::mustache::data data)
 {
   kainjow::mustache::mustache tmpl(template_str);
-  kainjow::mustache::data urlencode{kainjow::mustache::lambda2{
-                               [](const std::string& str,const kainjow::mustache::renderer& r) { return urlEncode(r(str), true); }}};
-  data.set("urlencoded", urlencode);
   std::stringstream ss;
   tmpl.render(data, [&ss](const std::string& str) { ss << str; });
   return ss.str();
