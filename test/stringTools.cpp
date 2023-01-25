@@ -125,26 +125,19 @@ TEST(stringTools, urlEncode)
 {
   using namespace URLEncoding;
 
-  EXPECT_EQ(urlEncode(letters,false), letters);
-  EXPECT_EQ(urlEncode(letters, true), letters);
+  EXPECT_EQ(urlEncode(letters), letters);
 
-  EXPECT_EQ(urlEncode(digits,false), digits);
-  EXPECT_EQ(urlEncode(digits, true), digits);
+  EXPECT_EQ(urlEncode(digits), digits);
 
-  EXPECT_EQ(urlEncode(nonEncodableSymbols,false), nonEncodableSymbols);
-  EXPECT_EQ(urlEncode(nonEncodableSymbols, true), nonEncodableSymbols);
+  EXPECT_EQ(urlEncode(nonEncodableSymbols), nonEncodableSymbols);
 
-  EXPECT_EQ(urlEncode(uriDelimSymbols,false), uriDelimSymbols);
-  EXPECT_EQ(urlEncode(uriDelimSymbols, true), "%3A%40%3F%3D%2B%26%23%24%3B%2C");
+  EXPECT_EQ(urlEncode(uriDelimSymbols), "%3A%40%3F%3D%2B%26%23%24%3B%2C");
 
-  EXPECT_EQ(urlEncode(otherSymbols,false), "%60%25%5E%5B%5D%7B%7D%5C%7C%22%3C%3E");
-  EXPECT_EQ(urlEncode(otherSymbols,false), urlEncode(otherSymbols, true));
+  EXPECT_EQ(urlEncode(otherSymbols), "%60%25%5E%5B%5D%7B%7D%5C%7C%22%3C%3E");
 
-  EXPECT_EQ(urlEncode(whitespace,false), "%20%0A%09%0D");
-  EXPECT_EQ(urlEncode(whitespace,false), urlEncode(whitespace, true));
+  EXPECT_EQ(urlEncode(whitespace), "%20%0A%09%0D");
 
-  EXPECT_EQ(urlEncode(someNonASCIIChars,false), "%CE%A3%E2%99%82%E2%99%80%E3%83%84");
-  EXPECT_EQ(urlEncode(someNonASCIIChars,false), urlEncode(someNonASCIIChars, true));
+  EXPECT_EQ(urlEncode(someNonASCIIChars), "%CE%A3%E2%99%82%E2%99%80%E3%83%84");
 }
 
 TEST(stringTools, urlDecode)
@@ -161,13 +154,13 @@ TEST(stringTools, urlDecode)
 
   for ( const char c : allTestChars ) {
     const std::string str(1, c);
-    EXPECT_EQ(urlDecode(urlEncode(str,false),false), str);
-    EXPECT_EQ(urlDecode(urlEncode(str, true), true), str);
-    EXPECT_EQ(urlDecode(urlEncode(str,false)),       str);
+    EXPECT_EQ(urlDecode(urlEncode(str), true), str);
   }
 
-  EXPECT_EQ(urlDecode(urlEncode(allTestChars,false),false), allTestChars);
-  EXPECT_EQ(urlDecode(urlEncode(allTestChars, true), true), allTestChars);
+  EXPECT_EQ(urlDecode(urlEncode(allTestChars), true), allTestChars);
+
+  const std::string encodedUriDelimSymbols = urlEncode(uriDelimSymbols);
+  EXPECT_EQ(urlDecode(encodedUriDelimSymbols, false), encodedUriDelimSymbols);
 }
 
 };

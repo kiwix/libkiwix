@@ -94,7 +94,7 @@ kainjow::mustache::data buildQueryData
   kainjow::mustache::data query;
   query.set("pattern", kiwix::encodeDiples(pattern));
   std::ostringstream ss;
-  ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern, true);
+  ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern);
   ss << "&" << bookQuery;
   query.set("unpaginatedQuery", ss.str());
   auto lang = extractValueFromQuery(bookQuery, "books.filter.lang");
@@ -174,7 +174,7 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
     const std::string zim_id(it.getZimId());
     const auto path = mp_nameMapper->getNameForId(zim_id) + "/" + it.getPath();
     result.set("title", it.getTitle());
-    result.set("absolutePath", absPathPrefix + urlEncode(path, true));
+    result.set("absolutePath", absPathPrefix + urlEncode(path));
     result.set("snippet", it.getSnippet());
     if (mp_library) {
       result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());

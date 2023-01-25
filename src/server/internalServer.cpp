@@ -1030,7 +1030,7 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  const auto path = kiwix::urlEncode(item.getPath(), true);
+  const auto path = kiwix::urlEncode(item.getPath());
   const auto redirectUrl = m_root + "/content/" + bookName + "/" + path;
   return Response::build_redirect(*this, redirectUrl);
 }
@@ -1055,7 +1055,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
-    const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern, true);
+    const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
@@ -1096,7 +1096,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
-    std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern, true);
+    std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern);
     return HTTP404Response(*this, request)
            + urlNotFoundMsg
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));

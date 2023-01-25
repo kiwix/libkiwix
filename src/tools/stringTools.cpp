@@ -164,9 +164,6 @@ std::string kiwix::encodeDiples(const std::string& str)
 namespace
 {
 
-/* urlEncode() based on javascript encodeURI() &
-   encodeURIComponent(). Mostly code from rstudio/httpuv (GPLv3) */
-
 bool isReservedUrlChar(char c)
 {
   switch (c) {
@@ -246,7 +243,7 @@ int hexToInt(char c) {
 
 } // unnamed namespace
 
-std::string kiwix::urlEncode(const std::string& value, bool encodeReserved)
+std::string kiwix::urlEncode(const std::string& value)
 {
   std::ostringstream os;
   os << std::hex << std::uppercase;
@@ -254,7 +251,7 @@ std::string kiwix::urlEncode(const std::string& value, bool encodeReserved)
        it != value.end();
        it++) {
 
-    if (!needsEscape(*it, encodeReserved)) {
+    if (!needsEscape(*it, true)) {
       os << *it;
     } else {
       const unsigned int charVal = static_cast<unsigned char>(*it);

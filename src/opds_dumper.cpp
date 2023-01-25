@@ -82,7 +82,7 @@ std::string fullEntryXML(const Book& book, const std::string& rootLocation, cons
       {"title", book.getTitle()},
       {"description", book.getDescription()},
       {"language", book.getLanguage()},
-      {"content_id",  urlEncode(contentId, true)},
+      {"content_id",  urlEncode(contentId)},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
       {"book_date", bookDate},
       {"category", book.getCategory()},
@@ -241,7 +241,7 @@ std::string OPDSDumper::categoriesOPDSFeed() const
   const auto now = gen_date_str();
   kainjow::mustache::list categoryData;
   for ( const auto& category : library->getBooksCategories() ) {
-    const auto urlencodedCategoryName = urlEncode(category, true);
+    const auto urlencodedCategoryName = urlEncode(category);
     categoryData.push_back(kainjow::mustache::object{
       {"name", category},
       {"urlencoded_name",  urlencodedCategoryName},

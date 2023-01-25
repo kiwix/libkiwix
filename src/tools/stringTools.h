@@ -55,7 +55,9 @@ private:
 };
 
 
-std::string urlEncode(const std::string& value, bool encodeReserved);
+/* urlEncode() is the equivalent of JS encodeURIComponent(), with the only
+ * difference that the slash (/) symbol is NOT encoded. */
+std::string urlEncode(const std::string& value);
 std::string urlDecode(const std::string& value, bool component = false);
 
 std::string join(const std::vector<std::string>& list, const std::string& sep);

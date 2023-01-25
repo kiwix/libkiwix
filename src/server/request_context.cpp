@@ -116,10 +116,10 @@ MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
   if ( ! _this->queryString.empty() ) {
     _this->queryString += "&";
   }
-  _this->queryString += urlEncode(key, true);
+  _this->queryString += urlEncode(key);
   if ( value ) {
     _this->queryString += "=";
-    _this->queryString += urlEncode(value, true);
+    _this->queryString += urlEncode(value);
   }
   return MHD_YES;
 }
