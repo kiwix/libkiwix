@@ -208,17 +208,6 @@ bool isHarmlessUriChar(char c)
   return false;
 }
 
-bool needsEscape(char c, bool encodeReserved)
-{
-  if (isHarmlessUriChar(c))
-    return false;
-
-  if (isReservedUrlChar(c))
-    return encodeReserved;
-
-  return true;
-}
-
 int hexToInt(char c) {
   switch (c) {
   case '0': return 0;
@@ -247,14 +236,11 @@ std::string kiwix::urlEncode(const std::string& value)
 {
   std::ostringstream os;
   os << std::hex << std::uppercase;
-  for (std::string::const_iterator it = value.begin();
-       it != value.end();
-       it++) {
-
-    if (!needsEscape(*it, true)) {
-      os << *it;
+  for (const char c : value) {
+    if (isHarmlessUriChar(c)) {
+      os << c;
     } else {
-      const unsigned int charVal = static_cast<unsigned char>(*it);
+      const unsigned int charVal = static_cast<unsigned char>(c);
       os << '%' << std::setw(2) << std::setfill('0') << charVal;
     }
   }
