@@ -827,7 +827,7 @@ TEST_F(ServerTest, Http400HtmlError)
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?content=non-existing-book&pattern=a"&lt;script foo&gt;" is not a valid request.
+      The requested URL "/ROOT/search?content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" is not a valid request.
     </p>
     <p>
       No such book: non-existing-book
@@ -910,7 +910,7 @@ TEST_F(ServerTest, HttpXmlError)
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?format=xml&content=non-existing-book&pattern=a"&lt;script foo&gt;" is not a valid request.</detail>
+<detail>The requested URL "/ROOT/search?format=xml&content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" is not a valid request.</detail>
 <detail>No such book: non-existing-book</detail>
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate
@@ -1156,7 +1156,7 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   auto g = zfs1_->GET("/ROOT/random?content=zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A%2F"));
+  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
   ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
   ASSERT_FALSE(g->has_header("ETag"));
 }
@@ -1224,7 +1224,7 @@ TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
   auto g = zfs1_->GET("/ROOT/content/zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ("/ROOT/content/zimfile/A%2Findex", g->get_header_value("Location"));
+  ASSERT_EQ("/ROOT/content/zimfile/A/index", g->get_header_value("Location"));
   }
 }
 

@@ -37,34 +37,34 @@ TEST(OpdsCatalog, getSearchUrl)
   }
   {
     Filter f;
-    f.query("abc def");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc%20def");
+    f.query("abc def#xyz");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc%20def%23xyz");
   }
   {
     Filter f;
-    f.category("ted");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?category=ted");
+    f.category("ted&bob");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?category=ted%26bob");
   }
   {
     Filter f;
-    f.lang("eng");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?lang=eng");
+    f.lang("eng,fra");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?lang=eng%2Cfra");
   }
   {
     Filter f;
-    f.name("second");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?name=second");
+    f.name("second?");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?name=second%3F");
   }
   {
     Filter f;
-    f.acceptTags({"paper", "plastic"});
-    EXPECT_SEARCH_URL("/catalog/v2/entries?tag=paper;plastic");
+    f.acceptTags({"#paper", "#plastic"});
+    EXPECT_SEARCH_URL("/catalog/v2/entries?tag=%23paper%3B%23plastic");
   }
   {
     Filter f;
-    f.query("abc");
-    f.category("ted");
-    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc&category=ted");
+    f.query("abc=123");
+    f.category("@ted");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?q=abc%3D123&category=%40ted");
   }
   {
     Filter f;
@@ -79,7 +79,7 @@ TEST(OpdsCatalog, getSearchUrl)
     f.lang("html");
     f.name("edsonarantesdonascimento");
     f.acceptTags({"body", "script"});
-    EXPECT_SEARCH_URL("/catalog/v2/entries?q=peru&category=scifi&lang=html&name=edsonarantesdonascimento&tag=body;script");
+    EXPECT_SEARCH_URL("/catalog/v2/entries?q=peru&category=scifi&lang=html&name=edsonarantesdonascimento&tag=body%3Bscript");
   }
   #undef EXPECT_SEARCH_URL
 }

@@ -161,15 +161,14 @@ std::string kiwix::encodeDiples(const std::string& str)
   return result;
 }
 
-/* urlEncode() based on javascript encodeURI() &
-   encodeURIComponent(). Mostly code from rstudio/httpuv (GPLv3) */
+namespace
+{
 
 bool isReservedUrlChar(char c)
 {
   switch (c) {
   case ';':
   case ',':
-  case '/':
   case '?':
   case ':':
   case '@':
@@ -177,22 +176,22 @@ bool isReservedUrlChar(char c)
   case '=':
   case '+':
   case '$':
+  case '#':
     return true;
   default:
     return false;
   }
 }
 
-bool needsEscape(char c, bool encodeReserved)
+bool isHarmlessUriChar(char c)
 {
   if (c >= 'a' && c <= 'z')
-    return false;
+    return true;
   if (c >= 'A' && c <= 'Z')
-    return false;
+    return true;
   if (c >= '0' && c <= '9')
-    return false;
-  if (isReservedUrlChar(c))
-    return encodeReserved;
+    return true;
+
   switch (c) {
   case '-':
   case '_':
@@ -203,9 +202,10 @@ bool needsEscape(char c, bool encodeReserved)
   case '\'':
   case '(':
   case ')':
-    return false;
+  case '/':
+    return true;
   }
-  return true;
+  return false;
 }
 
 int hexToInt(char c) {
@@ -230,18 +230,18 @@ int hexToInt(char c) {
   }
 }
 
-std::string kiwix::urlEncode(const std::string& value, bool encodeReserved)
+} // unnamed namespace
+
+std::string kiwix::urlEncode(const std::string& value)
 {
   std::ostringstream os;
   os << std::hex << std::uppercase;
-  for (std::string::const_iterator it = value.begin();
-       it != value.end();
-       it++) {
-
-    if (!needsEscape(*it, encodeReserved)) {
-      os << *it;
+  for (const char c : value) {
+    if (isHarmlessUriChar(c)) {
+      os << c;
     } else {
-      os << '%' << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(*it));
+      const unsigned int charVal = static_cast<unsigned char>(c);
+      os << '%' << std::setw(2) << std::setfill('0') << charVal;
     }
   }
   return os.str();
@@ -267,15 +267,15 @@ std::string kiwix::urlDecode(const std::string& value, bool component)
       int iHi = hexToInt(hi);
       int iLo = hexToInt(lo);
       if (iHi < 0 || iLo < 0) {
-	// Invalid escape sequence
-	os << '%' << hi << lo;
-	continue;
+        // Invalid escape sequence
+        os << '%' << hi << lo;
+        continue;
       }
       char c = (char)(iHi << 4 | iLo);
       if (!component && isReservedUrlChar(c)) {
-	os << '%' << hi << lo;
+        os << '%' << hi << lo;
       } else {
-	os << c;
+        os << c;
       }
     } else {
       os << *it;

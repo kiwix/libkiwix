@@ -105,4 +105,62 @@ TEST(stringTools, extractFromString)
   ASSERT_THROW(extractFromString<float>("3.14.5"), std::invalid_argument);
 }
 
+namespace URLEncoding
+{
+
+const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char digits[] = "0123456789";
+const char nonEncodableSymbols[] = ".-_~()*!/";
+const char uriDelimSymbols[] = ":@?=+&#$;,";
+
+const char otherSymbols[] = R"(`%^[]{}\|"<>)";
+
+const char whitespace[] = " \n\t\r";
+
+const char someNonASCIIChars[] = "Σ♂♀ツ";
+
+}
+
+TEST(stringTools, urlEncode)
+{
+  using namespace URLEncoding;
+
+  EXPECT_EQ(urlEncode(letters), letters);
+
+  EXPECT_EQ(urlEncode(digits), digits);
+
+  EXPECT_EQ(urlEncode(nonEncodableSymbols), nonEncodableSymbols);
+
+  EXPECT_EQ(urlEncode(uriDelimSymbols), "%3A%40%3F%3D%2B%26%23%24%3B%2C");
+
+  EXPECT_EQ(urlEncode(otherSymbols), "%60%25%5E%5B%5D%7B%7D%5C%7C%22%3C%3E");
+
+  EXPECT_EQ(urlEncode(whitespace), "%20%0A%09%0D");
+
+  EXPECT_EQ(urlEncode(someNonASCIIChars), "%CE%A3%E2%99%82%E2%99%80%E3%83%84");
+}
+
+TEST(stringTools, urlDecode)
+{
+  using namespace URLEncoding;
+
+  const std::string allTestChars = std::string(letters)
+                                 + digits
+                                 + nonEncodableSymbols
+                                 + uriDelimSymbols
+                                 + otherSymbols
+                                 + whitespace
+                                 + someNonASCIIChars;
+
+  for ( const char c : allTestChars ) {
+    const std::string str(1, c);
+    EXPECT_EQ(urlDecode(urlEncode(str), true), str);
+  }
+
+  EXPECT_EQ(urlDecode(urlEncode(allTestChars), true), allTestChars);
+
+  const std::string encodedUriDelimSymbols = urlEncode(uriDelimSymbols);
+  EXPECT_EQ(urlDecode(encodedUriDelimSymbols, false), encodedUriDelimSymbols);
+}
+
 };

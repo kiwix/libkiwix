@@ -193,7 +193,7 @@ TEST_F(LibraryServerTest, catalog_search_by_phrase)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Filtered zims (q=&quot;ray charles&quot;)</title>\n"
+    "  <title>Filtered zims (q=%22ray%20charles%22)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -212,7 +212,7 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Filtered zims (q=ray charles)</title>\n"
+    "  <title>Filtered zims (q=ray%20charles)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>3</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -233,7 +233,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Filtered zims (q=description:ray description:charles)</title>\n"
+      "  <title>Filtered zims (q=description%3Aray%20description%3Acharles)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -250,7 +250,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Filtered zims (q=title:&quot;ray charles&quot;)</title>\n"
+      "  <title>Filtered zims (q=title%3A%22ray%20charles%22)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -269,7 +269,7 @@ TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Filtered zims (q=ray -uncategorized)</title>\n"
+    "  <title>Filtered zims (q=ray%20-uncategorized)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -288,7 +288,7 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Filtered zims (tag=_category:jazz)</title>\n"
+    "  <title>Filtered zims (tag=_category%3Ajazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -342,7 +342,7 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-      "  <title>Filtered zims (lang=eng,fra)</title>\n"
+      "  <title>Filtered zims (lang=eng%2Cfra)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -694,7 +694,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
-    "  <title>Filtered Entries (q=&quot;ray charles&quot;)</title>\n"
+    "  <title>Filtered Entries (q=%22ray%20charles%22)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -726,8 +726,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
     const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?lang=eng,fra");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-      CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng,fra")
-      "  <title>Filtered Entries (lang=eng,fra)</title>\n"
+      CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng%2Cfra")
+      "  <title>Filtered Entries (lang=eng%2Cfra)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
@@ -865,7 +865,7 @@ TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
-    "  <title>Filtered zims (tag=_category:jazz)</title>\n"
+    "  <title>Filtered zims (tag=_category%3Ajazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"

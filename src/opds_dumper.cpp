@@ -82,7 +82,7 @@ std::string fullEntryXML(const Book& book, const std::string& rootLocation, cons
       {"title", book.getTitle()},
       {"description", book.getDescription()},
       {"language", book.getLanguage()},
-      {"content_id",  urlEncode(contentId, true)},
+      {"content_id",  urlEncode(contentId)},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
       {"book_date", bookDate},
       {"category", book.getCategory()},
@@ -216,7 +216,7 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"endpoint_root", endpointRoot},
      {"feed_id", gen_uuid(libraryId + endpoint + "?" + query)},
      {"filter", onlyAsNonEmptyMustacheValue(query)},
-     {"query", query.empty() ? "" : "?" + urlEncode(query)},
+     {"query", query.empty() ? "" : "?" + query},
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},

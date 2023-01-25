@@ -99,7 +99,7 @@ class RequestContext {
     std::string get_query(F filter, bool mustEncode) const {
       std::string q;
       const char* sep = "";
-      auto encode = [=](const std::string& value) { return mustEncode?urlEncode(value, true):value; };
+      auto encode = [=](const std::string& value) { return mustEncode?urlEncode(value):value; };
       for ( const auto& a : arguments ) {
         if (!filter(a.first)) {
           continue;
