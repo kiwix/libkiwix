@@ -55,7 +55,7 @@ private:
 };
 
 
-std::string urlEncode(const std::string& value, bool encodeReserved = false);
+std::string urlEncode(const std::string& value, bool encodeReserved);
 std::string urlDecode(const std::string& value, bool component = false);
 
 std::string join(const std::vector<std::string>& list, const std::string& sep);
