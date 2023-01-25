@@ -42,19 +42,19 @@ std::string buildSearchString(const Filter& f)
 {
   std::ostringstream oss;
   if ( f.hasQuery() )
-    oss << AMP << "q=" << urlEncode(f.getQuery());
+    oss << AMP << "q=" << urlEncode(f.getQuery(), true);
 
   if ( f.hasCategory() )
-    oss << AMP << "category=" << urlEncode(f.getCategory());
+    oss << AMP << "category=" << urlEncode(f.getCategory(), true);
 
   if ( f.hasLang() )
-    oss << AMP << "lang=" << urlEncode(f.getLang());
+    oss << AMP << "lang=" << urlEncode(f.getLang(), true);
 
   if ( f.hasName() )
-    oss << AMP << "name=" << urlEncode(f.getName());
+    oss << AMP << "name=" << urlEncode(f.getName(), true);
 
   if ( !f.getAcceptTags().empty() )
-    oss << AMP << "tag=" << urlEncode(join(f.getAcceptTags(), ";"));
+    oss << AMP << "tag=" << urlEncode(join(f.getAcceptTags(), ";"), true);
 
   return oss.str();
 }
