@@ -18,6 +18,17 @@
     let timer;
     let languages = {};
 
+    function updateFeedLink() {
+        const inputParams = new URLSearchParams(window.location.search);
+        const filteredParams = new URLSearchParams();
+        for (const [key, value] of inputParams) {
+            if ( value != '' ) {
+                filteredParams.append(key, value);
+            }
+        }
+        document.querySelector('#feed_link').href = `${root}/catalog/v2/entries?${filteredParams.toString()}`;
+    }
+
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
@@ -363,6 +374,7 @@
             setCookie(filterCookieName, params.toString());
         }
         updateFilterColors();
+        updateFeedLink();
         await loadAndDisplayBooks(true);
     }
 
@@ -492,6 +504,7 @@
                 langFilter.dispatchEvent(new Event('change'));
             }
         }
+        updateFeedLink();
         setCookie(filterCookieName, params.toString());
     }
 })();
