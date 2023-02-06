@@ -58,6 +58,8 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT/skin/css/autoComplete.css?cacheid=08951e06" },
   { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon.ico" },
   { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/i18n.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/i18n.js?cacheid=dcf3d584" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT/skin/index.css?cacheid=0f9ba34e" },
   { DYNAMIC_CONTENT, "/ROOT/skin/index.js" },
@@ -66,10 +68,12 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/mustache.min.js" },
+  { STATIC_CONTENT,  "/ROOT/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT/skin/taskbar.css?cacheid=216d6b5d" },
+  { STATIC_CONTENT,  "/ROOT/skin/taskbar.css?cacheid=2cbac34b" },
   { DYNAMIC_CONTENT, "/ROOT/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/viewer.js?cacheid=ab5374c5" },
+  { STATIC_CONTENT,  "/ROOT/skin/viewer.js?cacheid=b3c754ec" },
   { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Roboto.ttf" },
@@ -135,6 +139,11 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT/skin/search-icon.svg?cacheid=b10ae7ed" },
   { DYNAMIC_CONTENT, "/ROOT/skin/search_results.css" },
   { STATIC_CONTENT,  "/ROOT/skin/search_results.css?cacheid=76d39c84" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/i18n/test.json" },
+  // TODO: implement cache management of i18n resources
+  //{ STATIC_CONTENT, "/ROOT/skin/i18n/test.json?cacheid=unknown" },
+  { DYNAMIC_CONTENT, "/ROOT/skin/languages.js" },
+  { STATIC_CONTENT, "/ROOT/skin/languages.js?cacheid=fe100348" },
 
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
   { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Description" },
@@ -289,12 +298,14 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
     },
     {
       /* url */ "/ROOT/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=216d6b5d" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=2cbac34b" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=ab5374c5" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=dcf3d584" defer></script>
+    <script type="text/javascript" src="./skin/languages.js?cacheid=fe100348" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=b3c754ec" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
-            <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
+          <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
             src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
     },
@@ -970,6 +981,77 @@ TEST_F(ServerTest, 500)
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
   }
+}
+
+TEST_F(ServerTest, UserLanguageList)
+{
+  const auto r = zfs1_->GET("/ROOT/skin/languages.js");
+  EXPECT_EQ(r->body,
+R"EXPECTEDRESPONSE(const uiLanguages = [
+  {
+    "বাংলা": "bn"
+  },
+  {
+    "Čeština": "cs"
+  },
+  {
+    "Deutsch": "de"
+  },
+  {
+    "English": "en"
+  },
+  {
+    "français": "fr"
+  },
+  {
+    "עברית": "he"
+  },
+  {
+    "Հայերեն": "hy"
+  },
+  {
+    "italiano": "it"
+  },
+  {
+    "日本語": "ja"
+  },
+  {
+    "한국어": "ko"
+  },
+  {
+    "kurdî": "ku-latn"
+  },
+  {
+    "македонски": "mk"
+  },
+  {
+    "ߒߞߏ": "nqo"
+  },
+  {
+    "Polski": "pl"
+  },
+  {
+    "русский": "ru"
+  },
+  {
+    "Sardu": "sc"
+  },
+  {
+    "slovenčina": "sk"
+  },
+  {
+    "Svenska": "sv"
+  },
+  {
+    "Türkçe": "tr"
+  },
+  {
+    "英语": "zh-hans"
+  },
+  {
+    "繁體中文": "zh-hant"
+  }
+])EXPECTEDRESPONSE");
 }
 
 TEST_F(ServerTest, UserLanguageControl)

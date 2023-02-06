@@ -2,9 +2,13 @@
 //
 // user url: identifier of the page that has to be displayed in the viewer
 //           and that is used as the hash component of the viewer URL. For
-//           book resources the address url is {book}/{resource} .
+//           book resources the user url is {book}/{resource} .
 //
 // iframe url: the URL to be loaded in the viewer iframe.
+
+let viewerState = {
+  uiLanguage: 'en',
+};
 
 function userUrl2IframeUrl(url) {
   if ( url == '' ) {
@@ -30,7 +34,7 @@ function getBookFromUserUrl(url) {
   return url.split('/')[0];
 }
 
-let currentBook = getBookFromUserUrl(location.hash.slice(1));
+let currentBook = null;
 let currentBookTitle = null;
 
 const bookUIGroup = document.getElementById('kiwix_serve_taskbar_book_ui_group');
@@ -68,14 +72,24 @@ function makeJSLink(jsCodeString, linkText, linkAttr="") {
 
 function suggestionsApiURL()
 {
-  return `${root}/suggest?content=${encodeURIComponent(currentBook)}`;
+  const uriEncodedBookName = encodeURIComponent(currentBook);
+  const userLang = viewerState.uiLanguage;
+  return `${root}/suggest?userlang=${userLang}&content=${uriEncodedBookName}`;
+}
+
+function setTitle(element, text) {
+  if ( element ) {
+    element.title = text;
+    if ( element.hasAttribute("aria-label") ) {
+      element.setAttribute("aria-label", text);
+    }
+  }
 }
 
 function setCurrentBook(book, title) {
   currentBook = book;
   currentBookTitle = title;
-  homeButton.title = `Go to the main page of '${title}'`;
-  homeButton.setAttribute("aria-label", homeButton.title);
+  setTitle(homeButton, $t("home-button-text", {BOOK_TITLE: title}));
   homeButton.innerHTML = `<button>${title}</button>`;
   bookUIGroup.style.display = 'inline';
   updateSearchBoxForBookChange();
@@ -153,7 +167,7 @@ function updateSearchBoxForBookChange() {
   const searchbox = document.getElementById('kiwixsearchbox');
   const kiwixSearchFormWrapper = document.querySelector('.kiwix_searchform');
   if ( currentBookTitle ) {
-    searchbox.title = `Search '${currentBookTitle}'`;
+    searchbox.title = $t("searchbox-tooltip", {BOOK_TITLE : currentBookTitle});
     searchbox.placeholder = searchbox.title;
     searchbox.setAttribute("aria-label", searchbox.title);
     kiwixSearchFormWrapper.style.display = 'inline';
@@ -197,6 +211,7 @@ function handle_location_hash_change() {
   }
   updateSearchBoxForLocationChange();
   previousScrollTop = Infinity;
+  history.replaceState(viewerState, null);
 }
 
 function handle_content_url_change() {
@@ -206,8 +221,7 @@ function handle_content_url_change() {
   const iframeContentUrl = iframeLocation.pathname;
   const iframeContentQuery = iframeLocation.search;
   const newHash = iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
-  const viewerURL = location.origin + location.pathname + location.search;
-  window.location.replace(viewerURL + '#' + newHash);
+  history.replaceState(viewerState, null, makeURL(location.search, newHash));
   updateCurrentBookIfNeeded(newHash);
 };
 
@@ -291,16 +305,14 @@ function setup_external_link_blocker() {
 // End of external link blocking
 ////////////////////////////////////////////////////////////////////////////////
 
+let viewerSetupComplete = false;
+
 function on_content_load() {
-  handle_content_url_change();
-  setup_external_link_blocker();
+  if ( viewerSetupComplete ) {
+    handle_content_url_change();
+    setup_external_link_blocker();
+  }
 }
-
-window.onresize = handle_visual_viewport_change;
-window.onhashchange = handle_location_hash_change;
-
-updateCurrentBook(currentBook);
-handle_location_hash_change();
 
 function htmlDecode(input) {
     var doc = new DOMParser().parseFromString(input, "text/html");
@@ -391,22 +403,82 @@ function setupSuggestions() {
   });
 }
 
+function makeURL(search, hash) {
+  let url = location.origin + location.pathname;
+  if (search != "") {
+    url += (search[0] == '?' ? search : '?' + search);
+  }
+
+  url += (hash[0] == '#' ? hash : '#' + hash);
+  return url;
+}
+
+function initUILanguageSelector() {
+  const languageSelector = document.getElementById("ui_language");
+  for (const lang of uiLanguages ) {
+    const lang_name = Object.getOwnPropertyNames(lang)[0];
+    const lang_code = lang[lang_name];
+    const is_selected = lang_code == viewerState.uiLanguage;
+    languageSelector.appendChild(new Option(lang_name, lang_code, is_selected, is_selected));
+  }
+}
+
+function updateUILanguageSelector(userLang) {
+  console.log(`updateUILanguageSelector(${userLang})`);
+  const languageSelector = document.getElementById("ui_language");
+  for (const opt of languageSelector.children ) {
+    if ( opt.value == userLang ) {
+      opt.selected = true;
+    }
+  }
+}
+
+function handle_history_state_change(event) {
+  console.log(`handle_history_state_change`);
+  if ( event.state ) {
+    viewerState = event.state;
+    updateUILanguageSelector(viewerState.uiLanguage);
+    setUserLanguage(viewerState.uiLanguage, updateUIText);
+  }
+}
+
+function changeUILanguage() {
+  const s = document.getElementById("ui_language");
+  const lang = s.options[s.selectedIndex].value;
+  viewerState.uiLanguage = lang;
+  setUserLanguage(lang, () => {
+    updateUIText();
+    history.pushState(viewerState, null);
+  });
+}
+
 function setupViewer() {
   // Defer the call of handle_visual_viewport_change() until after the
   // presence or absence of the taskbar as determined by this function
   // has been settled.
   setTimeout(handle_visual_viewport_change, 0);
 
+  window.onresize = handle_visual_viewport_change;
+
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
     return;
   }
+
+  const lang = getUserLanguage();
+  setUserLanguage(lang, finishViewerSetupOnceTranslationsAreLoaded);
+  viewerState.uiLanguage = lang;
+  const q = new URLSearchParams(window.location.search);
+  q.delete('userlang');
+  const rewrittenURL = makeURL(q.toString(), location.hash);
+  history.replaceState(viewerState, null, rewrittenURL);
 
   kiwixToolBarWrapper.style.display = 'block';
   if ( ! viewerSettings.libraryButtonEnabled ) {
     document.getElementById("kiwix_serve_taskbar_library_button").remove();
   }
 
+  initUILanguageSelector();
   setupSuggestions();
 
   // cybook hack
@@ -417,4 +489,26 @@ function setupViewer() {
   if (document.body.clientWidth < 520) {
     setupAutoHidingOfTheToolbar();
   }
+}
+
+function updateUIText() {
+  currentBook = getBookFromUserUrl(location.hash.slice(1));
+  updateCurrentBook(currentBook);
+
+  setTitle(document.getElementById("kiwix_serve_taskbar_library_button"),
+           $t("library-button-text"));
+
+  setTitle(document.getElementById("kiwix_serve_taskbar_random_button"),
+           $t("random-page-button-text"));
+}
+
+function finishViewerSetupOnceTranslationsAreLoaded()
+{
+  updateUIText();
+  handle_location_hash_change();
+
+  window.onhashchange = handle_location_hash_change;
+  window.onpopstate = handle_history_state_change;
+
+  viewerSetupComplete = true;
 }

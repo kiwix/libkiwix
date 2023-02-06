@@ -15,7 +15,7 @@ preprocessed_resources = custom_target('preprocessed_resource_files',
 )
 
 lib_resources = custom_target('resources',
-    input: preprocessed_resources,
+    input: [preprocessed_resources, 'i18n_resources_list.txt'],
     output: ['libkiwix-resources.cpp', 'libkiwix-resources.h'],
     command:[res_compiler,
              '--cxxfile', '@OUTPUT0@',
