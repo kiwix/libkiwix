@@ -26,7 +26,9 @@
                 filteredParams.append(key, value);
             }
         }
-        document.querySelector('#feed_link').href = `${root}/catalog/v2/entries?${filteredParams.toString()}`;
+        const feedLink = `${root}/catalog/v2/entries?${filteredParams.toString()}`;
+        document.querySelector('#headFeedLink').href = feedLink;
+        document.querySelector('#feedLink').href = feedLink;
     }
 
     function queryUrlBuilder() {
