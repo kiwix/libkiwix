@@ -198,7 +198,10 @@ function updateToolbarVisibilityState() {
 }
 
 function handle_visual_viewport_change() {
-  contentIframe.height = window.visualViewport.height - contentIframe.offsetTop - 4;
+  const wh = window.visualViewport
+           ? window.visualViewport.height
+           : window.innerHeight;
+  contentIframe.height = wh - contentIframe.offsetTop - 4;
 }
 
 function handle_location_hash_change() {
