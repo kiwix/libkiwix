@@ -25,6 +25,7 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <mutex>
 
 namespace kiwix
 {
@@ -95,10 +96,11 @@ class Downloader
   Download* startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
   Download* getDownload(const std::string& did);
 
-  size_t getNbDownload() { return m_knownDownloads.size(); }
+  size_t getNbDownload();
   std::vector<std::string> getDownloadIds();
 
  private:
+  std::mutex m_lock;
   std::map<std::string, std::unique_ptr<Download>> m_knownDownloads;
   std::shared_ptr<Aria2> mp_aria;
 };

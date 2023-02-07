@@ -156,6 +156,7 @@ void Downloader::close()
 }
 
 std::vector<std::string> Downloader::getDownloadIds() {
+  std::unique_lock<std::mutex> lock(m_lock);
   std::vector<std::string> ret;
   for(auto& p:m_knownDownloads) {
     ret.push_back(p.first);
@@ -165,6 +166,7 @@ std::vector<std::string> Downloader::getDownloadIds() {
 
 Download* Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
 {
+  std::unique_lock<std::mutex> lock(m_lock);
   for (auto& p: m_knownDownloads) {
     auto& d = p.second;
     auto& uris = d->getUris();
@@ -179,6 +181,7 @@ Download* Downloader::startDownload(const std::string& uri, const std::vector<st
 
 Download* Downloader::getDownload(const std::string& did)
 {
+  std::unique_lock<std::mutex> lock(m_lock);
   try {
     return m_knownDownloads.at(did).get();
   } catch(std::exception& e) {
@@ -196,6 +199,11 @@ Download* Downloader::getDownload(const std::string& did)
     }
     throw e;
   }
+}
+
+size_t Downloader::getNbDownload() {
+  std::unique_lock<std::mutex> lock(m_lock);
+  return m_knownDownloads.size();
 }
 
 }
