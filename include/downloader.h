@@ -58,15 +58,15 @@ class Download {
   void pauseDownload();
   void resumeDownload();
   void cancelDownload();
-  StatusResult getStatus()          { return m_status; }
-  std::string  getDid()             { return m_did; }
-  std::string  getFollowedBy()      { return m_followedBy; }
-  uint64_t     getTotalLength()     { return m_totalLength; }
-  uint64_t     getCompletedLength() { return m_completedLength; }
-  uint64_t     getDownloadSpeed()   { return m_downloadSpeed; }
-  uint64_t     getVerifiedLength()  { return m_verifiedLength; }
-  std::string  getPath()            { return m_path; }
-  std::vector<std::string>&  getUris()             { return m_uris; }
+  StatusResult getStatus() const             { return m_status; }
+  const std::string&  getDid() const         { return m_did; }
+  const std::string&  getFollowedBy() const  { return m_followedBy; }
+  uint64_t     getTotalLength() const        { return m_totalLength; }
+  uint64_t     getCompletedLength() const    { return m_completedLength; }
+  uint64_t     getDownloadSpeed() const      { return m_downloadSpeed; }
+  uint64_t     getVerifiedLength() const     { return m_verifiedLength; }
+  const std::string&  getPath() const        { return m_path; }
+  const std::vector<std::string>&  getUris() const { return m_uris; }
 
  protected:
   std::shared_ptr<Aria2> mp_aria;
@@ -96,11 +96,11 @@ class Downloader
   std::shared_ptr<Download> startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
   std::shared_ptr<Download> getDownload(const std::string& did);
 
-  size_t getNbDownload();
-  std::vector<std::string> getDownloadIds();
+  size_t getNbDownload() const;
+  std::vector<std::string> getDownloadIds() const;
 
  private:
-  std::mutex m_lock;
+  mutable std::mutex m_lock;
   std::map<std::string, std::shared_ptr<Download>> m_knownDownloads;
   std::shared_ptr<Aria2> mp_aria;
 };

@@ -155,7 +155,7 @@ void Downloader::close()
   mp_aria->close();
 }
 
-std::vector<std::string> Downloader::getDownloadIds() {
+std::vector<std::string> Downloader::getDownloadIds() const {
   std::unique_lock<std::mutex> lock(m_lock);
   std::vector<std::string> ret;
   for(auto& p:m_knownDownloads) {
@@ -201,7 +201,7 @@ std::shared_ptr<Download> Downloader::getDownload(const std::string& did)
   }
 }
 
-size_t Downloader::getNbDownload() {
+size_t Downloader::getNbDownload() const {
   std::unique_lock<std::mutex> lock(m_lock);
   return m_knownDownloads.size();
 }
