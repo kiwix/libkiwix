@@ -12,7 +12,6 @@
 #include "xmlrpc.h"
 
 #include <memory>
-#include <mutex>
 #include <curl/curl.h>
 
 namespace kiwix {
@@ -24,12 +23,11 @@ class Aria2
     int m_port;
     std::string m_secret;
     std::string m_downloadDir;
-    std::mutex m_lock;
     std::string doRequest(const MethodCall& methodCall);
 
   public:
     Aria2();
-    virtual ~Aria2();
+    virtual ~Aria2() = default;
     void close();
 
     std::string addUri(const std::vector<std::string>& uri, const std::vector<std::pair<std::string, std::string>>& options = {});

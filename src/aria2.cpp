@@ -115,11 +115,6 @@ Aria2::Aria2():
   }
 }
 
-Aria2::~Aria2()
-{
-  std::unique_lock<std::mutex> lock(m_lock);
-}
-
 void Aria2::close()
 {
   saveSession();
@@ -139,28 +134,25 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
   std::stringstream outStream;
   CURLcode res;
   long response_code;
-  {
-    std::unique_lock<std::mutex> lock(m_lock);
-    char curlErrorBuffer[CURL_ERROR_SIZE];
-    CURL* p_curl = curl_easy_init();
-    curl_easy_setopt(p_curl, CURLOPT_URL, "http://localhost/rpc");
-    curl_easy_setopt(p_curl, CURLOPT_PORT, m_port);
-    curl_easy_setopt(p_curl, CURLOPT_POST, 1L);
-    curl_easy_setopt(p_curl, CURLOPT_ERRORBUFFER, curlErrorBuffer);
-    curl_easy_setopt(p_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
-    curl_easy_setopt(p_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
-    curl_easy_setopt(p_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
-    curl_easy_setopt(p_curl, CURLOPT_WRITEDATA, &outStream);
-    curlErrorBuffer[0] = 0;
-    res = curl_easy_perform(p_curl);
-    if (res != CURLE_OK) {
-      LOG_ARIA_ERROR();
-      curl_easy_cleanup(p_curl);
-      throw std::runtime_error("Cannot perform request");
-    }
-    curl_easy_getinfo(p_curl, CURLINFO_RESPONSE_CODE, &response_code);
+  char curlErrorBuffer[CURL_ERROR_SIZE];
+  CURL* p_curl = curl_easy_init();
+  curl_easy_setopt(p_curl, CURLOPT_URL, "http://localhost/rpc");
+  curl_easy_setopt(p_curl, CURLOPT_PORT, m_port);
+  curl_easy_setopt(p_curl, CURLOPT_POST, 1L);
+  curl_easy_setopt(p_curl, CURLOPT_ERRORBUFFER, curlErrorBuffer);
+  curl_easy_setopt(p_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
+  curl_easy_setopt(p_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
+  curl_easy_setopt(p_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
+  curl_easy_setopt(p_curl, CURLOPT_WRITEDATA, &outStream);
+  curlErrorBuffer[0] = 0;
+  res = curl_easy_perform(p_curl);
+  if (res != CURLE_OK) {
+    LOG_ARIA_ERROR();
     curl_easy_cleanup(p_curl);
+    throw std::runtime_error("Cannot perform request");
   }
+  curl_easy_getinfo(p_curl, CURLINFO_RESPONSE_CODE, &response_code);
+  curl_easy_cleanup(p_curl);
 
   auto responseContent = outStream.str();
   if (response_code != 200) {
