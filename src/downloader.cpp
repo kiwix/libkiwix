@@ -180,23 +180,20 @@ Download* Downloader::startDownload(const std::string& uri, const std::vector<st
 Download* Downloader::getDownload(const std::string& did)
 {
   try {
-    m_knownDownloads.at(did).get()->updateStatus(true);
     return m_knownDownloads.at(did).get();
   } catch(std::exception& e) {
     for (auto gid : mp_aria->tellActive()) {
       if (gid == did) {
         m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-        m_knownDownloads.at(gid).get()->updateStatus(true);
         return m_knownDownloads[gid].get();
       }
     }
     for (auto gid : mp_aria->tellWaiting()) {
       if (gid == did) {
         m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-        m_knownDownloads.at(gid).get()->updateStatus(true);
         return m_knownDownloads[gid].get();
       }
-  }
+    }
     throw e;
   }
 }
