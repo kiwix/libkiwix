@@ -512,3 +512,7 @@ function finishViewerSetupOnceTranslationsAreLoaded()
 
   viewerSetupComplete = true;
 }
+
+function setPermanentGlobalCookie(name, value) {
+  document.cookie = `${name}=${value};path=${root};max-age=31536000`;
+}

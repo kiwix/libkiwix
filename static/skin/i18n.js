@@ -92,8 +92,7 @@ function getUserLanguage() {
 }
 
 function setUserLanguage(lang, callback) {
-  const rootPath = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
-  document.cookie = `userlang=${lang};path=${rootPath};max-age=31536000`;
+  setPermanentGlobalCookie('userlang', lang);
   Translations.load(lang);
   Translations.whenReady(callback);
 }
