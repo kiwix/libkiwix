@@ -71,14 +71,15 @@ class Download {
    * - A first one to download the metadlink.
    * - A second one to download the real file.
    *
-   * By default, `Download` track only the first download. So status may appear
-   * as COMPLETE even if the real file downloading is still running.
-   * By passing true to follow, `Dowload` will detect that and will track the
-   * second download instead.
+   * If `follow` is true, updateStatus tries to detect that and tracks
+   * the second download when the first one is finished.
+   * By passing false to `follow`, `Download` will only track the first download.
    *
    * `getFoo` methods are based on the last statusUpdate.
+   *
+   * @param follow: Do we have to follow following downloads.
    */
-  void updateStatus(bool follow=false);
+  void updateStatus(bool follow);
 
   /**
    * Pause the download (and call updateStatus)

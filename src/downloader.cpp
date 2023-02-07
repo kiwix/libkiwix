@@ -130,7 +130,7 @@ Downloader::Downloader() :
   try {
     for (auto gid : mp_aria->tellActive()) {
       m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-      m_knownDownloads[gid]->updateStatus();
+      m_knownDownloads[gid]->updateStatus(false);
     }
   } catch (std::exception& e) {
     std::cerr << "aria2 tellActive failed : " << e.what() << std::endl;
@@ -138,7 +138,7 @@ Downloader::Downloader() :
   try {
     for (auto gid : mp_aria->tellWaiting()) {
       m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-      m_knownDownloads[gid]->updateStatus();
+      m_knownDownloads[gid]->updateStatus(false);
     }
   } catch (std::exception& e) {
     std::cerr << "aria2 tellWaiting failed : " << e.what() << std::endl;
