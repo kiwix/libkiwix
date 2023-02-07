@@ -24,7 +24,7 @@
 #define LOG_ARIA_ERROR() \
   { \
     std::cerr << "ERROR: aria2 RPC request failed. (" << res << ")." << std::endl; \
-    std::cerr << (m_curlErrorBuffer[0] ? m_curlErrorBuffer.get() : curl_easy_strerror(res)) << std::endl; \
+    std::cerr << (curlErrorBuffer[0] ? curlErrorBuffer : curl_easy_strerror(res)) << std::endl; \
   }
 
 namespace kiwix {
@@ -32,9 +32,7 @@ namespace kiwix {
 Aria2::Aria2():
   mp_aria(nullptr),
   m_port(42042),
-  m_secret(getNewRpcSecret()),
-  m_curlErrorBuffer(new char[CURL_ERROR_SIZE]),
-  mp_curl(nullptr)
+  m_secret(getNewRpcSecret())
 {
   m_downloadDir = getDataDirectory();
   makeDirectory(m_downloadDir);
@@ -91,26 +89,28 @@ Aria2::Aria2():
       launchCmd.append(cmd).append(" ");
   }
   mp_aria = Subprocess::run(callCmd);
-  mp_curl = curl_easy_init();
 
-  curl_easy_setopt(mp_curl, CURLOPT_URL, "http://localhost/rpc");
-  curl_easy_setopt(mp_curl, CURLOPT_PORT, m_port);
-  curl_easy_setopt(mp_curl, CURLOPT_POST, 1L);
-  curl_easy_setopt(mp_curl, CURLOPT_ERRORBUFFER, m_curlErrorBuffer.get());
+  CURL* p_curl = curl_easy_init();
+  char curlErrorBuffer[CURL_ERROR_SIZE];
+
+  curl_easy_setopt(p_curl, CURLOPT_URL, "http://localhost/rpc");
+  curl_easy_setopt(p_curl, CURLOPT_PORT, m_port);
+  curl_easy_setopt(p_curl, CURLOPT_POST, 1L);
+  curl_easy_setopt(p_curl, CURLOPT_ERRORBUFFER, curlErrorBuffer);
 
   int watchdog = 50;
   while(--watchdog) {
     sleep(10);
-    m_curlErrorBuffer[0] = 0;
-    auto res = curl_easy_perform(mp_curl);
+    curlErrorBuffer[0] = 0;
+    auto res = curl_easy_perform(p_curl);
     if (res == CURLE_OK) {
       break;
     } else if (watchdog == 1) {
       LOG_ARIA_ERROR();
     }
   }
+  curl_easy_cleanup(p_curl);
   if (!watchdog) {
-    curl_easy_cleanup(mp_curl);
     throw std::runtime_error("Cannot connect to aria2c rpc. Aria2c launch cmd : " + launchCmd);
   }
 }
@@ -118,7 +118,6 @@ Aria2::Aria2():
 Aria2::~Aria2()
 {
   std::unique_lock<std::mutex> lock(m_lock);
-  curl_easy_cleanup(mp_curl);
 }
 
 void Aria2::close()
@@ -142,17 +141,25 @@ std::string Aria2::doRequest(const MethodCall& methodCall)
   long response_code;
   {
     std::unique_lock<std::mutex> lock(m_lock);
-    curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
-    curl_easy_setopt(mp_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
-    curl_easy_setopt(mp_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
-    curl_easy_setopt(mp_curl, CURLOPT_WRITEDATA, &outStream);
-    m_curlErrorBuffer[0] = 0;
-    res = curl_easy_perform(mp_curl);
+    char curlErrorBuffer[CURL_ERROR_SIZE];
+    CURL* p_curl = curl_easy_init();
+    curl_easy_setopt(p_curl, CURLOPT_URL, "http://localhost/rpc");
+    curl_easy_setopt(p_curl, CURLOPT_PORT, m_port);
+    curl_easy_setopt(p_curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(p_curl, CURLOPT_ERRORBUFFER, curlErrorBuffer);
+    curl_easy_setopt(p_curl, CURLOPT_POSTFIELDSIZE, requestContent.size());
+    curl_easy_setopt(p_curl, CURLOPT_POSTFIELDS, requestContent.c_str());
+    curl_easy_setopt(p_curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
+    curl_easy_setopt(p_curl, CURLOPT_WRITEDATA, &outStream);
+    curlErrorBuffer[0] = 0;
+    res = curl_easy_perform(p_curl);
     if (res != CURLE_OK) {
       LOG_ARIA_ERROR();
+      curl_easy_cleanup(p_curl);
       throw std::runtime_error("Cannot perform request");
     }
-    curl_easy_getinfo(mp_curl, CURLINFO_RESPONSE_CODE, &response_code);
+    curl_easy_getinfo(p_curl, CURLINFO_RESPONSE_CODE, &response_code);
+    curl_easy_cleanup(p_curl);
   }
 
   auto responseContent = outStream.str();
