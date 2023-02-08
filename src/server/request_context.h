@@ -57,8 +57,8 @@ class IndexError: public std::runtime_error {};
 class RequestContext {
   public: // functions
     RequestContext(struct MHD_Connection* connection,
-                   std::string rootLocation,
-                   const std::string& url,
+                   const std::string& rootLocation,
+                   const std::string& unrootedUrl,
                    const std::string& method,
                    const std::string& version);
     ~RequestContext();

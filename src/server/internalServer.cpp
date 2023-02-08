@@ -94,6 +94,22 @@ inline std::string normalizeRootUrl(std::string rootUrl)
   return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
+std::string
+fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
+{
+  if (rootLocation.empty()) {
+    // nothing special to handle.
+    return full_url;
+  } else if (full_url == rootLocation) {
+    return "/";
+  } else if (full_url.size() > rootLocation.size() &&
+             full_url.substr(0, rootLocation.size()+1) == rootLocation + "/") {
+    return full_url.substr(rootLocation.size());
+  } else {
+    return "";
+  }
+}
+
 Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
 {
     auto filter = kiwix::Filter().valid(true).local(true);
@@ -494,7 +510,7 @@ static MHD_Result staticHandlerCallback(void* cls,
 }
 
 MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
-                                           const char* url,
+                                           const char* fullUrl,
                                            const char* method,
                                            const char* version,
                                            const char* upload_data,
@@ -505,8 +521,10 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   if (m_verbose.load() ) {
     printf("======================\n");
     printf("Requesting : \n");
-    printf("full_url  : %s\n", url);
+    printf("full_url  : %s\n", fullUrl);
   }
+
+  const auto url = fullURL2LocalURL(fullUrl, m_root);
   RequestContext request(connection, m_root, url, method, version);
 
   if (m_verbose.load() ) {
@@ -527,7 +545,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     printf("========== INTERNAL ERROR !! ============\n");
     if (!m_verbose.load()) {
       printf("Requesting : \n");
-      printf("full_url : %s\n", url);
+      printf("full_url : %s\n", fullUrl);
       request.print_debug_info();
     }
   }

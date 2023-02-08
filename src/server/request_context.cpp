@@ -49,32 +49,16 @@ RequestMethod str2RequestMethod(const std::string& method) {
   else                          return RequestMethod::OTHER;
 }
 
-std::string
-fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
-{
-  if (rootLocation.empty()) {
-    // nothing special to handle.
-    return full_url;
-  } else if (full_url == rootLocation) {
-    return "/";
-  } else if (full_url.size() > rootLocation.size() &&
-             full_url.substr(0, rootLocation.size()+1) == rootLocation + "/") {
-    return full_url.substr(rootLocation.size());
-  } else {
-    return "";
-  }
-}
-
 } // unnamed namespace
 
 RequestContext::RequestContext(struct MHD_Connection* connection,
-                               std::string _rootLocation,
-                               const std::string& _url,
+                               const std::string& _rootLocation,
+                               const std::string& unrootedUrl,
                                const std::string& _method,
                                const std::string& version) :
   rootLocation(_rootLocation),
-  full_url(_url),
-  url(fullURL2LocalURL(_url, _rootLocation)),
+  full_url(_rootLocation + unrootedUrl),
+  url(unrootedUrl),
   method(str2RequestMethod(_method)),
   version(version),
   requestIndex(s_requestIndex++),
