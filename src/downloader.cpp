@@ -128,20 +128,22 @@ Downloader::Downloader() :
   mp_aria(new Aria2())
 {
   try {
-    for (auto gid : mp_aria->tellActive()) {
-      m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-      m_knownDownloads[gid]->updateStatus(false);
-    }
-  } catch (std::exception& e) {
-    std::cerr << "aria2 tellActive failed : " << e.what() << std::endl;
-  }
-  try {
     for (auto gid : mp_aria->tellWaiting()) {
       m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
       m_knownDownloads[gid]->updateStatus(false);
     }
   } catch (std::exception& e) {
     std::cerr << "aria2 tellWaiting failed : " << e.what() << std::endl;
+  }
+  try {
+    for (auto gid : mp_aria->tellActive()) {
+      if( m_knownDownloads.find(gid) == m_knownDownloads.end()) {
+        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        m_knownDownloads[gid]->updateStatus(false);
+      }
+    }
+  } catch (std::exception& e) {
+    std::cerr << "aria2 tellActive failed : " << e.what() << std::endl;
   }
 }
 
@@ -185,13 +187,13 @@ std::shared_ptr<Download> Downloader::getDownload(const std::string& did)
   try {
     return m_knownDownloads.at(did);
   } catch(std::exception& e) {
-    for (auto gid : mp_aria->tellActive()) {
+    for (auto gid : mp_aria->tellWaiting()) {
       if (gid == did) {
         m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
         return m_knownDownloads[gid];
       }
     }
-    for (auto gid : mp_aria->tellWaiting()) {
+    for (auto gid : mp_aria->tellActive()) {
       if (gid == did) {
         m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
         return m_knownDownloads[gid];
