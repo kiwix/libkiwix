@@ -200,7 +200,7 @@ HTTP404Response::HTTP404Response(const InternalServer& server,
 
 HTTPErrorResponse& HTTP404Response::operator+(UrlNotFoundMsg /*unused*/)
 {
-  const std::string requestUrl = m_request.get_full_url();
+  const std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   return *this + ParameterizedMessage("url-not-found", {{"url", requestUrl}});
 }
 
@@ -234,7 +234,7 @@ HTTP400Response::HTTP400Response(const InternalServer& server,
 
 HTTPErrorResponse& HTTP400Response::operator+(InvalidUrlMsg /*unused*/)
 {
-  std::string requestUrl = m_request.get_full_url();
+  std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   const auto query = m_request.get_query();
   if (!query.empty()) {
     requestUrl += "?" + encodeDiples(query);

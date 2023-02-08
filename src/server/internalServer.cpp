@@ -430,7 +430,9 @@ InternalServer::InternalServer(Library* library,
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources)
-{}
+{
+  m_root = urlEncode(m_root);
+}
 
 InternalServer::~InternalServer() = default;
 
@@ -621,7 +623,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
-    std::string contentUrl = urlEncode(m_root + "/content" + url);
+    std::string contentUrl = m_root + "/content" + urlEncode(url);
     const std::string query = request.get_query();
     if ( ! query.empty() )
       contentUrl += "?" + query;
@@ -1044,8 +1046,9 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  const auto absPath = m_root + "/content/" + bookName + "/" + item.getPath();
-  return Response::build_redirect(*this, kiwix::urlEncode(absPath));
+  const auto contentPath = "/content/" + bookName + "/" + item.getPath();
+  const auto url = m_root + kiwix::urlEncode(contentPath);
+  return Response::build_redirect(*this, url);
 }
 
 std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& request)

@@ -47,136 +47,136 @@ std::ostream& operator<<(std::ostream& out, const Resource& r)
 typedef std::vector<Resource> ResourceCollection;
 
 const ResourceCollection resources200Compressible{
-  { DYNAMIC_CONTENT, "/ROOT/" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/" },
 
-  { DYNAMIC_CONTENT, "/ROOT/viewer" },
-  { DYNAMIC_CONTENT, "/ROOT/viewer?cacheid=whatever" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/viewer" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/viewer?cacheid=whatever" },
 
-  { DYNAMIC_CONTENT, "/ROOT/skin/autoComplete.min.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/autoComplete.min.js?cacheid=1191aaaf" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/css/autoComplete.css" },
-  { STATIC_CONTENT,  "/ROOT/skin/css/autoComplete.css?cacheid=08951e06" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon.ico" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/i18n.js?cacheid=6da2bca0" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT/skin/index.css?cacheid=0f9ba34e" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/index.js?cacheid=2f5a81ac" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/iso6391To3.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/isotope.pkgd.min.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/mustache.min.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/mustache.min.js?cacheid=bd23c4fb" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT/skin/taskbar.css?cacheid=eb3bec90" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT/skin/viewer.js?cacheid=03fd97ee" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Poppins.ttf" },
-  { STATIC_CONTENT,  "/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/fonts/Roboto.ttf" },
-  { STATIC_CONTENT,  "/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete.min.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=1191aaaf" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon.ico" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=fba03a27" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=0f9ba34e" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=2f5a81ac" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=eb3bec90" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=03fd97ee" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248" },
 
-  { DYNAMIC_CONTENT, "/ROOT/catalog/search" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/root.xml" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/entries" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/partial_entries" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/entries" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/partial_entries" },
 
-  { DYNAMIC_CONTENT, "/ROOT/search?content=zimfile&pattern=a" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/search?content=zimfile&pattern=a" },
 
-  { DYNAMIC_CONTENT, "/ROOT/suggest?content=zimfile&term=ray" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile&term=ray" },
 
-  { ZIM_CONTENT,     "/ROOT/content/zimfile/A/index" },
-  { ZIM_CONTENT,     "/ROOT/content/zimfile/A/Ray_Charles" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/content/zimfile/A/index" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/content/zimfile/A/Ray_Charles" },
 
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/content/A/index" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/content/A/Ray_Charles" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/content/A/index" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/content/A/Ray_Charles" },
 };
 
 const ResourceCollection resources200Uncompressible{
-  { DYNAMIC_CONTENT, "/ROOT/skin/bittorrent.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/bittorrent.png?cacheid=4f5c6882" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/blank.html" },
-  { STATIC_CONTENT,  "/ROOT/skin/blank.html?cacheid=6b1fa032" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/caret.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/caret.png?cacheid=22b942b4" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/download.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/download.png?cacheid=a39aa502" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/android-chrome-192x192.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/android-chrome-192x192.png?cacheid=bfac158b" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/android-chrome-512x512.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/android-chrome-512x512.png?cacheid=380c3653" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/apple-touch-icon.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/browserconfig.xml" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/browserconfig.xml?cacheid=f29a7c4a" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon-16x16.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon-16x16.png?cacheid=a986fedc" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/favicon-32x32.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/favicon-32x32.png?cacheid=79ded625" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-144x144.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-144x144.png?cacheid=c25a7641" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-150x150.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-150x150.png?cacheid=6fa6f467" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-310x150.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-310x150.png?cacheid=e0ed9032" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-310x310.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-310x310.png?cacheid=26b20530" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/mstile-70x70.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/mstile-70x70.png?cacheid=64ffd9dc" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/safari-pinned-tab.svg" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/favicon/site.webmanifest" },
-  { STATIC_CONTENT,  "/ROOT/skin/favicon/site.webmanifest?cacheid=bc396efb" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/hash.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/hash.png?cacheid=f836e872" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/magnet.png" },
-  { STATIC_CONTENT,  "/ROOT/skin/magnet.png?cacheid=73b6bddf" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/search-icon.svg" },
-  { STATIC_CONTENT,  "/ROOT/skin/search-icon.svg?cacheid=b10ae7ed" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/search_results.css" },
-  { STATIC_CONTENT,  "/ROOT/skin/search_results.css?cacheid=76d39c84" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/i18n/test.json" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.png?cacheid=4f5c6882" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blank.html" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/blank.html?cacheid=6b1fa032" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/caret.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/caret.png?cacheid=22b942b4" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/download.png?cacheid=a39aa502" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/android-chrome-192x192.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/android-chrome-192x192.png?cacheid=bfac158b" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/android-chrome-512x512.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/android-chrome-512x512.png?cacheid=380c3653" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/apple-touch-icon.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/browserconfig.xml" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon-16x16.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon-32x32.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-144x144.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-144x144.png?cacheid=c25a7641" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-150x150.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-150x150.png?cacheid=6fa6f467" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-310x150.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-310x150.png?cacheid=e0ed9032" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-310x310.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-310x310.png?cacheid=26b20530" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-70x70.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-70x70.png?cacheid=64ffd9dc" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/site.webmanifest" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/hash.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/hash.png?cacheid=f836e872" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/magnet.png" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/magnet.png?cacheid=73b6bddf" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search-icon.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=b10ae7ed" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search_results.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json" },
   // TODO: implement cache management of i18n resources
-  //{ STATIC_CONTENT, "/ROOT/skin/i18n/test.json?cacheid=unknown" },
-  { DYNAMIC_CONTENT, "/ROOT/skin/languages.js" },
-  { STATIC_CONTENT, "/ROOT/skin/languages.js?cacheid=fe100348" },
+  //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
+  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=fe100348" },
 
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Description" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Language" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Name" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Tags" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Date" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Creator" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Publisher" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Title" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Description" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Language" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Name" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Tags" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Date" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Creator" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Publisher" },
 
-  { DYNAMIC_CONTENT, "/ROOT/catalog/root.xml" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/searchdescription.xml" },
 
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/categories" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/languages" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/searchdescription.xml" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/categories" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/languages" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/searchdescription.xml" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
 
-  { DYNAMIC_CONTENT, "/ROOT/catch/external?source=www.example.com" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catch/external?source=www.example.com" },
 
-  { ZIM_CONTENT,     "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases%23%26/empty.html" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases%23%26/empty.css" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases%23%26/empty.js" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/content/corner_cases%23%26/empty.html" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/content/corner_cases%23%26/empty.css" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/content/corner_cases%23%26/empty.js" },
 
 
   // The following url's responses are too small to be compressed
-  { DYNAMIC_CONTENT, "/ROOT/catalog/root.xml" },
-  { DYNAMIC_CONTENT, "/ROOT/catalog/searchdescription.xml" },
-  { DYNAMIC_CONTENT, "/ROOT/suggest?content=zimfile" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Creator" },
-  { ZIM_CONTENT,     "/ROOT/raw/zimfile/meta/Title" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/root.xml" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/searchdescription.xml" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Creator" },
+  { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Title" },
 };
 
 ResourceCollection all200Resources()
@@ -192,7 +192,7 @@ TEST(indexTemplateStringTest, emptyIndexTemplate) {
   };
 
   ZimFileServer zfs(PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES, "");
-  EXPECT_EQ(200, zfs.GET("/ROOT/")->status);
+  EXPECT_EQ(200, zfs.GET("/ROOT%23%3F/")->status);
 }
 
 TEST(indexTemplateStringTest, indexTemplateCheck) {
@@ -209,7 +209,7 @@ TEST(indexTemplateStringTest, indexTemplateCheck) {
   EXPECT_EQ("<!DOCTYPE html><head>"
     "<title>Welcome to kiwix library</title>"
     "</head>"
-  "</html>", zfs.GET("/ROOT/")->body);
+  "</html>", zfs.GET("/ROOT%23%3F/")->body);
 }
 
 TEST_F(ServerTest, 200)
@@ -220,11 +220,11 @@ TEST_F(ServerTest, 200)
 
 TEST_F(ServerTest, 200_IdNameMapper)
 {
-  EXPECT_EQ(404, zfs1_->GET("/ROOT/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status);
-  EXPECT_EQ(200, zfs1_->GET("/ROOT/content/zimfile/A/index")->status);
+  EXPECT_EQ(404, zfs1_->GET("/ROOT%23%3F/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status);
+  EXPECT_EQ(200, zfs1_->GET("/ROOT%23%3F/content/zimfile/A/index")->status);
   resetServer(ZimFileServer::NO_NAME_MAPPER);
-  EXPECT_EQ(200, zfs1_->GET("/ROOT/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status);
-  EXPECT_EQ(404, zfs1_->GET("/ROOT/content/zimfile/A/index")->status);
+  EXPECT_EQ(200, zfs1_->GET("/ROOT%23%3F/content/6f1d19d0-633f-087b-fb55-7ac324ff9baf/A/index")->status);
+  EXPECT_EQ(404, zfs1_->GET("/ROOT%23%3F/content/zimfile/A/index")->status);
 }
 
 TEST_F(ServerTest, CompressibleContentIsCompressedIfAcceptable)
@@ -267,29 +267,29 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   typedef std::pair<std::string, std::string> UrlAndExpectedResult;
   const std::vector<UrlAndExpectedResult> testData{
     {
-      /* url */ "/ROOT/",
-R"EXPECTEDRESULT(      href="/ROOT/skin/index.css?cacheid=0f9ba34e"
-    <link rel="apple-touch-icon" sizes="180x180" href="/ROOT/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
-    <link rel="icon" type="image/png" sizes="32x32" href="/ROOT/skin/favicon/favicon-32x32.png?cacheid=79ded625">
-    <link rel="icon" type="image/png" sizes="16x16" href="/ROOT/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
-    <link rel="manifest" href="/ROOT/skin/favicon/site.webmanifest?cacheid=bc396efb">
-    <link rel="mask-icon" href="/ROOT/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
-    <link rel="shortcut icon" href="/ROOT/skin/favicon/favicon.ico?cacheid=fba03a27">
-    <meta name="msapplication-config" content="/ROOT/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
-        src: url("/ROOT/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
-          src: url("/ROOT/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
-    <script src="/ROOT/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
-    <script src="/ROOT/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT/skin/index.js?cacheid=2f5a81ac" defer></script>
+      /* url */ "/ROOT%23%3F/",
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=0f9ba34e"
+    <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
+    <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
+    <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
+    <link rel="manifest" href="/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb">
+    <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
+    <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=fba03a27">
+    <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
+        src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
+          src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
+    <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
+    <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=2f5a81ac" defer></script>
 )EXPECTEDRESULT"
     },
     {
-      /* url */ "/ROOT/skin/index.css",
+      /* url */ "/ROOT%23%3F/skin/index.css",
 R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10ae7ed');
 )EXPECTEDRESULT"
     },
     {
-      /* url */ "/ROOT/skin/index.js",
+      /* url */ "/ROOT%23%3F/skin/index.js",
 R"EXPECTEDRESULT(                                <img src="../skin/download.png?cacheid=a39aa502" alt="direct download" />
                                 <img src="../skin/hash.png?cacheid=f836e872" alt="download hash" />
                                 <img src="../skin/magnet.png?cacheid=73b6bddf" alt="download magnet" />
@@ -297,7 +297,7 @@ R"EXPECTEDRESULT(                                <img src="../skin/download.png?
 )EXPECTEDRESULT"
     },
     {
-      /* url */ "/ROOT/viewer",
+      /* url */ "/ROOT%23%3F/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=eb3bec90" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=6da2bca0" defer></script>
@@ -310,14 +310,14 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=eb3b
 )EXPECTEDRESULT"
     },
     {
-      /* url */ "/ROOT/content/zimfile/A/index",
+      /* url */ "/ROOT%23%3F/content/zimfile/A/index",
       ""
     },
     {
       // Searching in a ZIM file without a full-text index returns
       // a page rendered from static/templates/no_search_result_html
-      /* url */ "/ROOT/search?content=poor&pattern=whatever",
-R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
+      /* url */ "/ROOT%23%3F/search?content=poor&pattern=whatever",
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
 )EXPECTEDRESULT"
     },
   };
@@ -333,15 +333,15 @@ R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT/skin/search_results.css?c
 }
 
 const char* urls400[] = {
-  "/ROOT/search",
-  "/ROOT/search?content=zimfile",
-  "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
-  "/ROOT/search?content=non-existing-book&pattern=asd<qwerty",
-  "/ROOT/search?books.name=non-exsitent-book&pattern=asd<qwerty",
-  "/ROOT/search?books.id=non-exsitent-id&pattern=asd<qwerty",
-  "/ROOT/search?books.filter.lang=unk&pattern=asd<qwerty",
-  "/ROOT/search?pattern=foo",
-  "/ROOT/search?pattern"
+  "/ROOT%23%3F/search",
+  "/ROOT%23%3F/search?content=zimfile",
+  "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty",
+  "/ROOT%23%3F/search?content=non-existing-book&pattern=asd<qwerty",
+  "/ROOT%23%3F/search?books.name=non-exsitent-book&pattern=asd<qwerty",
+  "/ROOT%23%3F/search?books.id=non-exsitent-id&pattern=asd<qwerty",
+  "/ROOT%23%3F/search?books.filter.lang=unk&pattern=asd<qwerty",
+  "/ROOT%23%3F/search?pattern=foo",
+  "/ROOT%23%3F/search?pattern"
 };
 
 
@@ -355,35 +355,35 @@ TEST_F(ServerTest, 400)
 const char* urls404[] = {
   "/",
   "/zimfile",
-  "/ROOT/skin/non-existent-skin-resource",
-  "/ROOT/skin/autoComplete.min.js?cacheid=wrongcacheid",
-  "/ROOT/catalog",
-  "/ROOT/catalog/",
-  "/ROOT/catalog/non-existent-item",
-  "/ROOT/catalog/v2/illustration/zimfile?size=48",
-  "/ROOT/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=96",
-  "/ROOT/random",
-  "/ROOT/random?content=non-existent-book",
-  "/ROOT/random/",
-  "/ROOT/random/number",
-  "/ROOT/suggest",
-  "/ROOT/suggest?content=non-existent-book&term=abcd",
-  "/ROOT/suggest/",
-  "/ROOT/suggest/fr",
-  "/ROOT/search/",
-  "/ROOT/search/anythingotherthansearchdescription.xml",
-  "/ROOT/catch/",
-  "/ROOT/catch/external", // missing ?source=URL
-  "/ROOT/catch/external?source=",
-  "/ROOT/catch/anythingotherthanexternal",
-  "/ROOT/content/zimfile/A/non-existent-article",
+  "/ROOT%23%3F/skin/non-existent-skin-resource",
+  "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=wrongcacheid",
+  "/ROOT%23%3F/catalog",
+  "/ROOT%23%3F/catalog/",
+  "/ROOT%23%3F/catalog/non-existent-item",
+  "/ROOT%23%3F/catalog/v2/illustration/zimfile?size=48",
+  "/ROOT%23%3F/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=96",
+  "/ROOT%23%3F/random",
+  "/ROOT%23%3F/random?content=non-existent-book",
+  "/ROOT%23%3F/random/",
+  "/ROOT%23%3F/random/number",
+  "/ROOT%23%3F/suggest",
+  "/ROOT%23%3F/suggest?content=non-existent-book&term=abcd",
+  "/ROOT%23%3F/suggest/",
+  "/ROOT%23%3F/suggest/fr",
+  "/ROOT%23%3F/search/",
+  "/ROOT%23%3F/search/anythingotherthansearchdescription.xml",
+  "/ROOT%23%3F/catch/",
+  "/ROOT%23%3F/catch/external", // missing ?source=URL
+  "/ROOT%23%3F/catch/external?source=",
+  "/ROOT%23%3F/catch/anythingotherthanexternal",
+  "/ROOT%23%3F/content/zimfile/A/non-existent-article",
 
-  "/ROOT/raw/non-existent-book/meta/Title",
-  "/ROOT/raw/zimfile/wrong-kind/Foo",
+  "/ROOT%23%3F/raw/non-existent-book/meta/Title",
+  "/ROOT%23%3F/raw/zimfile/wrong-kind/Foo",
 
   // zimfile has no Favicon nor Illustration_48x48@1 meta item
-  "/ROOT/raw/zimfile/meta/Favicon",
-  "/ROOT/raw/zimfile/meta/Illustration_48x48@1",
+  "/ROOT%23%3F/raw/zimfile/meta/Favicon",
+  "/ROOT%23%3F/raw/zimfile/meta/Illustration_48x48@1",
 };
 
 TEST_F(ServerTest, 404)
@@ -422,8 +422,8 @@ std::string getCacheControlHeader(const httplib::Response& r)
 
 TEST_F(CustomizedServerTest, NewResourcesCanBeAdded)
 {
-  // ServerTest.404 verifies that "/ROOT/non-existent-item" doesn't exist
-  const auto r = zfs1_->GET("/ROOT/non-existent-item");
+  // ServerTest.404 verifies that "/ROOT%23%3F/non-existent-item" doesn't exist
+  const auto r = zfs1_->GET("/ROOT%23%3F/non-existent-item");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/plain");
   EXPECT_EQ(r->body, "Hello world!\n");
@@ -432,35 +432,35 @@ TEST_F(CustomizedServerTest, NewResourcesCanBeAdded)
 TEST_F(CustomizedServerTest, ContentOfAnyServableUrlCanBeOverriden)
 {
   {
-    const auto r = zfs1_->GET("/ROOT/");
+    const auto r = zfs1_->GET("/ROOT%23%3F/");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/html");
     EXPECT_EQ(r->body, "<html><head></head><body>Welcome</body></html>\n");
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/skin/index.css");
+    const auto r = zfs1_->GET("/ROOT%23%3F/skin/index.css");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "application/json");
     EXPECT_EQ(r->body, "Hello world!\n");
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/zimfile/A/Ray_Charles");
+    const auto r = zfs1_->GET("/ROOT%23%3F/zimfile/A/Ray_Charles");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "ray/charles");
     EXPECT_EQ(r->body, "<html><head></head><body>Welcome</body></html>\n");
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/content/zimfile/A/Ray_Charles");
+    const auto r = zfs1_->GET("/ROOT%23%3F/content/zimfile/A/Ray_Charles");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "charles/ray");
     EXPECT_EQ(r->body, "<html><head></head><body>Welcome</body></html>\n");
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/search?pattern=la+femme");
+    const auto r = zfs1_->GET("/ROOT%23%3F/search?pattern=la+femme");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/html");
     EXPECT_EQ(r->body, "Hello world!\n");
@@ -614,7 +614,7 @@ TEST_F(ServerTest, Http404HtmlError)
 {
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn404HtmlResponse> testData{
-    { /* url */ "/ROOT/random?content=non-existent-book",
+    { /* url */ "/ROOT%23%3F/random?content=non-existent-book",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -622,7 +622,7 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/random?content=non-existent-book&userlang=test",
+    { /* url */ "/ROOT%23%3F/random?content=non-existent-book&userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
@@ -631,7 +631,7 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/suggest?content=no-such-book&term=whatever",
+    { /* url */ "/ROOT%23%3F/suggest?content=no-such-book&term=whatever",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -639,149 +639,149 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT/catalog/",
+    { /* url */ "/ROOT%23%3F/catalog/",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/catalog/" was not found on this server.
+      The requested URL "/ROOT%23%3F/catalog/" was not found on this server.
     </p>
 )"  },
 
-    { /* url */ "/ROOT/catalog/?userlang=test",
+    { /* url */ "/ROOT%23%3F/catalog/?userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
-      [I18N TESTING] URL not found: /ROOT/catalog/
+      [I18N TESTING] URL not found: /ROOT%23%3F/catalog/
     </p>
 )"  },
 
-    { /* url */ "/ROOT/catalog/invalid_endpoint",
+    { /* url */ "/ROOT%23%3F/catalog/invalid_endpoint",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/catalog/invalid_endpoint" was not found on this server.
+      The requested URL "/ROOT%23%3F/catalog/invalid_endpoint" was not found on this server.
     </p>
 )"  },
 
-    { /* url */ "/ROOT/catalog/invalid_endpoint?userlang=test",
+    { /* url */ "/ROOT%23%3F/catalog/invalid_endpoint?userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
-      [I18N TESTING] URL not found: /ROOT/catalog/invalid_endpoint
+      [I18N TESTING] URL not found: /ROOT%23%3F/catalog/invalid_endpoint
     </p>
 )"  },
 
-    { /* url */ "/ROOT/content/invalid-book/whatever",
+    { /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/content/invalid-book/whatever" was not found on this server.
+      The requested URL "/ROOT%23%3F/content/invalid-book/whatever" was not found on this server.
     </p>
     <p>
-      Make a full text search for <a href="/ROOT/search?pattern=whatever">whatever</a>
+      Make a full text search for <a href="/ROOT%23%3F/search?pattern=whatever">whatever</a>
     </p>
 )"  },
 
-    { /* url */ "/ROOT/content/zimfile/invalid-article",
+    { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article",
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/content/zimfile/invalid-article" was not found on this server.
+      The requested URL "/ROOT%23%3F/content/zimfile/invalid-article" was not found on this server.
     </p>
     <p>
-      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
+      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
-    { /* url */ R"(/ROOT/content/"><svg onload=alert(1)>)",
+    { /* url */ R"(/ROOT%23%3F/content/"><svg onload=alert(1)>)",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/content/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
+      The requested URL "/ROOT%23%3F/content/&quot;&gt;&lt;svg onload%3Dalert(1)&gt;" was not found on this server.
     </p>
     <p>
-      Make a full text search for <a href="/ROOT/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
+      Make a full text search for <a href="/ROOT%23%3F/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
     </p>
 )"  },
 
-    { /* url */ R"(/ROOT/content/zimfile/"><svg onload=alert(1)>)",
+    { /* url */ R"(/ROOT%23%3F/content/zimfile/"><svg onload=alert(1)>)",
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/content/zimfile/&quot;&gt;&lt;svg onload=alert(1)&gt;" was not found on this server.
+      The requested URL "/ROOT%23%3F/content/zimfile/&quot;&gt;&lt;svg onload%3Dalert(1)&gt;" was not found on this server.
     </p>
     <p>
-      Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
+      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
     </p>
 )"  },
 
-    { /* url */ "/ROOT/content/zimfile/invalid-article?userlang=test",
+    { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
-      [I18N TESTING] URL not found: /ROOT/content/zimfile/invalid-article
+      [I18N TESTING] URL not found: /ROOT%23%3F/content/zimfile/invalid-article
     </p>
     <p>
-      [I18N TESTING] Make a full text search for <a href="/ROOT/search?content=zimfile&pattern=invalid-article">invalid-article</a>
+      [I18N TESTING] Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=invalid-article">invalid-article</a>
     </p>
 )"  },
 
-    { /* url */ "/ROOT/raw/no-such-book/meta/Title",
+    { /* url */ "/ROOT%23%3F/raw/no-such-book/meta/Title",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/raw/no-such-book/meta/Title" was not found on this server.
+      The requested URL "/ROOT%23%3F/raw/no-such-book/meta/Title" was not found on this server.
     </p>
     <p>
       No such book: no-such-book
     </p>
 )"  },
 
-    { /* url */ "/ROOT/raw/zimfile/XYZ",
+    { /* url */ "/ROOT%23%3F/raw/zimfile/XYZ",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/raw/zimfile/XYZ" was not found on this server.
+      The requested URL "/ROOT%23%3F/raw/zimfile/XYZ" was not found on this server.
     </p>
     <p>
       XYZ is not a valid request for raw content.
     </p>
 )"  },
 
-    { /* url */ "/ROOT/raw/zimfile/meta/invalid-metadata",
+    { /* url */ "/ROOT%23%3F/raw/zimfile/meta/invalid-metadata",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/raw/zimfile/meta/invalid-metadata" was not found on this server.
+      The requested URL "/ROOT%23%3F/raw/zimfile/meta/invalid-metadata" was not found on this server.
     </p>
     <p>
       Cannot find meta entry invalid-metadata
     </p>
 )"  },
 
-    { /* url */ "/ROOT/raw/zimfile/content/invalid-article",
+    { /* url */ "/ROOT%23%3F/raw/zimfile/content/invalid-article",
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
-      The requested URL "/ROOT/raw/zimfile/content/invalid-article" was not found on this server.
+      The requested URL "/ROOT%23%3F/raw/zimfile/content/invalid-article" was not found on this server.
     </p>
     <p>
       Cannot find content entry invalid-article
     </p>
 )"  },
 
-    { /* url */ "/ROOT/search?content=poor&pattern=whatever",
+    { /* url */ "/ROOT%23%3F/search?content=poor&pattern=whatever",
       expected_page_title=="Fulltext search unavailable" &&
-      expected_css_url=="/ROOT/skin/search_results.css?cacheid=76d39c84" &&
+      expected_css_url=="/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" &&
       book_name=="poor" &&
       book_title=="poor" &&
       expected_body==R"(
@@ -804,41 +804,41 @@ TEST_F(ServerTest, Http400HtmlError)
 {
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn400HtmlResponse> testData{
-    { /* url */ "/ROOT/search",
+    { /* url */ "/ROOT%23%3F/search",
       expected_body== R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search" is not a valid request.
+      The requested URL "/ROOT%23%3F/search" is not a valid request.
     </p>
     <p>
       Too many books requested (4) where limit is 3
     </p>
 )"  },
-    { /* url */ "/ROOT/search?content=zimfile",
+    { /* url */ "/ROOT%23%3F/search?content=zimfile",
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?content=zimfile" is not a valid request.
+      The requested URL "/ROOT%23%3F/search?content=zimfile" is not a valid request.
     </p>
     <p>
       No query provided.
     </p>
 )"  },
-    { /* url */ "/ROOT/search?content=non-existing-book&pattern=asdfqwerty",
+    { /* url */ "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty",
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?content=non-existing-book&pattern=asdfqwerty" is not a valid request.
+      The requested URL "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty" is not a valid request.
     </p>
     <p>
       No such book: non-existing-book
     </p>
 )"  },
-    { /* url */ "/ROOT/search?content=non-existing-book&pattern=a\"<script foo>",
+    { /* url */ "/ROOT%23%3F/search?content=non-existing-book&pattern=a\"<script foo>",
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" is not a valid request.
+      The requested URL "/ROOT%23%3F/search?content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" is not a valid request.
     </p>
     <p>
       No such book: non-existing-book
@@ -846,21 +846,21 @@ TEST_F(ServerTest, Http400HtmlError)
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate
     // between `pattern` and `pattern=`
-    { /* url */ "/ROOT/search?books.filter.lang=eng&pattern",
+    { /* url */ "/ROOT%23%3F/search?books.filter.lang=eng&pattern",
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?books.filter.lang=eng&pattern" is not a valid request.
+      The requested URL "/ROOT%23%3F/search?books.filter.lang=eng&pattern" is not a valid request.
     </p>
     <p>
       No query provided.
     </p>
 )"  },
-    { /* url */ "/ROOT/search?pattern=foo",
+    { /* url */ "/ROOT%23%3F/search?pattern=foo",
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
-      The requested URL "/ROOT/search?pattern=foo" is not a valid request.
+      The requested URL "/ROOT%23%3F/search?pattern=foo" is not a valid request.
     </p>
     <p>
       Too many books requested (4) where limit is 3
@@ -896,51 +896,51 @@ TEST_F(ServerTest, HttpXmlError)
   };
 
   const std::vector<TestData> testData{
-    { /* url */ "/ROOT/search?format=xml",
+    { /* url */ "/ROOT%23%3F/search?format=xml",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?format=xml" is not a valid request.</detail>
+<detail>The requested URL "/ROOT%23%3F/search?format=xml" is not a valid request.</detail>
 <detail>Too many books requested (4) where limit is 3</detail>
 )"  },
-    { /* url */ "/ROOT/search?format=xml&content=zimfile",
+    { /* url */ "/ROOT%23%3F/search?format=xml&content=zimfile",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?format=xml&content=zimfile" is not a valid request.</detail>
+<detail>The requested URL "/ROOT%23%3F/search?format=xml&content=zimfile" is not a valid request.</detail>
 <detail>No query provided.</detail>
 )"  },
-    { /* url */ "/ROOT/search?format=xml&content=non-existing-book&pattern=asdfqwerty",
+    { /* url */ "/ROOT%23%3F/search?format=xml&content=non-existing-book&pattern=asdfqwerty",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?format=xml&content=non-existing-book&pattern=asdfqwerty" is not a valid request.</detail>
+<detail>The requested URL "/ROOT%23%3F/search?format=xml&content=non-existing-book&pattern=asdfqwerty" is not a valid request.</detail>
 <detail>No such book: non-existing-book</detail>
 )"  },
-    { /* url */ "/ROOT/search?format=xml&content=non-existing-book&pattern=a\"<script foo>",
+    { /* url */ "/ROOT%23%3F/search?format=xml&content=non-existing-book&pattern=a\"<script foo>",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?format=xml&content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" is not a valid request.</detail>
+<detail>The requested URL "/ROOT%23%3F/search?format=xml&content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" is not a valid request.</detail>
 <detail>No such book: non-existing-book</detail>
 )"  },
     // There is a flaw in our way to handle query string, we cannot differenciate
     // between `pattern` and `pattern=`
-    { /* url */ "/ROOT/search?format=xml&books.filter.lang=eng&pattern",
+    { /* url */ "/ROOT%23%3F/search?format=xml&books.filter.lang=eng&pattern",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?format=xml&books.filter.lang=eng&pattern" is not a valid request.</detail>
+<detail>The requested URL "/ROOT%23%3F/search?format=xml&books.filter.lang=eng&pattern" is not a valid request.</detail>
 <detail>No query provided.</detail>
 )"  },
-    { /* url */ "/ROOT/search?format=xml&pattern=foo",
+    { /* url */ "/ROOT%23%3F/search?format=xml&pattern=foo",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
 <error>Invalid request</error>
-<detail>The requested URL "/ROOT/search?format=xml&pattern=foo" is not a valid request.</detail>
+<detail>The requested URL "/ROOT%23%3F/search?format=xml&pattern=foo" is not a valid request.</detail>
 <detail>Too many books requested (4) where limit is 3</detail>
 )"  },
-    { /* url */ "/ROOT/search?format=xml&content=poor&pattern=whatever",
+    { /* url */ "/ROOT%23%3F/search?format=xml&content=poor&pattern=whatever",
       /* HTTP status code */ 404,
       /* expected response XML */ R"(
 <error>Fulltext search unavailable</error>
@@ -977,7 +977,7 @@ TEST_F(ServerTest, 500)
 )";
 
   {
-  const auto r = zfs1_->GET("/ROOT/content/poor/A/redirect_loop.html");
+  const auto r = zfs1_->GET("/ROOT%23%3F/content/poor/A/redirect_loop.html");
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
   }
@@ -985,7 +985,7 @@ TEST_F(ServerTest, 500)
 
 TEST_F(ServerTest, UserLanguageList)
 {
-  const auto r = zfs1_->GET("/ROOT/skin/languages.js");
+  const auto r = zfs1_->GET("/ROOT%23%3F/skin/languages.js");
   EXPECT_EQ(r->body,
 R"EXPECTEDRESPONSE(const uiLanguages = [
   {
@@ -1086,47 +1086,47 @@ TEST_F(ServerTest, UserLanguageControl)
   const TestData testData[] = {
     {
       "Default user language is English",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
       "userlang URL query parameter is respected",
-      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
       "userlang URL query parameter is respected",
-      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=test",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       "'Accept-Language: *' is handled",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
       "Accept-Language: header is respected",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       "userlang cookie is respected",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
       /*Response Set-Cookie:*/  NO_COOKIE,
@@ -1134,7 +1134,7 @@ TEST_F(ServerTest, UserLanguageControl)
     },
     {
       "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "anothercookie=123; userlang=test",
       /*Response Set-Cookie:*/  NO_COOKIE,
@@ -1142,7 +1142,7 @@ TEST_F(ServerTest, UserLanguageControl)
     },
     {
       "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test; anothercookie=abc",
       /*Response Set-Cookie:*/  NO_COOKIE,
@@ -1150,7 +1150,7 @@ TEST_F(ServerTest, UserLanguageControl)
     },
     {
       "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "cookie1=abc; userlang=test; cookie2=xyz",
       /*Response Set-Cookie:*/  NO_COOKIE,
@@ -1158,7 +1158,7 @@ TEST_F(ServerTest, UserLanguageControl)
     },
     {
       "Multiple userlang cookies are not a problem",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "cookie1=abc; userlang=en; userlang=test; cookie2=xyz",
       /*Response Set-Cookie:*/  NO_COOKIE,
@@ -1166,23 +1166,23 @@ TEST_F(ServerTest, UserLanguageControl)
     },
     {
       "userlang query parameter takes precedence over Accept-Language",
-      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
       "userlang query parameter takes precedence over its cookie counterpart",
-      /*url*/ "/ROOT/content/zimfile/invalid-article?userlang=en",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
       "userlang in cookies takes precedence over Accept-Language",
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       "userlang=en",
       /*Response Set-Cookie:*/  NO_COOKIE,
@@ -1192,20 +1192,20 @@ TEST_F(ServerTest, UserLanguageControl)
       "Most suitable language is selected from the Accept-Language header",
       // In case of a comma separated list of languages (optionally weighted
       // with quality values) the most suitable language is selected.
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
       "Most suitable language is selected from the Accept-Language header",
       // In case of a comma separated list of languages (optionally weighted
       // with quality values) the most suitable language is selected.
-      /*url*/ "/ROOT/content/zimfile/invalid-article",
+      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT;Max-Age=31536000",
+      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
   };
@@ -1235,10 +1235,10 @@ TEST_F(ServerTest, UserLanguageControl)
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
 {
-  auto g = zfs1_->GET("/ROOT/random?content=zimfile");
+  auto g = zfs1_->GET("/ROOT%23%3F/random?content=zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT/content/zimfile/A/"));
+  ASSERT_TRUE(kiwix::startsWith(g->get_header_value("Location"), "/ROOT%23%3F/content/zimfile/A/"));
   ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
   ASSERT_FALSE(g->has_header("ETag"));
 }
@@ -1255,16 +1255,16 @@ TEST_F(ServerTest, RandomPageRedirectionsAreUriEncoded)
   // may over time evolve into something more general whereupon it must be
   // renamed.
 
-  auto g = zfs1_->GET("/ROOT/random?content=corner_cases%23%26");
+  auto g = zfs1_->GET("/ROOT%23%3F/random?content=corner_cases%23%26");
 
   typedef std::set<std::string> StringSet;
   const StringSet frontArticles{
-      {"/ROOT/content/corner_cases%23%26/c%23.html"},
+      {"/ROOT%23%3F/content/corner_cases%23%26/c%23.html"},
 
       // empty.html is missing because of a subtle bug
       // in libzim::randomNumber(max) which returns a value equal to
       // it argument with much lower probability than other numbers
-      // {"/ROOT/content/corner_cases%23%26/empty.html"}
+      // {"/ROOT%23%3F/content/corner_cases%23%26/empty.html"}
   };
 
   StringSet randomPageUrls;
@@ -1327,11 +1327,11 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
 
   for ( const std::string& p : paths )
   {
-    auto g = zfs1_->GET(("/ROOT" + p).c_str());
+    auto g = zfs1_->GET(("/ROOT%23%3F" + p).c_str());
     const TestContext ctx{ { "path", p } };
     ASSERT_EQ(302, g->status) << ctx;
     ASSERT_TRUE(g->has_header("Location")) << ctx;
-    ASSERT_EQ("/ROOT/content" + p, g->get_header_value("Location")) << ctx;
+    ASSERT_EQ("/ROOT%23%3F/content" + p, g->get_header_value("Location")) << ctx;
     ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
     ASSERT_FALSE(g->has_header("ETag"));
   }
@@ -1339,10 +1339,10 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
 
 TEST_F(ServerTest, RedirectionsToURLsWithSpecialSymbols)
 {
-  auto g = zfs1_->GET("/ROOT/content/corner_cases%23%26/c_sharp.html");
+  auto g = zfs1_->GET("/ROOT%23%3F/content/corner_cases%23%26/c_sharp.html");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ(g->get_header_value("Location"), "/ROOT/content/corner_cases%23%26/c%23.html");
+  ASSERT_EQ(g->get_header_value("Location"), "/ROOT%23%3F/content/corner_cases%23%26/c%23.html");
   ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
   ASSERT_FALSE(g->has_header("ETag"));
 }
@@ -1351,21 +1351,21 @@ TEST_F(ServerTest, RedirectionsToURLsWithSpecialSymbols)
 TEST_F(ServerTest, BookMainPageIsRedirectedToArticleIndex)
 {
   {
-  auto g = zfs1_->GET("/ROOT/content/zimfile");
+  auto g = zfs1_->GET("/ROOT%23%3F/content/zimfile");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ("/ROOT/content/zimfile/A/index", g->get_header_value("Location"));
+  ASSERT_EQ("/ROOT%23%3F/content/zimfile/A/index", g->get_header_value("Location"));
   }
 }
 
 
 TEST_F(ServerTest, RawEntry)
 {
-  auto p = zfs1_->GET("/ROOT/raw/zimfile/meta/Title");
+  auto p = zfs1_->GET("/ROOT%23%3F/raw/zimfile/meta/Title");
   EXPECT_EQ(200, p->status);
   EXPECT_EQ(p->body, std::string("Ray Charles"));
 
-  p = zfs1_->GET("/ROOT/raw/zimfile/meta/Creator");
+  p = zfs1_->GET("/ROOT%23%3F/raw/zimfile/meta/Creator");
   EXPECT_EQ(200, p->status);
   EXPECT_EQ(p->body, std::string("Wikipedia"));
 
@@ -1373,16 +1373,16 @@ TEST_F(ServerTest, RawEntry)
   // the same as the one in the zim file.
   auto archive = zim::Archive("./test/zimfile.zim");
   auto entry = archive.getEntryByPath("A/Ray_Charles");
-  p = zfs1_->GET("/ROOT/raw/zimfile/content/A/Ray_Charles");
+  p = zfs1_->GET("/ROOT%23%3F/raw/zimfile/content/A/Ray_Charles");
   EXPECT_EQ(200, p->status);
   EXPECT_EQ(std::string(p->body), std::string(entry.getItem(true).getData()));
 
   /* Now normal content is not decorated in any way, either
   // ... but the "normal" content is not
-  p = zfs1_->GET("/ROOT/content/zimfile/A/Ray_Charles");
+  p = zfs1_->GET("/ROOT%23%3F/content/zimfile/A/Ray_Charles");
   EXPECT_EQ(200, p->status);
   EXPECT_NE(std::string(p->body), std::string(entry.getItem(true).getData()));
-  EXPECT_TRUE(p->body.find("<link type=\"root\" href=\"/ROOT\">") != std::string::npos);
+  EXPECT_TRUE(p->body.find("<link type=\"root\" href=\"/ROOT%23%3F\">") != std::string::npos);
   */
 }
 
@@ -1588,7 +1588,7 @@ TEST_F(ServerTest, IfNoneMatchRequestsWithMismatchingETagResultIn200Responses)
 
 TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
 {
-  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
   const auto full = zfs1_->GET(url);
   EXPECT_FALSE(full->has_header("Content-Range"));
   EXPECT_EQ("bytes", full->get_header_value("Accept-Ranges"));
@@ -1638,7 +1638,7 @@ TEST_F(ServerTest, ValidSingleRangeByteRangeRequestsAreHandledProperly)
 
 TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 {
-  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
 
   const char* invalidRanges[] = {
     "0-10", "bytes=", "bytes=123", "bytes=-10-20", "bytes=10-20xxx",
@@ -1659,7 +1659,7 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 
 TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
 {
-  const char url[] = "/ROOT/content/corner_cases%23%26/empty.js";
+  const char url[] = "/ROOT%23%3F/content/corner_cases%23%26/empty.js";
 
   const char* ranges[] = {
     "bytes=0-",
@@ -1678,7 +1678,7 @@ TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
 
 TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
 {
-  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
 
   const Headers onlyRange{ {"Range", "bytes=123-456"} };
   Headers rangeAndCompression(onlyRange);
@@ -1693,7 +1693,7 @@ TEST_F(ServerTest, RangeHasPrecedenceOverCompression)
 
 TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
 {
-  const char url[] = "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
+  const char url[] = "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg";
   const auto r0 = zfs1_->GET(url, { {"Range", "bytes=100-200"} } );
 
   const char* header_variations[] = { "RANGE", "range", "rAnGe", "RaNgE" };
@@ -1709,7 +1709,7 @@ TEST_F(ServerTest, suggestions)
 {
   typedef std::pair<std::string, std::string> UrlAndExpectedResponse;
   const std::vector<UrlAndExpectedResponse> testData{
-    { /* url: */ "/ROOT/suggest?content=zimfile&term=thing",
+    { /* url: */ "/ROOT%23%3F/suggest?content=zimfile&term=thing",
 R"EXPECTEDRESPONSE([
   {
     "value" : "Doing His Thing",
@@ -1732,7 +1732,7 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
-    { /* url: */ "/ROOT/suggest?content=zimfile&term=old%20sun",
+    { /* url: */ "/ROOT%23%3F/suggest?content=zimfile&term=old%20sun",
 R"EXPECTEDRESPONSE([
   {
     "value" : "That Lucky Old Sun",
@@ -1749,7 +1749,7 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
-    { /* url: */ "/ROOT/suggest?content=zimfile&term=öld%20suñ",
+    { /* url: */ "/ROOT%23%3F/suggest?content=zimfile&term=öld%20suñ",
 R"EXPECTEDRESPONSE([
   {
     "value" : "That Lucky Old Sun",
@@ -1766,7 +1766,7 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
-    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra",
+    { /* url: */ "/ROOT%23%3F/suggest?content=zimfile&term=abracadabra",
 R"EXPECTEDRESPONSE([
   {
     "value" : "abracadabra ",
@@ -1778,7 +1778,7 @@ R"EXPECTEDRESPONSE([
 )EXPECTEDRESPONSE"
     },
     { // Test handling of & (%26 when url-encoded) in the search string
-      /* url: */ "/ROOT/suggest?content=zimfile&term=A%26B",
+      /* url: */ "/ROOT%23%3F/suggest?content=zimfile&term=A%26B",
 R"EXPECTEDRESPONSE([
   {
     "value" : "A&amp;B ",
@@ -1789,7 +1789,7 @@ R"EXPECTEDRESPONSE([
 ]
 )EXPECTEDRESPONSE"
     },
-    { /* url: */ "/ROOT/suggest?content=zimfile&term=abracadabra&userlang=test",
+    { /* url: */ "/ROOT%23%3F/suggest?content=zimfile&term=abracadabra&userlang=test",
 R"EXPECTEDRESPONSE([
   {
     "value" : "abracadabra ",
@@ -1823,7 +1823,7 @@ TEST_F(ServerTest, suggestions_in_range)
   {
     int suggCount = 0;
     for (int i = 0; i < 10; i++) {
-      std::string url = "/ROOT/suggest?content=zimfile&term=ray&start=" + std::to_string(i*5) + "&count=5";
+      std::string url = "/ROOT%23%3F/suggest?content=zimfile&term=ray&start=" + std::to_string(i*5) + "&count=5";
       const auto r = zfs1_->GET(url.c_str());
       std::string body = r->body;
       int currCount = std::count(body.begin(), body.end(), '{') - 1;
@@ -1835,13 +1835,13 @@ TEST_F(ServerTest, suggestions_in_range)
 
   // Attempt to get 10 suggestions in steps of 5 even though there are only 8
   {
-    std::string url = "/ROOT/suggest?content=zimfile&term=song+for+you&start=0&count=5";
+    std::string url = "/ROOT%23%3F/suggest?content=zimfile&term=song+for+you&start=0&count=5";
     const auto r1 = zfs1_->GET(url.c_str());
     std::string body = r1->body;
     int currCount = std::count(body.begin(), body.end(), '{') - 1;
     ASSERT_EQ(currCount, 5);
 
-    url = "/ROOT/suggest?content=zimfile&term=song+for+you&start=5&count=5";
+    url = "/ROOT%23%3F/suggest?content=zimfile&term=song+for+you&start=5&count=5";
     const auto r2 = zfs1_->GET(url.c_str());
     body = r2->body;
     currCount = std::count(body.begin(), body.end(), '{') - 1;
@@ -1850,7 +1850,7 @@ TEST_F(ServerTest, suggestions_in_range)
 
   // Attempt to get 10 suggestions even though there is only 1
   {
-    std::string url = "/ROOT/suggest?content=zimfile&term=strong&start=0&count=5";
+    std::string url = "/ROOT%23%3F/suggest?content=zimfile&term=strong&start=0&count=5";
     const auto r = zfs1_->GET(url.c_str());
     std::string body = r->body;
     int currCount = std::count(body.begin(), body.end(), '{') - 1;
@@ -1859,7 +1859,7 @@ TEST_F(ServerTest, suggestions_in_range)
 
   // No Suggestion
   {
-    std::string url = "/ROOT/suggest?content=zimfile&term=oops&start=0&count=5";
+    std::string url = "/ROOT%23%3F/suggest?content=zimfile&term=oops&start=0&count=5";
     const auto r = zfs1_->GET(url.c_str());
     std::string body = r->body;
     int currCount = std::count(body.begin(), body.end(), '{') - 1;
@@ -1868,7 +1868,7 @@ TEST_F(ServerTest, suggestions_in_range)
 
   // Out of bound value
   {
-    std::string url = "/ROOT/suggest?content=zimfile&term=ray&start=-2&count=-1";
+    std::string url = "/ROOT%23%3F/suggest?content=zimfile&term=ray&start=-2&count=-1";
     const auto r = zfs1_->GET(url.c_str());
     std::string body = r->body;
     int currCount = std::count(body.begin(), body.end(), '{') - 1;
@@ -1881,7 +1881,7 @@ TEST_F(ServerTest, viewerSettings)
   const auto JS_CONTENT_TYPE = "application/javascript; charset=utf-8";
   {
     resetServer(ZimFileServer::NO_TASKBAR_NO_LINK_BLOCKING);
-    const auto r = zfs1_->GET("/ROOT/viewer_settings.js");
+    const auto r = zfs1_->GET("/ROOT%23%3F/viewer_settings.js");
     ASSERT_EQ(r->status, 200);
     ASSERT_EQ(getHeaderValue(r->headers, "Content-Type"), JS_CONTENT_TYPE);
     ASSERT_EQ(r->body,
@@ -1895,7 +1895,7 @@ R"(const viewerSettings = {
 
   {
     resetServer(ZimFileServer::BLOCK_EXTERNAL_LINKS);
-    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js")->body,
 R"(const viewerSettings = {
   toolbarEnabled:       false,
   linkBlockingEnabled:  true,
@@ -1906,7 +1906,7 @@ R"(const viewerSettings = {
 
   {
     resetServer(ZimFileServer::WITH_TASKBAR);
-    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js")->body,
 R"(const viewerSettings = {
   toolbarEnabled:       true,
   linkBlockingEnabled:  false,
@@ -1917,7 +1917,7 @@ R"(const viewerSettings = {
 
   {
     resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
-    ASSERT_EQ(zfs1_->GET("/ROOT/viewer_settings.js")->body,
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js")->body,
 R"(const viewerSettings = {
   toolbarEnabled:       true,
   linkBlockingEnabled:  false,

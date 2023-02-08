@@ -52,12 +52,12 @@ RequestMethod str2RequestMethod(const std::string& method) {
 } // unnamed namespace
 
 RequestContext::RequestContext(struct MHD_Connection* connection,
-                               const std::string& _rootLocation,
-                               const std::string& unrootedUrl,
+                               const std::string& _rootLocation, // URI-encoded
+                               const std::string& unrootedUrl,   // URI-decoded
                                const std::string& _method,
                                const std::string& version) :
   rootLocation(_rootLocation),
-  full_url(_rootLocation + unrootedUrl),
+  full_url(_rootLocation + urlEncode(unrootedUrl)),
   url(unrootedUrl),
   method(str2RequestMethod(_method)),
   version(version),

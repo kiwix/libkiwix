@@ -73,7 +73,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n" \
     "  <link rel=\"search\""                                            \
            " type=\"application/opensearchdescription+xml\""            \
-           " href=\"/ROOT/catalog/searchdescription.xml\" />\n"
+           " href=\"/ROOT%23%3F/catalog/searchdescription.xml\" />\n"
 
 #define CATALOG_ENTRY(UUID, TITLE, SUMMARY, LANG, NAME, CATEGORY, TAGS, EXTRA_LINK, CONTENT_NAME, FILE_NAME, LENGTH) \
     "  <entry>\n"                                                       \
@@ -88,7 +88,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>" TAGS "</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    " EXTRA_LINK "<link type=\"text/html\" href=\"/ROOT/content/" CONTENT_NAME "\" />\n"               \
+    "    " EXTRA_LINK "<link type=\"text/html\" href=\"/ROOT%23%3F/content/" CONTENT_NAME "\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
     "    </author>\n"                                                   \
@@ -126,7 +126,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   "wikipedia",\
   "public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes",\
   "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
-  "          href=\"/ROOT/catalog/v2/illustration/raycharles/?size=48\"\n" \
+  "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n" \
   "          type=\"image/png;width=48;height=48;scale=1\"/>\n    ", \
   CONTENT_NAME, \
   "zimfile", \
@@ -152,7 +152,7 @@ std::string maskVariableOPDSFeedData(std::string s)
 
 TEST_F(LibraryServerTest, catalog_root_xml)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/root.xml");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/root.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
@@ -170,7 +170,7 @@ TEST_F(LibraryServerTest, catalog_root_xml)
 
 TEST_F(LibraryServerTest, catalog_searchdescription_xml)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/searchdescription.xml");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/searchdescription.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body,
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -181,14 +181,14 @@ TEST_F(LibraryServerTest, catalog_searchdescription_xml)
     "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
     "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
     "       indexOffset=\"0\"\n"
-    "       template=\"/ROOT/catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "       template=\"/ROOT%23%3F/catalog/search?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&notag={k:notag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
     "</OpenSearchDescription>\n"
   );
 }
 
 TEST_F(LibraryServerTest, catalog_search_by_phrase)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/search?q=\"ray%20charles\"");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=\"ray%20charles\"");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
@@ -207,7 +207,7 @@ TEST_F(LibraryServerTest, catalog_search_by_phrase)
 
 TEST_F(LibraryServerTest, catalog_search_by_words)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/search?q=ray%20charles");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=ray%20charles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
@@ -228,7 +228,7 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
 TEST_F(LibraryServerTest, catalog_prefix_search)
 {
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?q=description:ray%20description:charles");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=description:ray%20description:charles");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -245,7 +245,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
     );
   }
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?q=title:\"ray%20charles\"");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=title:\"ray%20charles\"");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -264,7 +264,7 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
 
 TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/search?q=ray%20-uncategorized");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=ray%20-uncategorized");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
@@ -283,7 +283,7 @@ TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
 
 TEST_F(LibraryServerTest, catalog_search_by_tag)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/search?tag=_category:jazz");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?tag=_category:jazz");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
@@ -301,7 +301,7 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
 
 TEST_F(LibraryServerTest, catalog_search_by_category)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/search?category=jazz");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?category=jazz");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
@@ -320,7 +320,7 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
 TEST_F(LibraryServerTest, catalog_search_by_language)
 {
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?lang=eng");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?lang=eng");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -337,7 +337,7 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?lang=eng,fra");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?lang=eng,fra");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -358,7 +358,7 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
 TEST_F(LibraryServerTest, catalog_search_results_pagination)
 {
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?count=0");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?count=0");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -376,7 +376,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     );
   }
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?count=1");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?count=1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -392,7 +392,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     );
   }
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?start=1&count=1");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?start=1&count=1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -408,7 +408,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     );
   }
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/search?start=100&count=10");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?start=100&count=10");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       OPDS_FEED_TAG
@@ -426,20 +426,20 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
 
 TEST_F(LibraryServerTest, catalog_v2_root)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/root.xml");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/root.xml");
   EXPECT_EQ(r->status, 200);
   const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:opds="https://specs.opds.io/opds-1.2">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
-        href="/ROOT/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v2/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="start"
-        href="/ROOT/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v2/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="search"
-        href="/ROOT/catalog/v2/searchdescription.xml"
+        href="/ROOT%23%3F/catalog/v2/searchdescription.xml"
         type="application/opensearchdescription+xml"/>
   <title>OPDS Catalog Root</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
@@ -447,7 +447,7 @@ TEST_F(LibraryServerTest, catalog_v2_root)
   <entry>
     <title>All entries</title>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/entries"
+          href="/ROOT%23%3F/catalog/v2/entries"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -456,7 +456,7 @@ TEST_F(LibraryServerTest, catalog_v2_root)
   <entry>
     <title>All entries (partial)</title>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/partial_entries"
+          href="/ROOT%23%3F/catalog/v2/partial_entries"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -465,7 +465,7 @@ TEST_F(LibraryServerTest, catalog_v2_root)
   <entry>
     <title>List of categories</title>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/categories"
+          href="/ROOT%23%3F/catalog/v2/categories"
           type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -474,7 +474,7 @@ TEST_F(LibraryServerTest, catalog_v2_root)
   <entry>
     <title>List of languages</title>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/languages"
+          href="/ROOT%23%3F/catalog/v2/languages"
           type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -487,7 +487,7 @@ TEST_F(LibraryServerTest, catalog_v2_root)
 
 TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/searchdescription.xml");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/searchdescription.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body,
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -498,24 +498,24 @@ TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
     "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
     "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
     "       indexOffset=\"0\"\n"
-    "       template=\"/ROOT/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "       template=\"/ROOT%23%3F/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
     "</OpenSearchDescription>\n"
   );
 }
 
 TEST_F(LibraryServerTest, catalog_v2_categories)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/categories");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/categories");
   EXPECT_EQ(r->status, 200);
   const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:opds="https://specs.opds.io/opds-1.2">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
-        href="/ROOT/catalog/v2/categories"
+        href="/ROOT%23%3F/catalog/v2/categories"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="start"
-        href="/ROOT/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v2/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <title>List of categories</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
@@ -523,7 +523,7 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
   <entry>
     <title>jazz</title>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/entries?category=jazz"
+          href="/ROOT%23%3F/catalog/v2/entries?category=jazz"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -532,7 +532,7 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
   <entry>
     <title>wikipedia</title>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/entries?category=wikipedia"
+          href="/ROOT%23%3F/catalog/v2/entries?category=wikipedia"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -545,7 +545,7 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
 
 TEST_F(LibraryServerTest, catalog_v2_languages)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/languages");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/languages");
   EXPECT_EQ(r->status, 200);
   const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
@@ -554,10 +554,10 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
       xmlns:thr="http://purl.org/syndication/thread/1.0">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
-        href="/ROOT/catalog/v2/languages"
+        href="/ROOT%23%3F/catalog/v2/languages"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="start"
-        href="/ROOT/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v2/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <title>List of languages</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
@@ -567,7 +567,7 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
     <dc:language>eng</dc:language>
     <thr:count>1</thr:count>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/entries?lang=eng"
+          href="/ROOT%23%3F/catalog/v2/entries?lang=eng"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -577,7 +577,7 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
     <dc:language>fra</dc:language>
     <thr:count>1</thr:count>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/entries?lang=fra"
+          href="/ROOT%23%3F/catalog/v2/entries?lang=fra"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -587,7 +587,7 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
     <dc:language>rus</dc:language>
     <thr:count>1</thr:count>
     <link rel="subsection"
-          href="/ROOT/catalog/v2/entries?lang=rus"
+          href="/ROOT%23%3F/catalog/v2/entries?lang=rus"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -606,13 +606,13 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"       \
     "\n"                                                      \
     "  <link rel=\"self\"\n"                                  \
-    "        href=\"/ROOT/catalog/v2/" x "\"\n"                    \
+    "        href=\"/ROOT%23%3F/catalog/v2/" x "\"\n"                    \
     "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n" \
     "  <link rel=\"start\"\n"                                 \
-    "        href=\"/ROOT/catalog/v2/root.xml\"\n"              \
+    "        href=\"/ROOT%23%3F/catalog/v2/root.xml\"\n"              \
     "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n" \
     "  <link rel=\"up\"\n"                                    \
-    "        href=\"/ROOT/catalog/v2/root.xml\"\n"              \
+    "        href=\"/ROOT%23%3F/catalog/v2/root.xml\"\n"              \
     "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n" \
     "\n"                                                      \
 
@@ -624,7 +624,7 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
 
 TEST_F(LibraryServerTest, catalog_v2_entries)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/entries");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("")
@@ -641,7 +641,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries)
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
 {
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?start=1");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?start=1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?start=1")
@@ -657,7 +657,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?count=2");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=2");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?count=2")
@@ -673,7 +673,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?start=1&count=1");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?start=1&count=1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?start=1&count=1")
@@ -690,7 +690,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
 
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?q=\"ray%20charles\"");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=\"ray%20charles\"");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
@@ -708,7 +708,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
 {
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?lang=eng");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=eng");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng")
@@ -723,7 +723,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT/catalog/v2/entries?lang=eng,fra");
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=eng,fra");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng%2Cfra")
@@ -741,20 +741,20 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
 
 TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/entry/raycharles");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/raycharles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     RAY_CHARLES_CATALOG_ENTRY
   );
 
-  const auto r1 = zfs1_->GET("/ROOT/catalog/v2/entry/non-existent-entry");
+  const auto r1 = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/non-existent-entry");
   EXPECT_EQ(r1->status, 404);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_partial_entries)
 {
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/partial_entries");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/partial_entries");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_PARTIAL_ENTRIES_PREAMBLE("")
@@ -766,7 +766,7 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
     "    <title>Charles, Ray</title>\n"
     "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "    <link rel=\"alternate\"\n"
-    "          href=\"/ROOT/catalog/v2/entry/charlesray\"\n"
+    "          href=\"/ROOT%23%3F/catalog/v2/entry/charlesray\"\n"
     "          type=\"application/atom+xml;type=entry;profile=opds-catalog\"/>\n"
     "  </entry>\n"
     "  <entry>\n"
@@ -774,7 +774,7 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
     "    <title>Ray Charles</title>\n"
     "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "    <link rel=\"alternate\"\n"
-    "          href=\"/ROOT/catalog/v2/entry/raycharles\"\n"
+    "          href=\"/ROOT%23%3F/catalog/v2/entry/raycharles\"\n"
     "          type=\"application/atom+xml;type=entry;profile=opds-catalog\"/>\n"
     "  </entry>\n"
     "  <entry>\n"
@@ -782,7 +782,7 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
     "    <title>Ray (uncategorized) Charles</title>\n"
     "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "    <link rel=\"alternate\"\n"
-    "          href=\"/ROOT/catalog/v2/entry/raycharles_uncategorized\"\n"
+    "          href=\"/ROOT%23%3F/catalog/v2/entry/raycharles_uncategorized\"\n"
     "          type=\"application/atom+xml;type=entry;profile=opds-catalog\"/>\n"
     "  </entry>\n"
     "</feed>\n"
@@ -791,7 +791,7 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
 
 #define EXPECT_SEARCH_RESULTS(SEARCH_TERM, RESULT_COUNT, OPDS_ENTRIES)      \
   {                                                                         \
-    const auto r = zfs1_->GET("/ROOT/catalog/search?q=" SEARCH_TERM);       \
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=" SEARCH_TERM);       \
     EXPECT_EQ(r->status, 200);                                              \
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),                            \
       OPDS_FEED_TAG                                                         \
@@ -860,7 +860,7 @@ TEST_F(LibraryServerTest, catalog_search_excludes_hidden_tags)
 TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
-  const auto r = zfs1_->GET("/ROOT/catalog/search?tag=_category:jazz");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?tag=_category:jazz");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     OPDS_FEED_TAG
@@ -880,14 +880,14 @@ TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
-  const auto r = zfs1_->GET("/ROOT/catalog/v2/entry/raycharles");
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/raycharles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     RAY_CHARLES_CATALOG_ENTRY_NO_MAPPER
   );
 
-  const auto r1 = zfs1_->GET("/ROOT/catalog/v2/entry/non-existent-entry");
+  const auto r1 = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/non-existent-entry");
   EXPECT_EQ(r1->status, 404);
 }
 
