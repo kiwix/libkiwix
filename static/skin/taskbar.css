@@ -44,8 +44,8 @@
     margin: 0 auto;
 }
 
-#ui_language {
-  float: left
+.kiwix #ui_language {
+  float: left;
 }
 
 #kiwix_button_show_toggle {
@@ -84,6 +84,7 @@ label[for="kiwix_button_show_toggle"],
     float: right;
 }
 
+.kiwix #ui_language,
 .kiwix #kiwixtoolbar button,
 .kiwix #kiwixtoolbar input[type="submit"] {
     box-sizing: border-box !important;

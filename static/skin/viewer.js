@@ -198,7 +198,10 @@ function updateToolbarVisibilityState() {
 }
 
 function handle_visual_viewport_change() {
-  contentIframe.height = window.visualViewport.height - contentIframe.offsetTop - 4;
+  const wh = window.visualViewport
+           ? window.visualViewport.height
+           : window.innerHeight;
+  contentIframe.height = wh - contentIframe.offsetTop - 4;
 }
 
 function handle_location_hash_change() {
@@ -511,4 +514,8 @@ function finishViewerSetupOnceTranslationsAreLoaded()
   window.onpopstate = handle_history_state_change;
 
   viewerSetupComplete = true;
+}
+
+function setPermanentGlobalCookie(name, value) {
+  document.cookie = `${name}=${value};path=${root};max-age=31536000`;
 }
