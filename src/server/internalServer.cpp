@@ -607,7 +607,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
-    std::string contentUrl = m_root + "/content" + url;
+    std::string contentUrl = urlEncode(m_root + "/content" + url);
     const std::string query = request.get_query();
     if ( ! query.empty() )
       contentUrl += "?" + query;

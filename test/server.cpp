@@ -1310,6 +1310,19 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
 
     // Make sure that the query is preserved in the redirect URL
     "/does?P=NP"
+
+    // Make sure that reserved URI encoded symbols stay URI encoded
+    "/C%23",              // # --> /C#
+    "/100%25_guarantee",  // % --> /100%_guarantee
+    "/AT%26T",            // & --> /AT&T
+    "/Quo_vadis%3F",      // ? --> /Quo_vadis?
+    "/1%2B1%3D2",         // +,= --> 1+1=2
+
+    // Make sure that URI-encoded query stays URI-encoded
+    "/encode?string=%23%25%26%2B%3D%3F",
+
+    // Bug: the + symbol (that replaces space) in the query gets URI-encoded
+    //"/route?from=current+location&to=girlfriend%238",
   };
 
   for ( const std::string& p : paths )
