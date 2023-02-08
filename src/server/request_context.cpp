@@ -57,7 +57,6 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
                                const std::string& _method,
                                const std::string& version) :
   rootLocation(_rootLocation),
-  full_url(_rootLocation + urlEncode(unrootedUrl)),
   url(unrootedUrl),
   method(str2RequestMethod(_method)),
   version(version),
@@ -137,7 +136,6 @@ void RequestContext::print_debug_info() const {
     printf("\n");
   }
   printf("Parsed : \n");
-  printf("full_url: %s\n", full_url.c_str());
   printf("url   : %s\n", url.c_str());
   printf("acceptEncodingGzip : %d\n", acceptEncodingGzip);
   printf("has_range : %d\n", byteRange_.kind() != ByteRange::NONE);
@@ -175,7 +173,7 @@ std::string RequestContext::get_url_part(int number) const {
 }
 
 std::string RequestContext::get_full_url() const {
-  return full_url;
+  return rootLocation + urlEncode(url);
 }
 
 std::string RequestContext::get_root_path() const {

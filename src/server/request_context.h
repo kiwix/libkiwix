@@ -138,7 +138,6 @@ class RequestContext {
 
   private: // data
     std::string rootLocation;
-    std::string full_url;
     std::string url;
     RequestMethod method;
     std::string version;
