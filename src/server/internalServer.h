@@ -163,8 +163,8 @@ class InternalServer {
   private: // data
     std::string m_addr;
     int m_port;
-    std::string m_root;              // URI-encoded
-    std::string m_rootWithSeparator; // URI-decoded
+    std::string m_root;                   // URI-encoded
+    std::string m_rootPrefixOfDecodedURL; // URI-decoded
     int m_nbThreads;
     unsigned int m_multizimSearchLimit;
     std::atomic_bool m_verbose;

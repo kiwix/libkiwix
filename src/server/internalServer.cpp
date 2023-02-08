@@ -415,7 +415,7 @@ InternalServer::InternalServer(Library* library,
   m_addr(addr),
   m_port(port),
   m_root(normalizeRootUrl(root)),
-  m_rootWithSeparator(m_root + "/"),
+  m_rootPrefixOfDecodedURL(m_root + "/"),
   m_nbThreads(nbThreads),
   m_multizimSearchLimit(multizimSearchLimit),
   m_verbose(verbose),
@@ -522,7 +522,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     printf("full_url  : %s\n", fullUrl);
   }
 
-  const auto url = fullURL2LocalURL(fullUrl, m_rootWithSeparator);
+  const auto url = fullURL2LocalURL(fullUrl, m_rootPrefixOfDecodedURL);
   RequestContext request(connection, m_root, url, method, version);
 
   if (m_verbose.load() ) {
