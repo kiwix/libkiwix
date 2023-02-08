@@ -166,9 +166,9 @@ const ResourceCollection resources200Uncompressible{
 
   { ZIM_CONTENT,     "/ROOT/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.html" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.css" },
-  { ZIM_CONTENT,     "/ROOT/content/corner_cases/empty.js" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases%23%26/empty.html" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases%23%26/empty.css" },
+  { ZIM_CONTENT,     "/ROOT/content/corner_cases%23%26/empty.js" },
 
 
   // The following url's responses are too small to be compressed
@@ -188,7 +188,7 @@ TEST(indexTemplateStringTest, emptyIndexTemplate) {
   const int PORT = 8001;
   const ZimFileServer::FilePathCollection ZIMFILES {
     "./test/zimfile.zim",
-    "./test/corner_cases.zim"
+    "./test/corner_cases#&.zim"
   };
 
   ZimFileServer zfs(PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES, "");
@@ -199,7 +199,7 @@ TEST(indexTemplateStringTest, indexTemplateCheck) {
   const int PORT = 8001;
   const ZimFileServer::FilePathCollection ZIMFILES {
     "./test/zimfile.zim",
-    "./test/corner_cases.zim"
+    "./test/corner_cases#&.zim"
   };
 
   ZimFileServer zfs(PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES, "<!DOCTYPE html><head>"
@@ -1291,10 +1291,10 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
 
 TEST_F(ServerTest, RedirectionsToURLsWithSpecialSymbols)
 {
-  auto g = zfs1_->GET("/ROOT/content/corner_cases/c_sharp.html");
+  auto g = zfs1_->GET("/ROOT/content/corner_cases%23%26/c_sharp.html");
   ASSERT_EQ(302, g->status);
   ASSERT_TRUE(g->has_header("Location"));
-  ASSERT_EQ(g->get_header_value("Location"), "/ROOT/content/corner_cases/c%23.html");
+  ASSERT_EQ(g->get_header_value("Location"), "/ROOT/content/corner_cases%23%26/c%23.html");
   ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate");
   ASSERT_FALSE(g->has_header("ETag"));
 }
@@ -1611,7 +1611,7 @@ TEST_F(ServerTest, InvalidAndMultiRangeByteRangeRequestsResultIn416Responses)
 
 TEST_F(ServerTest, ValidByteRangeRequestsOfZeroSizedEntriesResultIn416Responses)
 {
-  const char url[] = "/ROOT/content/corner_cases/empty.js";
+  const char url[] = "/ROOT/content/corner_cases%23%26/empty.js";
 
   const char* ranges[] = {
     "bytes=0-",

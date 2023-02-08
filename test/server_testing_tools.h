@@ -163,7 +163,7 @@ protected:
     "./test/zimfile.zim",
     "./test/example.zim",
     "./test/poor.zim",
-    "./test/corner_cases.zim"
+    "./test/corner_cases#&.zim"
   };
 
 protected:

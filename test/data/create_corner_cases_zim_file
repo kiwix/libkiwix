@@ -1,7 +1,24 @@
 #!/usr/bin/env bash
 
 cd "$(dirname "$0")"
-rm -f corner_cases.zim
+
+# The following symbols (that would be nice to include in testing) are not
+# allowed under NTFS and/or FAT32 filesystems, and would result in the
+# impossibility to git clone (or rather checkout) the libkiwix repository under
+# Windows:
+#
+#  ?
+#  =
+#  + (that's a pity, since the + symbol in a ZIM filename is replaced with the
+#     text 'plus' when the ZIM file is added to kiwix-serve's library and it
+#     would be nice to test that functionality)
+#
+# Assuming that tests are NOT run under Windows, above symbols can be included
+# in testing if the file is renamed while copying to the build directory (see
+# test/meson.build), though that would make maintenance slightly more confusing.
+zimfilename='corner_cases#&.zim'
+
+rm -f "$zimfilename"
 zimwriterfs --withoutFTIndex --dont-check-arguments \
             -w empty.html \
             -I empty.png \
@@ -11,6 +28,6 @@ zimwriterfs --withoutFTIndex --dont-check-arguments \
             -c "" \
             -p "" \
             corner_cases \
-            corner_cases.zim \
-&& echo 'corner_cases.zim was successfully created' \
-|| echo '!!! Failed to create corner_cases.zim !!!' >&2
+            "$zimfilename" \
+&& echo "$zimfilename was successfully created" \
+|| echo '!!! Failed to create' "$zimfilename" '!!!' >&2

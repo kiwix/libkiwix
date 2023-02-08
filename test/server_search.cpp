@@ -1517,7 +1517,7 @@ TEST(ServerSearchTest, searchInMultilanguageBookSetIsDenied)
   const ZimFileServer::FilePathCollection ZIMFILES{
     "./test/zimfile.zim",       // eng
     "./test/example.zim",       // en
-    "./test/corner_cases.zim"   // =en
+    "./test/corner_cases#&.zim" // =en
   };
 
   ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS, ZIMFILES);
