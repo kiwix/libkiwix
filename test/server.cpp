@@ -1243,6 +1243,41 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
   ASSERT_FALSE(g->has_header("ETag"));
 }
 
+TEST_F(ServerTest, RandomPageRedirectionsAreUriEncoded)
+{
+  // The purpose of this unit test is to validate that the URL to which the
+  // /random endpoint redirects is in URI-encoded form. Due to the difficulty
+  // of checking non-deterministic functionality, it is implemented by running
+  // /random sufficiently many times so that all articles are returned with
+  // close to 100% probability (this is done on an artificial small ZIM file
+  // with at least one article with a special symbol in its name). Such an
+  // approach effectively tests more than the original goal was, so this test
+  // may over time evolve into something more general whereupon it must be
+  // renamed.
+
+  auto g = zfs1_->GET("/ROOT/random?content=corner_cases%23%26");
+
+  typedef std::set<std::string> StringSet;
+  const StringSet frontArticles{
+      {"/ROOT/content/corner_cases%23%26/c%23.html"},
+
+      // empty.html is missing because of a subtle bug
+      // in libzim::randomNumber(max) which returns a value equal to
+      // it argument with much lower probability than other numbers
+      // {"/ROOT/content/corner_cases%23%26/empty.html"}
+  };
+
+  StringSet randomPageUrls;
+  auto n = 10 * frontArticles.size();
+  while ( --n && randomPageUrls.size() != frontArticles.size() ) {
+    ASSERT_EQ(302, g->status);
+    ASSERT_TRUE(g->has_header("Location"));
+    randomPageUrls.insert(g->get_header_value("Location"));
+  }
+
+  ASSERT_EQ(frontArticles, randomPageUrls);
+}
+
 TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
 {
   const std::string paths[] = {
