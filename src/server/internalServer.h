@@ -164,6 +164,7 @@ class InternalServer {
     std::string m_addr;
     int m_port;
     std::string m_root;
+    std::string m_rootWithSeparator;
     int m_nbThreads;
     unsigned int m_multizimSearchLimit;
     std::atomic_bool m_verbose;
