@@ -97,8 +97,9 @@ inline std::string normalizeRootUrl(std::string rootUrl)
 std::string
 fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
 {
-  if ( kiwix::startsWith(fullUrl, rootLocation + "/") ) {
-    return fullUrl.substr(rootLocation.size());
+  assert(rootLocation.size() > 0 && rootLocation.back() == '/');
+  if ( kiwix::startsWith(fullUrl, rootLocation) ) {
+    return fullUrl.substr(rootLocation.size() - 1);
   } else {
     return "";
   }
@@ -518,7 +519,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     printf("full_url  : %s\n", fullUrl);
   }
 
-  const auto url = fullURL2LocalURL(fullUrl, m_root);
+  const auto url = fullURL2LocalURL(fullUrl, m_root + "/");
   RequestContext request(connection, m_root, url, method, version);
 
   if (m_verbose.load() ) {
