@@ -95,16 +95,10 @@ inline std::string normalizeRootUrl(std::string rootUrl)
 }
 
 std::string
-fullURL2LocalURL(const std::string& full_url, const std::string& rootLocation)
+fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
 {
-  if (rootLocation.empty()) {
-    // nothing special to handle.
-    return full_url;
-  } else if (full_url == rootLocation) {
-    return "/";
-  } else if (full_url.size() > rootLocation.size() &&
-             full_url.substr(0, rootLocation.size()+1) == rootLocation + "/") {
-    return full_url.substr(rootLocation.size());
+  if ( kiwix::startsWith(fullUrl, rootLocation + "/") ) {
+    return fullUrl.substr(rootLocation.size());
   } else {
     return "";
   }
