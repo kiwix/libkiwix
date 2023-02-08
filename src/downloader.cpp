@@ -128,20 +128,22 @@ Downloader::Downloader() :
   mp_aria(new Aria2())
 {
   try {
-    for (auto gid : mp_aria->tellActive()) {
-      m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-      m_knownDownloads[gid]->updateStatus();
-    }
-  } catch (std::exception& e) {
-    std::cerr << "aria2 tellActive failed : " << e.what() << std::endl;
-  }
-  try {
     for (auto gid : mp_aria->tellWaiting()) {
       m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-      m_knownDownloads[gid]->updateStatus();
+      m_knownDownloads[gid]->updateStatus(false);
     }
   } catch (std::exception& e) {
     std::cerr << "aria2 tellWaiting failed : " << e.what() << std::endl;
+  }
+  try {
+    for (auto gid : mp_aria->tellActive()) {
+      if( m_knownDownloads.find(gid) == m_knownDownloads.end()) {
+        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        m_knownDownloads[gid]->updateStatus(false);
+      }
+    }
+  } catch (std::exception& e) {
+    std::cerr << "aria2 tellActive failed : " << e.what() << std::endl;
   }
 }
 
@@ -155,7 +157,8 @@ void Downloader::close()
   mp_aria->close();
 }
 
-std::vector<std::string> Downloader::getDownloadIds() {
+std::vector<std::string> Downloader::getDownloadIds() const {
+  std::unique_lock<std::mutex> lock(m_lock);
   std::vector<std::string> ret;
   for(auto& p:m_knownDownloads) {
     ret.push_back(p.first);
@@ -163,42 +166,46 @@ std::vector<std::string> Downloader::getDownloadIds() {
   return ret;
 }
 
-Download* Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
+std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
 {
+  std::unique_lock<std::mutex> lock(m_lock);
   for (auto& p: m_knownDownloads) {
     auto& d = p.second;
     auto& uris = d->getUris();
     if (std::find(uris.begin(), uris.end(), uri) != uris.end())
-      return d.get();
+      return d;
   }
   std::vector<std::string> uris = {uri};
   auto gid = mp_aria->addUri(uris, options);
-  m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-  return m_knownDownloads[gid].get();
+  m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
+  return m_knownDownloads[gid];
 }
 
-Download* Downloader::getDownload(const std::string& did)
+std::shared_ptr<Download> Downloader::getDownload(const std::string& did)
 {
+  std::unique_lock<std::mutex> lock(m_lock);
   try {
-    m_knownDownloads.at(did).get()->updateStatus(true);
-    return m_knownDownloads.at(did).get();
+    return m_knownDownloads.at(did);
   } catch(std::exception& e) {
-    for (auto gid : mp_aria->tellActive()) {
-      if (gid == did) {
-        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-        m_knownDownloads.at(gid).get()->updateStatus(true);
-        return m_knownDownloads[gid].get();
-      }
-    }
     for (auto gid : mp_aria->tellWaiting()) {
       if (gid == did) {
-        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
-        m_knownDownloads.at(gid).get()->updateStatus(true);
-        return m_knownDownloads[gid].get();
+        m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
+        return m_knownDownloads[gid];
       }
-  }
+    }
+    for (auto gid : mp_aria->tellActive()) {
+      if (gid == did) {
+        m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
+        return m_knownDownloads[gid];
+      }
+    }
     throw e;
   }
+}
+
+size_t Downloader::getNbDownload() const {
+  std::unique_lock<std::mutex> lock(m_lock);
+  return m_knownDownloads.size();
 }
 
 }

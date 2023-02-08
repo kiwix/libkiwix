@@ -25,6 +25,7 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <mutex>
 
 namespace kiwix
 {
@@ -43,6 +44,14 @@ class AriaError : public std::runtime_error {
 };
 
 
+/**
+ * A representation of a current download.
+ *
+ * `Download` is not thread safe. User must care to not call method on a
+ * same download from different threads.
+ * However, it is safe to use different `Download`s from different threads.
+ */
+
 class Download {
  public:
   typedef enum { K_ACTIVE, K_WAITING, K_PAUSED, K_ERROR, K_COMPLETE, K_REMOVED, K_UNKNOWN } StatusResult;
@@ -53,19 +62,89 @@ class Download {
     : mp_aria(p_aria),
       m_status(K_UNKNOWN),
       m_did(did) {};
-  void updateStatus(bool follow=false);
+
+  /**
+   * Update the status of the download.
+   *
+   * This call make an aria rpc call and is blocking.
+   * Some download (started with a metalink) are in fact several downloads.
+   * - A first one to download the metadlink.
+   * - A second one to download the real file.
+   *
+   * If `follow` is true, updateStatus tries to detect that and tracks
+   * the second download when the first one is finished.
+   * By passing false to `follow`, `Download` will only track the first download.
+   *
+   * `getFoo` methods are based on the last statusUpdate.
+   *
+   * @param follow: Do we have to follow following downloads.
+   */
+  void updateStatus(bool follow);
+
+  /**
+   * Pause the download (and call updateStatus)
+   */
   void pauseDownload();
+
+  /**
+   * Resume the download (and call updateStatus)
+   */
   void resumeDownload();
+
+  /**
+   * Cancel the download.
+   *
+   * A canceled downlod cannot be resume and updateStatus does nothing.
+   * However, you can still get information based on the last known information.
+   */
   void cancelDownload();
-  StatusResult getStatus()          { return m_status; }
-  std::string  getDid()             { return m_did; }
-  std::string  getFollowedBy()      { return m_followedBy; }
-  uint64_t     getTotalLength()     { return m_totalLength; }
-  uint64_t     getCompletedLength() { return m_completedLength; }
-  uint64_t     getDownloadSpeed()   { return m_downloadSpeed; }
-  uint64_t     getVerifiedLength()  { return m_verifiedLength; }
-  std::string  getPath()            { return m_path; }
-  std::vector<std::string>&  getUris()             { return m_uris; }
+
+  /*
+   * Get the status of the download.
+   */
+  StatusResult getStatus() const             { return m_status; }
+
+  /*
+   * Get the id of the download.
+   */
+  const std::string&  getDid() const         { return m_did; }
+
+  /*
+   * Get the id of the "second" download.
+   *
+   * Set only if the "first" download is a metalink and is complete.
+   */
+  const std::string&  getFollowedBy() const  { return m_followedBy; }
+
+  /*
+   * Get the total length of the download.
+   */
+  uint64_t     getTotalLength() const        { return m_totalLength; }
+
+  /*
+   * Get the completed length of the download.
+   */
+  uint64_t     getCompletedLength() const    { return m_completedLength; }
+
+  /*
+   * Get the download speed of the download.
+   */
+  uint64_t     getDownloadSpeed() const      { return m_downloadSpeed; }
+
+  /*
+   * Get the verified length of the download.
+   */
+  uint64_t     getVerifiedLength() const     { return m_verifiedLength; }
+
+  /*
+   * Get the path (local file) of the download.
+   */
+  const std::string&  getPath() const        { return m_path; }
+
+  /*
+   * Get the download uris of the download.
+   */
+  const std::vector<std::string>&  getUris() const { return m_uris; }
 
  protected:
   std::shared_ptr<Aria2> mp_aria;
@@ -83,6 +162,9 @@ class Download {
 /**
  * A tool to download things.
  *
+ * A Downloader manages `Download` using aria2 in the background.
+ * `Downloader` is threadsafe.
+ * However, the returned `Download`s are NOT threadsafe.
  */
 class Downloader
 {
@@ -92,14 +174,41 @@ class Downloader
 
   void close();
 
-  Download* startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
-  Download* getDownload(const std::string& did);
+  /**
+   * Start a new download.
+   *
+   * This method is thread safe and return a pointer to a newly created `Download`.
+   * User should call `update` on the returned `Download` to have an accurate status.
+   *
+   * @param uri: The uri of the thing to download.
+   * @param options: A series of pair <option_name, option_value> to pass to aria.
+   * @return: The newly created Download.
+   */
+  std::shared_ptr<Download> startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
 
-  size_t getNbDownload() { return m_knownDownloads.size(); }
-  std::vector<std::string> getDownloadIds();
+  /**
+   * Get a download corrsponding to a download id (did)
+   * User should call `update` on the returned `Download` to have an accurate status.
+   *
+   * @param did: The download id to search for.
+   * @return: The Download corresponding to did.
+   * @throw: Throw std::out_of_range if did is not found.
+   */
+  std::shared_ptr<Download> getDownload(const std::string& did);
+
+  /**
+   * Get the number of downloads currently managed.
+   */
+  size_t getNbDownload() const;
+
+  /**
+   * Get the ids of the managed downloads.
+   */
+  std::vector<std::string> getDownloadIds() const;
 
  private:
-  std::map<std::string, std::unique_ptr<Download>> m_knownDownloads;
+  mutable std::mutex m_lock;
+  std::map<std::string, std::shared_ptr<Download>> m_knownDownloads;
   std::shared_ptr<Aria2> mp_aria;
 };
 }
