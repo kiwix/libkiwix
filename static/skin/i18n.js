@@ -97,6 +97,18 @@ function setUserLanguage(lang, callback) {
   Translations.whenReady(callback);
 }
 
+function initUILanguageSelector(activeLanguage, languageChangeCallback) {
+  const languageSelector = document.getElementById("ui_language");
+  for (const lang of uiLanguages ) {
+    const lang_name = Object.getOwnPropertyNames(lang)[0];
+    const lang_code = lang[lang_name];
+    const is_selected = lang_code == activeLanguage;
+    languageSelector.appendChild(new Option(lang_name, lang_code, is_selected, is_selected));
+  }
+  languageSelector.onchange = languageChangeCallback;
+}
+
 window.$t = $t;
 window.getUserLanguage = getUserLanguage;
 window.setUserLanguage = setUserLanguage;
+window.initUILanguageSelector = initUILanguageSelector;

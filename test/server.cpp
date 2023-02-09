@@ -59,7 +59,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=c475fe0b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=316dbc21" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
@@ -73,7 +73,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=eb3bec90" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=03fd97ee" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=d0c7f567" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -280,7 +280,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
         src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=c475fe0b" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=1f5f1cce" defer></script>
@@ -304,9 +304,9 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
       /* url */ "/ROOT%23%3F/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=eb3bec90" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="module" src="./skin/i18n.js?cacheid=6da2bca0" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=c475fe0b" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=fe100348" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=03fd97ee" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=d0c7f567" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
