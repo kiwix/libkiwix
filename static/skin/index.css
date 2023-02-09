@@ -441,6 +441,13 @@ body {
     width: auto;
 }
 
+.feedLogo {
+    margin: 16px 12px 0 0;
+    height: 30px;
+    float: right;
+    border-radius: 5px;
+}
+
 @media screen and (max-width: 1100px) {
 
     .kiwixHomeBody {
@@ -481,5 +488,9 @@ body {
 
     .kiwixNav__filters {
         grid-template-columns: 1fr;
+    }
+
+    .feedLogo {
+        display: none;
     }
 }

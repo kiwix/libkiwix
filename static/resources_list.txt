@@ -1,6 +1,7 @@
 skin/caret.png
 skin/bittorrent.png
 skin/magnet.png
+skin/feed.png
 skin/download.png
 skin/hash.png
 skin/search-icon.svg
