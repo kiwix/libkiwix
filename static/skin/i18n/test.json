@@ -32,4 +32,5 @@
 	, "magnet-alt-text": "download [I18N TESTING] magnet"
 	, "torrent-download-link-text": "Torrent [I18N TESTING] file"
 	, "torrent-download-alt-text": "download [I18N TESTING] torrent"
+	, "library-opds-feed": "Library [I18N] OPDS [TESTING] Feed"
 }

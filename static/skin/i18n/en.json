@@ -43,4 +43,5 @@
 	, "magnet-alt-text": "download magnet"
 	, "torrent-download-link-text": "Torrent file"
 	, "torrent-download-alt-text": "download torrent"
+	, "library-opds-feed": "Library OPDS Feed"
 }

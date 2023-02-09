@@ -475,6 +475,11 @@
       document.getElementById('searchButton').value = searchText;
       document.getElementById('categoryFilter').children[0].innerHTML = $t("book-filtering-all-categories");
       document.getElementById('languageFilter').children[0].innerHTML = $t("book-filtering-all-languages");
+      const feedLogoElem = document.getElementById('feedLogo');
+      const libraryOpdsFeedHint = $t("library-opds-feed");
+      for (const attr of ["alt", "aria-label", "title"] ) {
+        feedLogoElem.setAttribute(attr, libraryOpdsFeedHint);
+      }
     }
 
     async function onload() {
