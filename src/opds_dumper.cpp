@@ -146,6 +146,7 @@ std::map<std::string, std::string> iso639_3 = {
   {"dty", "डोटेली"},
   {"eml", "emiliân-rumagnōl"},
   {"fbs", "српскохрватски"},
+  {"hbs", "srpskohrvatski"},
   {"ido", "ido"},
   {"kbp", "kabɩyɛ"},
   {"kld", "Gamilaraay"},
@@ -165,7 +166,7 @@ std::map<std::string, std::string> iso639_3 = {
   {"rmr", "Caló"},
   {"rmy", "romani shib"},
   {"roa", "romance languages"},
-  {"twi", "twi"}
+  {"twi", "twi"},
 };
 
 std::once_flag fillLanguagesFlag;
