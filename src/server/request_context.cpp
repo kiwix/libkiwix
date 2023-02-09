@@ -181,7 +181,7 @@ std::string RequestContext::get_root_path() const {
 }
 
 bool RequestContext::is_valid_url() const {
-  return !url.empty();
+  return url.empty() || url[0] == '/';
 }
 
 ByteRange RequestContext::get_range() const {

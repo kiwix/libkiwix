@@ -97,12 +97,17 @@ inline std::string normalizeRootUrl(std::string rootUrl)
 std::string
 fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
 {
-  assert(rootLocation.size() > 0 && rootLocation.back() == '/');
   if ( kiwix::startsWith(fullUrl, rootLocation) ) {
-    return fullUrl.substr(rootLocation.size() - 1);
+    return fullUrl.substr(rootLocation.size());
   } else {
-    return "";
+    return "INVALID URL";
   }
+}
+
+std::string getSearchComponent(const RequestContext& request)
+{
+    const std::string query = request.get_query();
+    return query.empty() ? query : "?" + query;
 }
 
 Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
@@ -415,7 +420,7 @@ InternalServer::InternalServer(Library* library,
   m_addr(addr),
   m_port(port),
   m_root(normalizeRootUrl(root)),
-  m_rootPrefixOfDecodedURL(m_root + "/"),
+  m_rootPrefixOfDecodedURL(m_root),
   m_nbThreads(nbThreads),
   m_multizimSearchLimit(multizimSearchLimit),
   m_verbose(verbose),
@@ -585,6 +590,13 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
              + urlNotFoundMsg;
     }
 
+    if ( request.get_url() == "" ) {
+      // Redirect /ROOT_LOCATION to /ROOT_LOCATION/ (note the added slash)
+      // so that relative URLs are resolved correctly
+      const std::string query = getSearchComponent(request);
+      return Response::build_redirect(*this, m_root + "/" + query);
+    }
+
     const ETag etag = get_matching_if_none_match_etag(request, getLibraryId());
     if ( etag )
       return Response::build_304(*this, etag);
@@ -623,11 +635,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
-    std::string contentUrl = m_root + "/content" + urlEncode(url);
-    const std::string query = request.get_query();
-    if ( ! query.empty() )
-      contentUrl += "?" + query;
-    return Response::build_redirect(*this, contentUrl);
+    const std::string contentUrl = m_root + "/content" + urlEncode(url);
+    const std::string query = getSearchComponent(request);
+    return Response::build_redirect(*this, contentUrl + query);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
     return HTTP500Response(*this, request)

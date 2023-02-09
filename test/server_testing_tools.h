@@ -68,10 +68,18 @@ public: // types
     DEFAULT_OPTIONS = WITH_TASKBAR | WITH_LIBRARY_BUTTON
   };
 
+  struct Cfg
+  {
+    std::string root = "ROOT#?";
+    Options options = DEFAULT_OPTIONS;
+
+    Cfg(Options opts = DEFAULT_OPTIONS) : options(opts) {}
+  };
+
 public: // functions
-  ZimFileServer(int serverPort, Options options, std::string libraryFilePath);
+  ZimFileServer(int serverPort, Cfg cfg, std::string libraryFilePath);
   ZimFileServer(int serverPort,
-                Options options,
+                Cfg cfg,
                 const FilePathCollection& zimpaths,
                 std::string indexTemplateString = "");
   ~ZimFileServer();
@@ -95,12 +103,12 @@ private: // data
   std::unique_ptr<kiwix::NameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
-  const Options options = DEFAULT_OPTIONS;
+  const Cfg cfg;
 };
 
-ZimFileServer::ZimFileServer(int serverPort, Options _options, std::string libraryFilePath)
+ZimFileServer::ZimFileServer(int serverPort, Cfg _cfg, std::string libraryFilePath)
 : manager(&this->library)
-, options(_options)
+, cfg(_cfg)
 {
   if ( kiwix::isRelativePath(libraryFilePath) )
     libraryFilePath = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), libraryFilePath);
@@ -109,11 +117,11 @@ ZimFileServer::ZimFileServer(int serverPort, Options _options, std::string libra
 }
 
 ZimFileServer::ZimFileServer(int serverPort,
-                             Options _options,
+                             Cfg _cfg,
                              const FilePathCollection& zimpaths,
                              std::string indexTemplateString)
 : manager(&this->library)
-, options(_options)
+, cfg(_cfg)
 {
   for ( const auto& zimpath : zimpaths ) {
     if (!manager.addBookFromPath(zimpath, zimpath, "", false))
@@ -125,19 +133,19 @@ ZimFileServer::ZimFileServer(int serverPort,
 void ZimFileServer::run(int serverPort, std::string indexTemplateString)
 {
   const std::string address = "127.0.0.1";
-  if (options & NO_NAME_MAPPER) {
+  if (cfg.options & NO_NAME_MAPPER) {
     nameMapper.reset(new kiwix::IdNameMapper());
   } else {
     nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   }
   server.reset(new kiwix::Server(&library, nameMapper.get()));
-  server->setRoot("ROOT#?");
+  server->setRoot(cfg.root);
   server->setAddress(address);
   server->setPort(serverPort);
   server->setNbThreads(2);
   server->setVerbose(false);
-  server->setTaskbar(options & WITH_TASKBAR, options & WITH_LIBRARY_BUTTON);
-  server->setBlockExternalLinks(options & BLOCK_EXTERNAL_LINKS);
+  server->setTaskbar(cfg.options & WITH_TASKBAR, cfg.options & WITH_LIBRARY_BUTTON);
+  server->setBlockExternalLinks(cfg.options & BLOCK_EXTERNAL_LINKS);
   server->setMultiZimSearchLimit(3);
   if (!indexTemplateString.empty()) {
     server->setIndexTemplateString(indexTemplateString);
@@ -171,9 +179,9 @@ protected:
     resetServer(ZimFileServer::DEFAULT_OPTIONS);
   }
 
-  void resetServer(ZimFileServer::Options options) {
+  void resetServer(ZimFileServer::Cfg cfg) {
     zfs1_.reset();
-    zfs1_.reset(new ZimFileServer(SERVER_PORT, options, ZIMFILES));
+    zfs1_.reset(new ZimFileServer(SERVER_PORT, cfg, ZIMFILES));
   }
 
   void TearDown() override {

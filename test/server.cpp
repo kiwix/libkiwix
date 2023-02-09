@@ -359,6 +359,10 @@ TEST_F(ServerTest, 400)
 const char* urls404[] = {
   "/",
   "/zimfile",
+  "/ROOT",
+  "/ROOT%23%",
+  "/ROOT%23%3",
+  "/ROOT%23%3Fxyz",
   "/ROOT%23%3F/skin/non-existent-skin-resource",
   "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=wrongcacheid",
   "/ROOT%23%3F/catalog",
@@ -1266,6 +1270,36 @@ TEST_F(ServerTest, UserLanguageControl)
     const std::string h1(h1Match[1]);
     EXPECT_EQ(h1, t.expectedH1) << t;
   }
+}
+
+TEST_F(ServerTest, SlashlessRootURLIsRedirectedToSlashfulURL)
+{
+  const std::pair<const char*, const char*> test_data[] = {
+    // URL                            redirect
+    { "/ROOT%23%3F",                  "/ROOT%23%3F/" },
+    { "/ROOT%23%3F?abcd=123&xyz=890", "/ROOT%23%3F/?abcd=123&xyz=890" }
+  };
+
+  for ( const auto& t : test_data )
+  {
+    const TestContext ctx{ {"url", t.first} };
+    const auto g = zfs1_->GET(t.first);
+    ASSERT_EQ(302, g->status) << ctx;
+    ASSERT_TRUE(g->has_header("Location")) << ctx;
+    ASSERT_EQ(g->get_header_value("Location"), t.second) << ctx;
+    ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate") << ctx;
+    ASSERT_FALSE(g->has_header("ETag")) << ctx;
+  }
+}
+
+TEST_F(ServerTest, EmptyRootIsNotRedirected)
+{
+  ZimFileServer::Cfg serverCfg;
+  serverCfg.root = "";
+
+  resetServer(serverCfg);
+
+  ASSERT_EQ(200, zfs1_->GET("/")->status);
 }
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
