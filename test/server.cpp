@@ -58,8 +58,6 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=1191aaaf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon.ico" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=fba03a27" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
@@ -119,6 +117,8 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon-32x32.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon.ico" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=fba03a27" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-144x144.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-144x144.png?cacheid=c25a7641" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-150x150.png" },
@@ -487,8 +487,8 @@ TEST_F(ServerTest, MimeTypes)
     { "/catalog/v2/root.xml",              "application/atom+xml;profile=opds-catalog;kind=navigation" },
     { "/skin/search-icon.svg",             "image/svg+xml" },
     { "/skin/bittorrent.png",              "image/png" },
-    { "/skin/favicon/favicon.ico",         "text/plain" }, // !!!
-    { "/skin/i18n/en.json",                "text/plain" }, // !!!
+    { "/skin/favicon/favicon.ico",         "image/x-icon" },
+    { "/skin/i18n/en.json",                "application/json" },
     { "/skin/fonts/Roboto.ttf",            "application/font-ttf" },
     { "/suggest?content=zimfile&term=ray", "application/json; charset=utf-8" },
   };
