@@ -61,9 +61,9 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=c475fe0b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=316dbc21" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=ac5767d8" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=1f5f1cce" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=c333bdba" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -71,7 +71,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=eb3bec90" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=af241ff1" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=d0c7f567" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
@@ -270,7 +270,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=ac5767d8"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -281,9 +281,10 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
         src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=c475fe0b" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=fe100348" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=1f5f1cce" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=c333bdba" defer></script>
       <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1" class="feedLogo" alt="Library OPDS Feed" aria-label="Library OPDS Feed" title="Library OPDS Feed">
 )EXPECTEDRESULT"
     },
@@ -302,7 +303,7 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=eb3bec90" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=af241ff1" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=c475fe0b" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=fe100348" defer></script>

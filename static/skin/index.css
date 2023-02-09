@@ -157,6 +157,11 @@ body {
     font-weight: bolder;
 }
 
+#ui_language {
+  float: right;
+  top: 0;
+}
+
 .book__list {
     position: relative;
     margin: 0 auto;
@@ -472,11 +477,11 @@ body {
     .kiwixHomeBody {
         min-height: calc(100vh - 287px);
     }
-    
+
     .kiwixSearch {
         margin-top: 11px;
     }
-    
+
     .kiwixButton {
         margin: 15px 0;
         width: 229px;

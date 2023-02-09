@@ -31,6 +31,14 @@
         document.querySelector('#feedLink').href = feedLink;
     }
 
+    function changeUILanguage() {
+      const s = document.getElementById("ui_language");
+      const lang = s.options[s.selectedIndex].value;
+      const q = new URLSearchParams(window.location.search);
+      q.set("userlang", lang);
+      location.search = q.toString();
+    }
+
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
@@ -466,6 +474,7 @@
     }
 
     async function onload() {
+        initUILanguageSelector(getUserLanguage(), changeUILanguage);
         iso = new Isotope( '.book__list', {
             itemSelector: '.book',
             getSortData:{
