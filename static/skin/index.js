@@ -15,6 +15,7 @@
     let noResultInjected = false;
     let filters = getCookie(filterCookieName);
     let params = new URLSearchParams(window.location.search || filters || '');
+    params.delete('userlang');
     let timer;
     let languages = {};
 
@@ -34,9 +35,8 @@
     function changeUILanguage() {
       const s = document.getElementById("ui_language");
       const lang = s.options[s.selectedIndex].value;
-      const q = new URLSearchParams(window.location.search);
-      q.set("userlang", lang);
-      location.search = q.toString();
+      setPermanentGlobalCookie('userlang', lang);
+      window.location.reload();
     }
 
     function queryUrlBuilder() {
