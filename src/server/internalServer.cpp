@@ -94,6 +94,17 @@ inline std::string normalizeRootUrl(std::string rootUrl)
   return rootUrl.empty() ? rootUrl : "/" + rootUrl;
 }
 
+std::string
+fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
+{
+  assert(rootLocation.size() > 0 && rootLocation.back() == '/');
+  if ( kiwix::startsWith(fullUrl, rootLocation) ) {
+    return fullUrl.substr(rootLocation.size() - 1);
+  } else {
+    return "";
+  }
+}
+
 Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
 {
     auto filter = kiwix::Filter().valid(true).local(true);
@@ -404,6 +415,7 @@ InternalServer::InternalServer(Library* library,
   m_addr(addr),
   m_port(port),
   m_root(normalizeRootUrl(root)),
+  m_rootPrefixOfDecodedURL(m_root + "/"),
   m_nbThreads(nbThreads),
   m_multizimSearchLimit(multizimSearchLimit),
   m_verbose(verbose),
@@ -418,7 +430,9 @@ InternalServer::InternalServer(Library* library,
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources)
-{}
+{
+  m_root = urlEncode(m_root);
+}
 
 InternalServer::~InternalServer() = default;
 
@@ -494,7 +508,7 @@ static MHD_Result staticHandlerCallback(void* cls,
 }
 
 MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
-                                           const char* url,
+                                           const char* fullUrl,
                                            const char* method,
                                            const char* version,
                                            const char* upload_data,
@@ -505,8 +519,10 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   if (m_verbose.load() ) {
     printf("======================\n");
     printf("Requesting : \n");
-    printf("full_url  : %s\n", url);
+    printf("full_url  : %s\n", fullUrl);
   }
+
+  const auto url = fullURL2LocalURL(fullUrl, m_rootPrefixOfDecodedURL);
   RequestContext request(connection, m_root, url, method, version);
 
   if (m_verbose.load() ) {
@@ -527,7 +543,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     printf("========== INTERNAL ERROR !! ============\n");
     if (!m_verbose.load()) {
       printf("Requesting : \n");
-      printf("full_url : %s\n", url);
+      printf("full_url : %s\n", fullUrl);
       request.print_debug_info();
     }
   }
@@ -607,7 +623,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
-    std::string contentUrl = m_root + "/content" + url;
+    std::string contentUrl = m_root + "/content" + urlEncode(url);
     const std::string query = request.get_query();
     if ( ! query.empty() )
       contentUrl += "?" + query;
@@ -1030,9 +1046,9 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
 std::unique_ptr<Response>
 InternalServer::build_redirect(const std::string& bookName, const zim::Item& item) const
 {
-  const auto path = kiwix::urlEncode(item.getPath());
-  const auto redirectUrl = m_root + "/content/" + bookName + "/" + path;
-  return Response::build_redirect(*this, redirectUrl);
+  const auto contentPath = "/content/" + bookName + "/" + item.getPath();
+  const auto url = m_root + kiwix::urlEncode(contentPath);
+  return Response::build_redirect(*this, url);
 }
 
 std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& request)

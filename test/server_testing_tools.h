@@ -131,7 +131,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
     nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
   }
   server.reset(new kiwix::Server(&library, nameMapper.get()));
-  server->setRoot("ROOT");
+  server->setRoot("ROOT#?");
   server->setAddress(address);
   server->setPort(serverPort);
   server->setNbThreads(2);
@@ -163,7 +163,7 @@ protected:
     "./test/zimfile.zim",
     "./test/example.zim",
     "./test/poor.zim",
-    "./test/corner_cases.zim"
+    "./test/corner_cases#&.zim"
   };
 
 protected:
