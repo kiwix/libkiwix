@@ -46,10 +46,14 @@
         return (url);
     }
 
-    function setCookie(cookieName, cookieValue) {
-        const date = new Date();
-        date.setTime(date.getTime() + oneDayDelta);
-        document.cookie = `${cookieName}=${cookieValue};expires=${date.toUTCString()};sameSite=Strict`;
+    function setCookie(cookieName, cookieValue, ttl) {
+        let exp = "";
+        if ( ttl ) {
+          const date = new Date();
+          date.setTime(date.getTime() + ttl);
+          exp = `expires=${date.toUTCString()};`;
+        }
+        document.cookie = `${cookieName}=${cookieValue};${exp}sameSite=Strict`;
     }
 
     function getCookie(cookieName) {
@@ -375,7 +379,7 @@
         if (filterType) {
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `?${params.toString()}`);
-            setCookie(filterCookieName, params.toString());
+            setCookie(filterCookieName, params.toString(), oneDayDelta);
         }
         updateFilterColors();
         updateFeedLink();
@@ -520,7 +524,7 @@
             }
         }
         updateFeedLink();
-        setCookie(filterCookieName, params.toString());
+        setCookie(filterCookieName, params.toString(), oneDayDelta);
     };
 
     // required by i18n.js:setUserLanguage()
