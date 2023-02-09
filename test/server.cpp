@@ -1321,8 +1321,11 @@ TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
     // Make sure that URI-encoded query stays URI-encoded
     "/encode?string=%23%25%26%2B%3D%3F",
 
-    // Bug: the + symbol (that replaces space) in the query gets URI-encoded
+    // There seems to be a bug in httplib client - the '+' symbols
+    // in query parameters are URI encoded. Therefore using %20 (a URI-encoded
+    // space) instead.
     //"/route?from=current+location&to=girlfriend%238",
+    "/route?from=current%20location&to=girlfriend%238",
   };
 
   for ( const std::string& p : paths )
