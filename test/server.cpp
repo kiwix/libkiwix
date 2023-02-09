@@ -9,6 +9,8 @@
 #include "../src/tools/stringTools.h"
 
 
+const std::string ROOT_PREFIX("/ROOT%23%3F");
+
 bool is_valid_etag(const std::string& etag)
 {
   return etag.size() >= 2 &&
@@ -465,6 +467,37 @@ TEST_F(CustomizedServerTest, ContentOfAnyServableUrlCanBeOverriden)
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/html");
     EXPECT_EQ(r->body, "Hello world!\n");
+  }
+}
+
+TEST_F(ServerTest, MimeTypes)
+{
+  struct TestData {
+    const char* const url;
+    const char* const mimeType;
+  };
+
+  const TestData testData[] = {
+    { "/",                                 "text/html; charset=utf-8" },
+    { "/viewer",                           "text/html" },
+    { "/skin/blank.html",                  "text/html" },
+    { "/skin/index.css",                   "text/css" },
+    { "/skin/index.js",                    "application/javascript" },
+    { "/catalog/v2/searchdescription.xml", "application/opensearchdescription+xml" },
+    { "/catalog/v2/root.xml",              "application/atom+xml;profile=opds-catalog;kind=navigation" },
+    { "/skin/search-icon.svg",             "image/svg+xml" },
+    { "/skin/bittorrent.png",              "image/png" },
+    { "/skin/favicon/favicon.ico",         "text/plain" }, // !!!
+    { "/skin/i18n/en.json",                "text/plain" }, // !!!
+    { "/skin/fonts/Roboto.ttf",            "application/font-ttf" },
+    { "/suggest?content=zimfile&term=ray", "application/json; charset=utf-8" },
+  };
+
+  for ( const auto& t : testData ) {
+    const std::string url= ROOT_PREFIX + t.url;
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), t.mimeType) << ctx;
   }
 }
 
