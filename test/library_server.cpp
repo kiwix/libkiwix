@@ -377,7 +377,7 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
     );
   }
   {
-    // count=0 disables the limit on the number of results
+    // count=0 returns 0 results
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?count=0");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
@@ -387,11 +387,8 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>3</itemsPerPage>\n"
+      "  <itemsPerPage>0</itemsPerPage>\n"
       CATALOG_LINK_TAGS
-      CHARLES_RAY_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
-      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
   }
@@ -695,7 +692,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 
   {
-    // count=0 disables the limit on the number of results
+    // count=0 returns 0 results
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=0");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
@@ -704,10 +701,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>3</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
-      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      "  <itemsPerPage>0</itemsPerPage>\n"
       "</feed>\n"
     );
   }
