@@ -1021,9 +1021,9 @@ InternalServer::search_catalog(const RequestContext& request,
     const auto filter = get_search_filter(request);
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
-    const size_t count = request.get_optional_param("count", 10UL);
+    const long count = request.get_optional_param("count", 10L);
     const size_t startIndex = request.get_optional_param("start", 0UL);
-    const size_t intendedCount = count > 0 ? count : bookIdsToDump.size();
+    const size_t intendedCount = count >= 0 ? count : bookIdsToDump.size();
     bookIdsToDump = subrange(bookIdsToDump, startIndex, intendedCount);
     opdsDumper.setOpenSearchInfo(totalResults, startIndex, bookIdsToDump.size());
     return bookIdsToDump;
