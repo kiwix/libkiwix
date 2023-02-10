@@ -9,6 +9,8 @@
 #include "../src/tools/stringTools.h"
 
 
+const std::string ROOT_PREFIX("/ROOT%23%3F");
+
 bool is_valid_etag(const std::string& etag)
 {
   return etag.size() >= 2 &&
@@ -56,8 +58,6 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=1191aaaf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon.ico" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=fba03a27" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
@@ -117,6 +117,8 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon-32x32.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/favicon.ico" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-144x144.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-144x144.png?cacheid=c25a7641" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/mstile-150x150.png" },
@@ -274,7 +276,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
     <link rel="manifest" href="/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb">
     <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
-    <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=fba03a27">
+    <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
         src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
@@ -465,6 +467,37 @@ TEST_F(CustomizedServerTest, ContentOfAnyServableUrlCanBeOverriden)
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), "text/html");
     EXPECT_EQ(r->body, "Hello world!\n");
+  }
+}
+
+TEST_F(ServerTest, MimeTypes)
+{
+  struct TestData {
+    const char* const url;
+    const char* const mimeType;
+  };
+
+  const TestData testData[] = {
+    { "/",                                 "text/html; charset=utf-8" },
+    { "/viewer",                           "text/html" },
+    { "/skin/blank.html",                  "text/html" },
+    { "/skin/index.css",                   "text/css" },
+    { "/skin/index.js",                    "application/javascript" },
+    { "/catalog/v2/searchdescription.xml", "application/opensearchdescription+xml" },
+    { "/catalog/v2/root.xml",              "application/atom+xml;profile=opds-catalog;kind=navigation" },
+    { "/skin/search-icon.svg",             "image/svg+xml" },
+    { "/skin/bittorrent.png",              "image/png" },
+    { "/skin/favicon/favicon.ico",         "image/x-icon" },
+    { "/skin/i18n/en.json",                "application/json" },
+    { "/skin/fonts/Roboto.ttf",            "application/font-ttf" },
+    { "/suggest?content=zimfile&term=ray", "application/json; charset=utf-8" },
+  };
+
+  for ( const auto& t : testData ) {
+    const std::string url= ROOT_PREFIX + t.url;
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(getHeaderValue(r->headers, "Content-Type"), t.mimeType) << ctx;
   }
 }
 
