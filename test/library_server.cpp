@@ -358,6 +358,26 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
 TEST_F(LibraryServerTest, catalog_search_results_pagination)
 {
   {
+    // count=-1 disables the limit on the number of results
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?count=-1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      OPDS_FEED_TAG
+      "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+      "  <title>Filtered zims (count=-1)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>3</itemsPerPage>\n"
+      CATALOG_LINK_TAGS
+      CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+  {
+    // count=0 disables the limit on the number of results
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?count=0");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
