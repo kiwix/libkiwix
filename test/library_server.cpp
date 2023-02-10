@@ -657,6 +657,42 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 
   {
+    // count=-1 disables the limit on the number of results
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=-1");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?count=-1")
+      "  <title>Filtered Entries (count=-1)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>3</itemsPerPage>\n"
+      CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
+    // count=0 disables the limit on the number of results
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=0");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?count=0")
+      "  <title>Filtered Entries (count=0)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>3</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>3</itemsPerPage>\n"
+      CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+
+  {
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=2");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
