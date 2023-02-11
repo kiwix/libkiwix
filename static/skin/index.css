@@ -24,6 +24,9 @@ body {
     background-color: #f4f6f8;
     width: 100%;
     padding: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 3;
 }
 
 .kiwixHomeBody__results {
