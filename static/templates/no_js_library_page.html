@@ -29,12 +29,39 @@
           font-family: "roboto";
           src: url("{{root}}/skin/fonts/Roboto.ttf?KIWIXCACHEID") format("truetype");
       }
+
+      .book__list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .book__wrapper:hover {
+        transform: scale(1.0);
+      }
     </style>
   </head>
   <body>
-    VERY REAL TEST :)))))))) 
-    {{#books}}
-    <div>{{name}}</div>
-    {{/books}}
+    <div class="kiwixHomeBody">
+        <div class="book__list">
+        {{#books}}
+        <div class="book__wrapper">
+            <a class="book__link" href="#" title="Preview" aria-label="Preview">
+                <div class="book__link__wrapper">
+                    <div class="book__icon" {{faviconAttr}}></div>
+                    <div class="book__header">
+                        <div id="book__title">{{title}}</div>
+                    </div>
+                    <div class="book__description" title="{{description}}">{{description}}</div>
+                </div>
+            </a>
+            <div class="book__languageTag" {{languageAttr}}>{{langCode}}</div>
+            <div class="book__tags"><div class="book__tags--wrapper">TO DO: TAGS</div>
+        </div>
+        </div>
+        {{/books}}
+        </div>
+    </div>
     </body>
 </html>
