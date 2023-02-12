@@ -628,6 +628,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "search"))
       return handle_search(request);
 
+    if (isEndpointUrl(url, "nojs"))
+      return handle_no_js(request);
+
     if (isEndpointUrl(url, "suggest"))
      return handle_suggest(request);
 
@@ -755,6 +758,19 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
   };
   return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
+
+std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& request)
+{
+  HTMLDumper htmlDumper(mp_library, mp_nameMapper);
+  htmlDumper.setRootLocation(m_root);
+  htmlDumper.setLibraryId(getLibraryId());
+  return ContentResponse::build(
+             *this,
+             htmlDumper.dumpPlainHTML(),
+             "text/html; charset=utf-8"
+  );
+}
+
 
 namespace
 {
