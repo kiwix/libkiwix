@@ -39,12 +39,17 @@ std::string HTMLDumper::dumpPlainHTML() const
   for ( const auto& bookId : library->getBooksIds() ) {
     const auto bookObj = library->getBookById(bookId);
     const auto bookTitle = bookObj.getTitle();
+    std::string contentId = "";
+    try {
+      contentId = urlEncode(nameMapper->getNameForId(bookId));
+    } catch (...) {}
     const auto bookDescription = bookObj.getDescription();
     const auto langCode = bookObj.getCommaSeparatedLanguages();
     const auto bookIconUrl = rootLocation + "/catalog/v2/illustration/" + bookId +  "/?size=48";
     const auto tags = bookObj.getTags();
     std::string faviconAttr = "style=background-image:url(" + bookIconUrl + ")";
     booksData.push_back(kainjow::mustache::object{
+      {"id", contentId},
       {"title", bookTitle},
       {"description", bookDescription},
       {"langCode", langCode},
