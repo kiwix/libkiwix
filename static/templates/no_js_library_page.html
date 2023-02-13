@@ -40,6 +40,10 @@
       .book__wrapper:hover {
         transform: scale(1.0);
       }
+
+      .tag__link {
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
@@ -57,7 +61,11 @@
                 </div>
             </a>
             <div class="book__languageTag" {{languageAttr}}>{{langCode}}</div>
-            <div class="book__tags"><div class="book__tags--wrapper">TO DO: TAGS</div>
+            <div class="book__tags"><div class="book__tags--wrapper">
+                {{#tagList}}
+                <span class="tag__link" aria-label='{{tag}}' title='{{tag}}'>{{tag}}</span>
+                {{/tagList}}
+            </div>
         </div>
         </div>
         {{/books}}

@@ -1,6 +1,7 @@
 #include "html_dumper.h"
 #include "libkiwix-resources.h"
 #include "tools/otherTools.h"
+#include "tools.h"
 
 namespace kiwix
 {
@@ -15,6 +16,23 @@ HTMLDumper::~HTMLDumper()
 {
 }
 
+namespace {
+
+kainjow::mustache::list getTagList(std::string tags)
+{
+  const auto tagsList = kiwix::split(tags, ";", true, false);
+  kainjow::mustache::list finalTagList;
+  for (auto tag : tagsList) {
+  if (tag[0] != '_')
+    finalTagList.push_back(kainjow::mustache::object{
+      {"tag", tag}
+    });
+  }
+  return finalTagList;
+}
+
+} // unnamed namespace
+
 std::string HTMLDumper::dumpPlainHTML() const
 {
   kainjow::mustache::list booksData;
@@ -24,12 +42,14 @@ std::string HTMLDumper::dumpPlainHTML() const
     const auto bookDescription = bookObj.getDescription();
     const auto langCode = bookObj.getCommaSeparatedLanguages();
     const auto bookIconUrl = rootLocation + "/catalog/v2/illustration/" + bookId +  "/?size=48";
+    const auto tags = bookObj.getTags();
     std::string faviconAttr = "style=background-image:url(" + bookIconUrl + ")";
     booksData.push_back(kainjow::mustache::object{
       {"title", bookTitle},
       {"description", bookDescription},
       {"langCode", langCode},
-      {"faviconAttr", faviconAttr}
+      {"faviconAttr", faviconAttr},
+      {"tagList", getTagList(tags)}
     });
   }
 
