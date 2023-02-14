@@ -156,6 +156,8 @@ class InternalServer {
 
     std::string getLibraryId() const;
 
+    std::string getNoJSDownloadPageHTML(const std::string& bookId) const;
+
   private: // types
     class LockableSuggestionSearcher;
     typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;

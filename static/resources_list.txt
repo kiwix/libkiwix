@@ -38,6 +38,7 @@ templates/catalog_v2_languages.xml
 templates/url_of_search_results_css
 templates/viewer_settings.js
 templates/no_js_library_page.html
+templates/no_js_download.html
 opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml

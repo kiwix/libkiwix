@@ -415,6 +415,17 @@ bool kiwix::startsWith(const std::string& base, const std::string& start)
         && std::equal(start.begin(), start.end(), base.begin());
 }
 
+std::string kiwix::stripSuffix(const std::string& str, const std::string& suffix)
+{
+  if (str.size() > suffix.size()) {
+    const auto subStr = str.substr(str.size() - suffix.size(), str.size());
+    if (subStr == suffix) {
+      return str.substr(0, str.size() - suffix.size());
+    }
+  }
+  return str;
+}
+
 std::vector<std::string> kiwix::getTitleVariants(const std::string& title) {
   std::vector<std::string> variants;
   variants.push_back(title);

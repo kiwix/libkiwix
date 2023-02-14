@@ -47,14 +47,17 @@ std::string HTMLDumper::dumpPlainHTML() const
     const auto langCode = bookObj.getCommaSeparatedLanguages();
     const auto bookIconUrl = rootLocation + "/catalog/v2/illustration/" + bookId +  "/?size=48";
     const auto tags = bookObj.getTags();
+    const auto downloadAvailable = (bookObj.getUrl() != "");
     std::string faviconAttr = "style=background-image:url(" + bookIconUrl + ")";
+    
     booksData.push_back(kainjow::mustache::object{
       {"id", contentId},
       {"title", bookTitle},
       {"description", bookDescription},
       {"langCode", langCode},
       {"faviconAttr", faviconAttr},
-      {"tagList", getTagList(tags)}
+      {"tagList", getTagList(tags)},
+      {"downloadAvailable", downloadAvailable}
     });
   }
 

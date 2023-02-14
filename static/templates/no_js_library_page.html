@@ -44,6 +44,20 @@
       .tag__link {
         pointer-events: none;
       }
+
+      .book__link__wrapper {
+        grid-column: 1 / 3;
+        grid-row: 1 / 3;
+      }
+
+      .book__link {
+        grid-row: 2 / 3;
+      }
+
+      #book__title>a, .book__download a {
+        text-decoration: none;
+        all: unset;
+      }
     </style>
   </head>
   <body>
@@ -51,15 +65,18 @@
         <div class="book__list">
         {{#books}}
         <div class="book__wrapper">
-            <a class="book__link" href="{{root}}/content/{{id}}" title="Preview" aria-label="Preview">
                 <div class="book__link__wrapper">
                     <div class="book__icon" {{faviconAttr}}></div>
                     <div class="book__header">
-                        <div id="book__title">{{title}}</div>
+                        <div id="book__title"><a href="{{root}}/content/{{id}}">{{title}}</a></div>
+                        {{#downloadAvailable}}
+                        <div class="book__download"><span><a href="{{root}}/nojs/download/{{id}}">Download</a></span></div>
+                        {{/downloadAvailable}}
                     </div>
-                    <div class="book__description" title="{{description}}">{{description}}</div>
-                </div>
-            </a>
+                    <a class="book__link" href="{{root}}/content/{{id}}" title="Preview" aria-label="Preview">
+                      <div class="book__description" title="{{description}}">{{description}}</div>
+                    </a>
+              </div>
             <div class="book__languageTag" {{languageAttr}}>{{langCode}}</div>
             <div class="book__tags"><div class="book__tags--wrapper">
                 {{#tagList}}
