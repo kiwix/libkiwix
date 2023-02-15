@@ -783,7 +783,8 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
   std::string content;
 
   if (urlParts.size() == 1) {
-    content = htmlDumper.dumpPlainHTML();
+    const auto filter = get_search_filter(request);
+    content = htmlDumper.dumpPlainHTML(filter);
   } else if ((urlParts.size() == 3) && (urlParts[1] == "download")) {
     try {
       const auto bookId = mp_nameMapper->getIdForName(urlParts[2]);
@@ -796,7 +797,6 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
     return HTTP404Response(*this, request)
            + urlNotFoundMsg;
   }
-
 
   return ContentResponse::build(
              *this,

@@ -61,6 +61,12 @@
     </style>
   </head>
   <body>
+    <div class='kiwixNav'>
+      <form id='kiwixSearchForm' class='kiwixNav__SearchForm' action="{{root}}/nojs">
+        <input type="text" name="q" placeholder="Search" id="searchFilter" class='kiwixSearch filter' value="{{searchQuery}}">
+        <input type="submit" class="kiwixButton kiwixButtonHover" value="Search"/>
+      </form>
+    </div>
     <div class="kiwixHomeBody">
         <div class="book__list">
         {{#books}}
