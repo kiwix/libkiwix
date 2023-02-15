@@ -54,6 +54,10 @@
         grid-row: 2 / 3;
       }
 
+      .kiwixHomeBody__results {
+        flex-basis: 100%;
+      }
+
       #book__title>a, .book__download a {
         text-decoration: none;
         all: unset;
@@ -69,6 +73,7 @@
     </div>
     <div class="kiwixHomeBody">
         <div class="book__list">
+        <h3 class="kiwixHomeBody__results">{{resultsCount}} results</h3>
         {{#books}}
         <div class="book__wrapper">
                 <div class="book__link__wrapper">

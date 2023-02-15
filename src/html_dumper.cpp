@@ -69,7 +69,8 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
              kainjow::mustache::object{
                {"root", rootLocation},
                {"books", booksData },
-               {"searchQuery", searchQuery}
+               {"searchQuery", searchQuery},
+               {"resultsCount", to_string(filteredBooks.size())}
              }
   );
 }
