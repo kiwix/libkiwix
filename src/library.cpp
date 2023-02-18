@@ -878,6 +878,18 @@ Filter& Filter::name(std::string name)
   return *this;
 }
 
+Filter& Filter::clearLang()
+{
+  activeFilters &= ~LANG;
+  return *this;
+}
+
+Filter& Filter::clearCategory()
+{
+  activeFilters &= ~CATEGORY;
+  return *this;
+}
+
 #define ACTIVE(X) (activeFilters & (X))
 #define FILTER(TAG, TEST) if (ACTIVE(TAG) && !(TEST)) { return false; }
 bool Filter::hasQuery() const

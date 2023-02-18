@@ -2,6 +2,7 @@
 #include "libkiwix-resources.h"
 #include "tools/otherTools.h"
 #include "tools.h"
+#include "tools/regexTools.h"
 
 namespace kiwix
 {
@@ -17,6 +18,13 @@ HTMLDumper::~HTMLDumper()
 }
 
 namespace {
+
+std::string humanFriendlyTitle(std::string title)
+{
+  std::string humanFriendlyString = replaceRegex(title, "_", " ");
+  humanFriendlyString[0] = toupper(humanFriendlyString[0]);
+  return humanFriendlyString;
+}
 
 kainjow::mustache::list getTagList(std::string tags)
 {
@@ -38,6 +46,22 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
   kainjow::mustache::list booksData;
   const auto filteredBooks = library->filter(filter);
   const auto searchQuery = filter.getQuery();
+  auto languages = getLanguageData();
+  auto categories = getCategoryData();
+
+  for (auto &category : categories) {
+    const auto categoryName = category.get("name")->string_value();
+    if (categoryName == filter.getCategory()) {
+      category["selected"] = true;
+    }
+    category["hf_name"] = humanFriendlyTitle(categoryName);
+  }
+
+  for (auto &language : languages) {
+    if (language.get("lang_code")->string_value() == filter.getLang()) {
+      language["selected"] = true;
+    }
+  }
 
   for ( const auto& bookId : filteredBooks ) {
     const auto bookObj = library->getBookById(bookId);
@@ -70,7 +94,9 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
                {"root", rootLocation},
                {"books", booksData },
                {"searchQuery", searchQuery},
-               {"resultsCount", to_string(filteredBooks.size())}
+               {"resultsCount", to_string(filteredBooks.size())},
+               {"languages", languages},
+               {"categories", categories}
              }
   );
 }

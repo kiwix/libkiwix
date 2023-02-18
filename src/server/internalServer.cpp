@@ -783,7 +783,17 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
   std::string content;
 
   if (urlParts.size() == 1) {
-    const auto filter = get_search_filter(request);
+    auto filter = get_search_filter(request);
+    try {
+      if (request.get_argument("category") == "") {
+        filter.clearCategory();
+      }
+    } catch (...) {}
+    try {
+      if (request.get_argument("lang") == "") {
+        filter.clearLang();
+      }
+    } catch (...) {}
     content = htmlDumper.dumpPlainHTML(filter);
   } else if ((urlParts.size() == 3) && (urlParts[1] == "download")) {
     try {

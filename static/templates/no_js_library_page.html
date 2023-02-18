@@ -66,6 +66,24 @@
   </head>
   <body>
     <div class='kiwixNav'>
+      <div class="kiwixNav__filters">
+        <div class="kiwixNav__select">
+          <select name="lang" id="languageFilter" class='kiwixNav__kiwixFilter filter' form="kiwixSearchForm">
+            <option value="" selected>All languages</option>
+            {{#languages}}
+            <option value="{{lang_code}}"{{#selected}} selected {{/selected}}>{{lang_self_name}}</option>
+            {{/languages}}
+          </select>
+        </div>
+        <div class="kiwixNav__select">
+          <select name="category" id="categoryFilter" class='kiwixNav__kiwixFilter filter' form="kiwixSearchForm">
+            <option value="">All categories</option>
+            {{#categories}}
+            <option value="{{name}}"{{#selected}} selected {{/selected}}>{{hf_name}}</option>
+            {{/categories}}
+          </select>
+        </div>
+      </div>
       <form id='kiwixSearchForm' class='kiwixNav__SearchForm' action="{{root}}/nojs">
         <input type="text" name="q" placeholder="Search" id="searchFilter" class='kiwixSearch filter' value="{{searchQuery}}">
         <input type="submit" class="kiwixButton kiwixButtonHover" value="Search"/>
