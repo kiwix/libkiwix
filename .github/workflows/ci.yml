@@ -19,13 +19,11 @@ jobs:
           brew install pkg-config ninja meson
 
       - name: Install dependences
-        shell: bash
         run: |
           ARCHIVE_NAME=deps2_osx_native_dyn_libkiwix.tar.xz
           wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C $HOME
 
       - name: Compile source code
-        shell: bash
         run: |
           export PKG_CONFIG_PATH=$HOME/BUILD_native_dyn/INSTALL/lib/pkgconfig
           export CPPFLAGS="-I$HOME/BUILD_native_dyn/INSTALL/include"
@@ -36,7 +34,6 @@ jobs:
       - name: Test libkiwix
         env:
           SKIP_BIG_MEMORY_TEST: 1
-        shell: bash
         run: |
           export LD_LIBRARY_PATH=$HOME/BUILD_native_dyn/INSTALL/lib:$HOME/BUILD_native_dyn/INSTALL/lib64
           cd build
