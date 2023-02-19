@@ -44,10 +44,6 @@
     margin: 0 auto;
 }
 
-.kiwix #ui_language {
-  float: right;
-}
-
 #kiwix_button_show_toggle {
     display: none;
 }
@@ -84,7 +80,6 @@ label[for="kiwix_button_show_toggle"],
     float: right;
 }
 
-.kiwix #ui_language,
 .kiwix #kiwixtoolbar button,
 .kiwix #kiwixtoolbar input[type="submit"] {
     box-sizing: border-box !important;
@@ -132,6 +127,79 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
 .autoComplete_wrapper > ul {
     max-height: none !important;
     column-count: 1 !important;
+}
+
+.modal-wrapper {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    background-color: rgba(0, 0, 0, 30%);
+}
+
+.modal {
+    color: #444343;
+    height: 280px;
+    width: 250px;
+    margin: 15px;
+    background-color: #f7f7f7;
+    border: 1px solid #ececec;
+    border-radius: 3px;
+}
+
+.modal-heading {
+    background-color: #f0f0f0;
+    height: 20%;
+    width: 100%;
+    border-bottom: 1px solid #ececec;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+}
+
+.modal-title {
+    display: flex;
+    font-size: 15px;
+    align-items: center;
+    padding-left: 20px;
+    font-family: poppins;
+}
+
+.modal-close-button {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    padding: 20px;
+}
+
+#uiLanguageSelector {
+  display: none;
+}
+
+#uiLanguageSelector .modal {
+  height: 140px;
+}
+
+#uiLanguageSelector .modal-heading {
+  height: 40%;
+}
+
+#uiLanguageSelector .modal-content #ui_language {
+  width: 100%;
+}
+
+#uiLanguageSelectorButton {
+  margin: 0px 12px 6px 12px;
+  float: right;
 }
 
 @media(min-width:420px) {

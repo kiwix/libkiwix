@@ -436,6 +436,7 @@ function handle_history_state_change(event) {
 }
 
 function changeUILanguage() {
+  window.modalUILanguageSelector.close();
   const s = document.getElementById("ui_language");
   const lang = s.options[s.selectedIndex].value;
   viewerState.uiLanguage = lang;
