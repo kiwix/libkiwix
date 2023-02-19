@@ -511,8 +511,4 @@ body {
     .kiwixNav__filters {
         grid-template-columns: 1fr;
     }
-
-    .feedLogo {
-        display: none;
-    }
 }
