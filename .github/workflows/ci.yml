@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  Macos:
-    runs-on: macos-latest
+  macOS:
+    runs-on: macos-12
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
