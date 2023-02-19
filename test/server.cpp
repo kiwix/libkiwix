@@ -59,11 +59,11 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=c475fe0b" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=ac5767d8" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=489b1f15" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=5b1775c2" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=7348b4df" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -270,7 +270,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=ac5767d8"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=489b1f15"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -280,11 +280,11 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=ac5767d8"
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
         src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=c475fe0b" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=fe100348" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=5b1775c2" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=7348b4df" defer></script>
       <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1"
 )EXPECTEDRESULT"
     },
@@ -305,7 +305,7 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
       /* url */ "/ROOT%23%3F/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=af241ff1" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="module" src="./skin/i18n.js?cacheid=c475fe0b" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=2cf0f8c5" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=fe100348" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=d0c7f567" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>

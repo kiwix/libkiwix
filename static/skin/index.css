@@ -157,9 +157,26 @@ body {
     font-weight: bolder;
 }
 
-#ui_language {
+#uiLanguageSelector {
+  display: none;
+}
+
+#uiLanguageSelector .modal {
+  height: 140px;
+}
+
+#uiLanguageSelector .modal-heading {
+  height: 40%;
+}
+
+#uiLanguageSelector .modal-content #ui_language {
+  font-size: 1.6rem;
+  width: 100%;
+}
+
+#uiLanguageSelectorButton {
+  margin: 16px 12px 0 0;
   float: right;
-  top: 0;
 }
 
 .book__list {
