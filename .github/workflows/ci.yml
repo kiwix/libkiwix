@@ -20,11 +20,11 @@ jobs:
           brew update
           brew install pkg-config ninja meson
 
-      - name: Install dependences
+      - name: Install dependencies
         env:
           ARCHIVE_NAME: deps2_osx_native_dyn_libkiwix.tar.xz
         run: |
-          wget -O- https://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C $HOME
+          wget -O- https://tmp.kiwix.org/ci/${{env.ARCHIVE_NAME}} | tar -xJ -C ${{env.HOME}}
 
       - name: Compile source code
         env:
@@ -32,16 +32,13 @@ jobs:
           CPPFLAGS: -I${{env.HOME}}/BUILD_native_dyn/INSTALL/include
         run: |
           meson . build --default-library=shared -Db_coverage=true
-          cd build
-          ninja
+          ninja -C build
 
       - name: Test libkiwix
         env:
           SKIP_BIG_MEMORY_TEST: 1
           LD_LIBRARY_PATH: ${{env.HOME}}/BUILD_native_dyn/INSTALL/lib:${{env.HOME}}/BUILD_native_dyn/INSTALL/lib64
-        run: |
-          cd build
-          meson test --verbose
+        run: meson test -C build --verbose
 
   Linux:
     strategy:
