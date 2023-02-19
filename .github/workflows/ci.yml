@@ -9,6 +9,8 @@ on:
 jobs:
   macOS:
     runs-on: macos-12
+    env:
+      HOME: /Users/runner
     steps:
       - name: Retrieve source code
         uses: actions/checkout@v3
@@ -19,14 +21,16 @@ jobs:
           brew install pkg-config ninja meson
 
       - name: Install dependences
+        env:
+          ARCHIVE_NAME: deps2_osx_native_dyn_libkiwix.tar.xz
         run: |
-          ARCHIVE_NAME=deps2_osx_native_dyn_libkiwix.tar.xz
           wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C $HOME
 
       - name: Compile source code
+        env:
+          PKG_CONFIG_PATH: ${{env.HOME}}/BUILD_native_dyn/INSTALL/lib/pkgconfig
+          CPPFLAGS: -I${{env.HOME}}/BUILD_native_dyn/INSTALL/include
         run: |
-          export PKG_CONFIG_PATH=$HOME/BUILD_native_dyn/INSTALL/lib/pkgconfig
-          export CPPFLAGS="-I$HOME/BUILD_native_dyn/INSTALL/include"
           meson . build --default-library=shared -Db_coverage=true
           cd build
           ninja
@@ -34,8 +38,8 @@ jobs:
       - name: Test libkiwix
         env:
           SKIP_BIG_MEMORY_TEST: 1
+          LD_LIBRARY_PATH: ${{env.HOME}}/BUILD_native_dyn/INSTALL/lib:${{env.HOME}}/BUILD_native_dyn/INSTALL/lib64
         run: |
-          export LD_LIBRARY_PATH=$HOME/BUILD_native_dyn/INSTALL/lib:$HOME/BUILD_native_dyn/INSTALL/lib64
           cd build
           meson test --verbose
 
