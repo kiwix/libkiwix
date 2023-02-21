@@ -106,7 +106,7 @@
     function generateTagLink(tagValue) {
         tagValue = tagValue.toLowerCase();
         const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
-        const tagMessage = `Filter by tag "${humanFriendlyTagValue}"`;
+        const tagMessage = $t("filter-by-tag", {TAG: humanFriendlyTagValue});
         return `<span class='tag__link' aria-label='${tagMessage}' title='${tagMessage}' data-tag=${tagValue}>${humanFriendlyTagValue}</span>`
     }
 
@@ -418,7 +418,7 @@
         tagElement.style.display = 'inline-block';
         const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
         tagElement.innerHTML = `${humanFriendlyTagValue}`;
-        const tagMessage = `Stop filtering by tag "${humanFriendlyTagValue}"`;
+        const tagMessage = $t("stop-filtering-by-tag", {TAG: humanFriendlyTagValue});
         tagElement.setAttribute('aria-label', tagMessage);
         tagElement.setAttribute('title', tagMessage);
         if (resetFilter)

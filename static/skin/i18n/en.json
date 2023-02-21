@@ -44,4 +44,6 @@
 	, "torrent-download-link-text": "Torrent file"
 	, "torrent-download-alt-text": "download torrent"
 	, "library-opds-feed": "Library OPDS Feed"
+	, "filter-by-tag": "Filter by tag \"{{TAG}}\""
+	, "stop-filtering-by-tag": "Stop filtering by tag \"{{TAG}}\""
 }
