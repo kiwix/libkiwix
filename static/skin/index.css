@@ -157,6 +157,28 @@ body {
     font-weight: bolder;
 }
 
+#uiLanguageSelector {
+  display: none;
+}
+
+#uiLanguageSelector .modal {
+  height: 140px;
+}
+
+#uiLanguageSelector .modal-heading {
+  height: 40%;
+}
+
+#uiLanguageSelector .modal-content #ui_language {
+  font-size: 1.6rem;
+  width: 100%;
+}
+
+#uiLanguageSelectorButton {
+  margin: 16px 12px 0 0;
+  float: right;
+}
+
 .book__list {
     position: relative;
     margin: 0 auto;
@@ -472,11 +494,11 @@ body {
     .kiwixHomeBody {
         min-height: calc(100vh - 287px);
     }
-    
+
     .kiwixSearch {
         margin-top: 11px;
     }
-    
+
     .kiwixButton {
         margin: 15px 0;
         width: 229px;
@@ -488,9 +510,5 @@ body {
 
     .kiwixNav__filters {
         grid-template-columns: 1fr;
-    }
-
-    .feedLogo {
-        display: none;
     }
 }

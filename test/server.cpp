@@ -59,11 +59,11 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6da2bca0" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=316dbc21" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=f0ee124c" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=b0cc9d6b" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=042058df" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -71,13 +71,16 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=eb3bec90" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=8fc2cc83" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=03fd97ee" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=b9a574d4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json" },
+  // TODO: implement cache management of i18n resources
+  //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
@@ -141,9 +144,6 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=b10ae7ed" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search_results.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json" },
-  // TODO: implement cache management of i18n resources
-  //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
   { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=fe100348" },
 
@@ -270,7 +270,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=f0ee124c"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -280,10 +280,12 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=316dbc21"
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
         src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=fe100348" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=b0cc9d6b" defer></script>
-      <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1" class="feedLogo" alt="Library OPDS Feed" aria-label="Library OPDS Feed" title="Library OPDS Feed">
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=042058df" defer></script>
+      <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1"
 )EXPECTEDRESULT"
     },
     {
@@ -293,19 +295,19 @@ R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10a
     },
     {
       /* url */ "/ROOT%23%3F/skin/index.js",
-R"EXPECTEDRESULT(                                <img src="../skin/download.png?cacheid=a39aa502" alt="direct download" />
-                                <img src="../skin/hash.png?cacheid=f836e872" alt="download hash" />
-                                <img src="../skin/magnet.png?cacheid=73b6bddf" alt="download magnet" />
-                                <img src="../skin/bittorrent.png?cacheid=4f5c6882" alt="download torrent" />
+R"EXPECTEDRESULT(                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
+                                <img src="${root}/skin/hash.png?cacheid=f836e872" alt="${$t("hash-download-alt-text")}" />
+                                <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="${$t("magnet-alt-text")}" />
+                                <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="${$t("torrent-download-alt-text")}" />
 )EXPECTEDRESULT"
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=eb3bec90" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=8fc2cc83" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="module" src="./skin/i18n.js?cacheid=6da2bca0" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=2cf0f8c5" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=fe100348" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=03fd97ee" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=b9a574d4" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
@@ -358,6 +360,10 @@ TEST_F(ServerTest, 400)
 const char* urls404[] = {
   "/",
   "/zimfile",
+  "/ROOT",
+  "/ROOT%23%",
+  "/ROOT%23%3",
+  "/ROOT%23%3Fxyz",
   "/ROOT%23%3F/skin/non-existent-skin-resource",
   "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=wrongcacheid",
   "/ROOT%23%3F/catalog",
@@ -1265,6 +1271,36 @@ TEST_F(ServerTest, UserLanguageControl)
     const std::string h1(h1Match[1]);
     EXPECT_EQ(h1, t.expectedH1) << t;
   }
+}
+
+TEST_F(ServerTest, SlashlessRootURLIsRedirectedToSlashfulURL)
+{
+  const std::pair<const char*, const char*> test_data[] = {
+    // URL                            redirect
+    { "/ROOT%23%3F",                  "/ROOT%23%3F/" },
+    { "/ROOT%23%3F?abcd=123&xyz=890", "/ROOT%23%3F/?abcd=123&xyz=890" }
+  };
+
+  for ( const auto& t : test_data )
+  {
+    const TestContext ctx{ {"url", t.first} };
+    const auto g = zfs1_->GET(t.first);
+    ASSERT_EQ(302, g->status) << ctx;
+    ASSERT_TRUE(g->has_header("Location")) << ctx;
+    ASSERT_EQ(g->get_header_value("Location"), t.second) << ctx;
+    ASSERT_EQ(getCacheControlHeader(*g), "max-age=0, must-revalidate") << ctx;
+    ASSERT_FALSE(g->has_header("ETag")) << ctx;
+  }
+}
+
+TEST_F(ServerTest, EmptyRootIsNotRedirected)
+{
+  ZimFileServer::Cfg serverCfg;
+  serverCfg.root = "";
+
+  resetServer(serverCfg);
+
+  ASSERT_EQ(200, zfs1_->GET("/")->status);
 }
 
 TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)

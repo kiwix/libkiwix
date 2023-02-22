@@ -29,5 +29,23 @@
 	"library-button-text": "Tooltip of the button leading to the welcome page",
 	"home-button-text": "Tooltip of the button leading to the main page of a book",
 	"random-page-button-text": "Tooltip of the button opening a randomly selected page",
-	"searchbox-tooltip": "Tooltip displayed for the search box"
+	"searchbox-tooltip": "Tooltip displayed for the search box in the viewer"
+	, "welcome-page-overzealous-filter": "Text shown when book filtering on the welcome page produces zero results"
+	, "powered-by-kiwix-html": "Link to Kiwix website"
+	, "search": "A general search action (text displayed on search buttons or as aplaceholder in searchboxes)"
+	, "book-filtering-all-categories": "Choosing this filter will disable filtering of books by category"
+	, "book-filtering-all-languages": "Choosing this filter will disable filtering of books by language"
+	, "count-of-matching-books": "Reporting the count of books matching the filter"
+	, "download": "A general download action"
+	, "direct-download-link-text": "Link text for a direct download"
+	, "direct-download-alt-text": "Hint for a direct download icon"
+	, "hash-download-link-text": "Link text for downloading the hash"
+	, "hash-download-alt-text": "Hint for the icon of hash download"
+	, "magnet-link-text": "Link text for a magnet link"
+	, "magnet-alt-text": "Hint for the icon of a magnet link"
+	, "torrent-download-link-text": "Link text for downloading the torrent file"
+	, "torrent-download-alt-text": "Hint for the icon of torrent download"
+	, "library-opds-feed": "Hint for the library OPDS feed link"
+	, "filter-by-tag": "Hint for a link that would load results filtered by a single tag"
+	, "stop-filtering-by-tag": "Tooltip for the button that cancels filtering by tag"
 }

@@ -15,6 +15,7 @@
     let noResultInjected = false;
     let filters = getCookie(filterCookieName);
     let params = new URLSearchParams(window.location.search || filters || '');
+    params.delete('userlang');
     let timer;
     let languages = {};
 
@@ -31,6 +32,14 @@
         document.querySelector('#feedLink').href = feedLink;
     }
 
+    function changeUILanguage() {
+      window.modalUILanguageSelector.close();
+      const s = document.getElementById("ui_language");
+      const lang = s.options[s.selectedIndex].value;
+      setPermanentGlobalCookie('userlang', lang);
+      window.location.reload();
+    }
+
     function queryUrlBuilder() {
         let url = `${root}/catalog/search?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
@@ -38,10 +47,14 @@
         return (url);
     }
 
-    function setCookie(cookieName, cookieValue) {
-        const date = new Date();
-        date.setTime(date.getTime() + oneDayDelta);
-        document.cookie = `${cookieName}=${cookieValue};expires=${date.toUTCString()};sameSite=Strict`;
+    function setCookie(cookieName, cookieValue, ttl) {
+        let exp = "";
+        if ( ttl ) {
+          const date = new Date();
+          date.setTime(date.getTime() + ttl);
+          exp = `expires=${date.toUTCString()};`;
+        }
+        document.cookie = `${cookieName}=${cookieValue};${exp}sameSite=Strict`;
     }
 
     function getCookie(cookieName) {
@@ -93,7 +106,7 @@
     function generateTagLink(tagValue) {
         tagValue = tagValue.toLowerCase();
         const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
-        const tagMessage = `Filter by tag "${humanFriendlyTagValue}"`;
+        const tagMessage = $t("filter-by-tag", {TAG: humanFriendlyTagValue});
         return `<span class='tag__link' aria-label='${tagMessage}' title='${tagMessage}' data-tag=${tagValue}>${humanFriendlyTagValue}</span>`
     }
 
@@ -143,7 +156,7 @@
             <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
                 <div id="book__title">${title}</div>
-                ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">Download ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
+                ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">${$t("download")} ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
             </div>
@@ -209,27 +222,27 @@
                     <div class="modal-content">
                         <div class="modal-regular-download">
                             <a href="${downloadLink}" download>
-                                <img src="../skin/download.png?KIWIXCACHEID" alt="direct download" />
-                                <div>Direct</div>
+                                <img src="${root}/skin/download.png?KIWIXCACHEID" alt="${$t("direct-download-alt-text")}" />
+                                <div>${$t("direct-download-link-text")}</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.sha256" download>
-                                <img src="../skin/hash.png?KIWIXCACHEID" alt="download hash" />
-                                <div>Sha256 hash</div>
+                                <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
+                                <div>${$t("hash-download-link-text")}</div>
                             </a>
                         </div>
                         ${magnetLink ?
                         `<div class="modal-regular-download">
                             <a href="${magnetLink}" target="_blank">
-                                <img src="../skin/magnet.png?KIWIXCACHEID" alt="download magnet" />
-                                <div>Magnet link</div>
+                                <img src="${root}/skin/magnet.png?KIWIXCACHEID" alt="${$t("magnet-alt-text")}" />
+                                <div>${$t("magnet-link-text")}</div>
                             </a>
                         </div>` : ``}
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.torrent" download>
-                                <img src="../skin/bittorrent.png?KIWIXCACHEID" alt="download torrent" />
-                                <div>Torrent file</div>
+                                <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
+                                <div>${$t("torrent-download-link-text")}</div>
                             </a>
                         </div>
                     </div>
@@ -262,16 +275,10 @@
             } else {
                 toggleFooter();
             }
-            const kiwixResultText = document.querySelector('.kiwixHomeBody__results')
-            if (results) {
-                let resultText = `${results} books`;
-                if (results === 1) {
-                    resultText = `${results} book`;
-                }
-                kiwixResultText.innerHTML = resultText;
-            } else {
-                kiwixResultText.innerHTML = ``;
-            }
+            const text = results
+                       ? $t("count-of-matching-books", {COUNT: results})
+                       : '';
+            document.querySelector('.kiwixHomeBody__results').innerHTML = text;
             loader.style.display = 'none';
             return books;
         });
@@ -298,7 +305,7 @@
         const kiwixHomeBody = document.querySelector('.kiwixHomeBody');
         const divTag = document.createElement('div');
         divTag.setAttribute('class', 'noResults');
-        divTag.innerHTML = `No result. Would you like to <a href="?lang=">reset filter</a>?`;
+        divTag.innerHTML = $t("welcome-page-overzealous-filter");
         kiwixHomeBody.append(divTag);
         kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
         loader.setAttribute('style', 'position: absolute; top: 50%');
@@ -373,7 +380,7 @@
         if (filterType) {
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `?${params.toString()}`);
-            setCookie(filterCookieName, params.toString());
+            setCookie(filterCookieName, params.toString(), oneDayDelta);
         }
         updateFilterColors();
         updateFeedLink();
@@ -411,7 +418,7 @@
         tagElement.style.display = 'inline-block';
         const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
         tagElement.innerHTML = `${humanFriendlyTagValue}`;
-        const tagMessage = `Stop filtering by tag "${humanFriendlyTagValue}"`;
+        const tagMessage = $t("stop-filtering-by-tag", {TAG: humanFriendlyTagValue});
         tagElement.setAttribute('aria-label', tagMessage);
         tagElement.setAttribute('title', tagMessage);
         if (resetFilter)
@@ -462,7 +469,22 @@
         }
     });
 
-    window.onload = async () => {
+    function updateUIText() {
+      footer.innerHTML = $t("powered-by-kiwix-html");
+      const searchText = $t("search");
+      document.getElementById('searchFilter').placeholder = searchText;
+      document.getElementById('searchButton').value = searchText;
+      document.getElementById('categoryFilter').children[0].innerHTML = $t("book-filtering-all-categories");
+      document.getElementById('languageFilter').children[0].innerHTML = $t("book-filtering-all-languages");
+      const feedLogoElem = document.getElementById('feedLogo');
+      const libraryOpdsFeedHint = $t("library-opds-feed");
+      for (const attr of ["alt", "aria-label", "title"] ) {
+        feedLogoElem.setAttribute(attr, libraryOpdsFeedHint);
+      }
+    }
+
+    async function onload() {
+        initUILanguageSelector(getUserLanguage(), changeUILanguage);
         iso = new Isotope( '.book__list', {
             itemSelector: '.book',
             getSortData:{
@@ -478,6 +500,7 @@
             }
         });
         footer = document.getElementById('kiwixfooter');
+        updateUIText();
         fadeOutDiv = document.getElementById('fadeOut');
         loader = document.querySelector('.loader');
         await loadAndDisplayOptions('#languageFilter', `${root}/catalog/v2/languages`, 'language');
@@ -507,7 +530,14 @@
             }
         }
         updateFeedLink();
-        setCookie(filterCookieName, params.toString());
+        setCookie(filterCookieName, params.toString(), oneDayDelta);
+    };
+
+    // required by i18n.js:setUserLanguage()
+    window.setPermanentGlobalCookie = function(name, value) {
+      document.cookie = `${name}=${value};path=${root};max-age=31536000`;
     }
+
+    window.onload = () => { setUserLanguage(getUserLanguage(), onload); }
 })();
 
