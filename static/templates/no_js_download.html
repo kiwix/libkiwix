@@ -4,30 +4,30 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download book</title>
+    <title>{{translations.download-links-title}}</title>
 </head>
 <style>
     .downloadLinksTitle {
         text-align: center;
         font-size: 32px;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
     }
 </style>
 <body>
     <div class="downloadLinksTitle">
-        Download links for <b><i>{{bookTitle}}</i></b>
+        {{{translations.download-links-heading}}}
     </div>
     <a href="{{url}}" download>
-        <div>Direct</div>
+        <div>{{translations.direct-download-link-text}}</div>
     </a>
     <a href="{{url}}.sha256" download>
-        <div>Sha256 hash</div>
+        <div>{{translations.hash-download-link-text}}</div>
     </a>
     <a href="{{url}}.magnet" target="_blank">
-        <div>Magnet link</div>
+        <div>{{translations.magnet-link-text}}</div>
     </a>
     <a href="{{url}}.torrent" download>
-        <div>Torrent file</div>
+        <div>{{translations.torrent-download-link-text}}</div>
     </a>
 </body>
 </html>

@@ -47,4 +47,8 @@
 	, "filter-by-tag": "Filter by tag \"{{TAG}}\""
 	, "stop-filtering-by-tag": "Stop filtering by tag \"{{TAG}}\""
 	, "library-opds-feed-parameterised": "Library OPDS Feed - entries matching {{#LANG}}\nLanguage: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategory: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTag: {{TAG}} {{/TAG}}{{#Q}}\nQuery: {{Q}} {{/Q}}"
+	, "welcome-to-kiwix-server": "Welcome to Kiwix Server"
+	, "download-links-heading": "Download links for <b><i>{{BOOK_TITLE}}</i></b>"
+	, "download-links-title": "Download book"
+	, "preview-book": "Preview"
 }

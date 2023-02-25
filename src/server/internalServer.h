@@ -156,7 +156,7 @@ class InternalServer {
 
     std::string getLibraryId() const;
 
-    std::string getNoJSDownloadPageHTML(const std::string& bookId) const;
+    std::string getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const;
 
   private: // types
     class LockableSuggestionSearcher;

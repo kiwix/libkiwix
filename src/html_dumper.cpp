@@ -3,6 +3,7 @@
 #include "tools/otherTools.h"
 #include "tools.h"
 #include "tools/regexTools.h"
+#include "server/i18n.h"
 
 namespace kiwix
 {
@@ -88,15 +89,28 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
     });
   }
 
+  auto getTranslation = i18n::GetTranslatedStringWithMsgId(m_userLang);
+
+  const auto translations = kainjow::mustache::object{
+                    getTranslation("search"),
+                    getTranslation("download"),
+                    getTranslation("count-of-matching-books", {{"COUNT", to_string(filteredBooks.size())}}),
+                    getTranslation("book-filtering-all-categories"),
+                    getTranslation("book-filtering-all-languages"),
+                    getTranslation("powered-by-kiwix-html"),
+                    getTranslation("welcome-to-kiwix-server"),
+                    getTranslation("preview-book")
+  };
+
   return render_template(
              RESOURCE::templates::no_js_library_page_html,
              kainjow::mustache::object{
                {"root", rootLocation},
                {"books", booksData },
                {"searchQuery", searchQuery},
-               {"resultsCount", to_string(filteredBooks.size())},
                {"languages", languages},
-               {"categories", categories}
+               {"categories", categories},
+               {"translations", translations}
              }
   );
 }

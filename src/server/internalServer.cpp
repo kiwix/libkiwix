@@ -759,16 +759,25 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
   return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
 
-std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId) const
+std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const
 {
   const auto book = mp_library->getBookById(bookId);
   auto bookUrl = kiwix::stripSuffix(book.getUrl(), ".meta4");
+  auto getTranslation = i18n::GetTranslatedStringWithMsgId(userLang);
+  const auto translations = kainjow::mustache::object{
+                            getTranslation("download-links-heading", {{"BOOK_TITLE", book.getTitle()}}),
+                            getTranslation("download-links-title"),
+                            getTranslation("direct-download-link-text"),
+                            getTranslation("hash-download-link-text"),
+                            getTranslation("magnet-link-text"),
+                            getTranslation("torrent-download-link-text")
+  };
 
   return render_template(
              RESOURCE::templates::no_js_download_html,
              kainjow::mustache::object{
                {"url", bookUrl},
-               {"bookTitle", book.getTitle()}
+               {"translations", translations}
              }
   );
 }
@@ -780,6 +789,8 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
   HTMLDumper htmlDumper(mp_library, mp_nameMapper);
   htmlDumper.setRootLocation(m_root);
   htmlDumper.setLibraryId(getLibraryId());
+  auto userLang = request.get_user_language();
+  htmlDumper.setUserLanguage(userLang);
   std::string content;
 
   if (urlParts.size() == 1) {
@@ -798,7 +809,7 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
   } else if ((urlParts.size() == 3) && (urlParts[1] == "download")) {
     try {
       const auto bookId = mp_nameMapper->getIdForName(urlParts[2]);
-      content = getNoJSDownloadPageHTML(bookId);
+      content = getNoJSDownloadPageHTML(bookId, userLang);
     } catch (const std::out_of_range&) {
       return HTTP404Response(*this, request)
            + urlNotFoundMsg;
