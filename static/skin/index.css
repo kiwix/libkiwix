@@ -490,8 +490,9 @@ body {
 
 @media screen and (max-width: 590px) {
 
-    .kiwixNav {
-        height: 285px;
+    .kiwixNav__SearchForm {
+        display: flex;
+        flex-direction: column;
     }
 
     .kiwixHomeBody {
