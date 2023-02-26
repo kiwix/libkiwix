@@ -27,6 +27,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 3;
+    transition: all 0.5s ease;
 }
 
 .kiwixHomeBody__results {
@@ -137,6 +138,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 .tagFilterLabel {
@@ -178,7 +180,7 @@ body {
 }
 
 #uiLanguageSelectorButton {
-  margin: 16px 12px 0 0;
+  margin: 0 12px 0 0;
   float: right;
 }
 
@@ -467,7 +469,6 @@ body {
 }
 
 .feedLogo {
-    margin: 16px 12px 0 0;
     height: 30px;
     float: right;
     border-radius: 5px;
