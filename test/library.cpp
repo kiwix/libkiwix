@@ -69,7 +69,7 @@ const char * sampleOpdsStream = R"(
     <id>urn:uuid:0ea1cde6-441d-6c58-f2c7-21c2838e659f</id>
     <icon>/meta?name=favicon&amp;content=wikiquote_fr_all_nopic_2019-06</icon>
     <updated>2019-06-05T00:00::00:Z</updated>
-    <language>fra</language>
+    <language>fra,ita</language>
     <summary>Une page de Wikiquote, le recueil des citations libres.</summary>
     <category>category_defined_via_category_element_only</category>
     <tags>wikiquote;nopic</tags>
@@ -199,7 +199,7 @@ const char sampleLibraryXML[] = R"(
         url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Ray Charles"
         description="Wikipedia articles about Ray Charles"
-        language="eng"
+        language="eng,spa"
         creator="Wikipedia"
         publisher="Kiwix"
         date="2020-03-31"
@@ -344,7 +344,7 @@ TEST_F(LibraryTest, sanityCheck)
 {
   EXPECT_EQ(lib.getBookCount(true, true), 12U);
   EXPECT_EQ(lib.getBooksLanguages(),
-            std::vector<std::string>({"deu", "eng", "fra"})
+            std::vector<std::string>({"deu", "eng", "fra", "ita", "spa"})
   );
   EXPECT_EQ(lib.getBooksCreators(), std::vector<std::string>({
       "Islam Stack Exchange",

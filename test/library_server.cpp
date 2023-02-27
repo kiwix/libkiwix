@@ -140,7 +140,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   "raycharles_uncategorized",\
   "Ray (uncategorized) Charles",\
   "No category is assigned to this library entry.",\
-  "rus",\
+  "rus,eng",\
   "wikipedia_ru_ray_charles",\
   "",\
   "public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no",\
@@ -327,10 +327,11 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (lang=eng)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "  <totalResults>1</totalResults>\n"
+      "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>1</itemsPerPage>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
       CATALOG_LINK_TAGS
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
       RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
@@ -344,12 +345,13 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (lang=eng%2Cfra)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "  <totalResults>2</totalResults>\n"
+      "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>2</itemsPerPage>\n"
+      "  <itemsPerPage>3</itemsPerPage>\n"
       CATALOG_LINK_TAGS
-      RAY_CHARLES_CATALOG_ENTRY
       CHARLES_RAY_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
   }
@@ -582,7 +584,7 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
   <entry>
     <title>English</title>
     <dc:language>eng</dc:language>
-    <thr:count>1</thr:count>
+    <thr:count>2</thr:count>
     <link rel="subsection"
           href="/ROOT%23%3F/catalog/v2/entries?lang=eng"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
@@ -764,9 +766,10 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng")
       "  <title>Filtered Entries (lang=eng)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "  <totalResults>1</totalResults>\n"
+      "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>1</itemsPerPage>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
       RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
@@ -779,11 +782,12 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng%2Cfra")
       "  <title>Filtered Entries (lang=eng%2Cfra)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "  <totalResults>2</totalResults>\n"
+      "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>2</itemsPerPage>\n"
-      RAY_CHARLES_CATALOG_ENTRY
+      "  <itemsPerPage>3</itemsPerPage>\n"
       CHARLES_RAY_CATALOG_ENTRY
+      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
   }
@@ -874,8 +878,8 @@ TEST_F(LibraryServerTest, catalog_search_includes_public_tags)
   // prefix search works on tag names
   EXPECT_SEARCH_RESULTS("public_tag",
                         2,
-                        RAY_CHARLES_CATALOG_ENTRY
                         UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+                        RAY_CHARLES_CATALOG_ENTRY
   );
 
   EXPECT_SEARCH_RESULTS("value_of_a_public_tag",

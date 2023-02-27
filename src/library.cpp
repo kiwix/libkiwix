@@ -373,12 +373,28 @@ std::vector<std::string> Library::getBookPropValueSet(BookStrPropMemFn p) const
 
 std::vector<std::string> Library::getBooksLanguages() const
 {
-  return getBookPropValueSet(&Book::getLanguage);
+  std::vector<std::string> langs;
+  for ( const auto& langAndCount : getBooksLanguagesWithCounts() ) {
+    langs.push_back(langAndCount.first);
+  }
+  return langs;
 }
 
 Library::AttributeCounts Library::getBooksLanguagesWithCounts() const
 {
-  return getBookAttributeCounts(&Book::getLanguage);
+  std::lock_guard<std::mutex> lock(m_mutex);
+  AttributeCounts langsWithCounts;
+
+  for (const auto& pair: mp_impl->m_books) {
+    const auto& book = pair.second;
+    if (book.getOrigId().empty()) {
+      const std::string commaSeparatedLangList = book.getLanguage();
+      for ( const auto& lang : kiwix::split(commaSeparatedLangList, ",") ) {
+        ++langsWithCounts[lang];
+      }
+    }
+  }
+  return langsWithCounts;
 }
 
 std::vector<std::string> Library::getBooksCategories() const
