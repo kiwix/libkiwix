@@ -1,5 +1,8 @@
 const uiLanguages = [
   {
+    "الإنجليزية": "ar"
+  },
+  {
     "বাংলা": "bn"
   },
   {
@@ -33,6 +36,9 @@ const uiLanguages = [
     "kurdî": "ku-latn"
   },
   {
+    "Lëtzebuergesch": "lb"
+  },
+  {
     "македонски": "mk"
   },
   {
@@ -49,6 +55,9 @@ const uiLanguages = [
   },
   {
     "slovenčina": "sk"
+  },
+  {
+    "slovenščina": "sl"
   },
   {
     "Svenska": "sv"
