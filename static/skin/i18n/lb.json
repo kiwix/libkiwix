@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby",
+			"Volvox"
+		]
+	},
+	"name": "Lëtzebuergesch",
+	"suggest-search": "Maacht eng Volltext-Sich fir <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "Ups! Et konnt keen zoufällegen Artikel ausgewielt ginn :(",
+	"404-page-title": "Inhalt net fonnt",
+	"404-page-heading": "Net fonnt",
+	"500-page-title": "Interne Feeler um Server",
+	"500-page-heading": "Interne Feeler um Server",
+	"fulltext-search-unavailable": "Volltext-Sich net verfügbar",
+	"home-button-text": "Gitt op d'Haaptsäit vun '{{BOOK_TITLE}}'",
+	"random-page-button-text": "Gitt op eng zoufälleg gewielte Säit",
+	"searchbox-tooltip": "No '{{BOOK_TITLE}}' sichen",
+	"welcome-page-overzealous-filter": "Kee Resultat. Wëllt Dir <a href=\"?lang=\">de Filter zrécksetzen</a>?",
+	"search": "Sichen",
+	"book-filtering-all-categories": "All Kategorien",
+	"book-filtering-all-languages": "All Sproochen",
+	"count-of-matching-books": "{{COUNT}} Buch/Bicher",
+	"download": "Eroflueden",
+	"direct-download-link-text": "Direkt"
+}

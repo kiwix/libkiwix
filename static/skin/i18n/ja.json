@@ -15,5 +15,8 @@
 	"fulltext-search-unavailable": "全文検索は利用できません",
 	"no-search-results": "このコンテンツでは全文検索エンジンが利用できません",
 	"library-button-text": "ウェルカムページに移動",
-	"random-page-button-text": "無作為に選ばれたページに移動する"
+	"random-page-button-text": "無作為に選ばれたページに移動する",
+	"search": "検索",
+	"book-filtering-all-categories": "すべてのカテゴリー",
+	"book-filtering-all-languages": "すべての言語"
 }

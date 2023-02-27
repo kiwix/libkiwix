@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie",
+			"Vistaus"
+		]
+	},
+	"too-many-books": "Er zijn teveel boeken opgevraagd ({{NB_BOOKS}}). Het limiet is {{LIMIT}}.",
+	"no-book-found": "Er zijn geen boeken die overeenkomen met de zoekcriteria",
+	"no-value-for-arg": "Er is geen waarde opgegeven bij {{ARGUMENT}}",
+	"no-query": "Er is geen zoekterm opgegeven.",
+	"welcome-page-overzealous-filter": "Geen resultaat. Wilt u <a href=\"?lang=\">het filter resetten</a>?",
+	"powered-by-kiwix-html": "Mogelijk gemaakt door <a href=\"https://kiwix.org\">Kiwix</a>",
+	"search": "Zoeken",
+	"book-filtering-all-categories": "Alle categorieën",
+	"book-filtering-all-languages": "Alle talen",
+	"count-of-matching-books": "{{COUNT}} boek(en)",
+	"download": "Downloaden",
+	"direct-download-link-text": "Direct",
+	"direct-download-alt-text": "directe download",
+	"hash-download-link-text": "SHA256-hash",
+	"hash-download-alt-text": "controlesom (hash) van de download",
+	"magnet-link-text": "Magnet-link",
+	"magnet-alt-text": "magnet-link van de download",
+	"torrent-download-link-text": "Torrent-bestand",
+	"torrent-download-alt-text": "torrent downloaden",
+	"library-opds-feed": "OPDS-feed van de bibliotheek",
+	"filter-by-tag": "Filteren op tag \"{{TAG}}\"",
+	"stop-filtering-by-tag": "Stoppen met filteren op tag \"{{TAG}}\""
+}
