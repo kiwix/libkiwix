@@ -315,7 +315,7 @@
         const kiwixHomeBody = document.querySelector('.kiwixHomeBody');
         const divTag = document.createElement('div');
         divTag.setAttribute('class', 'noResults');
-        divTag.innerHTML = $t("welcome-page-overzealous-filter");
+        divTag.innerHTML = $t("welcome-page-overzealous-filter", {URL: '#lang='});
         kiwixHomeBody.append(divTag);
         kiwixHomeBody.setAttribute('style', 'display: flex; justify-content: center; align-items: center');
         loader.setAttribute('style', 'position: absolute; top: 50%');

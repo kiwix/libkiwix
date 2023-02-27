@@ -90,6 +90,24 @@
       </form>
     </div>
     <div class="kiwixHomeBody">
+        {{#noResults}}
+        <style>
+          .book__list {
+            display: none;
+          }
+          .kiwixHomeBody {
+            justify-content: center;
+          }
+          .noResults {
+            font-size: 16px;
+            font-family: roboto;
+          }
+        </style>
+        <div class="noResults">
+          {{{translations.welcome-page-overzealous-filter}}}
+        </div>
+        </style>
+        {{/noResults}}
         <div class="book__list">
         <h3 class="kiwixHomeBody__results">{{translations.count-of-matching-books}}</h3>
         {{#books}}
