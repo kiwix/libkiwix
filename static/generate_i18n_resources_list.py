@@ -29,7 +29,8 @@ def get_translation_info(filepath):
     lang_code = Path(filepath).stem
     with open(filepath, 'r', encoding="utf-8") as f:
         content = json.load(f)
-        return lang_code, content["name"]
+        lang_name = content.get("name")
+        return lang_code, lang_name
 
 language_list = []
 json_files = translation_dir.glob("*.json")
@@ -39,7 +40,11 @@ with open(resource_file, 'w', encoding="utf-8") as f:
             continue
         print("Processing", i18n_file.name)
         if i18n_file.name != "test.json":
-            language_list.append(get_translation_info(i18n_file))
+            lang_code, lang_name = get_translation_info(i18n_file)
+            if lang_name:
+                language_list.append((lang_code, lang_name))
+            else:
+                print(f"Warning: missing 'name' in {i18n_file.name}")
         f.write(str(i18n_file.relative_to(script_path.parent)) + '\n')
 
 language_list = [{name: code} for code, name in sorted(language_list)]
