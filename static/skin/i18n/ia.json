@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"welcome-page-overzealous-filter": "Nulle resultato. Vole tu <a href=\"?lang=\">reinitialisar le filtro</a>?",
+	"powered-by-kiwix-html": "Actionate per&nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",
+	"search": "Cercar",
+	"book-filtering-all-categories": "Tote le categorias",
+	"book-filtering-all-languages": "Tote le linguas",
+	"count-of-matching-books": "{{COUNT}} libro(s)",
+	"download": "Discargar",
+	"direct-download-link-text": "Directe",
+	"direct-download-alt-text": "discargamento directe",
+	"hash-download-link-text": "Hash SHA256",
+	"hash-download-alt-text": "hash del discargamento",
+	"magnet-link-text": "Ligamine Magnet",
+	"magnet-alt-text": "ligamine \"magnet\" de discargamento",
+	"torrent-download-link-text": "File Torrent",
+	"torrent-download-alt-text": "discargar Torrent",
+	"library-opds-feed": "Fluxo OPDS del bibliotheca",
+	"filter-by-tag": "Filtrar per etiquetta \"{{TAG}}\"",
+	"stop-filtering-by-tag": "Non plus filtrar per etiquetta \"{{TAG}}\""
+}
