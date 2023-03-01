@@ -455,12 +455,14 @@ void Library::updateBookDB(const Book& book)
 {
   Xapian::Stem stemmer;
   Xapian::TermGenerator indexer;
-  const std::string lang = book.getLanguage();
-  try {
-    stemmer = Xapian::Stem(iso639_3ToXapian(lang));
-    indexer.set_stemmer(stemmer);
-    indexer.set_stemming_strategy(Xapian::TermGenerator::STEM_SOME);
-  } catch (...) {}
+  const auto langs = book.getLanguages();
+  if ( langs.size() == 1 ) {
+    try {
+      stemmer = Xapian::Stem(iso639_3ToXapian(langs[0]));
+      indexer.set_stemmer(stemmer);
+      indexer.set_stemming_strategy(Xapian::TermGenerator::STEM_SOME);
+    } catch (...) {}
+  }
   Xapian::Document doc;
   indexer.set_document(doc);
 
@@ -475,7 +477,9 @@ void Library::updateBookDB(const Book& book)
   // Index all fields for field-based search
   indexer.index_text(title, 1, "S");
   indexer.index_text(desc,  1, "XD");
-  indexer.index_text(lang,  1, "L");
+  for ( const auto& lang : langs ) {
+    indexer.index_text(lang,  1, "L");
+  }
   indexer.index_text(normalizeText(book.getCreator()),   1, "A");
   indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
   indexer.index_text(normalizeText(book.getName()),      1, "XN");
