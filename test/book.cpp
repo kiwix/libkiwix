@@ -58,59 +58,52 @@ TEST(BookTest, updateFromXMLTest)
     EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
 }
 
+namespace
+{
+
+kiwix::Book makeBook(const std::string& attr, const std::string& baseDir="")
+{
+    const XMLDoc xml("<book " + attr + "></book>");
+    kiwix::Book book;
+    book.updateFromXml(xml.child("book"), baseDir);
+    return book;
+}
+
+} // unnamed namespace
+
 TEST(BookTest, updateFromXMLCategoryHandlingTest)
 {
   {
-    const XMLDoc xml(R"(
-      <book id="abcd"
-            tags="_category:category_defined_via_tags_only"
-          >
-      </book>
+    const kiwix::Book book = makeBook(R"(
+        id="abcd"
+        tags="_category:category_defined_via_tags_only"
     )");
-
-    kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "");
 
     EXPECT_EQ(book.getCategory(), "category_defined_via_tags_only");
   }
   {
-    const XMLDoc xml(R"(
-      <book id="abcd"
-            category="category_defined_via_attribute_only"
-          >
-      </book>
+    const kiwix::Book book = makeBook(R"(
+        id="abcd"
+        category="category_defined_via_attribute_only"
     )");
-
-    kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "");
 
     EXPECT_EQ(book.getCategory(), "category_defined_via_attribute_only");
   }
   {
-    const XMLDoc xml(R"(
-      <book id="abcd"
-            category="category_attribute_overrides_tags"
-            tags="_category:tags_override_category_attribute"
-          >
-      </book>
+    const kiwix::Book book = makeBook(R"(
+        id="abcd"
+        category="category_attribute_overrides_tags"
+        tags="_category:tags_override_category_attribute"
     )");
-
-    kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "");
 
     EXPECT_EQ(book.getCategory(), "category_attribute_overrides_tags");
   }
   {
-    const XMLDoc xml(R"(
-      <book id="abcd"
-            tags="_category:tags_override_category_attribute"
-            category="category_attribute_overrides_tags"
-          >
-      </book>
+    const kiwix::Book book = makeBook(R"(
+        id="abcd"
+        tags="_category:tags_override_category_attribute"
+        category="category_attribute_overrides_tags"
     )");
-
-    kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "");
 
     EXPECT_EQ(book.getCategory(), "category_attribute_overrides_tags");
   }
@@ -126,10 +119,7 @@ TEST(BookTest, setTagsDoesntAffectCategory)
 
 TEST(BookTest, updateCopiesCategory)
 {
-    const XMLDoc xml(R"(<book id="abcd" category="ted"></book>)");
-
-    kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "");
+    const kiwix::Book book = makeBook(R"(id="abcd" category="ted")");
 
     kiwix::Book newBook;
     newBook.setId("abcd");
@@ -140,20 +130,15 @@ TEST(BookTest, updateCopiesCategory)
 
 TEST(BookTest, updateTest)
 {
-    const XMLDoc xml(R"(
-      <book id="xyz"
-            path="/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim"
-            url="book-url"
-            name="skin-of-color-society_en_all"
-            tags="youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes"
-            favicon="Ym9vay1mYXZpY29u"
-            faviconMimeType="book-favicon-mimetype"
-          >
-      </book>
-    )");
-
-    kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "/data/zim");
+    kiwix::Book book = makeBook(R"(
+        id="xyz"
+        path="/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim"
+        url="book-url"
+        name="skin-of-color-society_en_all"
+        tags="youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes"
+        favicon="Ym9vay1mYXZpY29u"
+        faviconMimeType="book-favicon-mimetype"
+    )", "/data/zim");
 
     book.setReadOnly(false);
     book.setPathValid(true);
