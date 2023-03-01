@@ -286,4 +286,9 @@ std::string Book::getCategoryFromTags() const
   }
 }
 
+const std::vector<std::string> Book::getLanguages() const
+{
+  return kiwix::split(m_language, ",");
+}
+
 }

@@ -388,8 +388,7 @@ Library::AttributeCounts Library::getBooksLanguagesWithCounts() const
   for (const auto& pair: mp_impl->m_books) {
     const auto& book = pair.second;
     if (book.getOrigId().empty()) {
-      const std::string commaSeparatedLangList = book.getLanguage();
-      for ( const auto& lang : kiwix::split(commaSeparatedLangList, ",") ) {
+      for ( const auto& lang : book.getLanguages() ) {
         ++langsWithCounts[lang];
       }
     }

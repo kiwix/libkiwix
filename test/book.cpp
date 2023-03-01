@@ -195,3 +195,22 @@ TEST(BookTest, getHumanReadableIdFromPath)
 #endif
   EXPECT_EQ("3plus2",  path2HumanReadableId("3+2.zim"));
 }
+
+TEST(BookTest, getLanguages)
+{
+  typedef std::vector<std::string> Langs;
+
+  {
+    const kiwix::Book book = makeBook(R"(id="abcd" language="fra")");
+
+    EXPECT_EQ(book.getLanguage(), "fra");
+    EXPECT_EQ(book.getLanguages(), Langs{ "fra" });
+  }
+
+  {
+    const kiwix::Book book = makeBook(R"(id="abcd" language="eng,ong,ing")");
+
+    EXPECT_EQ(book.getLanguage(), "eng,ong,ing");
+    EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));
+  }
+}
