@@ -203,14 +203,14 @@ TEST(BookTest, getLanguages)
   {
     const kiwix::Book book = makeBook(R"(id="abcd" language="fra")");
 
-    EXPECT_EQ(book.getLanguage(), "fra");
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "fra");
     EXPECT_EQ(book.getLanguages(), Langs{ "fra" });
   }
 
   {
     const kiwix::Book book = makeBook(R"(id="abcd" language="eng,ong,ing")");
 
-    EXPECT_EQ(book.getLanguage(), "eng,ong,ing");
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng,ong,ing");
     EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));
   }
 }

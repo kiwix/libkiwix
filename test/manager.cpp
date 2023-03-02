@@ -57,7 +57,7 @@ TEST(ManagerTest, readXml)
     EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl());
     EXPECT_EQ("Unit Test", book.getTitle());
     EXPECT_EQ("Wikipedia articles about unit testing", book.getDescription());
-    EXPECT_EQ("eng", book.getLanguage());
+    EXPECT_EQ("eng", book.getCommaSeparatedLanguages());
     EXPECT_EQ("Wikipedia", book.getCreator());
     EXPECT_EQ("Kiwix", book.getPublisher());
     EXPECT_EQ("2020-03-31", book.getDate());
