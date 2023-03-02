@@ -28,6 +28,7 @@
 
 #include "library.h"
 #include "name_mapper.h"
+#include "library_dumper.h"
 
 using namespace std;
 
@@ -38,11 +39,10 @@ namespace kiwix
  * A tool to dump a `Library` into a opds stream.
  *
  */
-class OPDSDumper
+class OPDSDumper : public LibraryDumper
 {
  public:
-  OPDSDumper() = default;
-  OPDSDumper(Library* library, NameMapper* NameMapper);
+  OPDSDumper(const Library* library, const NameMapper* NameMapper);
   ~OPDSDumper();
 
   /**
@@ -85,38 +85,6 @@ class OPDSDumper
    * @return The OPDS feed.
    */
   std::string languagesOPDSFeed() const;
-
-  /**
-   * Set the id of the library.
-   *
-   * @param id the id to use.
-   */
-  void setLibraryId(const std::string& id) { this->libraryId = id;}
-
-  /**
-   * Set the root location used when generating url.
-   *
-   * @param rootLocation the root location to use.
-   */
-  void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
-
-  /**
-   * Set some informations about the search results.
-   *
-   * @param totalResult the total number of results of the search.
-   * @param startIndex the start index of the result.
-   * @param count the number of result of the current set (or page).
-   */
-  void setOpenSearchInfo(int totalResult, int startIndex, int count);
-
- protected:
-  kiwix::Library* library;
-  kiwix::NameMapper* nameMapper;
-  std::string libraryId;
-  std::string rootLocation;
-  int m_totalResults;
-  int m_startIndex;
-  int m_count;
 };
 }
 
