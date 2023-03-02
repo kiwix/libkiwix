@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link type="root" href="{{root}}">
+    <title>Welcome to Kiwix Server</title>
+    <link
+      type="text/css"
+      href="{{root}}/skin/index.css?KIWIXCACHEID"
+      rel="Stylesheet"
+    />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{root}}/skin/favicon/apple-touch-icon.png?KIWIXCACHEID">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{root}}/skin/favicon/favicon-32x32.png?KIWIXCACHEID">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{root}}/skin/favicon/favicon-16x16.png?KIWIXCACHEID">
+    <link rel="manifest" href="{{root}}/skin/favicon/site.webmanifest?KIWIXCACHEID">
+    <link rel="mask-icon" href="{{root}}/skin/favicon/safari-pinned-tab.svg?KIWIXCACHEID" color="#5bbad5">
+    <link rel="shortcut icon" href="{{root}}/skin/favicon/favicon.ico?KIWIXCACHEID">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="{{root}}/skin/favicon/browserconfig.xml?KIWIXCACHEID">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      @font-face {
+        font-family: "poppins";
+        src: url("{{root}}/skin/fonts/Poppins.ttf?KIWIXCACHEID") format("truetype");
+      }
+
+      @font-face {
+          font-family: "roboto";
+          src: url("{{root}}/skin/fonts/Roboto.ttf?KIWIXCACHEID") format("truetype");
+      }
+    </style>
+  </head>
+  <body>
+    VERY REAL TEST :)))))))) 
+    {{#books}}
+    <div>{{name}}</div>
+    {{/books}}
+    </body>
+</html>

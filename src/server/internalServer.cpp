@@ -53,6 +53,7 @@ extern "C" {
 #include "name_mapper.h"
 #include "search_renderer.h"
 #include "opds_dumper.h"
+#include "html_dumper.h"
 #include "i18n.h"
 
 #include <zim/uuid.h>
