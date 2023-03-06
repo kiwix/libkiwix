@@ -61,9 +61,9 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=f0ee124c" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=be514520" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=042058df" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=39705b4f" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -270,7 +270,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=f0ee124c"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=be514520"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -284,8 +284,8 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=f0ee124c"
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=b00b12db" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=042058df" defer></script>
-      <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1"
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=39705b4f" defer></script>
+        <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1"
 )EXPECTEDRESULT"
     },
     {

@@ -18,6 +18,7 @@
     params.delete('userlang');
     let timer;
     let languages = {};
+    let previousScrollTop = Infinity;
 
     function updateFeedLink() {
         const inputParams = new URLSearchParams(window.location.search);
@@ -453,6 +454,22 @@
         }
     }
 
+    function updateNavVisibilityState() {
+        const st = window.scrollY;
+        const enableAutoHiding = document.body.clientWidth < 590;
+        if ((Math.abs(previousScrollTop - st) <= 5) || !enableAutoHiding)
+            return;
+        const kiwixNav = document.querySelector('.kiwixNav');
+        if (st > previousScrollTop) {
+            kiwixNav.style.position = 'fixed';
+            kiwixNav.style.top = '-100%';
+        } else {
+            kiwixNav.style.position = 'sticky';
+            kiwixNav.style.top = '0';
+        }
+        previousScrollTop = st;
+    }
+
     window.addEventListener('resize', (event) => {
         if (timer) {clearTimeout(timer)}
         timer = setTimeout(() => {
@@ -531,6 +548,7 @@
         }
         updateFeedLink();
         setCookie(filterCookieName, params.toString(), oneDayDelta);
+        setInterval(updateNavVisibilityState, 250);
     };
 
     // required by i18n.js:setUserLanguage()
