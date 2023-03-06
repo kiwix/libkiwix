@@ -1,4 +1,12 @@
 (function() {
+    class FragmentParams extends URLSearchParams {
+        constructor(fragment = '') {
+            if (fragment[0] == '#')
+                fragment = fragment.substring(1);
+            super(fragment);
+        }
+    }
+
     const root = document.querySelector(`link[type='root']`).getAttribute('href');
     const incrementalLoadingParams = {
         start: 0,
@@ -14,18 +22,18 @@
     let isFetching = false;
     let noResultInjected = false;
     let filters = getCookie(filterCookieName);
-    let params = new URLSearchParams(window.location.search || filters || '');
+    let params = new FragmentParams(window.location.hash || filters || '');
     params.delete('userlang');
     let timer;
     let languages = {};
     let previousScrollTop = Infinity;
 
     function updateFeedLink() {
-        const inputParams = new URLSearchParams(window.location.search);
-        const filteredParams = new URLSearchParams();
+        const inputParams = new FragmentParams(window.location.hash);
+        const filteredParams = new FragmentParams();
         for (const [key, value] of inputParams) {
             if ( value != '' ) {
-                filteredParams.append(key, value);
+                filteredParams.set(key, value);
             }
         }
         const feedLink = `${root}/catalog/v2/entries?${filteredParams.toString()}`;
@@ -377,10 +385,10 @@
         incrementalLoadingParams.count = viewPortToCount();
         fadeOutDiv.style.display = 'none';
         bookOrderMap.clear();
-        params = new URLSearchParams(window.location.search);
+        params = new FragmentParams(window.location.hash);
         if (filterType) {
             params.set(filterType, filterValue);
-            window.history.pushState({}, null, `?${params.toString()}`);
+            window.history.pushState({}, null, `#${params.toString()}`);
             setCookie(filterCookieName, params.toString(), oneDayDelta);
         }
         updateFilterColors();
@@ -486,18 +494,20 @@
         }
     });
 
+    window.addEventListener('hashchange', () => resetAndFilter());
+
     function updateUIText() {
-      footer.innerHTML = $t("powered-by-kiwix-html");
-      const searchText = $t("search");
-      document.getElementById('searchFilter').placeholder = searchText;
-      document.getElementById('searchButton').value = searchText;
-      document.getElementById('categoryFilter').children[0].innerHTML = $t("book-filtering-all-categories");
-      document.getElementById('languageFilter').children[0].innerHTML = $t("book-filtering-all-languages");
-      const feedLogoElem = document.getElementById('feedLogo');
-      const libraryOpdsFeedHint = $t("library-opds-feed");
-      for (const attr of ["alt", "aria-label", "title"] ) {
-        feedLogoElem.setAttribute(attr, libraryOpdsFeedHint);
-      }
+        footer.innerHTML = $t("powered-by-kiwix-html");
+        const searchText = $t("search");
+        document.getElementById('searchFilter').placeholder = searchText;
+        document.getElementById('searchButton').value = searchText;
+        document.getElementById('categoryFilter').children[0].innerHTML = $t("book-filtering-all-categories");
+        document.getElementById('languageFilter').children[0].innerHTML = $t("book-filtering-all-languages");
+        const feedLogoElem = document.getElementById('feedLogo');
+        const libraryOpdsFeedHint = $t("library-opds-feed");
+        for (const attr of ["alt", "aria-label", "title"] ) {
+            feedLogoElem.setAttribute(attr, libraryOpdsFeedHint);
+        }
     }
 
     async function onload() {
@@ -529,15 +539,15 @@
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.addEventListener('click', () => removeTagElement(true));
         if (filters) {
-            const currentLink = window.location.search;
-            const newLink = `?${params.toString()}`;
+            const currentLink = window.location.hash;
+            const newLink = `#${params.toString()}`;
             if (currentLink != newLink) {
                 window.history.pushState({}, null, newLink);
             }
         }
         updateVisibleParams();
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
-        if (!window.location.search) {
+        if (!window.location.hash) {
             const browserLang = navigator.language.split('-')[0];
             const langFilter = document.getElementById('languageFilter');
             const lang = browserLang.length === 3 ? browserLang : iso6391To3[browserLang];
@@ -553,7 +563,7 @@
 
     // required by i18n.js:setUserLanguage()
     window.setPermanentGlobalCookie = function(name, value) {
-      document.cookie = `${name}=${value};path=${root};max-age=31536000`;
+        document.cookie = `${name}=${value};path=${root};max-age=31536000`;
     }
 
     window.onload = () => { setUserLanguage(getUserLanguage(), onload); }

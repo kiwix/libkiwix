@@ -63,7 +63,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=be514520" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=39705b4f" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=cafa3d61" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -284,7 +284,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=be514520"
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=b00b12db" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=39705b4f" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=cafa3d61" defer></script>
         <img src="/ROOT%23%3F/skin/feed.png?cacheid=56a672b1"
 )EXPECTEDRESULT"
     },
