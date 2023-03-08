@@ -81,7 +81,7 @@ std::string fullEntryXML(const Book& book, const std::string& rootLocation, cons
       {"name", book.getName()},
       {"title", book.getTitle()},
       {"description", book.getDescription()},
-      {"language", book.getLanguage()},
+      {"language", book.getCommaSeparatedLanguages()},
       {"content_id",  urlEncode(contentId)},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
       {"book_date", bookDate},

@@ -79,7 +79,9 @@ class Book
   bool isPathValid() const { return m_pathValid; }
   const std::string& getTitle() const { return m_title; }
   const std::string& getDescription() const { return m_description; }
-  const std::string& getLanguage() const { return m_language; }
+  DEPRECATED const std::string& getLanguage() const { return m_language; }
+  const std::string& getCommaSeparatedLanguages() const { return m_language; }
+  const std::vector<std::string> getLanguages() const;
   const std::string& getCreator() const { return m_creator; }
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }

@@ -54,7 +54,7 @@ void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
   if (book.getOrigId().empty()) {
     ADD_ATTR_NOT_EMPTY(entry_node, "title", book.getTitle());
     ADD_ATTR_NOT_EMPTY(entry_node, "description", book.getDescription());
-    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getLanguage());
+    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getCommaSeparatedLanguages());
     ADD_ATTR_NOT_EMPTY(entry_node, "creator", book.getCreator());
     ADD_ATTR_NOT_EMPTY(entry_node, "publisher", book.getPublisher());
     ADD_ATTR_NOT_EMPTY(entry_node, "name", book.getName());
@@ -97,7 +97,7 @@ void LibXMLDumper::handleBookmark(Bookmark bookmark, pugi::xml_node root_node) {
     auto book = library->getBookByIdThreadSafe(bookmark.getBookId());
     ADD_TEXT_ENTRY(book_node, "id", book.getId());
     ADD_TEXT_ENTRY(book_node, "title", book.getTitle());
-    ADD_TEXT_ENTRY(book_node, "language", book.getLanguage());
+    ADD_TEXT_ENTRY(book_node, "language", book.getCommaSeparatedLanguages());
     ADD_TEXT_ENTRY(book_node, "date", book.getDate());
   } catch (...) {
     ADD_TEXT_ENTRY(book_node, "id", bookmark.getBookId());

@@ -238,7 +238,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
     }
 
     if (!checkMetaData
-        || (checkMetaData && !book.getTitle().empty() && !book.getLanguage().empty()
+        || (!book.getTitle().empty() && !book.getLanguages().empty()
             && !book.getDate().empty())) {
       book.setUrl(url);
       manipulator->addBookToLibrary(book);

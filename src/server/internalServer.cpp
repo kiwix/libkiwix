@@ -223,7 +223,8 @@ typedef std::set<std::string> Languages;
 Languages getLanguages(const Library& lib, const Library::BookIdSet& bookIds) {
   Languages langs;
   for ( const auto& b : bookIds ) {
-    langs.insert(lib.getBookById(b).getLanguage());
+    const auto bookLangs = lib.getBookById(b).getLanguages();
+    langs.insert(bookLangs.begin(), bookLangs.end());
   }
   return langs;
 }

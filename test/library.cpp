@@ -69,7 +69,7 @@ const char * sampleOpdsStream = R"(
     <id>urn:uuid:0ea1cde6-441d-6c58-f2c7-21c2838e659f</id>
     <icon>/meta?name=favicon&amp;content=wikiquote_fr_all_nopic_2019-06</icon>
     <updated>2019-06-05T00:00::00:Z</updated>
-    <language>fra</language>
+    <language>fra,ita</language>
     <summary>Une page de Wikiquote, le recueil des citations libres.</summary>
     <category>category_defined_via_category_element_only</category>
     <tags>wikiquote;nopic</tags>
@@ -199,7 +199,7 @@ const char sampleLibraryXML[] = R"(
         url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Ray Charles"
         description="Wikipedia articles about Ray Charles"
-        language="eng"
+        language="eng,spa"
         creator="Wikipedia"
         publisher="Kiwix"
         date="2020-03-31"
@@ -234,6 +234,8 @@ const char sampleLibraryXML[] = R"(
 namespace
 {
 
+typedef std::vector<std::string> Langs;
+
 TEST(LibraryOpdsImportTest, allInOne)
 {
   kiwix::Library lib;
@@ -248,7 +250,8 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book1.getTitle(), "Encyclopédie de la Tunisie");
   EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie_novid_2018-10");
   EXPECT_EQ(book1.getFlavour(), "unforgettable");
-  EXPECT_EQ(book1.getLanguage(), "fra");
+  EXPECT_EQ(book1.getLanguages(), Langs{ "fra" });
+  EXPECT_EQ(book1.getCommaSeparatedLanguages(), "fra");
   EXPECT_EQ(book1.getDate(), "8 Oct 2018");
   EXPECT_EQ(book1.getDescription(), "Le meilleur de Wikipédia sur la Tunisie");
   EXPECT_EQ(book1.getCreator(), "Wikipedia");
@@ -272,7 +275,8 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book2.getTitle(), "TED talks - Business");
   EXPECT_EQ(book2.getName(), "");
   EXPECT_EQ(book2.getFlavour(), "");
-  EXPECT_EQ(book2.getLanguage(), "eng");
+  EXPECT_EQ(book2.getLanguages(), Langs{ "eng" });
+  EXPECT_EQ(book2.getCommaSeparatedLanguages(), "eng");
   EXPECT_EQ(book2.getDate(), "2018-07-23");
   EXPECT_EQ(book2.getDescription(), "Ideas worth spreading");
   EXPECT_EQ(book2.getCreator(), "TED");
@@ -344,7 +348,7 @@ TEST_F(LibraryTest, sanityCheck)
 {
   EXPECT_EQ(lib.getBookCount(true, true), 12U);
   EXPECT_EQ(lib.getBooksLanguages(),
-            std::vector<std::string>({"deu", "eng", "fra"})
+            std::vector<std::string>({"deu", "eng", "fra", "ita", "spa"})
   );
   EXPECT_EQ(lib.getBooksCreators(), std::vector<std::string>({
       "Islam Stack Exchange",

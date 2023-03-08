@@ -23,7 +23,7 @@
         url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Ray (uncategorized) Charles"
         description="No category is assigned to this library entry."
-        language="rus"
+        language="rus,eng"
         creator="Wikipedia"
         publisher="Kiwix"
         date="2020-03-31"
