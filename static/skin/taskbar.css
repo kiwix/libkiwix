@@ -200,6 +200,7 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
 #uiLanguageSelectorButton {
   margin: 0px 12px 6px 12px;
   float: right;
+  cursor: pointer;
 }
 
 @media(min-width:420px) {

@@ -61,7 +61,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=be514520" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=4974c58b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=cafa3d61" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
@@ -71,7 +71,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=8fc2cc83" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=fee406f3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=b9a574d4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
@@ -270,7 +270,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=be514520"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=4974c58b"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -303,7 +303,7 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=8fc2cc83" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=fee406f3" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=2cf0f8c5" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=b00b12db" defer></script>

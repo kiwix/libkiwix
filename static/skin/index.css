@@ -182,6 +182,7 @@ body {
 #uiLanguageSelectorButton {
   margin: 0 12px 0 0;
   float: right;
+  cursor: pointer;
 }
 
 .book__list {
