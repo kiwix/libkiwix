@@ -190,7 +190,7 @@ To use JS provided by kiwix-serve you can use the following template to start wi
 - To get books listed using `index.js` add - `<div class="book__list"></div>` under body tag.
 - To get number of books listed add - `<h3 class="kiwixHomeBody__results"></h3>` under body tag.
 - To add language select box add - `<select id="languageFilter"></select>` under body tag.
-- To add language select box add - `<select id="categoryFilter"></select>` under body tag.
+- To add category select box add - `<select id="categoryFilter"></select>` under body tag.
 - To add search box for books use following form -
     ```
         <form id='kiwixSearchForm'>
