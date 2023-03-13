@@ -10,5 +10,6 @@
 	"500-page-heading": "অভ্যন্তরীণ সার্ভার ত্রুটি",
 	"library-button-text": "স্বাগত পাতায় চলুন",
 	"home-button-text": "'{{BOOK_TITLE}}'-এর প্রধান পাতায় চলুন",
-	"searchbox-tooltip": "'{{BOOK_TITLE}}' অনুসন্ধান করুন"
+	"searchbox-tooltip": "'{{BOOK_TITLE}}' অনুসন্ধান করুন",
+	"search": "অনুসন্ধান"
 }

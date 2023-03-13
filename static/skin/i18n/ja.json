@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"MathXplore"
+			"MathXplore",
+			"もなー(偽物)"
 		]
 	},
 	"name": "日本語",
@@ -18,5 +19,14 @@
 	"random-page-button-text": "無作為に選ばれたページに移動する",
 	"search": "検索",
 	"book-filtering-all-categories": "すべてのカテゴリー",
-	"book-filtering-all-languages": "すべての言語"
+	"book-filtering-all-languages": "すべての言語",
+	"download": "ダウンロード",
+	"direct-download-link-text": "直ダウンロードリンク",
+	"direct-download-alt-text": "直ダウンロード",
+	"hash-download-link-text": "Sha256 ハッシュ",
+	"hash-download-alt-text": "ハッシュをダウンロード",
+	"magnet-link-text": "マグネットリンク",
+	"magnet-alt-text": "マグネットをダウンロード",
+	"torrent-download-link-text": "Torrentファイル",
+	"torrent-download-alt-text": "Torrentをダウンロード"
 }
