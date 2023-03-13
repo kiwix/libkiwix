@@ -15,7 +15,7 @@
 	"invalid-raw-data-type": "{{DATATYPE}} ni veljaven zahtevek za neobdelano vsebino.",
 	"no-value-for-arg": "Argument {{ARGUMENT}} nima določene nobene vrednosti",
 	"no-query": "Poizvedba ni podana.",
-	"raw-entry-not-found": "Ni mogoče najti vnosa {{ENTRY}} vrste {{DATATYPE}}",
+	"raw-entry-not-found": "Ni mogoče najti vnosa {{ENTRY}} tipa {{DATATYPE}}",
 	"400-page-title": "Neveljaven zahtevek",
 	"400-page-heading": "Neveljaven zahtevek",
 	"404-page-title": "Vsebine ni mogoče najti",

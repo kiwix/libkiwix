@@ -33,5 +33,6 @@
 	"searchbox-tooltip": "Искать '{{BOOK_TITLE}}'",
 	"confusion-of-tongues": "В поиске будут участвовать две или более книг на разных языках, что может привести к запутанным результатам.",
 	"book-filtering-all-categories": "Все категории",
+	"book-filtering-all-languages": "Все языки",
 	"download": "Скачать"
 }
