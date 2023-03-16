@@ -80,7 +80,7 @@ jobs:
       HOME: /home/runner
     runs-on: ubuntu-latest
     container:
-      image: "kiwix/kiwix-build_ci:${{matrix.image_variant}}-31"
+      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:36"
     steps:
     - name: Checkout code
       shell: python
@@ -133,13 +133,9 @@ jobs:
       env:
         LD_LIBRARY_PATH: "/home/runner/BUILD_${{matrix.target}}/INSTALL/lib:/home/runner/BUILD_${{matrix.target}}/INSTALL/lib${{matrix.lib_postfix}}"
         SKIP_BIG_MEMORY_TEST: 1
+
     - name: Publish coverage
-      shell: bash
-      run: |
-        cd $HOME/libkiwix
-        curl https://codecov.io/bash -o codecov.sh
-        bash codecov.sh -n "${OS_NAME}_${{matrix.target}}" -Z
-        rm codecov.sh
       if: startsWith(matrix.target, 'native_')
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
