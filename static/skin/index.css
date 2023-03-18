@@ -469,10 +469,9 @@ body {
     width: auto;
 }
 
-.feedLogo {
+.feedLogo, #uiLanguageSelectorButton {
     height: 30px;
     float: right;
-    border-radius: 5px;
 }
 
 @media screen and (max-width: 1100px) {

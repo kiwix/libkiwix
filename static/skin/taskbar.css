@@ -201,6 +201,7 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
   margin: 0px 12px 6px 12px;
   float: right;
   cursor: pointer;
+  height: 30px;
 }
 
 @media(min-width:420px) {
