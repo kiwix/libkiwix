@@ -97,6 +97,8 @@ const ResourceCollection resources200Compressible{
 
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/content/A/index" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/content/A/Ray_Charles" },
+
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/nojs"},
 };
 
 const ResourceCollection resources200Uncompressible{
@@ -179,6 +181,8 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Creator" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Title" },
+
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/nojs/download/zimfile"},
 };
 
 ResourceCollection all200Resources()
@@ -395,6 +399,8 @@ const char* urls404[] = {
   // zimfile has no Favicon nor Illustration_48x48@1 meta item
   "/ROOT%23%3F/raw/zimfile/meta/Favicon",
   "/ROOT%23%3F/raw/zimfile/meta/Illustration_48x48@1",
+
+  "/ROOT%23%3F/nojs/download/thiszimdoesntexist"
 };
 
 TEST_F(ServerTest, 404)

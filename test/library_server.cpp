@@ -945,6 +945,259 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   EXPECT_EQ(r1->status, 404);
 }
 
+#define HTML_PREAMBLE \
+  "<!DOCTYPE html>\n" \
+  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" \
+  "  <head>\n" \
+  "    <meta charset=\"UTF-8\" />\n" \
+  "    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n" \
+  "    <link type=\"root\" href=\"/ROOT%23%3F\">\n" \
+  "    <title>Welcome to Kiwix Server</title>\n" \
+  "    <link\n" \
+  "      type=\"text/css\"\n" \
+  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=e4d76d16\"\n" \
+  "      rel=\"Stylesheet\"\n" \
+  "    />\n" \
+  "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3\">\n" \
+  "    <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625\">\n" \
+  "    <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc\">\n" \
+  "    <link rel=\"manifest\" href=\"/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb\">\n" \
+  "    <link rel=\"mask-icon\" href=\"/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95\" color=\"#5bbad5\">\n" \
+  "    <link rel=\"shortcut icon\" href=\"/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314\">\n" \
+  "    <meta name=\"msapplication-TileColor\" content=\"#da532c\">\n" \
+  "    <meta name=\"msapplication-config\" content=\"/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a\">\n" \
+  "    <meta name=\"theme-color\" content=\"#ffffff\">\n" \
+  "    <style>\n" \
+  "      @font-face {\n" \
+  "        font-family: \"poppins\";\n" \
+  "        src: url(\"/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837\") format(\"truetype\");\n" \
+  "      }\n\n" \
+  "      @font-face {\n" \
+  "          font-family: \"roboto\";\n" \
+  "          src: url(\"/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248\") format(\"truetype\");\n" \
+  "      }\n\n" \
+  "      .book__list {\n" \
+  "        display: flex;\n" \
+  "        flex-direction: row;\n" \
+  "        flex-wrap: wrap;\n" \
+  "        align-items: center;\n" \
+  "      }\n\n" \
+  "      .book__wrapper:hover {\n" \
+  "        transform: scale(1.0);\n" \
+  "      }\n\n" \
+  "      .tag__link {\n" \
+  "        pointer-events: none;\n" \
+  "      }\n\n" \
+  "      .book__link__wrapper {\n" \
+  "        grid-column: 1 / 3;\n" \
+  "        grid-row: 1 / 3;\n" \
+  "      }\n\n" \
+  "      .book__link {\n" \
+  "        grid-row: 2 / 3;\n" \
+  "      }\n\n" \
+  "      .kiwixHomeBody__results {\n" \
+  "        flex-basis: 100%;\n" \
+  "      }\n\n" \
+  "      #book__title>a, .book__download a {\n" \
+  "        text-decoration: none;\n" \
+  "        all: unset;\n" \
+  "      }\n" \
+  "    </style>\n" \
+  "  </head>\n" \
+  "  <body>\n" \
+  "    <div class='kiwixNav'>\n"
 
+#define CHARLES_RAY_BOOK_HTML \
+  "        <div class=\"book__wrapper\">\n" \
+  "                <div class=\"book__link__wrapper\">\n" \
+  "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/charlesray/?size=48)></div>\n" \
+  "                    <div class=\"book__header\">\n" \
+  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile%26other\">Charles, Ray</a></div>\n" \
+  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile%26other\">Download</a></span></div>\n" \
+  "                    </div>\n" \
+  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile%26other\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "                      <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
+  "                    </a>\n" \
+  "              </div>\n" \
+  "            <div class=\"book__languageTag\" >fra</div>\n" \
+  "            <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                <span class=\"tag__link\" aria-label='unittest' title='unittest'>unittest</span>\n" \
+  "                <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "            </div>\n" \
+  "        </div>\n" \
+  "        </div>\n"
+
+#define RAY_CHARLES_BOOK_HTML \
+  "        <div class=\"book__wrapper\">\n" \
+  "                <div class=\"book__link__wrapper\">\n" \
+  "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48)></div>\n" \
+  "                    <div class=\"book__header\">\n" \
+  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile\">Ray Charles</a></div>\n" \
+  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile\">Download</a></span></div>\n" \
+  "                    </div>\n" \
+  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "                      <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
+  "                    </a>\n" \
+  "              </div>\n" \
+  "            <div class=\"book__languageTag\" >eng</div>\n" \
+  "            <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                <span class=\"tag__link\" aria-label='public_tag_without_a_value' title='public_tag_without_a_value'>public_tag_without_a_value</span>\n" \
+  "                <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "            </div>\n" \
+  "        </div>\n" \
+  "        </div>\n"
+
+#define RAY_CHARLES_UNCTZ_BOOK_HTML \
+  "        <div class=\"book__wrapper\">\n" \
+  "                <div class=\"book__link__wrapper\">\n" \
+  "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles_uncategorized/?size=48)></div>\n" \
+  "                    <div class=\"book__header\">\n" \
+  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile\">Ray (uncategorized) Charles</a></div>\n" \
+  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile\">Download</a></span></div>\n" \
+  "                    </div>\n" \
+  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "                      <div class=\"book__description\" title=\"No category is assigned to this library entry.\">No category is assigned to this library entry.</div>\n" \
+  "                    </a>\n" \
+  "              </div>\n" \
+  "            <div class=\"book__languageTag\" >rus,eng</div>\n" \
+  "            <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                <span class=\"tag__link\" aria-label='public_tag_with_a_value:value_of_a_public_tag' title='public_tag_with_a_value:value_of_a_public_tag'>public_tag_with_a_value:value_of_a_public_tag</span>\n" \
+  "                <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "            </div>\n" \
+  "        </div>\n" \
+  "        </div>\n"
+
+#define FINAL_HTML_TEXT \
+  "        </div>\n" \
+  "    </div>\n" \
+  "    <div id=\"kiwixfooter\" class=\"kiwixfooter\">Powered by&nbsp;<a href=\"https://kiwix.org\">Kiwix</a></div>\n" \
+  "    </body>\n" \
+  "</html>"
+
+#define FILTERS_HTML(SELECTED_ENG) \
+  "      <div class=\"kiwixNav__filters\">\n" \
+  "        <div class=\"kiwixNav__select\">\n" \
+  "          <select name=\"lang\" id=\"languageFilter\" class='kiwixNav__kiwixFilter filter' form=\"kiwixSearchForm\">\n" \
+  "            <option value=\"\" selected>All languages</option>\n" \
+  "            <option value=\"eng\"" SELECTED_ENG ">English</option>\n" \
+  "            <option value=\"fra\">français</option>\n" \
+  "            <option value=\"rus\">русский</option>\n" \
+  "          </select>\n" \
+  "        </div>\n" \
+  "        <div class=\"kiwixNav__select\">\n" \
+  "          <select name=\"category\" id=\"categoryFilter\" class='kiwixNav__kiwixFilter filter' form=\"kiwixSearchForm\">\n" \
+  "            <option value=\"\">All categories</option>\n" \
+  "            <option value=\"jazz\">Jazz</option>\n" \
+  "            <option value=\"wikipedia\">Wikipedia</option>\n" \
+  "          </select>\n" \
+  "        </div>\n" \
+  "      </div>\n" \
+  "      <form id='kiwixSearchForm' class='kiwixNav__SearchForm' action=\"/ROOT%23%3F/nojs\">\n" \
+  "        <input type=\"text\" name=\"q\" placeholder=\"Search\" id=\"searchFilter\" class='kiwixSearch filter' value=\"\">\n" \
+  "        <input type=\"submit\" class=\"kiwixButton kiwixButtonHover\" value=\"Search\"/>\n" \
+  "      </form>\n" \
+  "    </div>\n"
+
+#define HOME_BODY_TEXT(X) \
+  "    <div class=\"kiwixHomeBody\">\n" \
+  "        \n" \
+  "        <div class=\"book__list\">\n" \
+  "        <h3 class=\"kiwixHomeBody__results\">" X " book(s)</h3>\n"
+
+#define HOME_BODY_0_RESULTS \
+  "    <div class=\"kiwixHomeBody\">\n" \
+  "        <style>\n" \
+  "          .book__list {\n" \
+  "            display: none;\n" \
+  "          }\n" \
+  "          .kiwixHomeBody {\n" \
+  "            justify-content: center;\n" \
+  "          }\n" \
+  "          .noResults {\n" \
+  "            font-size: 16px;\n" \
+  "            font-family: roboto;\n" \
+  "          }\n" \
+  "        </style>\n" \
+  "        <div class=\"noResults\">\n" \
+  "          No result. Would you like to <a href=\"?lang=\">reset filter</a>?\n" \
+  "        </div>\n" \
+  "        </style>\n" \
+  "        <div class=\"book__list\">\n" \
+  "        <h3 class=\"kiwixHomeBody__results\">0 book(s)</h3>\n" \
+  "        \n"
+
+#define RAY_CHARLES_UNCTZ_DOWNLOAD \
+  "<!DOCTYPE html>\n" \
+  "<html lang=\"en\">\n" \
+  "<head>\n" \
+  "    <meta charset=\"UTF-8\">\n" \
+  "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" \
+  "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" \
+  "    <title>Download book</title>\n" \
+  "</head>\n" \
+  "<style>\n" \
+  "    .downloadLinksTitle {\n" \
+  "        text-align: center;\n" \
+  "        font-size: 32px;\n" \
+  "        margin-bottom: 8px;\n" \
+  "    }\n" \
+  "</style>\n" \
+  "<body>\n" \
+  "    <div class=\"downloadLinksTitle\">\n" \
+  "        Download links for <b><i>Ray (uncategorized) Charles</i></b>\n" \
+  "    </div>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim\" download>\n" \
+  "        <div>Direct</div>\n" \
+  "    </a>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim.sha256\" download>\n" \
+  "        <div>Sha256 hash</div>\n" \
+  "    </a>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim.magnet\" target=\"_blank\">\n" \
+  "        <div>Magnet link</div>\n" \
+  "    </a>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim.torrent\" download>\n" \
+  "        <div>Torrent file</div>\n" \
+  "    </a>\n" \
+  "</body>\n" \
+  "</html>"
+
+TEST_F(LibraryServerTest, noJS) {
+  // no_js_default
+  auto r = zfs1_->GET("/ROOT%23%3F/nojs");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+            HTML_PREAMBLE
+            FILTERS_HTML("")
+            HOME_BODY_TEXT("3")
+            CHARLES_RAY_BOOK_HTML
+            RAY_CHARLES_BOOK_HTML
+            RAY_CHARLES_UNCTZ_BOOK_HTML
+            FINAL_HTML_TEXT);
+
+  // no_js_eng_lang
+  r = zfs1_->GET("/ROOT%23%3F/nojs?lang=eng");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+            HTML_PREAMBLE
+            FILTERS_HTML(" selected ")
+            HOME_BODY_TEXT("2")
+            RAY_CHARLES_UNCTZ_BOOK_HTML
+            RAY_CHARLES_BOOK_HTML
+            FINAL_HTML_TEXT);
+
+  // no_js_no_books
+  r = zfs1_->GET("/ROOT%23%3F/nojs?lang=fas");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+            HTML_PREAMBLE
+            FILTERS_HTML("")
+            HOME_BODY_0_RESULTS
+            FINAL_HTML_TEXT);
+  
+  // no_js_download
+  r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body, RAY_CHARLES_UNCTZ_DOWNLOAD);
+}
 
 #undef EXPECT_SEARCH_RESULTS
