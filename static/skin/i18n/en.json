@@ -43,7 +43,8 @@
 	, "magnet-alt-text": "download magnet"
 	, "torrent-download-link-text": "Torrent file"
 	, "torrent-download-alt-text": "download torrent"
-	, "library-opds-feed": "Library OPDS Feed"
+	, "library-opds-feed-all-entries": "Library OPDS Feed - All entries"
 	, "filter-by-tag": "Filter by tag \"{{TAG}}\""
 	, "stop-filtering-by-tag": "Stop filtering by tag \"{{TAG}}\""
+	, "library-opds-feed-parameterised": "Library OPDS Feed - entries matching {{#LANG}}\nLanguage: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategory: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTag: {{TAG}} {{/TAG}}{{#Q}}\nQuery: {{Q}} {{/Q}}"
 }

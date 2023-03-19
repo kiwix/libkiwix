@@ -39,6 +39,7 @@
         const feedLink = `${root}/catalog/v2/entries?${filteredParams.toString()}`;
         document.querySelector('#headFeedLink').href = feedLink;
         document.querySelector('#feedLink').href = feedLink;
+        setFeedToolTip();
     }
 
     function changeUILanguage() {
@@ -496,6 +497,28 @@
 
     window.addEventListener('hashchange', () => resetAndFilter());
 
+    function setFeedToolTip() {
+        const feedLogoElem = document.getElementById('feedLogo');
+        const libraryOpdsFeedHint = opdsFeedHintByParams();
+        for (const attr of ["alt", "aria-label", "title"] ) {
+            feedLogoElem.setAttribute(attr, libraryOpdsFeedHint);
+        }
+    }
+
+    function opdsFeedHintByParams() {
+        const paramObj = {};
+        const inputParams = new FragmentParams(window.location.hash);
+        for (const [key, value] of inputParams) {
+            if ( value != '' ) {
+                paramObj[key.toUpperCase()] = value;
+            }
+        }
+        if (!paramObj.LANG && !paramObj.CATEGORY && !paramObj.TAG && !paramObj.Q) {
+            return $t('library-opds-feed-all-entries');
+        }
+        return $t('library-opds-feed-parameterised', paramObj);
+    }
+
     function updateUIText() {
         footer.innerHTML = $t("powered-by-kiwix-html");
         const searchText = $t("search");
@@ -503,11 +526,7 @@
         document.getElementById('searchButton').value = searchText;
         document.getElementById('categoryFilter').children[0].innerHTML = $t("book-filtering-all-categories");
         document.getElementById('languageFilter').children[0].innerHTML = $t("book-filtering-all-languages");
-        const feedLogoElem = document.getElementById('feedLogo');
-        const libraryOpdsFeedHint = $t("library-opds-feed");
-        for (const attr of ["alt", "aria-label", "title"] ) {
-            feedLogoElem.setAttribute(attr, libraryOpdsFeedHint);
-        }
+        setFeedToolTip();
     }
 
     async function onload() {

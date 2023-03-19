@@ -45,7 +45,8 @@
 	"magnet-alt-text": "Hint for the icon of a magnet link",
 	"torrent-download-link-text": "Link text for downloading the torrent file",
 	"torrent-download-alt-text": "Hint for the icon of torrent download",
-	"library-opds-feed": "Hint for the library OPDS feed link",
 	"filter-by-tag": "Hint for a link that would load results filtered by a single tag",
-	"stop-filtering-by-tag": "Tooltip for the button that cancels filtering by tag"
+	"stop-filtering-by-tag": "Tooltip for the button that cancels filtering by tag",
+	"library-opds-feed-all-entries": "Hint for the library OPDS feed for all entries",
+	"library-opds-feed-parameterised": "Hint for the library OPDS feed for filtered entries"
 }
