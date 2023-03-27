@@ -32,7 +32,8 @@
 	, "magnet-alt-text": "download [I18N TESTING] magnet"
 	, "torrent-download-link-text": "Torrent [I18N TESTING] file"
 	, "torrent-download-alt-text": "download [I18N TESTING] torrent"
-	, "library-opds-feed": "Library [I18N] OPDS [TESTING] Feed"
+	, "library-opds-feed-all-entries": "[I18N] Library [TESTING] OPDS Feed - All entries [I18N TESTING]"
 	, "filter-by-tag": "Filter [I18N] by [TESTING] tag \"{{TAG}}\""
 	, "stop-filtering-by-tag": "[I18N] Stop filtering [TESTING] by tag \"{{TAG}}\""
+	, "library-opds-feed-parameterised": "[I18N] Library OPDS Feed - [TESTING] entries matching {{#LANG}}\nLanguage: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategory: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTag: {{TAG}} {{/TAG}}{{#Q}}\nQuery: {{Q}} {{/Q}}"
 }
