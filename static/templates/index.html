@@ -44,6 +44,29 @@
     <script type="text/javascript" src="{{root}}/skin/index.js?KIWIXCACHEID" defer></script>
   </head>
   <body>
+    <noscript>
+      <style>
+        .kiwixNav, .kiwixHomeBody, #feedLink, .kiwixfooter {
+          display: none;
+        }
+        html, body {
+          height: 100%;
+        }
+        .noScriptLinkContainer {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          -moz-transform: translateX(-50%) translateY(-50%);
+          -webkit-transform: translateX(-50%) translateY(-50%);
+          transform: translateX(-50%) translateY(-50%);
+          font-size: 16px;
+          font-family: roboto;
+        }
+      </style>
+      <div class="noScriptLinkContainer">
+        <span id="noScriptLinkText">This page cannot be accessed if JavaScript is not enabled. Please head over to <a href="{{root}}/nojs">nojs endpoint.</a></span>
+      </div>
+    </noscript>
     <div class='kiwixNav'>
       <a href="{{root}}/catalog/v2/entries" id="feedLink">
         <img src="{{root}}/skin/feed.svg?KIWIXCACHEID"
