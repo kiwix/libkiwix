@@ -266,7 +266,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   const auto illustration = book1.getIllustration(48);
   EXPECT_EQ(illustration->width, 48U);
   EXPECT_EQ(illustration->height, 48U);
-  EXPECT_EQ(illustration->mimeType, "image/png");
+  EXPECT_EQ(illustration->mimeType, "image/svg");
   EXPECT_EQ(illustration->url, "library-opds-import.unittests.dev/meta?name=favicon&content=wikipedia_fr_tunisie_novid_2018-10");
   }
 
@@ -291,7 +291,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   const auto illustration = book2.getIllustration(48);
   EXPECT_EQ(illustration->width, 48U);
   EXPECT_EQ(illustration->height, 48U);
-  EXPECT_EQ(illustration->mimeType, "image/png");
+  EXPECT_EQ(illustration->mimeType, "image/svg");
   EXPECT_EQ(illustration->url, "library-opds-import.unittests.dev/meta?name=favicon&content=ted_en_business_2018-07");
   }
 }
