@@ -120,6 +120,8 @@ class Filter {
     Filter& maxSize(size_t size);
     Filter& query(std::string query, bool partial=true);
     Filter& name(std::string name);
+    Filter& clearLang();
+    Filter& clearCategory();
 
     bool hasQuery() const;
     const std::string& getQuery() const { return _query; }

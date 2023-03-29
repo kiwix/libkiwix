@@ -93,6 +93,8 @@ std::string extractFromString(const std::string& str);
 
 bool startsWith(const std::string& base, const std::string& start);
 
+std::string stripSuffix(const std::string& str, const std::string& suffix);
+
 std::vector<std::string> getTitleVariants(const std::string& title);
 } //namespace kiwix
 #endif

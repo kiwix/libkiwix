@@ -28,7 +28,7 @@
 	, "random-page-button-text": "Go to a randomly selected page"
 	, "searchbox-tooltip": "Search '{{BOOK_TITLE}}'"
 	, "confusion-of-tongues": "Two or more books in different languages would participate in search, which may lead to confusing results."
-	, "welcome-page-overzealous-filter": "No result. Would you like to <a href=\"#lang=\">reset filter</a>?"
+	, "welcome-page-overzealous-filter": "No result. Would you like to <a href=\"{{URL}}\">reset filter</a>?"
 	, "powered-by-kiwix-html": "Powered by&nbsp;<a href=\"https://kiwix.org\">Kiwix</a>"
 	, "search": "Search"
 	, "book-filtering-all-categories": "All categories"
@@ -47,4 +47,8 @@
 	, "filter-by-tag": "Filter by tag \"{{TAG}}\""
 	, "stop-filtering-by-tag": "Stop filtering by tag \"{{TAG}}\""
 	, "library-opds-feed-parameterised": "Library OPDS Feed - entries matching {{#LANG}}\nLanguage: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategory: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTag: {{TAG}} {{/TAG}}{{#Q}}\nQuery: {{Q}} {{/Q}}"
+	, "welcome-to-kiwix-server": "Welcome to Kiwix Server"
+	, "download-links-heading": "Download links for <b><i>{{BOOK_TITLE}}</i></b>"
+	, "download-links-title": "Download book"
+	, "preview-book": "Preview"
 }

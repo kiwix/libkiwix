@@ -163,4 +163,11 @@ TEST(stringTools, urlDecode)
   EXPECT_EQ(urlDecode(encodedUriDelimSymbols, false), encodedUriDelimSymbols);
 }
 
+TEST(stringTools, stripSuffix)
+{
+  EXPECT_EQ(stripSuffix("abc123", "123"), "abc");
+  EXPECT_EQ(stripSuffix("abc123", "123456789"), "abc123");
+  EXPECT_EQ(stripSuffix("abc123", "987"), "abc123");
+}
+
 };

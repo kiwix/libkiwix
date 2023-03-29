@@ -17,7 +17,7 @@
 	, "home-button-text": "[I18N TESTING] Jump to the main page of '{{BOOK_TITLE}}'"
 	, "random-page-button-text": "[I18N TESTING] I am tired of determinism"
 	, "searchbox-tooltip": "[I18N TESTING] Let's search in '{{BOOK_TITLE}}'"
-	, "welcome-page-overzealous-filter": "[I18N TESTING] Nothing found. <a href=\"?lang=\">Reset filter</a>"
+	, "welcome-page-overzealous-filter": "[I18N TESTING] Nothing found. <a href=\"{{URL}}\">Reset filter</a>"
 	, "powered-by-kiwix-html": "[I18N TESTING] Powered by&nbsp;<a href=\"https://kiwix.org\">Kiwix</a> (nominal power: 1.23 kW)"
 	, "search": "[I18N Search TESTING]"
 	, "book-filtering-all-categories": "All [I18N TESTING] categories"
@@ -36,4 +36,8 @@
 	, "filter-by-tag": "Filter [I18N] by [TESTING] tag \"{{TAG}}\""
 	, "stop-filtering-by-tag": "[I18N] Stop filtering [TESTING] by tag \"{{TAG}}\""
 	, "library-opds-feed-parameterised": "[I18N] Library OPDS Feed - [TESTING] entries matching {{#LANG}}\nLanguage: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategory: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTag: {{TAG}} {{/TAG}}{{#Q}}\nQuery: {{Q}} {{/Q}}"
+	, "welcome-to-kiwix-server": "[I18N] Welcome to Kiwix Server [TESTING]"
+	, "download-links-heading": "[I18N] Download links for <b><i>{{BOOK_TITLE}}</i></b> [TESTING]"
+	, "download-links-title": "[I18N TESTING]Download book"
+	, "preview-book": "[I18N] Preview [TESTING]"
 }

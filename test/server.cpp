@@ -63,7 +63,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=e4d76d16" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=78cfd6a2" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=d38d9ef1" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -97,6 +97,8 @@ const ResourceCollection resources200Compressible{
 
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/content/A/index" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/content/A/Ray_Charles" },
+
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/nojs"},
 };
 
 const ResourceCollection resources200Uncompressible{
@@ -179,6 +181,8 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Creator" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Title" },
+
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/nojs/download/zimfile"},
 };
 
 ResourceCollection all200Resources()
@@ -284,7 +288,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=e4d76d16"
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=b00b12db" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=78cfd6a2" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=d38d9ef1" defer></script>
         <img src="/ROOT%23%3F/skin/feed.svg?cacheid=055b333f"
         <img src="/ROOT%23%3F/skin/langSelector.svg?cacheid=00b59961"
 )EXPECTEDRESULT"
@@ -395,6 +399,8 @@ const char* urls404[] = {
   // zimfile has no Favicon nor Illustration_48x48@1 meta item
   "/ROOT%23%3F/raw/zimfile/meta/Favicon",
   "/ROOT%23%3F/raw/zimfile/meta/Illustration_48x48@1",
+
+  "/ROOT%23%3F/nojs/download/thiszimdoesntexist"
 };
 
 TEST_F(ServerTest, 404)

@@ -53,6 +53,7 @@ extern "C" {
 #include "name_mapper.h"
 #include "search_renderer.h"
 #include "opds_dumper.h"
+#include "html_dumper.h"
 #include "i18n.h"
 
 #include <zim/uuid.h>
@@ -627,6 +628,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "search"))
       return handle_search(request);
 
+    if (isEndpointUrl(url, "nojs"))
+      return handle_no_js(request);
+
     if (isEndpointUrl(url, "suggest"))
      return handle_suggest(request);
 
@@ -753,6 +757,73 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
     {"enable_library_button", m_withLibraryButton ? "true" : "false" }
   };
   return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
+}
+
+std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const
+{
+  const auto book = mp_library->getBookById(bookId);
+  auto bookUrl = kiwix::stripSuffix(book.getUrl(), ".meta4");
+  auto getTranslation = i18n::GetTranslatedStringWithMsgId(userLang);
+  const auto translations = kainjow::mustache::object{
+                            getTranslation("download-links-heading", {{"BOOK_TITLE", book.getTitle()}}),
+                            getTranslation("download-links-title"),
+                            getTranslation("direct-download-link-text"),
+                            getTranslation("hash-download-link-text"),
+                            getTranslation("magnet-link-text"),
+                            getTranslation("torrent-download-link-text")
+  };
+
+  return render_template(
+             RESOURCE::templates::no_js_download_html,
+             kainjow::mustache::object{
+               {"url", bookUrl},
+               {"translations", translations}
+             }
+  );
+}
+
+std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& request)
+{
+  const auto url = request.get_url();
+  const auto urlParts = kiwix::split(url, "/", true, false);
+  HTMLDumper htmlDumper(mp_library, mp_nameMapper);
+  htmlDumper.setRootLocation(m_root);
+  htmlDumper.setLibraryId(getLibraryId());
+  auto userLang = request.get_user_language();
+  htmlDumper.setUserLanguage(userLang);
+  std::string content;
+
+  if (urlParts.size() == 1) {
+    auto filter = get_search_filter(request);
+    try {
+      if (request.get_argument("category") == "") {
+        filter.clearCategory();
+      }
+    } catch (...) {}
+    try {
+      if (request.get_argument("lang") == "") {
+        filter.clearLang();
+      }
+    } catch (...) {}
+    content = htmlDumper.dumpPlainHTML(filter);
+  } else if ((urlParts.size() == 3) && (urlParts[1] == "download")) {
+    try {
+      const auto bookId = mp_nameMapper->getIdForName(urlParts[2]);
+      content = getNoJSDownloadPageHTML(bookId, userLang);
+    } catch (const std::out_of_range&) {
+      return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+    }
+  } else {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
+  return ContentResponse::build(
+             *this,
+             content,
+             "text/html; charset=utf-8"
+  );
 }
 
 namespace

@@ -48,5 +48,9 @@
 	"filter-by-tag": "Hint for a link that would load results filtered by a single tag",
 	"stop-filtering-by-tag": "Tooltip for the button that cancels filtering by tag",
 	"library-opds-feed-all-entries": "Hint for the library OPDS feed for all entries",
-	"library-opds-feed-parameterised": "Hint for the library OPDS feed for filtered entries"
+	"library-opds-feed-parameterised": "Hint for the library OPDS feed for filtered entries",
+	"welcome-to-kiwix-server": "Title shown in browser's title bar/page tab",
+	"download-links-heading": "Heading for no-js download page",
+	"download-links-title": "Title for no-js download page",
+	"preview-book": "Tooltip of book-tile leading to the book"
 }
