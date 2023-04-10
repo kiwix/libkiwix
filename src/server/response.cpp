@@ -412,12 +412,6 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, const st
   m_mimeType(mimetype)
 {
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
-  if ( !startsWith(m_mimeType, "application/pdf") ) {
-    add_header("Content-Security-Policy",
-               "default-src 'self' data: blob: about: chrome-extension: 'unsafe-inline' 'unsafe-eval'; "
-               "sandbox allow-scripts allow-same-origin allow-modals allow-popups allow-forms allow-downloads;");
-    add_header("Referrer-Policy", "no-referrer");
-  }
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(

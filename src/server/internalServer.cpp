@@ -1123,6 +1123,29 @@ ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::s
                               });
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// The content security policy below is set on responses to the /content
+// endpoint in order to prevent the ZIM content from interfering with the
+// viewer (e.g. breaking out of the viewer iframe by performing top-level
+// navigation).
+const std::string CONTENT_CSP_HEADER =
+    "default-src 'self' "
+                "data: "
+                "blob: "
+                "about: "
+                "'unsafe-inline' "
+                "'unsafe-eval'; "
+
+    "sandbox allow-scripts "
+            "allow-same-origin "
+            "allow-modals "
+            "allow-popups "
+            "allow-forms "
+            "allow-downloads;";
+
+// End of content security policy
+///////////////////////////////////////////////////////////////////////////////
+
 } // unnamed namespace
 
 std::unique_ptr<Response>
@@ -1183,6 +1206,13 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     }
     auto response = ItemResponse::build(*this, request, entry.getItem());
     response->set_etag_body(archiveUuid);
+
+    if ( !startsWith(entry.getItem().getMimetype(), "application/pdf") ) {
+      // NOTE: Content security policy is not applied to PDF content so that
+      // NOTE: it can be displayed in the viewer in Chromium-based browsers.
+      response->add_header("Content-Security-Policy", CONTENT_CSP_HEADER);
+      response->add_header("Referrer-Policy", "no-referrer");
+    }
 
     if (m_verbose.load()) {
       printf("Found %s\n", entry.getPath().c_str());
