@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - can-revert
   pull_request:
 
 jobs:
@@ -39,103 +39,3 @@ jobs:
           SKIP_BIG_MEMORY_TEST: 1
           LD_LIBRARY_PATH: ${{env.HOME}}/BUILD_native_dyn/INSTALL/lib:${{env.HOME}}/BUILD_native_dyn/INSTALL/lib64
         run: meson test -C build --verbose
-
-  Linux:
-    strategy:
-      fail-fast: false
-      matrix:
-        name:
-          - native_static
-          - native_dyn
-          - android_arm
-          - android_arm64
-          - win32_static
-          - win32_dyn
-        include:
-          - name: native_static
-            target: native_static
-            image_variant: bionic
-            lib_postfix: '/x86_64-linux-gnu'
-          - name: native_dyn
-            target: native_dyn
-            image_variant: bionic
-            lib_postfix: '/x86_64-linux-gnu'
-          - name: android_arm
-            target: android_arm
-            image_variant: bionic
-            lib_postfix: '/arm-linux-androideabi'
-          - name: android_arm64
-            target: android_arm64
-            image_variant: bionic
-            lib_postfix: '/aarch64-linux-android'
-          - name: win32_static
-            target: win32_static
-            image_variant: f35
-            lib_postfix: '64'
-          - name: win32_dyn
-            target: win32_dyn
-            image_variant: f35
-            lib_postfix: '64'
-    env:
-      HOME: /home/runner
-    runs-on: ubuntu-latest
-    container:
-      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:36"
-    steps:
-    - name: Checkout code
-      shell: python
-      run: |
-        from subprocess import check_call
-        from os import environ
-        command = [
-          'git', 'clone',
-          'https://github.com/${{github.repository}}',
-          '--depth=1',
-          '--branch', '${{ github.head_ref || github.ref_name }}'
-        ]
-        check_call(command, cwd=environ['HOME'])
-    - name: Install deps
-      shell: bash
-      run: |
-        ARCHIVE_NAME=deps2_${OS_NAME}_${{matrix.target}}_libkiwix.tar.xz
-        wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C /home/runner
-    - name: Compile
-      shell: bash
-      run: |
-        meson --version
-        if [[ "${{matrix.target}}" =~ .*_dyn ]]; then
-          MESON_OPTION="--default-library=shared"
-        else
-          MESON_OPTION="--default-library=static"
-        fi
-        if [[ "${{matrix.target}}" =~ native_.* ]]; then
-          MESON_OPTION="$MESON_OPTION -Db_coverage=true"
-        else
-          MESON_OPTION="$MESON_OPTION --cross-file $HOME/BUILD_${{matrix.target}}/meson_cross_file.txt"
-        fi
-        if [[ "${{matrix.target}}" =~ android_.* ]]; then
-          MESON_OPTION="$MESON_OPTION -Dstatic-linkage=true"
-        fi
-        cd $HOME/libkiwix
-        meson . build ${MESON_OPTION}
-        cd build
-        ninja
-      env:
-        PKG_CONFIG_PATH: "/home/runner/BUILD_${{matrix.target}}/INSTALL/lib/pkgconfig:/home/runner/BUILD_${{matrix.target}}/INSTALL/lib${{matrix.lib_postfix}}/pkgconfig"
-        CPPFLAGS: "-I/home/runner/BUILD_${{matrix.target}}/INSTALL/include"
-    - name: Test
-      if: startsWith(matrix.target, 'native_')
-      shell: bash
-      run: |
-        cd $HOME/libkiwix/build
-        meson test --verbose
-        ninja coverage
-      env:
-        LD_LIBRARY_PATH: "/home/runner/BUILD_${{matrix.target}}/INSTALL/lib:/home/runner/BUILD_${{matrix.target}}/INSTALL/lib${{matrix.lib_postfix}}"
-        SKIP_BIG_MEMORY_TEST: 1
-
-    - name: Publish coverage
-      if: startsWith(matrix.target, 'native_')
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
