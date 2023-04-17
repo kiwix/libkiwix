@@ -18,9 +18,6 @@ jobs:
       - name: Install packages
         run: |
           brew update
-          brew unlink python3
-          # upgrade from python@3.11.2_1 to python@3.11.3 fails to overwrite those
-          rm -f /usr/local/bin/2to3 /usr/local/bin/2to3-3.11 /usr/local/bin/idle3 /usr/local/bin/idle3.11 /usr/local/bin/pydoc3 /usr/local/bin/pydoc3.11 /usr/local/bin/python3 /usr/local/bin/python3-config /usr/local/bin/python3.11 /usr/local/bin/python3.11-config
           brew install pkg-config ninja meson
 
       - name: Install dependencies
