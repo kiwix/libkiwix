@@ -131,8 +131,13 @@
         const title =  getInnerHtml(book, 'title');
         const description = getInnerHtml(book, 'summary');
         const id = getInnerHtml(book, 'id');
-        const langCode = getInnerHtml(book, 'language');
-        const language = languages[langCode];
+        const langCodesList = getInnerHtml(book, 'language').split(',');
+        const langCode = langCodesList.length == 1 ? langCodesList[0] : 'mul';
+        let language = languages[langCode];
+        if (langCode == 'mul') {
+            const mulLangList = langCodesList.filter(x => languages.hasOwnProperty(x)).map(x => languages[x]);
+            language = mulLangList.join(', ');
+        }
         const tags = getInnerHtml(book, 'tags');
         const tagList = tags.split(';').filter(tag => {return !(tag.startsWith('_'))});
         const tagFilterLinks = tagList.map((tagValue) => generateTagLink(tagValue));
