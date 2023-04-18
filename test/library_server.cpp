@@ -793,6 +793,24 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
   }
 }
 
+TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
+{
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=fra&category=jazz");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?lang=fra&category=jazz")
+      "  <title>Filtered Entries (lang=fra&amp;category=jazz)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>1</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      CHARLES_RAY_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+}
+
 TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/raycharles");
@@ -1193,7 +1211,7 @@ TEST_F(LibraryServerTest, noJS) {
             FILTERS_HTML("")
             HOME_BODY_0_RESULTS
             FINAL_HTML_TEXT);
-  
+
   // no_js_download
   r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile");
   EXPECT_EQ(r->status, 200);
