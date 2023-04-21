@@ -51,7 +51,7 @@
     }
 
     function queryUrlBuilder() {
-        let url = `${root}/catalog/search?`;
+        let url = `${root}/catalog/v2/entries?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
         params.forEach((value, key) => {url+= value ? `&${key}=${value}` : ''});
         return (url);
@@ -267,7 +267,7 @@
     }
 
     async function getBookCount(query) {
-        const url = `${root}/catalog/search?${query}`;
+        const url = `${root}/catalog/v2/entries?${query}&count=0`;
         return await fetch(url).then(async (resp) => {
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
             return parseInt(data.querySelector('totalResults').innerHTML);
