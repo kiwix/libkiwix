@@ -204,14 +204,30 @@ function handle_visual_viewport_change() {
   contentIframe.height = wh - contentIframe.offsetTop - 4;
 }
 
+function setIframeUrl(path) {
+  try {
+    // Don't do anything if we are already at the requested URL.
+    // This is needed to break the infinite ping-pong played by
+    // handle_location_hash_change() and handle_content_url_change()
+    // (when either top-window or content window/iframe URL changes the other
+    // one is updated too).
+    if ( path == contentIframe.contentWindow.location.pathname )
+      return;
+  } catch ( error ) {
+    // This happens in Firefox when a PDF file is displayed in the iframe
+    // (sandboxing of the iframe content and cross-origin mismatch with the
+    // builtin PDF viewer result in preventing access to the attributes of
+    // contentIframe.contentWindow.location).
+    // Fall through and load the requested URL.
+  }
+  contentIframe.contentWindow.location.replace(path);
+}
+
 function handle_location_hash_change() {
   const hash = window.location.hash.slice(1);
   console.log("handle_location_hash_change: " + hash);
   updateCurrentBookIfNeeded(hash);
-  const iframeContentUrl = userUrl2IframeUrl(hash);
-  if ( iframeContentUrl != contentIframe.contentWindow.location.pathname ) {
-    contentIframe.contentWindow.location.replace(iframeContentUrl);
-  }
+  setIframeUrl(userUrl2IframeUrl(hash));
   updateSearchBoxForLocationChange();
   previousScrollTop = Infinity;
   history.replaceState(viewerState, null);
