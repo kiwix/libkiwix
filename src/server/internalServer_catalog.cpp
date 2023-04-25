@@ -33,6 +33,74 @@
 
 namespace kiwix {
 
+namespace
+{
+
+enum OPDSResponseKind
+{
+  OPDS_ENTRY,
+  OPDS_NAVIGATION_FEED,
+  OPDS_ACQUISITION_FEED
+};
+
+const std::string opdsMimeType[] = {
+  "application/atom+xml;type=entry;profile=opds-catalog;charset=utf-8",
+  "application/atom+xml;profile=opds-catalog;kind=navigation;charset=utf-8",
+  "application/atom+xml;profile=opds-catalog;kind=acquisition;charset=utf-8"
+};
+
+} // unnamed namespace
+
+std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_catalog");
+  }
+
+  std::string host;
+  std::string url;
+  try {
+    host = request.get_header("Host");
+    url  = request.get_url_part(1);
+  } catch (const std::out_of_range&) {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
+  if (url == "v2") {
+    return handle_catalog_v2(request);
+  }
+
+  if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
+  if (url == "searchdescription.xml") {
+    auto response = ContentResponse::build(*this, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
+    return std::move(response);
+  }
+
+  zim::Uuid uuid;
+  kiwix::OPDSDumper opdsDumper(mp_library, mp_nameMapper);
+  opdsDumper.setRootLocation(m_root);
+  opdsDumper.setLibraryId(getLibraryId());
+  std::vector<std::string> bookIdsToDump;
+  if (url == "root.xml") {
+    uuid = zim::Uuid::generate(host);
+    bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
+  } else if (url == "search") {
+    bookIdsToDump = search_catalog(request, opdsDumper);
+    uuid = zim::Uuid::generate();
+  }
+
+  auto response = ContentResponse::build(
+      *this,
+      opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
+      opdsMimeType[OPDS_ACQUISITION_FEED]);
+  return std::move(response);
+}
+
 std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -90,7 +158,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
                {"category_list_feed_id", gen_uuid(libraryId + "/categories")},
                {"language_list_feed_id", gen_uuid(libraryId + "/languages")}
              },
-             "application/atom+xml;profile=opds-catalog;kind=navigation"
+             opdsMimeType[OPDS_NAVIGATION_FEED]
   );
 }
 
@@ -104,7 +172,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
   return ContentResponse::build(
              *this,
              opdsFeed,
-             "application/atom+xml;profile=opds-catalog;kind=acquisition"
+             opdsMimeType[OPDS_ACQUISITION_FEED]
   );
 }
 
@@ -124,7 +192,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   return ContentResponse::build(
              *this,
              opdsFeed,
-             "application/atom+xml;type=entry;profile=opds-catalog"
+             opdsMimeType[OPDS_ENTRY]
   );
 }
 
@@ -136,7 +204,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
   return ContentResponse::build(
              *this,
              opdsDumper.categoriesOPDSFeed(),
-             "application/atom+xml;profile=opds-catalog;kind=navigation"
+             opdsMimeType[OPDS_NAVIGATION_FEED]
   );
 }
 
@@ -148,7 +216,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
   return ContentResponse::build(
              *this,
              opdsDumper.languagesOPDSFeed(),
-             "application/atom+xml;profile=opds-catalog;kind=navigation"
+             opdsMimeType[OPDS_NAVIGATION_FEED]
   );
 }
 

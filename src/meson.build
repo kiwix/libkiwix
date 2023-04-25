@@ -26,7 +26,7 @@ kiwix_sources = [
   'server/request_context.cpp',
   'server/response.cpp',
   'server/internalServer.cpp',
-  'server/internalServer_catalog_v2.cpp',
+  'server/internalServer_catalog.cpp',
   'server/i18n.cpp',
   'opds_catalog.cpp',
   'version.cpp'
