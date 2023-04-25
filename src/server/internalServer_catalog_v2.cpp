@@ -51,6 +51,56 @@ const std::string opdsMimeType[] = {
 
 } // unnamed namespace
 
+std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_catalog");
+  }
+
+  std::string host;
+  std::string url;
+  try {
+    host = request.get_header("Host");
+    url  = request.get_url_part(1);
+  } catch (const std::out_of_range&) {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
+  if (url == "v2") {
+    return handle_catalog_v2(request);
+  }
+
+  if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
+    return HTTP404Response(*this, request)
+           + urlNotFoundMsg;
+  }
+
+  if (url == "searchdescription.xml") {
+    auto response = ContentResponse::build(*this, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
+    return std::move(response);
+  }
+
+  zim::Uuid uuid;
+  kiwix::OPDSDumper opdsDumper(mp_library, mp_nameMapper);
+  opdsDumper.setRootLocation(m_root);
+  opdsDumper.setLibraryId(getLibraryId());
+  std::vector<std::string> bookIdsToDump;
+  if (url == "root.xml") {
+    uuid = zim::Uuid::generate(host);
+    bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
+  } else if (url == "search") {
+    bookIdsToDump = search_catalog(request, opdsDumper);
+    uuid = zim::Uuid::generate();
+  }
+
+  auto response = ContentResponse::build(
+      *this,
+      opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
+      "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
+  return std::move(response);
+}
+
 std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
 {
   if (m_verbose.load()) {
