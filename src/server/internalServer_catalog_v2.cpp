@@ -44,9 +44,9 @@ enum OPDSResponseKind
 };
 
 const std::string opdsMimeType[] = {
-  "application/atom+xml;type=entry;profile=opds-catalog",
-  "application/atom+xml;profile=opds-catalog;kind=navigation",
-  "application/atom+xml;profile=opds-catalog;kind=acquisition"
+  "application/atom+xml;type=entry;profile=opds-catalog;charset=utf-8",
+  "application/atom+xml;profile=opds-catalog;kind=navigation;charset=utf-8",
+  "application/atom+xml;profile=opds-catalog;kind=acquisition;charset=utf-8"
 };
 
 } // unnamed namespace
@@ -97,7 +97,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   auto response = ContentResponse::build(
       *this,
       opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
-      "application/atom+xml; profile=opds-catalog; kind=acquisition; charset=utf-8");
+      opdsMimeType[OPDS_ACQUISITION_FEED]);
   return std::move(response);
 }
 
