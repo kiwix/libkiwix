@@ -1088,6 +1088,7 @@ const std::string CONTENT_CSP_HEADER =
 
     "sandbox allow-scripts "
             "allow-same-origin "
+            "allow-top-navigation-by-user-activation "
             "allow-modals "
             "allow-popups "
             "allow-forms "
