@@ -257,7 +257,7 @@ function isExternalUrl(url) {
       || url.startsWith("https:");
 }
 
-function onClickEvent(e) {
+function handleLinkClick(e) {
   const iframeDocument = contentIframe.contentDocument;
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
   if (target !== null && "href" in target) {
@@ -266,6 +266,8 @@ function onClickEvent(e) {
       if ( viewerSettings.linkBlockingEnabled ) {
         return blockLink(target);
       }
+    } else {
+      target.setAttribute("target", "content_iframe");
     }
   }
 }
@@ -301,7 +303,7 @@ this.Element && function(ElementPrototype) {
 }(Element.prototype);
 
 function setup_external_link_blocker() {
-  setupEventHandler(contentIframe.contentDocument, 'a', 'click', onClickEvent);
+  setupEventHandler(contentIframe.contentDocument, 'a', 'click', handleLinkClick);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
