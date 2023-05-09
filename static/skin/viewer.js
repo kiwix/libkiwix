@@ -309,14 +309,22 @@ function setup_external_link_blocker() {
   setupEventHandler(contentIframe.contentDocument, 'a', 'click', onClickEvent);
 }
 
+function getBlockedUrl(catchExternalUrl) {
+  const p = new URLSearchParams(catchExternalUrl.split('?')[1]);
+  return p.get('source');
+}
+
 function handleInterceptedExternalLink(catchExternalUrl) {
   // The external link blocking page was loaded in the viewer iframe.
-  // We need to get rid of the viewer taskbar and display the confirmation
-  // page in the top frame.
-  const urlpath = `${root}/` + catchExternalUrl;
+  // We need to get rid of the viewer taskbar and load in the top frame either
+  // the external resource or, if running in --blockexternal mode, the
+  // confirmation page
+  const url = viewerSettings.linkBlockingEnabled
+            ? `${root}/` + catchExternalUrl
+            : getBlockedUrl(catchExternalUrl);
   history.back(); // drop from the browsing history the state where the
                   // external link catcher page is loaded in the iframe ...
-  window.location = urlpath; // ... and load it in the top frame instead
+  window.location = url; // ... and load the target in the top frame instead
 }
 
 ////////////////////////////////////////////////////////////////////////////////
