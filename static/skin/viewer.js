@@ -23,7 +23,7 @@ function userUrl2IframeUrl(url) {
 }
 
 function getBookFromUserUrl(url) {
-  if ( url == '' ) {
+  if ( url == '' || url.startsWith('catch/external?') ) {
     return null;
   }
 
@@ -131,6 +131,10 @@ function iframeUrl2UserUrl(url, query) {
     return '';
   }
 
+  if ( url == `${root}/catch/external` ) {
+    return `catch/external${query}`;
+  }
+
   if ( url == `${root}/search` ) {
     return `search${query}`;
   }
@@ -224,8 +228,12 @@ function handle_content_url_change() {
   const iframeContentUrl = iframeLocation.pathname;
   const iframeContentQuery = iframeLocation.search;
   const newHash = iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
-  history.replaceState(viewerState, null, makeURL(location.search, newHash));
-  updateCurrentBookIfNeeded(newHash);
+  if ( newHash.startsWith('catch/external?') ) {
+    handleInterceptedExternalLink(newHash);
+  } else {
+    history.replaceState(viewerState, null, makeURL(location.search, newHash));
+    updateCurrentBookIfNeeded(newHash);
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -262,10 +270,7 @@ function onClickEvent(e) {
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
   if (target !== null && "href" in target) {
     if ( isExternalUrl(target.href) ) {
-      target.setAttribute("target", "_top");
-      if ( viewerSettings.linkBlockingEnabled ) {
-        return blockLink(target);
-      }
+      return blockLink(target);
     }
   }
 }
@@ -302,6 +307,16 @@ this.Element && function(ElementPrototype) {
 
 function setup_external_link_blocker() {
   setupEventHandler(contentIframe.contentDocument, 'a', 'click', onClickEvent);
+}
+
+function handleInterceptedExternalLink(catchExternalUrl) {
+  // The external link blocking page was loaded in the viewer iframe.
+  // We need to get rid of the viewer taskbar and display the confirmation
+  // page in the top frame.
+  const urlpath = `${root}/` + catchExternalUrl;
+  history.back(); // drop from the browsing history the state where the
+                  // external link catcher page is loaded in the iframe ...
+  window.location = urlpath; // ... and load it in the top frame instead
 }
 
 ////////////////////////////////////////////////////////////////////////////////
