@@ -224,13 +224,13 @@ function handle_location_hash_change() {
 function handle_content_url_change() {
   const iframeLocation = contentIframe.contentWindow.location;
   console.log('handle_content_url_change: ' + iframeLocation.href);
-  document.title = contentIframe.contentDocument.title;
   const iframeContentUrl = iframeLocation.pathname;
   const iframeContentQuery = iframeLocation.search;
   const newHash = iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
   if ( newHash.startsWith('catch/external?') ) {
     handleInterceptedExternalLink(newHash);
   } else {
+    document.title = contentIframe.contentDocument.title;
     history.replaceState(viewerState, null, makeURL(location.search, newHash));
     updateCurrentBookIfNeeded(newHash);
   }
