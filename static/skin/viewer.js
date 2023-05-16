@@ -243,9 +243,10 @@ function matchingAncestorElement(el, context, selector) {
 
 const block_path = `${root}/catch/external`;
 
-function blockLink(target) {
-  const encodedHref = encodeURIComponent(target.href);
-  target.setAttribute("href", block_path + "?source=" + encodedHref);
+function blockLink(url) {
+  return viewerSettings.linkBlockingEnabled
+       ? block_path + "?source=" + encodeURIComponent(url)
+       : url;
 }
 
 function isExternalUrl(url) {
@@ -262,10 +263,8 @@ function onClickEvent(e) {
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
   if (target !== null && "href" in target) {
     if ( isExternalUrl(target.href) ) {
-      target.setAttribute("target", "_top");
-      if ( viewerSettings.linkBlockingEnabled ) {
-        return blockLink(target);
-      }
+      target.setAttribute("href", blockLink(target.href));
+      contentIframe.contentWindow.parent.postMessage({ externalURL : target.href }, "*");
     }
   }
 }
@@ -446,6 +445,13 @@ function changeUILanguage() {
   });
 }
 
+function handleMessage(event) {
+  console.log("handleMessage");
+  if ( event.data.externalURL ) {
+    window.location = event.data.externalURL;
+  }
+}
+
 function setupViewer() {
   // Defer the call of handle_visual_viewport_change() until after the
   // presence or absence of the taskbar as determined by this function
@@ -453,6 +459,7 @@ function setupViewer() {
   setTimeout(handle_visual_viewport_change, 0);
 
   window.onresize = handle_visual_viewport_change;
+  window.addEventListener("message", handleMessage);
 
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
