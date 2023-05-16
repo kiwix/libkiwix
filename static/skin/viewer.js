@@ -259,9 +259,10 @@ function matchingAncestorElement(el, context, selector) {
 
 const block_path = `${root}/catch/external`;
 
-function blockLink(target) {
-  const encodedHref = encodeURIComponent(target.href);
-  target.setAttribute("href", block_path + "?source=" + encodedHref);
+function blockLink(url) {
+  return viewerSettings.linkBlockingEnabled
+       ? block_path + "?source=" + encodeURIComponent(url)
+       : url;
 }
 
 function isExternalUrl(url) {
@@ -278,9 +279,14 @@ function onClickEvent(e) {
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
   if (target !== null && "href" in target) {
     if ( isExternalUrl(target.href) ) {
-      target.setAttribute("target", "_top");
-      if ( viewerSettings.linkBlockingEnabled ) {
-        return blockLink(target);
+      const possiblyBlockedLink = blockLink(target.href);
+      if ( e.ctrlKey || e.shiftKey ) {
+        // The link will be loaded in a new tab/window - update the link
+        // and let the browser handle the rest.
+        target.setAttribute("href", possiblyBlockedLink);
+      } else {
+        // Load the external URL in the viewer window (rather than iframe)
+        contentIframe.contentWindow.parent.location = possiblyBlockedLink;
       }
     }
   }
