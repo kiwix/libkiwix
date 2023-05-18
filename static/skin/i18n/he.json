@@ -30,7 +30,7 @@
 	"random-page-button-text": "מעבר לדף שנבחר אקראית",
 	"searchbox-tooltip": "חיפוש \"{{BOOK_TITLE}}\"",
 	"confusion-of-tongues": "שני ספרים או יותר בשפות שונות ישתתפו בחיפוש, מה שעלול להוביל לתוצאות מבלבלות.",
-	"welcome-page-overzealous-filter": "אין תוצאות. האם <a href=\"?lang=\">לאפס את המסנן</a>?",
+	"welcome-page-overzealous-filter": "אין תוצאות. האם <a href=\"{{URL}}\">לאפס את המסנן</a>?",
 	"powered-by-kiwix-html": "מופעל על־ידי&nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",
 	"search": "חיפוש",
 	"book-filtering-all-categories": "כל הקטגוריות",
@@ -45,7 +45,12 @@
 	"magnet-alt-text": "הורדת magnet",
 	"torrent-download-link-text": "קובץ טורנט",
 	"torrent-download-alt-text": "הורדת טורנט",
-	"library-opds-feed": "הזנת OPDS של ספרייה",
+	"library-opds-feed-all-entries": "הזנת ספריית OPDS - כל הרשומות",
 	"filter-by-tag": "סינון לפי התג \"{{TAG}}\"",
-	"stop-filtering-by-tag": "להפסיק סינון לפי התג \"{{TAG}}\""
+	"stop-filtering-by-tag": "להפסיק סינון לפי התג \"{{TAG}}\"",
+	"library-opds-feed-parameterised": "הזנת ספריית OPDS - רשומות שתואמות ל{{#LANG}}\nשפה: {{LANG}} {{/LANG}}{{#CATEGORY}}\nקטגוריה: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nתג: {{TAG}} {{/TAG}}{{#Q}}\nשאילתה: {{Q}} {{/Q}}",
+	"welcome-to-kiwix-server": "ברוך בואך לשרת קיוויקס",
+	"download-links-heading": "הורדת קישורים עבור <b><i>{{BOOK_TITLE}}</i></b>",
+	"download-links-title": "הורדת ספר",
+	"preview-book": "תצוגה מקדימה"
 }

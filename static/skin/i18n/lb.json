@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kelson",
 			"Robby",
 			"Volvox"
 		]
@@ -16,7 +17,7 @@
 	"home-button-text": "Gitt op d'Haaptsäit vun '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Gitt op eng zoufälleg gewielte Säit",
 	"searchbox-tooltip": "No '{{BOOK_TITLE}}' sichen",
-	"welcome-page-overzealous-filter": "Kee Resultat. Wëllt Dir <a href=\"?lang=\">de Filter zrécksetzen</a>?",
+	"welcome-page-overzealous-filter": "Kee Resultat. Wëllt Dir <a href=\"{{URL}}\">de Filter zrécksetzen</a>?",
 	"search": "Sichen",
 	"book-filtering-all-categories": "All Kategorien",
 	"book-filtering-all-languages": "All Sproochen",

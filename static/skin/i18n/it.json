@@ -2,12 +2,13 @@
 	"@metadata": {
 		"authors": [
 			"Albano",
-			"Beta16"
+			"Beta16",
+			"McDutchie"
 		]
 	},
 	"name": "italiano",
 	"suggest-full-text-search": "contenente '{{{SEARCH_TERMS}}}'...",
-	"no-such-book": "Nessun libro del genere: {{BOOK_NAME}}",
+	"no-such-book": "Nessun libro con questo nome: {{BOOK_NAME}}",
 	"too-many-books": "Troppi libri richiesti ({{NB_BOOKS}}) dove il limite è {{LIMIT}}",
 	"no-book-found": "Nessun libro corrisponde ai criteri di selezione",
 	"url-not-found": "L'URL richiesto \"{{url}}\" non è stato trovato in questo server.",
@@ -27,5 +28,7 @@
 	"book-filtering-all-categories": "Tutte le categorie",
 	"book-filtering-all-languages": "Tutte le lingue",
 	"count-of-matching-books": "{{COUNT}} libro/i",
-	"download": "Scarica"
+	"download": "Scarica",
+	"download-links-title": "Scarica libro",
+	"preview-book": "Anteprima"
 }

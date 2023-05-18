@@ -1,10 +1,36 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kelson",
 			"McDutchie"
 		]
 	},
-	"welcome-page-overzealous-filter": "Nulle resultato. Vole tu <a href=\"?lang=\">reinitialisar le filtro</a>?",
+	"name": "interlingua",
+	"suggest-full-text-search": "continente '{{{SEARCH_TERMS}}}'...",
+	"no-such-book": "Necun tal libro: {{BOOK_NAME}}",
+	"too-many-books": "Troppo de libros demandate ({{NB_BOOKS}}); le limite es {{LIMIT}}",
+	"no-book-found": "Necun libro corresponde al criterios de selection",
+	"url-not-found": "Le URL reuqestate \"{{url}}\" non ha essite trovate sur iste servitor.",
+	"suggest-search": "Facer un recerca in texto complete de <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "Ups! Non poteva eliger un articulo aleatori :(",
+	"invalid-raw-data-type": "{{DATATYPE}} non es un request valide pro contento crude.",
+	"no-value-for-arg": "Necun valor fornite pro le argumento {{ARGUMENT}}",
+	"no-query": "Necun consulta fornite.",
+	"raw-entry-not-found": "Non pote trovar le entrata {{ENTRY}} del typo {{DATATYPE}}",
+	"400-page-title": "Requesta invalide",
+	"400-page-heading": "Requesta invalide",
+	"404-page-title": "Contento non trovate",
+	"404-page-heading": "Non trovate",
+	"500-page-title": "Error interne del servitor",
+	"500-page-heading": "Error interne del servitor",
+	"fulltext-search-unavailable": "Le recerca in texto complete es indisponibile",
+	"no-search-results": "Le motor de recerca in texto complete non es disponibile pro iste contento.",
+	"library-button-text": "Ir al pagina de benvenita",
+	"home-button-text": "Ir al pagina principal de ''{{BOOK_TITLE}}",
+	"random-page-button-text": "Ir a un pagina seligite aleatorimente",
+	"searchbox-tooltip": "Cercar '{{BOOK_TITLE}}'",
+	"confusion-of-tongues": "Duo o plus libros in differente linguas participarea in le recerca, lo que pote menar a resultatos confuse.",
+	"welcome-page-overzealous-filter": "Nulle resultato. Vole tu <a href=\"{{URL}}\">reinitialisar le filtro</a>?",
 	"powered-by-kiwix-html": "Actionate per&nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",
 	"search": "Cercar",
 	"book-filtering-all-categories": "Tote le categorias",
@@ -19,7 +45,12 @@
 	"magnet-alt-text": "ligamine \"magnet\" de discargamento",
 	"torrent-download-link-text": "File Torrent",
 	"torrent-download-alt-text": "discargar Torrent",
-	"library-opds-feed": "Fluxo OPDS del bibliotheca",
+	"library-opds-feed-all-entries": "Fluxo OPDS del bibliotheca – Tote le entratas",
 	"filter-by-tag": "Filtrar per etiquetta \"{{TAG}}\"",
-	"stop-filtering-by-tag": "Non plus filtrar per etiquetta \"{{TAG}}\""
+	"stop-filtering-by-tag": "Non plus filtrar per etiquetta \"{{TAG}}\"",
+	"library-opds-feed-parameterised": "Fluxo OPDS del bibliotheca – Entratas correspondente a {{#LANG}}\nLingua {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategoria: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nEtiquetta: {{TAG}} {{/TAG}}{{#Q}}\nConsulta: {{Q}} {{/Q}}",
+	"welcome-to-kiwix-server": "Benvenite al servitor Kiwix",
+	"download-links-heading": "Discargar ligamines pro <b><i>{{BOOK_TITLE}}</i></b>",
+	"download-links-title": "Discargar libro",
+	"preview-book": "Previsualisation"
 }

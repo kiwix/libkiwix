@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Alhaji Yakubu"
+			"Alhaji Yakubu",
+			"Amire80"
 		]
 	},
-	"welcome-page-overzealous-filter": "Duoro kyebe. E na boɔra ka fo <a href=\"?lang=\"></a>",
+	"welcome-page-overzealous-filter": "Duoro kyebe. <a href=\"{{URL}}\">E na boɔra ka fo</a>?",
 	"search": "Bo",
 	"book-filtering-all-categories": "Zagre zaa",
 	"book-filtering-all-languages": "Kɔkɔrɛɛ zaa",
@@ -15,7 +16,6 @@
 	"hash-download-alt-text": "Tage bonmannaa",
 	"magnet-link-text": "Kurimaraa sobie",
 	"magnet-alt-text": "Tage kurimaraa",
-	"library-opds-feed": "Gamadie OPDS diibu",
 	"filter-by-tag": "Guy yi kpuli {{TAG}}",
 	"stop-filtering-by-tag": "Bare gyɛɛbo kpuli {{TAG}}"
 }

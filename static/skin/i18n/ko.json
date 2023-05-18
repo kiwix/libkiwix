@@ -14,5 +14,6 @@
 	"500-page-title": "내부 서버 오류",
 	"500-page-heading": "내부 서버 오류",
 	"fulltext-search-unavailable": "전문 검색을 사용할 수 없습니다",
-	"random-page-button-text": "무작위로 선택된 문서로 이동"
+	"random-page-button-text": "무작위로 선택된 문서로 이동",
+	"preview-book": "미리 보기"
 }
