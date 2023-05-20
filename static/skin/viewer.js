@@ -335,8 +335,8 @@ let viewerSetupComplete = false;
 function on_content_load() {
   if ( viewerSetupComplete ) {
     handle_content_url_change();
-    setup_external_link_blocker();
   }
+  setup_external_link_blocker();
 }
 
 function htmlDecode(input) {
