@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kelson",
 			"McDutchie",
 			"Vistaus"
 		]
@@ -9,7 +10,7 @@
 	"no-book-found": "Er zijn geen boeken die overeenkomen met de zoekcriteria",
 	"no-value-for-arg": "Er is geen waarde opgegeven bij {{ARGUMENT}}",
 	"no-query": "Er is geen zoekterm opgegeven.",
-	"welcome-page-overzealous-filter": "Geen resultaat. Wilt u <a href=\"?lang=\">het filter resetten</a>?",
+	"welcome-page-overzealous-filter": "Geen resultaat. Wilt u <a href=\"{{URL}}\">het filter resetten</a>?",
 	"powered-by-kiwix-html": "Mogelijk gemaakt door <a href=\"https://kiwix.org\">Kiwix</a>",
 	"search": "Zoeken",
 	"book-filtering-all-categories": "Alle categorieën",
@@ -24,7 +25,6 @@
 	"magnet-alt-text": "magnet-link van de download",
 	"torrent-download-link-text": "Torrent-bestand",
 	"torrent-download-alt-text": "torrent downloaden",
-	"library-opds-feed": "OPDS-feed van de bibliotheek",
 	"filter-by-tag": "Filteren op tag \"{{TAG}}\"",
 	"stop-filtering-by-tag": "Stoppen met filteren op tag \"{{TAG}}\""
 }

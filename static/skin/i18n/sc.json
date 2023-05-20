@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kelson",
 			"L2212"
 		]
 	},
@@ -28,5 +29,28 @@
 	"home-button-text": "Bae a sa pàgina printzipale de '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Bae a una pàgina seletzionada a manera casuale",
 	"searchbox-tooltip": "Chirca '{{BOOK_TITLE}}'",
-	"confusion-of-tongues": "Duos o prus libros in limbas diferentes diant pigare parte a sa chirca, cosa chi diat pòdere causare resurtados confusionosos."
+	"confusion-of-tongues": "Duos o prus libros in limbas diferentes diant pigare parte a sa chirca, cosa chi diat pòdere causare resurtados confusionosos.",
+	"welcome-page-overzealous-filter": "Perunu resurtadu. Boles <a href=\"{{URL}}\">resetare su filtru</a>?",
+	"powered-by-kiwix-html": "Alimentadu dae&nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",
+	"search": "Chirca",
+	"book-filtering-all-categories": "Totu sas categorias",
+	"book-filtering-all-languages": "Totu sas limbas",
+	"count-of-matching-books": "{{COUNT}} libru/os",
+	"download": "Iscàrriga",
+	"direct-download-link-text": "Diretu",
+	"direct-download-alt-text": "iscarrigamentu diretu",
+	"hash-download-link-text": "Hash SHA256",
+	"hash-download-alt-text": "hash de s'iscarrigamentu",
+	"magnet-link-text": "Ligàmene Magnet",
+	"magnet-alt-text": "ligàmene \"magnet\" de iscarrigamentu",
+	"torrent-download-link-text": "Documentu Torrent",
+	"torrent-download-alt-text": "iscàrriga su torrent",
+	"library-opds-feed-all-entries": "Flussu OPDS de sa biblioteca – Totu sos elementos",
+	"filter-by-tag": "Filtra pro eticheta \"{{TAG}}\"",
+	"stop-filtering-by-tag": "Non filtres prus pro eticheta \"{{TAG}}\"",
+	"library-opds-feed-parameterised": "Flussu OPDS de sa biblioteca - elementos chi currispondet cun {{#LANG}}\nLimba: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategoria: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nEticheta: {{TAG}} {{/TAG}}{{#Q}}\nChirca: {{Q}} {{/Q}}",
+	"welcome-to-kiwix-server": "Bene bènnidu a su serbidore de Kiwix",
+	"download-links-heading": "Ligàmenes de iscarrigamentu pro <b><i>{{BOOK_TITLE}}</i></b>",
+	"download-links-title": "Iscàrriga su libru",
+	"preview-book": "Antiprima"
 }

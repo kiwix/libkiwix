@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kelson",
 			"Kly",
 			"Winston Sung"
 		]
@@ -30,7 +31,7 @@
 	"random-page-button-text": "前往隨機選取頁面",
 	"searchbox-tooltip": "在{{BOOK_TITLE}}搜尋",
 	"confusion-of-tongues": "搜索裡有加入兩本或更多不同語言的書籍，這可能會導致混淆結果。",
-	"welcome-page-overzealous-filter": "沒有結果。您想要<a href=\"?lang=\">重新設定篩選</a>嗎？",
+	"welcome-page-overzealous-filter": "沒有結果。您想要<a href=\"{{URL}}\">重新設定篩選</a>嗎？",
 	"powered-by-kiwix-html": "由 <a href=\"https://kiwix.org\">Kiwix</a> 提供技術支援",
 	"search": "搜尋",
 	"book-filtering-all-categories": "所有分類",
@@ -45,7 +46,12 @@
 	"magnet-alt-text": "下載 magnet",
 	"torrent-download-link-text": "Torrent 檔案",
 	"torrent-download-alt-text": "下載 torrent",
-	"library-opds-feed": "圖書館 OPDS 訊息來源",
+	"library-opds-feed-all-entries": "圖書館 OPDS 摘要 - 所有項目",
 	"filter-by-tag": "依標籤「{{TAG}}」篩選",
-	"stop-filtering-by-tag": "停止依標籤「{{TAG}}」篩選"
+	"stop-filtering-by-tag": "停止依標籤「{{TAG}}」篩選",
+	"library-opds-feed-parameterised": "圖書館 OPDS 摘要 - 項目符合 {{#LANG}}\n語言：{{LANG}} {{/LANG}}{{#CATEGORY}}\n分類：{{CATEGORY}} {{/CATEGORY}}{{#TAG}}\n標籤：{{TAG}} {{/TAG}}{{#Q}}\n查詢：{{Q}} {{/Q}}",
+	"welcome-to-kiwix-server": "歡迎來到 Kiwix 伺服器",
+	"download-links-heading": "下載<b><i>{{BOOK_TITLE}}</i></b>的連結",
+	"download-links-title": "下載書籍",
+	"preview-book": "預覽"
 }

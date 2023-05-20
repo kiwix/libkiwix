@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Strebski"
+			"Strebski",
+			"WaldiSt"
 		]
 	},
 	"name": "Polski",
@@ -23,5 +24,8 @@
 	"library-button-text": "Przejdź do strony powitalnej",
 	"home-button-text": "Przejdź do głównej strony '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Przejdź do losowo wybranej strony",
-	"searchbox-tooltip": "Szukaj '{{BOOK_TITLE}}'"
+	"searchbox-tooltip": "Szukaj '{{BOOK_TITLE}}'",
+	"welcome-to-kiwix-server": "Witamy na serwerze Kiwix",
+	"download-links-title": "Pobierz książkę",
+	"preview-book": "Podgląd"
 }

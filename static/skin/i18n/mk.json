@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bjankuloski06"
+			"Bjankuloski06",
+			"Kelson"
 		]
 	},
 	"name": "македонски",
@@ -29,7 +30,7 @@
 	"random-page-button-text": "Оди на случајно избрана страница",
 	"searchbox-tooltip": "Пребарај го „{{BOOK_TITLE}}“",
 	"confusion-of-tongues": "Во пребарувањето ќе учествуваат две или повеќе книги на различни јазици, што може да довете до збунувачки исход.",
-	"welcome-page-overzealous-filter": "Нема исход. Дали би сакале да го <a href=\"?lang=\">поништите филтерот</a>?",
+	"welcome-page-overzealous-filter": "Нема исход. Дали би сакале да го <a href=\"{{URL}}\">поништите филтерот</a>?",
 	"powered-by-kiwix-html": "Овозможено од&nbsp;<a href=\"https://kiwix.org\">Кивикс</a>",
 	"search": "Пребарај",
 	"book-filtering-all-categories": "Сите категории",
@@ -44,7 +45,12 @@
 	"magnet-alt-text": "преземи магнет",
 	"torrent-download-link-text": "Торентна податотека",
 	"torrent-download-alt-text": "преземи торент",
-	"library-opds-feed": "Библиотечен OPDS-тековник",
+	"library-opds-feed-all-entries": "Библиотечен тековник на OPDS — Сите ставки",
 	"filter-by-tag": "Филтрирај по ознаката „{{TAG}}“",
-	"stop-filtering-by-tag": "Запри филтрирање по ознаката „{{TAG}}“"
+	"stop-filtering-by-tag": "Запри филтрирање по ознаката „{{TAG}}“",
+	"library-opds-feed-parameterised": "Библиотечен тековник на OPDS — ставки што одговараат на {{#LANG}}\nЈазик: {{LANG}} {{/LANG}}{{#CATEGORY}}\nКатегорија: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nОзнака: {{TAG}} {{/TAG}}{{#Q}}\nБарање: {{Q}} {{/Q}}",
+	"welcome-to-kiwix-server": "Добре дојдовте на Опслужувачот на Кивикс",
+	"download-links-heading": "Врски за преземање на <b><i>{{BOOK_TITLE}}</i></b>",
+	"download-links-title": "Преземи книга",
+	"preview-book": "Преглед"
 }

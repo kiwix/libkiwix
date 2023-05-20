@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Eleassar"
+			"Eleassar",
+			"Kelson"
 		]
 	},
 	"name": "slovenščina",
@@ -29,7 +30,7 @@
 	"random-page-button-text": "Pojdite na naključno izbrano stran",
 	"searchbox-tooltip": "Poiščite »{{BOOK_TITLE}}«",
 	"confusion-of-tongues": "V iskanju bi bili uporabljeni dve ali več knjig v različnih jezikih, kar lahko pripelje do nejasnih zadetkov.",
-	"welcome-page-overzealous-filter": "Ni zadetkov. Želite <a href=\"?lang=\">ponastaviti filter</a>?",
+	"welcome-page-overzealous-filter": "Ni zadetkov. Želite <a href=\"{{URL}}\">ponastaviti filter</a>?",
 	"powered-by-kiwix-html": "Omogoča <a href=\"https://kiwix.org\">Kiwix</a>",
 	"search": "Išči",
 	"book-filtering-all-categories": "Vse kategorije",
@@ -44,7 +45,12 @@
 	"magnet-alt-text": "prenesi magnet",
 	"torrent-download-link-text": "Torrent datoteka",
 	"torrent-download-alt-text": "prenesi torrent",
-	"library-opds-feed": "Vir OPDS knjižnice",
+	"library-opds-feed-all-entries": "Knjižnični vir OPDS – Vsi vnosi",
 	"filter-by-tag": "Filtriraj po oznaki »{{TAG}}«",
-	"stop-filtering-by-tag": "Ustavi filtriranje po oznaki »{{TAG}}«"
+	"stop-filtering-by-tag": "Ustavi filtriranje po oznaki »{{TAG}}«",
+	"library-opds-feed-parameterised": "Knjižnični vir OPDS – vnosi, ki se ujemajo z {{#LANG}}\nJezik: {{LANG}} {{/LANG}}{{#CATEGORY}}\nKategorija: {{CATEGORY}} {{/CATEGORY}} {{#TAG}}\nOznaka: {{TAG}} {{/TAG}}{{#Q}}\nPoizvedba: {{Q}} {{/Q}}",
+	"welcome-to-kiwix-server": "Pozdravljeni na strežniku Kiwix",
+	"download-links-heading": "Povezave za prenos za <b><i>{{BOOK_TITLE}}</i></b>",
+	"download-links-title": "Prenesi knjigo",
+	"preview-book": "Predogled"
 }

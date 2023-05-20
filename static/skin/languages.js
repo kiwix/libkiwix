@@ -15,6 +15,9 @@ const uiLanguages = [
     "English": "en"
   },
   {
+    "suomi": "fi"
+  },
+  {
     "français": "fr"
   },
   {
@@ -22,6 +25,9 @@ const uiLanguages = [
   },
   {
     "Հայերեն": "hy"
+  },
+  {
+    "interlingua": "ia"
   },
   {
     "italiano": "it"
