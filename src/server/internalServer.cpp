@@ -19,7 +19,7 @@
 
 #include "internalServer.h"
 
-#ifdef __FreeBSD__
+#ifndef _WIN32
 #include <netinet/in.h>
 #endif
 
