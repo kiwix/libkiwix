@@ -1106,6 +1106,36 @@ InternalServer::build_redirect(const std::string& bookName, const zim::Item& ite
   return Response::build_redirect(*this, url);
 }
 
+std::unique_ptr<Response> build_response_for_path(const zim::Archive& archive, const std::string& path) {
+  auto entry = getEntryFromPath(archive, urlStr);
+  if (entry.isRedirect() || urlStr != entry.getPath()) {
+    // In the condition above, the second case (an entry with a different
+    // URL was returned) can occur in the following situations:
+    // 1. urlStr is empty or equal to "/" and the ZIM file doesn't contain
+    //    such an entry, in which case the main entry is returned instead.
+    // 2. The ZIM file uses old namespace scheme, and the resource at urlStr
+    //    is not present but can be found under one of the 'A', 'I', 'J' or
+    //    '-' namespaces, in which case that resource is returned instead.
+    return build_redirect(bookName, getFinalItem(archive, entry));
+  }
+  auto response = ItemResponse::build(*this, request, entry.getItem());
+  response->set_etag_body(archiveUuid);
+
+  if ( !startsWith(entry.getItem().getMimetype(), "application/pdf") ) {
+    // NOTE: Content security policy is not applied to PDF content so that
+    // NOTE: it can be displayed in the viewer in Chromium-based browsers.
+    response->add_header("Content-Security-Policy", CONTENT_CSP_HEADER);
+    response->add_header("Referrer-Policy", "no-referrer");
+  }
+
+  if (m_verbose.load()) {
+    printf("Found %s\n", entry.getPath().c_str());
+    printf("mimeType: %s\n", entry.getItem(true).getMimetype().c_str());
+  }
+
+  return response;
+}
+
 std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& request)
 {
   const std::string url = request.get_url();
@@ -1143,33 +1173,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   try {
-    auto entry = getEntryFromPath(*archive, urlStr);
-    if (entry.isRedirect() || urlStr != entry.getPath()) {
-      // In the condition above, the second case (an entry with a different
-      // URL was returned) can occur in the following situations:
-      // 1. urlStr is empty or equal to "/" and the ZIM file doesn't contain
-      //    such an entry, in which case the main entry is returned instead.
-      // 2. The ZIM file uses old namespace scheme, and the resource at urlStr
-      //    is not present but can be found under one of the 'A', 'I', 'J' or
-      //    '-' namespaces, in which case that resource is returned instead.
-      return build_redirect(bookName, getFinalItem(*archive, entry));
-    }
-    auto response = ItemResponse::build(*this, request, entry.getItem());
-    response->set_etag_body(archiveUuid);
-
-    if ( !startsWith(entry.getItem().getMimetype(), "application/pdf") ) {
-      // NOTE: Content security policy is not applied to PDF content so that
-      // NOTE: it can be displayed in the viewer in Chromium-based browsers.
-      response->add_header("Content-Security-Policy", CONTENT_CSP_HEADER);
-      response->add_header("Referrer-Policy", "no-referrer");
-    }
-
-    if (m_verbose.load()) {
-      printf("Found %s\n", entry.getPath().c_str());
-      printf("mimeType: %s\n", entry.getItem(true).getMimetype().c_str());
-    }
-
-    return response;
+    return build_response_for_path(*archive, urlStr);
   } catch(zim::EntryNotFound& e) {
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
