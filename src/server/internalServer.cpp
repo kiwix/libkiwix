@@ -360,7 +360,7 @@ zim::Query SearchInfo::getZimQuery(bool verbose) const {
   if (verbose) {
     std::cout << "Performing query '" << pattern<< "'";
   }
-  query.setQuery(pattern);
+  query.setQuery(removeAccents(pattern));
   if (geoQuery) {
     if (verbose) {
       std::cout << " with geo query '" << geoQuery.distance << "&(" << geoQuery.latitude << ";" << geoQuery.longitude << ")'";
