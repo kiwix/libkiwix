@@ -106,7 +106,6 @@ jobs:
         if [[ "${{matrix.target}}" =~ android_.* ]]; then
           MESON_OPTION="$MESON_OPTION -Dstatic-linkage=true"
         fi
-        cd $HOME/libkiwix
         meson . build ${MESON_OPTION}
         cd build
         ninja
@@ -117,7 +116,7 @@ jobs:
       if: startsWith(matrix.target, 'native_')
       shell: bash
       run: |
-        cd $HOME/libkiwix/build
+        cd build
         meson test --verbose
         ninja coverage
       env:
