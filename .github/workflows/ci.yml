@@ -83,17 +83,7 @@ jobs:
       image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:36"
     steps:
     - name: Checkout code
-      shell: python
-      run: |
-        from subprocess import check_call
-        from os import environ
-        command = [
-          'git', 'clone',
-          'https://github.com/${{github.repository}}',
-          '--depth=1',
-          '--branch', '${{ github.head_ref || github.ref_name }}'
-        ]
-        check_call(command, cwd=environ['HOME'])
+      uses: actions/checkout@v3
     - name: Install deps
       shell: bash
       run: |
