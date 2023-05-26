@@ -8,7 +8,7 @@ on:
 
 jobs:
   macOS:
-    runs-on: macos-12
+    runs-on: macos-11
     env:
       HOME: /Users/runner
     steps:
@@ -78,7 +78,7 @@ jobs:
             lib_postfix: '64'
     env:
       HOME: /home/runner
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container:
       image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:37"
     steps:
