@@ -54,19 +54,19 @@ jobs:
         include:
           - name: native_static
             target: native_static
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/x86_64-linux-gnu'
           - name: native_dyn
             target: native_dyn
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/x86_64-linux-gnu'
           - name: android_arm
             target: android_arm
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/arm-linux-androideabi'
           - name: android_arm64
             target: android_arm64
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/aarch64-linux-android'
           - name: win32_static
             target: win32_static
