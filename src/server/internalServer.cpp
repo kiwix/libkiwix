@@ -1126,6 +1126,7 @@ std::unique_ptr<Response> InternalServer::build_response_for_path(const RequestC
   }
 
   auto response = ItemResponse::build(*this, request, entry.getItem());
+  response->set_etag_body(std::string(archive.getUuid()));
 
   if ( !startsWith(entry.getItem().getMimetype(), "application/pdf") ) {
     // NOTE: Content security policy is not applied to PDF content so that
@@ -1135,6 +1136,132 @@ std::unique_ptr<Response> InternalServer::build_response_for_path(const RequestC
   }
 
   return response;
+}
+
+struct FuzzyRule {
+  std::string match;
+  std::string fuzzyCannonReplace;
+  std::string split;
+  bool splitlast;
+  std::vector<std::vector<std::string>> args;
+};
+
+typedef std::vector<FuzzyRule> FuzzyRules;
+
+
+const FuzzyRules FUZZY_RULES{
+  {
+    /*match:*/ "^(https?://(?:www\\.)?)(youtube\\.com/@[^?]+)[?].*",
+    /*fuzzyCanonReplace:*/ "$1$2",
+    /*.split:*/ "",
+    /*.splitlast:*/ false,
+    /*.args:*/ {},
+  },
+  {
+      /*match:*/ "//(?:www\\.)?youtube(?:-nocookie)?\\.com/(get_video_info)",
+      /*fuzzyCanonReplace": */"//youtube.fuzzy.replayweb.page/$1",
+      /*split:*/ "",
+      /*slpitlast:*/ false,
+      /*args:*/ {{"video_id"}},
+    },
+  {
+    /*match:*/ "//(?:www\\.)?youtube(?:-nocookie)?\\.com/(youtubei/v1/[^?]+\\?).*(videoId[^&]+).*",
+    /*fuzzyCanonReplace: */ "//youtube.fuzzy.replayweb.page/$1$2",
+    /*.split:*/ "",
+    /*.splitlast:*/ false,
+    /*"args: */ {{"videoId"}},
+    },
+     {
+    /*"match":*/  "//.*googlevideo.com/(videoplayback)",
+    /*fuzzyCanonReplace": */"//youtube.fuzzy.replayweb.page/$1",
+    /*.split:*/ "",
+    /*.splitlast:*/ false,
+    /*"args": */ {
+      {"id", "itag"},
+      {"id"}
+    },
+  },
+};
+
+FuzzyRule get_rule(std::string path) {
+  if (path.find("?") == std::string::npos) {
+    path.append("?");
+  }
+
+  for ( const auto& fuzzy_rule : FUZZY_RULES ) {
+    std::cout << "try to match " << fuzzy_rule.match << std::endl;
+    if (matchRegex(path, fuzzy_rule.match)) {
+      return fuzzy_rule;
+    }
+  }
+  throw std::runtime_error("No Rule");
+}
+
+std::vector<std::string> gen_fuzzy_urls(const RequestContext& request, const std::string& path) {
+  std::vector<std::string> fuzzy_urls;
+  // First of all, add the query_string
+  auto url_queried = path + "?" + request.get_query();
+  fuzzy_urls.push_back(url_queried);
+  try {
+    auto rule = get_rule(url_queried);
+
+    std::cout << "Matching rule : " << rule.match << std::endl;
+
+    std::string sep = rule.split.size() != 0 ? rule.split : "?";
+    auto split_idx = rule.splitlast ? url_queried.rfind(sep) : url_queried.find(sep);
+    auto prefix = split_idx == std::string::npos ? url_queried: url_queried.substr(0, split_idx+sep.size());
+
+    std::cout << "Prefix is : " << prefix << std::endl;
+
+    std::string fuzzy_cannon_url;
+    if (rule.fuzzyCannonReplace.size() != 0) {
+      std::cout << "replace " << rule.match << " with " << rule.fuzzyCannonReplace << std::endl;
+      fuzzy_cannon_url = replaceRegex(url_queried, rule.fuzzyCannonReplace, rule.match);
+    } else {
+      fuzzy_cannon_url = prefix;
+    }
+
+    // remove querystring from fuzzy_cannon_url.
+    split_idx = fuzzy_cannon_url.find("?");
+    fuzzy_cannon_url = fuzzy_cannon_url.substr(0, split_idx);
+
+    std::cout << "fuzzy_cannon_url is : " << fuzzy_cannon_url << std::endl;
+
+    fuzzy_urls.push_back(fuzzy_cannon_url);
+
+    for (auto args: rule.args) {
+      std::stringstream query;
+      std::string sep="?";
+      for (auto arg: args) {
+        query << sep << arg << "=" << request.get_optional_param(arg, std::string());
+        sep = "&";
+      }
+      fuzzy_urls.push_back(fuzzy_cannon_url+query.str());
+    }
+  } catch(const std::runtime_error&) {
+    auto split_idx = url_queried.find("?");
+    fuzzy_urls.push_back(split_idx == std::string::npos ? url_queried : url_queried.substr(0, split_idx+1));
+  }
+  return fuzzy_urls;
+}
+
+std::unique_ptr<Response> InternalServer::build_response_for_fuzzypath(const RequestContext& request, const zim::Archive& archive, const std::string& bookName, const std::string& path) const
+{
+  try {
+    std::cout << "Try url : " << path << std::endl;
+    return build_response_for_path(request, archive, bookName, path);
+  } catch(zim::EntryNotFound& e) {
+    // We have to do fuzzy matching.
+    for (const auto& fuzzy_url: gen_fuzzy_urls(request, path)) {
+      std::cout << "Try fuzzy url : " << fuzzy_url << std::endl;
+      try {
+        return build_response_for_path(request, archive, bookName, fuzzy_url);
+      } catch(zim::EntryNotFound& e) {}
+    }
+    // No fuzzy path matches,
+    std::cout << "Not found, sorry.." << std::endl;
+    throw zim::EntryNotFound("No fuzzy rule matches.");
+  }
 }
 
 std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& request)
@@ -1174,8 +1301,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   }
 
   try {
-    auto response = build_response_for_path(request, *archive, bookName, urlStr);
-    response->set_etag_body(archiveUuid);
+    auto response = build_response_for_fuzzypath(request, *archive, bookName, urlStr);
     return response;
   } catch(zim::EntryNotFound& e) {
     if (m_verbose.load())

@@ -122,6 +122,12 @@ zim::Entry getEntryFromPath(const zim::Archive& archive, const std::string& path
     if (path.empty() || path == "/") {
       return archive.getMainEntry();
     }
+    std::cout << "Search for H/"<<path << std::endl;
+    auto entry = archive.getEntryByPath("H/"+path);
+    while (entry.isRedirect()) {
+      entry = entry.getRedirectEntry();
+    }
+    return entry;
   }
   throw zim::EntryNotFound("Cannot find entry for non empty path");
 }

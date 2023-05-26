@@ -124,6 +124,7 @@ class InternalServer {
     std::unique_ptr<Response> build_redirect(const std::string& bookName, const zim::Item& item) const;
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
     std::unique_ptr<Response> build_response_for_path(const RequestContext& request, const zim::Archive& archive, const std::string& bookName, const std::string& path) const;
+    std::unique_ptr<Response> build_response_for_fuzzypath(const RequestContext& request, const zim::Archive& archive, const std::string& bookName, const std::string& path) const;
     std::unique_ptr<Response> handle_viewer_settings(const RequestContext& request);
     std::unique_ptr<Response> handle_skin(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog(const RequestContext& request);
