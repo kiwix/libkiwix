@@ -36,7 +36,7 @@ else
 endif
 
 libzim_dep = dependency('libzim', version : '>=8.1.0', static:static_deps)
-if not compiler.has_header_symbol('zim/zim.h', 'LIBZIM_WITH_XAPIAN')
+if not compiler.has_header_symbol('zim/zim.h', 'LIBZIM_WITH_XAPIAN', dependencies: libzim_dep)
   error('Libzim seems to be compiled without xapian. Xapian support is mandatory.')
 endif
 
