@@ -8,7 +8,7 @@ on:
 
 jobs:
   macOS:
-    runs-on: macos-12
+    runs-on: macos-11
     env:
       HOME: /Users/runner
     steps:
@@ -54,19 +54,19 @@ jobs:
         include:
           - name: native_static
             target: native_static
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/x86_64-linux-gnu'
           - name: native_dyn
             target: native_dyn
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/x86_64-linux-gnu'
           - name: android_arm
             target: android_arm
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/arm-linux-androideabi'
           - name: android_arm64
             target: android_arm64
-            image_variant: bionic
+            image_variant: focal
             lib_postfix: '/aarch64-linux-android'
           - name: win32_static
             target: win32_static
@@ -78,22 +78,12 @@ jobs:
             lib_postfix: '64'
     env:
       HOME: /home/runner
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container:
-      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:36"
+      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:37"
     steps:
     - name: Checkout code
-      shell: python
-      run: |
-        from subprocess import check_call
-        from os import environ
-        command = [
-          'git', 'clone',
-          'https://github.com/${{github.repository}}',
-          '--depth=1',
-          '--branch', '${{ github.head_ref || github.ref_name }}'
-        ]
-        check_call(command, cwd=environ['HOME'])
+      uses: actions/checkout@v3
     - name: Install deps
       shell: bash
       run: |
@@ -116,7 +106,6 @@ jobs:
         if [[ "${{matrix.target}}" =~ android_.* ]]; then
           MESON_OPTION="$MESON_OPTION -Dstatic-linkage=true"
         fi
-        cd $HOME/libkiwix
         meson . build ${MESON_OPTION}
         cd build
         ninja
@@ -127,7 +116,7 @@ jobs:
       if: startsWith(matrix.target, 'native_')
       shell: bash
       run: |
-        cd $HOME/libkiwix/build
+        cd build
         meson test --verbose
         ninja coverage
       env:
