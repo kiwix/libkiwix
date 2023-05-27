@@ -1158,22 +1158,22 @@ const FuzzyRules FUZZY_RULES{
     /*.args:*/ {},
   },
   {
-      /*match:*/ "//(?:www\\.)?youtube(?:-nocookie)?\\.com/(get_video_info)",
-      /*fuzzyCanonReplace": */"//youtube.fuzzy.replayweb.page/$1",
+      /*match:*/ "(?:www\\.)?youtube(?:-nocookie)?\\.com/(get_video_info)",
+      /*fuzzyCanonReplace": */"youtube.fuzzy.replayweb.page/$1",
       /*split:*/ "",
       /*slpitlast:*/ false,
       /*args:*/ {{"video_id"}},
     },
   {
-    /*match:*/ "//(?:www\\.)?youtube(?:-nocookie)?\\.com/(youtubei/v1/[^?]+\\?).*(videoId[^&]+).*",
-    /*fuzzyCanonReplace: */ "//youtube.fuzzy.replayweb.page/$1$2",
+    /*match:*/ "(?:www\\.)?youtube(?:-nocookie)?\\.com/(youtubei/v1/[^?]+\\?).*(videoId[^&]+).*",
+    /*fuzzyCanonReplace: */ "youtube.fuzzy.replayweb.page/$1$2",
     /*.split:*/ "",
     /*.splitlast:*/ false,
     /*"args: */ {{"videoId"}},
     },
      {
-    /*"match":*/  "//.*googlevideo.com/(videoplayback)",
-    /*fuzzyCanonReplace": */"//youtube.fuzzy.replayweb.page/$1",
+    /*"match":*/  ".*googlevideo.com/(videoplayback)",
+    /*fuzzyCanonReplace": */"youtube.fuzzy.replayweb.page/$1",
     /*.split:*/ "",
     /*.splitlast:*/ false,
     /*"args": */ {
