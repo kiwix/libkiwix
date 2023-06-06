@@ -2,6 +2,7 @@
 #define CPPHTTPLIB_ZLIB_SUPPORT 1
 #include "./httplib.h"
 #include "gtest/gtest.h"
+#include "../src/tools/stringTools.h"
 
 #define SERVER_PORT 8101
 #include "server_testing_tools.h"
@@ -716,7 +717,7 @@ struct TestData
 
   std::string getPattern() const
   {
-    return extractQueryValue("pattern");
+    return kiwix::urlDecode(extractQueryValue("pattern"), true);
   }
 
   std::string getLang() const
