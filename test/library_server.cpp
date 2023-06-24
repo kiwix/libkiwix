@@ -144,7 +144,9 @@ std::string maskVariableOPDSFeedData(std::string s)
   "wikipedia_ru_ray_charles",\
   "",\
   "public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no",\
-  "",\
+  "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
+  "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles_uncategorized/?size=48\"\n" \
+  "          type=\"image/png;favicon_attribute_is_absent;width=48;height=48;scale=1\"/>\n    ", \
   "zimfile", \
   "zimfile", \
   "125952"\
