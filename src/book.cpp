@@ -117,11 +117,12 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
   m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
   m_size = strtoull(ATTR("size"), 0, 0) << 10;
-  std::string favicon_mimetype = ATTR("faviconMimeType");
-  if (! favicon_mimetype.empty()) {
+  const std::string faviconMimeType = ATTR("faviconMimeType");
+  const std::string faviconBase64EncodedData = ATTR("favicon");
+  if ( !faviconMimeType.empty() && !faviconBase64EncodedData.empty() ) {
     const auto favicon = std::make_shared<Illustration>();
-    favicon->data = base64_decode(ATTR("favicon"));
-    favicon->mimeType = favicon_mimetype;
+    favicon->data = base64_decode(faviconBase64EncodedData);
+    favicon->mimeType = faviconMimeType;
     favicon->url = ATTR("faviconUrl");
     m_illustrations.assign(1, favicon);
   }

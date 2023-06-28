@@ -32,6 +32,7 @@
         articleCount="284"
         mediaCount="2"
         size="123"
+        faviconMimeType="image/png;favicon_attribute_is_absent"
       ></book>
   <book
         id="charlesray"
@@ -48,5 +49,6 @@
         articleCount="284"
         mediaCount="2"
         size="556"
+        favicon="faviconMimeType_attribute_is_absent"
       ></book>
 </library>
