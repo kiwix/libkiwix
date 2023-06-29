@@ -49,7 +49,7 @@
 	"library-opds-feed-all-entries": "Flux OPDS de la bibliothèque – Toutes les entrées",
 	"filter-by-tag": "Filtrer par la balise « {{TAG}} »",
 	"stop-filtering-by-tag": "Arrêter le filtrage par la balise « {{TAG}} »",
-	"library-opds-feed-parameterised": "Flux OPDS de la bibliothèque – Entrées correspondant à {{#LANG}}\nLangue : {{LANG}} {{/LANG}}{{#CATEGORY}}\nCatégorie : {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nÉtiquette : {{TAG}} {{/TAG}}{{#Q}}\nRequête : {{Q}} {{/Q}}",
+	"library-opds-feed-parameterised": "Flux OPDS de la bibliothèque – Entrées correspondant à {{#LANG}} :\n ▪ Langue : {{LANG}} {{/LANG}}{{#CATEGORY}}\n ▪ Catégorie : {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\n ▪ Étiquette : {{TAG}} {{/TAG}}{{#Q}}\n ▪ Requête : {{Q}} {{/Q}}",
 	"welcome-to-kiwix-server": "Bienvenue sur le Serveur Kiwix",
 	"download-links-heading": "Liens de téléchargement pour <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Télécharger le livre",
