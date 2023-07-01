@@ -2,6 +2,7 @@
 #define CPPHTTPLIB_ZLIB_SUPPORT 1
 #include "./httplib.h"
 #include "gtest/gtest.h"
+#include "../src/tools/stringTools.h"
 
 #define SERVER_PORT 8101
 #include "server_testing_tools.h"
@@ -716,7 +717,7 @@ struct TestData
 
   std::string getPattern() const
   {
-    return extractQueryValue("pattern");
+    return kiwix::urlDecode(extractQueryValue("pattern"), true);
   }
 
   std::string getLang() const
@@ -1433,6 +1434,33 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz"
+                           "&books.filter.lang=eng"
+                           "&books.filter.title=Ray%20Charles",
+      /* start */            -1,
+      /* resultsPerPage */   5,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ {
+        LARGE_SEARCH_RESULTS[0],
+        LARGE_SEARCH_RESULTS[1],
+        LARGE_SEARCH_RESULTS[2],
+        LARGE_SEARCH_RESULTS[3],
+        LARGE_SEARCH_RESULTS[4],
+      },
+
+      /* pagination */ {
+        { "1", 0,  true  },
+        { "2", 5,  false },
+        { "3", 10, false },
+        { "4", 15, false },
+        { "5", 20, false },
+        { "▶", 40, false },
+      }
+    },
+
+    // Be sure that searching with accented query return the same things than non accented query.
+    {
+      /* query */          "pattern=j%C3%A0zz"
                            "&books.filter.lang=eng"
                            "&books.filter.title=Ray%20Charles",
       /* start */            -1,
