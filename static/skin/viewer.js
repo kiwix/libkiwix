@@ -54,6 +54,22 @@ function gotoRandomPage() {
   gotoUrl(`/random?content=${currentBook}`);
 }
 
+// URI-encodes only the specified special symbols (note, however, that '%' is
+// always considered a special symbol).
+function quasiUriEncode(s, specialSymbols) {
+  if ( specialSymbols.match(/[A-Za-z0-9]/) ) {
+    throw "Alphanumeric symbols cannot be special";
+  }
+
+  // Set's guarantee of iterating in insertion order ensures that
+  // all %s in s will be encoded first.
+  for ( const c of new Set('%' + specialSymbols) ) {
+    s = s.replaceAll(c, encodeURIComponent(c));
+  }
+
+  return s;
+}
+
 function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
   const q = encodeURIComponent(searchbox.value);
@@ -386,8 +402,13 @@ function setupSuggestions() {
           const uriEncodedBookName = encodeURIComponent(currentBook);
           let url;
           if (data.value.kind == "path") {
-            const path = encodeURIComponent(htmlDecode(data.value.path));
-            url = `/content/${uriEncodedBookName}/${path}`;
+            // The double quote and backslash symbols are included in the list
+            // of special symbols to URI-encode so that the resulting URL can
+            // be safely quoted inside a dynamically executed piece of
+            // Javascript code a few lines later.
+            const path = htmlDecode(data.value.path);
+            const quasiUriEncodedPath = quasiUriEncode(path, '#?"\\');
+            url = `/content/${uriEncodedBookName}/${quasiUriEncodedPath}`;
           } else {
             const pattern = encodeURIComponent(htmlDecode(data.value.value));
             url = `/search?content=${uriEncodedBookName}&pattern=${pattern}`;
