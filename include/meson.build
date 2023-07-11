@@ -6,6 +6,8 @@ headers = [
   'manager.h',
   'libxml_dumper.h',
   'opds_dumper.h',
+  'library_dumper.h',
+  'html_dumper.h',
   'downloader.h',
   'search_renderer.h',
   'server.h',
