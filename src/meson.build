@@ -17,6 +17,7 @@ kiwix_sources = [
   'tools/regexTools.cpp',
   'tools/stringTools.cpp',
   'tools/networkTools.cpp',
+  'tools/opdsParsingTools.cpp',
   'tools/otherTools.cpp',
   'tools/archiveTools.cpp',
   'kiwixserve.cpp',

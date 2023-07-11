@@ -26,6 +26,8 @@
 #include <cstdint>
 
 namespace kiwix {
+typedef std::pair<std::string, std::string> LangNameCodePair;
+typedef std::vector<LangNameCodePair> FeedLanguages;
 
 /**
  * Return the current directory.
@@ -226,5 +228,12 @@ std::string getBestPublicIp();
  */
 std::string beautifyFileSize(uint64_t number);
 
+/**
+ * Load languages stored in an OPDS stream.
+ * 
+ * @param content the OPDS stream.
+ * @return vector containing pairs of language code and their corresponding full language name. 
+ */
+FeedLanguages readLanguagesFromFeed(const std::string& content);
 }
 #endif // KIWIX_TOOLS_H
