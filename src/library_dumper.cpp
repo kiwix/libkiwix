@@ -38,6 +38,7 @@ std::map<std::string, std::string> iso639_3 = {
   {"dty", "डोटेली"},
   {"eml", "emiliân-rumagnōl"},
   {"fbs", "српскохрватски"},
+  {"guw", "Gungbe"},
   {"hbs", "srpskohrvatski"},
   {"ido", "ido"},
   {"kbp", "kabɩyɛ"},
