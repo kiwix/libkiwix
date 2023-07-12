@@ -244,5 +244,13 @@ FeedLanguages readLanguagesFromFeed(const std::string& content);
  * @return vector containing category strings.
  */
 FeedCategories readCategoriesFromFeed(const std::string& content);
+
+/**
+ * Retrieve the full language name associated with a given ISO 639-3 language code.
+ * 
+ * @param lang ISO 639-3 language code.
+ * @return full language name.
+ */
+std::string getLanguageSelfName(const std::string& lang);
 }
 #endif // KIWIX_TOOLS_H
