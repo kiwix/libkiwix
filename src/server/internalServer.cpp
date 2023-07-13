@@ -920,6 +920,10 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   auto searchInfo = getSearchInfo(request);
   auto bookIds = searchInfo.getBookIds();
 
+  std::cout << "======= Search in boooks: " << std::endl;
+  for (auto& bookId: bookIds) {
+    std::cout << " - " << bookId << std::endl;
+  }
   /* Make the search */
   // Try to get a search from the searchInfo, else build it
   auto searcher = mp_library->getSearcherByIds(bookIds);
@@ -929,7 +933,8 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   try {
     search = searchCache.getOrPut(searchInfo,
       [=](){
-        return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(m_verbose.load())));
+        //std::cout << "======== Create search for query " << searchInfo.getZimQuery(m_verbose.load()) << std::end;
+        return make_shared<zim::Search>(searcher->search(searchInfo.getZimQuery(true)));
       }
     );
   } catch(std::runtime_error& e) {
@@ -955,6 +960,8 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
 
   const auto start = max(1u, request.get_optional_param("start", 1u));
   const auto pageLength = getSearchPageSize(request);
+
+  std::cout << "=========== estimated search results: " << search->getEstimatedMatches() << std::endl;
 
   /* Get the results */
   SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
