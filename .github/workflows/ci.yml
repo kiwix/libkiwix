@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies
         env:
-          ARCHIVE_NAME: deps2_osx_native_dyn_libkiwix.tar.xz
+          ARCHIVE_NAME: deps2_macos_native_dyn_libkiwix.tar.xz
         run: |
           wget -O- https://tmp.kiwix.org/ci/${{env.ARCHIVE_NAME}} | tar -xJ -C ${{env.HOME}}
 
