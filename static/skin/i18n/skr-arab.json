@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saraiki"
+		]
+	},
+	"name": "سرائیکی",
+	"400-page-title": "غلط ارداس",
+	"400-page-heading": "غلط ارداس",
+	"404-page-title": "مواد کائنی لبھیا",
+	"404-page-heading": "کائنی لبھا",
+	"500-page-title": "اندرلا سرور نقص",
+	"500-page-heading": "اندرلا سرور نقص",
+	"search": "ڳولو",
+	"book-filtering-all-categories": "ساریاں ونکیاں",
+	"book-filtering-all-languages": "ساریاں زباناں",
+	"count-of-matching-books": "{{COUNT}} کتاب(اں)",
+	"download": "ڈاؤن لوڈ",
+	"direct-download-link-text": "ڈائرکٹ",
+	"direct-download-alt-text": "ڈائرکٹ ڈاؤن لوڈ",
+	"hash-download-alt-text": "ڈاؤن لوڈ ہیش",
+	"torrent-download-link-text": "ٹورنٹ فائل",
+	"torrent-download-alt-text": "ٹورںٹ ݙاؤن لوڈ کرو",
+	"download-links-title": "کتاب ڈاؤن لوڈ کرو",
+	"preview-book": "پیشگی ݙکھالا"
+}
