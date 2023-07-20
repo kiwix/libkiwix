@@ -1,3 +1,40 @@
+libkiwix 12.1.0
+===============
+
+ * Server:
+  - Introduce a `/nojs` endpoint to browse catalog and zim files with a browser without js (@juuz0 #897)
+  - Translate the viewer (@veloman-yunkan #871 #846)
+  - Display `mul` on tile when zim is multi-languages (@juuz0 #934)
+  - Suggestion links point to the `/content` endpoint (@veloman-yunkan #862)
+  - Correctly compress web fonts in http answers (@kelson42 #856)
+  - Correctly encode link in suggestions (@veloman-yunkan #859 #860 #963)
+  - Correctly encode url redirection (@veloman-yunkan #866 #890)
+  - Properly handle user language, through cookies and http headers (@veloman-yunkan #849 #869)
+  - Fix url encoding (@veloman-yunkan #870)
+  - Fix viewer for viewer for SeaMonkey (@veloman-yunkan #887)
+  - Make the downloader threadsafe (@mgautierfr #886)
+  - Add RSS feed in the main page (pointing to the catalog) (@juuz0 #882 #920)
+  - Correctly set the mimetype for json and ico (@veloman-yunkan #892)
+  - `count=-1` correspond to unlimited count (instead of 0) (@veloman-yunkan #894)
+  - Keep the navigation bar on top (@juuz0 #896)
+  - Make the viewer's iframe "safe" (@veloman-yunkan #906 #930)
+  - Correctly escape search link in XML Opds output (@veloman-yunkan #936)
+  - Store values needed for the viewer js in the url fragment instead of the query string (@juuz0 #907)
+  - Get rid of legacy OPDS API usage in the viewer (@veloman-yunkan #939)
+  - Fix charset encoding declaration in OPDS response MIME types (@veloman-yunkan #942)
+  - Fix PDF in the viewer (@veloman-yunkan #940)
+  - Fix external links handling in the viewer (@veloman-yunkan #959)
+  - Add tests of searching with accents (@mgautierfs #954)
+ * Fix handling of missing illustration in the book (@veloman-yunkan #961)
+ * Add support for multi languages zim files (@veloman-yunkan #904)
+ * Fix includes for openbsd (@bentley #949)
+ * Fix pathes in git to allow git clone on Windows (@adamlamar #868)
+ * Switch to `main` as principal branch (instead of `master`) (@kelson42)
+ * Remove libkiwix android publisher from the repository (@kelson42 #884)
+ * Various fixes of meson and CI. (@mgautierfr @kelson42)
+
+
+
 libkiwix 12.0.0
 ===============
 
