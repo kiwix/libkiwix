@@ -31,7 +31,6 @@
 namespace kiwix
 {
 std::string beautifyInteger(uint64_t number);
-std::string beautifyFileSize(uint64_t number);
 void printStringInHexadecimal(const char* s);
 void printStringInHexadecimal(icu::UnicodeString s);
 void stringReplacement(std::string& str,
