@@ -549,25 +549,30 @@ Xapian::Query nameQuery(const std::string& name)
   return Xapian::Query("XN" + normalizeText(name));
 }
 
-Xapian::Query categoryQuery(const std::string& category)
+Xapian::Query multipleParamQuery(const std::string& commaSeparatedList, const std::string& prefix)
 {
-  return Xapian::Query("XC" + normalizeText(category));
+  Xapian::Query q;
+  bool firstIteration = true;
+  for ( const auto& elem : kiwix::split(commaSeparatedList, ",") ) {
+    const Xapian::Query singleQuery(prefix + normalizeText(elem));
+    if ( firstIteration ) {
+      q = singleQuery;
+      firstIteration = false;
+    } else {
+      q = Xapian::Query(Xapian::Query::OP_OR, q, singleQuery);
+    }
+  }
+  return q;
+}
+
+Xapian::Query categoryQuery(const std::string& commaSeparatedCategoryList)
+{
+  return multipleParamQuery(commaSeparatedCategoryList, "XC");
 }
 
 Xapian::Query langQuery(const std::string& commaSeparatedLanguageList)
 {
-  Xapian::Query q;
-  bool firstIteration = true;
-  for ( const auto& lang : kiwix::split(commaSeparatedLanguageList, ",") ) {
-    const Xapian::Query singleLangQuery("L" + normalizeText(lang));
-    if ( firstIteration ) {
-      q = singleLangQuery;
-      firstIteration = false;
-    } else {
-      q = Xapian::Query(Xapian::Query::OP_OR, q, singleLangQuery);
-    }
-  }
-  return q;
+  return multipleParamQuery(commaSeparatedLanguageList, "L");
 }
 
 Xapian::Query publisherQuery(const std::string& publisher)

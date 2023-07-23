@@ -105,6 +105,12 @@ class Filter {
     Filter& acceptTags(const Tags& tags);
     Filter& rejectTags(const Tags& tags);
 
+    /**
+     *  Set the filter to only accept books in the specified category.
+     *
+     *  Multiple categories can be specified as a comma-separated list (in
+     *  which case a book in any of those categories will match).
+     */
     Filter& category(std::string category);
 
     /**
