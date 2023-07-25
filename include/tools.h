@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdint>
 
 namespace kiwix {
 
@@ -217,9 +218,9 @@ std::map<std::string, std::string> getNetworkInterfaces();
 std::string getBestPublicIp();
 
 /** Converts file size to human readable format.
- * 
+ *
  * This function will convert a number to its equivalent size using units.
- * 
+ *
  * @param number file size in bytes.
  * @return a human-readable string representation of the size, e.g., "2.3 KB", "1.8 MB", "5.2 GB".
  */
