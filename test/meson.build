@@ -5,6 +5,8 @@ tests = [
     'stringTools',
     'pathTools',
     'otherTools',
+    'opdsParsingTools',
+    'languageTools',
     'kiwixserve',
     'book',
     'manager',
