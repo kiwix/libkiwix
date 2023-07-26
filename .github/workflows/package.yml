@@ -15,6 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         distro:
+          - debian-unstable
           - ubuntu-jammy
           - ubuntu-focal
     steps:
@@ -38,6 +39,13 @@ jobs:
           fullname: Kiwix builder
           email: release+launchpad@kiwix.org
           distro: ${{ matrix.distro }}
+
+      - uses: legoktm/gh-action-build-deb@debian-unstable
+        if: matrix.distro == 'debian-unstable'
+        name: Build package for debian-unstable
+        id: build-debian-unstable
+        with:
+          args: --no-sign
 
       - uses: legoktm/gh-action-build-deb@ubuntu-jammy
         if: matrix.distro == 'ubuntu-jammy'
