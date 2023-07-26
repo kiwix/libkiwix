@@ -83,7 +83,7 @@ jobs:
       HOME: /home/runner
     runs-on: ubuntu-20.04
     container:
-      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:37"
+      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:38"
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
