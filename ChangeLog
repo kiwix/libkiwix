@@ -1,3 +1,8 @@
+libkiwix 12.1.1
+===============
+
+ * Revert API break introduced in libkiwix 12.1.0
+
 libkiwix 12.1.0
 ===============
 
