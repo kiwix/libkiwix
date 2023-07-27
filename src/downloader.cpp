@@ -166,37 +166,37 @@ std::vector<std::string> Downloader::getDownloadIds() const {
   return ret;
 }
 
-std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
+Download* Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
 {
   std::unique_lock<std::mutex> lock(m_lock);
   for (auto& p: m_knownDownloads) {
     auto& d = p.second;
     auto& uris = d->getUris();
     if (std::find(uris.begin(), uris.end(), uri) != uris.end())
-      return d;
+      return d.get();
   }
   std::vector<std::string> uris = {uri};
   auto gid = mp_aria->addUri(uris, options);
-  m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
-  return m_knownDownloads[gid];
+  m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+  return m_knownDownloads[gid].get();
 }
 
-std::shared_ptr<Download> Downloader::getDownload(const std::string& did)
+Download* Downloader::getDownload(const std::string& did)
 {
   std::unique_lock<std::mutex> lock(m_lock);
   try {
-    return m_knownDownloads.at(did);
+    return m_knownDownloads.at(did).get();
   } catch(std::exception& e) {
     for (auto gid : mp_aria->tellWaiting()) {
       if (gid == did) {
-        m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
-        return m_knownDownloads[gid];
+        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        return m_knownDownloads[gid].get();
       }
     }
     for (auto gid : mp_aria->tellActive()) {
       if (gid == did) {
-        m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
-        return m_knownDownloads[gid];
+        m_knownDownloads[gid] = std::unique_ptr<Download>(new Download(mp_aria, gid));
+        return m_knownDownloads[gid].get();
       }
     }
     throw e;

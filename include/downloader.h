@@ -184,7 +184,7 @@ class Downloader
    * @param options: A series of pair <option_name, option_value> to pass to aria.
    * @return: The newly created Download.
    */
-  std::shared_ptr<Download> startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
+  Download* startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
 
   /**
    * Get a download corrsponding to a download id (did)
@@ -194,7 +194,7 @@ class Downloader
    * @return: The Download corresponding to did.
    * @throw: Throw std::out_of_range if did is not found.
    */
-  std::shared_ptr<Download> getDownload(const std::string& did);
+  Download* getDownload(const std::string& did);
 
   /**
    * Get the number of downloads currently managed.
@@ -208,7 +208,7 @@ class Downloader
 
  private:
   mutable std::mutex m_lock;
-  std::map<std::string, std::shared_ptr<Download>> m_knownDownloads;
+  std::map<std::string, std::unique_ptr<Download>> m_knownDownloads;
   std::shared_ptr<Aria2> mp_aria;
 };
 }
