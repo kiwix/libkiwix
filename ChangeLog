@@ -1,3 +1,9 @@
+libkiwix 13.0.0
+===============
+
+ * This version is mainly a re-releasing of 12.1.0 with a new major version
+   as there is a API break in this version.
+
 libkiwix 12.1.1
 ===============
 
