@@ -178,9 +178,6 @@ class ZimSearcher : public zim::Searcher
  */
 class Library: public std::enable_shared_from_this<Library>
 {
-  // all data fields must be added in LibraryBase
-  mutable std::mutex m_mutex;
-
  public:
   typedef uint64_t Revision;
   typedef std::vector<std::string> BookIdCollection;
