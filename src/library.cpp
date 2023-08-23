@@ -39,6 +39,8 @@
 namespace kiwix
 {
 
+
+
 namespace
 {
 
@@ -57,6 +59,8 @@ bool booksReferToTheSameArchive(const Book& book1, const Book& book2)
       && book2.isPathValid()
       && book1.getPath() == book2.getPath();
 }
+
+} // unnamed namespace
 
 template<typename Key, typename Value>
 class MultiKeyCache: public ConcurrentCache<std::set<Key>, Value>
@@ -79,47 +83,8 @@ class MultiKeyCache: public ConcurrentCache<std::set<Key>, Value>
     }
 };
 
-} // unnamed namespace
-
-struct Library::Impl
-{
-  struct Entry : Book
-  {
-    Library::Revision lastUpdatedRevision = 0;
-  };
-
-  mutable std::mutex m_mutex;
-  Library::Revision m_revision;
-  std::map<std::string, Entry> m_books;
-  using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
-  std::unique_ptr<ArchiveCache> mp_archiveCache;
-  using SearcherCache = MultiKeyCache<std::string, std::shared_ptr<ZimSearcher>>;
-  std::unique_ptr<SearcherCache> mp_searcherCache;
-  std::vector<kiwix::Bookmark> m_bookmarks;
-  Xapian::WritableDatabase m_bookDB;
-
-  unsigned int getBookCount(const bool localBooks, const bool remoteBooks) const;
-
-  Impl();
-  ~Impl();
-
-  Impl(Impl&& ) = delete;
-  Impl& operator=(Impl&& ) = delete;
-};
-
-Library::Impl::Impl()
-  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 1), 1))),
-    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", 1), 1))),
-    m_bookDB("", Xapian::DB_BACKEND_INMEMORY)
-{
-}
-
-Library::Impl::~Impl()
-{
-}
-
 unsigned int
-Library::Impl::getBookCount(const bool localBooks, const bool remoteBooks) const
+Library::getBookCount_not_protected(const bool localBooks, const bool remoteBooks) const
 {
   unsigned int result = 0;
   for (auto& pair: m_books) {
@@ -134,19 +99,10 @@ Library::Impl::getBookCount(const bool localBooks, const bool remoteBooks) const
 
 /* Constructor */
 Library::Library()
-  : mp_impl(new Library::Impl)
+  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 1), 1))),
+    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", 1), 1))),
+    m_bookDB(new Xapian::WritableDatabase("", Xapian::DB_BACKEND_INMEMORY))
 {
-}
-
-Library::Library(Library&& other)
-  : mp_impl(std::move(other.mp_impl))
-{
-}
-
-Library& Library::operator=(Library&& other)
-{
-  mp_impl = std::move(other.mp_impl);
-  return *this;
 }
 
 /* Destructor */
@@ -154,30 +110,30 @@ Library::~Library() = default;
 
 bool Library::addBook(const Book& book)
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  ++mp_impl->m_revision;
+  std::lock_guard<std::mutex> lock(m_mutex);
+  ++m_revision;
   /* Try to find it */
   updateBookDB(book);
   try {
-    auto& oldbook = mp_impl->m_books.at(book.getId());
+    auto& oldbook = m_books.at(book.getId());
     if ( ! booksReferToTheSameArchive(oldbook, book) ) {
       dropCache(book.getId());
     }
     oldbook.update(book); // XXX: This may have no effect if oldbook is readonly
                           // XXX: Then m_bookDB will become out-of-sync with
                           // XXX: the real contents of the library.
-    oldbook.lastUpdatedRevision = mp_impl->m_revision;
+    oldbook.lastUpdatedRevision = m_revision;
     return false;
   } catch (std::out_of_range&) {
-    auto& newEntry = mp_impl->m_books[book.getId()];
+    auto& newEntry = m_books[book.getId()];
     static_cast<Book&>(newEntry) = book;
-    newEntry.lastUpdatedRevision = mp_impl->m_revision;
-    size_t new_cache_size = static_cast<size_t>(std::ceil(mp_impl->getBookCount(true, true)*0.1));
+    newEntry.lastUpdatedRevision = m_revision;
+    size_t new_cache_size = static_cast<size_t>(std::ceil(getBookCount_not_protected(true, true)*0.1));
     if (getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", -1) <= 0) {
-      mp_impl->mp_archiveCache->setMaxSize(new_cache_size);
+      mp_archiveCache->setMaxSize(new_cache_size);
     }
     if (getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", -1) <= 0) {
-      mp_impl->mp_searcherCache->setMaxSize(new_cache_size);
+      mp_searcherCache->setMaxSize(new_cache_size);
     }
     return true;
   }
@@ -185,16 +141,16 @@ bool Library::addBook(const Book& book)
 
 void Library::addBookmark(const Bookmark& bookmark)
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  mp_impl->m_bookmarks.push_back(bookmark);
+  std::lock_guard<std::mutex> lock(m_mutex);
+  m_bookmarks.push_back(bookmark);
 }
 
 bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  for(auto it=mp_impl->m_bookmarks.begin(); it!=mp_impl->m_bookmarks.end(); it++) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  for(auto it=m_bookmarks.begin(); it!=m_bookmarks.end(); it++) {
     if (it->getBookId() == zimId && it->getUrl() == url) {
-      mp_impl->m_bookmarks.erase(it);
+      m_bookmarks.erase(it);
       return true;
     }
   }
@@ -204,14 +160,14 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 
 void Library::dropCache(const std::string& id)
 {
-  mp_impl->mp_archiveCache->drop(id);
-  mp_impl->mp_searcherCache->drop(id);
+  mp_archiveCache->drop(id);
+  mp_searcherCache->drop(id);
 }
 
 bool Library::removeBookById(const std::string& id)
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  mp_impl->m_bookDB.delete_document("Q" + id);
+  std::lock_guard<std::mutex> lock(m_mutex);
+  m_bookDB->delete_document("Q" + id);
   dropCache(id);
   // We do not change the cache size here
   // Most of the time, the book is remove in case of library refresh, it is
@@ -219,25 +175,25 @@ bool Library::removeBookById(const std::string& id)
   // Having a too big cache is not a problem here (or it would have been before)
   // (And setMaxSize doesn't actually reduce the cache size, extra cached items
   //  will be removed in put or getOrPut).
-  const bool bookWasRemoved = mp_impl->m_books.erase(id) == 1;
+  const bool bookWasRemoved = m_books.erase(id) == 1;
   if ( bookWasRemoved ) {
-    ++mp_impl->m_revision;
+    ++m_revision;
   }
   return bookWasRemoved;
 }
 
 Library::Revision Library::getRevision() const
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  return mp_impl->m_revision;
+  std::lock_guard<std::mutex> lock(m_mutex);
+  return m_revision;
 }
 
 uint32_t Library::removeBooksNotUpdatedSince(Revision libraryRevision)
 {
   BookIdCollection booksToRemove;
   {
-    std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-    for ( const auto& entry : mp_impl->m_books) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    for ( const auto& entry : m_books) {
       if ( entry.second.lastUpdatedRevision <= libraryRevision ) {
         booksToRemove.push_back(entry.first);
       }
@@ -256,12 +212,12 @@ const Book& Library::getBookById(const std::string& id) const
 {
   // XXX: Doesn't make sense to lock this operation since it cannot
   // XXX: guarantee thread-safety because of its return type
-  return mp_impl->m_books.at(id);
+  return m_books.at(id);
 }
 
 Book Library::getBookByIdThreadSafe(const std::string& id) const
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+  std::lock_guard<std::mutex> lock(m_mutex);
   return getBookById(id);
 }
 
@@ -269,7 +225,7 @@ const Book& Library::getBookByPath(const std::string& path) const
 {
   // XXX: Doesn't make sense to lock this operation since it cannot
   // XXX: guarantee thread-safety because of its return type
-  for(auto& it: mp_impl->m_books) {
+  for(auto& it: m_books) {
     auto& book = it.second;
     if (book.getPath() == path)
       return book;
@@ -282,7 +238,7 @@ const Book& Library::getBookByPath(const std::string& path) const
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
   try {
-    return mp_impl->mp_archiveCache->getOrPut(id,
+    return mp_archiveCache->getOrPut(id,
     [&](){
       auto book = getBookById(id);
       if (!book.isPathValid()) {
@@ -299,7 +255,7 @@ std::shared_ptr<ZimSearcher> Library::getSearcherByIds(const BookIdSet& ids)
 {
   assert(!ids.empty());
   try {
-    return mp_impl->mp_searcherCache->getOrPut(ids,
+    return mp_searcherCache->getOrPut(ids,
     [&](){
       std::vector<zim::Archive> archives;
       for(auto& id:ids) {
@@ -319,8 +275,8 @@ std::shared_ptr<ZimSearcher> Library::getSearcherByIds(const BookIdSet& ids)
 unsigned int Library::getBookCount(const bool localBooks,
                                    const bool remoteBooks) const
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  return mp_impl->getBookCount(localBooks, remoteBooks);
+  std::lock_guard<std::mutex> lock(m_mutex);
+  return getBookCount_not_protected(localBooks, remoteBooks);
 }
 
 bool Library::writeToFile(const std::string& path) const
@@ -332,7 +288,7 @@ bool Library::writeToFile(const std::string& path) const
   dumper.setBaseDir(baseDir);
   std::string xml;
   {
-    std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     xml = dumper.dumpLibXMLContent(allBookIds);
   };
   return writeTextFile(path, xml);
@@ -348,10 +304,10 @@ bool Library::writeBookmarksToFile(const std::string& path) const
 
 Library::AttributeCounts Library::getBookAttributeCounts(BookStrPropMemFn p) const
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+  std::lock_guard<std::mutex> lock(m_mutex);
   AttributeCounts propValueCounts;
 
-  for (const auto& pair: mp_impl->m_books) {
+  for (const auto& pair: m_books) {
     const auto& book = pair.second;
     if (book.getOrigId().empty()) {
       propValueCounts[(book.*p)()] += 1;
@@ -380,10 +336,10 @@ std::vector<std::string> Library::getBooksLanguages() const
 
 Library::AttributeCounts Library::getBooksLanguagesWithCounts() const
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+  std::lock_guard<std::mutex> lock(m_mutex);
   AttributeCounts langsWithCounts;
 
-  for (const auto& pair: mp_impl->m_books) {
+  for (const auto& pair: m_books) {
     const auto& book = pair.second;
     if (book.getOrigId().empty()) {
       for ( const auto& lang : book.getLanguages() ) {
@@ -396,10 +352,10 @@ Library::AttributeCounts Library::getBooksLanguagesWithCounts() const
 
 std::vector<std::string> Library::getBooksCategories() const
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+  std::lock_guard<std::mutex> lock(m_mutex);
   std::set<std::string> categories;
 
-  for (const auto& pair: mp_impl->m_books) {
+  for (const auto& pair: m_books) {
     const auto& book = pair.second;
     const auto& c = book.getCategory();
     if ( !c.empty() ) {
@@ -423,12 +379,12 @@ std::vector<std::string> Library::getBooksPublishers() const
 const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks) const
 {
   if (!onlyValidBookmarks) {
-    return mp_impl->m_bookmarks;
+    return m_bookmarks;
   }
   std::vector<kiwix::Bookmark> validBookmarks;
   auto booksId = getBooksIds();
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  for(auto& bookmark:mp_impl->m_bookmarks) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  for(auto& bookmark:m_bookmarks) {
     if (std::find(booksId.begin(), booksId.end(), bookmark.getBookId()) != booksId.end()) {
       validBookmarks.push_back(bookmark);
     }
@@ -438,10 +394,10 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
 
 Library::BookIdCollection Library::getBooksIds() const
 {
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+  std::lock_guard<std::mutex> lock(m_mutex);
   BookIdCollection bookIds;
 
-  for (auto& pair: mp_impl->m_books) {
+  for (auto& pair: m_books) {
     bookIds.push_back(pair.first);
   }
 
@@ -496,7 +452,7 @@ void Library::updateBookDB(const Book& book)
 
   doc.set_data(book.getId());
 
-  mp_impl->m_bookDB.replace_document(idterm, doc);
+  m_bookDB->replace_document(idterm, doc);
 }
 
 namespace
@@ -644,10 +600,10 @@ Library::BookIdCollection Library::filterViaBookDB(const Filter& filter) const
 
   BookIdCollection bookIds;
 
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
-  Xapian::Enquire enquire(mp_impl->m_bookDB);
+  std::lock_guard<std::mutex> lock(m_mutex);
+  Xapian::Enquire enquire(*m_bookDB);
   enquire.set_query(query);
-  const auto results = enquire.get_mset(0, mp_impl->m_books.size());
+  const auto results = enquire.get_mset(0, m_books.size());
   for ( auto it = results.begin(); it != results.end(); ++it  ) {
     bookIds.push_back(it.get_document().get_data());
   }
@@ -659,9 +615,9 @@ Library::BookIdCollection Library::filter(const Filter& filter) const
 {
   BookIdCollection result;
   const auto preliminaryResult = filterViaBookDB(filter);
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+  std::lock_guard<std::mutex> lock(m_mutex);
   for(auto id : preliminaryResult) {
-    if(filter.accept(mp_impl->m_books.at(id))) {
+    if(filter.accept(m_books.at(id))) {
       result.push_back(id);
     }
   }
@@ -733,7 +689,7 @@ void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool asc
   // NOTE: for the entire duration of the sort. Will need to obtain (under a
   // NOTE: lock) the required atributes from the books once, and then the
   // NOTE: sorting will run on a copy of data without locking.
-  std::lock_guard<std::mutex> lock(mp_impl->m_mutex);
+  std::lock_guard<std::mutex> lock(m_mutex);
   switch(sort) {
     case TITLE:
       std::sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this, ascending));
