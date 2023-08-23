@@ -31,7 +31,7 @@ namespace kiwix
 // LibraryManipulator
 ////////////////////////////////////////////////////////////////////////////////
 
-LibraryManipulator::LibraryManipulator(std::shared_ptr<Library> library)
+LibraryManipulator::LibraryManipulator(LibraryPtr library)
   : library(library)
 {}
 
@@ -85,7 +85,7 @@ Manager::Manager(LibraryManipulator manipulator):
 {
 }
 
-Manager::Manager(std::shared_ptr<Library> library) :
+Manager::Manager(LibraryPtr library) :
   writableLibraryPath(""),
   manipulator(LibraryManipulator(library))
 {

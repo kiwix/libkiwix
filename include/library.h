@@ -183,6 +183,9 @@ class ConcurrentCache;
 template<typename, typename>
 class MultiKeyCache;
 
+using LibraryPtr = std::shared_ptr<Library>;
+using ConstLibraryPtr = std::shared_ptr<const Library>;
+
 /**
  * A Library store several books.
  */
@@ -198,8 +201,8 @@ class Library: public std::enable_shared_from_this<Library>
   Library();
 
  public:
-  [[nodiscard]] static std::shared_ptr<Library> create() {
-    return std::shared_ptr<Library>(new Library());
+  [[nodiscard]] static LibraryPtr create() {
+    return LibraryPtr(new Library());
   }
   ~Library();
 
@@ -404,6 +407,7 @@ private: //data
   std::vector<kiwix::Bookmark> m_bookmarks;
   std::unique_ptr<Xapian::WritableDatabase> m_bookDB;
 };
+
 
 }
 

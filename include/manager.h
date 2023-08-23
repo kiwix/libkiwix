@@ -37,10 +37,10 @@ namespace kiwix
 class LibraryManipulator
 {
  public: // functions
-  explicit LibraryManipulator(std::shared_ptr<Library> library);
+  explicit LibraryManipulator(LibraryPtr library);
   virtual ~LibraryManipulator();
 
-  std::shared_ptr<Library> getLibrary() const { return library; }
+  LibraryPtr getLibrary() const { return library; }
 
   bool addBookToLibrary(const Book& book);
   void addBookmarkToLibrary(const Bookmark& bookmark);
@@ -52,7 +52,7 @@ class LibraryManipulator
   virtual void booksWereRemovedFromLibrary();
 
  private: // data
-  std::shared_ptr<kiwix::Library> library;
+  LibraryPtr library;
 };
 
 /**
@@ -65,7 +65,7 @@ class Manager
 
  public: // functions
   explicit Manager(LibraryManipulator manipulator);
-  explicit Manager(std::shared_ptr<Library> library);
+  explicit Manager(LibraryPtr library);
 
   /**
    * Read a `library.xml` and add book in the file to the library.

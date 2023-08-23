@@ -411,7 +411,7 @@ public:
 };
 
 
-InternalServer::InternalServer(std::shared_ptr<Library> library,
+InternalServer::InternalServer(LibraryPtr library,
                                std::shared_ptr<NameMapper> nameMapper,
                                std::string addr,
                                int port,

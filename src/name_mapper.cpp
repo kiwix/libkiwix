@@ -63,7 +63,7 @@ std::string HumanReadableNameMapper::getIdForName(const std::string& name) const
 // UpdatableNameMapper
 ////////////////////////////////////////////////////////////////////////////////
 
-UpdatableNameMapper::UpdatableNameMapper(std::shared_ptr<Library> lib, bool withAlias)
+UpdatableNameMapper::UpdatableNameMapper(LibraryPtr lib, bool withAlias)
   : library(lib)
   , withAlias(withAlias)
 {
