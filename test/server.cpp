@@ -315,7 +315,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=bbda
     <script type="text/javascript" src="./skin/viewer.js?cacheid=bb748367" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
-            <img src="./skin/langSelector.svg?cacheid=00b59961">
+                 src="./skin/langSelector.svg?cacheid=00b59961">
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
             src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"

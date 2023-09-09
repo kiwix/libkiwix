@@ -34,12 +34,12 @@
     <div class="kiwix" style="display:none" id="kiwixtoolbarwrapper">
       <div id="kiwixtoolbar" class="ui-widget-header">
         <div class="kiwix_centered">
-          <a id="uiLanguageSelectorButton"
-             onclick="window.modalUILanguageSelector.show()"
+          <a onclick="window.modalUILanguageSelector.show()"
              alt="Select UI language"
              aria-label="Select UI language"
              title="Select UI language">
-            <img src="./skin/langSelector.svg?KIWIXCACHEID">
+            <img id="uiLanguageSelectorButton"
+                 src="./skin/langSelector.svg?KIWIXCACHEID">
           </a>
           <div class="kiwix_searchform">
             <form class="kiwixsearch" method="GET" action="javascript:performSearch()" id="kiwixsearchform">
