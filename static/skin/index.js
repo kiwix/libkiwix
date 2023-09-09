@@ -46,7 +46,7 @@
       window.modalUILanguageSelector.close();
       const s = document.getElementById("ui_language");
       const lang = s.options[s.selectedIndex].value;
-      setPermanentGlobalCookie('userlang', lang);
+      localStorage.setItem('userlang', lang);
       window.location.reload();
     }
 
@@ -584,11 +584,6 @@
         setCookie(filterCookieName, params.toString(), oneDayDelta);
         setInterval(updateNavVisibilityState, 250);
     };
-
-    // required by i18n.js:setUserLanguage()
-    window.setPermanentGlobalCookie = function(name, value) {
-        document.cookie = `${name}=${value};path=${root};max-age=31536000`;
-    }
 
     window.onload = () => { setUserLanguage(getUserLanguage(), onload); }
 })();
