@@ -1926,7 +1926,8 @@ TEST_F(ServerTest, viewerSettings)
 R"(const viewerSettings = {
   toolbarEnabled:       false,
   linkBlockingEnabled:  false,
-  libraryButtonEnabled: false
+  libraryButtonEnabled: false,
+  defaultUserLanguage:  "en"
 }
 )");
   }
@@ -1937,7 +1938,8 @@ R"(const viewerSettings = {
 R"(const viewerSettings = {
   toolbarEnabled:       false,
   linkBlockingEnabled:  true,
-  libraryButtonEnabled: false
+  libraryButtonEnabled: false,
+  defaultUserLanguage:  "en"
 }
 )");
   }
@@ -1948,7 +1950,8 @@ R"(const viewerSettings = {
 R"(const viewerSettings = {
   toolbarEnabled:       true,
   linkBlockingEnabled:  false,
-  libraryButtonEnabled: false
+  libraryButtonEnabled: false,
+  defaultUserLanguage:  "en"
 }
 )");
   }
@@ -1959,7 +1962,47 @@ R"(const viewerSettings = {
 R"(const viewerSettings = {
   toolbarEnabled:       true,
   linkBlockingEnabled:  false,
-  libraryButtonEnabled: true
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "en"
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    const Headers headers{ {"Accept-Language", "fr"} };
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js", headers)->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "fr"
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    const Headers headers{ {"Accept-Language", "test;q=0.2, en;q=0.9"} };
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js", headers)->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "en"
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    const Headers headers{ {"Accept-Language", "test;q=0.9, en;q=0.2"} };
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js", headers)->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "test"
 }
 )");
   }

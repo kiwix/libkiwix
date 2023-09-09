@@ -754,7 +754,8 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
   const kainjow::mustache::object data{
     {"enable_toolbar", m_withTaskbar ? "true" : "false" },
     {"enable_link_blocking", m_blockExternalLinks ? "true" : "false" },
-    {"enable_library_button", m_withLibraryButton ? "true" : "false" }
+    {"enable_library_button", m_withLibraryButton ? "true" : "false" },
+    {"default_user_language", request.get_user_language() }
   };
   return ContentResponse::build(*this, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
