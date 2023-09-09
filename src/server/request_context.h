@@ -119,15 +119,12 @@ class RequestContext {
     std::string get_user_language() const;
     std::string get_requested_format() const;
 
-    bool user_language_comes_from_cookie() const;
-
   private: // types
     struct UserLanguage
     {
       enum SelectorKind
       {
         QUERY_PARAM,
-        COOKIE,
         ACCEPT_LANGUAGE_HEADER,
         DEFAULT
       };

@@ -1130,7 +1130,6 @@ TEST_F(ServerTest, UserLanguageControl)
     const std::string url;
     const std::string acceptLanguageHeader;
     const char* const requestCookie; // Cookie: header of the request
-    const char* const responseSetCookie; // Set-Cookie: header of the response
     const std::string expectedH1;
 
     operator TestContext() const
@@ -1157,7 +1156,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1165,7 +1163,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1173,7 +1170,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1181,7 +1177,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1189,71 +1184,20 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
-      "userlang cookie is respected",
+      "userlang cookie is ignored",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "anothercookie=123; userlang=test",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "userlang=test; anothercookie=abc",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "cookie1=abc; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "Multiple userlang cookies are not a problem",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "cookie1=abc; userlang=en; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "Not Found"
     },
     {
       "userlang query parameter takes precedence over Accept-Language",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
-      /* expected <h1> */ "Not Found"
-    },
-    {
-      "userlang query parameter takes precedence over its cookie counterpart",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
-      /* expected <h1> */ "Not Found"
-    },
-    {
-      "userlang in cookies takes precedence over Accept-Language",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "test",
-      /*Request Cookie:*/       "userlang=en",
-      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1263,7 +1207,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1273,7 +1216,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
   };
@@ -1289,12 +1231,7 @@ TEST_F(ServerTest, UserLanguageControl)
       headers.insert({"Cookie", t.requestCookie});
     }
     const auto r = zfs1_->GET(t.url.c_str(), headers);
-    if ( t.responseSetCookie ) {
-      ASSERT_TRUE(r->has_header("Set-Cookie")) << t;
-      EXPECT_EQ(t.responseSetCookie, getHeaderValue(r->headers, "Set-Cookie")) << t;
-    } else {
-      EXPECT_FALSE(r->has_header("Set-Cookie"));
-    }
+    EXPECT_FALSE(r->has_header("Set-Cookie"));
     std::regex_search(r->body, h1Match, h1Regex);
     const std::string h1(h1Match[1]);
     EXPECT_EQ(h1, t.expectedH1) << t;

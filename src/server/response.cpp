@@ -387,13 +387,6 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
     MHD_add_response_header(response, p.first.c_str(), p.second.c_str());
   }
 
-  if ( ! request.user_language_comes_from_cookie() ) {
-    const std::string cookie = "userlang=" + request.get_user_language()
-                               + ";Path=" + request.get_root_path()
-                               + ";Max-Age=31536000";
-    MHD_add_response_header(response, MHD_HTTP_HEADER_SET_COOKIE, cookie.c_str());
-  }
-
   if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
 
