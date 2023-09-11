@@ -202,19 +202,10 @@ std::string RequestContext::get_user_language() const
   return userlang.lang;
 }
 
-bool RequestContext::user_language_comes_from_cookie() const
-{
-  return userlang.selectedBy == UserLanguage::SelectorKind::COOKIE;
-}
-
 RequestContext::UserLanguage RequestContext::determine_user_language() const
 {
   try {
     return {UserLanguage::SelectorKind::QUERY_PARAM, get_argument("userlang")};
-  } catch(const std::out_of_range&) {}
-
-  try {
-     return {UserLanguage::SelectorKind::COOKIE, cookies.at("userlang")};
   } catch(const std::out_of_range&) {}
 
   try {

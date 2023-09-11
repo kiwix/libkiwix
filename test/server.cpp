@@ -59,11 +59,11 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6a8c6fb2" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=e4d76d16" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=07b06fca" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=e1b1ae55" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -73,7 +73,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=bbdaf425" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=bb748367" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=201653b8" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -284,11 +284,11 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=e4d76d16"
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
         src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
           src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=2cf0f8c5" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=648526e1" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=07b06fca" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=e1b1ae55" defer></script>
         <img src="/ROOT%23%3F/skin/feed.svg?cacheid=055b333f"
         <img src="/ROOT%23%3F/skin/langSelector.svg?cacheid=00b59961"
 )EXPECTEDRESULT"
@@ -310,12 +310,12 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
       /* url */ "/ROOT%23%3F/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=bbdaf425" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
-    <script type="module" src="./skin/i18n.js?cacheid=2cf0f8c5" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=648526e1" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=bb748367" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=201653b8" defer></script>
     <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
-            <img src="./skin/langSelector.svg?cacheid=00b59961">
+                 src="./skin/langSelector.svg?cacheid=00b59961">
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
             src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
@@ -1130,7 +1130,6 @@ TEST_F(ServerTest, UserLanguageControl)
     const std::string url;
     const std::string acceptLanguageHeader;
     const char* const requestCookie; // Cookie: header of the request
-    const char* const responseSetCookie; // Set-Cookie: header of the response
     const std::string expectedH1;
 
     operator TestContext() const
@@ -1157,7 +1156,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1165,7 +1163,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1173,7 +1170,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1181,7 +1177,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1189,71 +1184,20 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
-      "userlang cookie is respected",
+      "userlang cookie is ignored",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
       /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "anothercookie=123; userlang=test",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "userlang=test; anothercookie=abc",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "userlang cookie is correctly parsed",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "cookie1=abc; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
-    },
-    {
-      "Multiple userlang cookies are not a problem",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "cookie1=abc; userlang=en; userlang=test; cookie2=xyz",
-      /*Response Set-Cookie:*/  NO_COOKIE,
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "Not Found"
     },
     {
       "userlang query parameter takes precedence over Accept-Language",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
-      /* expected <h1> */ "Not Found"
-    },
-    {
-      "userlang query parameter takes precedence over its cookie counterpart",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
-      /*Accept-Language:*/ "",
-      /*Request Cookie:*/       "userlang=test",
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
-      /* expected <h1> */ "Not Found"
-    },
-    {
-      "userlang in cookies takes precedence over Accept-Language",
-      /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
-      /*Accept-Language:*/ "test",
-      /*Request Cookie:*/       "userlang=en",
-      /*Response Set-Cookie:*/  NO_COOKIE,
       /* expected <h1> */ "Not Found"
     },
     {
@@ -1263,7 +1207,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=test;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
     },
     {
@@ -1273,7 +1216,6 @@ TEST_F(ServerTest, UserLanguageControl)
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
       /*Request Cookie:*/       NO_COOKIE,
-      /*Response Set-Cookie:*/  "userlang=en;Path=/ROOT%23%3F;Max-Age=31536000",
       /* expected <h1> */ "Not Found"
     },
   };
@@ -1289,12 +1231,7 @@ TEST_F(ServerTest, UserLanguageControl)
       headers.insert({"Cookie", t.requestCookie});
     }
     const auto r = zfs1_->GET(t.url.c_str(), headers);
-    if ( t.responseSetCookie ) {
-      ASSERT_TRUE(r->has_header("Set-Cookie")) << t;
-      EXPECT_EQ(t.responseSetCookie, getHeaderValue(r->headers, "Set-Cookie")) << t;
-    } else {
-      EXPECT_FALSE(r->has_header("Set-Cookie"));
-    }
+    EXPECT_FALSE(r->has_header("Set-Cookie"));
     std::regex_search(r->body, h1Match, h1Regex);
     const std::string h1(h1Match[1]);
     EXPECT_EQ(h1, t.expectedH1) << t;
@@ -1989,7 +1926,8 @@ TEST_F(ServerTest, viewerSettings)
 R"(const viewerSettings = {
   toolbarEnabled:       false,
   linkBlockingEnabled:  false,
-  libraryButtonEnabled: false
+  libraryButtonEnabled: false,
+  defaultUserLanguage:  "en"
 }
 )");
   }
@@ -2000,7 +1938,8 @@ R"(const viewerSettings = {
 R"(const viewerSettings = {
   toolbarEnabled:       false,
   linkBlockingEnabled:  true,
-  libraryButtonEnabled: false
+  libraryButtonEnabled: false,
+  defaultUserLanguage:  "en"
 }
 )");
   }
@@ -2011,7 +1950,8 @@ R"(const viewerSettings = {
 R"(const viewerSettings = {
   toolbarEnabled:       true,
   linkBlockingEnabled:  false,
-  libraryButtonEnabled: false
+  libraryButtonEnabled: false,
+  defaultUserLanguage:  "en"
 }
 )");
   }
@@ -2022,7 +1962,47 @@ R"(const viewerSettings = {
 R"(const viewerSettings = {
   toolbarEnabled:       true,
   linkBlockingEnabled:  false,
-  libraryButtonEnabled: true
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "en"
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    const Headers headers{ {"Accept-Language", "fr"} };
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js", headers)->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "fr"
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    const Headers headers{ {"Accept-Language", "test;q=0.2, en;q=0.9"} };
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js", headers)->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "en"
+}
+)");
+  }
+
+  {
+    resetServer(ZimFileServer::WITH_TASKBAR_AND_LIBRARY_BUTTON);
+    const Headers headers{ {"Accept-Language", "test;q=0.9, en;q=0.2"} };
+    ASSERT_EQ(zfs1_->GET("/ROOT%23%3F/viewer_settings.js", headers)->body,
+R"(const viewerSettings = {
+  toolbarEnabled:       true,
+  linkBlockingEnabled:  false,
+  libraryButtonEnabled: true,
+  defaultUserLanguage:  "test"
 }
 )");
   }
