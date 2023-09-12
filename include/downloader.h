@@ -204,7 +204,7 @@ class Downloader
   /**
    * Get the ids of the managed downloads.
    */
-  std::vector<std::string> getDownloadIds() const;
+  std::vector<std::string> getDownloadIds();
 
  private:
   mutable std::mutex m_lock;
