@@ -157,7 +157,7 @@ void Downloader::close()
   mp_aria->close();
 }
 
-std::vector<std::string> Downloader::getDownloadIds() const {
+std::vector<std::string> Downloader::getDownloadIds() {
   std::unique_lock<std::mutex> lock(m_lock);
   std::vector<std::string> ret;
   for(auto& p:m_knownDownloads) {
