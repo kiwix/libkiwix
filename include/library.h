@@ -176,7 +176,7 @@ class ZimSearcher : public zim::Searcher
 /**
  * A Library store several books.
  */
-class Library
+class Library: public std::enable_shared_from_this<Library>
 {
   // all data fields must be added in LibraryBase
   mutable std::mutex m_mutex;
@@ -187,8 +187,13 @@ class Library
   typedef std::map<std::string, int> AttributeCounts;
   typedef std::set<std::string> BookIdSet;
 
- public:
+ private:
   Library();
+
+ public:
+  [[nodiscard]] static std::shared_ptr<Library> create() {
+    return std::shared_ptr<Library>(new Library());
+  }
   ~Library();
 
   /**

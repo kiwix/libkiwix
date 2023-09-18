@@ -238,14 +238,14 @@ typedef std::vector<std::string> Langs;
 
 TEST(LibraryOpdsImportTest, allInOne)
 {
-  kiwix::Library lib;
-  kiwix::Manager manager(&lib);
+  auto lib = kiwix::Library::create();
+  kiwix::Manager manager(lib.get());
   manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
 
-  EXPECT_EQ(10U, lib.getBookCount(true, true));
+  EXPECT_EQ(10U, lib->getBookCount(true, true));
 
   {
-  const kiwix::Book& book1 = lib.getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd");
+  const kiwix::Book& book1 = lib->getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd");
 
   EXPECT_EQ(book1.getTitle(), "Encyclopédie de la Tunisie");
   EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie_novid_2018-10");
@@ -271,7 +271,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   }
 
   {
-  const kiwix::Book& book2 = lib.getBookById("0189d9be-2fd0-b4b6-7300-20fab0b5cdc8");
+  const kiwix::Book& book2 = lib->getBookById("0189d9be-2fd0-b4b6-7300-20fab0b5cdc8");
   EXPECT_EQ(book2.getTitle(), "TED talks - Business");
   EXPECT_EQ(book2.getName(), "");
   EXPECT_EQ(book2.getFlavour(), "");
@@ -301,8 +301,10 @@ class LibraryTest : public ::testing::Test {
   typedef kiwix::Library::BookIdCollection BookIdCollection;
   typedef std::vector<std::string> TitleCollection;
 
+  LibraryTest(): lib(kiwix::Library::create()) {}
+
   void SetUp() override {
-     kiwix::Manager manager(&lib);
+     kiwix::Manager manager(lib.get());
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }
@@ -316,25 +318,25 @@ class LibraryTest : public ::testing::Test {
   TitleCollection ids2Titles(const BookIdCollection& ids) {
     TitleCollection titles;
     for ( const auto& bookId : ids ) {
-      titles.push_back(lib.getBookById(bookId).getTitle());
+      titles.push_back(lib->getBookById(bookId).getTitle());
     }
     std::sort(titles.begin(), titles.end());
     return titles;
   }
 
-  kiwix::Library lib;
+  std::shared_ptr<kiwix::Library> lib;
 };
 
 TEST_F(LibraryTest, getBookMarksTest)
 {
-    auto bookId1 = lib.getBooksIds()[0];
-    auto bookId2 = lib.getBooksIds()[1];
+    auto bookId1 = lib->getBooksIds()[0];
+    auto bookId2 = lib->getBooksIds()[1];
 
-    lib.addBookmark(createBookmark(bookId1));
-    lib.addBookmark(createBookmark("invalid-bookmark-id"));
-    lib.addBookmark(createBookmark(bookId2));
-    auto onlyValidBookmarks = lib.getBookmarks();
-    auto allBookmarks = lib.getBookmarks(false);
+    lib->addBookmark(createBookmark(bookId1));
+    lib->addBookmark(createBookmark("invalid-bookmark-id"));
+    lib->addBookmark(createBookmark(bookId2));
+    auto onlyValidBookmarks = lib->getBookmarks();
+    auto allBookmarks = lib->getBookmarks(false);
 
     EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
@@ -346,11 +348,11 @@ TEST_F(LibraryTest, getBookMarksTest)
 
 TEST_F(LibraryTest, sanityCheck)
 {
-  EXPECT_EQ(lib.getBookCount(true, true), 12U);
-  EXPECT_EQ(lib.getBooksLanguages(),
+  EXPECT_EQ(lib->getBookCount(true, true), 12U);
+  EXPECT_EQ(lib->getBooksLanguages(),
             std::vector<std::string>({"deu", "eng", "fra", "ita", "spa"})
   );
-  EXPECT_EQ(lib.getBooksCreators(), std::vector<std::string>({
+  EXPECT_EQ(lib->getBooksCreators(), std::vector<std::string>({
       "Islam Stack Exchange",
       "Movies & TV Stack Exchange",
       "Mythology & Folklore Stack Exchange",
@@ -361,7 +363,7 @@ TEST_F(LibraryTest, sanityCheck)
       "Wikipedia",
       "Wikiquote"
   }));
-  EXPECT_EQ(lib.getBooksPublishers(), std::vector<std::string>({
+  EXPECT_EQ(lib->getBooksPublishers(), std::vector<std::string>({
       "",
       "Kiwix",
       "Kiwix & Some Enthusiasts",
@@ -371,22 +373,22 @@ TEST_F(LibraryTest, sanityCheck)
 
 TEST_F(LibraryTest, categoryHandling)
 {
-  EXPECT_EQ("", lib.getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd").getCategory());
-  EXPECT_EQ("category_defined_via_tags_only", lib.getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2").getCategory());
-  EXPECT_EQ("category_defined_via_category_element_only", lib.getBookById("0ea1cde6-441d-6c58-f2c7-21c2838e659f").getCategory());
-  EXPECT_EQ("category_element_overrides_tags", lib.getBookById("1123e574-6eef-6d54-28fc-13e4caeae474").getCategory());
-  EXPECT_EQ("category_element_overrides_tags", lib.getBookById("14829621-c490-c376-0792-9de558b57efa").getCategory());
+  EXPECT_EQ("", lib->getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd").getCategory());
+  EXPECT_EQ("category_defined_via_tags_only", lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2").getCategory());
+  EXPECT_EQ("category_defined_via_category_element_only", lib->getBookById("0ea1cde6-441d-6c58-f2c7-21c2838e659f").getCategory());
+  EXPECT_EQ("category_element_overrides_tags", lib->getBookById("1123e574-6eef-6d54-28fc-13e4caeae474").getCategory());
+  EXPECT_EQ("category_element_overrides_tags", lib->getBookById("14829621-c490-c376-0792-9de558b57efa").getCategory());
 }
 
 TEST_F(LibraryTest, emptyFilter)
 {
-  const auto bookIds = lib.filter(kiwix::Filter());
-  EXPECT_EQ(bookIds, lib.getBooksIds());
+  const auto bookIds = lib->filter(kiwix::Filter());
+  EXPECT_EQ(bookIds, lib->getBooksIds());
 }
 
 #define EXPECT_FILTER_RESULTS(f, ...)        \
         EXPECT_EQ(                           \
-          ids2Titles(lib.filter(f)),         \
+          ids2Titles(lib->filter(f)),         \
           TitleCollection({ __VA_ARGS__ })   \
         )
 
@@ -736,33 +738,33 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
 
 TEST_F(LibraryTest, getBookByPath)
 {
-  kiwix::Book book = lib.getBookById(lib.getBooksIds()[0]);
+  kiwix::Book book = lib->getBookById(lib->getBooksIds()[0]);
 #ifdef _WIN32
   auto path = "C:\\some\\abs\\path.zim";
 #else
   auto path = "/some/abs/path.zim";
 #endif
   book.setPath(path);
-  lib.addBook(book);
-  EXPECT_EQ(lib.getBookByPath(path).getId(), book.getId());
-  EXPECT_THROW(lib.getBookByPath("non/existant/path.zim"), std::out_of_range);
+  lib->addBook(book);
+  EXPECT_EQ(lib->getBookByPath(path).getId(), book.getId());
+  EXPECT_THROW(lib->getBookByPath("non/existant/path.zim"), std::out_of_range);
 }
 
 TEST_F(LibraryTest, removeBookByIdRemovesTheBook)
 {
-  const auto initialBookCount = lib.getBookCount(true, true);
+  const auto initialBookCount = lib->getBookCount(true, true);
   ASSERT_GT(initialBookCount, 0U);
-  EXPECT_NO_THROW(lib.getBookById("raycharles"));
-  lib.removeBookById("raycharles");
-  EXPECT_EQ(initialBookCount - 1, lib.getBookCount(true, true));
-  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+  EXPECT_NO_THROW(lib->getBookById("raycharles"));
+  lib->removeBookById("raycharles");
+  EXPECT_EQ(initialBookCount - 1, lib->getBookCount(true, true));
+  EXPECT_THROW(lib->getBookById("raycharles"), std::out_of_range);
 };
 
 TEST_F(LibraryTest, removeBookByIdDropsTheReader)
 {
-  EXPECT_NE(nullptr, lib.getArchiveById("raycharles"));
-  lib.removeBookById("raycharles");
-  EXPECT_THROW(lib.getArchiveById("raycharles"), std::out_of_range);
+  EXPECT_NE(nullptr, lib->getArchiveById("raycharles"));
+  lib->removeBookById("raycharles");
+  EXPECT_THROW(lib->getArchiveById("raycharles"), std::out_of_range);
 };
 
 TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
@@ -770,17 +772,17 @@ TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
   kiwix::Filter f;
   f.local(true).valid(true).query(R"(title:"ray charles")", false);
 
-  EXPECT_NO_THROW(lib.getBookById("raycharles"));
-  EXPECT_EQ(1U, lib.filter(f).size());
+  EXPECT_NO_THROW(lib->getBookById("raycharles"));
+  EXPECT_EQ(1U, lib->filter(f).size());
 
-  lib.removeBookById("raycharles");
+  lib->removeBookById("raycharles");
 
-  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
-  EXPECT_EQ(0U, lib.filter(f).size());
+  EXPECT_THROW(lib->getBookById("raycharles"), std::out_of_range);
+  EXPECT_EQ(0U, lib->filter(f).size());
 
   // make sure that Library::filter() doesn't add an empty book with
   // an id surviving in the search DB
-  EXPECT_THROW(lib.getBookById("raycharles"), std::out_of_range);
+  EXPECT_THROW(lib->getBookById("raycharles"), std::out_of_range);
 };
 
 TEST_F(LibraryTest, removeBooksNotUpdatedSince)
@@ -800,18 +802,18 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
     "Wikiquote"
   );
 
-  const uint64_t rev = lib.getRevision();
-  for ( const auto& id : lib.filter(kiwix::Filter().query("exchange")) ) {
-    lib.addBook(lib.getBookByIdThreadSafe(id));
+  const uint64_t rev = lib->getRevision();
+  for ( const auto& id : lib->filter(kiwix::Filter().query("exchange")) ) {
+    lib->addBook(lib->getBookByIdThreadSafe(id));
   }
 
-  EXPECT_GT(lib.getRevision(), rev);
+  EXPECT_GT(lib->getRevision(), rev);
 
-  const uint64_t rev2 = lib.getRevision();
+  const uint64_t rev2 = lib->getRevision();
 
-  EXPECT_EQ(9u, lib.removeBooksNotUpdatedSince(rev));
+  EXPECT_EQ(9u, lib->removeBooksNotUpdatedSince(rev));
 
-  EXPECT_GT(lib.getRevision(), rev2);
+  EXPECT_GT(lib->getRevision(), rev2);
 
   EXPECT_FILTER_RESULTS(kiwix::Filter(),
     "Islam Stack Exchange",

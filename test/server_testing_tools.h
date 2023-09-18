@@ -98,7 +98,7 @@ private:
   void run(int serverPort, std::string indexTemplateString = "");
 
 private: // data
-  kiwix::Library library;
+  std::shared_ptr<kiwix::Library> library;
   kiwix::Manager manager;
   std::unique_ptr<kiwix::NameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
@@ -107,7 +107,8 @@ private: // data
 };
 
 ZimFileServer::ZimFileServer(int serverPort, Cfg _cfg, std::string libraryFilePath)
-: manager(&this->library)
+: library(kiwix::Library::create())
+, manager(this->library.get())
 , cfg(_cfg)
 {
   if ( kiwix::isRelativePath(libraryFilePath) )
@@ -120,7 +121,8 @@ ZimFileServer::ZimFileServer(int serverPort,
                              Cfg _cfg,
                              const FilePathCollection& zimpaths,
                              std::string indexTemplateString)
-: manager(&this->library)
+: library(kiwix::Library::create())
+, manager(this->library.get())
 , cfg(_cfg)
 {
   for ( const auto& zimpath : zimpaths ) {
@@ -136,9 +138,9 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   if (cfg.options & NO_NAME_MAPPER) {
     nameMapper.reset(new kiwix::IdNameMapper());
   } else {
-    nameMapper.reset(new kiwix::HumanReadableNameMapper(library, false));
+    nameMapper.reset(new kiwix::HumanReadableNameMapper(*library, false));
   }
-  server.reset(new kiwix::Server(&library, nameMapper.get()));
+  server.reset(new kiwix::Server(library.get(), nameMapper.get()));
   server->setRoot(cfg.root);
   server->setAddress(address);
   server->setPort(serverPort);
