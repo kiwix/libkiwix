@@ -963,7 +963,7 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   const auto pageLength = getSearchPageSize(request);
 
   /* Get the results */
-  SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper.get(), mp_library.get(), start,
+  SearchRenderer renderer(search->getResults(start-1, pageLength), start,
                           search->getEstimatedMatches());
   renderer.setSearchPattern(searchInfo.pattern);
   renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
@@ -971,9 +971,17 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   renderer.setSearchProtocolPrefix(m_root + "/search");
   renderer.setPageLength(pageLength);
   if (request.get_requested_format() == "xml") {
-    return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
+    return ContentResponse::build(
+      *this,
+      renderer.getXml(*mp_nameMapper, mp_library.get()),
+      "application/rss+xml; charset=utf-8"
+    );
   }
-  auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
+  auto response = ContentResponse::build(
+    *this,
+    renderer.getHtml(*mp_nameMapper, mp_library.get()),
+    "text/html; charset=utf-8"
+  );
   // XXX: Now this has to be handled by the iframe-based viewer which
   // XXX: has to resolve if the book selection resulted in a single book.
   /*

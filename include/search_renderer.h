@@ -37,29 +37,11 @@ class SearchRenderer
   /**
    * Construct a SearchRenderer from a SearchResultSet.
    *
-   * The constructed version of the SearchRenderer will not introduce
-   * the book name for each result. It is better to use the other constructor
-   * with a Library pointer to have a better html page.
-   *
    * @param srs The `SearchResultSet` to render.
-   * @param mapper The `NameMapper` to use to do the rendering.
    * @param start The start offset used for the srs.
    * @param estimatedResultCount The estimatedResultCount of the whole search
    */
-  SearchRenderer(zim::SearchResultSet srs, const NameMapper* mapper,
-                 unsigned int start, unsigned int estimatedResultCount);
-
-  /**
-   * Construct a SearchRenderer from a SearchResultSet.
-   *
-   * @param srs The `SearchResultSet` to render.
-   * @param mapper The `NameMapper` to use to do the rendering.
-   * @param library The `Library` to use to look up book details for search results.
-   * @param start The start offset used for the srs.
-   * @param estimatedResultCount The estimatedResultCount of the whole search
-   */
-  SearchRenderer(zim::SearchResultSet srs, const NameMapper* mapper, Library* library,
-                 unsigned int start, unsigned int estimatedResultCount);
+  SearchRenderer(zim::SearchResultSet srs, unsigned int start, unsigned int estimatedResultCount);
 
   ~SearchRenderer();
 
@@ -90,24 +72,32 @@ class SearchRenderer
     this->pageLength  = pageLength;
   }
 
-  std::string renderTemplate(const std::string& tmpl_str);
-
   /**
    * Generate the html page with the resutls of the search.
+   *
+   * @param mapper The `NameMapper` to use to do the rendering.
+   * @param library The `Library` to use to look up book details for search results.
+                    May be nullptr. In this case, bookName is not set in the rendered string.
+   * @return The html string
    */
-  std::string getHtml();
+  std::string getHtml(const NameMapper& mapper, const Library* library);
 
-    /**
+  /**
    * Generate the xml page with the resutls of the search.
+   *
+   * @param mapper The `NameMapper` to use to do the rendering.
+   * @param library The `Library` to use to look up book details for search results.
+                    May be nullptr. In this case, bookName is not set in the rendered string.
+   * @return The xml string
    */
-  std::string getXml();
+  std::string getXml(const NameMapper& mapper, const Library* library);
 
+ protected: // function
+  std::string renderTemplate(const std::string& tmpl_str, const NameMapper& mapper, const Library *library);
 
  protected:
   std::string beautifyInteger(const unsigned int number);
   zim::SearchResultSet m_srs;
-  const NameMapper* mp_nameMapper;
-  Library* mp_library;
   std::string searchBookQuery;
   std::string searchPattern;
   std::string protocolPrefix;

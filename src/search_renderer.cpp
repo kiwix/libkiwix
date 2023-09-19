@@ -36,16 +36,9 @@ namespace kiwix
 {
 
 /* Constructor */
-SearchRenderer::SearchRenderer(zim::SearchResultSet srs, const NameMapper* mapper,
-                      unsigned int start, unsigned int estimatedResultCount)
-    : SearchRenderer(srs, mapper, nullptr, start, estimatedResultCount)
-{}
-
-SearchRenderer::SearchRenderer(zim::SearchResultSet srs, const NameMapper* mapper, Library* library,
+SearchRenderer::SearchRenderer(zim::SearchResultSet srs,
                       unsigned int start, unsigned int estimatedResultCount)
     : m_srs(srs),
-      mp_nameMapper(mapper),
-      mp_library(library),
       protocolPrefix("zim://"),
       searchProtocolPrefix("search://"),
       estimatedResultCount(estimatedResultCount),
@@ -164,7 +157,7 @@ kainjow::mustache::data buildPagination(
   return pagination;
 }
 
-std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
+std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const NameMapper& nameMapper, const Library* library)
 {
   const std::string absPathPrefix = protocolPrefix;
   // Build the results list
@@ -172,12 +165,12 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
   for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
     kainjow::mustache::data result;
     const std::string zim_id(it.getZimId());
-    const auto path = mp_nameMapper->getNameForId(zim_id) + "/" + it.getPath();
+    const auto path = nameMapper.getNameForId(zim_id) + "/" + it.getPath();
     result.set("title", it.getTitle());
     result.set("absolutePath", absPathPrefix + urlEncode(path));
     result.set("snippet", it.getSnippet());
-    if (mp_library) {
-      result.set("bookTitle", mp_library->getBookById(zim_id).getTitle());
+    if (library) {
+      result.set("bookTitle", library->getBookById(zim_id).getTitle());
     }
     if (it.getWordCount() >= 0) {
       result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
@@ -222,14 +215,14 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str)
   return ss.str();
 }
 
-std::string SearchRenderer::getHtml()
+std::string SearchRenderer::getHtml(const NameMapper& mapper, const Library* library)
 {
-  return renderTemplate(RESOURCE::templates::search_result_html);
+  return renderTemplate(RESOURCE::templates::search_result_html, mapper, library);
 }
 
-std::string SearchRenderer::getXml()
+std::string SearchRenderer::getXml(const NameMapper& mapper, const Library* library)
 {
-  return renderTemplate(RESOURCE::templates::search_result_xml);
+  return renderTemplate(RESOURCE::templates::search_result_xml, mapper, library);
 }
 
 
