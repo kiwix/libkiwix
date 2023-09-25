@@ -22,7 +22,7 @@ class NameMapperTest : public ::testing::Test {
   NameMapperTest(): lib(kiwix::Library::create()) {}
  protected:
   void SetUp() override {
-     kiwix::Manager manager(lib.get());
+     kiwix::Manager manager(lib);
      manager.readXml(libraryXML, false, "./library.xml", true);
      for ( const std::string& id : lib->getBooksIds() ) {
        kiwix::Book bookCopy = lib->getBookById(id);

@@ -239,7 +239,7 @@ typedef std::vector<std::string> Langs;
 TEST(LibraryOpdsImportTest, allInOne)
 {
   auto lib = kiwix::Library::create();
-  kiwix::Manager manager(lib.get());
+  kiwix::Manager manager(lib);
   manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
 
   EXPECT_EQ(10U, lib->getBookCount(true, true));
@@ -304,7 +304,7 @@ class LibraryTest : public ::testing::Test {
   LibraryTest(): lib(kiwix::Library::create()) {}
 
   void SetUp() override {
-     kiwix::Manager manager(lib.get());
+     kiwix::Manager manager(lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }

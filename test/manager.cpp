@@ -9,7 +9,7 @@
 TEST(ManagerTest, addBookFromPathAndGetIdTest)
 {
     auto lib = kiwix::Library::create();
-    kiwix::Manager manager = kiwix::Manager(lib.get());
+    kiwix::Manager manager = kiwix::Manager(lib);
 
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim");
     ASSERT_NE(bookId, "");
@@ -49,7 +49,7 @@ const char sampleLibraryXML[] = R"(
 TEST(ManagerTest, readXml)
 {
     auto lib = kiwix::Library::create();
-    kiwix::Manager manager = kiwix::Manager(lib.get());
+    kiwix::Manager manager = kiwix::Manager(lib);
 
     EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, "/data/lib.xml", true));
     kiwix::Book book = lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
@@ -71,7 +71,7 @@ TEST(ManagerTest, readXml)
 TEST(Manager, reload)
 {
   auto lib = kiwix::Library::create();
-  kiwix::Manager manager(lib.get());
+  kiwix::Manager manager(lib);
 
   manager.reload({ "./test/library.xml" });
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{

@@ -108,7 +108,7 @@ private: // data
 
 ZimFileServer::ZimFileServer(int serverPort, Cfg _cfg, std::string libraryFilePath)
 : library(kiwix::Library::create())
-, manager(this->library.get())
+, manager(this->library)
 , cfg(_cfg)
 {
   if ( kiwix::isRelativePath(libraryFilePath) )
@@ -122,7 +122,7 @@ ZimFileServer::ZimFileServer(int serverPort,
                              const FilePathCollection& zimpaths,
                              std::string indexTemplateString)
 : library(kiwix::Library::create())
-, manager(this->library.get())
+, manager(this->library)
 , cfg(_cfg)
 {
   for ( const auto& zimpath : zimpaths ) {
