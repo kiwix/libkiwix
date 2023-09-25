@@ -110,7 +110,7 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
 TEST_F(NameMapperTest, UpdatableNameMapperWithoutAliases)
 {
   CapturedStderr stderror;
-  kiwix::UpdatableNameMapper nm(*lib, false);
+  kiwix::UpdatableNameMapper nm(lib, false);
   EXPECT_EQ("", std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
@@ -126,7 +126,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithoutAliases)
 TEST_F(NameMapperTest, UpdatableNameMapperWithAliases)
 {
   CapturedStderr stderror;
-  kiwix::UpdatableNameMapper nm(*lib, true);
+  kiwix::UpdatableNameMapper nm(lib, true);
   EXPECT_EQ(
       "Path collision: /data/zero_four_2021-10.zim and"
       " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
