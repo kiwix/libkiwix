@@ -100,7 +100,7 @@ private:
 private: // data
   std::shared_ptr<kiwix::Library> library;
   kiwix::Manager manager;
-  std::unique_ptr<kiwix::NameMapper> nameMapper;
+  std::shared_ptr<kiwix::NameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
   const Cfg cfg;
@@ -140,7 +140,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   } else {
     nameMapper.reset(new kiwix::HumanReadableNameMapper(*library, false));
   }
-  server.reset(new kiwix::Server(library, nameMapper.get()));
+  server.reset(new kiwix::Server(library, nameMapper));
   server->setRoot(cfg.root);
   server->setAddress(address);
   server->setPort(serverPort);

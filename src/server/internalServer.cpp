@@ -254,6 +254,11 @@ get_matching_if_none_match_etag(const RequestContext& r, const std::string& etag
   }
 }
 
+struct NoDelete
+{
+  template<class T> void operator()(T*) {}
+};
+
 } // unnamed namespace
 
 std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const RequestContext& request) const
@@ -407,7 +412,7 @@ public:
 
 
 InternalServer::InternalServer(std::shared_ptr<Library> library,
-                               NameMapper* nameMapper,
+                               std::shared_ptr<NameMapper> nameMapper,
                                std::string addr,
                                int port,
                                std::string root,
@@ -433,7 +438,7 @@ InternalServer::InternalServer(std::shared_ptr<Library> library,
   m_ipConnectionLimit(ipConnectionLimit),
   mp_daemon(nullptr),
   mp_library(library),
-  mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
+  mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources)
@@ -787,7 +792,7 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
 {
   const auto url = request.get_url();
   const auto urlParts = kiwix::split(url, "/", true, false);
-  HTMLDumper htmlDumper(mp_library.get(), mp_nameMapper);
+  HTMLDumper htmlDumper(mp_library.get(), mp_nameMapper.get());
   htmlDumper.setRootLocation(m_root);
   htmlDumper.setLibraryId(getLibraryId());
   auto userLang = request.get_user_language();
@@ -958,7 +963,7 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   const auto pageLength = getSearchPageSize(request);
 
   /* Get the results */
-  SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library.get(), start,
+  SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper.get(), mp_library.get(), start,
                           search->getEstimatedMatches());
   renderer.setSearchPattern(searchInfo.pattern);
   renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
