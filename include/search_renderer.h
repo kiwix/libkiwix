@@ -46,7 +46,7 @@ class SearchRenderer
    * @param start The start offset used for the srs.
    * @param estimatedResultCount The estimatedResultCount of the whole search
    */
-  SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper,
+  SearchRenderer(zim::SearchResultSet srs, const NameMapper* mapper,
                  unsigned int start, unsigned int estimatedResultCount);
 
   /**
@@ -58,7 +58,7 @@ class SearchRenderer
    * @param start The start offset used for the srs.
    * @param estimatedResultCount The estimatedResultCount of the whole search
    */
-  SearchRenderer(zim::SearchResultSet srs, NameMapper* mapper, Library* library,
+  SearchRenderer(zim::SearchResultSet srs, const NameMapper* mapper, Library* library,
                  unsigned int start, unsigned int estimatedResultCount);
 
   ~SearchRenderer();
@@ -106,7 +106,7 @@ class SearchRenderer
  protected:
   std::string beautifyInteger(const unsigned int number);
   zim::SearchResultSet m_srs;
-  NameMapper* mp_nameMapper;
+  const NameMapper* mp_nameMapper;
   Library* mp_library;
   std::string searchBookQuery;
   std::string searchPattern;
