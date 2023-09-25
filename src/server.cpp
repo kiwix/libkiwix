@@ -29,7 +29,7 @@
 
 namespace kiwix {
 
-Server::Server(Library* library, NameMapper* nameMapper) :
+Server::Server(std::shared_ptr<Library> library, NameMapper* nameMapper) :
   mp_library(library),
   mp_nameMapper(nameMapper),
   mp_server(nullptr)

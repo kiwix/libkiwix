@@ -406,7 +406,7 @@ public:
 };
 
 
-InternalServer::InternalServer(Library* library,
+InternalServer::InternalServer(std::shared_ptr<Library> library,
                                NameMapper* nameMapper,
                                std::string addr,
                                int port,
@@ -787,7 +787,7 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
 {
   const auto url = request.get_url();
   const auto urlParts = kiwix::split(url, "/", true, false);
-  HTMLDumper htmlDumper(mp_library, mp_nameMapper);
+  HTMLDumper htmlDumper(mp_library.get(), mp_nameMapper);
   htmlDumper.setRootLocation(m_root);
   htmlDumper.setLibraryId(getLibraryId());
   auto userLang = request.get_user_language();
@@ -958,7 +958,7 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   const auto pageLength = getSearchPageSize(request);
 
   /* Get the results */
-  SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
+  SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library.get(), start,
                           search->getEstimatedMatches());
   renderer.setSearchPattern(searchInfo.pattern);
   renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
