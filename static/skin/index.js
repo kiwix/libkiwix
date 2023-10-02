@@ -197,6 +197,58 @@
         }
     }
 
+    function makeURLSearchString(params, keysToURIEncode) {
+        let output = '';
+        for (const [key, value] of params.entries()) {
+            let finalValue = (keysToURIEncode.indexOf(key) >= 0) ? encodeURIComponent(value) : value;
+            output += `&${key}=${finalValue}`;
+        }
+        return output;
+    }
+
+    /* hack for library.kiwix.org magnet links (created by MirrorBrain)
+        See https://github.com/kiwix/container-images/issues/242 */
+    async function getFixedMirrorbrainMagnet(magnetLink) {
+        // parse as query parameters
+        const params = new URLSearchParams(
+            magnetLink.replaceAll('&amp;', '&').replace(/^magnet:/, ''));
+
+        const zimUrl = params.get('as'); // as= is fallback URL
+        // download metalink to build list of mirrored URLs
+        let mirrorUrls = [];
+
+        const metalink = await fetch(`${zimUrl}.meta4`).then(response => {
+            return response.ok ? response.text() : '';
+        }).catch((_error) => '');
+        if (metalink) {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(metalink, "application/xml");
+                doc.querySelectorAll("url").forEach((node) => {
+                    if (node.hasAttribute("priority")) { // ensures its a mirror link
+                        mirrorUrls.push(node.innerHTML);
+                    }
+                });
+            } catch (err) {
+                // not a big deal, magnet will only contain primary URL
+                console.debug(`Failed to parse mirror links for ${zimUrl}`);
+            }
+        }
+
+        // set webseed (ws=) URL to primary download URL (redirects to mirror)
+        params.set('ws', zimUrl);
+        // if we got metalink mirror URLs, append them all
+        if (mirrorUrls) {
+            mirrorUrls.forEach((url) => {
+                params.append('ws', url);
+            });
+        }
+
+        params.set('xs', `${zimUrl}.torrent`);  // adding xs= to point to torrent URL
+
+        return 'magnet:?' + makeURLSearchString(params, ['ws', 'as', 'dn', 'xs', 'tr']);
+    }
+
     async function getMagnetLink(downloadLink) {
         const magnetUrl = downloadLink + '.magnet';
         const controller = new AbortController();
@@ -204,6 +256,9 @@
         const magnetLink = await fetch(magnetUrl, { signal: controller.signal }).then(response => {
             return response.ok ? response.text() : '';
         }).catch((_error) => '');
+        if (magnetLink) {
+            return await getFixedMirrorbrainMagnet(magnetLink);
+        }
         return magnetLink;
     }
 
