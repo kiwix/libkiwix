@@ -254,6 +254,11 @@ get_matching_if_none_match_etag(const RequestContext& r, const std::string& etag
   }
 }
 
+struct NoDelete
+{
+  template<class T> void operator()(T*) {}
+};
+
 } // unnamed namespace
 
 std::pair<std::string, Library::BookIdSet> InternalServer::selectBooks(const RequestContext& request) const
@@ -406,8 +411,8 @@ public:
 };
 
 
-InternalServer::InternalServer(Library* library,
-                               NameMapper* nameMapper,
+InternalServer::InternalServer(LibraryPtr library,
+                               std::shared_ptr<NameMapper> nameMapper,
                                std::string addr,
                                int port,
                                std::string root,
@@ -433,7 +438,7 @@ InternalServer::InternalServer(Library* library,
   m_ipConnectionLimit(ipConnectionLimit),
   mp_daemon(nullptr),
   mp_library(library),
-  mp_nameMapper(nameMapper ? nameMapper : &defaultNameMapper),
+  mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources)
@@ -787,7 +792,7 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
 {
   const auto url = request.get_url();
   const auto urlParts = kiwix::split(url, "/", true, false);
-  HTMLDumper htmlDumper(mp_library, mp_nameMapper);
+  HTMLDumper htmlDumper(mp_library.get(), mp_nameMapper.get());
   htmlDumper.setRootLocation(m_root);
   htmlDumper.setLibraryId(getLibraryId());
   auto userLang = request.get_user_language();
@@ -958,7 +963,7 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   const auto pageLength = getSearchPageSize(request);
 
   /* Get the results */
-  SearchRenderer renderer(search->getResults(start-1, pageLength), mp_nameMapper, mp_library, start,
+  SearchRenderer renderer(search->getResults(start-1, pageLength), start,
                           search->getEstimatedMatches());
   renderer.setSearchPattern(searchInfo.pattern);
   renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
@@ -966,9 +971,17 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   renderer.setSearchProtocolPrefix(m_root + "/search");
   renderer.setPageLength(pageLength);
   if (request.get_requested_format() == "xml") {
-    return ContentResponse::build(*this, renderer.getXml(), "application/rss+xml; charset=utf-8");
+    return ContentResponse::build(
+      *this,
+      renderer.getXml(*mp_nameMapper, mp_library.get()),
+      "application/rss+xml; charset=utf-8"
+    );
   }
-  auto response = ContentResponse::build(*this, renderer.getHtml(), "text/html; charset=utf-8");
+  auto response = ContentResponse::build(
+    *this,
+    renderer.getHtml(*mp_nameMapper, mp_library.get()),
+    "text/html; charset=utf-8"
+  );
   // XXX: Now this has to be handled by the iframe-based viewer which
   // XXX: has to resolve if the book selection resulted in a single book.
   /*

@@ -36,7 +36,7 @@ namespace kiwix
         *
         * @param library The library to serve.
         */
-       Server(Library* library, NameMapper* nameMapper=nullptr);
+       Server(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper=nullptr);
 
        virtual ~Server();
 
@@ -66,8 +66,8 @@ namespace kiwix
        std::string getAddress();
 
      protected:
-       Library* mp_library;
-       NameMapper* mp_nameMapper;
+       std::shared_ptr<Library> mp_library;
+       std::shared_ptr<NameMapper> mp_nameMapper;
        std::string m_root = "";
        std::string m_addr = "";
        std::string m_indexTemplateString = "";

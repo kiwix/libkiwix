@@ -34,6 +34,10 @@
 
 #define KIWIX_LIBRARY_VERSION "20110515"
 
+namespace Xapian {
+class WritableDatabase;
+};
+
 namespace kiwix
 {
 
@@ -173,31 +177,42 @@ class ZimSearcher : public zim::Searcher
     std::mutex m_mutex;
 };
 
+template<typename, typename>
+class ConcurrentCache;
+
+template<typename, typename>
+class MultiKeyCache;
+
+using LibraryPtr = std::shared_ptr<Library>;
+using ConstLibraryPtr = std::shared_ptr<const Library>;
+
 /**
  * A Library store several books.
  */
-class Library
+class Library: public std::enable_shared_from_this<Library>
 {
-  // all data fields must be added in LibraryBase
-  mutable std::mutex m_mutex;
-
  public:
   typedef uint64_t Revision;
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
   typedef std::set<std::string> BookIdSet;
 
- public:
+ private:
   Library();
+
+ public:
+  [[nodiscard]] static LibraryPtr create() {
+    return LibraryPtr(new Library());
+  }
   ~Library();
 
   /**
    * Library is not a copiable object. However it can be moved.
    */
   Library(const Library& ) = delete;
-  Library(Library&& );
+  Library(Library&& ) = delete;
   void operator=(const Library& ) = delete;
-  Library& operator=(Library&& );
+  Library& operator=(Library&& ) = delete;
 
   /**
    * Add a book to the library.
@@ -368,18 +383,31 @@ class Library
 
 private: // types
   typedef const std::string& (Book::*BookStrPropMemFn)() const;
-  struct Impl;
+  struct Entry : Book
+  {
+    Library::Revision lastUpdatedRevision = 0;
+  };
 
 private: // functions
   AttributeCounts getBookAttributeCounts(BookStrPropMemFn p) const;
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
+  unsigned int getBookCount_not_protected(const bool localBooks, const bool remoteBooks) const;
   void updateBookDB(const Book& book);
   void dropCache(const std::string& bookId);
 
 private: //data
-  std::unique_ptr<Impl> mp_impl;
+  mutable std::mutex m_mutex;
+  Library::Revision m_revision;
+  std::map<std::string, Entry> m_books;
+  using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
+  std::unique_ptr<ArchiveCache> mp_archiveCache;
+  using SearcherCache = MultiKeyCache<std::string, std::shared_ptr<ZimSearcher>>;
+  std::unique_ptr<SearcherCache> mp_searcherCache;
+  std::vector<kiwix::Bookmark> m_bookmarks;
+  std::unique_ptr<Xapian::WritableDatabase> m_bookDB;
 };
+
 
 }
 

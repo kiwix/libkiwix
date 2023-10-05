@@ -92,8 +92,8 @@ class OPDSDumper;
 
 class InternalServer {
   public:
-    InternalServer(Library* library,
-                   NameMapper* nameMapper,
+    InternalServer(LibraryPtr library,
+                   std::shared_ptr<NameMapper> nameMapper,
                    std::string addr,
                    int port,
                    std::string root,
@@ -178,8 +178,8 @@ class InternalServer {
     int m_ipConnectionLimit;
     struct MHD_Daemon* mp_daemon;
 
-    Library* mp_library;
-    NameMapper* mp_nameMapper;
+    LibraryPtr mp_library;
+    std::shared_ptr<NameMapper> mp_nameMapper;
 
     SearchCache searchCache;
     SuggestionSearcherCache suggestionSearcherCache;
