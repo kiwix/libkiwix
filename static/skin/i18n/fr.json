@@ -2,11 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Gomoko",
+			"Stephane",
 			"Thibaut120094",
 			"Verdy p"
 		]
 	},
-	"name": "français",
+	"name": "Français",
 	"suggest-full-text-search": "contenant « {{{SEARCH_TERMS}}} »...",
 	"no-such-book": "Aucun livre avec ce nom : {{BOOK_NAME}}",
 	"too-many-books": "Trop de livres demandés ({{NB_BOOKS}}) alors que la limite est de {{LIMIT}}",

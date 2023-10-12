@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"GuoPC",
-			"StarrySky"
+			"StarrySky",
+			"Sunai"
 		]
 	},
 	"name": "英语",
@@ -12,5 +13,9 @@
 	"404-page-heading": "未找到",
 	"500-page-title": "内部服务器错误",
 	"500-page-heading": "内部服务器错误",
-	"library-button-text": "前往欢迎页面"
+	"library-button-text": "前往欢迎页面",
+	"search": "搜索",
+	"book-filtering-all-languages": "所有语言",
+	"download": "下载",
+	"preview-book": "预览"
 }
