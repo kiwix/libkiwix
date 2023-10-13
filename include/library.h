@@ -186,6 +186,17 @@ class MultiKeyCache;
 using LibraryPtr = std::shared_ptr<Library>;
 using ConstLibraryPtr = std::shared_ptr<const Library>;
 
+
+// Some compiler we use don't have [[nodiscard]] attribute.
+// We don't want to declare `create` with it in this case.
+#define LIBKIWIX_NODISCARD
+#if defined __has_cpp_attribute
+  #if __has_cpp_attribute (nodiscard)
+    #undef LIBKIWIX_NODISCARD
+    #define LIBKIWIX_NODISCARD [[nodiscard]]
+  #endif
+#endif
+
 /**
  * A Library store several books.
  */
@@ -201,7 +212,7 @@ class Library: public std::enable_shared_from_this<Library>
   Library();
 
  public:
-  [[nodiscard]] static LibraryPtr create() {
+  LIBKIWIX_NODISCARD static LibraryPtr create() {
     return LibraryPtr(new Library());
   }
   ~Library();
@@ -407,6 +418,10 @@ private: //data
   std::vector<kiwix::Bookmark> m_bookmarks;
   std::unique_ptr<Xapian::WritableDatabase> m_bookDB;
 };
+
+// We don't need it anymore and we don't want to polute any other potential usage
+// of `LIBKIWIX_NODISCARD` token.
+#undef LIBKIWIX_NODISCARD
 
 
 }
