@@ -15,13 +15,19 @@ const uiLanguages = [
     "English": "en"
   },
   {
+    "español": "es"
+  },
+  {
     "suomi": "fi"
   },
   {
-    "français": "fr"
+    "Français": "fr"
   },
   {
     "עברית": "he"
+  },
+  {
+    "हिन्दी": "hi"
   },
   {
     "Հայերեն": "hy"
@@ -48,6 +54,12 @@ const uiLanguages = [
     "македонски": "mk"
   },
   {
+    "Bahasa Melayu": "ms"
+  },
+  {
+    "Nederlands": "nl"
+  },
+  {
     "ߒߞߏ": "nqo"
   },
   {
@@ -63,7 +75,13 @@ const uiLanguages = [
     "slovenčina": "sk"
   },
   {
+    "سرائیکی": "skr-arab"
+  },
+  {
     "slovenščina": "sl"
+  },
+  {
+    "Shqip": "sq"
   },
   {
     "Svenska": "sv"
