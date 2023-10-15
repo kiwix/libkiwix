@@ -4,7 +4,9 @@
 			"Fenixs-ru",
 			"Kareyac",
 			"Okras",
-			"Pacha Tchernof"
+			"Pacha Tchernof",
+			"Razno0",
+			"Smavrina"
 		]
 	},
 	"name": "русский",
@@ -32,7 +34,23 @@
 	"random-page-button-text": "Перейти на случайно выбранную страницу",
 	"searchbox-tooltip": "Искать '{{BOOK_TITLE}}'",
 	"confusion-of-tongues": "В поиске будут участвовать две или более книг на разных языках, что может привести к запутанным результатам.",
+	"powered-by-kiwix-html": "При поддержке&nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",
+	"search": "Найти",
 	"book-filtering-all-categories": "Все категории",
 	"book-filtering-all-languages": "Все языки",
-	"download": "Скачать"
+	"count-of-matching-books": "{{COUNT}} книг(и)",
+	"download": "Скачать",
+	"direct-download-alt-text": "прямая загрузка",
+	"hash-download-link-text": "Хэш Sha256",
+	"hash-download-alt-text": "скачать хэш",
+	"magnet-link-text": "Магнитная ссылка",
+	"torrent-download-link-text": "Торрент-файл",
+	"torrent-download-alt-text": "скачать торрент",
+	"library-opds-feed-all-entries": "Канал библиотеки OPDS – все записи",
+	"filter-by-tag": "Фильтровать по тегу \"{{TAG}}\"",
+	"stop-filtering-by-tag": "Прекратить фильтрацию по тегу \"{{TAG}}\"",
+	"welcome-to-kiwix-server": "Добро пожаловать на сервер Kiwix",
+	"download-links-heading": "Ссылки для скачивания <b><i>{{BOOK_TITLE}}</i></b>",
+	"download-links-title": "Скачать книгу",
+	"preview-book": "Предпросмотр"
 }
