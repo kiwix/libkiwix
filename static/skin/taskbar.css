@@ -194,6 +194,7 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
 }
 
 #uiLanguageSelector .modal-content #ui_language {
+  font-size: 1rem;
   width: 100%;
 }
 
@@ -254,4 +255,14 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
     .kiwix_searchform {
         width: 80%;
     }
+}
+
+@font-face {
+  font-family: "poppins";
+  src: url("../skin/fonts/Poppins.ttf?KIWIXCACHEID") format("truetype");
+}
+
+@font-face {
+    font-family: "roboto";
+    src: url("../skin/fonts/Roboto.ttf?KIWIXCACHEID") format("truetype");
 }
