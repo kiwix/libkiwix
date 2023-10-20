@@ -24,9 +24,9 @@ with the Libkiwix compilation itself, we recommend to have a look to
 Preamble
 --------
 
-Although the Libkiwix can be (cross-)compiled on/for many sytems, the
+Although the Libkiwix can be (cross-)compiled on/for many systems, the
 following documentation explains how to do it on POSIX ones. It is
-primarly thought for GNU/Linux systems and has been tested on recent
+primarily thought for GNU/Linux systems and has been tested on recent
 releases of Ubuntu and Fedora.
 
 Dependencies
@@ -54,7 +54,7 @@ The following dependency needs to be available at runtime:
 These dependencies may or may not be packaged by your operating
 system. They may also be packaged but only in an older version. The
 compilation script will tell you if one of them is missing or too old.
-In the worse case, you will have to download and compile bleeding edge
+In the worst case, you will have to download and compile bleeding edge
 version by hand.
 
 If you want to install these dependencies locally, then use the
@@ -201,7 +201,7 @@ To use JS provided by kiwix-serve you can use the following template to start wi
 
 
 If you compile manually Libmicrohttpd, you might need to compile it
-without GNU TLS, a bug here will empeach further compilation
+without GNU TLS, a bug here will impeach further compilation
 otherwise.
 
 If the compilation still fails, you might need to get a more recent
