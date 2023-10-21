@@ -325,58 +325,6 @@ body {
     -webkit-box-orient: vertical;
 }
 
-.modal-wrapper {
-    position: fixed;
-    z-index: 100;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    background-color: rgba(0, 0, 0, 30%);
-}
-
-.modal {
-    color: #444343;
-    height: 280px;
-    width: 250px;
-    margin: 15px;
-    background-color: #f7f7f7;
-    border: 1px solid #ececec;
-    border-radius: 3px;
-}
-
-.modal-heading {
-    background-color: #f0f0f0;
-    height: 20%;
-    width: 100%;
-    border-bottom: 1px solid #ececec;
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-}
-
-.modal-title {
-    display: flex;
-    font-size: 15px;
-    align-items: center;
-    padding-left: 20px;
-    font-family: poppins;
-}
-
-.modal-close-button {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    padding: 20px;
-}
-
 .modal-content div {
     width: 100%;
     height: 40px;
