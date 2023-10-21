@@ -61,7 +61,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6a8c6fb2" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=2446b723" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=e4d76d16" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=ce19da2a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
@@ -71,7 +71,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=5ab04b5a" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=74156c3a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=201653b8" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
@@ -140,6 +140,8 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/hash.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/hash.png?cacheid=f836e872" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/kiwix.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=27f092fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/magnet.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/magnet.png?cacheid=73b6bddf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search-icon.svg" },
@@ -274,7 +276,8 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=2446b723"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=27f092fb"
+      href="/ROOT%23%3F/skin/index.css?cacheid=e4d76d16"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -292,10 +295,14 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=2446b723"
 )EXPECTEDRESULT"
     },
     {
+      /* url */ "/ROOT%23%3F/skin/kiwix.css",
+R"EXPECTEDRESULT(  src: url("../skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
+  src: url("../skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
+)EXPECTEDRESULT"
+    },
+    {
       /* url */ "/ROOT%23%3F/skin/index.css",
 R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10ae7ed');
-  src: url("../skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
-  src: url("../skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
 )EXPECTEDRESULT"
     },
     {
@@ -308,7 +315,8 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=5ab04b5a" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=27f092fb" rel="Stylesheet" />
+    <link type="text/css" href="./skin/taskbar.css?cacheid=74156c3a" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=96f2cf73" defer></script>
