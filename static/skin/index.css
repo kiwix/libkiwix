@@ -517,3 +517,13 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+@font-face {
+  font-family: "poppins";
+  src: url("../skin/fonts/Poppins.ttf?KIWIXCACHEID") format("truetype");
+}
+
+@font-face {
+  font-family: "roboto";
+  src: url("../skin/fonts/Roboto.ttf?KIWIXCACHEID") format("truetype");
+}
