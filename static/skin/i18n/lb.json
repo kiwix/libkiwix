@@ -23,5 +23,6 @@
 	"book-filtering-all-languages": "All Sproochen",
 	"count-of-matching-books": "{{COUNT}} Buch/Bicher",
 	"download": "Eroflueden",
-	"direct-download-link-text": "Direkt"
+	"direct-download-link-text": "Direkt",
+	"download-links-title": "Buch eroflueden"
 }
