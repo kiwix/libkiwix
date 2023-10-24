@@ -63,6 +63,9 @@ const uiLanguages = [
     "ߒߞߏ": "nqo"
   },
   {
+    "ଓଡ଼ିଆ": "or"
+  },
+  {
     "Polski": "pl"
   },
   {
@@ -85,6 +88,9 @@ const uiLanguages = [
   },
   {
     "Svenska": "sv"
+  },
+  {
+    "ఇంగ్లీషు": "te"
   },
   {
     "Türkçe": "tr"

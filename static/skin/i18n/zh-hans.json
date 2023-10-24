@@ -3,7 +3,8 @@
 		"authors": [
 			"GuoPC",
 			"StarrySky",
-			"Sunai"
+			"Sunai",
+			"XtexChooser"
 		]
 	},
 	"name": "英语",
@@ -15,7 +16,10 @@
 	"500-page-heading": "内部服务器错误",
 	"library-button-text": "前往欢迎页面",
 	"search": "搜索",
+	"book-filtering-all-categories": "所有分类",
 	"book-filtering-all-languages": "所有语言",
 	"download": "下载",
+	"magnet-link-text": "磁力链接",
+	"torrent-download-link-text": "种子文件",
 	"preview-book": "预览"
 }
