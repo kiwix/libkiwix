@@ -1,3 +1,25 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    position: relative;
+    box-sizing: border-box;
+}
+
+::selection {
+    background-color: #00b4e4;
+    color: white;
+}
+
 .modal-wrapper {
     position: fixed;
     z-index: 100;

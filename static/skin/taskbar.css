@@ -21,6 +21,7 @@
 }
 
 .kiwixsearch {
+    font-size: 1.6rem;
     position: relative;
     height: 26px;
     width: 100%;
@@ -119,6 +120,7 @@ label[for=kiwixsearchbox] {
 }
 
 a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
+    font-size: 1.6rem;
     display: block;
     text-decoration: none;
     color: inherit;
@@ -142,7 +144,7 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
 }
 
 #uiLanguageSelector .modal-content #ui_language {
-  font-size: 1rem;
+  font-size: 1.6rem;
   width: 100%;
 }
 
