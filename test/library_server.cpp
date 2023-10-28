@@ -1028,12 +1028,12 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    <title>Welcome to Kiwix Server</title>\n" \
   "    <link\n" \
   "      type=\"text/css\"\n" \
-  "      href=\"/ROOT%23%3F/skin/kiwix.css?cacheid=bdae4d22\"\n" \
+  "      href=\"/ROOT%23%3F/skin/kiwix.css?cacheid=9b1b089f\"\n" \
   "      rel=\"Stylesheet\"\n" \
   "    />\n" \
   "    <link\n" \
   "      type=\"text/css\"\n" \
-  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=081e1606\"\n" \
+  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=4196ad7d\"\n" \
   "      rel=\"Stylesheet\"\n" \
   "    />\n" \
   "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3\">\n" \

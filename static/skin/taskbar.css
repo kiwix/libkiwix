@@ -131,30 +131,6 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
     column-count: 1 !important;
 }
 
-#uiLanguageSelector {
-  display: none;
-}
-
-#uiLanguageSelector .modal {
-  height: 140px;
-}
-
-#uiLanguageSelector .modal-heading {
-  height: 40%;
-}
-
-#uiLanguageSelector .modal-content #ui_language {
-  font-size: 1.6rem;
-  width: 100%;
-}
-
-#uiLanguageSelectorButton {
-  margin: 0px 12px 6px 12px;
-  float: right;
-  cursor: pointer;
-  height: 30px;
-}
-
 @media(min-width:420px) {
     .kiwix_button_cont {
         display: inline-block !important;
