@@ -1,7 +1,7 @@
 .kiwixNav {
     background-color: #f4f6f8;
     width: 100%;
-    padding: 20px;
+    padding: 10px 20px;
     position: sticky;
     top: 0;
     z-index: 3;
@@ -37,10 +37,10 @@
     background-image: none;
     border-radius: 1px;
     width: 195px;
-    height: 35px;
+    height: 30px;
     flex: 1;
     color: black;
-    padding: 7px 10px 10px;
+    padding: 0px 10px 0px 10px;
     cursor: pointer;
  }
 
@@ -52,7 +52,7 @@
     position: relative;
     display: flex;
     width: 231px;
-    height: 35px;
+    height: 30px;
     line-height: 3;
     background: #909090;
     overflow: hidden;
@@ -82,7 +82,7 @@
 }
 
 .kiwixSearch {
-    height: 35px;
+    height: 30px;
     width: 231px;
     border-radius: 10px;
     border: solid 1px #b5b2b2;
@@ -96,7 +96,7 @@
 
 .kiwixButton {
     margin: 0 17px;
-    height: 35px;
+    height: 30px;
     width: 100px;
     border-radius: 10px;
     color: white;
