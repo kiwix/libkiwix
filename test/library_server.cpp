@@ -1028,7 +1028,12 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    <title>Welcome to Kiwix Server</title>\n" \
   "    <link\n" \
   "      type=\"text/css\"\n" \
-  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=e4d76d16\"\n" \
+  "      href=\"/ROOT%23%3F/skin/kiwix.css?cacheid=9b1b089f\"\n" \
+  "      rel=\"Stylesheet\"\n" \
+  "    />\n" \
+  "    <link\n" \
+  "      type=\"text/css\"\n" \
+  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=1e78e7cf\"\n" \
   "      rel=\"Stylesheet\"\n" \
   "    />\n" \
   "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3\">\n" \
@@ -1145,7 +1150,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    </div>\n" \
   "    <div id=\"kiwixfooter\" class=\"kiwixfooter\">Powered by&nbsp;<a href=\"https://kiwix.org\">Kiwix</a></div>\n" \
   "    </body>\n" \
-  "</html>"
+  "</html>\n"
 
 #define FILTERS_HTML(SELECTED_ENG) \
   "      <div class=\"kiwixNav__filters\">\n" \

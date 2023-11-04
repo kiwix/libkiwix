@@ -61,17 +61,19 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6a8c6fb2" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=e4d76d16" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=1e78e7cf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=ce19da2a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/kiwix.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=9b1b089f" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=5ab04b5a" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=a1200d6b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=201653b8" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
@@ -274,7 +276,8 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=e4d76d16"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=9b1b089f"
+      href="/ROOT%23%3F/skin/index.css?cacheid=1e78e7cf"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -282,8 +285,6 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=e4d76d16"
     <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
-        src: url("/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
-          src: url("/ROOT%23%3F/skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=96f2cf73" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
@@ -291,6 +292,12 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/index.css?cacheid=e4d76d16"
     <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=ce19da2a" defer></script>
         <img src="/ROOT%23%3F/skin/feed.svg?cacheid=055b333f"
         <img src="/ROOT%23%3F/skin/langSelector.svg?cacheid=00b59961"
+)EXPECTEDRESULT"
+    },
+    {
+      /* url */ "/ROOT%23%3F/skin/kiwix.css",
+R"EXPECTEDRESULT(  src: url("../skin/fonts/Poppins.ttf?cacheid=af705837") format("truetype");
+  src: url("../skin/fonts/Roboto.ttf?cacheid=84d10248") format("truetype");
 )EXPECTEDRESULT"
     },
     {
@@ -308,7 +315,8 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/taskbar.css?cacheid=5ab04b5a" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=9b1b089f" rel="Stylesheet" />
+    <link type="text/css" href="./skin/taskbar.css?cacheid=a1200d6b" rel="Stylesheet" />
     <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=96f2cf73" defer></script>

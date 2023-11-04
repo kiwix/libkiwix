@@ -10,6 +10,7 @@ skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
 skin/autoComplete.min.js
+skin/kiwix.css
 skin/taskbar.css
 skin/index.css
 skin/fonts/Poppins.ttf

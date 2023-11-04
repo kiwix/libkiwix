@@ -1,29 +1,7 @@
-*,
-*::after,
-*::before {
-  margin: 0;
-  padding: 0;
-  box-sizing: inherit;
-}
-
-html {
-    font-size: 62.5%;
-}
-
-body {
-    position: relative;
-    box-sizing: border-box;
-}
-
-::selection {
-    background-color: #00b4e4;
-    color: white;
-}
-
 .kiwixNav {
     background-color: #f4f6f8;
     width: 100%;
-    padding: 20px;
+    padding: 10px 20px;
     position: sticky;
     top: 0;
     z-index: 3;
@@ -59,10 +37,10 @@ body {
     background-image: none;
     border-radius: 1px;
     width: 195px;
-    height: 35px;
+    height: 30px;
     flex: 1;
     color: black;
-    padding: 7px 10px 10px;
+    padding: 0px 10px 0px 10px;
     cursor: pointer;
  }
 
@@ -74,7 +52,7 @@ body {
     position: relative;
     display: flex;
     width: 231px;
-    height: 35px;
+    height: 30px;
     line-height: 3;
     background: #909090;
     overflow: hidden;
@@ -104,7 +82,7 @@ body {
 }
 
 .kiwixSearch {
-    height: 35px;
+    height: 30px;
     width: 231px;
     border-radius: 10px;
     border: solid 1px #b5b2b2;
@@ -118,7 +96,7 @@ body {
 
 .kiwixButton {
     margin: 0 17px;
-    height: 35px;
+    height: 30px;
     width: 100px;
     border-radius: 10px;
     color: white;
@@ -160,29 +138,6 @@ body {
 
 .tag__link:hover {
     font-weight: bolder;
-}
-
-#uiLanguageSelector {
-  display: none;
-}
-
-#uiLanguageSelector .modal {
-  height: 140px;
-}
-
-#uiLanguageSelector .modal-heading {
-  height: 40%;
-}
-
-#uiLanguageSelector .modal-content #ui_language {
-  font-size: 1.6rem;
-  width: 100%;
-}
-
-#uiLanguageSelectorButton {
-  margin: 0 12px 0 0;
-  float: right;
-  cursor: pointer;
 }
 
 .book__list {
@@ -325,58 +280,6 @@ body {
     -webkit-box-orient: vertical;
 }
 
-.modal-wrapper {
-    position: fixed;
-    z-index: 100;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    background-color: rgba(0, 0, 0, 30%);
-}
-
-.modal {
-    color: #444343;
-    height: 280px;
-    width: 250px;
-    margin: 15px;
-    background-color: #f7f7f7;
-    border: 1px solid #ececec;
-    border-radius: 3px;
-}
-
-.modal-heading {
-    background-color: #f0f0f0;
-    height: 20%;
-    width: 100%;
-    border-bottom: 1px solid #ececec;
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-}
-
-.modal-title {
-    display: flex;
-    font-size: 15px;
-    align-items: center;
-    padding-left: 20px;
-    font-family: poppins;
-}
-
-.modal-close-button {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    padding: 20px;
-}
-
 .modal-content div {
     width: 100%;
     height: 40px;
@@ -469,7 +372,7 @@ body {
     width: auto;
 }
 
-.feedLogo, #uiLanguageSelectorButton {
+.feedLogo {
     height: 30px;
     float: right;
 }
