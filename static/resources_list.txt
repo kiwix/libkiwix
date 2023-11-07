@@ -9,7 +9,7 @@ skin/search-icon.svg
 skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
-skin/autoComplete.min.js
+skin/autoComplete/autoComplete.min.js
 skin/kiwix.css
 skin/taskbar.css
 skin/index.css
@@ -43,7 +43,7 @@ templates/no_js_download.html
 opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
-skin/css/autoComplete.css
+skin/autoComplete/css/autoComplete.css
 skin/favicon/android-chrome-192x192.png
 skin/favicon/android-chrome-512x512.png
 skin/favicon/apple-touch-icon.png

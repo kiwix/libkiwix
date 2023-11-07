@@ -54,10 +54,10 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/viewer" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/viewer?cacheid=whatever" },
 
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete.min.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=1191aaaf" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/css/autoComplete.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/css/autoComplete.css?cacheid=08951e06" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=6a8c6fb2" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
@@ -317,11 +317,11 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
       /* url */ "/ROOT%23%3F/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=9b1b089f" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=a1200d6b" rel="Stylesheet" />
-    <link type="text/css" href="./skin/css/autoComplete.css?cacheid=08951e06" rel="Stylesheet" />
+    <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=96f2cf73" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=201653b8" defer></script>
-    <script type="text/javascript" src="./skin/autoComplete.min.js?cacheid=1191aaaf"></script>
+    <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
                  src="./skin/langSelector.svg?cacheid=00b59961">
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
@@ -379,7 +379,7 @@ const char* urls404[] = {
   "/ROOT%23%3",
   "/ROOT%23%3Fxyz",
   "/ROOT%23%3F/skin/non-existent-skin-resource",
-  "/ROOT%23%3F/skin/autoComplete.min.js?cacheid=wrongcacheid",
+  "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=wrongcacheid",
   "/ROOT%23%3F/catalog",
   "/ROOT%23%3F/catalog/",
   "/ROOT%23%3F/catalog/non-existent-item",
