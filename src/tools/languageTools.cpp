@@ -22,6 +22,7 @@ std::map<std::string, std::string> iso639_3 = {
     {"dty", "डोटेली"},
     {"eml", "emiliân-rumagnōl"},
     {"fbs", "српскохрватски"},
+    {"fon", "fɔ̀ngbè"},
     {"guw", "Gungbe"},
     {"hbs", "srpskohrvatski"},
     {"ido", "ido"},
