@@ -218,7 +218,7 @@ const char sampleLibraryXML[] = R"(
         creator="Wikibooks"
         publisher="Kiwix & Some Enthusiasts"
         date="2021-04-11"
-        name="wikibooks_de"
+        name="wikibooks.de"
         tags="unittest;wikibooks;_category:wikibooks"
         articleCount="12"
         mediaCount="0"
@@ -680,16 +680,37 @@ TEST_F(LibraryTest, filterByPublisher)
 
 TEST_F(LibraryTest, filterByName)
 {
-  EXPECT_FILTER_RESULTS(kiwix::Filter().name("wikibooks_de"),
+  EXPECT_FILTER_RESULTS(kiwix::Filter().name("wikibooks.de"),
     "An example ZIM archive"
   );
 
-  EXPECT_FILTER_RESULTS(kiwix::Filter().query("name:wikibooks_de"),
-    "An example ZIM archive"
-  );
-
-  EXPECT_FILTER_RESULTS(kiwix::Filter().query("wikibooks_de"),
+  // Parsing the query with `name:` prefix splits the token on the dot, as if it was 2 sentences.
+  // It creates a query "XNwikibook@1 PHRASE 2 XNde@2".
+  // I haven't found the syntax to not split on dot.
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("name:wikibooks.de"),
     /* no results */
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().name("wikibooks"),
+    /* no results */
+  );
+
+  // Wikibooks is in `tags` so it matches.
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("wikibooks"),
+    "An example ZIM archive"
+  );
+
+  // But "wikibooks.de" is only in name and `query` doesn't looks in name.
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("wikibooks.de"),
+    /* no results */
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().name("wikipedia_en_ray_charles"),
+    "Ray Charles"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("name:wikipedia_en_ray_charles"),
+    "Ray Charles"
   );
 }
 

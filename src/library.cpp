@@ -436,7 +436,7 @@ void Library::updateBookDB(const Book& book)
   }
   indexer.index_text(normalizeText(book.getCreator()),   1, "A");
   indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
-  indexer.index_text(normalizeText(book.getName()),      1, "XN");
+  doc.add_term("XN"+normalizeText(book.getName()));
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
