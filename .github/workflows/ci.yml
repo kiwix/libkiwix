@@ -33,11 +33,11 @@ jobs:
           rm -f /usr/local/bin/2to3 /usr/local/bin/2to3-3.11 /usr/local/bin/idle3 /usr/local/bin/idle3.11 /usr/local/bin/pydoc3 /usr/local/bin/pydoc3.11 /usr/local/bin/python3 /usr/local/bin/python3-config /usr/local/bin/python3.11 /usr/local/bin/python3.11-config
           brew install pkg-config ninja meson
 
-      - name: Install dependencies
-        env:
-          ARCHIVE_NAME: deps2_macos_native_dyn_libkiwix.tar.xz
+      - name: Install deps
+        shell: bash
         run: |
-          wget -O- https://tmp.kiwix.org/ci/${{env.ARCHIVE_NAME}} | tar -xJ -C ${{env.HOME}}
+          ARCHIVE_NAME=deps2_macos_${{matrix.target}}_libzim.tar.xz
+          wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C $HOME
 
       - name: Compile
         env:
