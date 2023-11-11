@@ -8,7 +8,7 @@ on:
 
 jobs:
   macOS:
-    runs-on: macos-11
+    runs-on: macos-13
     env:
       HOME: /Users/runner
     steps:
