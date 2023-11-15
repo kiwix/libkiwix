@@ -51,9 +51,8 @@
     display: none;
 }
 
-#kiwix_button_show_toggle:checked~label~.kiwix_button_cont,
 #kiwix_button_show_toggle:checked~label~.kiwix_button_cont>a {
-    display: block;
+    display: inline-block;
 }
 
 #kiwix_button_show_toggle:not(:checked)~label~.kiwix_button_cont {
@@ -182,5 +181,9 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
 @media(max-width:419px) {
     .kiwix_searchform {
         width: 80%;
+    }
+
+    .kiwix_button_cont {
+        padding-top: 5px;
     }
 }
