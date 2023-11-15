@@ -179,7 +179,7 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
     }
 }
 
-@media(max-width:415px) {
+@media(max-width:419px) {
     .kiwix_searchform {
         width: 80%;
     }
