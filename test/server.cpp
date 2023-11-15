@@ -69,11 +69,11 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/kiwix.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=9b1b089f" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=a1200d6b" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=e014a885" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=201653b8" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
@@ -276,7 +276,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=9b1b089f"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
       href="/ROOT%23%3F/skin/index.css?cacheid=1e78e7cf"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
@@ -315,16 +315,16 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=9b1b089f" rel="Stylesheet" />
-    <link type="text/css" href="./skin/taskbar.css?cacheid=a1200d6b" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fad9" rel="Stylesheet" />
+    <link type="text/css" href="./skin/taskbar.css?cacheid=e014a885" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=96f2cf73" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=201653b8" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
-                 src="./skin/langSelector.svg?cacheid=00b59961">
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
+               src="./skin/langSelector.svg?cacheid=00b59961">
             src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
     },
