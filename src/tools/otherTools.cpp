@@ -330,17 +330,19 @@ std::string kiwix::render_template(const std::string& template_str, kainjow::mus
 namespace
 {
 
-std::string escapeBackslashes(const std::string& s)
+std::string escapeForJSON(const std::string& s)
 {
-  std::string es;
-  es.reserve(s.size());
+  std::ostringstream oss;
   for (char c : s) {
     if ( c == '\\' ) {
-      es.push_back('\\');
+      oss << "\\\\";
+    } else if ( unsigned(c) < 0x20U ) {
+      oss << "\\u" << std::setw(4) << std::setfill('0') << unsigned(c);
+    } else {
+      oss << c;
     }
-    es.push_back(c);
   }
-  return es;
+  return oss.str();
 }
 
 std::string makeFulltextSearchSuggestion(const std::string& lang,
@@ -368,10 +370,10 @@ void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
                           ? suggestion.getSnippet()
                           : suggestion.getTitle();
 
-  result.set("label", escapeBackslashes(label));
-  result.set("value", escapeBackslashes(suggestion.getTitle()));
+  result.set("label", escapeForJSON(label));
+  result.set("value", escapeForJSON(suggestion.getTitle()));
   result.set("kind", "path");
-  result.set("path", escapeBackslashes(suggestion.getPath()));
+  result.set("path", escapeForJSON(suggestion.getPath()));
   result.set("first", m_data.is_empty_list());
   m_data.push_back(result);
 }
@@ -381,8 +383,8 @@ void kiwix::Suggestions::addFTSearchSuggestion(const std::string& uiLang,
 {
   kainjow::mustache::data result;
   const std::string label = makeFulltextSearchSuggestion(uiLang, queryString);
-  result.set("label", escapeBackslashes(label));
-  result.set("value", escapeBackslashes(queryString + " "));
+  result.set("label", escapeForJSON(label));
+  result.set("value", escapeForJSON(queryString + " "));
   result.set("kind", "pattern");
   result.set("first", m_data.is_empty_list());
   m_data.push_back(result);
