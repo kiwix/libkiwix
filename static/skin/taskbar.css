@@ -5,6 +5,7 @@
     box-sizing: border-box;
     background: #f4f6f8;
     border-bottom: 1px solid #aaa;
+    display: flex;
 }
 
 #kiwixtoolbar>a {
@@ -42,6 +43,7 @@
 
 .kiwix .kiwix_centered {
     max-width: 720px;
+    width: 100%;
     margin: 0 auto;
 }
 
