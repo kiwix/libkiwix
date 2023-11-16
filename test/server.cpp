@@ -75,7 +75,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=e014a885" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=201653b8" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=948df083" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -320,7 +320,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fa
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=6a8c6fb2" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=96f2cf73" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=201653b8" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=948df083" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>

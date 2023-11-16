@@ -290,12 +290,23 @@ function isExternalUrl(url) {
       || url.startsWith("https:");
 }
 
+function getRealHref(target) {
+  // In case of wombat in the middle, wombat will rewrite the href value to the original url (external link)
+  // This is not what we want. Let's ask wombat to not rewrite href
+  const old_no_rewrite = target._no_rewrite;
+  target._no_rewrite = true;
+  const target_href = target.href;
+  target._no_rewrite = old_no_rewrite;
+  return target_href;
+}
+
 function onClickEvent(e) {
   const iframeDocument = contentIframe.contentDocument;
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
   if (target !== null && "href" in target) {
-    if ( isExternalUrl(target.href) ) {
-      const possiblyBlockedLink = blockLink(target.href);
+    const target_href = getRealHref(target);
+    if (isExternalUrl(target_href)) {
+      const possiblyBlockedLink = blockLink(target_href);
       if ( e.ctrlKey || e.shiftKey ) {
         // The link will be loaded in a new tab/window - update the link
         // and let the browser handle the rest.
