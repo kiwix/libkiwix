@@ -100,7 +100,7 @@ TEST(Suggestions, specialCharHandling)
 {
   // HTML special symbols (<, >, &, ", and ') must be HTML-escaped
   // Backslash symbols (\) must be duplicated.
-  const std::string SYMBOLS(R"(\<>&'"~!@#$%^*()_+`-=[]{}|:;,.?)");
+  const std::string SYMBOLS("\t\n\r" R"(\<>&'"~!@#$%^*()_+`-=[]{}|:;,.?)");
   {
     kiwix::Suggestions s;
     s.add(zim::SuggestionItem("Title with "   + SYMBOLS,
@@ -110,10 +110,10 @@ TEST(Suggestions, specialCharHandling)
     CHECK_SUGGESTIONS(s.getJSON(),
 R"EXPECTEDJSON([
   {
-    "value" : "Title with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
-    "label" : "Snippet with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
+    "value" : "Title with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
+    "label" : "Snippet with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
     "kind" : "path"
-      , "path" : "Path with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?"
+      , "path" : "Path with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?"
   }
 ]
 )EXPECTEDJSON"
@@ -128,10 +128,10 @@ R"EXPECTEDJSON([
     CHECK_SUGGESTIONS(s.getJSON(),
 R"EXPECTEDJSON([
   {
-    "value" : "Snippetless title with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
-    "label" : "Snippetless title with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
+    "value" : "Snippetless title with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
+    "label" : "Snippetless title with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?",
     "kind" : "path"
-      , "path" : "Path with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?"
+      , "path" : "Path with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?"
   }
 ]
 )EXPECTEDJSON"
@@ -145,8 +145,8 @@ R"EXPECTEDJSON([
     CHECK_SUGGESTIONS(s.getJSON(),
 R"EXPECTEDJSON([
   {
-    "value" : "text with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.? ",
-    "label" : "containing &apos;text with \\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?&apos;...",
+    "value" : "text with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.? ",
+    "label" : "containing &apos;text with \u0009\u0010\u0013\\&lt;&gt;&amp;&apos;&quot;~!@#$%^*()_+`-=[]{}|:;,.?&apos;...",
     "kind" : "pattern"
     //EOLWHITESPACEMARKER
   }
