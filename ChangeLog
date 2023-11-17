@@ -1,3 +1,23 @@
+libkiwix 13.0.0
+===============
+
+ * Server:
+  - Improved look & feel of kiwix-serve UI (@veloman-yunkan #917 #1021)
+  - Increase tolerance to malformed (control characters) ZIM entry titles (@veloman-yunkan #1023)
+  - API allowing to filter many categories at once (@juuz0 #974)
+  - Cookie-less user language control (@veloman-yumkan #997)
+  - Hack to fix Mirrorbrain based broken magnet URLs (@rgaudin #1001)
+ * Fix handling of books with 'Name' metadata with dots (@mgautier #1016)
+ * New method beautifyFileSize() to provide nice-looking book sizes (@vuuz0 #971)
+ * Fix a few missing includes (@mgautierfr #978)
+ * New functions to read - kiwix-serve - languages and categories streams (@juuz0 #967)
+ * Add support of Fon language (@kelson42 #1013)
+ * C++17 code base compliancy (@mgautierfr #996)
+ * Use everywhere std::shared_ptr in place of raw pointer (@mgautierfr #991)
+ * Do not use [[nodiscard]] attribute on compiler not supporting it (@mgautierfr #1003)
+ * Add a non minified version of autoComplete.js (@mgautierfr #1008)
+ * Multiple CI/CD improvements (@kelson42 #982)
+
 libkiwix 12.1.0
 ===============
 
