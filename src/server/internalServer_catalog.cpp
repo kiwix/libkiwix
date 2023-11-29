@@ -63,7 +63,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
-    return UrlNotFoundResponse(m_root, request);
+    return UrlNotFoundResponse(request);
   }
 
   if (url == "v2") {
@@ -71,7 +71,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return UrlNotFoundResponse(m_root, request);
+    return UrlNotFoundResponse(request);
   }
 
   if (url == "searchdescription.xml") {
@@ -108,7 +108,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   try {
     url  = request.get_url_part(2);
   } catch (const std::out_of_range&) {
-    return UrlNotFoundResponse(m_root, request);
+    return UrlNotFoundResponse(request);
   }
 
   if (url == "root.xml") {
@@ -134,7 +134,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   } else if (url == "illustration") {
     return handle_catalog_v2_illustration(request);
   } else {
-    return UrlNotFoundResponse(m_root, request);
+    return UrlNotFoundResponse(request);
   }
 }
 
@@ -174,7 +174,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   try {
     mp_library->getBookById(entryId);
   } catch (const std::out_of_range&) {
-    return UrlNotFoundResponse(m_root, request);
+    return UrlNotFoundResponse(request);
   }
 
   OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
@@ -221,7 +221,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
                illustration->mimeType
     );
   } catch(...) {
-    return UrlNotFoundResponse(m_root, request);
+    return UrlNotFoundResponse(request);
   }
 }
 

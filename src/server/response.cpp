@@ -163,14 +163,12 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
   return r;
 }
 
-HTTPErrorResponse::HTTPErrorResponse(const std::string& root,
-                                     const RequestContext& request,
+HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
                                      const std::string& headingMsgId,
                                      const std::string& cssUrl)
-  : ContentResponseBlueprint(root,
-                             &request,
+  : ContentResponseBlueprint(&request,
                              httpStatusCode,
                              request.get_requested_format() == "html" ? "text/html; charset=utf-8" : "application/xml; charset=utf-8",
                              request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml)
@@ -184,19 +182,16 @@ HTTPErrorResponse::HTTPErrorResponse(const std::string& root,
   };
 }
 
-HTTP404Response::HTTP404Response(const std::string& root,
-                                 const RequestContext& request)
-  : HTTPErrorResponse(root,
-                      request,
+HTTP404Response::HTTP404Response(const RequestContext& request)
+  : HTTPErrorResponse(request,
                       MHD_HTTP_NOT_FOUND,
                       "404-page-title",
                       "404-page-heading")
 {
 }
 
-UrlNotFoundResponse::UrlNotFoundResponse(const std::string& root,
-                                         const RequestContext& request)
-    : HTTP404Response(root, request)
+UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
+    : HTTP404Response(request)
 {
   const std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   *this += ParameterizedMessage("url-not-found", {{"url", requestUrl}});
@@ -216,10 +211,8 @@ HTTPErrorResponse& HTTPErrorResponse::operator+=(const ParameterizedMessage& det
 }
 
 
-HTTP400Response::HTTP400Response(const std::string& root,
-                                 const RequestContext& request)
-  : HTTPErrorResponse(root,
-                      request,
+HTTP400Response::HTTP400Response(const RequestContext& request)
+  : HTTPErrorResponse(request,
                       MHD_HTTP_BAD_REQUEST,
                       "400-page-title",
                       "400-page-heading")
@@ -232,10 +225,8 @@ HTTP400Response::HTTP400Response(const std::string& root,
   *this += ParameterizedMessage("invalid-request", {{"url", requestUrl}});
 }
 
-HTTP500Response::HTTP500Response(const std::string& root,
-                                 const RequestContext& request)
-  : HTTPErrorResponse(root,
-                      request,
+HTTP500Response::HTTP500Response(const RequestContext& request)
+  : HTTPErrorResponse(request,
                       MHD_HTTP_INTERNAL_SERVER_ERROR,
                       "500-page-title",
                       "500-page-heading")

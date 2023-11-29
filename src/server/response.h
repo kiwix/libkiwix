@@ -115,13 +115,11 @@ class ContentResponse : public Response {
 class ContentResponseBlueprint
 {
 public: // functions
-  ContentResponseBlueprint(const std::string& root,
-                           const RequestContext* request,
+  ContentResponseBlueprint(const RequestContext* request,
                            int httpStatusCode,
                            const std::string& mimeType,
                            const std::string& templateStr)
-    : m_root(root)
-    , m_request(*request)
+    : m_request(*request)
     , m_httpStatusCode(httpStatusCode)
     , m_mimeType(mimeType)
     , m_template(templateStr)
@@ -140,7 +138,6 @@ protected: // functions
   virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 public: //data
-  const std::string m_root;
   const RequestContext& m_request;
   const int m_httpStatusCode;
   const std::string m_mimeType;
@@ -150,8 +147,7 @@ public: //data
 
 struct HTTPErrorResponse : ContentResponseBlueprint
 {
-  HTTPErrorResponse(const std::string& root,
-                    const RequestContext& request,
+  HTTPErrorResponse(const RequestContext& request,
                     int httpStatusCode,
                     const std::string& pageTitleMsgId,
                     const std::string& headingMsgId,
@@ -163,26 +159,22 @@ struct HTTPErrorResponse : ContentResponseBlueprint
 
 struct HTTP404Response : HTTPErrorResponse
 {
-  HTTP404Response(const std::string& root,
-                  const RequestContext& request);
+  explicit HTTP404Response(const RequestContext& request);
 };
 
 struct UrlNotFoundResponse : HTTP404Response
 {
-  UrlNotFoundResponse(const std::string& root,
-                      const RequestContext& request);
+  explicit UrlNotFoundResponse(const RequestContext& request);
 };
 
 struct HTTP400Response : HTTPErrorResponse
 {
-  HTTP400Response(const std::string& root,
-                  const RequestContext& request);
+  explicit HTTP400Response(const RequestContext& request);
 };
 
 struct HTTP500Response : HTTPErrorResponse
 {
-  HTTP500Response(const std::string& root,
-                  const RequestContext& request);
+  explicit HTTP500Response(const RequestContext& request);
 
 private: // overrides
   // generateResponseObject() is overriden in order to produce a minimal
