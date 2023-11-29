@@ -386,9 +386,8 @@ MHD_Result Response::send(const RequestContext& request, bool verbose, MHD_Conne
   return ret;
 }
 
-ContentResponse::ContentResponse(const std::string& root, const std::string& content, const std::string& mimetype) :
+ContentResponse::ContentResponse(const std::string& content, const std::string& mimetype) :
   Response(),
-  m_root(root),
   m_content(content),
   m_mimeType(mimetype)
 {
@@ -396,12 +395,10 @@ ContentResponse::ContentResponse(const std::string& root, const std::string& con
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(
-  const std::string& root,
   const std::string& content,
   const std::string& mimetype)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
-        root,
         content,
         mimetype));
 }
@@ -413,7 +410,7 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const std::string& mimetype)
 {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(root, content, mimetype);
+  return ContentResponse::build(content, mimetype);
 }
 
 ItemResponse::ItemResponse(const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
@@ -433,7 +430,7 @@ std::unique_ptr<Response> ItemResponse::build(const std::string& root, const Req
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    auto response = ContentResponse::build(root, item.getData(), mimetype);
+    auto response = ContentResponse::build(item.getData(), mimetype);
     response->set_kind(Response::ZIM_CONTENT);
     response->m_byteRange = byteRange;
     return std::move(response);

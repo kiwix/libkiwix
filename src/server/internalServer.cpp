@@ -739,7 +739,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
     results.addFTSearchSuggestion(request.get_user_language(), queryString);
   }
 
-  return ContentResponse::build(m_root, results.getJSON(), "application/json; charset=utf-8");
+  return ContentResponse::build(results.getJSON(), "application/json; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)
@@ -815,11 +815,7 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
     return UrlNotFoundResponse(m_root, request);
   }
 
-  return ContentResponse::build(
-             m_root,
-             content,
-             "text/html; charset=utf-8"
-  );
+  return ContentResponse::build(content, "text/html; charset=utf-8");
 }
 
 namespace
@@ -857,7 +853,6 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
   try {
     const auto accessType = staticResourceAccessType(request, resourceCacheId);
     auto response = ContentResponse::build(
-        m_root,
         getResource(resourceName),
         getMimeTypeForFile(resourceName));
     response->set_kind(accessType);
@@ -959,13 +954,11 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   renderer.setPageLength(pageLength);
   if (request.get_requested_format() == "xml") {
     return ContentResponse::build(
-      m_root,
       renderer.getXml(*mp_nameMapper, mp_library.get()),
       "application/rss+xml; charset=utf-8"
     );
   }
   auto response = ContentResponse::build(
-    m_root,
     renderer.getHtml(*mp_nameMapper, mp_library.get()),
     "text/html; charset=utf-8"
   );
@@ -1267,9 +1260,7 @@ std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(con
     return Response::build_416(resourceData.size());
   }
 
-  return ContentResponse::build(m_root,
-                                resourceData,
-                                crd.mimeType);
+  return ContentResponse::build(resourceData, crd.mimeType);
 }
 
 }

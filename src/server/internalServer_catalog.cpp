@@ -93,7 +93,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   auto response = ContentResponse::build(
-      m_root,
       opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
       opdsMimeType[OPDS_ACQUISITION_FEED]);
   return std::move(response);
@@ -166,7 +165,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
   const auto bookIds = search_catalog(request, opdsDumper);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
   return ContentResponse::build(
-             m_root,
              opdsFeed,
              opdsMimeType[OPDS_ACQUISITION_FEED]
   );
@@ -185,7 +183,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   opdsDumper.setLibraryId(getLibraryId());
   const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
-             m_root,
              opdsFeed,
              opdsMimeType[OPDS_ENTRY]
   );
@@ -197,7 +194,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
-             m_root,
              opdsDumper.categoriesOPDSFeed(),
              opdsMimeType[OPDS_NAVIGATION_FEED]
   );
@@ -209,7 +205,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
-             m_root,
              opdsDumper.languagesOPDSFeed(),
              opdsMimeType[OPDS_NAVIGATION_FEED]
   );
@@ -223,7 +218,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
     auto size = request.get_argument<unsigned int>("size");
     auto illustration = book.getIllustration(size);
     return ContentResponse::build(
-               m_root,
                illustration->getData(),
                illustration->mimeType
     );

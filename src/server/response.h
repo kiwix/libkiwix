@@ -89,12 +89,10 @@ class Response {
 class ContentResponse : public Response {
   public:
     ContentResponse(
-      const std::string& root,
       const std::string& content,
       const std::string& mimetype);
 
     static std::unique_ptr<ContentResponse> build(
-      const std::string& root,
       const std::string& content,
       const std::string& mimetype);
 
@@ -111,7 +109,6 @@ class ContentResponse : public Response {
 
 
   private:
-    std::string m_root;
     std::string m_content;
     std::string m_mimeType;
  };
