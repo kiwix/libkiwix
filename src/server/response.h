@@ -136,14 +136,9 @@ public: // functions
 
   virtual ~ContentResponseBlueprint() = default;
 
-  operator std::unique_ptr<ContentResponse>() const
-  {
-    return generateResponseObject();
-  }
-
   operator std::unique_ptr<Response>() const
   {
-    return operator std::unique_ptr<ContentResponse>();
+    return generateResponseObject();
   }
 
 
