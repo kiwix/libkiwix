@@ -927,6 +927,19 @@ TEST_F(ServerTest, Http400HtmlError)
       Too many books requested (4) where limit is 3
     </p>
 )"  },
+
+    // Testing of translation
+    { /* url */ "/ROOT%23%3F/search?content=zimfile&userlang=test",
+      expected_page_title=="[I18N TESTING] Invalid request ($400 fine must be paid)" &&
+      expected_body==R"(
+    <h1>[I18N TESTING] -400 karma for an invalid request</h1>
+    <p>
+      [I18N TESTING] Invalid URL: "/ROOT%23%3F/search?content=zimfile&userlang=test"
+    </p>
+    <p>
+      [I18N TESTING] Kiwix can read your thoughts but it is against GDPR. Please provide your query explicitly.
+    </p>
+)"  },
   };
 
   for ( const auto& t : testData ) {

@@ -239,8 +239,7 @@ HTTPErrorResponse& HTTP400Response::operator+(InvalidUrlMsg /*unused*/)
   if (!query.empty()) {
     requestUrl += "?" + encodeDiples(query);
   }
-  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{{url}}}" is not a valid request.)");
-  return *this + msgTmpl.render({"url", requestUrl});
+  return *this + ParameterizedMessage("invalid-request", {{"url", requestUrl}});
 }
 
 HTTP500Response::HTTP500Response(const InternalServer& server,
