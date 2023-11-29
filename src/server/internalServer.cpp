@@ -190,12 +190,6 @@ ParameterizedMessage tooManyBooksMsg(size_t nbBooks, size_t limit)
   );
 }
 
-ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
-{
-  const ParameterizedMessage::Parameters noParams;
-  return ParameterizedMessage(msgId, noParams);
-}
-
 struct Error : public std::runtime_error {
   explicit Error(const ParameterizedMessage& message)
     : std::runtime_error("Error while handling request"),
@@ -650,11 +644,11 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
     return HTTP500Response(*this, request)
-         + e.what();
+         + ParameterizedMessage("non-translated-text", {{"MSG", e.what()}});
   } catch (...) {
     fprintf(stderr, "===== Unhandled unknown error\n");
     return HTTP500Response(*this, request)
-         + "Unknown error";
+         + nonParameterizedMessage("unknown-error");
   }
 }
 

@@ -169,7 +169,6 @@ struct HTTPErrorResponse : ContentResponseBlueprint
                     const std::string& headingMsgId,
                     const std::string& cssUrl = "");
 
-  HTTPErrorResponse& operator+(const std::string& msg);
   HTTPErrorResponse& operator+(const ParameterizedMessage& errorDetails);
   HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);
 };

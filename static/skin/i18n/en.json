@@ -22,6 +22,7 @@
 	, "404-page-heading" : "Not Found"
 	, "500-page-title" : "Internal Server Error"
 	, "500-page-heading" : "Internal Server Error"
+	, "500-page-text": "An internal server error occured. We are sorry about that :/"
 	, "fulltext-search-unavailable" : "Fulltext search unavailable"
 	, "no-search-results": "The fulltext search engine is not available for this content."
 	, "library-button-text": "Go to welcome page"
@@ -52,4 +53,6 @@
 	, "download-links-heading": "Download links for <b><i>{{BOOK_TITLE}}</i></b>"
 	, "download-links-title": "Download book"
 	, "preview-book": "Preview"
+	, "non-translated-text": "{{MSG}}"
+	, "unknown-error": "Unknown error"
 }

@@ -205,15 +205,11 @@ UrlNotFoundResponse::UrlNotFoundResponse(const InternalServer& server,
   *this += ParameterizedMessage("url-not-found", {{"url", requestUrl}});
 }
 
-HTTPErrorResponse& HTTPErrorResponse::operator+(const std::string& msg)
-{
-  m_data["details"].push_back({"p", msg});
-  return *this;
-}
-
 HTTPErrorResponse& HTTPErrorResponse::operator+(const ParameterizedMessage& details)
 {
-  return *this + details.getText(m_request.get_user_language());
+  const std::string msg = details.getText(m_request.get_user_language());
+  m_data["details"].push_back({"p", msg});
+  return *this;
 }
 
 HTTPErrorResponse& HTTPErrorResponse::operator+=(const ParameterizedMessage& details)
@@ -251,8 +247,7 @@ HTTP500Response::HTTP500Response(const InternalServer& server,
                       "500-page-title",
                       "500-page-heading")
 {
-  // operator+() is a state-modifying operator (akin to operator+=)
-  *this + "An internal server error occured. We are sorry about that :/";
+  *this += nonParameterizedMessage("500-page-text");
 }
 
 std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const

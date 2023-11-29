@@ -111,6 +111,12 @@ private: // data
   const Parameters  params;
 };
 
+inline ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
+{
+  const ParameterizedMessage::Parameters noParams;
+  return ParameterizedMessage(msgId, noParams);
+}
+
 struct LangPreference
 {
   const std::string lang;
