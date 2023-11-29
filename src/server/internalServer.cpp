@@ -1143,7 +1143,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
       //    '-' namespaces, in which case that resource is returned instead.
       return build_redirect(bookName, getFinalItem(*archive, entry));
     }
-    auto response = ItemResponse::build(m_root, request, entry.getItem());
+    auto response = ItemResponse::build(request, entry.getItem());
     response->set_etag_body(archiveUuid);
 
     if ( !startsWith(entry.getItem().getMimetype(), "application/pdf") ) {
@@ -1215,7 +1215,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   try {
     if (kind == "meta") {
       auto item = archive->getMetadataItem(itemPath);
-      auto response = ItemResponse::build(m_root, request, item);
+      auto response = ItemResponse::build(request, item);
       response->set_etag_body(archiveUuid);
       return response;
     } else {
@@ -1223,7 +1223,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
       if (entry.isRedirect()) {
         return build_redirect(bookName, entry.getItem(true));
       }
-      auto response = ItemResponse::build(m_root, request, entry.getItem());
+      auto response = ItemResponse::build(request, entry.getItem());
       response->set_etag_body(archiveUuid);
       return response;
     }

@@ -193,7 +193,7 @@ private: // overrides
 class ItemResponse : public Response {
   public:
     ItemResponse(const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
-    static std::unique_ptr<Response> build(const std::string& root, const RequestContext& request, const zim::Item& item);
+    static std::unique_ptr<Response> build(const RequestContext& request, const zim::Item& item);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);

@@ -422,7 +422,7 @@ ItemResponse::ItemResponse(const zim::Item& item, const std::string& mimetype, c
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<Response> ItemResponse::build(const std::string& root, const RequestContext& request, const zim::Item& item)
+std::unique_ptr<Response> ItemResponse::build(const RequestContext& request, const zim::Item& item)
 {
   const std::string mimetype = get_mime_type(item);
   auto byteRange = request.get_range().resolve(item.getSize());
