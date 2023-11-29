@@ -188,8 +188,6 @@ class InternalServer {
 
     class CustomizedResources;
     std::unique_ptr<CustomizedResources> m_customizedResources;
-
-    friend std::unique_ptr<ContentResponse> ContentResponse::build(const InternalServer& server, const std::string& content, const std::string& mimetype);
 };
 
 }

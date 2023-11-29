@@ -63,7 +63,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
-    return UrlNotFoundResponse(*this, request);
+    return UrlNotFoundResponse(m_root, request);
   }
 
   if (url == "v2") {
@@ -71,11 +71,11 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return UrlNotFoundResponse(*this, request);
+    return UrlNotFoundResponse(m_root, request);
   }
 
   if (url == "searchdescription.xml") {
-    auto response = ContentResponse::build(*this, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
+    auto response = ContentResponse::build(m_root, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
     return std::move(response);
   }
 
@@ -93,7 +93,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   auto response = ContentResponse::build(
-      *this,
+      m_root,
       opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
       opdsMimeType[OPDS_ACQUISITION_FEED]);
   return std::move(response);
@@ -109,14 +109,14 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   try {
     url  = request.get_url_part(2);
   } catch (const std::out_of_range&) {
-    return UrlNotFoundResponse(*this, request);
+    return UrlNotFoundResponse(m_root, request);
   }
 
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
   } else if (url == "searchdescription.xml") {
     const std::string endpoint_root = m_root + "/catalog/v2";
-    return ContentResponse::build(*this,
+    return ContentResponse::build(m_root,
         RESOURCE::catalog_v2_searchdescription_xml,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
         "application/opensearchdescription+xml"
@@ -135,7 +135,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   } else if (url == "illustration") {
     return handle_catalog_v2_illustration(request);
   } else {
-    return UrlNotFoundResponse(*this, request);
+    return UrlNotFoundResponse(m_root, request);
   }
 }
 
@@ -143,7 +143,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 {
   const std::string libraryId = getLibraryId();
   return ContentResponse::build(
-             *this,
+             m_root,
              RESOURCE::templates::catalog_v2_root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
@@ -166,7 +166,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
   const auto bookIds = search_catalog(request, opdsDumper);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
   return ContentResponse::build(
-             *this,
+             m_root,
              opdsFeed,
              opdsMimeType[OPDS_ACQUISITION_FEED]
   );
@@ -177,7 +177,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   try {
     mp_library->getBookById(entryId);
   } catch (const std::out_of_range&) {
-    return UrlNotFoundResponse(*this, request);
+    return UrlNotFoundResponse(m_root, request);
   }
 
   OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
@@ -185,7 +185,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
   opdsDumper.setLibraryId(getLibraryId());
   const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
-             *this,
+             m_root,
              opdsFeed,
              opdsMimeType[OPDS_ENTRY]
   );
@@ -197,7 +197,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
-             *this,
+             m_root,
              opdsDumper.categoriesOPDSFeed(),
              opdsMimeType[OPDS_NAVIGATION_FEED]
   );
@@ -209,7 +209,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const Requ
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   return ContentResponse::build(
-             *this,
+             m_root,
              opdsDumper.languagesOPDSFeed(),
              opdsMimeType[OPDS_NAVIGATION_FEED]
   );
@@ -223,12 +223,12 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
     auto size = request.get_argument<unsigned int>("size");
     auto illustration = book.getIllustration(size);
     return ContentResponse::build(
-               *this,
+               m_root,
                illustration->getData(),
                illustration->mimeType
     );
   } catch(...) {
-    return UrlNotFoundResponse(*this, request);
+    return UrlNotFoundResponse(m_root, request);
   }
 }
 

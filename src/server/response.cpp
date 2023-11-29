@@ -158,18 +158,18 @@ std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
-  auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
+  auto r = ContentResponse::build(m_root, m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
 
-HTTPErrorResponse::HTTPErrorResponse(const InternalServer& server,
+HTTPErrorResponse::HTTPErrorResponse(const std::string& root,
                                      const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
                                      const std::string& headingMsgId,
                                      const std::string& cssUrl)
-  : ContentResponseBlueprint(&server,
+  : ContentResponseBlueprint(root,
                              &request,
                              httpStatusCode,
                              request.get_requested_format() == "html" ? "text/html; charset=utf-8" : "application/xml; charset=utf-8",
@@ -184,9 +184,9 @@ HTTPErrorResponse::HTTPErrorResponse(const InternalServer& server,
   };
 }
 
-HTTP404Response::HTTP404Response(const InternalServer& server,
+HTTP404Response::HTTP404Response(const std::string& root,
                                  const RequestContext& request)
-  : HTTPErrorResponse(server,
+  : HTTPErrorResponse(root,
                       request,
                       MHD_HTTP_NOT_FOUND,
                       "404-page-title",
@@ -194,9 +194,9 @@ HTTP404Response::HTTP404Response(const InternalServer& server,
 {
 }
 
-UrlNotFoundResponse::UrlNotFoundResponse(const InternalServer& server,
+UrlNotFoundResponse::UrlNotFoundResponse(const std::string& root,
                                          const RequestContext& request)
-    : HTTP404Response(server, request)
+    : HTTP404Response(root, request)
 {
   const std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   *this += ParameterizedMessage("url-not-found", {{"url", requestUrl}});
@@ -216,9 +216,9 @@ HTTPErrorResponse& HTTPErrorResponse::operator+=(const ParameterizedMessage& det
 }
 
 
-HTTP400Response::HTTP400Response(const InternalServer& server,
+HTTP400Response::HTTP400Response(const std::string& root,
                                  const RequestContext& request)
-  : HTTPErrorResponse(server,
+  : HTTPErrorResponse(root,
                       request,
                       MHD_HTTP_BAD_REQUEST,
                       "400-page-title",
@@ -232,9 +232,9 @@ HTTP400Response::HTTP400Response(const InternalServer& server,
   *this += ParameterizedMessage("invalid-request", {{"url", requestUrl}});
 }
 
-HTTP500Response::HTTP500Response(const InternalServer& server,
+HTTP500Response::HTTP500Response(const std::string& root,
                                  const RequestContext& request)
-  : HTTPErrorResponse(server,
+  : HTTPErrorResponse(root,
                       request,
                       MHD_HTTP_INTERNAL_SERVER_ERROR,
                       "500-page-title",
@@ -246,7 +246,7 @@ HTTP500Response::HTTP500Response(const InternalServer& server,
 std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
 {
   const std::string mimeType = "text/html;charset=utf-8";
-  auto r = ContentResponse::build(m_server, m_template, m_data, mimeType);
+  auto r = ContentResponse::build(m_root, m_template, m_data, mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
@@ -396,24 +396,24 @@ ContentResponse::ContentResponse(const std::string& root, const std::string& con
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(
-  const InternalServer& server,
+  const std::string& root,
   const std::string& content,
   const std::string& mimetype)
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
-        server.m_root,
+        root,
         content,
         mimetype));
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(
-  const InternalServer& server,
+  const std::string& root,
   const std::string& template_str,
   kainjow::mustache::data data,
   const std::string& mimetype)
 {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype);
+  return ContentResponse::build(root, content, mimetype);
 }
 
 ItemResponse::ItemResponse(const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
@@ -426,14 +426,14 @@ ItemResponse::ItemResponse(const zim::Item& item, const std::string& mimetype, c
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item)
+std::unique_ptr<Response> ItemResponse::build(const std::string& root, const RequestContext& request, const zim::Item& item)
 {
   const std::string mimetype = get_mime_type(item);
   auto byteRange = request.get_range().resolve(item.getSize());
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    auto response = ContentResponse::build(server, item.getData(), mimetype);
+    auto response = ContentResponse::build(root, item.getData(), mimetype);
     response->set_kind(Response::ZIM_CONTENT);
     response->m_byteRange = byteRange;
     return std::move(response);
