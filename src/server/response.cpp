@@ -132,14 +132,14 @@ void Response::set_kind(Kind k)
     m_etag.set_option(ETag::ZIM_CONTENT);
 }
 
-std::unique_ptr<Response> Response::build(const InternalServer& server)
+std::unique_ptr<Response> Response::build()
 {
   return std::unique_ptr<Response>(new Response());
 }
 
-std::unique_ptr<Response> Response::build_304(const InternalServer& server, const ETag& etag)
+std::unique_ptr<Response> Response::build_304(const ETag& etag)
 {
-  auto response = Response::build(server);
+  auto response = Response::build();
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->m_etag = etag;
   if ( etag.get_option(ETag::ZIM_CONTENT) ) {
@@ -251,9 +251,9 @@ std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
   return r;
 }
 
-std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
+std::unique_ptr<Response> Response::build_416(size_t resourceLength)
 {
-  auto response = Response::build(server);
+  auto response = Response::build();
 // [FIXME] (compile with recent enough version of libmicrohttpd)
 //  response->set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
   response->set_code(416);
@@ -265,9 +265,9 @@ std::unique_ptr<Response> Response::build_416(const InternalServer& server, size
 }
 
 
-std::unique_ptr<Response> Response::build_redirect(const InternalServer& server, const std::string& redirectUrl)
+std::unique_ptr<Response> Response::build_redirect(const std::string& redirectUrl)
 {
-  auto response = Response::build(server);
+  auto response = Response::build();
   response->m_returnCode = MHD_HTTP_FOUND;
   response->add_header(MHD_HTTP_HEADER_LOCATION, redirectUrl);
   return response;
@@ -440,7 +440,7 @@ std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, cons
   }
 
   if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
-    auto response = Response::build_416(server, item.getSize());
+    auto response = Response::build_416(item.getSize());
     response->set_kind(Response::ZIM_CONTENT);
     return response;
   }

@@ -57,10 +57,10 @@ class Response {
     Response();
     virtual ~Response() = default;
 
-    static std::unique_ptr<Response> build(const InternalServer& server);
-    static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
-    static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
-    static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
+    static std::unique_ptr<Response> build();
+    static std::unique_ptr<Response> build_304(const ETag& etag);
+    static std::unique_ptr<Response> build_416(size_t resourceLength);
+    static std::unique_ptr<Response> build_redirect(const std::string& redirectUrl);
 
     MHD_Result send(const RequestContext& request, bool verbose, MHD_Connection* connection);
 

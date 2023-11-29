@@ -594,12 +594,12 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
       // Redirect /ROOT_LOCATION to /ROOT_LOCATION/ (note the added slash)
       // so that relative URLs are resolved correctly
       const std::string query = getSearchComponent(request);
-      return Response::build_redirect(*this, m_root + "/" + query);
+      return Response::build_redirect(m_root + "/" + query);
     }
 
     const ETag etag = get_matching_if_none_match_etag(request, getLibraryId());
     if ( etag )
-      return Response::build_304(*this, etag);
+      return Response::build_304(etag);
 
     const auto url = request.get_url();
     if ( isLocallyCustomizedResource(url) )
@@ -640,7 +640,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
 
     const std::string contentUrl = m_root + "/content" + urlEncode(url);
     const std::string query = getSearchComponent(request);
-    return Response::build_redirect(*this, contentUrl + query);
+    return Response::build_redirect(contentUrl + query);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
     return HTTP500Response(*this, request)
@@ -1101,7 +1101,7 @@ InternalServer::build_redirect(const std::string& bookName, const zim::Item& ite
 {
   const auto contentPath = "/content/" + bookName + "/" + item.getPath();
   const auto url = m_root + kiwix::urlEncode(contentPath);
-  return Response::build_redirect(*this, url);
+  return Response::build_redirect(url);
 }
 
 std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& request)
@@ -1132,7 +1132,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   const std::string archiveUuid(archive->getUuid());
   const ETag etag = get_matching_if_none_match_etag(request, archiveUuid);
   if ( etag )
-    return Response::build_304(*this, etag);
+    return Response::build_304(etag);
 
   auto urlStr = url.substr(prefixLength + bookName.size());
   if (urlStr[0] == '/') {
@@ -1212,7 +1212,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   const std::string archiveUuid(archive->getUuid());
   const ETag etag = get_matching_if_none_match_etag(request, archiveUuid);
   if ( etag )
-    return Response::build_304(*this, etag);
+    return Response::build_304(etag);
 
   // Remove the beggining of the path:
   // /raw/<bookName>/<kind>/foo
@@ -1264,7 +1264,7 @@ std::unique_ptr<Response> InternalServer::handle_locally_customized_resource(con
 
   auto byteRange = request.get_range().resolve(resourceData.size());
   if (byteRange.kind() != ByteRange::RESOLVED_FULL_CONTENT) {
-    return Response::build_416(*this, resourceData.size());
+    return Response::build_416(resourceData.size());
   }
 
   return ContentResponse::build(*this,
