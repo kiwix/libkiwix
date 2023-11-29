@@ -558,7 +558,7 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     response->set_etag_body(getLibraryId());
   }
 
-  auto ret = response->send(request, connection);
+  auto ret = response->send(request, m_verbose.load(), connection);
   auto end_time = std::chrono::steady_clock::now();
   auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
   if (m_verbose.load()) {

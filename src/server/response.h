@@ -54,7 +54,7 @@ class Response {
     };
 
   public:
-    Response(bool verbose);
+    Response();
     virtual ~Response() = default;
 
     static std::unique_ptr<Response> build(const InternalServer& server);
@@ -62,7 +62,7 @@ class Response {
     static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
     static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
 
-    MHD_Result send(const RequestContext& request, MHD_Connection* connection);
+    MHD_Result send(const RequestContext& request, bool verbose, MHD_Connection* connection);
 
     void set_code(int code) { m_returnCode = code; }
     void set_kind(Kind k);
@@ -78,7 +78,6 @@ class Response {
 
   protected: // data
     Kind m_kind = DYNAMIC_CONTENT;
-    bool m_verbose;
     int m_returnCode;
     ByteRange m_byteRange;
     ETag m_etag;
@@ -92,7 +91,6 @@ class ContentResponse : public Response {
   public:
     ContentResponse(
       const std::string& root,
-      bool verbose,
       const std::string& content,
       const std::string& mimetype);
 
@@ -199,7 +197,7 @@ private: // overrides
 
 class ItemResponse : public Response {
   public:
-    ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
+    ItemResponse(const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
     static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
 
   private:

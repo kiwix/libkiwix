@@ -119,9 +119,8 @@ const char* getCacheControlHeader(Response::Kind k)
 
 } // unnamed namespace
 
-Response::Response(bool verbose)
-  : m_verbose(verbose),
-    m_returnCode(MHD_HTTP_OK)
+Response::Response()
+  : m_returnCode(MHD_HTTP_OK)
 {
   add_header(MHD_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 }
@@ -135,7 +134,7 @@ void Response::set_kind(Kind k)
 
 std::unique_ptr<Response> Response::build(const InternalServer& server)
 {
-  return std::unique_ptr<Response>(new Response(server.m_verbose.load()));
+  return std::unique_ptr<Response>(new Response());
 }
 
 std::unique_ptr<Response> Response::build_304(const InternalServer& server, const ETag& etag)
@@ -363,7 +362,7 @@ ContentResponse::create_mhd_response(const RequestContext& request)
   return response;
 }
 
-MHD_Result Response::send(const RequestContext& request, MHD_Connection* connection)
+MHD_Result Response::send(const RequestContext& request, bool verbose, MHD_Connection* connection)
 {
   MHD_Response* response = create_mhd_response(request);
 
@@ -379,7 +378,7 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
 
-  if (m_verbose)
+  if (verbose)
     print_response_info(m_returnCode, response);
 
   auto ret = MHD_queue_response(connection, m_returnCode, response);
@@ -387,8 +386,8 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-ContentResponse::ContentResponse(const std::string& root, bool verbose, const std::string& content, const std::string& mimetype) :
-  Response(verbose),
+ContentResponse::ContentResponse(const std::string& root, const std::string& content, const std::string& mimetype) :
+  Response(),
   m_root(root),
   m_content(content),
   m_mimeType(mimetype)
@@ -403,7 +402,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
 {
    return std::unique_ptr<ContentResponse>(new ContentResponse(
         server.m_root,
-        server.m_verbose.load(),
         content,
         mimetype));
 }
@@ -418,8 +416,8 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   return ContentResponse::build(server, content, mimetype);
 }
 
-ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
-  Response(verbose),
+ItemResponse::ItemResponse(const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
+  Response(),
   m_item(item),
   m_mimeType(mimetype)
 {
@@ -448,7 +446,6 @@ std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, cons
   }
 
   return std::unique_ptr<Response>(new ItemResponse(
-        server.m_verbose.load(),
         item,
         mimetype,
         byteRange));
