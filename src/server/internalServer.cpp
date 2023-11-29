@@ -593,8 +593,7 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
 {
   try {
     if (! request.is_valid_url()) {
-      return HTTP404Response(*this, request)
-             + urlNotFoundMsg;
+      return UrlNotFoundResponse(*this, request);
     }
 
     if ( request.get_url() == "" ) {
@@ -697,8 +696,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   if ( startsWith(request.get_url(), "/suggest/") ) {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+    return UrlNotFoundResponse(*this, request);
   }
 
   std::string bookName, bookId;
@@ -817,12 +815,10 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
       const auto bookId = mp_nameMapper->getIdForName(urlParts[2]);
       content = getNoJSDownloadPageHTML(bookId, userLang);
     } catch (const std::out_of_range&) {
-      return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+      return UrlNotFoundResponse(*this, request);
     }
   } else {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+    return UrlNotFoundResponse(*this, request);
   }
 
   return ContentResponse::build(
@@ -873,8 +869,7 @@ std::unique_ptr<Response> InternalServer::handle_skin(const RequestContext& requ
     response->set_kind(accessType);
     return std::move(response);
   } catch (const ResourceNotFound& e) {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+    return UrlNotFoundResponse(*this, request);
   }
 }
 
@@ -892,8 +887,7 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
         get_default_data(),
         "application/opensearchdescription+xml");
     }
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+    return UrlNotFoundResponse(*this, request);
   }
 
   try {
@@ -1001,8 +995,7 @@ std::unique_ptr<Response> InternalServer::handle_random(const RequestContext& re
   }
 
   if ( startsWith(request.get_url(), "/random/") ) {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+    return UrlNotFoundResponse(*this, request);
   }
 
   std::string bookName;
@@ -1037,8 +1030,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
   } catch (const std::out_of_range& e) {}
 
   if (source.empty()) {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+    return UrlNotFoundResponse(*this, request);
   }
 
   auto data = get_default_data();
@@ -1056,8 +1048,7 @@ std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& req
     return handle_captured_external(request);
   }
 
-  return HTTP404Response(*this, request)
-         + urlNotFoundMsg;
+  return UrlNotFoundResponse(*this, request);
 }
 
 std::vector<std::string>
@@ -1141,8 +1132,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   if (archive == nullptr) {
     const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern);
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg
+    return UrlNotFoundResponse(*this, request)
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
   }
 
@@ -1189,8 +1179,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
       printf("Failed to find %s\n", urlStr.c_str());
 
     std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern);
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg
+    return UrlNotFoundResponse(*this, request)
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
   }
 }
@@ -1208,13 +1197,11 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
      bookName = request.get_url_part(1);
      kind = request.get_url_part(2);
   } catch (const std::out_of_range& e) {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg;
+    return UrlNotFoundResponse(*this, request);
   }
 
   if (kind != "meta" && kind!= "content") {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg
+    return UrlNotFoundResponse(*this, request)
            + invalidRawAccessMsg(kind);
   }
 
@@ -1225,8 +1212,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg
+    return UrlNotFoundResponse(*this, request)
            + noSuchBookErrorMsg(bookName);
   }
 
@@ -1260,8 +1246,7 @@ std::unique_ptr<Response> InternalServer::handle_raw(const RequestContext& reque
     if (m_verbose.load()) {
       printf("Failed to find %s\n", itemPath.c_str());
     }
-    return HTTP404Response(*this, request)
-           + urlNotFoundMsg
+    return UrlNotFoundResponse(*this, request)
            + rawEntryNotFoundMsg(kind, itemPath);
   }
 }

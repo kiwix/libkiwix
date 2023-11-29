@@ -174,17 +174,18 @@ struct HTTPErrorResponse : ContentResponseBlueprint
   HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);
 };
 
-class UrlNotFoundMsg {};
-
-extern const UrlNotFoundMsg urlNotFoundMsg;
-
 struct HTTP404Response : HTTPErrorResponse
 {
   HTTP404Response(const InternalServer& server,
                   const RequestContext& request);
 
   using HTTPErrorResponse::operator+;
-  HTTPErrorResponse& operator+(UrlNotFoundMsg /*unused*/);
+};
+
+struct UrlNotFoundResponse : HTTP404Response
+{
+  UrlNotFoundResponse(const InternalServer& server,
+                      const RequestContext& request);
 };
 
 class InvalidUrlMsg {};

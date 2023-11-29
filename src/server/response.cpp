@@ -152,7 +152,6 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-const UrlNotFoundMsg urlNotFoundMsg;
 const InvalidUrlMsg invalidUrlMsg;
 
 std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
@@ -198,10 +197,12 @@ HTTP404Response::HTTP404Response(const InternalServer& server,
 {
 }
 
-HTTPErrorResponse& HTTP404Response::operator+(UrlNotFoundMsg /*unused*/)
+UrlNotFoundResponse::UrlNotFoundResponse(const InternalServer& server,
+                                         const RequestContext& request)
+    : HTTP404Response(server, request)
 {
   const std::string requestUrl = urlDecode(m_request.get_full_url(), false);
-  return *this + ParameterizedMessage("url-not-found", {{"url", requestUrl}});
+  *this += ParameterizedMessage("url-not-found", {{"url", requestUrl}});
 }
 
 HTTPErrorResponse& HTTPErrorResponse::operator+(const std::string& msg)
