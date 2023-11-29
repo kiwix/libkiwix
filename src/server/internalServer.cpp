@@ -888,7 +888,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
     return handle_search_request(request);
   } catch (const Error& e) {
     return HTTP400Response(*this, request)
-      + invalidUrlMsg
       + e.message();
   }
 }

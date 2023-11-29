@@ -152,8 +152,6 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-const InvalidUrlMsg invalidUrlMsg;
-
 std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 {
   return getTranslatedString(m_request.get_user_language(), msgId);
@@ -227,16 +225,12 @@ HTTP400Response::HTTP400Response(const InternalServer& server,
                       "400-page-title",
                       "400-page-heading")
 {
-}
-
-HTTPErrorResponse& HTTP400Response::operator+(InvalidUrlMsg /*unused*/)
-{
   std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   const auto query = m_request.get_query();
   if (!query.empty()) {
     requestUrl += "?" + encodeDiples(query);
   }
-  return *this + ParameterizedMessage("invalid-request", {{"url", requestUrl}});
+  *this += ParameterizedMessage("invalid-request", {{"url", requestUrl}});
 }
 
 HTTP500Response::HTTP500Response(const InternalServer& server,

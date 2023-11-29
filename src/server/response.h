@@ -177,8 +177,6 @@ struct HTTP404Response : HTTPErrorResponse
 {
   HTTP404Response(const InternalServer& server,
                   const RequestContext& request);
-
-  using HTTPErrorResponse::operator+;
 };
 
 struct UrlNotFoundResponse : HTTP404Response
@@ -187,17 +185,10 @@ struct UrlNotFoundResponse : HTTP404Response
                       const RequestContext& request);
 };
 
-class InvalidUrlMsg {};
-
-extern const InvalidUrlMsg invalidUrlMsg;
-
 struct HTTP400Response : HTTPErrorResponse
 {
   HTTP400Response(const InternalServer& server,
                   const RequestContext& request);
-
-  using HTTPErrorResponse::operator+;
-  HTTPErrorResponse& operator+(InvalidUrlMsg /*unused*/);
 };
 
 struct HTTP500Response : HTTPErrorResponse
