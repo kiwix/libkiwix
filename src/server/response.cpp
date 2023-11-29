@@ -134,7 +134,7 @@ void Response::set_kind(Kind k)
 
 std::unique_ptr<Response> Response::build()
 {
-  return std::unique_ptr<Response>(new Response());
+  return std::make_unique<Response>();
 }
 
 std::unique_ptr<Response> Response::build_304(const ETag& etag)
@@ -389,9 +389,7 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
   const std::string& content,
   const std::string& mimetype)
 {
-   return std::unique_ptr<ContentResponse>(new ContentResponse(
-        content,
-        mimetype));
+   return std::make_unique<ContentResponse>(content, mimetype);
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(
@@ -432,10 +430,7 @@ std::unique_ptr<Response> ItemResponse::build(const RequestContext& request, con
     return response;
   }
 
-  return std::unique_ptr<Response>(new ItemResponse(
-        item,
-        mimetype,
-        byteRange));
+  return std::make_unique<ItemResponse>(item, mimetype, byteRange);
 }
 
 MHD_Response*
