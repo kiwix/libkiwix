@@ -158,7 +158,7 @@ std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
-  auto r = ContentResponse::build(m_root, m_template, m_data, m_mimeType);
+  auto r = ContentResponse::build(m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
@@ -246,7 +246,7 @@ HTTP500Response::HTTP500Response(const std::string& root,
 std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
 {
   const std::string mimeType = "text/html;charset=utf-8";
-  auto r = ContentResponse::build(m_root, m_template, m_data, mimeType);
+  auto r = ContentResponse::build(m_template, m_data, mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
@@ -404,7 +404,6 @@ std::unique_ptr<ContentResponse> ContentResponse::build(
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(
-  const std::string& root,
   const std::string& template_str,
   kainjow::mustache::data data,
   const std::string& mimetype)

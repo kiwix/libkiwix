@@ -75,7 +75,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url == "searchdescription.xml") {
-    auto response = ContentResponse::build(m_root, RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
+    auto response = ContentResponse::build(RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
     return std::move(response);
   }
 
@@ -115,7 +115,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
     return handle_catalog_v2_root(request);
   } else if (url == "searchdescription.xml") {
     const std::string endpoint_root = m_root + "/catalog/v2";
-    return ContentResponse::build(m_root,
+    return ContentResponse::build(
         RESOURCE::catalog_v2_searchdescription_xml,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
         "application/opensearchdescription+xml"
@@ -142,7 +142,6 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 {
   const std::string libraryId = getLibraryId();
   return ContentResponse::build(
-             m_root,
              RESOURCE::templates::catalog_v2_root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},

@@ -97,7 +97,6 @@ class ContentResponse : public Response {
       const std::string& mimetype);
 
     static std::unique_ptr<ContentResponse> build(
-      const std::string& root,
       const std::string& template_str,
       kainjow::mustache::data data,
       const std::string& mimetype);

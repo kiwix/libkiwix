@@ -661,7 +661,7 @@ MustacheData InternalServer::get_default_data() const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(m_root, m_indexTemplateString, get_default_data(), "text/html; charset=utf-8");
+  return ContentResponse::build(m_indexTemplateString, get_default_data(), "text/html; charset=utf-8");
 }
 
 /**
@@ -754,7 +754,7 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
     {"enable_library_button", m_withLibraryButton ? "true" : "false" },
     {"default_user_language", request.get_user_language() }
   };
-  return ContentResponse::build(m_root, RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
+  return ContentResponse::build(RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }
 
 std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const
@@ -871,7 +871,6 @@ std::unique_ptr<Response> InternalServer::handle_search(const RequestContext& re
   if ( startsWith(request.get_url(), "/search/") ) {
     if (request.get_url() == "/search/searchdescription.xml") {
       return ContentResponse::build(
-        m_root,
         RESOURCE::ft_opensearchdescription_xml,
         get_default_data(),
         "application/opensearchdescription+xml");
@@ -1021,7 +1020,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
 
   auto data = get_default_data();
   data.set("source", source);
-  return ContentResponse::build(m_root, RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
+  return ContentResponse::build(RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& request)
