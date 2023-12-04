@@ -41,17 +41,15 @@ jobs:
 
       - name: Compile
         env:
-          PKG_CONFIG_PATH: ${{env.HOME}}/BUILD_native_dyn/INSTALL/lib/pkgconfig
+          PKG_CONFIG_PATH: ${{env.HOME}}/BUILD_${{matrix.target}}/INSTALL/lib/pkgconfig
           CPPFLAGS: -I${{env.HOME}}/BUILD_native_dyn/INSTALL/include
+          MESON_OPTION: --default-library=shared -Db_coverage=true
+          MESON_CROSSFILE: ${{env.HOME}}/BUILD_${{matrix.target}}/meson_cross_file.txt
         shell: bash
         run: |
-          MESON_OPTION="--default-library=shared -Db_coverage=true"
-          MESON_CROSSFILE="$HOME/BUILD_${{matrix.target}}/meson_cross_file.txt"
           if [[ ! "${{matrix.target}}" =~ native_.* ]]; then
             MESON_OPTION="$MESON_OPTION --cross-file $MESON_CROSSFILE -Dstatic-linkage=true"
-            cat $MESON_CROSSFILE
           fi
-          export PKG_CONFIG_PATH=$HOME/BUILD_${{matrix.target}}/INSTALL/lib/pkgconfig
           meson . build ${MESON_OPTION}
           ninja -C build
 
