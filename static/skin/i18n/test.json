@@ -40,4 +40,6 @@
 	, "download-links-heading": "[I18N] Download links for <b><i>{{BOOK_TITLE}}</i></b> [TESTING]"
 	, "download-links-title": "[I18N TESTING]Download book"
 	, "preview-book": "[I18N] Preview [TESTING]"
+	, "no-query" : "[I18N TESTING] Kiwix can read your thoughts but it is against GDPR. Please provide your query explicitly."
+	, "invalid-request" : "[I18N TESTING] Invalid URL: \"{{{url}}}\""
 }

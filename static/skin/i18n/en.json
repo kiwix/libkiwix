@@ -12,6 +12,7 @@
 	, "suggest-search" : "Make a full text search for <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>"
 	, "random-article-failure" :  "Oops! Failed to pick a random article :("
 	, "invalid-raw-data-type" : "{{DATATYPE}} is not a valid request for raw content."
+	, "invalid-request" : "The requested URL \"{{{url}}}\" is not a valid request."
 	, "no-value-for-arg": "No value provided for argument {{ARGUMENT}}"
 	, "no-query" : "No query provided."
 	, "raw-entry-not-found" : "Cannot find {{DATATYPE}} entry {{ENTRY}}"
@@ -21,6 +22,7 @@
 	, "404-page-heading" : "Not Found"
 	, "500-page-title" : "Internal Server Error"
 	, "500-page-heading" : "Internal Server Error"
+	, "500-page-text": "An internal server error occured. We are sorry about that :/"
 	, "fulltext-search-unavailable" : "Fulltext search unavailable"
 	, "no-search-results": "The fulltext search engine is not available for this content."
 	, "library-button-text": "Go to welcome page"
@@ -51,4 +53,6 @@
 	, "download-links-heading": "Download links for <b><i>{{BOOK_TITLE}}</i></b>"
 	, "download-links-title": "Download book"
 	, "preview-book": "Preview"
+	, "non-translated-text": "{{MSG}}"
+	, "unknown-error": "Unknown error"
 }

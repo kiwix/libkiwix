@@ -41,7 +41,6 @@ class Archive;
 
 namespace kiwix {
 
-class InternalServer;
 class RequestContext;
 
 class Response {
@@ -54,15 +53,15 @@ class Response {
     };
 
   public:
-    Response(bool verbose);
+    Response();
     virtual ~Response() = default;
 
-    static std::unique_ptr<Response> build(const InternalServer& server);
-    static std::unique_ptr<Response> build_304(const InternalServer& server, const ETag& etag);
-    static std::unique_ptr<Response> build_416(const InternalServer& server, size_t resourceLength);
-    static std::unique_ptr<Response> build_redirect(const InternalServer& server, const std::string& redirectUrl);
+    static std::unique_ptr<Response> build();
+    static std::unique_ptr<Response> build_304(const ETag& etag);
+    static std::unique_ptr<Response> build_416(size_t resourceLength);
+    static std::unique_ptr<Response> build_redirect(const std::string& redirectUrl);
 
-    MHD_Result send(const RequestContext& request, MHD_Connection* connection);
+    MHD_Result send(const RequestContext& request, bool verbose, MHD_Connection* connection);
 
     void set_code(int code) { m_returnCode = code; }
     void set_kind(Kind k);
@@ -78,7 +77,6 @@ class Response {
 
   protected: // data
     Kind m_kind = DYNAMIC_CONTENT;
-    bool m_verbose;
     int m_returnCode;
     ByteRange m_byteRange;
     ETag m_etag;
@@ -91,18 +89,14 @@ class Response {
 class ContentResponse : public Response {
   public:
     ContentResponse(
-      const std::string& root,
-      bool verbose,
       const std::string& content,
       const std::string& mimetype);
 
     static std::unique_ptr<ContentResponse> build(
-      const InternalServer& server,
       const std::string& content,
       const std::string& mimetype);
 
     static std::unique_ptr<ContentResponse> build(
-      const InternalServer& server,
       const std::string& template_str,
       kainjow::mustache::data data,
       const std::string& mimetype);
@@ -114,7 +108,6 @@ class ContentResponse : public Response {
 
 
   private:
-    std::string m_root;
     std::string m_content;
     std::string m_mimeType;
  };
@@ -122,13 +115,11 @@ class ContentResponse : public Response {
 class ContentResponseBlueprint
 {
 public: // functions
-  ContentResponseBlueprint(const InternalServer* server,
-                           const RequestContext* request,
+  ContentResponseBlueprint(const RequestContext* request,
                            int httpStatusCode,
                            const std::string& mimeType,
                            const std::string& templateStr)
-    : m_server(*server)
-    , m_request(*request)
+    : m_request(*request)
     , m_httpStatusCode(httpStatusCode)
     , m_mimeType(mimeType)
     , m_template(templateStr)
@@ -136,14 +127,9 @@ public: // functions
 
   virtual ~ContentResponseBlueprint() = default;
 
-  operator std::unique_ptr<ContentResponse>() const
-  {
-    return generateResponseObject();
-  }
-
   operator std::unique_ptr<Response>() const
   {
-    return operator std::unique_ptr<ContentResponse>();
+    return generateResponseObject();
   }
 
 
@@ -152,7 +138,6 @@ protected: // functions
   virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 public: //data
-  const InternalServer& m_server;
   const RequestContext& m_request;
   const int m_httpStatusCode;
   const std::string m_mimeType;
@@ -162,48 +147,34 @@ public: //data
 
 struct HTTPErrorResponse : ContentResponseBlueprint
 {
-  HTTPErrorResponse(const InternalServer& server,
-                    const RequestContext& request,
+  HTTPErrorResponse(const RequestContext& request,
                     int httpStatusCode,
                     const std::string& pageTitleMsgId,
                     const std::string& headingMsgId,
                     const std::string& cssUrl = "");
 
-  HTTPErrorResponse& operator+(const std::string& msg);
   HTTPErrorResponse& operator+(const ParameterizedMessage& errorDetails);
   HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);
 };
 
-class UrlNotFoundMsg {};
-
-extern const UrlNotFoundMsg urlNotFoundMsg;
-
 struct HTTP404Response : HTTPErrorResponse
 {
-  HTTP404Response(const InternalServer& server,
-                  const RequestContext& request);
-
-  using HTTPErrorResponse::operator+;
-  HTTPErrorResponse& operator+(UrlNotFoundMsg /*unused*/);
+  explicit HTTP404Response(const RequestContext& request);
 };
 
-class InvalidUrlMsg {};
-
-extern const InvalidUrlMsg invalidUrlMsg;
+struct UrlNotFoundResponse : HTTP404Response
+{
+  explicit UrlNotFoundResponse(const RequestContext& request);
+};
 
 struct HTTP400Response : HTTPErrorResponse
 {
-  HTTP400Response(const InternalServer& server,
-                  const RequestContext& request);
-
-  using HTTPErrorResponse::operator+;
-  HTTPErrorResponse& operator+(InvalidUrlMsg /*unused*/);
+  explicit HTTP400Response(const RequestContext& request);
 };
 
 struct HTTP500Response : HTTPErrorResponse
 {
-  HTTP500Response(const InternalServer& server,
-                  const RequestContext& request);
+  explicit HTTP500Response(const RequestContext& request);
 
 private: // overrides
   // generateResponseObject() is overriden in order to produce a minimal
@@ -213,8 +184,8 @@ private: // overrides
 
 class ItemResponse : public Response {
   public:
-    ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
-    static std::unique_ptr<Response> build(const InternalServer& server, const RequestContext& request, const zim::Item& item);
+    ItemResponse(const zim::Item& item, const std::string& mimetype, const ByteRange& byterange);
+    static std::unique_ptr<Response> build(const RequestContext& request, const zim::Item& item);
 
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);

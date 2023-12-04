@@ -119,9 +119,8 @@ const char* getCacheControlHeader(Response::Kind k)
 
 } // unnamed namespace
 
-Response::Response(bool verbose)
-  : m_verbose(verbose),
-    m_returnCode(MHD_HTTP_OK)
+Response::Response()
+  : m_returnCode(MHD_HTTP_OK)
 {
   add_header(MHD_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 }
@@ -133,14 +132,14 @@ void Response::set_kind(Kind k)
     m_etag.set_option(ETag::ZIM_CONTENT);
 }
 
-std::unique_ptr<Response> Response::build(const InternalServer& server)
+std::unique_ptr<Response> Response::build()
 {
-  return std::unique_ptr<Response>(new Response(server.m_verbose.load()));
+  return std::make_unique<Response>();
 }
 
-std::unique_ptr<Response> Response::build_304(const InternalServer& server, const ETag& etag)
+std::unique_ptr<Response> Response::build_304(const ETag& etag)
 {
-  auto response = Response::build(server);
+  auto response = Response::build();
   response->set_code(MHD_HTTP_NOT_MODIFIED);
   response->m_etag = etag;
   if ( etag.get_option(ETag::ZIM_CONTENT) ) {
@@ -152,9 +151,6 @@ std::unique_ptr<Response> Response::build_304(const InternalServer& server, cons
   return response;
 }
 
-const UrlNotFoundMsg urlNotFoundMsg;
-const InvalidUrlMsg invalidUrlMsg;
-
 std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 {
   return getTranslatedString(m_request.get_user_language(), msgId);
@@ -162,19 +158,17 @@ std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
-  auto r = ContentResponse::build(m_server, m_template, m_data, m_mimeType);
+  auto r = ContentResponse::build(m_template, m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
 
-HTTPErrorResponse::HTTPErrorResponse(const InternalServer& server,
-                                     const RequestContext& request,
+HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
                                      const std::string& headingMsgId,
                                      const std::string& cssUrl)
-  : ContentResponseBlueprint(&server,
-                             &request,
+  : ContentResponseBlueprint(&request,
                              httpStatusCode,
                              request.get_requested_format() == "html" ? "text/html; charset=utf-8" : "application/xml; charset=utf-8",
                              request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml)
@@ -188,31 +182,26 @@ HTTPErrorResponse::HTTPErrorResponse(const InternalServer& server,
   };
 }
 
-HTTP404Response::HTTP404Response(const InternalServer& server,
-                                 const RequestContext& request)
-  : HTTPErrorResponse(server,
-                      request,
+HTTP404Response::HTTP404Response(const RequestContext& request)
+  : HTTPErrorResponse(request,
                       MHD_HTTP_NOT_FOUND,
                       "404-page-title",
                       "404-page-heading")
 {
 }
 
-HTTPErrorResponse& HTTP404Response::operator+(UrlNotFoundMsg /*unused*/)
+UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
+    : HTTP404Response(request)
 {
   const std::string requestUrl = urlDecode(m_request.get_full_url(), false);
-  return *this + ParameterizedMessage("url-not-found", {{"url", requestUrl}});
-}
-
-HTTPErrorResponse& HTTPErrorResponse::operator+(const std::string& msg)
-{
-  m_data["details"].push_back({"p", msg});
-  return *this;
+  *this += ParameterizedMessage("url-not-found", {{"url", requestUrl}});
 }
 
 HTTPErrorResponse& HTTPErrorResponse::operator+(const ParameterizedMessage& details)
 {
-  return *this + details.getText(m_request.get_user_language());
+  const std::string msg = details.getText(m_request.get_user_language());
+  m_data["details"].push_back({"p", msg});
+  return *this;
 }
 
 HTTPErrorResponse& HTTPErrorResponse::operator+=(const ParameterizedMessage& details)
@@ -222,50 +211,40 @@ HTTPErrorResponse& HTTPErrorResponse::operator+=(const ParameterizedMessage& det
 }
 
 
-HTTP400Response::HTTP400Response(const InternalServer& server,
-                                 const RequestContext& request)
-  : HTTPErrorResponse(server,
-                      request,
+HTTP400Response::HTTP400Response(const RequestContext& request)
+  : HTTPErrorResponse(request,
                       MHD_HTTP_BAD_REQUEST,
                       "400-page-title",
                       "400-page-heading")
-{
-}
-
-HTTPErrorResponse& HTTP400Response::operator+(InvalidUrlMsg /*unused*/)
 {
   std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   const auto query = m_request.get_query();
   if (!query.empty()) {
     requestUrl += "?" + encodeDiples(query);
   }
-  kainjow::mustache::mustache msgTmpl(R"(The requested URL "{{{url}}}" is not a valid request.)");
-  return *this + msgTmpl.render({"url", requestUrl});
+  *this += ParameterizedMessage("invalid-request", {{"url", requestUrl}});
 }
 
-HTTP500Response::HTTP500Response(const InternalServer& server,
-                                 const RequestContext& request)
-  : HTTPErrorResponse(server,
-                      request,
+HTTP500Response::HTTP500Response(const RequestContext& request)
+  : HTTPErrorResponse(request,
                       MHD_HTTP_INTERNAL_SERVER_ERROR,
                       "500-page-title",
                       "500-page-heading")
 {
-  // operator+() is a state-modifying operator (akin to operator+=)
-  *this + "An internal server error occured. We are sorry about that :/";
+  *this += nonParameterizedMessage("500-page-text");
 }
 
 std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
 {
   const std::string mimeType = "text/html;charset=utf-8";
-  auto r = ContentResponse::build(m_server, m_template, m_data, mimeType);
+  auto r = ContentResponse::build(m_template, m_data, mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
 
-std::unique_ptr<Response> Response::build_416(const InternalServer& server, size_t resourceLength)
+std::unique_ptr<Response> Response::build_416(size_t resourceLength)
 {
-  auto response = Response::build(server);
+  auto response = Response::build();
 // [FIXME] (compile with recent enough version of libmicrohttpd)
 //  response->set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
   response->set_code(416);
@@ -277,9 +256,9 @@ std::unique_ptr<Response> Response::build_416(const InternalServer& server, size
 }
 
 
-std::unique_ptr<Response> Response::build_redirect(const InternalServer& server, const std::string& redirectUrl)
+std::unique_ptr<Response> Response::build_redirect(const std::string& redirectUrl)
 {
-  auto response = Response::build(server);
+  auto response = Response::build();
   response->m_returnCode = MHD_HTTP_FOUND;
   response->add_header(MHD_HTTP_HEADER_LOCATION, redirectUrl);
   return response;
@@ -374,7 +353,7 @@ ContentResponse::create_mhd_response(const RequestContext& request)
   return response;
 }
 
-MHD_Result Response::send(const RequestContext& request, MHD_Connection* connection)
+MHD_Result Response::send(const RequestContext& request, bool verbose, MHD_Connection* connection)
 {
   MHD_Response* response = create_mhd_response(request);
 
@@ -390,7 +369,7 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   if (m_returnCode == MHD_HTTP_OK && m_byteRange.kind() == ByteRange::RESOLVED_PARTIAL_CONTENT)
     m_returnCode = MHD_HTTP_PARTIAL_CONTENT;
 
-  if (m_verbose)
+  if (verbose)
     print_response_info(m_returnCode, response);
 
   auto ret = MHD_queue_response(connection, m_returnCode, response);
@@ -398,9 +377,8 @@ MHD_Result Response::send(const RequestContext& request, MHD_Connection* connect
   return ret;
 }
 
-ContentResponse::ContentResponse(const std::string& root, bool verbose, const std::string& content, const std::string& mimetype) :
-  Response(verbose),
-  m_root(root),
+ContentResponse::ContentResponse(const std::string& content, const std::string& mimetype) :
+  Response(),
   m_content(content),
   m_mimeType(mimetype)
 {
@@ -408,29 +386,23 @@ ContentResponse::ContentResponse(const std::string& root, bool verbose, const st
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(
-  const InternalServer& server,
   const std::string& content,
   const std::string& mimetype)
 {
-   return std::unique_ptr<ContentResponse>(new ContentResponse(
-        server.m_root,
-        server.m_verbose.load(),
-        content,
-        mimetype));
+   return std::make_unique<ContentResponse>(content, mimetype);
 }
 
 std::unique_ptr<ContentResponse> ContentResponse::build(
-  const InternalServer& server,
   const std::string& template_str,
   kainjow::mustache::data data,
   const std::string& mimetype)
 {
   auto content = render_template(template_str, data);
-  return ContentResponse::build(server, content, mimetype);
+  return ContentResponse::build(content, mimetype);
 }
 
-ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
-  Response(verbose),
+ItemResponse::ItemResponse(const zim::Item& item, const std::string& mimetype, const ByteRange& byterange) :
+  Response(),
   m_item(item),
   m_mimeType(mimetype)
 {
@@ -439,30 +411,26 @@ ItemResponse::ItemResponse(bool verbose, const zim::Item& item, const std::strin
   add_header(MHD_HTTP_HEADER_CONTENT_TYPE, m_mimeType);
 }
 
-std::unique_ptr<Response> ItemResponse::build(const InternalServer& server, const RequestContext& request, const zim::Item& item)
+std::unique_ptr<Response> ItemResponse::build(const RequestContext& request, const zim::Item& item)
 {
   const std::string mimetype = get_mime_type(item);
   auto byteRange = request.get_range().resolve(item.getSize());
   const bool noRange = byteRange.kind() == ByteRange::RESOLVED_FULL_CONTENT;
   if (noRange && is_compressible_mime_type(mimetype)) {
     // Return a contentResponse
-    auto response = ContentResponse::build(server, item.getData(), mimetype);
+    auto response = ContentResponse::build(item.getData(), mimetype);
     response->set_kind(Response::ZIM_CONTENT);
     response->m_byteRange = byteRange;
     return std::move(response);
   }
 
   if (byteRange.kind() == ByteRange::RESOLVED_UNSATISFIABLE) {
-    auto response = Response::build_416(server, item.getSize());
+    auto response = Response::build_416(item.getSize());
     response->set_kind(Response::ZIM_CONTENT);
     return response;
   }
 
-  return std::unique_ptr<Response>(new ItemResponse(
-        server.m_verbose.load(),
-        item,
-        mimetype,
-        byteRange));
+  return std::make_unique<ItemResponse>(item, mimetype, byteRange);
 }
 
 MHD_Response*
