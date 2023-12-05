@@ -66,7 +66,6 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
 {
   MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
-  MHD_get_connection_values(connection, MHD_COOKIE_KIND, &RequestContext::fill_cookie, this);
 
   try {
     acceptEncodingGzip =
@@ -104,14 +103,6 @@ MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
     _this->queryString += "=";
     _this->queryString += urlEncode(value);
   }
-  return MHD_YES;
-}
-
-MHD_Result RequestContext::fill_cookie(void *__this, enum MHD_ValueKind kind,
-                                         const char *key, const char* value)
-{
-  RequestContext *_this = static_cast<RequestContext*>(__this);
-  _this->cookies[key] = value == nullptr ? "" : value;
   return MHD_YES;
 }
 
