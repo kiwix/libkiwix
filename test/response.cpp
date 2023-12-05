@@ -46,3 +46,30 @@ R"(<!DOCTYPE html>
 </html>
 )");
 }
+
+TEST(HTTPErrorResponse, shouldBeTranslatable) {
+  const RequestContext req = makeHttpGetRequest("/asdf",
+                              /* headers */     {},
+                              /* query args */  {{"userlang", "test"}}
+  );
+
+  HTTPErrorResponse errResp(req, MHD_HTTP_NOT_FOUND,
+                            "404-page-title",
+                            "404-page-heading",
+                            "/css/error.css");
+
+  EXPECT_EQ(getResponseContent(errResp),
+R"(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <title>[I18N TESTING] Not Found - Try Again</title>
+    <link type="text/css" href="/css/error.css" rel="Stylesheet" />
+  </head>
+  <body>
+    <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
+
+  </body>
+</html>
+)");
+}
