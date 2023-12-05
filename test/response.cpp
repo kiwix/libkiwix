@@ -8,9 +8,11 @@ namespace
 
 using namespace kiwix;
 
-RequestContext makeHttpGetRequest(const std::string& url)
+RequestContext makeHttpGetRequest(const std::string& url,
+                                  const RequestContext::NameValuePairs& headers,
+                                  const RequestContext::NameValuePairs& queryArgs)
 {
-  return RequestContext(nullptr, "", url, "GET", "1.1");
+  return RequestContext("", url, "GET", "1.1", headers, queryArgs);
 }
 
 std::string getResponseContent(const ContentResponseBlueprint& crb)
@@ -23,7 +25,7 @@ std::string getResponseContent(const ContentResponseBlueprint& crb)
 
 
 TEST(HTTPErrorResponse, shouldBeInEnglishByDefault) {
-  const RequestContext req = makeHttpGetRequest("/asdf");
+  const RequestContext req = makeHttpGetRequest("/asdf", {}, {});
   HTTPErrorResponse errResp(req, MHD_HTTP_NOT_FOUND,
                             "404-page-title",
                             "404-page-heading",
