@@ -14,7 +14,8 @@ tests = [
     'opds_catalog',
     'server_helper',
     'lrucache',
-    'i18n'
+    'i18n',
+    'response'
 ]
 
 if build_machine.system() != 'windows'

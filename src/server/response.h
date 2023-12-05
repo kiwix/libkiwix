@@ -101,6 +101,9 @@ class ContentResponse : public Response {
       kainjow::mustache::data data,
       const std::string& mimetype);
 
+    const std::string& getContent() const { return m_content; }
+    const std::string& getMimeType() const { return m_mimeType; }
+
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
 
@@ -135,6 +138,8 @@ public: // functions
 
 protected: // functions
   std::string getMessage(const std::string& msgId) const;
+
+public:
   virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 public: //data

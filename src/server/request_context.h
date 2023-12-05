@@ -29,7 +29,7 @@
 #include <stdexcept>
 
 #include "byte_range.h"
-#include "tools/stringTools.h"
+#include "../tools/stringTools.h"
 
 extern "C" {
 #include "microhttpd_wrapper.h"
