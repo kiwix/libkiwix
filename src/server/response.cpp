@@ -234,14 +234,6 @@ HTTP500Response::HTTP500Response(const RequestContext& request)
   *this += nonParameterizedMessage("500-page-text");
 }
 
-std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
-{
-  const std::string mimeType = "text/html;charset=utf-8";
-  auto r = ContentResponse::build(m_template, m_data, mimeType);
-  r->set_code(m_httpStatusCode);
-  return r;
-}
-
 std::unique_ptr<Response> Response::build_416(size_t resourceLength)
 {
   auto response = Response::build();

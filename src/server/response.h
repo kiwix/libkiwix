@@ -128,19 +128,15 @@ public: // functions
     , m_template(templateStr)
   {}
 
-  virtual ~ContentResponseBlueprint() = default;
-
   operator std::unique_ptr<Response>() const
   {
     return generateResponseObject();
   }
 
+  std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 protected: // functions
   std::string getMessage(const std::string& msgId) const;
-
-public:
-  virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
 
 public: //data
   const RequestContext& m_request;
@@ -180,11 +176,6 @@ struct HTTP400Response : HTTPErrorResponse
 struct HTTP500Response : HTTPErrorResponse
 {
   explicit HTTP500Response(const RequestContext& request);
-
-private: // overrides
-  // generateResponseObject() is overriden in order to produce a minimal
-  // response without any need for additional resources from the server
-  std::unique_ptr<ContentResponse> generateResponseObject() const override;
 };
 
 class ItemResponse : public Response {
