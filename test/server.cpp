@@ -1054,6 +1054,7 @@ TEST_F(ServerTest, 500)
   const auto r = zfs1_->GET("/ROOT%23%3F/content/poor/A/redirect_loop.html");
   EXPECT_EQ(r->status, 500);
   EXPECT_EQ(r->body, expectedBody);
+  EXPECT_EQ(r->get_header_value("Content-Type"), "text/html;charset=utf-8");
   }
 }
 
