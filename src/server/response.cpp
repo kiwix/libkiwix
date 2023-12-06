@@ -32,6 +32,9 @@
 #include <zlib.h>
 
 #include <array>
+#include <list>
+#include <map>
+#include <variant>
 
 // This is somehow a magic value.
 // If this value is too small, we will compress (and lost cpu time) too much
@@ -47,6 +50,8 @@ namespace kiwix {
 
 namespace
 {
+typedef kainjow::mustache::data MustacheData;
+
 // some utilities
 
 std::string get_mime_type(const zim::Item& item)
@@ -151,12 +156,65 @@ std::unique_ptr<Response> Response::build_304(const ETag& etag)
   return response;
 }
 
-class ContentResponseBlueprint::Data : public kainjow::mustache::data
+class ContentResponseBlueprint::Data
 {
 public:
+  typedef std::list<Data>             List;
+  typedef std::map<std::string, Data> Object;
+
+private:
+  std::variant<std::string, bool, List, Object> data;
+
+public:
   Data() {}
-  template<class T> Data(const T& t) : kainjow::mustache::data(t) {}
+  template<class T> Data(const T& t) : data(t) {}
+
+  MustacheData toMustache(const std::string& lang) const;
+
+  Data& operator[](const std::string& key)
+  {
+    return std::get<Object>(data)[key];
+  }
+
+  void push_back(const Data& d) { std::get<List>(data).push_back(d); }
+
+  static Data onlyAsNonEmptyValue(const std::string& s)
+  {
+    return s.empty() ? Data(false) : Data(s);
+  }
+
+private:
+  bool isString() const { return std::holds_alternative<std::string>(data); }
+  bool isList()   const { return std::holds_alternative<List>(data); }
+  bool isObject() const { return std::holds_alternative<Object>(data); }
+
+  const std::string& stringValue() const { return std::get<std::string>(data); }
+  bool               boolValue()   const { return std::get<bool>(data); }
+  const List&        listValue()   const { return std::get<List>(data); }
+  const Object&      objectValue() const { return std::get<Object>(data); }
 };
+
+MustacheData ContentResponseBlueprint::Data::toMustache(const std::string& lang) const
+{
+  if ( this->isList() ) {
+    kainjow::mustache::list l;
+    for ( const auto& x : this->listValue() ) {
+      l.push_back(x.toMustache(lang));
+    }
+    return l;
+  } else if ( this->isObject() ) {
+      kainjow::mustache::object o;
+      for ( const auto& kv : this->objectValue() ) {
+        o[kv.first] = kv.second.toMustache(lang);
+      }
+      return o;
+  } else if ( this->isString() ) {
+    return this->stringValue();
+  } else {
+    return this->boolValue();
+  }
+}
+
 
 ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request,
                          int httpStatusCode,
@@ -178,7 +236,8 @@ std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
-  auto r = ContentResponse::build(m_template, *m_data, m_mimeType);
+  kainjow::mustache::data d = m_data->toMustache(m_request.get_user_language());
+  auto r = ContentResponse::build(m_template, d, m_mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
@@ -193,13 +252,13 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                              request.get_requested_format() == "html" ? "text/html; charset=utf-8" : "application/xml; charset=utf-8",
                              request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml)
 {
-  kainjow::mustache::list emptyList;
-  *this->m_data = kainjow::mustache::object{
-                    {"CSS_URL", onlyAsNonEmptyMustacheValue(cssUrl) },
+  Data::List emptyList;
+  *this->m_data = Data(Data::Object{
+                    {"CSS_URL", Data::onlyAsNonEmptyValue(cssUrl) },
                     {"PAGE_TITLE",   getMessage(pageTitleMsgId)},
                     {"PAGE_HEADING", getMessage(headingMsgId)},
                     {"details", emptyList}
-  };
+  });
 }
 
 HTTP404Response::HTTP404Response(const RequestContext& request)
@@ -220,7 +279,7 @@ UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
 HTTPErrorResponse& HTTPErrorResponse::operator+(const ParameterizedMessage& details)
 {
   const std::string msg = details.getText(m_request.get_user_language());
-  (*m_data)["details"].push_back({"p", msg});
+  (*m_data)["details"].push_back(Data::Object{{"p", msg}});
   return *this;
 }
 
