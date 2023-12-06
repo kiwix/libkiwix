@@ -138,7 +138,7 @@ public: // functions
 protected: // functions
   std::string getMessage(const std::string& msgId) const;
 
-public: //data
+protected: //data
   const RequestContext& m_request;
   const int m_httpStatusCode;
   const std::string m_mimeType;
