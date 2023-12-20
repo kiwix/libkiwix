@@ -32,12 +32,14 @@ jobs:
           # upgrade from python@3.11.2_1 to python@3.11.3 fails to overwrite those
           rm -f /usr/local/bin/2to3 /usr/local/bin/2to3-3.11 /usr/local/bin/idle3 /usr/local/bin/idle3.11 /usr/local/bin/pydoc3 /usr/local/bin/pydoc3.11 /usr/local/bin/python3 /usr/local/bin/python3-config /usr/local/bin/python3.11 /usr/local/bin/python3.11-config
           brew install pkg-config ninja meson
+        env:
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
 
-      - name: Install deps
-        shell: bash
-        run: |
-          ARCHIVE_NAME=deps2_macos_${{matrix.target}}_libkiwix.tar.xz
-          wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C $HOME
+      - name: Install dependencies
+        uses: kiwix/kiwix-build/actions/dl_deps_archive@main
+        with:
+          os_name: macos
+          target_platform: ${{ matrix.target }}
 
       - name: Compile
         env:
@@ -104,11 +106,10 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Install deps
-      shell: bash
-      run: |
-        ARCHIVE_NAME=deps2_${OS_NAME}_${{matrix.target}}_libkiwix.tar.xz
-        wget -O- http://tmp.kiwix.org/ci/${ARCHIVE_NAME} | tar -xJ -C /home/runner
+    - name: Install dependencies
+      uses: kiwix/kiwix-build/actions/dl_deps_archive@main
+      with:
+        target_platform: ${{ matrix.target }}
     - name: Compile
       shell: bash
       run: |
