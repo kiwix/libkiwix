@@ -32,6 +32,8 @@ jobs:
           # upgrade from python@3.11.2_1 to python@3.11.3 fails to overwrite those
           rm -f /usr/local/bin/2to3 /usr/local/bin/2to3-3.11 /usr/local/bin/idle3 /usr/local/bin/idle3.11 /usr/local/bin/pydoc3 /usr/local/bin/pydoc3.11 /usr/local/bin/python3 /usr/local/bin/python3-config /usr/local/bin/python3.11 /usr/local/bin/python3.11-config
           brew install pkg-config ninja meson
+        env:
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
 
       - name: Install dependencies
         uses: kiwix/kiwix-build/actions/dl_deps_archive@main
