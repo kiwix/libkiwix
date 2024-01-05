@@ -32,6 +32,12 @@ TEST(HTTPErrorResponse, shouldBeInEnglishByDefault) {
                             "/css/error.css",
                             /*includeKiwixResponseData=*/true);
 
+  errResp += ParameterizedMessage("suggest-search",
+                              {
+                                { "PATTERN",    "asdf"   },
+                                { "SEARCH_URL", "/search?q=asdf" }
+             });
+
   EXPECT_EQ(getResponseContent(errResp),
 R"(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -40,12 +46,14 @@ R"(<!DOCTYPE html>
     <title>Content not found</title>
     <link type="text/css" href="/css/error.css" rel="Stylesheet" />
     <script>
-      const KIWIX_RESPONSE_DATA = { "CSS_URL" : "/css/error.css", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ ] };
+      const KIWIX_RESPONSE_DATA = { "CSS_URL" : "/css/error.css", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "asdf", "SEARCH_URL" : "/search?q=asdf" } } } ] };
     </script>
   </head>
   <body>
     <h1>Not Found</h1>
-
+    <p>
+      Make a full text search for <a href="/search?q=asdf">asdf</a>
+    </p>
   </body>
 </html>
 )");
@@ -63,6 +71,12 @@ TEST(HTTPErrorResponse, shouldBeTranslatable) {
                             "/css/error.css",
                             /*includeKiwixResponseData=*/true);
 
+  errResp += ParameterizedMessage("suggest-search",
+                              {
+                                { "PATTERN",    "asdf"   },
+                                { "SEARCH_URL", "/search?q=asdf" }
+             });
+
   EXPECT_EQ(getResponseContent(errResp),
 R"(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -71,12 +85,14 @@ R"(<!DOCTYPE html>
     <title>[I18N TESTING] Not Found - Try Again</title>
     <link type="text/css" href="/css/error.css" rel="Stylesheet" />
     <script>
-      const KIWIX_RESPONSE_DATA = { "CSS_URL" : "/css/error.css", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ ] };
+      const KIWIX_RESPONSE_DATA = { "CSS_URL" : "/css/error.css", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "asdf", "SEARCH_URL" : "/search?q=asdf" } } } ] };
     </script>
   </head>
   <body>
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
-
+    <p>
+      [I18N TESTING] Make a full text search for <a href="/search?q=asdf">asdf</a>
+    </p>
   </body>
 </html>
 )");
