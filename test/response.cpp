@@ -46,6 +46,7 @@ R"(<!DOCTYPE html>
     <title>Content not found</title>
     <link type="text/css" href="/css/error.css" rel="Stylesheet" />
     <script>
+      const KIWIX_RESPONSE_TEMPLATE = "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <meta content=\"text/html;charset=UTF-8\" http-equiv=\"content-type\" />\n    <title>{{PAGE_TITLE}}</title>\n{{#CSS_URL}}\n    <link type=\"text/css\" href=\"{{{CSS_URL}}}\" rel=\"Stylesheet\" />\n{{/CSS_URL}}{{#KIWIX_RESPONSE_DATA}}    <script>\n      const KIWIX_RESPONSE_TEMPLATE = \"{{{KIWIX_RESPONSE_TEMPLATE}}}\";\n      const KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    </script>{{/KIWIX_RESPONSE_DATA}}\n  </head>\n  <body>\n    <h1>{{PAGE_HEADING}}</h1>\n{{#details}}\n    <p>\n      {{{p}}}\n    </p>\n{{/details}}\n  </body>\n</html>\n";
       const KIWIX_RESPONSE_DATA = { "CSS_URL" : "/css/error.css", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "asdf", "SEARCH_URL" : "/search?q=asdf" } } } ] };
     </script>
   </head>
@@ -85,6 +86,7 @@ R"(<!DOCTYPE html>
     <title>[I18N TESTING] Not Found - Try Again</title>
     <link type="text/css" href="/css/error.css" rel="Stylesheet" />
     <script>
+      const KIWIX_RESPONSE_TEMPLATE = "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <meta content=\"text/html;charset=UTF-8\" http-equiv=\"content-type\" />\n    <title>{{PAGE_TITLE}}</title>\n{{#CSS_URL}}\n    <link type=\"text/css\" href=\"{{{CSS_URL}}}\" rel=\"Stylesheet\" />\n{{/CSS_URL}}{{#KIWIX_RESPONSE_DATA}}    <script>\n      const KIWIX_RESPONSE_TEMPLATE = \"{{{KIWIX_RESPONSE_TEMPLATE}}}\";\n      const KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    </script>{{/KIWIX_RESPONSE_DATA}}\n  </head>\n  <body>\n    <h1>{{PAGE_HEADING}}</h1>\n{{#details}}\n    <p>\n      {{{p}}}\n    </p>\n{{/details}}\n  </body>\n</html>\n";
       const KIWIX_RESPONSE_DATA = { "CSS_URL" : "/css/error.css", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "asdf", "SEARCH_URL" : "/search?q=asdf" } } } ] };
     </script>
   </head>
