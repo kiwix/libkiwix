@@ -334,16 +334,20 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
   });
 }
 
-HTTP404Response::HTTP404Response(const RequestContext& request)
+HTTP404Response::HTTP404Response(const RequestContext& request,
+                                 bool includeKiwixResponseData)
   : HTTPErrorResponse(request,
                       MHD_HTTP_NOT_FOUND,
                       "404-page-title",
-                      "404-page-heading")
+                      "404-page-heading",
+                      std::string(),
+                      includeKiwixResponseData)
 {
 }
 
-UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
-    : HTTP404Response(request)
+UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request,
+                                         bool includeKiwixResponseData)
+    : HTTP404Response(request, includeKiwixResponseData)
 {
   const std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   *this += ParameterizedMessage("url-not-found", {{"url", requestUrl}});

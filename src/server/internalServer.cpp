@@ -1133,7 +1133,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
 
   if (archive == nullptr) {
     const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern);
-    return UrlNotFoundResponse(request)
+    return UrlNotFoundResponse(request, true)
            + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
   }
 
