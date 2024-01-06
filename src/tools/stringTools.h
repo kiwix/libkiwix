@@ -53,7 +53,7 @@ private:
   const icu::Locale locale;
 };
 
-std::string escapeForJSON(const std::string& s);
+std::string escapeForJSON(const std::string& s, bool escapeQuote = true);
 
 /* urlEncode() is the equivalent of JS encodeURIComponent(), with the only
  * difference that the slash (/) symbol is NOT encoded. */

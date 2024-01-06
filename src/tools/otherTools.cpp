@@ -327,14 +327,27 @@ std::string kiwix::render_template(const std::string& template_str, kainjow::mus
   return ss.str();
 }
 
-std::string kiwix::escapeForJSON(const std::string& s)
+// The escapeQuote parameter of escapeForJSON() defaults to true.
+// This constant makes the calls to escapeForJSON() where the quote symbol
+// should not be escaped (as it is later replaced with the HTML character entity
+// &quot;) more readable.
+static const bool DONT_ESCAPE_QUOTE = false;
+
+std::string kiwix::escapeForJSON(const std::string& s, bool escapeQuote)
 {
   std::ostringstream oss;
   for (char c : s) {
     if ( c == '\\' ) {
       oss << "\\\\";
     } else if ( unsigned(c) < 0x20U ) {
-      oss << "\\u" << std::setw(4) << std::setfill('0') << unsigned(c);
+      switch ( c ) {
+      case '\n': oss << "\\n"; break;
+      case '\r': oss << "\\r"; break;
+      case '\t': oss << "\\t"; break;
+      default:   oss << "\\u" << std::setw(4) << std::setfill('0') << unsigned(c);
+      }
+    } else if ( c == '"' && escapeQuote ) {
+      oss << "\\\"";
     } else {
       oss << c;
     }
@@ -370,10 +383,10 @@ void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
                           ? suggestion.getSnippet()
                           : suggestion.getTitle();
 
-  result.set("label", escapeForJSON(label));
-  result.set("value", escapeForJSON(suggestion.getTitle()));
+  result.set("label", escapeForJSON(label, DONT_ESCAPE_QUOTE));
+  result.set("value", escapeForJSON(suggestion.getTitle(), DONT_ESCAPE_QUOTE));
   result.set("kind", "path");
-  result.set("path", escapeForJSON(suggestion.getPath()));
+  result.set("path", escapeForJSON(suggestion.getPath(), DONT_ESCAPE_QUOTE));
   result.set("first", m_data.is_empty_list());
   m_data.push_back(result);
 }
@@ -383,8 +396,8 @@ void kiwix::Suggestions::addFTSearchSuggestion(const std::string& uiLang,
 {
   kainjow::mustache::data result;
   const std::string label = makeFulltextSearchSuggestion(uiLang, queryString);
-  result.set("label", escapeForJSON(label));
-  result.set("value", escapeForJSON(queryString + " "));
+  result.set("label", escapeForJSON(label, DONT_ESCAPE_QUOTE));
+  result.set("value", escapeForJSON(queryString + " ", DONT_ESCAPE_QUOTE));
   result.set("kind", "pattern");
   result.set("first", m_data.is_empty_list());
   m_data.push_back(result);
