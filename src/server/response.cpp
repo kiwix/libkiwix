@@ -305,7 +305,7 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
 {
   kainjow::mustache::data d = m_data->toMustache(m_request.get_user_language());
   if ( m_includeKiwixResponseData ) {
-    d.set("KIWIX_RESPONSE_TEMPLATE", escapeForJSON(m_template));
+    d.set("KIWIX_RESPONSE_TEMPLATE", escapeForJSON(m_template, false));
     d.set("KIWIX_RESPONSE_DATA", m_data->asJSON());
   }
   auto r = ContentResponse::build(m_template, d, m_mimeType);
