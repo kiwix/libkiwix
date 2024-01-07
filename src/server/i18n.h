@@ -93,7 +93,7 @@ private:
 
 } // namespace i18n
 
-struct ParameterizedMessage
+class ParameterizedMessage
 {
 public: // types
   typedef kainjow::mustache::object Parameters;
