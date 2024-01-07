@@ -13,7 +13,8 @@ tests = [
     'name_mapper',
     'opds_catalog',
     'server_helper',
-    'lrucache'
+    'lrucache',
+    'i18n'
 ]
 
 if build_machine.system() != 'windows'
