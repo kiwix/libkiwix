@@ -121,7 +121,8 @@ public: // functions
   ContentResponseBlueprint(const RequestContext* request,
                            int httpStatusCode,
                            const std::string& mimeType,
-                           const std::string& templateStr);
+                           const std::string& templateStr,
+                           bool includeKiwixResponseData = false);
 
   ~ContentResponseBlueprint();
 
@@ -140,6 +141,7 @@ protected: //data
   const int m_httpStatusCode;
   const std::string m_mimeType;
   const std::string m_template;
+  const bool m_includeKiwixResponseData;
   std::unique_ptr<Data> m_data;
 };
 
@@ -149,7 +151,8 @@ struct HTTPErrorResponse : ContentResponseBlueprint
                     int httpStatusCode,
                     const std::string& pageTitleMsgId,
                     const std::string& headingMsgId,
-                    const std::string& cssUrl = "");
+                    const std::string& cssUrl = "",
+                    bool includeKiwixResponseData = false);
 
   HTTPErrorResponse& operator+(const ParameterizedMessage& errorDetails);
   HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);

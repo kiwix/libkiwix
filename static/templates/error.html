@@ -5,7 +5,9 @@
     <title>{{PAGE_TITLE}}</title>
 {{#CSS_URL}}
     <link type="text/css" href="{{{CSS_URL}}}" rel="Stylesheet" />
-{{/CSS_URL}}
+{{/CSS_URL}}{{#KIWIX_RESPONSE_DATA}}    <script>
+      const KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};
+    </script>{{/KIWIX_RESPONSE_DATA}}
   </head>
   <body>
     <h1>{{PAGE_HEADING}}</h1>

@@ -195,6 +195,9 @@ public:
     };
   }
 
+  std::string asJSON() const;
+  void dumpJSON(std::ostream& os) const;
+
 private:
   bool isString() const { return std::holds_alternative<std::string>(data); }
   bool isList()   const { return std::holds_alternative<List>(data); }
@@ -248,15 +251,51 @@ MustacheData ContentResponseBlueprint::Data::toMustache(const std::string& lang)
   }
 }
 
+void ContentResponseBlueprint::Data::dumpJSON(std::ostream& os) const
+{
+  if ( this->isString() ) {
+    os << '"' << escapeForJSON(this->stringValue()) << '"';
+  } else if ( this->isList() ) {
+    const char * sep = " ";
+    os << "[";
+
+    for ( const auto& x :  this->listValue() ) {
+      os << sep;
+      x.dumpJSON(os);
+      sep = ", ";
+    }
+    os << " ]";
+  } else if ( this->isObject() ) {
+    const char * sep = " ";
+    os << "{";
+    for ( const auto& kv : this->objectValue() ) {
+      os << sep << '"' << kv.first << "\" : ";
+      kv.second.dumpJSON(os);
+      sep = ", ";
+    }
+    os << " }";
+  } else {
+    os << (this->boolValue() ? "true" : "false");
+  }
+}
+
+std::string ContentResponseBlueprint::Data::asJSON() const
+{
+  std::ostringstream oss;
+  this->dumpJSON(oss);
+  return oss.str();
+}
 
 ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request,
                          int httpStatusCode,
                          const std::string& mimeType,
-                         const std::string& templateStr)
+                         const std::string& templateStr,
+                         bool includeKiwixResponseData)
   : m_request(*request)
   , m_httpStatusCode(httpStatusCode)
   , m_mimeType(mimeType)
   , m_template(templateStr)
+  , m_includeKiwixResponseData(includeKiwixResponseData)
   , m_data(new Data)
 {}
 
@@ -265,6 +304,9 @@ ContentResponseBlueprint::~ContentResponseBlueprint() = default;
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
   kainjow::mustache::data d = m_data->toMustache(m_request.get_user_language());
+  if ( m_includeKiwixResponseData ) {
+    d.set("KIWIX_RESPONSE_DATA", m_data->asJSON());
+  }
   auto r = ContentResponse::build(m_template, d, m_mimeType);
   r->set_code(m_httpStatusCode);
   return r;
@@ -274,11 +316,13 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
                                      const std::string& headingMsgId,
-                                     const std::string& cssUrl)
+                                     const std::string& cssUrl,
+                                     bool includeKiwixResponseData)
   : ContentResponseBlueprint(&request,
                              httpStatusCode,
                              request.get_requested_format() == "html" ? "text/html; charset=utf-8" : "application/xml; charset=utf-8",
-                             request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml)
+                             request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml,
+                             includeKiwixResponseData)
 {
   Data::List emptyList;
   *this->m_data = Data(Data::Object{
