@@ -121,12 +121,7 @@ public: // functions
   ContentResponseBlueprint(const RequestContext* request,
                            int httpStatusCode,
                            const std::string& mimeType,
-                           const std::string& templateStr)
-    : m_request(*request)
-    , m_httpStatusCode(httpStatusCode)
-    , m_mimeType(mimeType)
-    , m_template(templateStr)
-  {}
+                           const std::string& templateStr);
 
   operator std::unique_ptr<Response>() const
   {

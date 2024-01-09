@@ -151,6 +151,16 @@ std::unique_ptr<Response> Response::build_304(const ETag& etag)
   return response;
 }
 
+ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request,
+                         int httpStatusCode,
+                         const std::string& mimeType,
+                         const std::string& templateStr)
+  : m_request(*request)
+  , m_httpStatusCode(httpStatusCode)
+  , m_mimeType(mimeType)
+  , m_template(templateStr)
+{}
+
 std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 {
   return getTranslatedString(m_request.get_user_language(), msgId);
