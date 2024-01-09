@@ -327,10 +327,7 @@ std::string kiwix::render_template(const std::string& template_str, kainjow::mus
   return ss.str();
 }
 
-namespace
-{
-
-std::string escapeForJSON(const std::string& s)
+std::string kiwix::escapeForJSON(const std::string& s)
 {
   std::ostringstream oss;
   for (char c : s) {
@@ -344,6 +341,9 @@ std::string escapeForJSON(const std::string& s)
   }
   return oss.str();
 }
+
+namespace
+{
 
 std::string makeFulltextSearchSuggestion(const std::string& lang,
                                          const std::string& queryString)
