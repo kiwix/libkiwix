@@ -123,12 +123,17 @@ public: // functions
                            const std::string& mimeType,
                            const std::string& templateStr);
 
+  ~ContentResponseBlueprint();
+
   operator std::unique_ptr<Response>() const
   {
     return generateResponseObject();
   }
 
   std::unique_ptr<ContentResponse> generateResponseObject() const;
+
+protected: // types
+  class Data;
 
 protected: // functions
   std::string getMessage(const std::string& msgId) const;
@@ -138,7 +143,7 @@ protected: //data
   const int m_httpStatusCode;
   const std::string m_mimeType;
   const std::string m_template;
-  kainjow::mustache::data m_data;
+  std::unique_ptr<Data> m_data;
 };
 
 struct HTTPErrorResponse : ContentResponseBlueprint

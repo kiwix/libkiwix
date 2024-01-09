@@ -151,6 +151,13 @@ std::unique_ptr<Response> Response::build_304(const ETag& etag)
   return response;
 }
 
+class ContentResponseBlueprint::Data : public kainjow::mustache::data
+{
+public:
+  Data() {}
+  template<class T> Data(const T& t) : kainjow::mustache::data(t) {}
+};
+
 ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request,
                          int httpStatusCode,
                          const std::string& mimeType,
@@ -159,7 +166,10 @@ ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request
   , m_httpStatusCode(httpStatusCode)
   , m_mimeType(mimeType)
   , m_template(templateStr)
+  , m_data(new Data)
 {}
+
+ContentResponseBlueprint::~ContentResponseBlueprint() = default;
 
 std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 {
@@ -168,7 +178,7 @@ std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
-  auto r = ContentResponse::build(m_template, m_data, m_mimeType);
+  auto r = ContentResponse::build(m_template, *m_data, m_mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
@@ -184,7 +194,7 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                              request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml)
 {
   kainjow::mustache::list emptyList;
-  this->m_data = kainjow::mustache::object{
+  *this->m_data = kainjow::mustache::object{
                     {"CSS_URL", onlyAsNonEmptyMustacheValue(cssUrl) },
                     {"PAGE_TITLE",   getMessage(pageTitleMsgId)},
                     {"PAGE_HEADING", getMessage(headingMsgId)},
@@ -210,7 +220,7 @@ UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
 HTTPErrorResponse& HTTPErrorResponse::operator+(const ParameterizedMessage& details)
 {
   const std::string msg = details.getText(m_request.get_user_language());
-  m_data["details"].push_back({"p", msg});
+  (*m_data)["details"].push_back({"p", msg});
   return *this;
 }
 
