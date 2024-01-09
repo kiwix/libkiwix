@@ -112,8 +112,12 @@ std::string expandParameterizedString(const std::string& lang,
                                       const std::string& key,
                                       const Parameters& params)
 {
+  kainjow::mustache::object mustacheParams;
+  for( const auto& kv : params ) {
+    mustacheParams[kv.first] = kv.second;
+  }
   const std::string tmpl = getTranslatedString(lang, key);
-  return render_template(tmpl, params);
+  return render_template(tmpl, mustacheParams);
 }
 
 } // namespace i18n
