@@ -135,9 +135,6 @@ public: // functions
 protected: // types
   class Data;
 
-protected: // functions
-  std::string getMessage(const std::string& msgId) const;
-
 protected: //data
   const RequestContext& m_request;
   const int m_httpStatusCode;

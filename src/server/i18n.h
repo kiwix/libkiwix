@@ -107,6 +107,9 @@ public: // functions
 
   std::string getText(const std::string& lang) const;
 
+  const std::string& getMsgId()  const { return msgId; }
+  const Parameters&  getParams() const { return params; }
+
 private: // data
   const std::string msgId;
   const Parameters  params;

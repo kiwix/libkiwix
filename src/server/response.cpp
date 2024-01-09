@@ -183,6 +183,18 @@ public:
     return s.empty() ? Data(false) : Data(s);
   }
 
+  static Data from(const ParameterizedMessage& pmsg)
+  {
+    Object obj;
+    for(const auto& kv : pmsg.getParams()) {
+      obj[kv.first] = kv.second;
+    }
+    return Object{
+              { "msgid", pmsg.getMsgId() },
+              { "params", Data(obj) }
+    };
+  }
+
 private:
   bool isString() const { return std::holds_alternative<std::string>(data); }
   bool isList()   const { return std::holds_alternative<List>(data); }
@@ -192,6 +204,16 @@ private:
   bool               boolValue()   const { return std::get<bool>(data); }
   const List&        listValue()   const { return std::get<List>(data); }
   const Object&      objectValue() const { return std::get<Object>(data); }
+
+  const Data* get(const std::string& key) const
+  {
+    if ( !isObject() )
+      return nullptr;
+
+    const auto& obj = objectValue();
+    const auto it = obj.find(key);
+    return it != obj.end() ? &it->second : nullptr;
+  }
 };
 
 MustacheData ContentResponseBlueprint::Data::toMustache(const std::string& lang) const
@@ -203,11 +225,22 @@ MustacheData ContentResponseBlueprint::Data::toMustache(const std::string& lang)
     }
     return l;
   } else if ( this->isObject() ) {
+    const Data* msgId = this->get("msgid");
+    const Data* msgParams = this->get("params");
+    if ( msgId && msgId->isString() && msgParams && msgParams->isObject() ) {
+      std::map<std::string, std::string> params;
+      for(const auto& kv : msgParams->objectValue()) {
+        params[kv.first] = kv.second.stringValue();
+      }
+      const ParameterizedMessage msg(msgId->stringValue(), ParameterizedMessage::Parameters(params));
+      return msg.getText(lang);
+    } else {
       kainjow::mustache::object o;
       for ( const auto& kv : this->objectValue() ) {
         o[kv.first] = kv.second.toMustache(lang);
       }
       return o;
+    }
   } else if ( this->isString() ) {
     return this->stringValue();
   } else {
@@ -228,11 +261,6 @@ ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request
 {}
 
 ContentResponseBlueprint::~ContentResponseBlueprint() = default;
-
-std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
-{
-  return getTranslatedString(m_request.get_user_language(), msgId);
-}
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
@@ -255,8 +283,8 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
   Data::List emptyList;
   *this->m_data = Data(Data::Object{
                     {"CSS_URL", Data::onlyAsNonEmptyValue(cssUrl) },
-                    {"PAGE_TITLE",   getMessage(pageTitleMsgId)},
-                    {"PAGE_HEADING", getMessage(headingMsgId)},
+                    {"PAGE_TITLE",   Data::from(nonParameterizedMessage(pageTitleMsgId))},
+                    {"PAGE_HEADING", Data::from(nonParameterizedMessage(headingMsgId))},
                     {"details", emptyList}
   });
 }
@@ -278,8 +306,7 @@ UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
 
 HTTPErrorResponse& HTTPErrorResponse::operator+(const ParameterizedMessage& details)
 {
-  const std::string msg = details.getText(m_request.get_user_language());
-  (*m_data)["details"].push_back(Data::Object{{"p", msg}});
+  (*m_data)["details"].push_back(Data::Object{{"p", Data::from(details)}});
   return *this;
 }
 
