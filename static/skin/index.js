@@ -131,7 +131,7 @@
         const title =  getInnerHtml(book, 'title');
         const description = getInnerHtml(book, 'summary');
         const id = getInnerHtml(book, 'id');
-        const updated = getInnerHtml(book, 'updated');.split('T')[0];
+        const updated = getInnerHtml(book, 'updated').split('T')[0];
         const langCodesList = getInnerHtml(book, 'language').split(',');
         const langCode = langCodesList.length == 1 ? langCodesList[0] : 'mul';
         let language = languages[langCode];
