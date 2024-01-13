@@ -34,7 +34,6 @@
 #include <array>
 #include <list>
 #include <map>
-#include <variant>
 
 // This is somehow a magic value.
 // If this value is too small, we will compress (and lost cpu time) too much
@@ -156,6 +155,44 @@ std::unique_ptr<Response> Response::build_304(const ETag& etag)
   return response;
 }
 
+
+namespace
+{
+
+// This class was introduced in order to work around the missing support
+// for std::variant (and std::optional) under some of the current build
+// platforms.
+template<class T>
+class Optional
+{
+public: // functions
+    Optional() {}
+    Optional(const T& t) : ptr(new T(t)) {}
+    Optional(const Optional& o) : ptr(o.has_value() ? new T(*o) : nullptr) {}
+    Optional(Optional&& o) : ptr(std::move(o.ptr)) {}
+
+    Optional& operator=(const Optional& o)
+    {
+      *this = Optional(o);
+      return *this;
+    }
+
+    Optional& operator=(Optional&& o)
+    {
+      ptr = std::move(o.ptr);
+      return *this;
+    }
+
+    bool has_value() const { return ptr.get() != nullptr; }
+    const T& operator*() const { return *ptr; }
+    T& operator*() { return *ptr; }
+
+private: // data
+    std::unique_ptr<T> ptr;
+};
+
+} // unnamed namespace
+
 class ContentResponseBlueprint::Data
 {
 public:
@@ -163,20 +200,30 @@ public:
   typedef std::map<std::string, Data> Object;
 
 private:
-  std::variant<std::string, bool, List, Object> data;
+  // std::variant<std::string, bool, List, Object> data;
+  // XXX: libkiwix is compiled on platforms where std::variant
+  // XXX: is not yet supported. Hence this hack. Only one
+  // XXX: of the below data members is expected to contain a value.
+  Optional<std::string> m_stringValue;
+  Optional<bool>        m_boolValue;
+  Optional<List>        m_listValue;
+  Optional<Object>      m_objectValue;
 
 public:
   Data() {}
-  template<class T> Data(const T& t) : data(t) {}
+  Data(const std::string& s) : m_stringValue(s) {}
+  Data(bool b)               : m_boolValue(b)   {}
+  Data(const List& l)        : m_listValue(l)   {}
+  Data(const Object& o)      : m_objectValue(o) {}
 
   MustacheData toMustache(const std::string& lang) const;
 
   Data& operator[](const std::string& key)
   {
-    return std::get<Object>(data)[key];
+    return (*m_objectValue)[key];
   }
 
-  void push_back(const Data& d) { std::get<List>(data).push_back(d); }
+  void push_back(const Data& d) { (*m_listValue).push_back(d); }
 
   static Data onlyAsNonEmptyValue(const std::string& s)
   {
@@ -199,14 +246,14 @@ public:
   void dumpJSON(std::ostream& os) const;
 
 private:
-  bool isString() const { return std::holds_alternative<std::string>(data); }
-  bool isList()   const { return std::holds_alternative<List>(data); }
-  bool isObject() const { return std::holds_alternative<Object>(data); }
+  bool isString() const { return m_stringValue.has_value(); }
+  bool isList()   const { return m_listValue.has_value();   }
+  bool isObject() const { return m_objectValue.has_value(); }
 
-  const std::string& stringValue() const { return std::get<std::string>(data); }
-  bool               boolValue()   const { return std::get<bool>(data); }
-  const List&        listValue()   const { return std::get<List>(data); }
-  const Object&      objectValue() const { return std::get<Object>(data); }
+  const std::string& stringValue() const { return *m_stringValue; }
+  bool               boolValue()   const { return *m_boolValue;   }
+  const List&        listValue()   const { return *m_listValue;   }
+  const Object&      objectValue() const { return *m_objectValue; }
 
   const Data* get(const std::string& key) const
   {
