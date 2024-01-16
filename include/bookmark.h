@@ -29,13 +29,25 @@ class xml_node;
 namespace kiwix
 {
 
+class Book;
 /**
  * A class to store information about a bookmark (an article in a book)
  */
 class Bookmark
 {
  public:
+  /**
+   *  Create an empty bookmark.
+   *
+   * Bookmark must be populated with `set*` methods
+   */
   Bookmark();
+
+  /**
+   * Create a bookmark given a Book, a path and a title.
+   */
+  Bookmark(const Book& book, const std::string& path, const std::string& title);
+
   ~Bookmark();
 
   void updateFromXml(const pugi::xml_node& node);

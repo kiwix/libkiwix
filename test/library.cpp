@@ -20,7 +20,6 @@
 #include "gtest/gtest.h"
 #include <string>
 
-
 const char * sampleOpdsStream = R"(
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
@@ -247,6 +246,7 @@ const char sampleLibraryXML[] = R"(
 
 #include "../include/library.h"
 #include "../include/manager.h"
+#include "../include/book.h"
 #include "../include/bookmark.h"
 
 namespace
@@ -327,13 +327,18 @@ class LibraryTest : public ::testing::Test {
      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }
 
-    kiwix::Bookmark createBookmark(const std::string &id, const std::string& url="", const std::string& title="") {
-        kiwix::Bookmark bookmark;
-        bookmark.setBookId(id);
-        bookmark.setUrl(url);
-        bookmark.setTitle(title);
-        return bookmark;
-    };
+  kiwix::Bookmark createBookmark(const std::string &id, const std::string& url="", const std::string& title="") {
+    kiwix::Bookmark bookmark;
+    bookmark.setBookId(id);
+    bookmark.setUrl(url);
+    bookmark.setTitle(title);
+    return bookmark;
+  };
+
+  kiwix::Bookmark createBookmark(const kiwix::Book& book, const std::string& url="", const std::string& title="") {
+    kiwix::Bookmark bookmark(book, url, title);
+    return bookmark;
+  };
 
   TitleCollection ids2Titles(const BookIdCollection& ids) {
     TitleCollection titles;
@@ -347,14 +352,35 @@ class LibraryTest : public ::testing::Test {
   std::shared_ptr<kiwix::Library> lib;
 };
 
+TEST_F(LibraryTest, createBookMark)
+{
+  auto bookId = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+  auto book = lib->getBookById(bookId);
+
+  auto bookmark = createBookmark(book, "/a/url", "A title");
+
+  EXPECT_EQ(bookmark.getUrl(), "/a/url");
+  EXPECT_EQ(bookmark.getTitle(), "A title");
+  EXPECT_EQ(bookmark.getBookId(), bookId);
+  EXPECT_EQ(bookmark.getBookName(), book.getName());
+  EXPECT_EQ(bookmark.getBookName(), "wikipedia_fr_tunisie");
+  EXPECT_EQ(bookmark.getBookTitle(), book.getTitle());
+  EXPECT_EQ(bookmark.getDate(), book.getDate());
+  EXPECT_EQ(bookmark.getBookFlavour(), book.getFlavour());
+  EXPECT_EQ(bookmark.getLanguage(), book.getCommaSeparatedLanguages());
+}
+
 TEST_F(LibraryTest, getBookMarksTest)
 {
-    auto bookId1 = lib->getBooksIds()[0];
-    auto bookId2 = lib->getBooksIds()[1];
+    auto bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+    auto bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
 
-    lib->addBookmark(createBookmark(bookId1));
+    auto book1 = lib->getBookById(bookId1);
+    auto book2 = lib->getBookById(bookId2);
+
+    lib->addBookmark(createBookmark(book1));
     lib->addBookmark(createBookmark("invalid-book-id"));
-    lib->addBookmark(createBookmark(bookId2));
+    lib->addBookmark(createBookmark(book2));
     auto onlyValidBookmarks = lib->getBookmarks();
     auto allBookmarks = lib->getBookmarks(false);
 
@@ -374,9 +400,10 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     auto book1 = lib->getBookById(bookId1);
     auto book2 = lib->getBookById(bookId2);
 
+    // Create bookmarks using three different ways.
     lib->addBookmark(createBookmark(bookId1, "a/url", "Article title1"));
     lib->addBookmark(createBookmark("invalid-book-id", "another/url", "Unknown title"));
-    lib->addBookmark(createBookmark(bookId2, "a/url/2", "Article title2"));
+    lib->addBookmark(createBookmark(book2, "a/url/2", "Article title2"));
 
     lib->writeBookmarksToFile("__test__bookmarks.xml");
 
