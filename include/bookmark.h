@@ -42,6 +42,7 @@ class Bookmark
 
   const std::string& getBookId() const { return m_bookId; }
   const std::string& getBookTitle()  const { return m_bookTitle; }
+  const std::string& getBookName()  const { return m_bookName; }
   const std::string& getUrl() const { return m_url; }
   const std::string& getTitle() const { return m_title; }
   const std::string& getLanguage() const { return m_language; }
@@ -49,6 +50,7 @@ class Bookmark
 
   void setBookId(const std::string& bookId) { m_bookId = bookId; }
   void setBookTitle(const std::string& bookTitle) { m_bookTitle = bookTitle; }
+  void setBookName(const std::string& bookName) { m_bookName = bookName; }
   void setUrl(const std::string& url) { m_url = url; }
   void setTitle(const std::string& title) { m_title = title; }
   void setLanguage(const std::string& language) { m_language = language; }
@@ -57,6 +59,7 @@ class Bookmark
  protected:
   std::string m_bookId;
   std::string m_bookTitle;
+  std::string m_bookName;
   std::string m_url;
   std::string m_title;
   std::string m_language;
