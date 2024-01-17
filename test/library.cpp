@@ -402,6 +402,7 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     EXPECT_EQ(bookmark1.getBookId(), bookId1);
     EXPECT_EQ(bookmark1.getBookTitle(), book1.getTitle());
     EXPECT_EQ(bookmark1.getBookName(), book1.getName());
+    EXPECT_EQ(bookmark1.getBookFlavour(), book1.getFlavour());
     EXPECT_EQ(bookmark1.getUrl(), "a/url");
     EXPECT_EQ(bookmark1.getTitle(), "Article title1");
     EXPECT_EQ(bookmark1.getLanguage(), book1.getCommaSeparatedLanguages());
@@ -411,6 +412,7 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     EXPECT_EQ(bookmark2.getBookId(), "invalid-book-id");
     EXPECT_EQ(bookmark2.getBookTitle(), "");
     EXPECT_EQ(bookmark2.getBookName(), "");
+    EXPECT_EQ(bookmark2.getBookFlavour(), "");
     EXPECT_EQ(bookmark2.getUrl(), "another/url");
     EXPECT_EQ(bookmark2.getTitle(), "Unknown title");
     EXPECT_EQ(bookmark2.getLanguage(), "");
@@ -420,6 +422,7 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     EXPECT_EQ(bookmark3.getBookId(), bookId2);
     EXPECT_EQ(bookmark3.getBookTitle(), book2.getTitle());
     EXPECT_EQ(bookmark3.getBookName(), book2.getName());
+    EXPECT_EQ(bookmark3.getBookFlavour(), book2.getFlavour());
     EXPECT_EQ(bookmark3.getUrl(), "a/url/2");
     EXPECT_EQ(bookmark3.getTitle(), "Article title2");
     EXPECT_EQ(bookmark3.getLanguage(), book2.getCommaSeparatedLanguages());
