@@ -437,6 +437,7 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(normalizeText(book.getCreator()),   1, "A");
   indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
   doc.add_term("XN"+normalizeText(book.getName()));
+  indexer.index_text(normalizeText(book.getFlavour()),  1, "XF");
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
@@ -477,6 +478,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("title", "S");
   queryParser.add_prefix("description", "XD");
   queryParser.add_prefix("name", "XN");
+  queryParser.add_prefix("flavour", "XF");
   queryParser.add_prefix("category", "XC");
   queryParser.add_prefix("lang", "L");
   queryParser.add_prefix("publisher", "XP");
@@ -502,6 +504,12 @@ Xapian::Query nameQuery(const std::string& name)
 {
   return Xapian::Query("XN" + normalizeText(name));
 }
+
+Xapian::Query flavourQuery(const std::string& name)
+{
+  return Xapian::Query("XF" + normalizeText(name));
+}
+
 
 Xapian::Query multipleParamQuery(const std::string& commaSeparatedList, const std::string& prefix)
 {
@@ -569,6 +577,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   auto q = buildXapianQueryFromFilterQuery(filter);
   if ( filter.hasName() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, nameQuery(filter.getName()));
+  }
+  if ( filter.hasFlavour() )  {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, flavourQuery(filter.getFlavour()));     
   }
   if ( filter.hasCategory() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, categoryQuery(filter.getCategory()));
@@ -735,6 +746,7 @@ enum filterTypes {
   QUERY = FLAG(12),
   NAME = FLAG(13),
   CATEGORY = FLAG(14),
+  FLAVOUR = FLAG(15),
 };
 
 Filter& Filter::local(bool accept)
@@ -836,6 +848,13 @@ Filter& Filter::name(std::string name)
   activeFilters |= NAME;
   return *this;
 }
+  
+Filter& Filter::flavour(std::string flavour)
+{
+  _flavour = flavour;
+  activeFilters |= FLAVOUR;
+  return *this;
+}
 
 Filter& Filter::clearLang()
 {
@@ -880,6 +899,12 @@ bool Filter::hasCreator() const
 {
   return ACTIVE(_CREATOR);
 }
+
+bool Filter::hasFlavour() const
+{
+  return ACTIVE(FLAVOUR);
+}
+
 
 bool Filter::accept(const Book& book) const
 {

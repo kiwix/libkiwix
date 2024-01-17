@@ -71,6 +71,7 @@ class Filter {
     std::string _query;
     bool _queryIsPartial;
     std::string _name;
+    std::string _flavour;
 
   public: // functions
     Filter();
@@ -130,6 +131,7 @@ class Filter {
     Filter& maxSize(size_t size);
     Filter& query(std::string query, bool partial=true);
     Filter& name(std::string name);
+    Filter& flavour(std::string flavour);
     Filter& clearLang();
     Filter& clearCategory();
 
@@ -151,6 +153,9 @@ class Filter {
 
     bool hasCreator() const;
     const std::string& getCreator() const { return _creator; }
+
+    bool hasFlavour() const;
+    const std::string& getFlavour() const { return _flavour; }
 
     const Tags& getAcceptTags() const { return _acceptTags; }
     const Tags& getRejectTags() const { return _rejectTags; }

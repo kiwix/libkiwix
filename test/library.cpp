@@ -570,6 +570,25 @@ TEST_F(LibraryTest, filterByLanguage)
   );
 }
 
+TEST_F(LibraryTest, filterByFlavour)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().flavour("full"),
+    "Géographie par Wikipédia",
+    "Tania Louis",
+    "Wikiquote"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("flavour:full"),
+    "Géographie par Wikipédia",
+    "Tania Louis",
+    "Wikiquote"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("full"),
+    /* no results */
+  );
+}
+
 TEST_F(LibraryTest, filterByTags)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackexchange"}),
