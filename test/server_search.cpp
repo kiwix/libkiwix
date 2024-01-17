@@ -1509,7 +1509,10 @@ std::string expectedConfusionOfTonguesErrorHtml(std::string url)
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
     <title>Invalid request</title>
-
+    <script>
+      window.KIWIX_RESPONSE_TEMPLATE = )" + ERROR_HTML_TEMPLATE_JS_STRING + R"(;
+      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : ")" + url + R"(" } } }, { "p" : { "msgid" : "confusion-of-tongues", "params" : { } } } ] };
+    </script>
   </head>
   <body>
     <h1>Invalid request</h1>

@@ -381,20 +381,18 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
   });
 }
 
-HTTP404Response::HTTP404Response(const RequestContext& request,
-                                 bool includeKiwixResponseData)
+HTTP404Response::HTTP404Response(const RequestContext& request)
   : HTTPErrorResponse(request,
                       MHD_HTTP_NOT_FOUND,
                       "404-page-title",
                       "404-page-heading",
                       std::string(),
-                      includeKiwixResponseData)
+                      /*includeKiwixResponseData=*/true)
 {
 }
 
-UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request,
-                                         bool includeKiwixResponseData)
-    : HTTP404Response(request, includeKiwixResponseData)
+UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
+    : HTTP404Response(request)
 {
   const std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   *this += ParameterizedMessage("url-not-found", {{"url", requestUrl}});
@@ -417,7 +415,9 @@ HTTP400Response::HTTP400Response(const RequestContext& request)
   : HTTPErrorResponse(request,
                       MHD_HTTP_BAD_REQUEST,
                       "400-page-title",
-                      "400-page-heading")
+                      "400-page-heading",
+                      std::string(),
+                      /*includeKiwixResponseData=*/true)
 {
   std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   const auto query = m_request.get_query();

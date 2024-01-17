@@ -942,7 +942,8 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
     HTTPErrorResponse response(request, MHD_HTTP_NOT_FOUND,
                                "fulltext-search-unavailable",
                                "404-page-heading",
-                               cssUrl);
+                               cssUrl,
+                               /*includeKiwixResponseData=*/true);
     response += nonParameterizedMessage("no-search-results");
     // XXX: Now this has to be handled by the iframe-based viewer which
     // XXX: has to resolve if the book selection resulted in a single book.

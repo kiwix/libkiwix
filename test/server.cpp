@@ -337,6 +337,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fa
       // a page rendered from static/templates/no_search_result_html
       /* url */ "/ROOT%23%3F/search?content=poor&pattern=whatever",
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
+      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "fulltext-search-unavailable", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-search-results", "params" : { } } } ] };
 )EXPECTEDRESULT"
     },
   };
@@ -535,6 +536,7 @@ struct ExpectedResponseData
 {
   const std::string expectedPageTitle;
   const std::string expectedCssUrl;
+  const std::string expectedKiwixResponseData;
   const std::string bookName;
   const std::string bookTitle;
   const std::string expectedBody;
@@ -544,6 +546,7 @@ enum ExpectedResponseDataType
 {
   expected_page_title,
   expected_css_url,
+  expected_kiwix_response_data,
   book_name,
   book_title,
   expected_body
@@ -556,11 +559,13 @@ ExpectedResponseData operator==(ExpectedResponseDataType t, std::string s)
 {
   switch (t)
   {
-    case expected_page_title: return ExpectedResponseData{s, "", "", "", ""};
-    case expected_css_url:    return ExpectedResponseData{"", s, "", "", ""};
-    case book_name:           return ExpectedResponseData{"", "", s, "", ""};
-    case book_title:          return ExpectedResponseData{"", "", "", s, ""};
-    case expected_body:       return ExpectedResponseData{"", "", "", "", s};
+    case expected_page_title: return ExpectedResponseData{s, "", "", "", "", ""};
+    case expected_css_url:    return ExpectedResponseData{"", s, "", "", "", ""};
+    case expected_kiwix_response_data:
+                              return ExpectedResponseData{"", "", s, "", "", ""};
+    case book_name:           return ExpectedResponseData{"", "", "", s, "", ""};
+    case book_title:          return ExpectedResponseData{"", "", "", "", s, ""};
+    case expected_body:       return ExpectedResponseData{"", "", "", "", "", s};
     default: assert(false); return ExpectedResponseData{};
   }
 }
@@ -579,6 +584,7 @@ ExpectedResponseData operator&&(const ExpectedResponseData& a,
   return ExpectedResponseData{
     selectNonEmpty(a.expectedPageTitle, b.expectedPageTitle),
     selectNonEmpty(a.expectedCssUrl, b.expectedCssUrl),
+    selectNonEmpty(a.expectedKiwixResponseData, b.expectedKiwixResponseData),
     selectNonEmpty(a.bookName, b.bookName),
     selectNonEmpty(a.bookTitle, b.bookTitle),
     selectNonEmpty(a.expectedBody, b.expectedBody)
@@ -607,19 +613,29 @@ private:
 std::string TestContentIn404HtmlResponse::expectedResponse() const
 {
   const std::string frag[] =  {
+    // frag[0]
     R"FRAG(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
     <title>)FRAG",
 
+    // frag[1]
     R"FRAG(</title>
 )FRAG",
 
-    R"FRAG(
+    // frag[2]
+    R"(    <script>
+      window.KIWIX_RESPONSE_TEMPLATE = )" + ERROR_HTML_TEMPLATE_JS_STRING + R"(;
+      window.KIWIX_RESPONSE_DATA = )",
+
+    // frag[3]
+    R"FRAG(;
+    </script>
   </head>
   <body>)FRAG",
 
+  // frag[4]
   R"FRAG(  </body>
 </html>
 )FRAG"
@@ -630,8 +646,10 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
        + frag[1]
        + pageCssLink()
        + frag[2]
+       + expectedKiwixResponseData
+       + frag[3]
        + expectedBody
-       + frag[3];
+       + frag[4];
 }
 
 std::string TestContentIn404HtmlResponse::pageTitle() const
@@ -648,7 +666,8 @@ std::string TestContentIn404HtmlResponse::pageCssLink() const
 
   return R"(    <link type="text/css" href=")"
        + expectedCssUrl
-       + R"(" rel="Stylesheet" />)";
+       + R"(" rel="Stylesheet" />)"
+       + "\n";
 }
 
 class TestContentIn400HtmlResponse : public TestContentIn404HtmlResponse
@@ -676,6 +695,7 @@ TEST_F(ServerTest, Http404HtmlError)
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn404HtmlResponse> testData{
     { /* url */ "/ROOT%23%3F/random?content=non-existent-book",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "non-existent-book" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -685,6 +705,7 @@ TEST_F(ServerTest, Http404HtmlError)
 
     { /* url */ "/ROOT%23%3F/random?content=non-existent-book&userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "non-existent-book" } } } ] })" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
@@ -693,6 +714,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/suggest?content=no-such-book&term=whatever",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "no-such-book" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -701,6 +723,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/catalog/",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/catalog/" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -710,6 +733,7 @@ TEST_F(ServerTest, Http404HtmlError)
 
     { /* url */ "/ROOT%23%3F/catalog/?userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/catalog/" } } } ] })" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
@@ -718,6 +742,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/catalog/invalid_endpoint",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/catalog/invalid_endpoint" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -727,6 +752,7 @@ TEST_F(ServerTest, Http404HtmlError)
 
     { /* url */ "/ROOT%23%3F/catalog/invalid_endpoint?userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/catalog/invalid_endpoint" } } } ] })" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
@@ -735,6 +761,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/invalid-book/whatever" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "whatever", "SEARCH_URL" : "/ROOT%23%3F/search?pattern=whatever" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -748,6 +775,7 @@ TEST_F(ServerTest, Http404HtmlError)
     { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article",
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/invalid-article" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "invalid-article", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=invalid-article" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -759,6 +787,9 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ R"(/ROOT%23%3F/content/"><svg onload=alert(1)>)",
+      // XXX: This test case suggests that KIWIX_RESPONSE_DATA
+      // XXX: must be HTML-encoded, too
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/\"><svg onload%3Dalert(1)>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "\"><svg onload=alert(1)>", "SEARCH_URL" : "/ROOT%23%3F/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -772,6 +803,9 @@ TEST_F(ServerTest, Http404HtmlError)
     { /* url */ R"(/ROOT%23%3F/content/zimfile/"><svg onload=alert(1)>)",
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
+      // XXX: This test case suggests that KIWIX_RESPONSE_DATA
+      // XXX: must be HTML-encoded, too
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/\"><svg onload%3Dalert(1)>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "\"><svg onload=alert(1)>", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -786,6 +820,7 @@ TEST_F(ServerTest, Http404HtmlError)
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/invalid-article" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "invalid-article", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=invalid-article" } } } ] })" &&
       expected_body==R"(
     <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
     <p>
@@ -797,6 +832,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/raw/no-such-book/meta/Title",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/raw/no-such-book/meta/Title" } } }, { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "no-such-book" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -808,6 +844,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/raw/zimfile/XYZ",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/raw/zimfile/XYZ" } } }, { "p" : { "msgid" : "invalid-raw-data-type", "params" : { "DATATYPE" : "XYZ" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -819,6 +856,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/raw/zimfile/meta/invalid-metadata",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/raw/zimfile/meta/invalid-metadata" } } }, { "p" : { "msgid" : "raw-entry-not-found", "params" : { "DATATYPE" : "meta", "ENTRY" : "invalid-metadata" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -830,6 +868,7 @@ TEST_F(ServerTest, Http404HtmlError)
 )"  },
 
     { /* url */ "/ROOT%23%3F/raw/zimfile/content/invalid-article",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/raw/zimfile/content/invalid-article" } } }, { "p" : { "msgid" : "raw-entry-not-found", "params" : { "DATATYPE" : "content", "ENTRY" : "invalid-article" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -845,6 +884,7 @@ TEST_F(ServerTest, Http404HtmlError)
       expected_css_url=="/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" &&
       book_name=="poor" &&
       book_title=="poor" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "fulltext-search-unavailable", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-search-results", "params" : { } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -866,6 +906,7 @@ TEST_F(ServerTest, Http400HtmlError)
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn400HtmlResponse> testData{
     { /* url */ "/ROOT%23%3F/search",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search" } } }, { "p" : { "msgid" : "too-many-books", "params" : { "LIMIT" : "3", "NB_BOOKS" : "4" } } } ] })" &&
       expected_body== R"(
     <h1>Invalid request</h1>
     <p>
@@ -876,6 +917,7 @@ TEST_F(ServerTest, Http400HtmlError)
     </p>
 )"  },
     { /* url */ "/ROOT%23%3F/search?content=zimfile",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?content=zimfile" } } }, { "p" : { "msgid" : "no-query", "params" : { } } } ] })" &&
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
@@ -886,6 +928,7 @@ TEST_F(ServerTest, Http400HtmlError)
     </p>
 )"  },
     { /* url */ "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty" } } }, { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "non-existing-book" } } } ] })" &&
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
@@ -896,6 +939,7 @@ TEST_F(ServerTest, Http400HtmlError)
     </p>
 )"  },
     { /* url */ "/ROOT%23%3F/search?content=non-existing-book&pattern=a\"<script foo>",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" } } }, { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "non-existing-book" } } } ] })" &&
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
@@ -908,6 +952,7 @@ TEST_F(ServerTest, Http400HtmlError)
     // There is a flaw in our way to handle query string, we cannot differenciate
     // between `pattern` and `pattern=`
     { /* url */ "/ROOT%23%3F/search?books.filter.lang=eng&pattern",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?books.filter.lang=eng&pattern" } } }, { "p" : { "msgid" : "no-query", "params" : { } } } ] })" &&
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
@@ -918,6 +963,7 @@ TEST_F(ServerTest, Http400HtmlError)
     </p>
 )"  },
     { /* url */ "/ROOT%23%3F/search?pattern=foo",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?pattern=foo" } } }, { "p" : { "msgid" : "too-many-books", "params" : { "LIMIT" : "3", "NB_BOOKS" : "4" } } } ] })" &&
       expected_body==R"(
     <h1>Invalid request</h1>
     <p>
@@ -931,6 +977,7 @@ TEST_F(ServerTest, Http400HtmlError)
     // Testing of translation
     { /* url */ "/ROOT%23%3F/search?content=zimfile&userlang=test",
       expected_page_title=="[I18N TESTING] Invalid request ($400 fine must be paid)" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?content=zimfile&userlang=test" } } }, { "p" : { "msgid" : "no-query", "params" : { } } } ] })" &&
       expected_body==R"(
     <h1>[I18N TESTING] -400 karma for an invalid request</h1>
     <p>

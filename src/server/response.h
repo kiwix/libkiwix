@@ -160,14 +160,12 @@ struct HTTPErrorResponse : ContentResponseBlueprint
 
 struct HTTP404Response : HTTPErrorResponse
 {
-  explicit HTTP404Response(const RequestContext& request,
-                           bool includeKiwixResponseData = false);
+  explicit HTTP404Response(const RequestContext& request);
 };
 
 struct UrlNotFoundResponse : HTTP404Response
 {
-  explicit UrlNotFoundResponse(const RequestContext& request,
-                               bool includeKiwixResponseData = false);
+  explicit UrlNotFoundResponse(const RequestContext& request);
 };
 
 struct HTTP400Response : HTTPErrorResponse
