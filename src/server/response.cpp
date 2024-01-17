@@ -431,7 +431,9 @@ HTTP500Response::HTTP500Response(const RequestContext& request)
   : HTTPErrorResponse(request,
                       MHD_HTTP_INTERNAL_SERVER_ERROR,
                       "500-page-title",
-                      "500-page-heading")
+                      "500-page-heading",
+                      std::string(),
+                      /*includeKiwixResponseData=*/true)
 {
   *this += nonParameterizedMessage("500-page-text");
 }

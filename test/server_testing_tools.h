@@ -190,3 +190,5 @@ protected:
     zfs1_.reset();
   }
 };
+
+static const std::string ERROR_HTML_TEMPLATE_JS_STRING = R"("&lt;!DOCTYPE html&gt;\n&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;\n  &lt;head&gt;\n    &lt;meta content=&quot;text/html;charset=UTF-8&quot; http-equiv=&quot;content-type&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n{{#CSS_URL}}\n    &lt;link type=&quot;text/css&quot; href=&quot;{{{CSS_URL}}}&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{/CSS_URL}}{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n{{#details}}\n    &lt;p&gt;\n      {{{p}}}\n    &lt;/p&gt;\n{{/details}}\n  &lt;/body&gt;\n&lt;/html&gt;\n")";

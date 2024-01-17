@@ -1036,7 +1036,10 @@ TEST_F(ServerTest, 500)
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
     <title>Internal Server Error</title>
-
+    <script>
+      window.KIWIX_RESPONSE_TEMPLATE = )" + ERROR_HTML_TEMPLATE_JS_STRING + R"(;
+      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "500-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "500-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "500-page-text", "params" : { } } }, { "p" : { "msgid" : "non-translated-text", "params" : { "MSG" : "Entry redirect_loop.html is a redirect entry." } } } ] };
+    </script>
   </head>
   <body>
     <h1>Internal Server Error</h1>
