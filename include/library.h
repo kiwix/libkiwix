@@ -255,7 +255,7 @@ class Library: public std::enable_shared_from_this<Library>
   void addBookmark(const Bookmark& bookmark);
 
   /**
-   * Remove a bookmarkk
+   * Remove a bookmark
    *
    * @param zimId The zimId of the bookmark.
    * @param url The url of the bookmark.
@@ -263,6 +263,39 @@ class Library: public std::enable_shared_from_this<Library>
    */
   bool removeBookmark(const std::string& zimId, const std::string& url);
 
+  /**
+   * Migrate all invalid bookmarks.
+   *
+   * All invalid bookmarks (ie pointing to unknown books, no check is made on bookmark pointing to
+   * invalid articles of valid book) will be migrated (if possible) to a better book.
+   * "Better book", will be determined using heuristics based on book name, flavour and date.
+   *
+   * @return A tuple<int, int>: <The number of bookmarks updated>, <Number of invalid bookmarks before migration was performed>.
+   */
+  std::tuple<int, int> migrateBookmarks();
+
+  /**
+   * Migrate all bookmarks associated to a specific book.
+   *
+   * All bookmarks associated to `sourceBookId` book will be migrated to a better book.
+   * "Better book", will be determined using heuristics based on book name, flavour and date.
+
+   * @param source the source bookId of the bookmarks to migrate.
+   * @return The number of bookmarks updated.
+   */
+  int migrateBookmarks(const std::string& sourceBookId);
+
+  /**
+   * Migrate bookmarks
+   *
+   * Migrate all bookmarks pointing to `source` to `destination`.
+   *
+   * @param sourceBookId the source bookId of the bookmarks to migrate.
+   * @param targetBookId the destination bookId to migrate the bookmarks to.
+   * @return The number of bookmarks updated.
+   */
+  int migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId);
+ 
   // XXX: This is a non-thread-safe operation
   const Book& getBookById(const std::string& id) const;
   // XXX: This is a non-thread-safe operation
@@ -408,6 +441,7 @@ private: // functions
   AttributeCounts getBookAttributeCounts(BookStrPropMemFn p) const;
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
+  std::string getBestTargetBookId(const Bookmark& bookmark) const;
   unsigned int getBookCount_not_protected(const bool localBooks, const bool remoteBooks) const;
   void updateBookDB(const Book& book);
   void dropCache(const std::string& bookId);

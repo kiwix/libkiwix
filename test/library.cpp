@@ -456,6 +456,103 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     EXPECT_EQ(bookmark3.getDate(), book2.getDate());
 }
 
+TEST_F(LibraryTest, MigrateBookmark)
+{
+    auto bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+    auto bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
+
+    auto book1 = lib->getBookById(bookId1);
+    auto book2 = lib->getBookById(bookId2);
+
+    lib->addBookmark(createBookmark(book1));
+    lib->addBookmark(createBookmark("invalid-book-id"));
+    lib->addBookmark(createBookmark(book2));
+
+    auto wrongIdBookmark = createBookmark(book1);
+    wrongIdBookmark.setBookId("wrong-book-id");
+    lib->addBookmark(wrongIdBookmark);
+
+    auto wrongIdBookmarkNoName = createBookmark(book2);
+    wrongIdBookmarkNoName.setBookId("wrong-book-id-noname");
+    wrongIdBookmarkNoName.setBookName("");
+    lib->addBookmark(wrongIdBookmarkNoName);
+
+    auto onlyValidBookmarks = lib->getBookmarks();
+    auto allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 2);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+
+    ASSERT_EQ(allBookmarks.size(), 5);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), "wrong-book-id");
+    EXPECT_EQ(allBookmarks[4].getBookId(), "wrong-book-id-noname");
+
+    ASSERT_EQ(lib->migrateBookmarks("no-existant-book"), 0);
+
+    ASSERT_EQ(lib->migrateBookmarks(), std::make_tuple(2, 3));
+
+    onlyValidBookmarks = lib->getBookmarks();
+    allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 4);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
+
+    ASSERT_EQ(allBookmarks.size(), 5);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+
+    ASSERT_EQ(lib->migrateBookmarks(), std::make_tuple(0, 1));
+    ASSERT_EQ(lib->migrateBookmarks(bookId1), 0);
+    ASSERT_EQ(lib->migrateBookmarks(bookId1, bookId2), 2);
+
+    onlyValidBookmarks = lib->getBookmarks();
+    allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 4);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
+
+
+    ASSERT_EQ(allBookmarks.size(), 5);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+
+    ASSERT_EQ(lib->migrateBookmarks("invalid-book-id", bookId1), 1);
+
+    onlyValidBookmarks = lib->getBookmarks();
+    allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 5);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[4].getBookId(), bookId2);
+
+
+    ASSERT_EQ(allBookmarks.size(), 5);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[1].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+}
+
 
 TEST_F(LibraryTest, sanityCheck)
 {

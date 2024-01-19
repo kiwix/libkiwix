@@ -157,6 +157,94 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
   return false;
 }
 
+std::tuple<int, int> Library::migrateBookmarks() {
+  std::set<std::string> sourceBooks;
+  int invalidBookmarks = 0;
+  {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    for(auto& bookmark:m_bookmarks) {
+      if (m_books.find(bookmark.getBookId()) == m_books.end()) {
+        invalidBookmarks += 1;
+        sourceBooks.insert(bookmark.getBookId());
+      }
+    }
+  }
+  int changed = 0;
+  for(auto& sourceBook:sourceBooks) {
+    changed += migrateBookmarks(sourceBook);
+  }
+  return std::make_tuple(changed, invalidBookmarks);
+}
+
+std::string Library::getBestTargetBookId(const Bookmark& bookmark) const {
+  // Search for a existing book with the same name
+  auto book_filter = Filter();
+  if (!bookmark.getBookName().empty()) {
+    book_filter.name(bookmark.getBookName());
+  } else {
+    // We don't have a name stored (older bookmarks)
+    // Fallback on title (All bookmarks should have one, but let's be safe against wrongly filled bookmark)
+    if (bookmark.getBookTitle().empty()) {
+        // No bookName nor bookTitle, no way to find target book.
+        return "";
+    }
+    book_filter.query("title:\""+bookmark.getBookTitle() + "\"");
+  }
+  auto targetBooks = filter(book_filter);
+  // Remove source book
+  auto foundIT = std::find(targetBooks.begin(), targetBooks.end(), bookmark.getBookId());
+  if (foundIT != targetBooks.end()) {
+    targetBooks.erase(foundIT);
+  }
+    
+  if (targetBooks.empty()) {
+    // No existing book found for the target, or the same than source.
+    return "";
+  }
+  if (targetBooks.size() != 1) {
+    sort(targetBooks, DATE, false);
+  }
+  return targetBooks[0];
+}
+
+int Library::migrateBookmarks(const std::string& sourceBookId) {
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
+  Bookmark firstBookmarkToChange;
+  for(auto& bookmark:m_bookmarks) {
+    if (bookmark.getBookId() == sourceBookId) {
+      firstBookmarkToChange = bookmark;
+      break;
+    }
+  }
+
+  if (firstBookmarkToChange.getBookId().empty()) {
+    return 0;
+  }
+
+  std::string betterBook = getBestTargetBookId(firstBookmarkToChange);
+
+  if (betterBook.empty()) {
+    return 0;
+  }
+
+  return migrateBookmarks(sourceBookId, betterBook);
+}
+
+int Library::migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId) {
+  if (sourceBookId == targetBookId) {
+    return 0;
+  }
+  int changed = 0;
+  for (auto& bookmark:m_bookmarks) {
+    if (bookmark.getBookId() == sourceBookId) {
+      bookmark.setBookId(targetBookId);
+      changed += 1;
+    }
+  }
+  return changed;
+}
+
 
 void Library::dropCache(const std::string& id)
 {
