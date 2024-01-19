@@ -408,7 +408,7 @@ private: // functions
   void dropCache(const std::string& bookId);
 
 private: //data
-  mutable std::mutex m_mutex;
+  mutable std::recursive_mutex m_mutex;
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
   using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
