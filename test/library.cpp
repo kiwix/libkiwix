@@ -49,6 +49,48 @@ const char * sampleOpdsStream = R"(
     <articleCount>172</articleCount>
   </entry>
   <entry>
+    <title>Encyclopédie de la Tunisie</title>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>novid</flavour>
+    <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater</id>
+    <updated>2019-10-08T00:00::00:Z</updated>
+    <dc:issued>8 Oct 2019</dc:issued>
+    <language>fra</language>
+    <summary>Le meilleur de Wikipédia sur la Tunisie. Updated in 2019</summary>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+  </entry>
+  <entry>
+    <title>Encyclopédie de la Tunisie</title>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>other_flavour</flavour>
+    <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_flavour</id>
+    <updated>2018-10-08T00:00::00:Z</updated>
+    <dc:issued>8 Oct 2018</dc:issued>
+    <language>fra</language>
+    <summary>Le meilleur de Wikipédia sur la Tunisie. With another flavour</summary>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+  </entry>
+  <entry>
+    <title>Encyclopédie de la Tunisie</title>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>other_flavour</flavour>
+    <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour</id>
+    <updated>2019-10-08T00:00::00:Z</updated>
+    <dc:issued>8 Oct 2019</dc:issued>
+    <language>fra</language>
+    <summary>Le meilleur de Wikipédia sur la Tunisie. Updated in 2019, and other flavour</summary>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+  </entry>
+  <entry>
     <title>Tania Louis</title>
     <id>urn:uuid:0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2</id>
     <name>biologie-tout-compris_fr_all</name>
@@ -260,7 +302,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   kiwix::Manager manager(lib);
   manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
 
-  EXPECT_EQ(10U, lib->getBookCount(true, true));
+  EXPECT_EQ(13U, lib->getBookCount(true, true));
 
   {
   const kiwix::Book& book1 = lib->getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd");
@@ -458,8 +500,8 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
 
 TEST_F(LibraryTest, MigrateBookmark)
 {
-    auto bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
-    auto bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
+    std::string bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+    std::string bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
 
     auto book1 = lib->getBookById(bookId1);
     auto book2 = lib->getBookById(bookId2);
@@ -501,20 +543,30 @@ TEST_F(LibraryTest, MigrateBookmark)
     ASSERT_EQ(onlyValidBookmarks.size(), 4);
     EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
-    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId1+"_updated1yearlater");
     EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
 
     ASSERT_EQ(allBookmarks.size(), 5);
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
-    EXPECT_EQ(allBookmarks[3].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId1+"_updated1yearlater");
     EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
 
     ASSERT_EQ(lib->migrateBookmarks(), std::make_tuple(0, 1));
-    ASSERT_EQ(lib->migrateBookmarks(bookId1), 0);
-    ASSERT_EQ(lib->migrateBookmarks(bookId1, bookId2), 2);
 
+    ASSERT_EQ(lib->migrateBookmarks(bookId1), 1);
+    allBookmarks = lib->getBookmarks(false);
+    ASSERT_EQ(allBookmarks.size(), 5);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId1+"_updated1yearlater");
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId1+"_updated1yearlater");
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+
+    ASSERT_EQ(lib->migrateBookmarks(bookId1, bookId2), 0); // No more bookId1 bookmark
+
+    ASSERT_EQ(lib->migrateBookmarks(bookId1+"_updated1yearlater", bookId2), 2);
     onlyValidBookmarks = lib->getBookmarks();
     allBookmarks = lib->getBookmarks(false);
 
@@ -556,7 +608,7 @@ TEST_F(LibraryTest, MigrateBookmark)
 
 TEST_F(LibraryTest, sanityCheck)
 {
-  EXPECT_EQ(lib->getBookCount(true, true), 12U);
+  EXPECT_EQ(lib->getBookCount(true, true), 15U);
   EXPECT_EQ(lib->getBooksLanguages(),
             std::vector<std::string>({"deu", "eng", "fra", "ita", "spa"})
   );
@@ -609,6 +661,9 @@ TEST_F(LibraryTest, filterLocal)
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().local(false),
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
     "Islam Stack Exchange",
@@ -624,6 +679,9 @@ TEST_F(LibraryTest, filterLocal)
 TEST_F(LibraryTest, filterRemote)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().remote(true),
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
@@ -785,6 +843,9 @@ TEST_F(LibraryTest, filterByQuery)
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki"),
     "An example ZIM archive", // due to the "wikibooks" tag
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
     "Mathématiques", // due to the "wikipedia" tag
@@ -804,6 +865,9 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
   EXPECT_FILTER_RESULTS(kiwix::Filter().query(""),
     "An example ZIM archive",
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
     "Islam Stack Exchange",
@@ -820,6 +884,9 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
 TEST_F(LibraryTest, filterByCreator)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
     "Mathématiques",
@@ -861,6 +928,9 @@ TEST_F(LibraryTest, filterByCreator)
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("creator:Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
     "Mathématiques",
@@ -969,6 +1039,9 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia"),
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
     "Mathématiques", // due to the "wikipedia" tag
     "Ray Charles"
@@ -976,10 +1049,16 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL),
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Ray Charles"
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL).local(false),
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie"
   );
 }
@@ -1038,6 +1117,9 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
   EXPECT_FILTER_RESULTS(kiwix::Filter(),
     "An example ZIM archive",
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
     "Islam Stack Exchange",
@@ -1059,7 +1141,7 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
 
   const uint64_t rev2 = lib->getRevision();
 
-  EXPECT_EQ(9u, lib->removeBooksNotUpdatedSince(rev));
+  EXPECT_EQ(12u, lib->removeBooksNotUpdatedSince(rev));
 
   EXPECT_GT(lib->getRevision(), rev2);
 
