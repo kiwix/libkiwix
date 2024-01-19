@@ -202,6 +202,11 @@ std::string Library::getBestTargetBookId(const Bookmark& bookmark) const {
     return "";
   }
   if (targetBooks.size() != 1) {
+    // We have several, reduce to same flavour
+    auto flavouredTargetBooks = filter(book_filter.flavour(bookmark.getBookFlavour()));
+    if (!flavouredTargetBooks.empty()) {
+      targetBooks = flavouredTargetBooks;
+    }
     sort(targetBooks, DATE, false);
   }
   return targetBooks[0];
@@ -223,7 +228,7 @@ int Library::migrateBookmarks(const std::string& sourceBookId) {
   }
 
   std::string betterBook = getBestTargetBookId(firstBookmarkToChange);
-
+    
   if (betterBook.empty()) {
     return 0;
   }
