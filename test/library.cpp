@@ -28,8 +28,8 @@ const char * sampleOpdsStream = R"(
   <id>00000000-0000-0000-0000-000000000000</id>
   <entry>
     <title>Encyclopédie de la Tunisie</title>
-    <name>wikipedia_fr_tunisie_novid_2018-10</name>
-    <flavour>unforgettable</flavour>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>novid</flavour>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd</id>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_tunisie_novid_2018-10</icon>
     <updated>2018-10-08T00:00::00:Z</updated>
@@ -52,6 +52,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Tania Louis</title>
     <id>urn:uuid:0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2</id>
+    <name>biologie-tout-compris_fr_all</name>
     <icon>/meta?name=favicon&amp;content=biologie-tout-compris_fr_all_2018-06</icon>
     <updated>2018-06-23T00:00::00:Z</updated>
     <language>fra</language>
@@ -67,6 +68,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Wikiquote</title>
     <id>urn:uuid:0ea1cde6-441d-6c58-f2c7-21c2838e659f</id>
+    <name>wikiquote_fr_all</name>
     <icon>/meta?name=favicon&amp;content=wikiquote_fr_all_nopic_2019-06</icon>
     <updated>2019-06-05T00:00::00:Z</updated>
     <language>fra,ita</language>
@@ -83,6 +85,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Géographie par Wikipédia</title>
     <id>urn:uuid:1123e574-6eef-6d54-28fc-13e4caeae474</id>
+    <name>wikipedia_fr_geography</name>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_geography_nopic_2019-06</icon>
     <updated>2019-06-02T00:00::00:Z</updated>
     <summary>Une sélection d'articles de Wikipédia sur la géographie</summary>
@@ -99,6 +102,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Mathématiques</title>
     <id>urn:uuid:14829621-c490-c376-0792-9de558b57efa</id>
+    <name>wikipedia_fr_mathematics</name>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_mathematics_nopic_2019-05</icon>
     <updated>2019-05-13T00:00::00:Z</updated>
     <language>fra</language>
@@ -115,6 +119,7 @@ const char * sampleOpdsStream = R"(
 <entry>
     <title>Granblue Fantasy Wiki</title>
     <id>urn:uuid:006cbd1b-16d8-b00d-a584-c1ae110a94ed</id>
+    <name>grandbluefantasy_en_all</name>
     <icon>/meta?name=favicon&amp;content=granbluefantasy_en_all_all_nopic_2018-10</icon>
     <updated>2018-10-14T00:00::00:Z</updated>
     <language>eng</language>
@@ -130,6 +135,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Movies &amp; TV Stack Exchange</title>
     <id>urn:uuid:00f37b00-f4da-0675-995a-770f9c72903e</id>
+    <name>movies.stackexchange.com_en_all</name>
     <icon>/meta?name=favicon&amp;content=movies.stackexchange.com_en_all_2019-02</icon>
     <updated>2019-02-03T00:00::00:Z</updated>
     <language>eng</language>
@@ -145,6 +151,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>TED talks - Business</title>
     <id>urn:uuid:0189d9be-2fd0-b4b6-7300-20fab0b5cdc8</id>
+    <name>ted_en_business</name>
     <icon>/meta?name=favicon&amp;content=ted_en_business_2018-07</icon>
     <updated>2018-07-23T00:00::00:Z</updated>
     <language>eng</language>
@@ -160,6 +167,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Mythology &amp; Folklore Stack Exchange</title>
     <id>urn:uuid:028055ac-4acc-1d54-65e0-a96de45e1b22</id>
+    <name>mythology.stackexchange.com_en_all</name>
     <icon>/meta?name=favicon&amp;content=mythology.stackexchange.com_en_all_2019-02</icon>
     <updated>2019-02-03T00:00::00:Z</updated>
     <language>eng</language>
@@ -175,6 +183,7 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Islam Stack Exchange</title>
     <id>urn:uuid:02e9c7ff-36fc-9c6e-6ac7-cd7085989029</id>
+    <name>islam.stackexchange.com_en_all</name>
     <icon>/meta?name=favicon&amp;content=islam.stackexchange.com_en_all_2019-01</icon>
     <updated>2019-01-31T00:00::00:Z</updated>
     <language>eng</language>
@@ -248,8 +257,8 @@ TEST(LibraryOpdsImportTest, allInOne)
   const kiwix::Book& book1 = lib->getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd");
 
   EXPECT_EQ(book1.getTitle(), "Encyclopédie de la Tunisie");
-  EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie_novid_2018-10");
-  EXPECT_EQ(book1.getFlavour(), "unforgettable");
+  EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie");
+  EXPECT_EQ(book1.getFlavour(), "novid");
   EXPECT_EQ(book1.getLanguages(), Langs{ "fra" });
   EXPECT_EQ(book1.getCommaSeparatedLanguages(), "fra");
   EXPECT_EQ(book1.getDate(), "8 Oct 2018");
@@ -273,7 +282,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   {
   const kiwix::Book& book2 = lib->getBookById("0189d9be-2fd0-b4b6-7300-20fab0b5cdc8");
   EXPECT_EQ(book2.getTitle(), "TED talks - Business");
-  EXPECT_EQ(book2.getName(), "");
+  EXPECT_EQ(book2.getName(), "ted_en_business");
   EXPECT_EQ(book2.getFlavour(), "");
   EXPECT_EQ(book2.getLanguages(), Langs{ "eng" });
   EXPECT_EQ(book2.getCommaSeparatedLanguages(), "eng");
