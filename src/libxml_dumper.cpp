@@ -135,7 +135,7 @@ std::string LibXMLDumper::dumpLibXMLBookmark()
   pugi::xml_node bookmarksNode = doc.append_child("bookmarks");
 
   if (library) {
-    for (auto& bookmark: library->getBookmarks()) {
+    for (auto& bookmark: library->getBookmarks(false)) {
       handleBookmark(bookmark, bookmarksNode);
     }
   }

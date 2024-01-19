@@ -327,9 +327,11 @@ class LibraryTest : public ::testing::Test {
      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }
 
-    kiwix::Bookmark createBookmark(const std::string &id) {
+    kiwix::Bookmark createBookmark(const std::string &id, const std::string& url="", const std::string& title="") {
         kiwix::Bookmark bookmark;
         bookmark.setBookId(id);
+        bookmark.setUrl(url);
+        bookmark.setTitle(title);
         return bookmark;
     };
 
@@ -351,7 +353,7 @@ TEST_F(LibraryTest, getBookMarksTest)
     auto bookId2 = lib->getBooksIds()[1];
 
     lib->addBookmark(createBookmark(bookId1));
-    lib->addBookmark(createBookmark("invalid-bookmark-id"));
+    lib->addBookmark(createBookmark("invalid-book-id"));
     lib->addBookmark(createBookmark(bookId2));
     auto onlyValidBookmarks = lib->getBookmarks();
     auto allBookmarks = lib->getBookmarks(false);
@@ -360,9 +362,67 @@ TEST_F(LibraryTest, getBookMarksTest)
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
 
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
-    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-bookmark-id");
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
 }
+
+TEST_F(LibraryTest, bookmarksSerializationTest)
+{
+    auto bookId1 = lib->getBooksIds()[0];
+    auto bookId2 = lib->getBooksIds()[1];
+
+    auto book1 = lib->getBookById(bookId1);
+    auto book2 = lib->getBookById(bookId2);
+
+    lib->addBookmark(createBookmark(bookId1, "a/url", "Article title1"));
+    lib->addBookmark(createBookmark("invalid-book-id", "another/url", "Unknown title"));
+    lib->addBookmark(createBookmark(bookId2, "a/url/2", "Article title2"));
+
+    lib->writeBookmarksToFile("__test__bookmarks.xml");
+
+    // Build a new library
+    auto new_lib = kiwix::Library::create();
+    {
+      kiwix::Manager manager(new_lib);
+      manager.readOpds(sampleOpdsStream, "foo.urlHost");
+      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
+      manager.readBookmarkFile("__test__bookmarks.xml");
+    }
+    std::remove("__test__bookmarks.xml");
+
+    auto onlyValidBookmarks = new_lib->getBookmarks();
+    auto allBookmarks = new_lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 2);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+
+    ASSERT_EQ(allBookmarks.size(), 3);
+    auto bookmark1 = allBookmarks[0];
+    EXPECT_EQ(bookmark1.getBookId(), bookId1);
+    EXPECT_EQ(bookmark1.getBookTitle(), book1.getTitle());
+    EXPECT_EQ(bookmark1.getUrl(), "a/url");
+    EXPECT_EQ(bookmark1.getTitle(), "Article title1");
+    EXPECT_EQ(bookmark1.getLanguage(), book1.getCommaSeparatedLanguages());
+    EXPECT_EQ(bookmark1.getDate(), book1.getDate());
+
+    auto bookmark2 = allBookmarks[1];
+    EXPECT_EQ(bookmark2.getBookId(), "invalid-book-id");
+    EXPECT_EQ(bookmark2.getBookTitle(), "");
+    EXPECT_EQ(bookmark2.getUrl(), "another/url");
+    EXPECT_EQ(bookmark2.getTitle(), "Unknown title");
+    EXPECT_EQ(bookmark2.getLanguage(), "");
+    EXPECT_EQ(bookmark2.getDate(), "");
+
+    auto bookmark3 = allBookmarks[2];
+    EXPECT_EQ(bookmark3.getBookId(), bookId2);
+    EXPECT_EQ(bookmark3.getBookTitle(), book2.getTitle());
+    EXPECT_EQ(bookmark3.getUrl(), "a/url/2");
+    EXPECT_EQ(bookmark3.getTitle(), "Article title2");
+    EXPECT_EQ(bookmark3.getLanguage(), book2.getCommaSeparatedLanguages());
+    EXPECT_EQ(bookmark3.getDate(), book2.getDate());
+}
+
 
 TEST_F(LibraryTest, sanityCheck)
 {
