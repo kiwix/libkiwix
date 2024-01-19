@@ -53,6 +53,7 @@ const char * sampleOpdsStream = R"(
     <title>Tania Louis</title>
     <id>urn:uuid:0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2</id>
     <name>biologie-tout-compris_fr_all</name>
+    <flavour>full</flavour>
     <icon>/meta?name=favicon&amp;content=biologie-tout-compris_fr_all_2018-06</icon>
     <updated>2018-06-23T00:00::00:Z</updated>
     <language>fra</language>
@@ -69,6 +70,7 @@ const char * sampleOpdsStream = R"(
     <title>Wikiquote</title>
     <id>urn:uuid:0ea1cde6-441d-6c58-f2c7-21c2838e659f</id>
     <name>wikiquote_fr_all</name>
+    <flavour>full</flavour>
     <icon>/meta?name=favicon&amp;content=wikiquote_fr_all_nopic_2019-06</icon>
     <updated>2019-06-05T00:00::00:Z</updated>
     <language>fra,ita</language>
@@ -86,6 +88,7 @@ const char * sampleOpdsStream = R"(
     <title>Géographie par Wikipédia</title>
     <id>urn:uuid:1123e574-6eef-6d54-28fc-13e4caeae474</id>
     <name>wikipedia_fr_geography</name>
+    <flavour>full</flavour>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_geography_nopic_2019-06</icon>
     <updated>2019-06-02T00:00::00:Z</updated>
     <summary>Une sélection d'articles de Wikipédia sur la géographie</summary>
@@ -103,6 +106,7 @@ const char * sampleOpdsStream = R"(
     <title>Mathématiques</title>
     <id>urn:uuid:14829621-c490-c376-0792-9de558b57efa</id>
     <name>wikipedia_fr_mathematics</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_mathematics_nopic_2019-05</icon>
     <updated>2019-05-13T00:00::00:Z</updated>
     <language>fra</language>
@@ -120,6 +124,7 @@ const char * sampleOpdsStream = R"(
     <title>Granblue Fantasy Wiki</title>
     <id>urn:uuid:006cbd1b-16d8-b00d-a584-c1ae110a94ed</id>
     <name>grandbluefantasy_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=granbluefantasy_en_all_all_nopic_2018-10</icon>
     <updated>2018-10-14T00:00::00:Z</updated>
     <language>eng</language>
@@ -136,6 +141,7 @@ const char * sampleOpdsStream = R"(
     <title>Movies &amp; TV Stack Exchange</title>
     <id>urn:uuid:00f37b00-f4da-0675-995a-770f9c72903e</id>
     <name>movies.stackexchange.com_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=movies.stackexchange.com_en_all_2019-02</icon>
     <updated>2019-02-03T00:00::00:Z</updated>
     <language>eng</language>
@@ -152,6 +158,7 @@ const char * sampleOpdsStream = R"(
     <title>TED talks - Business</title>
     <id>urn:uuid:0189d9be-2fd0-b4b6-7300-20fab0b5cdc8</id>
     <name>ted_en_business</name>
+    <flavour>nodet</flavour>
     <icon>/meta?name=favicon&amp;content=ted_en_business_2018-07</icon>
     <updated>2018-07-23T00:00::00:Z</updated>
     <language>eng</language>
@@ -168,6 +175,7 @@ const char * sampleOpdsStream = R"(
     <title>Mythology &amp; Folklore Stack Exchange</title>
     <id>urn:uuid:028055ac-4acc-1d54-65e0-a96de45e1b22</id>
     <name>mythology.stackexchange.com_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=mythology.stackexchange.com_en_all_2019-02</icon>
     <updated>2019-02-03T00:00::00:Z</updated>
     <language>eng</language>
@@ -184,6 +192,7 @@ const char * sampleOpdsStream = R"(
     <title>Islam Stack Exchange</title>
     <id>urn:uuid:02e9c7ff-36fc-9c6e-6ac7-cd7085989029</id>
     <name>islam.stackexchange.com_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=islam.stackexchange.com_en_all_2019-01</icon>
     <updated>2019-01-31T00:00::00:Z</updated>
     <language>eng</language>
@@ -283,7 +292,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   const kiwix::Book& book2 = lib->getBookById("0189d9be-2fd0-b4b6-7300-20fab0b5cdc8");
   EXPECT_EQ(book2.getTitle(), "TED talks - Business");
   EXPECT_EQ(book2.getName(), "ted_en_business");
-  EXPECT_EQ(book2.getFlavour(), "");
+  EXPECT_EQ(book2.getFlavour(), "nodet");
   EXPECT_EQ(book2.getLanguages(), Langs{ "eng" });
   EXPECT_EQ(book2.getCommaSeparatedLanguages(), "eng");
   EXPECT_EQ(book2.getDate(), "2018-07-23");
