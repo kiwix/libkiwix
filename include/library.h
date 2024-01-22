@@ -55,6 +55,18 @@ enum supportedListMode {
   NOVALID = 1 << 5
 };
 
+enum MigrationMode {
+  /** When migrating bookmarks, do not allow to migrate to an older book than the currently pointed one.
+   *
+   * This is enforce only if the bookmark point to a valid books. If bookmark point to a invalid book,
+   * it will be migrated to an existing one, even if older.
+   */
+  UPGRADE_ONLY = 0,
+
+   /** Allow to migrate the bookmark to an older book. */
+  ALLOW_DOWNGRADE = 1,
+};
+
 class Filter {
   public: // types
     using Tags = std::vector<std::string>;
@@ -272,18 +284,21 @@ class Library: public std::enable_shared_from_this<Library>
    *
    * @return A tuple<int, int>: <The number of bookmarks updated>, <Number of invalid bookmarks before migration was performed>.
    */
-  std::tuple<int, int> migrateBookmarks();
+  std::tuple<int, int> migrateBookmarks(MigrationMode migrationMode = ALLOW_DOWNGRADE);
 
   /**
    * Migrate all bookmarks associated to a specific book.
    *
    * All bookmarks associated to `sourceBookId` book will be migrated to a better book.
    * "Better book", will be determined using heuristics based on book name, flavour and date.
-
-   * @param source the source bookId of the bookmarks to migrate.
+   * Be carrefull, when using with `migrationModde == ALLOW_DOWGRADE`, the bookmark will be migrated to a different book
+   * even if the bookmark points to an existing book and the other book is older than the current one.
+   *
+   * @param sourceBookId the source bookId of the bookmarks to migrate.
+   * @param migrationMode how we will find the best book.
    * @return The number of bookmarks updated.
    */
-  int migrateBookmarks(const std::string& sourceBookId);
+  int migrateBookmarks(const std::string& sourceBookId, MigrationMode migrationMode = UPGRADE_ONLY);
 
   /**
    * Migrate bookmarks
@@ -441,7 +456,8 @@ private: // functions
   AttributeCounts getBookAttributeCounts(BookStrPropMemFn p) const;
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
-  std::string getBestTargetBookId(const Bookmark& bookmark) const;
+  void cleanupBookCollection(BookIdCollection& books, const std::string& sourceBookId, MigrationMode migrationMode) const;
+  std::string getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const;
   unsigned int getBookCount_not_protected(const bool localBooks, const bool remoteBooks) const;
   void updateBookDB(const Book& book);
   void dropCache(const std::string& bookId);

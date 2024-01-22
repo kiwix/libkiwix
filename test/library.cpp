@@ -617,6 +617,23 @@ TEST_F(LibraryTest, MigrateBookmark)
     EXPECT_EQ(allBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
 }
 
+TEST_F(LibraryTest, MigrateBookmarkOlder)
+{
+    auto bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater";
+
+    auto book1 = lib->getBookById(bookId1);
+
+    lib->addBookmark(createBookmark(book1));
+
+    auto onlyValidBookmarks = lib->getBookmarks();
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 1);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+
+    ASSERT_EQ(lib->migrateBookmarks(bookId1), 0);
+    ASSERT_EQ(lib->migrateBookmarks(bookId1, kiwix::ALLOW_DOWNGRADE), 1);
+}
+
 
 TEST_F(LibraryTest, sanityCheck)
 {

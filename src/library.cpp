@@ -157,7 +157,7 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
   return false;
 }
 
-std::tuple<int, int> Library::migrateBookmarks() {
+std::tuple<int, int> Library::migrateBookmarks(MigrationMode migrationMode) {
   std::set<std::string> sourceBooks;
   int invalidBookmarks = 0;
   {
@@ -171,12 +171,27 @@ std::tuple<int, int> Library::migrateBookmarks() {
   }
   int changed = 0;
   for(auto& sourceBook:sourceBooks) {
-    changed += migrateBookmarks(sourceBook);
+    changed += migrateBookmarks(sourceBook, migrationMode);
   }
   return std::make_tuple(changed, invalidBookmarks);
 }
 
-std::string Library::getBestTargetBookId(const Bookmark& bookmark) const {
+void Library::cleanupBookCollection(BookIdCollection& books, const std::string& sourceBookId, MigrationMode migrationMode) const {
+  sort(books, DATE, false);
+
+  // Remove source book
+  auto foundIT = std::find(books.begin(), books.end(), sourceBookId);
+  if (foundIT != books.end()) {
+    if (migrationMode == ALLOW_DOWNGRADE) {
+      books.erase(foundIT);
+    } else {
+      // books is sorted by date, remove the source and all older books
+      books.erase(foundIT, books.end());
+    }
+  }
+}
+
+std::string Library::getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const {
   // Search for a existing book with the same name
   auto book_filter = Filter();
   if (!bookmark.getBookName().empty()) {
@@ -191,11 +206,7 @@ std::string Library::getBestTargetBookId(const Bookmark& bookmark) const {
     book_filter.query("title:\""+bookmark.getBookTitle() + "\"");
   }
   auto targetBooks = filter(book_filter);
-  // Remove source book
-  auto foundIT = std::find(targetBooks.begin(), targetBooks.end(), bookmark.getBookId());
-  if (foundIT != targetBooks.end()) {
-    targetBooks.erase(foundIT);
-  }
+  cleanupBookCollection(targetBooks, bookmark.getBookId(), migrationMode);
     
   if (targetBooks.empty()) {
     // No existing book found for the target, or the same than source.
@@ -204,15 +215,15 @@ std::string Library::getBestTargetBookId(const Bookmark& bookmark) const {
   if (targetBooks.size() != 1) {
     // We have several, reduce to same flavour
     auto flavouredTargetBooks = filter(book_filter.flavour(bookmark.getBookFlavour()));
+    cleanupBookCollection(flavouredTargetBooks, bookmark.getBookId(), migrationMode);
     if (!flavouredTargetBooks.empty()) {
       targetBooks = flavouredTargetBooks;
     }
-    sort(targetBooks, DATE, false);
   }
   return targetBooks[0];
 }
 
-int Library::migrateBookmarks(const std::string& sourceBookId) {
+int Library::migrateBookmarks(const std::string& sourceBookId, MigrationMode migrationMode) {
   std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
   Bookmark firstBookmarkToChange;
@@ -227,8 +238,8 @@ int Library::migrateBookmarks(const std::string& sourceBookId) {
     return 0;
   }
 
-  std::string betterBook = getBestTargetBookId(firstBookmarkToChange);
-    
+  std::string betterBook = getBestTargetBookId(firstBookmarkToChange, migrationMode);
+
   if (betterBook.empty()) {
     return 0;
   }
@@ -244,7 +255,7 @@ int Library::migrateBookmarks(const std::string& sourceBookId, const std::string
   for (auto& bookmark:m_bookmarks) {
     if (bookmark.getBookId() == sourceBookId) {
       bookmark.setBookId(targetBookId);
-      changed += 1;
+      changed +=1;
     }
   }
   return changed;
