@@ -817,7 +817,7 @@ TEST_F(ServerTest, Http404HtmlError)
     { /* url */ R"(/ROOT%23%3F/content/zimfile/</script>)",
       book_name=="zimfile" &&
       book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/</script>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "script>", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=script%3E" } } } ] })" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/</scr\ipt>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "script>", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=script%3E" } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>

@@ -34,6 +34,7 @@
 #include <array>
 #include <list>
 #include <map>
+#include <regex>
 
 // This is somehow a magic value.
 // If this value is too small, we will compress (and lost cpu time) too much
@@ -330,7 +331,14 @@ std::string ContentResponseBlueprint::Data::asJSON() const
 {
   std::ostringstream oss;
   this->dumpJSON(oss);
-  return oss.str();
+
+  // This JSON is going to be used in HTML inside a <script></script> tag.
+  // If it contains "</script>" (or "</script >") as a substring, then the HTML
+  // parser will be confused. Since for a valid JSON that may happen only inside
+  // a JSON string, we can safely take advantage of the answers to
+  // https://stackoverflow.com/questions/28259389/how-to-put-script-in-a-javascript-string
+  // and work around the issue by inserting an otherwise harmless backslash.
+  return std::regex_replace(oss.str(), std::regex("</script"), "</scr\\ipt");
 }
 
 ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request,
