@@ -104,11 +104,31 @@ const DEFAULT_UI_LANGUAGE = 'en';
 
 Translations.load(DEFAULT_UI_LANGUAGE, /*asDefault=*/true);
 
+// Below function selects the most suitable UI language from the list
+// of preferred languages in browser preferences and available translations.
+// Since, unlike Accept-Language header, navigator.languages doesn't contain
+// qvalues, they are computed using the same algorithm as in Firefox 121
+function getDefaultUserLanguage() {
+  const mostSuitableLang = { code: DEFAULT_UI_LANGUAGE, score: 0 }
+  const n = navigator.languages.length;
+  for (const lang of uiLanguages ) {
+    const rank = navigator.languages.indexOf(lang.iso_code);
+    if ( rank >= 0 ) {
+      const qvalue = Math.round(10*(1 - rank/n))/10;
+      const score = qvalue * lang.translation_count;
+      if ( score > mostSuitableLang.score ) {
+        mostSuitableLang.code = lang.iso_code;
+        mostSuitableLang.score = score;
+      }
+    }
+  }
+  return mostSuitableLang.code;
+}
+
 function getUserLanguage() {
   return new URLSearchParams(window.location.search).get('userlang')
       || window.localStorage.getItem('userlang')
-      || viewerSettings.defaultUserLanguage
-      || DEFAULT_UI_LANGUAGE;
+      || getDefaultUserLanguage();
 }
 
 function setUserLanguage(lang, callback) {

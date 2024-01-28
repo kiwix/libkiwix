@@ -59,7 +59,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=0b99e7a9" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=1e78e7cf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
@@ -285,7 +285,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=0b99e7a9" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=c41aae47" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
@@ -318,7 +318,7 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fad9" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=e014a885" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
-    <script type="module" src="./skin/i18n.js?cacheid=0b99e7a9" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=c41aae47" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=e9c025f2" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
