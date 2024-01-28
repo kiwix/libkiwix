@@ -1,104 +1,138 @@
 const uiLanguages = [
   {
-    "الإنجليزية": "ar"
+    "iso_code": "ar",
+    "self_name": "الإنجليزية"
   },
   {
-    "বাংলা": "bn"
+    "iso_code": "bn",
+    "self_name": "বাংলা"
   },
   {
-    "Čeština": "cs"
+    "iso_code": "cs",
+    "self_name": "Čeština"
   },
   {
-    "Deutsch": "de"
+    "iso_code": "de",
+    "self_name": "Deutsch"
   },
   {
-    "English": "en"
+    "iso_code": "en",
+    "self_name": "English"
   },
   {
-    "español": "es"
+    "iso_code": "es",
+    "self_name": "español"
   },
   {
-    "suomi": "fi"
+    "iso_code": "fi",
+    "self_name": "suomi"
   },
   {
-    "Français": "fr"
+    "iso_code": "fr",
+    "self_name": "Français"
   },
   {
-    "עברית": "he"
+    "iso_code": "he",
+    "self_name": "עברית"
   },
   {
-    "हिन्दी": "hi"
+    "iso_code": "hi",
+    "self_name": "हिन्दी"
   },
   {
-    "Հայերեն": "hy"
+    "iso_code": "hy",
+    "self_name": "Հայերեն"
   },
   {
-    "interlingua": "ia"
+    "iso_code": "ia",
+    "self_name": "interlingua"
   },
   {
-    "italiano": "it"
+    "iso_code": "it",
+    "self_name": "italiano"
   },
   {
-    "日本語": "ja"
+    "iso_code": "ja",
+    "self_name": "日本語"
   },
   {
-    "한국어": "ko"
+    "iso_code": "ko",
+    "self_name": "한국어"
   },
   {
-    "kurdî": "ku-latn"
+    "iso_code": "ku-latn",
+    "self_name": "kurdî"
   },
   {
-    "Lëtzebuergesch": "lb"
+    "iso_code": "lb",
+    "self_name": "Lëtzebuergesch"
   },
   {
-    "македонски": "mk"
+    "iso_code": "mk",
+    "self_name": "македонски"
   },
   {
-    "Bahasa Melayu": "ms"
+    "iso_code": "ms",
+    "self_name": "Bahasa Melayu"
   },
   {
-    "Nederlands": "nl"
+    "iso_code": "nl",
+    "self_name": "Nederlands"
   },
   {
-    "ߒߞߏ": "nqo"
+    "iso_code": "nqo",
+    "self_name": "ߒߞߏ"
   },
   {
-    "ଓଡ଼ିଆ": "or"
+    "iso_code": "or",
+    "self_name": "ଓଡ଼ିଆ"
   },
   {
-    "Polski": "pl"
+    "iso_code": "pl",
+    "self_name": "Polski"
   },
   {
-    "русский": "ru"
+    "iso_code": "ru",
+    "self_name": "русский"
   },
   {
-    "Sardu": "sc"
+    "iso_code": "sc",
+    "self_name": "Sardu"
   },
   {
-    "slovenčina": "sk"
+    "iso_code": "sk",
+    "self_name": "slovenčina"
   },
   {
-    "سرائیکی": "skr-arab"
+    "iso_code": "skr-arab",
+    "self_name": "سرائیکی"
   },
   {
-    "slovenščina": "sl"
+    "iso_code": "sl",
+    "self_name": "slovenščina"
   },
   {
-    "Shqip": "sq"
+    "iso_code": "sq",
+    "self_name": "Shqip"
   },
   {
-    "Svenska": "sv"
+    "iso_code": "sv",
+    "self_name": "Svenska"
   },
   {
-    "ఇంగ్లీషు": "te"
+    "iso_code": "te",
+    "self_name": "ఇంగ్లీషు"
   },
   {
-    "Türkçe": "tr"
+    "iso_code": "tr",
+    "self_name": "Türkçe"
   },
   {
-    "英语": "zh-hans"
+    "iso_code": "zh-hans",
+    "self_name": "英语"
   },
   {
-    "繁體中文": "zh-hant"
+    "iso_code": "zh-hant",
+    "self_name": "繁體中文"
   }
 ]

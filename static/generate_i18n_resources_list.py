@@ -47,7 +47,11 @@ with open(resource_file, 'w', encoding="utf-8") as f:
                 print(f"Warning: missing 'name' in {i18n_file.name}")
         f.write(str(i18n_file.relative_to(script_path.parent)) + '\n')
 
-language_list = [{name: code} for code, name in sorted(language_list)]
+def make_language_entry(lang_info_tuple):
+    iso_code, self_name = lang_info_tuple
+    return dict(iso_code=iso_code, self_name=self_name)
+
+language_list = [make_language_entry(x) for x in sorted(language_list)]
 language_list_jsobj_str = json.dumps(language_list,
                                      indent=2,
                                      ensure_ascii=False)

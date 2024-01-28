@@ -59,7 +59,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=4ab55b42" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=0b99e7a9" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=1e78e7cf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
@@ -83,6 +83,8 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json" },
   // TODO: implement cache management of i18n resources
   //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
+  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=792fee65" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
@@ -148,8 +150,6 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=b10ae7ed" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search_results.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
-  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=96f2cf73" },
 
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Title" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Description" },
@@ -285,8 +285,8 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=4ab55b42" defer></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=96f2cf73" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=0b99e7a9" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=792fee65" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=ce19da2a" defer></script>
@@ -318,8 +318,8 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fad9" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=e014a885" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
-    <script type="module" src="./skin/i18n.js?cacheid=4ab55b42" defer></script>
-    <script type="text/javascript" src="./skin/languages.js?cacheid=96f2cf73" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=0b99e7a9" defer></script>
+    <script type="text/javascript" src="./skin/languages.js?cacheid=792fee65" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=e9c025f2" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
@@ -1126,106 +1126,140 @@ TEST_F(ServerTest, UserLanguageList)
   EXPECT_EQ(r->body,
 R"EXPECTEDRESPONSE(const uiLanguages = [
   {
-    "الإنجليزية": "ar"
+    "iso_code": "ar",
+    "self_name": "الإنجليزية"
   },
   {
-    "বাংলা": "bn"
+    "iso_code": "bn",
+    "self_name": "বাংলা"
   },
   {
-    "Čeština": "cs"
+    "iso_code": "cs",
+    "self_name": "Čeština"
   },
   {
-    "Deutsch": "de"
+    "iso_code": "de",
+    "self_name": "Deutsch"
   },
   {
-    "English": "en"
+    "iso_code": "en",
+    "self_name": "English"
   },
   {
-    "español": "es"
+    "iso_code": "es",
+    "self_name": "español"
   },
   {
-    "suomi": "fi"
+    "iso_code": "fi",
+    "self_name": "suomi"
   },
   {
-    "Français": "fr"
+    "iso_code": "fr",
+    "self_name": "Français"
   },
   {
-    "עברית": "he"
+    "iso_code": "he",
+    "self_name": "עברית"
   },
   {
-    "हिन्दी": "hi"
+    "iso_code": "hi",
+    "self_name": "हिन्दी"
   },
   {
-    "Հայերեն": "hy"
+    "iso_code": "hy",
+    "self_name": "Հայերեն"
   },
   {
-    "interlingua": "ia"
+    "iso_code": "ia",
+    "self_name": "interlingua"
   },
   {
-    "italiano": "it"
+    "iso_code": "it",
+    "self_name": "italiano"
   },
   {
-    "日本語": "ja"
+    "iso_code": "ja",
+    "self_name": "日本語"
   },
   {
-    "한국어": "ko"
+    "iso_code": "ko",
+    "self_name": "한국어"
   },
   {
-    "kurdî": "ku-latn"
+    "iso_code": "ku-latn",
+    "self_name": "kurdî"
   },
   {
-    "Lëtzebuergesch": "lb"
+    "iso_code": "lb",
+    "self_name": "Lëtzebuergesch"
   },
   {
-    "македонски": "mk"
+    "iso_code": "mk",
+    "self_name": "македонски"
   },
   {
-    "Bahasa Melayu": "ms"
+    "iso_code": "ms",
+    "self_name": "Bahasa Melayu"
   },
   {
-    "Nederlands": "nl"
+    "iso_code": "nl",
+    "self_name": "Nederlands"
   },
   {
-    "ߒߞߏ": "nqo"
+    "iso_code": "nqo",
+    "self_name": "ߒߞߏ"
   },
   {
-    "ଓଡ଼ିଆ": "or"
+    "iso_code": "or",
+    "self_name": "ଓଡ଼ିଆ"
   },
   {
-    "Polski": "pl"
+    "iso_code": "pl",
+    "self_name": "Polski"
   },
   {
-    "русский": "ru"
+    "iso_code": "ru",
+    "self_name": "русский"
   },
   {
-    "Sardu": "sc"
+    "iso_code": "sc",
+    "self_name": "Sardu"
   },
   {
-    "slovenčina": "sk"
+    "iso_code": "sk",
+    "self_name": "slovenčina"
   },
   {
-    "سرائیکی": "skr-arab"
+    "iso_code": "skr-arab",
+    "self_name": "سرائیکی"
   },
   {
-    "slovenščina": "sl"
+    "iso_code": "sl",
+    "self_name": "slovenščina"
   },
   {
-    "Shqip": "sq"
+    "iso_code": "sq",
+    "self_name": "Shqip"
   },
   {
-    "Svenska": "sv"
+    "iso_code": "sv",
+    "self_name": "Svenska"
   },
   {
-    "ఇంగ్లీషు": "te"
+    "iso_code": "te",
+    "self_name": "ఇంగ్లీషు"
   },
   {
-    "Türkçe": "tr"
+    "iso_code": "tr",
+    "self_name": "Türkçe"
   },
   {
-    "英语": "zh-hans"
+    "iso_code": "zh-hans",
+    "self_name": "英语"
   },
   {
-    "繁體中文": "zh-hant"
+    "iso_code": "zh-hant",
+    "self_name": "繁體中文"
   }
 ])EXPECTEDRESPONSE");
 }
