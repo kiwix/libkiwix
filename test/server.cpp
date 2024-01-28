@@ -84,7 +84,7 @@ const ResourceCollection resources200Compressible{
   // TODO: implement cache management of i18n resources
   //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
-  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=792fee65" },
+  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=c41aae47" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
@@ -286,7 +286,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=0b99e7a9" defer></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=792fee65" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=c41aae47" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=ce19da2a" defer></script>
@@ -319,7 +319,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fa
     <link type="text/css" href="./skin/taskbar.css?cacheid=e014a885" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
     <script type="module" src="./skin/i18n.js?cacheid=0b99e7a9" defer></script>
-    <script type="text/javascript" src="./skin/languages.js?cacheid=792fee65" defer></script>
+    <script type="text/javascript" src="./skin/languages.js?cacheid=c41aae47" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=e9c025f2" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
@@ -1127,139 +1127,173 @@ TEST_F(ServerTest, UserLanguageList)
 R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "ar",
-    "self_name": "الإنجليزية"
+    "self_name": "الإنجليزية",
+    "translation_count": 25
   },
   {
     "iso_code": "bn",
-    "self_name": "বাংলা"
+    "self_name": "বাংলা",
+    "translation_count": 12
   },
   {
     "iso_code": "cs",
-    "self_name": "Čeština"
+    "self_name": "Čeština",
+    "translation_count": 25
   },
   {
     "iso_code": "de",
-    "self_name": "Deutsch"
+    "self_name": "Deutsch",
+    "translation_count": 49
   },
   {
     "iso_code": "en",
-    "self_name": "English"
+    "self_name": "English",
+    "translation_count": 53
   },
   {
     "iso_code": "es",
-    "self_name": "español"
+    "self_name": "español",
+    "translation_count": 48
   },
   {
     "iso_code": "fi",
-    "self_name": "suomi"
+    "self_name": "suomi",
+    "translation_count": 22
   },
   {
     "iso_code": "fr",
-    "self_name": "Français"
+    "self_name": "Français",
+    "translation_count": 52
   },
   {
     "iso_code": "he",
-    "self_name": "עברית"
+    "self_name": "עברית",
+    "translation_count": 52
   },
   {
     "iso_code": "hi",
-    "self_name": "हिन्दी"
+    "self_name": "हिन्दी",
+    "translation_count": 49
   },
   {
     "iso_code": "hy",
-    "self_name": "Հայերեն"
+    "self_name": "Հայերեն",
+    "translation_count": 15
   },
   {
     "iso_code": "ia",
-    "self_name": "interlingua"
+    "self_name": "interlingua",
+    "translation_count": 49
   },
   {
     "iso_code": "it",
-    "self_name": "italiano"
+    "self_name": "italiano",
+    "translation_count": 29
   },
   {
     "iso_code": "ja",
-    "self_name": "日本語"
+    "self_name": "日本語",
+    "translation_count": 26
   },
   {
     "iso_code": "ko",
-    "self_name": "한국어"
+    "self_name": "한국어",
+    "translation_count": 13
   },
   {
     "iso_code": "ku-latn",
-    "self_name": "kurdî"
+    "self_name": "kurdî",
+    "translation_count": 26
   },
   {
     "iso_code": "lb",
-    "self_name": "Lëtzebuergesch"
+    "self_name": "Lëtzebuergesch",
+    "translation_count": 22
   },
   {
     "iso_code": "mk",
-    "self_name": "македонски"
+    "self_name": "македонски",
+    "translation_count": 52
   },
   {
     "iso_code": "ms",
-    "self_name": "Bahasa Melayu"
+    "self_name": "Bahasa Melayu",
+    "translation_count": 14
   },
   {
     "iso_code": "nl",
-    "self_name": "Nederlands"
+    "self_name": "Nederlands",
+    "translation_count": 49
   },
   {
     "iso_code": "nqo",
-    "self_name": "ߒߞߏ"
+    "self_name": "ߒߞߏ",
+    "translation_count": 43
   },
   {
     "iso_code": "or",
-    "self_name": "ଓଡ଼ିଆ"
+    "self_name": "ଓଡ଼ିଆ",
+    "translation_count": 49
   },
   {
     "iso_code": "pl",
-    "self_name": "Polski"
+    "self_name": "Polski",
+    "translation_count": 24
   },
   {
     "iso_code": "ru",
-    "self_name": "русский"
+    "self_name": "русский",
+    "translation_count": 45
   },
   {
     "iso_code": "sc",
-    "self_name": "Sardu"
+    "self_name": "Sardu",
+    "translation_count": 49
   },
   {
     "iso_code": "sk",
-    "self_name": "slovenčina"
+    "self_name": "slovenčina",
+    "translation_count": 25
   },
   {
     "iso_code": "skr-arab",
-    "self_name": "سرائیکی"
+    "self_name": "سرائیکی",
+    "translation_count": 20
   },
   {
     "iso_code": "sl",
-    "self_name": "slovenščina"
+    "self_name": "slovenščina",
+    "translation_count": 52
   },
   {
     "iso_code": "sq",
-    "self_name": "Shqip"
+    "self_name": "Shqip",
+    "translation_count": 49
   },
   {
     "iso_code": "sv",
-    "self_name": "Svenska"
+    "self_name": "Svenska",
+    "translation_count": 52
   },
   {
     "iso_code": "te",
-    "self_name": "ఇంగ్లీషు"
+    "self_name": "ఇంగ్లీషు",
+    "translation_count": 49
   },
   {
     "iso_code": "tr",
-    "self_name": "Türkçe"
+    "self_name": "Türkçe",
+    "translation_count": 25
   },
   {
     "iso_code": "zh-hans",
-    "self_name": "英语"
+    "self_name": "英语",
+    "translation_count": 16
   },
   {
     "iso_code": "zh-hant",
-    "self_name": "繁體中文"
+    "self_name": "繁體中文",
+    "translation_count": 52
   }
 ])EXPECTEDRESPONSE");
 }
