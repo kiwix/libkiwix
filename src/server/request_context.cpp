@@ -51,11 +51,12 @@ RequestMethod str2RequestMethod(const std::string& method) {
 
 } // unnamed namespace
 
-RequestContext::RequestContext(struct MHD_Connection* connection,
-                               const std::string& _rootLocation, // URI-encoded
+RequestContext::RequestContext(const std::string& _rootLocation, // URI-encoded
                                const std::string& unrootedUrl,   // URI-decoded
                                const std::string& _method,
-                               const std::string& version) :
+                               const std::string& version,
+                               const NameValuePairs& headers,
+                               const NameValuePairs& queryArgs) :
   rootLocation(_rootLocation),
   url(unrootedUrl),
   method(str2RequestMethod(_method)),
@@ -64,9 +65,13 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
   acceptEncodingGzip(false),
   byteRange_()
 {
-  MHD_get_connection_values(connection, MHD_HEADER_KIND, &RequestContext::fill_header, this);
-  MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &RequestContext::fill_argument, this);
-  MHD_get_connection_values(connection, MHD_COOKIE_KIND, &RequestContext::fill_cookie, this);
+  for ( const auto& kv : headers ) {
+    add_header(kv.first, kv.second);
+  }
+
+  for ( const auto& kv : queryArgs ) {
+    add_argument(kv.first, kv.second);
+  }
 
   try {
     acceptEncodingGzip =
@@ -83,18 +88,14 @@ RequestContext::RequestContext(struct MHD_Connection* connection,
 RequestContext::~RequestContext()
 {}
 
-MHD_Result RequestContext::fill_header(void *__this, enum MHD_ValueKind kind,
-                                       const char *key, const char *value)
+void RequestContext::add_header(const char *key, const char *value)
 {
-  RequestContext *_this = static_cast<RequestContext*>(__this);
-  _this->headers[lcAll(key)] = value;
-  return MHD_YES;
+  this->headers[lcAll(key)] = value;
 }
 
-MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
-                                         const char *key, const char* value)
+void RequestContext::add_argument(const char *key, const char* value)
 {
-  RequestContext *_this = static_cast<RequestContext*>(__this);
+  RequestContext *_this = this;
   _this->arguments[key].push_back(value == nullptr ? "" : value);
   if ( ! _this->queryString.empty() ) {
     _this->queryString += "&";
@@ -104,15 +105,6 @@ MHD_Result RequestContext::fill_argument(void *__this, enum MHD_ValueKind kind,
     _this->queryString += "=";
     _this->queryString += urlEncode(value);
   }
-  return MHD_YES;
-}
-
-MHD_Result RequestContext::fill_cookie(void *__this, enum MHD_ValueKind kind,
-                                         const char *key, const char* value)
-{
-  RequestContext *_this = static_cast<RequestContext*>(__this);
-  _this->cookies[key] = value == nullptr ? "" : value;
-  return MHD_YES;
 }
 
 void RequestContext::print_debug_info() const {

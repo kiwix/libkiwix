@@ -69,6 +69,37 @@ function $t(msgId, params={}) {
   }
 }
 
+const I18n = {
+  instantiateParameterizedMessages: function(data) {
+    if ( data.__proto__ == Array.prototype ) {
+      const result = [];
+      for ( const x of data ) {
+        result.push(this.instantiateParameterizedMessages(x));
+      }
+      return result;
+    } else if ( data.__proto__ == Object.prototype ) {
+      const msgId = data.msgid;
+      const msgParams = data.params;
+      if ( msgId && msgId.__proto__ == String.prototype && msgParams && msgParams.__proto__ == Object.prototype ) {
+        return $t(msgId, msgParams);
+      } else {
+        const result = {};
+        for ( const p in data ) {
+          result[p] = this.instantiateParameterizedMessages(data[p]);
+        }
+        return result;
+      }
+    } else {
+      return data;
+    }
+  },
+
+  render: function (template, params) {
+    params = this.instantiateParameterizedMessages(params);
+    return mustache.render(template, params);
+  }
+}
+
 const DEFAULT_UI_LANGUAGE = 'en';
 
 Translations.load(DEFAULT_UI_LANGUAGE, /*asDefault=*/true);
@@ -145,3 +176,4 @@ window.$t = $t;
 window.getUserLanguage = getUserLanguage;
 window.setUserLanguage = setUserLanguage;
 window.initUILanguageSelector = initUILanguageSelector;
+window.I18n = I18n;

@@ -29,7 +29,7 @@
 #include <stdexcept>
 
 #include "byte_range.h"
-#include "tools/stringTools.h"
+#include "../tools/stringTools.h"
 
 extern "C" {
 #include "microhttpd_wrapper.h"
@@ -55,12 +55,17 @@ class IndexError: public std::runtime_error {};
 
 
 class RequestContext {
+  public: // types
+    typedef std::vector<std::pair<const char*, const char*>> NameValuePairs;
+
   public: // functions
-    RequestContext(struct MHD_Connection* connection,
-                   const std::string& rootLocation, // URI-encoded
+    RequestContext(const std::string& rootLocation, // URI-encoded
                    const std::string& unrootedUrl,  // URI-decoded
                    const std::string& method,
-                   const std::string& version);
+                   const std::string& version,
+                   const NameValuePairs& headers,
+                   const NameValuePairs& queryArgs);
+
     ~RequestContext();
 
     void print_debug_info() const;
@@ -145,16 +150,14 @@ class RequestContext {
     ByteRange byteRange_;
     std::map<std::string, std::string> headers;
     std::map<std::string, std::vector<std::string>> arguments;
-    std::map<std::string, std::string> cookies;
     std::string queryString;
     UserLanguage userlang;
 
   private: // functions
     UserLanguage determine_user_language() const;
 
-    static MHD_Result fill_header(void *, enum MHD_ValueKind, const char*, const char*);
-    static MHD_Result fill_cookie(void *, enum MHD_ValueKind, const char*, const char*);
-    static MHD_Result fill_argument(void *, enum MHD_ValueKind, const char*, const char*);
+    void add_header(const char* name, const char* value);
+    void add_argument(const char* name, const char* value);
 };
 
 template<> std::string RequestContext::get_argument(const std::string& name) const;

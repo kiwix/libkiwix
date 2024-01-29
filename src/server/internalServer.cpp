@@ -513,6 +513,19 @@ static MHD_Result staticHandlerCallback(void* cls,
                                 cont_cls);
 }
 
+namespace
+{
+
+MHD_Result add_name_value_pair(void *nvp, enum MHD_ValueKind kind,
+                               const char *key, const char *value)
+{
+  auto& nameValuePairs = *reinterpret_cast<RequestContext::NameValuePairs*>(nvp);
+  nameValuePairs.push_back({key, value});
+  return MHD_YES;
+}
+
+} // unnamed namespace
+
 MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
                                            const char* fullUrl,
                                            const char* method,
@@ -529,7 +542,10 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
   }
 
   const auto url = fullURL2LocalURL(fullUrl, m_rootPrefixOfDecodedURL);
-  RequestContext request(connection, m_root, url, method, version);
+  RequestContext::NameValuePairs headers, queryArgs;
+  MHD_get_connection_values(connection, MHD_HEADER_KIND, add_name_value_pair, &headers);
+  MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, add_name_value_pair, &queryArgs);
+  RequestContext request(m_root, url, method, version, headers, queryArgs);
 
   if (m_verbose.load() ) {
     request.print_debug_info();
@@ -926,7 +942,8 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
     HTTPErrorResponse response(request, MHD_HTTP_NOT_FOUND,
                                "fulltext-search-unavailable",
                                "404-page-heading",
-                               cssUrl);
+                               cssUrl,
+                               /*includeKiwixResponseData=*/true);
     response += nonParameterizedMessage("no-search-results");
     // XXX: Now this has to be handled by the iframe-based viewer which
     // XXX: has to resolve if the book selection resulted in a single book.

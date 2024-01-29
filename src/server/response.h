@@ -101,6 +101,9 @@ class ContentResponse : public Response {
       kainjow::mustache::data data,
       const std::string& mimetype);
 
+    const std::string& getContent() const { return m_content; }
+    const std::string& getMimeType() const { return m_mimeType; }
+
   private:
     MHD_Response* create_mhd_response(const RequestContext& request);
 
@@ -118,31 +121,28 @@ public: // functions
   ContentResponseBlueprint(const RequestContext* request,
                            int httpStatusCode,
                            const std::string& mimeType,
-                           const std::string& templateStr)
-    : m_request(*request)
-    , m_httpStatusCode(httpStatusCode)
-    , m_mimeType(mimeType)
-    , m_template(templateStr)
-  {}
+                           const std::string& templateStr,
+                           bool includeKiwixResponseData = false);
 
-  virtual ~ContentResponseBlueprint() = default;
+  ~ContentResponseBlueprint();
 
   operator std::unique_ptr<Response>() const
   {
     return generateResponseObject();
   }
 
+  std::unique_ptr<ContentResponse> generateResponseObject() const;
 
-protected: // functions
-  std::string getMessage(const std::string& msgId) const;
-  virtual std::unique_ptr<ContentResponse> generateResponseObject() const;
+protected: // types
+  class Data;
 
-public: //data
+protected: //data
   const RequestContext& m_request;
   const int m_httpStatusCode;
   const std::string m_mimeType;
   const std::string m_template;
-  kainjow::mustache::data m_data;
+  const bool m_includeKiwixResponseData;
+  std::unique_ptr<Data> m_data;
 };
 
 struct HTTPErrorResponse : ContentResponseBlueprint
@@ -151,7 +151,8 @@ struct HTTPErrorResponse : ContentResponseBlueprint
                     int httpStatusCode,
                     const std::string& pageTitleMsgId,
                     const std::string& headingMsgId,
-                    const std::string& cssUrl = "");
+                    const std::string& cssUrl = "",
+                    bool includeKiwixResponseData = false);
 
   HTTPErrorResponse& operator+(const ParameterizedMessage& errorDetails);
   HTTPErrorResponse& operator+=(const ParameterizedMessage& errorDetails);
@@ -175,11 +176,6 @@ struct HTTP400Response : HTTPErrorResponse
 struct HTTP500Response : HTTPErrorResponse
 {
   explicit HTTP500Response(const RequestContext& request);
-
-private: // overrides
-  // generateResponseObject() is overriden in order to produce a minimal
-  // response without any need for additional resources from the server
-  std::unique_ptr<ContentResponse> generateResponseObject() const override;
 };
 
 class ItemResponse : public Response {

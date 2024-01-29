@@ -20,6 +20,7 @@
 #ifndef KIWIX_SERVER_I18N
 #define KIWIX_SERVER_I18N
 
+#include <map>
 #include <string>
 #include <mustache.hpp>
 
@@ -44,7 +45,7 @@ std::string getTranslatedString(const std::string& lang, const std::string& key)
 namespace i18n
 {
 
-typedef kainjow::mustache::object Parameters;
+typedef std::map<std::string, std::string> Parameters;
 
 std::string expandParameterizedString(const std::string& lang,
                                       const std::string& key,
@@ -93,10 +94,10 @@ private:
 
 } // namespace i18n
 
-struct ParameterizedMessage
+class ParameterizedMessage
 {
 public: // types
-  typedef kainjow::mustache::object Parameters;
+  typedef i18n::Parameters Parameters;
 
 public: // functions
   ParameterizedMessage(const std::string& msgId, const Parameters& params)
@@ -105,6 +106,9 @@ public: // functions
   {}
 
   std::string getText(const std::string& lang) const;
+
+  const std::string& getMsgId()  const { return msgId; }
+  const Parameters&  getParams() const { return params; }
 
 private: // data
   const std::string msgId;

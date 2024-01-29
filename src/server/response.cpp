@@ -32,6 +32,9 @@
 #include <zlib.h>
 
 #include <array>
+#include <list>
+#include <map>
+#include <regex>
 
 // This is somehow a magic value.
 // If this value is too small, we will compress (and lost cpu time) too much
@@ -47,6 +50,8 @@ namespace kiwix {
 
 namespace
 {
+typedef kainjow::mustache::data MustacheData;
+
 // some utilities
 
 std::string get_mime_type(const zim::Item& item)
@@ -151,14 +156,214 @@ std::unique_ptr<Response> Response::build_304(const ETag& etag)
   return response;
 }
 
-std::string ContentResponseBlueprint::getMessage(const std::string& msgId) const
+
+namespace
 {
-  return getTranslatedString(m_request.get_user_language(), msgId);
+
+// This class was introduced in order to work around the missing support
+// for std::variant (and std::optional) under some of the current build
+// platforms.
+template<class T>
+class Optional
+{
+public: // functions
+    Optional() {}
+    Optional(const T& t) : ptr(new T(t)) {}
+    Optional(const Optional& o) : ptr(o.has_value() ? new T(*o) : nullptr) {}
+    Optional(Optional&& o) : ptr(std::move(o.ptr)) {}
+
+    Optional& operator=(const Optional& o)
+    {
+      *this = Optional(o);
+      return *this;
+    }
+
+    Optional& operator=(Optional&& o)
+    {
+      ptr = std::move(o.ptr);
+      return *this;
+    }
+
+    bool has_value() const { return ptr.get() != nullptr; }
+    const T& operator*() const { return *ptr; }
+    T& operator*() { return *ptr; }
+
+private: // data
+    std::unique_ptr<T> ptr;
+};
+
+} // unnamed namespace
+
+class ContentResponseBlueprint::Data
+{
+public:
+  typedef std::list<Data>             List;
+  typedef std::map<std::string, Data> Object;
+
+private:
+  // std::variant<std::string, bool, List, Object> data;
+  // XXX: libkiwix is compiled on platforms where std::variant
+  // XXX: is not yet supported. Hence this hack. Only one
+  // XXX: of the below data members is expected to contain a value.
+  Optional<std::string> m_stringValue;
+  Optional<bool>        m_boolValue;
+  Optional<List>        m_listValue;
+  Optional<Object>      m_objectValue;
+
+public:
+  Data() {}
+  Data(const std::string& s) : m_stringValue(s) {}
+  Data(bool b)               : m_boolValue(b)   {}
+  Data(const List& l)        : m_listValue(l)   {}
+  Data(const Object& o)      : m_objectValue(o) {}
+
+  MustacheData toMustache(const std::string& lang) const;
+
+  Data& operator[](const std::string& key)
+  {
+    return (*m_objectValue)[key];
+  }
+
+  void push_back(const Data& d) { (*m_listValue).push_back(d); }
+
+  static Data onlyAsNonEmptyValue(const std::string& s)
+  {
+    return s.empty() ? Data(false) : Data(s);
+  }
+
+  static Data from(const ParameterizedMessage& pmsg)
+  {
+    Object obj;
+    for(const auto& kv : pmsg.getParams()) {
+      obj[kv.first] = kv.second;
+    }
+    return Object{
+              { "msgid", pmsg.getMsgId() },
+              { "params", Data(obj) }
+    };
+  }
+
+  std::string asJSON() const;
+  void dumpJSON(std::ostream& os) const;
+
+private:
+  bool isString() const { return m_stringValue.has_value(); }
+  bool isList()   const { return m_listValue.has_value();   }
+  bool isObject() const { return m_objectValue.has_value(); }
+
+  const std::string& stringValue() const { return *m_stringValue; }
+  bool               boolValue()   const { return *m_boolValue;   }
+  const List&        listValue()   const { return *m_listValue;   }
+  const Object&      objectValue() const { return *m_objectValue; }
+
+  const Data* get(const std::string& key) const
+  {
+    if ( !isObject() )
+      return nullptr;
+
+    const auto& obj = objectValue();
+    const auto it = obj.find(key);
+    return it != obj.end() ? &it->second : nullptr;
+  }
+};
+
+MustacheData ContentResponseBlueprint::Data::toMustache(const std::string& lang) const
+{
+  if ( this->isList() ) {
+    kainjow::mustache::list l;
+    for ( const auto& x : this->listValue() ) {
+      l.push_back(x.toMustache(lang));
+    }
+    return l;
+  } else if ( this->isObject() ) {
+    const Data* msgId = this->get("msgid");
+    const Data* msgParams = this->get("params");
+    if ( msgId && msgId->isString() && msgParams && msgParams->isObject() ) {
+      std::map<std::string, std::string> params;
+      for(const auto& kv : msgParams->objectValue()) {
+        params[kv.first] = kv.second.stringValue();
+      }
+      const ParameterizedMessage msg(msgId->stringValue(), ParameterizedMessage::Parameters(params));
+      return msg.getText(lang);
+    } else {
+      kainjow::mustache::object o;
+      for ( const auto& kv : this->objectValue() ) {
+        o[kv.first] = kv.second.toMustache(lang);
+      }
+      return o;
+    }
+  } else if ( this->isString() ) {
+    return this->stringValue();
+  } else {
+    return this->boolValue();
+  }
 }
+
+void ContentResponseBlueprint::Data::dumpJSON(std::ostream& os) const
+{
+  if ( this->isString() ) {
+    os << '"' << escapeForJSON(this->stringValue()) << '"';
+  } else if ( this->isList() ) {
+    const char * sep = " ";
+    os << "[";
+
+    for ( const auto& x :  this->listValue() ) {
+      os << sep;
+      x.dumpJSON(os);
+      sep = ", ";
+    }
+    os << " ]";
+  } else if ( this->isObject() ) {
+    const char * sep = " ";
+    os << "{";
+    for ( const auto& kv : this->objectValue() ) {
+      os << sep << '"' << kv.first << "\" : ";
+      kv.second.dumpJSON(os);
+      sep = ", ";
+    }
+    os << " }";
+  } else {
+    os << (this->boolValue() ? "true" : "false");
+  }
+}
+
+std::string ContentResponseBlueprint::Data::asJSON() const
+{
+  std::ostringstream oss;
+  this->dumpJSON(oss);
+
+  // This JSON is going to be used in HTML inside a <script></script> tag.
+  // If it contains "</script>" (or "</script >") as a substring, then the HTML
+  // parser will be confused. Since for a valid JSON that may happen only inside
+  // a JSON string, we can safely take advantage of the answers to
+  // https://stackoverflow.com/questions/28259389/how-to-put-script-in-a-javascript-string
+  // and work around the issue by inserting an otherwise harmless backslash.
+  return std::regex_replace(oss.str(), std::regex("</script"), "</scr\\ipt");
+}
+
+ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request,
+                         int httpStatusCode,
+                         const std::string& mimeType,
+                         const std::string& templateStr,
+                         bool includeKiwixResponseData)
+  : m_request(*request)
+  , m_httpStatusCode(httpStatusCode)
+  , m_mimeType(mimeType)
+  , m_template(templateStr)
+  , m_includeKiwixResponseData(includeKiwixResponseData)
+  , m_data(new Data)
+{}
+
+ContentResponseBlueprint::~ContentResponseBlueprint() = default;
 
 std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObject() const
 {
-  auto r = ContentResponse::build(m_template, m_data, m_mimeType);
+  kainjow::mustache::data d = m_data->toMustache(m_request.get_user_language());
+  if ( m_includeKiwixResponseData ) {
+    d.set("KIWIX_RESPONSE_TEMPLATE", escapeForJSON(m_template, false));
+    d.set("KIWIX_RESPONSE_DATA", m_data->asJSON());
+  }
+  auto r = ContentResponse::build(m_template, d, m_mimeType);
   r->set_code(m_httpStatusCode);
   return r;
 }
@@ -167,26 +372,30 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
                                      const std::string& headingMsgId,
-                                     const std::string& cssUrl)
+                                     const std::string& cssUrl,
+                                     bool includeKiwixResponseData)
   : ContentResponseBlueprint(&request,
                              httpStatusCode,
                              request.get_requested_format() == "html" ? "text/html; charset=utf-8" : "application/xml; charset=utf-8",
-                             request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml)
+                             request.get_requested_format() == "html" ? RESOURCE::templates::error_html : RESOURCE::templates::error_xml,
+                             includeKiwixResponseData)
 {
-  kainjow::mustache::list emptyList;
-  this->m_data = kainjow::mustache::object{
-                    {"CSS_URL", onlyAsNonEmptyMustacheValue(cssUrl) },
-                    {"PAGE_TITLE",   getMessage(pageTitleMsgId)},
-                    {"PAGE_HEADING", getMessage(headingMsgId)},
+  Data::List emptyList;
+  *this->m_data = Data(Data::Object{
+                    {"CSS_URL", Data::onlyAsNonEmptyValue(cssUrl) },
+                    {"PAGE_TITLE",   Data::from(nonParameterizedMessage(pageTitleMsgId))},
+                    {"PAGE_HEADING", Data::from(nonParameterizedMessage(headingMsgId))},
                     {"details", emptyList}
-  };
+  });
 }
 
 HTTP404Response::HTTP404Response(const RequestContext& request)
   : HTTPErrorResponse(request,
                       MHD_HTTP_NOT_FOUND,
                       "404-page-title",
-                      "404-page-heading")
+                      "404-page-heading",
+                      std::string(),
+                      /*includeKiwixResponseData=*/true)
 {
 }
 
@@ -199,8 +408,7 @@ UrlNotFoundResponse::UrlNotFoundResponse(const RequestContext& request)
 
 HTTPErrorResponse& HTTPErrorResponse::operator+(const ParameterizedMessage& details)
 {
-  const std::string msg = details.getText(m_request.get_user_language());
-  m_data["details"].push_back({"p", msg});
+  (*m_data)["details"].push_back(Data::Object{{"p", Data::from(details)}});
   return *this;
 }
 
@@ -215,7 +423,9 @@ HTTP400Response::HTTP400Response(const RequestContext& request)
   : HTTPErrorResponse(request,
                       MHD_HTTP_BAD_REQUEST,
                       "400-page-title",
-                      "400-page-heading")
+                      "400-page-heading",
+                      std::string(),
+                      /*includeKiwixResponseData=*/true)
 {
   std::string requestUrl = urlDecode(m_request.get_full_url(), false);
   const auto query = m_request.get_query();
@@ -229,17 +439,11 @@ HTTP500Response::HTTP500Response(const RequestContext& request)
   : HTTPErrorResponse(request,
                       MHD_HTTP_INTERNAL_SERVER_ERROR,
                       "500-page-title",
-                      "500-page-heading")
+                      "500-page-heading",
+                      std::string(),
+                      /*includeKiwixResponseData=*/true)
 {
   *this += nonParameterizedMessage("500-page-text");
-}
-
-std::unique_ptr<ContentResponse> HTTP500Response::generateResponseObject() const
-{
-  const std::string mimeType = "text/html;charset=utf-8";
-  auto r = ContentResponse::build(m_template, m_data, mimeType);
-  r->set_code(m_httpStatusCode);
-  return r;
 }
 
 std::unique_ptr<Response> Response::build_416(size_t resourceLength)
