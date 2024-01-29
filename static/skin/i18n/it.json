@@ -3,6 +3,7 @@
 		"authors": [
 			"Albano",
 			"Beta16",
+			"Luca.favorido",
 			"McDutchie"
 		]
 	},
@@ -14,6 +15,7 @@
 	"url-not-found": "L'URL richiesto \"{{url}}\" non è stato trovato in questo server.",
 	"suggest-search": "Effettua una ricerca di testo completo per <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Ops! Impossibile selezionare un articolo casuale :(",
+	"invalid-request": "L'URL richiesto \"{{{url}}}\" non è una richiesta valida.",
 	"no-value-for-arg": "Nessun valore fornito per l'argomento {{ARGUMENT}}",
 	"400-page-title": "Richiesta non valida",
 	"400-page-heading": "Richiesta non valida",
@@ -21,6 +23,7 @@
 	"404-page-heading": "Non trovato",
 	"500-page-title": "Errore interno del server",
 	"500-page-heading": "Errore interno del server",
+	"500-page-text": "Si è verificato un errore interno del server. Ci dispiace :/",
 	"library-button-text": "Vai alla pagina di benvenuto",
 	"home-button-text": "Vai alla pagina principale di '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Vai a una pagina selezionata casualmente",
@@ -30,5 +33,6 @@
 	"count-of-matching-books": "{{COUNT}} libro/i",
 	"download": "Scarica",
 	"download-links-title": "Scarica libro",
-	"preview-book": "Anteprima"
+	"preview-book": "Anteprima",
+	"unknown-error": "Errore sconosciuto"
 }

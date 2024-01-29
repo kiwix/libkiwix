@@ -15,6 +15,7 @@
 	"suggest-search": "Utför en fulltextsökning för <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Hoppsan! Kunde inte välja en slumpartikel :(",
 	"invalid-raw-data-type": "{{DATATYPE}} är ingen giltig begäran för oformaterat innehåll.",
+	"invalid-request": "Den begärda webbadressen \"{{{url}}}\" är inte en giltig begäran.",
 	"no-value-for-arg": "Inget värde angett för argumentet {{ARGUMENT}}",
 	"no-query": "Ingen fråga tillhandahålls.",
 	"raw-entry-not-found": "Kunde inte hitta {{DATATYPE}}-inlägget {{ENTRY}}",
@@ -24,6 +25,7 @@
 	"404-page-heading": "Hittades inte",
 	"500-page-title": "Internt serverfel",
 	"500-page-heading": "Internt serverfel",
+	"500-page-text": "Ett internt serverfel uppstod. Vi ber om ursäkt för det :/",
 	"fulltext-search-unavailable": "Fulltextsökning är inte tillgänglig",
 	"no-search-results": "Sökmaskinen för fulltext är inte tillgänglig för detta innehåll.",
 	"library-button-text": "Gå till hemsidan",
@@ -53,5 +55,6 @@
 	"welcome-to-kiwix-server": "Välkommen till Kiwix Server",
 	"download-links-heading": "Nedladdningslänkar för <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Ladda ned bok",
-	"preview-book": "Förhandsgranska"
+	"preview-book": "Förhandsgranska",
+	"unknown-error": "Okänt fel"
 }

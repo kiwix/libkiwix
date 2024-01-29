@@ -15,6 +15,7 @@
 	"suggest-search": "建立 <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> 使用的全文搜尋",
 	"random-article-failure": "哎呀！隨機挑選條目失敗 :(",
 	"invalid-raw-data-type": "{{DATATYPE}}不是原始內容的有效請求。",
+	"invalid-request": "請求的 URL「{{{url}}}」不是有效的請求。",
 	"no-value-for-arg": "沒有為引數 {{ARGUMENT}} 提供內容",
 	"no-query": "未提供查詢。",
 	"raw-entry-not-found": "找不到{{DATATYPE}}項目{{ENTRY}}",
@@ -24,6 +25,7 @@
 	"404-page-heading": "查無頁面",
 	"500-page-title": "內部伺服器錯誤",
 	"500-page-heading": "內部伺服器錯誤",
+	"500-page-text": "內部伺服器發生錯誤。對此我們深感抱歉:/",
 	"fulltext-search-unavailable": "全文搜尋無效",
 	"no-search-results": "全文搜尋引擎不適用此內容。",
 	"library-button-text": "前往歡迎首頁",
@@ -53,5 +55,6 @@
 	"welcome-to-kiwix-server": "歡迎來到 Kiwix 伺服器",
 	"download-links-heading": "下載<b><i>{{BOOK_TITLE}}</i></b>的連結",
 	"download-links-title": "下載書籍",
-	"preview-book": "預覽"
+	"preview-book": "預覽",
+	"unknown-error": "不明錯誤"
 }

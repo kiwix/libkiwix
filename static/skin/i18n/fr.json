@@ -4,7 +4,9 @@
 			"Gomoko",
 			"Stephane",
 			"Thibaut120094",
-			"Verdy p"
+			"Verdy p",
+			"Vikoula5",
+			"Wladek92"
 		]
 	},
 	"name": "Français",
@@ -16,6 +18,7 @@
 	"suggest-search": "Faire une recherche en texte intégral de « <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> »",
 	"random-article-failure": "Oups ! Échec de sélection d’un article aléatoire :(",
 	"invalid-raw-data-type": "{{DATATYPE}} n’est pas une requête valide pour du contenu brut.",
+	"invalid-request": "L'URL demandée \"{{{url}}}\" n'est pas une requête valide.",
 	"no-value-for-arg": "Aucune valeur fournie pour l’argument {{ARGUMENT}}",
 	"no-query": "Aucune requête fournie.",
 	"raw-entry-not-found": "Impossible de trouver l’entrée « {{ENTRY}} » de type « {{DATATYPE}} »",
@@ -25,6 +28,7 @@
 	"404-page-heading": "Non trouvé",
 	"500-page-title": "Erreur interne du serveur",
 	"500-page-heading": "Erreur interne du serveur",
+	"500-page-text": "Une erreur de serveur interne s'est produite. Nous en sommes désolés :/",
 	"fulltext-search-unavailable": "Recherche en texte intégral non disponible",
 	"no-search-results": "Le moteur de recherche en texte intégral n’est pas disponible pour ce contenu.",
 	"library-button-text": "Aller à la page de bienvenue",
@@ -54,5 +58,6 @@
 	"welcome-to-kiwix-server": "Bienvenue sur le Serveur Kiwix",
 	"download-links-heading": "Liens de téléchargement pour <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Télécharger le livre",
-	"preview-book": "Aperçu"
+	"preview-book": "Aperçu",
+	"unknown-error": "Erreur inconnue"
 }
