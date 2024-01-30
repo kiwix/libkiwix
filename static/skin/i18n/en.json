@@ -25,6 +25,7 @@
 	, "500-page-text": "An internal server error occured. We are sorry about that :/"
 	, "fulltext-search-unavailable" : "Fulltext search unavailable"
 	, "no-search-results": "The fulltext search engine is not available for this content."
+	, "search-results-page-title": "Search: {{SEARCH_PATTERN}}"
 	, "library-button-text": "Go to welcome page"
 	, "home-button-text": "Go to the main page of '{{BOOK_TITLE}}'"
 	, "random-page-button-text": "Go to a randomly selected page"

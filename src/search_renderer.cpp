@@ -32,8 +32,22 @@
 #include "libkiwix-resources.h"
 #include "tools/stringTools.h"
 
+#include "server/i18n.h"
+
 namespace kiwix
 {
+
+namespace
+{
+
+ParameterizedMessage searchResultsPageTitleMsg(const std::string& searchPattern)
+{
+  return ParameterizedMessage("search-results-page-title",
+                              {{"SEARCH_PATTERN", searchPattern}}
+  );
+}
+
+} // unnamed namespace
 
 /* Constructor */
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs,
@@ -159,6 +173,7 @@ kainjow::mustache::data buildPagination(
 
 std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const NameMapper& nameMapper, const Library* library)
 {
+  const std::string userlang("en");
   const std::string absPathPrefix = protocolPrefix;
   // Build the results list
   kainjow::mustache::data items{kainjow::mustache::data::type::list};
@@ -199,11 +214,13 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
   );
 
 
-  kainjow::mustache::data allData;
-  allData.set("searchProtocolPrefix", searchProtocolPrefix);
-  allData.set("results", results);
-  allData.set("pagination", pagination);
-  allData.set("query", query);
+  const kainjow::mustache::object allData{
+    {"PAGE_TITLE", searchResultsPageTitleMsg(searchPattern).getText(userlang)},
+    {"searchProtocolPrefix", searchProtocolPrefix},
+    {"results", results},
+    {"pagination", pagination},
+    {"query", query},
+  };
 
   kainjow::mustache::mustache tmpl(tmpl_str);
 
