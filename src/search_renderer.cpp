@@ -192,7 +192,6 @@ kainjow::mustache::data buildPagination(
 
 std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const NameMapper& nameMapper, const Library* library)
 {
-  const std::string userlang("en");
   const std::string absPathPrefix = protocolPrefix;
   // Build the results list
   kainjow::mustache::data items{kainjow::mustache::data::type::list};

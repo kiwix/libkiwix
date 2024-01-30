@@ -967,6 +967,7 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
   renderer.setProtocolPrefix(m_root + "/content/");
   renderer.setSearchProtocolPrefix(m_root + "/search");
   renderer.setPageLength(pageLength);
+  renderer.setUserLang(request.get_user_language());
   if (request.get_requested_format() == "xml") {
     return ContentResponse::build(
       renderer.getXml(*mp_nameMapper, mp_library.get()),

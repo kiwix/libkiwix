@@ -73,6 +73,13 @@ class SearchRenderer
   }
 
   /**
+   * set user language
+   */
+  void setUserLang(const std::string& lang){
+    this->userlang  = lang;
+  }
+
+  /**
    * Generate the html page with the resutls of the search.
    *
    * @param mapper The `NameMapper` to use to do the rendering.
@@ -105,6 +112,7 @@ class SearchRenderer
   unsigned int pageLength;
   unsigned int estimatedResultCount;
   unsigned int resultStart;
+  std::string userlang = "en";
 };
 
 
