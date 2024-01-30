@@ -14,6 +14,7 @@
 	"suggest-search": "לעשות חיפוש טקסט מלא עבור <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "אוי! לא עבדה בחירת ערך אקראי :(",
 	"invalid-raw-data-type": "{{DATATYPE}} הוא לא בקשה תקינה של תוכן גולמי.",
+	"invalid-request": "הכתובת המבוקשת \"{{{url}}}\" אינה בקשה תקינה.",
 	"no-value-for-arg": "לא סופק ערך לארגומנט {{ARGUMENT}}",
 	"no-query": "לא סופקה שאילתה.",
 	"raw-entry-not-found": "לא ניתן למצוא את רשומת ה־{{DATATYPE}} בשם {{ENTRY}}",
@@ -23,6 +24,7 @@
 	"404-page-heading": "לא נמצא",
 	"500-page-title": "שגיאת שרת פנימית",
 	"500-page-heading": "שגיאת שרת פנימית",
+	"500-page-text": "אירעה שגיאת שרת פנימית. אנחנו מצטערים על זה :/",
 	"fulltext-search-unavailable": "חיפוש בטקסט מלא אינו זמין",
 	"no-search-results": "מנוע החיפוש בטקסט מלא אינו זמין עבור התוכן הזה.",
 	"library-button-text": "מעבר לדף הבית \"ברוך בואך\"",
@@ -52,5 +54,6 @@
 	"welcome-to-kiwix-server": "ברוך בואך לשרת קיוויקס",
 	"download-links-heading": "הורדת קישורים עבור <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "הורדת ספר",
-	"preview-book": "תצוגה מקדימה"
+	"preview-book": "תצוגה מקדימה",
+	"unknown-error": "שגיאה בלתי־ידועה"
 }

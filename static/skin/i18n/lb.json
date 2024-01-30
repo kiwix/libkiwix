@@ -13,6 +13,7 @@
 	"404-page-heading": "Net fonnt",
 	"500-page-title": "Interne Feeler um Server",
 	"500-page-heading": "Interne Feeler um Server",
+	"500-page-text": "Et ass en interne Serverfeeler opgetrueden. Mir entschëllegen eis dofir :/",
 	"fulltext-search-unavailable": "Volltext-Sich net verfügbar",
 	"home-button-text": "Gitt op d'Haaptsäit vun '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Gitt op eng zoufälleg gewielte Säit",
@@ -24,5 +25,6 @@
 	"count-of-matching-books": "{{COUNT}} Buch/Bicher",
 	"download": "Eroflueden",
 	"direct-download-link-text": "Direkt",
-	"download-links-title": "Buch eroflueden"
+	"download-links-title": "Buch eroflueden",
+	"unknown-error": "Onbekannte Feeler"
 }

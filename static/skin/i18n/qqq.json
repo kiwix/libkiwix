@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Matthieu Gautier",
 			"Veloman Yunkan",
 			"Verdy p"
@@ -15,7 +16,7 @@
 	"suggest-search": "Suggest a search when the URL points to a non existing article",
 	"random-article-failure": "Failure of the random article selection procedure",
 	"invalid-raw-data-type": "Invalid DATATYPE was used with the /raw endpoint (/raw/<book>/DATATYPE/...); allowed values are 'meta' and 'content'",
-	"invalid-request" : "Error text for malformed URLs.",
+	"invalid-request": "Error text for malformed URLs.",
 	"no-value-for-arg": "Error text when no value has been provided for ARGUMENT in the request's query string",
 	"no-query": "Error text when no query has been provided for fulltext search",
 	"raw-entry-not-found": "Entry requested via the /raw endpoint was not found",
@@ -55,6 +56,6 @@
 	"download-links-heading": "Heading for no-js download page",
 	"download-links-title": "Title for no-js download page",
 	"preview-book": "Tooltip of book-tile leading to the book",
-	"non-translated-text": "Used to display text that is generated at runtime and cannot be translated. Nothing to translate about this one.",
+	"non-translated-text": "{{ignored}}\nUsed to display text that is generated at runtime and cannot be translated. Nothing to translate about this one.",
 	"unknown-error": "Unknown error"
 }

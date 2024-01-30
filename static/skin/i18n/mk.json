@@ -14,6 +14,7 @@
 	"suggest-search": "Побарајте го <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> по целиот текст",
 	"random-article-failure": "Упс! Не успеав да изберам случајна статија :(",
 	"invalid-raw-data-type": "{{DATATYPE}} не претставува важечко барање за сирова содржина.",
+	"invalid-request": "Побараната URL „{{{url}}}“ не претставува важечко барање.",
 	"no-value-for-arg": "Нема укажано вредност за аргументот {{ARGUMENT}}",
 	"no-query": "Не е укажано барање.",
 	"raw-entry-not-found": "Не можам да ја најдам {{DATATYPE}}-ставката {{ENTRY}}",
@@ -23,6 +24,7 @@
 	"404-page-heading": "Не е најдено",
 	"500-page-title": "Внатрешна грешка во опслужувачот",
 	"500-page-heading": "Внатрешна грешка во опслужувачот",
+	"500-page-text": "Настана внатрешна грешка во опслужувачот. Жал ни е :/",
 	"fulltext-search-unavailable": "Целотекстното пребарување е недостапно",
 	"no-search-results": "Погонот за целотекстно пребарување не е достапен за оваа содржина.",
 	"library-button-text": "Оди на воведната страница",
@@ -52,5 +54,6 @@
 	"welcome-to-kiwix-server": "Добре дојдовте на Опслужувачот на Кивикс",
 	"download-links-heading": "Врски за преземање на <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Преземи книга",
-	"preview-book": "Преглед"
+	"preview-book": "Преглед",
+	"unknown-error": "Непозната грешка"
 }
