@@ -10,13 +10,22 @@ let viewerState = {
   uiLanguage: 'en',
 };
 
+function dropUserLang(query) {
+  const q = new URLSearchParams(query);
+  q.delete('userlang');
+  const pre = (query.startsWith('?') && q.size != 0 ? '?' : '');
+  return pre + q.toString();
+}
+
 function userUrl2IframeUrl(url) {
   if ( url == '' ) {
     return blankPageUrl;
   }
 
   if ( url.startsWith('search?') ) {
-    return `${root}/${url}`;
+    const q = new URLSearchParams(url.slice("search?".length));
+    q.set('userlang', viewerState.uiLanguage);
+    return `${root}/search?${q.toString()}`;
   }
 
   return `${root}/content/${url}`;
@@ -73,7 +82,7 @@ function quasiUriEncode(s, specialSymbols) {
 function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
   const q = encodeURIComponent(searchbox.value);
-  gotoUrl(`/search?books.name=${currentBook}&pattern=${q}`);
+  gotoUrl(`/search?books.name=${currentBook}&pattern=${q}&userlang=${viewerState.uiLanguage}`);
 }
 
 function makeJSLink(jsCodeString, linkText, linkAttr="") {
@@ -148,7 +157,7 @@ function iframeUrl2UserUrl(url, query) {
   }
 
   if ( url == `${root}/search` ) {
-    return `search${query}`;
+    return `search${dropUserLang(query)}`;
   }
 
   url = url.slice(root.length);
@@ -537,9 +546,8 @@ function setupViewer() {
   const lang = getUserLanguage();
   setUserLanguage(lang, finishViewerSetupOnceTranslationsAreLoaded);
   viewerState.uiLanguage = lang;
-  const q = new URLSearchParams(window.location.search);
-  q.delete('userlang');
-  const rewrittenURL = makeURL(q.toString(), location.hash);
+  const cleanedUpQuery = dropUserLang(window.location.search);
+  const rewrittenURL = makeURL(cleanedUpQuery, location.hash);
   history.replaceState(viewerState, null, rewrittenURL);
 
   kiwixToolBarWrapper.style.display = 'block';
