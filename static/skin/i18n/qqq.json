@@ -32,6 +32,8 @@
 	"search-results-page-title": "Title of the search results page",
 	"search-results-page-header": "Header of the search results page",
 	"empty-search-results-page-header": "Header of the empty search results page",
+	"search-result-book-info": "Reference to the book where the search result belongs (this is displayed AFTER the search result)",
+	"word-count": "Word count information",
 	"library-button-text": "Tooltip of the button leading to the welcome page",
 	"home-button-text": "Tooltip of the button leading to the main page of a book",
 	"random-page-button-text": "Tooltip of the button opening a randomly selected page",

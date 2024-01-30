@@ -204,10 +204,20 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
     result.set("absolutePath", absPathPrefix + urlEncode(path));
     result.set("snippet", it.getSnippet());
     if (library) {
-      result.set("bookTitle", library->getBookById(zim_id).getTitle());
+      const std::string bookTitle = library->getBookById(zim_id).getTitle();
+      const ParameterizedMessage bookInfoMsg("search-result-book-info",
+          {{"BOOK_TITLE", bookTitle}}
+      );
+      result.set("bookInfo",  bookInfoMsg.getText(userlang)); // for HTML
+      result.set("bookTitle", bookTitle); // for XML
     }
     if (it.getWordCount() >= 0) {
-      result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
+      const auto wordCountStr = kiwix::beautifyInteger(it.getWordCount());
+      const ParameterizedMessage wordCountMsg("word-count",
+          {{"COUNT", wordCountStr}}
+      );
+      result.set("wordCountInfo", wordCountMsg.getText(userlang)); // for HTML
+      result.set("wordCount", wordCountStr); // for XML
     }
 
     items.push_back(result);

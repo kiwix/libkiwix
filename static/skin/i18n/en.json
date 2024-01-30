@@ -28,6 +28,8 @@
 	, "search-results-page-title": "Search: {{SEARCH_PATTERN}}"
 	, "search-results-page-header": "Results <b>{{START}}-{{END}}</b> of <b>{{COUNT}}</b> for <b>\"{{{SEARCH_PATTERN}}}\"</b>"
 	, "empty-search-results-page-header": "No results were found for <b>\"{{{SEARCH_PATTERN}}}\"</b>"
+	, "search-result-book-info": "from {{BOOK_TITLE}}"
+	, "word-count": "{{COUNT}} words"
 	, "library-button-text": "Go to welcome page"
 	, "home-button-text": "Go to the main page of '{{BOOK_TITLE}}'"
 	, "random-page-button-text": "Go to a randomly selected page"
