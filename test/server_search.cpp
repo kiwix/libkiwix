@@ -738,18 +738,10 @@ struct TestData
   std::string expectedHtmlHeader() const
   {
     if ( totalResultCount == 0 ) {
-      return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
+      return "No results were found for <b>\"" + getPattern() + "\"</b>";
     }
 
-    std::string header = R"(  Results
-        <b>
-          FIRSTRESULT-LASTRESULT
-        </b> of <b>
-          RESULTCOUNT
-        </b> for <b>
-          "PATTERN"
-        </b>
-      )";
+    std::string header = R"(Results <b>FIRSTRESULT-LASTRESULT</b> of <b>RESULTCOUNT</b> for <b>"PATTERN"</b>)";
 
     const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
     header = replace(header, "FIRSTRESULT", std::to_string(firstResultIndex));

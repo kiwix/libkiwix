@@ -47,6 +47,25 @@ ParameterizedMessage searchResultsPageTitleMsg(const std::string& searchPattern)
   );
 }
 
+ParameterizedMessage searchResultsPageHeaderMsg(const std::string& searchPattern,
+                                                const kainjow::mustache::data& r)
+{
+  if ( r.get("count")->string_value() == "0" ) {
+    return ParameterizedMessage("empty-search-results-page-header",
+                                {{"SEARCH_PATTERN", searchPattern}}
+    );
+  } else {
+    return ParameterizedMessage("search-results-page-header",
+                                {
+                                  {"SEARCH_PATTERN", searchPattern},
+                                  {"START", r.get("start")->string_value()},
+                                  {"END",   r.get("end")  ->string_value()},
+                                  {"COUNT", r.get("count")->string_value()},
+                                }
+    );
+  }
+}
+
 } // unnamed namespace
 
 /* Constructor */
@@ -196,7 +215,6 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
   kainjow::mustache::data results;
   results.set("items", items);
   results.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  results.set("hasResults", estimatedResultCount != 0);
   results.set("start", kiwix::beautifyInteger(resultStart));
   results.set("end", kiwix::beautifyInteger(std::min(resultStart+pageLength-1, estimatedResultCount)));
 
@@ -213,9 +231,10 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
     searchBookQuery
   );
 
-
+  const auto pageHeaderMsg = searchResultsPageHeaderMsg(searchPattern, results);
   const kainjow::mustache::object allData{
     {"PAGE_TITLE", searchResultsPageTitleMsg(searchPattern).getText(userlang)},
+    {"PAGE_HEADER", pageHeaderMsg.getText(userlang)},
     {"searchProtocolPrefix", searchProtocolPrefix},
     {"results", results},
     {"pagination", pagination},

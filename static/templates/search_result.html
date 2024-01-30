@@ -106,19 +106,7 @@
   </head>
   <body bgcolor="white">
     <div class="header">
-      {{#results.hasResults}}
-        Results
-        <b>
-          {{results.start}}-{{results.end}}
-        </b> of <b>
-          {{results.count}}
-        </b> for <b>
-          "{{{query.pattern}}}"
-        </b>
-      {{/results.hasResults}}
-      {{^results.hasResults}}
-        No results were found for <b>"{{{query.pattern}}}"</b>
-      {{/results.hasResults}}
+      {{{PAGE_HEADER}}}
     </div>
 
     <div class="results">
