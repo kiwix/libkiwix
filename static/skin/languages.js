@@ -1,104 +1,172 @@
 const uiLanguages = [
   {
-    "الإنجليزية": "ar"
+    "iso_code": "ar",
+    "self_name": "الإنجليزية",
+    "translation_count": 25
   },
   {
-    "বাংলা": "bn"
+    "iso_code": "bn",
+    "self_name": "বাংলা",
+    "translation_count": 12
   },
   {
-    "Čeština": "cs"
+    "iso_code": "cs",
+    "self_name": "Čeština",
+    "translation_count": 25
   },
   {
-    "Deutsch": "de"
+    "iso_code": "de",
+    "self_name": "Deutsch",
+    "translation_count": 49
   },
   {
-    "English": "en"
+    "iso_code": "en",
+    "self_name": "English",
+    "translation_count": 53
   },
   {
-    "español": "es"
+    "iso_code": "es",
+    "self_name": "español",
+    "translation_count": 48
   },
   {
-    "suomi": "fi"
+    "iso_code": "fi",
+    "self_name": "suomi",
+    "translation_count": 22
   },
   {
-    "Français": "fr"
+    "iso_code": "fr",
+    "self_name": "Français",
+    "translation_count": 52
   },
   {
-    "עברית": "he"
+    "iso_code": "he",
+    "self_name": "עברית",
+    "translation_count": 52
   },
   {
-    "हिन्दी": "hi"
+    "iso_code": "hi",
+    "self_name": "हिन्दी",
+    "translation_count": 49
   },
   {
-    "Հայերեն": "hy"
+    "iso_code": "hy",
+    "self_name": "Հայերեն",
+    "translation_count": 15
   },
   {
-    "interlingua": "ia"
+    "iso_code": "ia",
+    "self_name": "interlingua",
+    "translation_count": 49
   },
   {
-    "italiano": "it"
+    "iso_code": "it",
+    "self_name": "italiano",
+    "translation_count": 29
   },
   {
-    "日本語": "ja"
+    "iso_code": "ja",
+    "self_name": "日本語",
+    "translation_count": 26
   },
   {
-    "한국어": "ko"
+    "iso_code": "ko",
+    "self_name": "한국어",
+    "translation_count": 13
   },
   {
-    "kurdî": "ku-latn"
+    "iso_code": "ku-latn",
+    "self_name": "kurdî",
+    "translation_count": 26
   },
   {
-    "Lëtzebuergesch": "lb"
+    "iso_code": "lb",
+    "self_name": "Lëtzebuergesch",
+    "translation_count": 22
   },
   {
-    "македонски": "mk"
+    "iso_code": "mk",
+    "self_name": "македонски",
+    "translation_count": 52
   },
   {
-    "Bahasa Melayu": "ms"
+    "iso_code": "ms",
+    "self_name": "Bahasa Melayu",
+    "translation_count": 14
   },
   {
-    "Nederlands": "nl"
+    "iso_code": "nl",
+    "self_name": "Nederlands",
+    "translation_count": 49
   },
   {
-    "ߒߞߏ": "nqo"
+    "iso_code": "nqo",
+    "self_name": "ߒߞߏ",
+    "translation_count": 43
   },
   {
-    "ଓଡ଼ିଆ": "or"
+    "iso_code": "or",
+    "self_name": "ଓଡ଼ିଆ",
+    "translation_count": 49
   },
   {
-    "Polski": "pl"
+    "iso_code": "pl",
+    "self_name": "Polski",
+    "translation_count": 24
   },
   {
-    "русский": "ru"
+    "iso_code": "ru",
+    "self_name": "русский",
+    "translation_count": 45
   },
   {
-    "Sardu": "sc"
+    "iso_code": "sc",
+    "self_name": "Sardu",
+    "translation_count": 49
   },
   {
-    "slovenčina": "sk"
+    "iso_code": "sk",
+    "self_name": "slovenčina",
+    "translation_count": 25
   },
   {
-    "سرائیکی": "skr-arab"
+    "iso_code": "skr-arab",
+    "self_name": "سرائیکی",
+    "translation_count": 20
   },
   {
-    "slovenščina": "sl"
+    "iso_code": "sl",
+    "self_name": "slovenščina",
+    "translation_count": 52
   },
   {
-    "Shqip": "sq"
+    "iso_code": "sq",
+    "self_name": "Shqip",
+    "translation_count": 49
   },
   {
-    "Svenska": "sv"
+    "iso_code": "sv",
+    "self_name": "Svenska",
+    "translation_count": 52
   },
   {
-    "ఇంగ్లీషు": "te"
+    "iso_code": "te",
+    "self_name": "ఇంగ్లీషు",
+    "translation_count": 49
   },
   {
-    "Türkçe": "tr"
+    "iso_code": "tr",
+    "self_name": "Türkçe",
+    "translation_count": 25
   },
   {
-    "英语": "zh-hans"
+    "iso_code": "zh-hans",
+    "self_name": "英语",
+    "translation_count": 16
   },
   {
-    "繁體中文": "zh-hant"
+    "iso_code": "zh-hant",
+    "self_name": "繁體中文",
+    "translation_count": 52
   }
 ]
