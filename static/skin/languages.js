@@ -22,7 +22,7 @@ const uiLanguages = [
   {
     "iso_code": "en",
     "self_name": "English",
-    "translation_count": 53
+    "translation_count": 58
   },
   {
     "iso_code": "es",

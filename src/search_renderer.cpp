@@ -32,8 +32,41 @@
 #include "libkiwix-resources.h"
 #include "tools/stringTools.h"
 
+#include "server/i18n.h"
+
 namespace kiwix
 {
+
+namespace
+{
+
+ParameterizedMessage searchResultsPageTitleMsg(const std::string& searchPattern)
+{
+  return ParameterizedMessage("search-results-page-title",
+                              {{"SEARCH_PATTERN", searchPattern}}
+  );
+}
+
+ParameterizedMessage searchResultsPageHeaderMsg(const std::string& searchPattern,
+                                                const kainjow::mustache::data& r)
+{
+  if ( r.get("count")->string_value() == "0" ) {
+    return ParameterizedMessage("empty-search-results-page-header",
+                                {{"SEARCH_PATTERN", searchPattern}}
+    );
+  } else {
+    return ParameterizedMessage("search-results-page-header",
+                                {
+                                  {"SEARCH_PATTERN", searchPattern},
+                                  {"START", r.get("start")->string_value()},
+                                  {"END",   r.get("end")  ->string_value()},
+                                  {"COUNT", r.get("count")->string_value()},
+                                }
+    );
+  }
+}
+
+} // unnamed namespace
 
 /* Constructor */
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs,
@@ -170,10 +203,20 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
     result.set("absolutePath", absPathPrefix + urlEncode(path));
     result.set("snippet", it.getSnippet());
     if (library) {
-      result.set("bookTitle", library->getBookById(zim_id).getTitle());
+      const std::string bookTitle = library->getBookById(zim_id).getTitle();
+      const ParameterizedMessage bookInfoMsg("search-result-book-info",
+          {{"BOOK_TITLE", bookTitle}}
+      );
+      result.set("bookInfo",  bookInfoMsg.getText(userlang)); // for HTML
+      result.set("bookTitle", bookTitle); // for XML
     }
     if (it.getWordCount() >= 0) {
-      result.set("wordCount", kiwix::beautifyInteger(it.getWordCount()));
+      const auto wordCountStr = kiwix::beautifyInteger(it.getWordCount());
+      const ParameterizedMessage wordCountMsg("word-count",
+          {{"COUNT", wordCountStr}}
+      );
+      result.set("wordCountInfo", wordCountMsg.getText(userlang)); // for HTML
+      result.set("wordCount", wordCountStr); // for XML
     }
 
     items.push_back(result);
@@ -181,7 +224,6 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
   kainjow::mustache::data results;
   results.set("items", items);
   results.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  results.set("hasResults", estimatedResultCount != 0);
   results.set("start", kiwix::beautifyInteger(resultStart));
   results.set("end", kiwix::beautifyInteger(std::min(resultStart+pageLength-1, estimatedResultCount)));
 
@@ -198,12 +240,15 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
     searchBookQuery
   );
 
-
-  kainjow::mustache::data allData;
-  allData.set("searchProtocolPrefix", searchProtocolPrefix);
-  allData.set("results", results);
-  allData.set("pagination", pagination);
-  allData.set("query", query);
+  const auto pageHeaderMsg = searchResultsPageHeaderMsg(searchPattern, results);
+  const kainjow::mustache::object allData{
+    {"PAGE_TITLE", searchResultsPageTitleMsg(searchPattern).getText(userlang)},
+    {"PAGE_HEADER", pageHeaderMsg.getText(userlang)},
+    {"searchProtocolPrefix", searchProtocolPrefix},
+    {"results", results},
+    {"pagination", pagination},
+    {"query", query},
+  };
 
   kainjow::mustache::mustache tmpl(tmpl_str);
 

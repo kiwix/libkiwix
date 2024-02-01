@@ -102,23 +102,11 @@
       }
 
     </style>
-    <title>Search: {{query.pattern}}</title>
+    <title>{{PAGE_TITLE}}</title>
   </head>
   <body bgcolor="white">
     <div class="header">
-      {{#results.hasResults}}
-        Results
-        <b>
-          {{results.start}}-{{results.end}}
-        </b> of <b>
-          {{results.count}}
-        </b> for <b>
-          "{{{query.pattern}}}"
-        </b>
-      {{/results.hasResults}}
-      {{^results.hasResults}}
-        No results were found for <b>"{{{query.pattern}}}"</b>
-      {{/results.hasResults}}
+      {{{PAGE_HEADER}}}
     </div>
 
     <div class="results">
@@ -131,12 +119,12 @@
             {{#snippet}}
               <cite>{{>snippet}}...</cite>
             {{/snippet}}
-            {{#bookTitle}}
-              <div class="book-title">from {{bookTitle}}</div>
-            {{/bookTitle}}
-            {{#wordCount}}
-              <div class="informations">{{wordCount}} words</div>
-            {{/wordCount}}
+            {{#bookInfo}}
+              <div class="book-title">{{bookInfo}}</div>
+            {{/bookInfo}}
+            {{#wordCountInfo}}
+              <div class="informations">{{wordCountInfo}}</div>
+            {{/wordCountInfo}}
           </li>
         {{/results.items}}
       </ul>

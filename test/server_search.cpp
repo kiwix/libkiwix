@@ -113,7 +113,7 @@ std::string makeSearchResultsHtml(const std::string& pattern,
       }
 
     </style>
-    <title>Search: %PATTERN%</title>
+    <title>%USERLANGMARKER%Search: %PATTERN%</title>
   </head>
   <body bgcolor="white">
     <div class="header">
@@ -173,8 +173,8 @@ struct SearchResult
       + "              " + title + "\n"
       + "            </a>\n"
       + "              <cite>" + snippet + "</cite>\n"
-      + "              <div class=\"book-title\">from " + bookTitle + "</div>\n"
-      + "              <div class=\"informations\">" + wordCount + " words</div>\n";
+      + "              <div class=\"book-title\">from %USERLANGMARKER%" + bookTitle + "</div>\n"
+      + "              <div class=\"informations\">" + wordCount + " %USERLANGMARKER%words</div>\n";
   }
 
   std::string getXml() const
@@ -737,26 +737,16 @@ struct TestData
 
   std::string expectedHtmlHeader() const
   {
-    if ( totalResultCount == 0 ) {
-      return "\n        No results were found for <b>\"" + getPattern() + "\"</b>";
-    }
-
-    std::string header = R"(  Results
-        <b>
-          FIRSTRESULT-LASTRESULT
-        </b> of <b>
-          RESULTCOUNT
-        </b> for <b>
-          "PATTERN"
-        </b>
-      )";
+    std::string header = totalResultCount == 0
+                       ? R"(No results were found for <b>"PATTERN"</b>)"
+                       : R"(Results <b>FIRSTRESULT-LASTRESULT</b> of <b>RESULTCOUNT</b> for <b>"PATTERN"</b>)";
 
     const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
     header = replace(header, "FIRSTRESULT", std::to_string(firstResultIndex));
     header = replace(header, "LASTRESULT",  std::to_string(lastResultIndex));
     header = replace(header, "RESULTCOUNT", std::to_string(totalResultCount));
     header = replace(header, "PATTERN",     getPattern());
-    return header;
+    return "%USERLANGMARKER%" + header;
   }
 
   std::string expectedHtmlResultsString() const
@@ -800,12 +790,18 @@ struct TestData
 
   std::string expectedHtml() const
   {
-    return makeSearchResultsHtml(
-             getPattern(),
-             expectedHtmlHeader(),
-             expectedHtmlResultsString(),
-             expectedHtmlFooter()
+    const std::string html = makeSearchResultsHtml(
+                                 getPattern(),
+                                 expectedHtmlHeader(),
+                                 expectedHtmlResultsString(),
+                                 expectedHtmlFooter()
     );
+
+    const std::string userlangMarker = extractQueryValue("userlang") == "test"
+                                     ? "[I18N TESTING] "
+                                     : "";
+
+    return replace(html, "%USERLANGMARKER%", userlangMarker);
   }
 
     std::string expectedXmlHeader() const
@@ -824,7 +820,8 @@ struct TestData
     />)";
 
       const auto realResultsPerPage = resultsPerPage?resultsPerPage:25;
-      const auto url = makeUrl(query + "&format=xml", firstResultIndex, realResultsPerPage);
+      const auto cleanedUpQuery = replace(query, "&userlang=test", "");
+      const auto url = makeUrl(cleanedUpQuery + "&format=xml", firstResultIndex, realResultsPerPage);
       header = replace(header, "URL", replace(url, "&", "&amp;"));
       header = replace(header, "FIRSTRESULT", std::to_string(firstResultIndex));
       header = replace(header, "ITEMCOUNT",  std::to_string(realResultsPerPage));
@@ -932,6 +929,17 @@ TEST(ServerSearchTest, searchResults)
     },
 
     {
+      /* query */          "pattern=velomanyunkan&books.id=" RAYCHARLESZIMID
+                           "&userlang=test",
+      /* start */            -1,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 0,
+      /* firstResultIndex */ 1,
+      /* results */          {},
+      /* pagination */       {}
+    },
+
+    {
       /* query */          "pattern=razaf&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
@@ -1029,6 +1037,17 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   100,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 1,
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
+    },
+
+    {
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID
+                           "&userlang=test",
       /* start */            -1,
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
