@@ -280,7 +280,7 @@ class Library: public std::enable_shared_from_this<Library>
    *
    * All invalid bookmarks (ie pointing to unknown books, no check is made on bookmark pointing to
    * invalid articles of valid book) will be migrated (if possible) to a better book.
-   * "Better book", will be determined using heuristics based on book name, flavour and date.
+   * "Better book", will be determined using method `getBestTargetBookId`.
    *
    * @return A tuple<int, int>: <The number of bookmarks updated>, <Number of invalid bookmarks before migration was performed>.
    */
@@ -290,9 +290,7 @@ class Library: public std::enable_shared_from_this<Library>
    * Migrate all bookmarks associated to a specific book.
    *
    * All bookmarks associated to `sourceBookId` book will be migrated to a better book.
-   * "Better book", will be determined using heuristics based on book name, flavour and date.
-   * Be carrefull, when using with `migrationModde == ALLOW_DOWGRADE`, the bookmark will be migrated to a different book
-   * even if the bookmark points to an existing book and the other book is older than the current one.
+   * "Better book", will be determined using method `getBestTargetBookId`.
    *
    * @param sourceBookId the source bookId of the bookmarks to migrate.
    * @param migrationMode how we will find the best book.
@@ -311,6 +309,18 @@ class Library: public std::enable_shared_from_this<Library>
    */
   int migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId);
  
+  /**
+   * Get the best available bookId for a bookmark.
+   *
+   * Given a bookmark, return the best available bookId.
+   * "best available bookId" is determined using heuristitcs based on book name, flavour and date.
+   *
+   * @param bookmark The bookmark to search the bookId for.
+   * @param migrationMode The migration mode to use.
+   * @return A bookId. Potentially empty string if no suitable book found.
+   */
+  std::string getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const;
+
   // XXX: This is a non-thread-safe operation
   const Book& getBookById(const std::string& id) const;
   // XXX: This is a non-thread-safe operation
@@ -457,7 +467,6 @@ private: // functions
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
   void cleanupBookCollection(BookIdCollection& books, const std::string& sourceBookId, MigrationMode migrationMode) const;
-  std::string getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const;
   unsigned int getBookCount_not_protected(const bool localBooks, const bool remoteBooks) const;
   void updateBookDB(const Book& book);
   void dropCache(const std::string& bookId);

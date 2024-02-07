@@ -192,6 +192,7 @@ void Library::cleanupBookCollection(BookIdCollection& books, const std::string& 
 }
 
 std::string Library::getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const {
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   // Search for a existing book with the same name
   auto book_filter = Filter();
   if (!bookmark.getBookName().empty()) {
