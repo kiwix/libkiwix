@@ -191,6 +191,11 @@ void Library::cleanupBookCollection(BookIdCollection& books, const std::string& 
   }
 }
 
+std::string remove_quote(std::string input) {
+  std::replace(input.begin(), input.end(), '"', ' ');
+  return input;
+}
+
 std::string Library::getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const {
   std::lock_guard<std::recursive_mutex> lock(m_mutex);
   // Search for a existing book with the same name
@@ -204,7 +209,7 @@ std::string Library::getBestTargetBookId(const Bookmark& bookmark, MigrationMode
         // No bookName nor bookTitle, no way to find target book.
         return "";
     }
-    book_filter.query("title:\""+bookmark.getBookTitle() + "\"");
+    book_filter.query("title:\"" + remove_quote(bookmark.getBookTitle()) + "\"");
   }
   auto targetBooks = filter(book_filter);
   cleanupBookCollection(targetBooks, bookmark.getBookId(), migrationMode);
