@@ -196,12 +196,29 @@ const char * sampleOpdsStream = R"(
     <link rel="http://opds-spec.org/image/thumbnail" type="image/png" href="/meta?name=favicon&amp;content=movies.stackexchange.com_en_all_2019-02" />
   </entry>
   <entry>
-    <title>TED talks - Business</title>
+    <title>TED"talks" - Business</title>
     <id>urn:uuid:0189d9be-2fd0-b4b6-7300-20fab0b5cdc8</id>
     <name>ted_en_business</name>
     <flavour>nodet</flavour>
     <icon>/meta?name=favicon&amp;content=ted_en_business_2018-07</icon>
     <updated>2018-07-23T00:00::00:Z</updated>
+    <language>eng</language>
+    <summary>Ideas worth spreading</summary>
+    <tags></tags>
+    <link type="text/html" href="/ted_en_business_2018-07" />
+    <author>
+      <name>TED</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/ted/ted_en_business_2018-07.zim.meta4" length="8855827456" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/png" href="/meta?name=favicon&amp;content=ted_en_business_2018-07" />
+  </entry>
+  <entry>
+    <title>Business talks about TED</title>
+    <id>Dummy id </id>
+    <name>speak_business</name>
+    <flavour>nodet</flavour>
+    <icon>/meta?name=favicon&amp;content=ted_en_business_2018-07</icon>
+    <updated>2018-08-23T00:00::00:Z</updated>
     <language>eng</language>
     <summary>Ideas worth spreading</summary>
     <tags></tags>
@@ -302,7 +319,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   kiwix::Manager manager(lib);
   manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
 
-  EXPECT_EQ(13U, lib->getBookCount(true, true));
+  EXPECT_EQ(14U, lib->getBookCount(true, true));
 
   {
   const kiwix::Book& book1 = lib->getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd");
@@ -332,7 +349,7 @@ TEST(LibraryOpdsImportTest, allInOne)
 
   {
   const kiwix::Book& book2 = lib->getBookById("0189d9be-2fd0-b4b6-7300-20fab0b5cdc8");
-  EXPECT_EQ(book2.getTitle(), "TED talks - Business");
+  EXPECT_EQ(book2.getTitle(), "TED\"talks\" - Business");
   EXPECT_EQ(book2.getName(), "ted_en_business");
   EXPECT_EQ(book2.getFlavour(), "nodet");
   EXPECT_EQ(book2.getLanguages(), Langs{ "eng" });
@@ -637,7 +654,7 @@ TEST_F(LibraryTest, MigrateBookmarkOlder)
 
 TEST_F(LibraryTest, sanityCheck)
 {
-  EXPECT_EQ(lib->getBookCount(true, true), 15U);
+  EXPECT_EQ(lib->getBookCount(true, true), 16U);
   EXPECT_EQ(lib->getBooksLanguages(),
             std::vector<std::string>({"deu", "eng", "fra", "ita", "spa"})
   );
@@ -689,6 +706,7 @@ TEST_F(LibraryTest, filterLocal)
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().local(false),
+    "Business talks about TED",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
@@ -699,7 +717,7 @@ TEST_F(LibraryTest, filterLocal)
     "Mathématiques",
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -708,6 +726,7 @@ TEST_F(LibraryTest, filterLocal)
 TEST_F(LibraryTest, filterRemote)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().remote(true),
+    "Business talks about TED",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
@@ -719,7 +738,7 @@ TEST_F(LibraryTest, filterRemote)
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -732,21 +751,23 @@ TEST_F(LibraryTest, filterRemote)
 TEST_F(LibraryTest, filterByLanguage)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().lang("eng"),
+    "Business talks about TED",
     "Granblue Fantasy Wiki",
     "Islam Stack Exchange",
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business"
+    "TED\"talks\" - Business"
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("lang:eng"),
+    "Business talks about TED",
     "Granblue Fantasy Wiki",
     "Islam Stack Exchange",
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business"
+    "TED\"talks\" - Business"
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("eng"),
@@ -893,6 +914,7 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query(""),
     "An example ZIM archive",
+    "Business talks about TED",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
@@ -904,7 +926,7 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -1145,6 +1167,7 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter(),
     "An example ZIM archive",
+    "Business talks about TED",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
@@ -1156,7 +1179,7 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -1170,7 +1193,7 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
 
   const uint64_t rev2 = lib->getRevision();
 
-  EXPECT_EQ(12u, lib->removeBooksNotUpdatedSince(rev));
+  EXPECT_EQ(13u, lib->removeBooksNotUpdatedSince(rev));
 
   EXPECT_GT(lib->getRevision(), rev2);
 
