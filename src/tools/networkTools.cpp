@@ -43,6 +43,10 @@
 #include <netdb.h>
 #endif
 
+#ifdef __HAIKU__
+#include <sys/sockio.h>
+#endif
+
 size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdata)
 {
   auto str = static_cast<std::stringstream*>(userdata);

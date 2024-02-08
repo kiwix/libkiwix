@@ -1516,7 +1516,7 @@ inline bool bind_ip_address(socket_t sock, const char *host) {
 }
 
 inline std::string if2ip(const std::string &ifn) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__HAIKU__)
   struct ifaddrs *ifap;
   getifaddrs(&ifap);
   for (auto ifa = ifap; ifa; ifa = ifa->ifa_next) {
