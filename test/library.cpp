@@ -32,7 +32,7 @@ const char * sampleOpdsStream = R"(
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd</id>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_tunisie_novid_2018-10</icon>
     <updated>2018-10-08T00:00::00:Z</updated>
-    <dc:issued>8 Oct 2018</dc:issued>
+    <dc:issued>2018-10-08T00:00::00:Z</dc:issued>
     <language>fra</language>
     <summary>Le meilleur de Wikipédia sur la Tunisie</summary>
     <tags>wikipedia;novid;_ftindex</tags>
@@ -54,7 +54,7 @@ const char * sampleOpdsStream = R"(
     <flavour>novid</flavour>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater</id>
     <updated>2019-10-08T00:00::00:Z</updated>
-    <dc:issued>8 Oct 2019</dc:issued>
+    <dc:issued>2019-10-08T00:00::00:Z</dc:issued>
     <language>fra</language>
     <summary>Le meilleur de Wikipédia sur la Tunisie. Updated in 2019</summary>
     <author>
@@ -68,7 +68,7 @@ const char * sampleOpdsStream = R"(
     <flavour>other_flavour</flavour>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_flavour</id>
     <updated>2018-10-08T00:00::00:Z</updated>
-    <dc:issued>8 Oct 2018</dc:issued>
+    <dc:issued>2018-10-08T00:00::00:Z</dc:issued>
     <language>fra</language>
     <summary>Le meilleur de Wikipédia sur la Tunisie. With another flavour</summary>
     <author>
@@ -82,7 +82,7 @@ const char * sampleOpdsStream = R"(
     <flavour>other_flavour</flavour>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour</id>
     <updated>2019-10-08T00:00::00:Z</updated>
-    <dc:issued>8 Oct 2019</dc:issued>
+    <dc:issued>2019-10-08T00:00::00:Z</dc:issued>
     <language>fra</language>
     <summary>Le meilleur de Wikipédia sur la Tunisie. Updated in 2019, and other flavour</summary>
     <author>
@@ -329,7 +329,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book1.getFlavour(), "novid");
   EXPECT_EQ(book1.getLanguages(), Langs{ "fra" });
   EXPECT_EQ(book1.getCommaSeparatedLanguages(), "fra");
-  EXPECT_EQ(book1.getDate(), "8 Oct 2018");
+  EXPECT_EQ(book1.getDate(), "2018-10-08");
   EXPECT_EQ(book1.getDescription(), "Le meilleur de Wikipédia sur la Tunisie");
   EXPECT_EQ(book1.getCreator(), "Wikipedia");
   EXPECT_EQ(book1.getPublisher(), "Wikipedia Publishing House");
@@ -634,23 +634,69 @@ TEST_F(LibraryTest, MigrateBookmark)
     EXPECT_EQ(allBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
 }
 
-TEST_F(LibraryTest, MigrateBookmarkOlder)
+TEST_F(LibraryTest, GetBestTargetBookIdOlder)
 {
-    auto bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater";
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
 
-    auto book1 = lib->getBookById(bookId1);
+    auto book = lib->getBookById(bookId);
 
-    lib->addBookmark(createBookmark(book1));
+    auto validBookmark = createBookmark(book);
+    lib->addBookmark(validBookmark);
 
-    auto onlyValidBookmarks = lib->getBookmarks();
-
-    ASSERT_EQ(onlyValidBookmarks.size(), 1);
-    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
-
-    ASSERT_EQ(lib->migrateBookmarks(bookId1), 0);
-    ASSERT_EQ(lib->migrateBookmarks(bookId1, kiwix::ALLOW_DOWNGRADE), 1);
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::UPGRADE_ONLY), bookId+"_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
 }
 
+TEST_F(LibraryTest, GetBestTargetBookIdNewer)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
+
+    auto book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getDate(), "2019-10-08");
+
+    auto validBookmark = createBookmark(book);
+    // Make the bookmark more recent than any books in the library.
+    // (But still pointing to existing book)
+    validBookmark.setDate("2020-10-08");
+    lib->addBookmark(validBookmark);
+
+    //  The best book for the bookmark is bookId...
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::UPGRADE_ONLY), bookId);
+    // but there is not migration to do as the bookmark already point to it.
+    ASSERT_EQ(lib->migrateBookmarks(bookId, kiwix::UPGRADE_ONLY), 0);
+
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::ALLOW_DOWNGRADE), bookId);
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdInvalidOlder)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
+
+    auto book = lib->getBookById(bookId);
+
+    auto invalidBookmark = createBookmark(book);
+    invalidBookmark.setBookId("invalid-book-id");
+    lib->addBookmark(invalidBookmark);
+
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::UPGRADE_ONLY), bookId+"_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdInvalidNewer)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
+
+    auto book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getDate(), "2018-10-08");
+
+    auto invalidBookmark = createBookmark(book);
+    invalidBookmark.setBookId("invalid-book-id");
+    invalidBookmark.setDate("2020-10-08");
+    lib->addBookmark(invalidBookmark);
+
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::UPGRADE_ONLY), "");
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
+}
 
 TEST_F(LibraryTest, sanityCheck)
 {

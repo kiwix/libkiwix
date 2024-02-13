@@ -176,19 +176,53 @@ std::tuple<int, int> Library::migrateBookmarks(MigrationMode migrationMode) {
   return std::make_tuple(changed, invalidBookmarks);
 }
 
-void Library::cleanupBookCollection(BookIdCollection& books, const std::string& sourceBookId, MigrationMode migrationMode) const {
-  sort(books, DATE, false);
+std::string Library::getBestFromBookCollection(BookIdCollection books, const Bookmark& bookmark, MigrationMode migrationMode) const {
+  // This function try to get the best book for a bookmark from a book collection.
+  // It assumes that all books in the collection are "acceptable".
+  // (this definiton is not clear but for now it is book's name is equal to bookmark's bookName)
+  //
+  // The algorithm first sort the colletion by "flavour equality" and date.
+  // "flavour equality" is if book's flavour is same that bookmark's flavour (let's say "flavourA" here)
+  // So we have the sorted collection:
+  // - flavourA, date 5
+  // - flavourA, date 4
+  // - flavourB, date 6
+  // - flavourC, date 5
+  // - flavourB, date 3
+  //
+  // Then, depending of migrationMode:
+  // - If ALLOW_DOWNGRADE => take the first one
+  // - If UPGRADE_ONLY => loop on books until we find a book newer than bookmark.
+  //   So if bookmark date is 5 => flavourB, date 6
+  //      if bookmark date is 4 => flavourA, date 5
+  //      if bookmark date is 7 => No book
 
-  // Remove source book
-  auto foundIT = std::find(books.begin(), books.end(), sourceBookId);
-  if (foundIT != books.end()) {
-    if (migrationMode == ALLOW_DOWNGRADE) {
-      books.erase(foundIT);
-    } else {
-      // books is sorted by date, remove the source and all older books
-      books.erase(foundIT, books.end());
+  if (books.empty()) {
+    return "";
+  }
+
+  sort(books, DATE, false);
+  stable_sort(books.begin(), books.end(), [&](const std::string& bookId1, const std::string& bookId2) {
+    const auto& book1 = getBookById(bookId1);
+    const auto& book2 = getBookById(bookId2);
+    bool same_flavour1 = book1.getFlavour() == bookmark.getBookFlavour();
+    bool same_flavour2 = book2.getFlavour() == bookmark.getBookFlavour();
+    // return True if bookId1 is before bookId2, ie if same_flavour1 and not same_flavour2
+    return same_flavour1 > same_flavour2;
+  });
+
+  if (migrationMode == ALLOW_DOWNGRADE) {
+    return books[0];
+  } else {
+    for (const auto& bookId: books) {
+      const auto& book = getBookById(bookId);
+      if (book.getDate() >= bookmark.getDate()) {
+        return bookId;
+      }
     }
   }
+
+  return "";
 }
 
 std::string remove_quote(std::string input) {
@@ -212,21 +246,14 @@ std::string Library::getBestTargetBookId(const Bookmark& bookmark, MigrationMode
     book_filter.query("title:\"" + remove_quote(bookmark.getBookTitle()) + "\"");
   }
   auto targetBooks = filter(book_filter);
-  cleanupBookCollection(targetBooks, bookmark.getBookId(), migrationMode);
-    
-  if (targetBooks.empty()) {
-    // No existing book found for the target, or the same than source.
-    return "";
+  auto bestBook = getBestFromBookCollection(targetBooks, bookmark, migrationMode);
+  if (bestBook.empty()) {
+    try {
+      getBookById(bookmark.getBookId());
+      return bookmark.getBookId();
+    } catch (std::out_of_range&) {}
   }
-  if (targetBooks.size() != 1) {
-    // We have several, reduce to same flavour
-    auto flavouredTargetBooks = filter(book_filter.flavour(bookmark.getBookFlavour()));
-    cleanupBookCollection(flavouredTargetBooks, bookmark.getBookId(), migrationMode);
-    if (!flavouredTargetBooks.empty()) {
-      targetBooks = flavouredTargetBooks;
-    }
-  }
-  return targetBooks[0];
+  return bestBook;
 }
 
 int Library::migrateBookmarks(const std::string& sourceBookId, MigrationMode migrationMode) {
@@ -619,7 +646,6 @@ Xapian::Query flavourQuery(const std::string& name)
 {
   return Xapian::Query("XF" + normalizeText(name));
 }
-
 
 Xapian::Query multipleParamQuery(const std::string& commaSeparatedList, const std::string& prefix)
 {

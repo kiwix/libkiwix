@@ -56,14 +56,18 @@ enum supportedListMode {
 };
 
 enum MigrationMode {
-  /** When migrating bookmarks, do not allow to migrate to an older book than the currently pointed one.
+  /** When migrating bookmarks, do not allow to migrate to an older book than the currently pointed one
+   * (or date stored in the bookmark if book is invalid)
    *
-   * This is enforce only if the bookmark point to a valid books. If bookmark point to a invalid book,
-   * it will be migrated to an existing one, even if older.
+   * If no newer books are found, no upgrade is made.
    */
   UPGRADE_ONLY = 0,
 
-   /** Allow to migrate the bookmark to an older book. */
+  /** Try hard to do a migration. This mostly does:
+   * - Try to find a newer book.
+   * - If book is invalid: find a best book, potentially older.
+   * Older book will never be returned if current book is a valid one.
+   */
   ALLOW_DOWNGRADE = 1,
 };
 
@@ -466,7 +470,7 @@ private: // functions
   AttributeCounts getBookAttributeCounts(BookStrPropMemFn p) const;
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
-  void cleanupBookCollection(BookIdCollection& books, const std::string& sourceBookId, MigrationMode migrationMode) const;
+  std::string getBestFromBookCollection(BookIdCollection books, const Bookmark& bookmark, MigrationMode migrationMode) const;
   unsigned int getBookCount_not_protected(const bool localBooks, const bool remoteBooks) const;
   void updateBookDB(const Book& book);
   void dropCache(const std::string& bookId);
