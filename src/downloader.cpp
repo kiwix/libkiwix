@@ -169,12 +169,6 @@ std::vector<std::string> Downloader::getDownloadIds() const {
 std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
 {
   std::unique_lock<std::mutex> lock(m_lock);
-  for (auto& p: m_knownDownloads) {
-    auto& d = p.second;
-    auto& uris = d->getUris();
-    if (std::find(uris.begin(), uris.end(), uri) != uris.end())
-      return d;
-  }
   std::vector<std::string> uris = {uri};
   auto gid = mp_aria->addUri(uris, options);
   m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
