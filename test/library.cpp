@@ -698,6 +698,14 @@ TEST_F(LibraryTest, GetBestTargetBookIdInvalidNewer)
     ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
 }
 
+TEST_F(LibraryTest, GetBestTargetBookIdName)
+{
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "novid"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "other_flavour"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour");
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "other_flavour", "2020-12-12"), "");
+}
+
 TEST_F(LibraryTest, sanityCheck)
 {
   EXPECT_EQ(lib->getBookCount(true, true), 16U);

@@ -230,6 +230,22 @@ std::string remove_quote(std::string input) {
   return input;
 }
 
+std::string Library::getBestTargetBookId(const std::string& bookName, const std::string& preferedFlavour, const std::string& minDate) const {
+  // Let's reuse our algorithm based on bookmark.
+  MigrationMode migrationMode = UPGRADE_ONLY;
+  auto bookmark = Bookmark();
+  bookmark.setBookName(bookName);
+  bookmark.setBookFlavour(preferedFlavour);
+
+  if (minDate.empty()) {
+    migrationMode = ALLOW_DOWNGRADE;
+  } else {
+    bookmark.setDate(minDate);
+  }
+
+  return getBestTargetBookId(bookmark, migrationMode);
+}
+
 std::string Library::getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const {
   std::lock_guard<std::recursive_mutex> lock(m_mutex);
   // Search for a existing book with the same name

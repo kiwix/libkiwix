@@ -325,6 +325,20 @@ class Library: public std::enable_shared_from_this<Library>
    */
   std::string getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const;
 
+  /**
+   * Get the best bookId for a combination of book's name, flavour and date.
+   *
+   * Given a bookName (mandatory), try to find the best book.
+   * If preferedFlavour is given, will try to find a book with the same flavour. If not found, return a book with a different flavour.
+   * If minDate is given, return a book newer than minDate. If not found, return a empty bookId.
+   *
+   * @param bookName The name of the book
+   * @param preferedFlavour The prefered flavour.
+   * @param minDate the minimal book date acceptable. Must be a string in the format "YYYY-MM-DD".
+   * @return A bookId corresponding to the query, or empty string if not found.
+   */
+  std::string getBestTargetBookId(const std::string& bookName, const std::string& preferedFlavour="", const std::string& minDate="") const;
+
   // XXX: This is a non-thread-safe operation
   const Book& getBookById(const std::string& id) const;
   // XXX: This is a non-thread-safe operation
