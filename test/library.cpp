@@ -698,6 +698,22 @@ TEST_F(LibraryTest, GetBestTargetBookIdInvalidNewer)
     ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
 }
 
+TEST_F(LibraryTest, GetBestTargetBookIdFlavour)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd_flavour");
+
+    auto book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getDate(), "2018-10-08");
+
+    auto invalidBookmark = createBookmark(book);
+    invalidBookmark.setBookId("invalid-book-id");
+    invalidBookmark.setDate("2020-10-08");
+    lib->addBookmark(invalidBookmark);
+
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::UPGRADE_ONLY), "");
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour");
+}
+
 TEST_F(LibraryTest, GetBestTargetBookIdName)
 {
     ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
