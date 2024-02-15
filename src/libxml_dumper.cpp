@@ -97,11 +97,15 @@ void LibXMLDumper::handleBookmark(Bookmark bookmark, pugi::xml_node root_node) {
     auto book = library->getBookByIdThreadSafe(bookmark.getBookId());
     ADD_TEXT_ENTRY(book_node, "id", book.getId());
     ADD_TEXT_ENTRY(book_node, "title", book.getTitle());
+    ADD_TEXT_ENTRY(book_node, "name", book.getName());
+    ADD_TEXT_ENTRY(book_node, "flavour", book.getFlavour());
     ADD_TEXT_ENTRY(book_node, "language", book.getCommaSeparatedLanguages());
     ADD_TEXT_ENTRY(book_node, "date", book.getDate());
   } catch (...) {
     ADD_TEXT_ENTRY(book_node, "id", bookmark.getBookId());
     ADD_TEXT_ENTRY(book_node, "title", bookmark.getBookTitle());
+    ADD_TEXT_ENTRY(book_node, "name", bookmark.getBookName());
+    ADD_TEXT_ENTRY(book_node, "flavour", bookmark.getBookFlavour());
     ADD_TEXT_ENTRY(book_node, "language", bookmark.getLanguage());
     ADD_TEXT_ENTRY(book_node, "date", bookmark.getDate());
   }
@@ -135,7 +139,7 @@ std::string LibXMLDumper::dumpLibXMLBookmark()
   pugi::xml_node bookmarksNode = doc.append_child("bookmarks");
 
   if (library) {
-    for (auto& bookmark: library->getBookmarks()) {
+    for (auto& bookmark: library->getBookmarks(false)) {
       handleBookmark(bookmark, bookmarksNode);
     }
   }

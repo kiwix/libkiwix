@@ -20,7 +20,6 @@
 #include "gtest/gtest.h"
 #include <string>
 
-
 const char * sampleOpdsStream = R"(
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
@@ -28,12 +27,12 @@ const char * sampleOpdsStream = R"(
   <id>00000000-0000-0000-0000-000000000000</id>
   <entry>
     <title>Encyclopédie de la Tunisie</title>
-    <name>wikipedia_fr_tunisie_novid_2018-10</name>
-    <flavour>unforgettable</flavour>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>novid</flavour>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd</id>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_tunisie_novid_2018-10</icon>
     <updated>2018-10-08T00:00::00:Z</updated>
-    <dc:issued>8 Oct 2018</dc:issued>
+    <dc:issued>2018-10-08T00:00::00:Z</dc:issued>
     <language>fra</language>
     <summary>Le meilleur de Wikipédia sur la Tunisie</summary>
     <tags>wikipedia;novid;_ftindex</tags>
@@ -50,8 +49,52 @@ const char * sampleOpdsStream = R"(
     <articleCount>172</articleCount>
   </entry>
   <entry>
+    <title>Encyclopédie de la Tunisie</title>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>novid</flavour>
+    <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater</id>
+    <updated>2019-10-08T00:00::00:Z</updated>
+    <dc:issued>2019-10-08T00:00::00:Z</dc:issued>
+    <language>fra</language>
+    <summary>Le meilleur de Wikipédia sur la Tunisie. Updated in 2019</summary>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+  </entry>
+  <entry>
+    <title>Encyclopédie de la Tunisie</title>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>other_flavour</flavour>
+    <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_flavour</id>
+    <updated>2018-10-08T00:00::00:Z</updated>
+    <dc:issued>2018-10-08T00:00::00:Z</dc:issued>
+    <language>fra</language>
+    <summary>Le meilleur de Wikipédia sur la Tunisie. With another flavour</summary>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+  </entry>
+  <entry>
+    <title>Encyclopédie de la Tunisie</title>
+    <name>wikipedia_fr_tunisie</name>
+    <flavour>other_flavour</flavour>
+    <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour</id>
+    <updated>2019-10-08T00:00::00:Z</updated>
+    <dc:issued>2019-10-08T00:00::00:Z</dc:issued>
+    <language>fra</language>
+    <summary>Le meilleur de Wikipédia sur la Tunisie. Updated in 2019, and other flavour</summary>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+  </entry>
+  <entry>
     <title>Tania Louis</title>
     <id>urn:uuid:0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2</id>
+    <name>biologie-tout-compris_fr_all</name>
+    <flavour>full</flavour>
     <icon>/meta?name=favicon&amp;content=biologie-tout-compris_fr_all_2018-06</icon>
     <updated>2018-06-23T00:00::00:Z</updated>
     <language>fra</language>
@@ -67,6 +110,8 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Wikiquote</title>
     <id>urn:uuid:0ea1cde6-441d-6c58-f2c7-21c2838e659f</id>
+    <name>wikiquote_fr_all</name>
+    <flavour>full</flavour>
     <icon>/meta?name=favicon&amp;content=wikiquote_fr_all_nopic_2019-06</icon>
     <updated>2019-06-05T00:00::00:Z</updated>
     <language>fra,ita</language>
@@ -83,6 +128,8 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Géographie par Wikipédia</title>
     <id>urn:uuid:1123e574-6eef-6d54-28fc-13e4caeae474</id>
+    <name>wikipedia_fr_geography</name>
+    <flavour>full</flavour>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_geography_nopic_2019-06</icon>
     <updated>2019-06-02T00:00::00:Z</updated>
     <summary>Une sélection d'articles de Wikipédia sur la géographie</summary>
@@ -99,6 +146,8 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Mathématiques</title>
     <id>urn:uuid:14829621-c490-c376-0792-9de558b57efa</id>
+    <name>wikipedia_fr_mathematics</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_mathematics_nopic_2019-05</icon>
     <updated>2019-05-13T00:00::00:Z</updated>
     <language>fra</language>
@@ -115,6 +164,8 @@ const char * sampleOpdsStream = R"(
 <entry>
     <title>Granblue Fantasy Wiki</title>
     <id>urn:uuid:006cbd1b-16d8-b00d-a584-c1ae110a94ed</id>
+    <name>grandbluefantasy_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=granbluefantasy_en_all_all_nopic_2018-10</icon>
     <updated>2018-10-14T00:00::00:Z</updated>
     <language>eng</language>
@@ -130,6 +181,8 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Movies &amp; TV Stack Exchange</title>
     <id>urn:uuid:00f37b00-f4da-0675-995a-770f9c72903e</id>
+    <name>movies.stackexchange.com_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=movies.stackexchange.com_en_all_2019-02</icon>
     <updated>2019-02-03T00:00::00:Z</updated>
     <language>eng</language>
@@ -143,8 +196,10 @@ const char * sampleOpdsStream = R"(
     <link rel="http://opds-spec.org/image/thumbnail" type="image/png" href="/meta?name=favicon&amp;content=movies.stackexchange.com_en_all_2019-02" />
   </entry>
   <entry>
-    <title>TED talks - Business</title>
+    <title>TED"talks" - Business</title>
     <id>urn:uuid:0189d9be-2fd0-b4b6-7300-20fab0b5cdc8</id>
+    <name>ted_en_business</name>
+    <flavour>nodet</flavour>
     <icon>/meta?name=favicon&amp;content=ted_en_business_2018-07</icon>
     <updated>2018-07-23T00:00::00:Z</updated>
     <language>eng</language>
@@ -158,8 +213,27 @@ const char * sampleOpdsStream = R"(
     <link rel="http://opds-spec.org/image/thumbnail" type="image/png" href="/meta?name=favicon&amp;content=ted_en_business_2018-07" />
   </entry>
   <entry>
+    <title>Business talks about TED</title>
+    <id>Dummy id </id>
+    <name>speak_business</name>
+    <flavour>nodet</flavour>
+    <icon>/meta?name=favicon&amp;content=ted_en_business_2018-07</icon>
+    <updated>2018-08-23T00:00::00:Z</updated>
+    <language>eng</language>
+    <summary>Ideas worth spreading</summary>
+    <tags></tags>
+    <link type="text/html" href="/ted_en_business_2018-07" />
+    <author>
+      <name>TED</name>
+    </author>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/ted/ted_en_business_2018-07.zim.meta4" length="8855827456" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/png" href="/meta?name=favicon&amp;content=ted_en_business_2018-07" />
+  </entry>
+  <entry>
     <title>Mythology &amp; Folklore Stack Exchange</title>
     <id>urn:uuid:028055ac-4acc-1d54-65e0-a96de45e1b22</id>
+    <name>mythology.stackexchange.com_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=mythology.stackexchange.com_en_all_2019-02</icon>
     <updated>2019-02-03T00:00::00:Z</updated>
     <language>eng</language>
@@ -175,6 +249,8 @@ const char * sampleOpdsStream = R"(
   <entry>
     <title>Islam Stack Exchange</title>
     <id>urn:uuid:02e9c7ff-36fc-9c6e-6ac7-cd7085989029</id>
+    <name>islam.stackexchange.com_en_all</name>
+    <flavour>novid</flavour>
     <icon>/meta?name=favicon&amp;content=islam.stackexchange.com_en_all_2019-01</icon>
     <updated>2019-01-31T00:00::00:Z</updated>
     <language>eng</language>
@@ -229,6 +305,7 @@ const char sampleLibraryXML[] = R"(
 
 #include "../include/library.h"
 #include "../include/manager.h"
+#include "../include/book.h"
 #include "../include/bookmark.h"
 
 namespace
@@ -242,17 +319,17 @@ TEST(LibraryOpdsImportTest, allInOne)
   kiwix::Manager manager(lib);
   manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
 
-  EXPECT_EQ(10U, lib->getBookCount(true, true));
+  EXPECT_EQ(14U, lib->getBookCount(true, true));
 
   {
   const kiwix::Book& book1 = lib->getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd");
 
   EXPECT_EQ(book1.getTitle(), "Encyclopédie de la Tunisie");
-  EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie_novid_2018-10");
-  EXPECT_EQ(book1.getFlavour(), "unforgettable");
+  EXPECT_EQ(book1.getName(), "wikipedia_fr_tunisie");
+  EXPECT_EQ(book1.getFlavour(), "novid");
   EXPECT_EQ(book1.getLanguages(), Langs{ "fra" });
   EXPECT_EQ(book1.getCommaSeparatedLanguages(), "fra");
-  EXPECT_EQ(book1.getDate(), "8 Oct 2018");
+  EXPECT_EQ(book1.getDate(), "2018-10-08");
   EXPECT_EQ(book1.getDescription(), "Le meilleur de Wikipédia sur la Tunisie");
   EXPECT_EQ(book1.getCreator(), "Wikipedia");
   EXPECT_EQ(book1.getPublisher(), "Wikipedia Publishing House");
@@ -272,9 +349,9 @@ TEST(LibraryOpdsImportTest, allInOne)
 
   {
   const kiwix::Book& book2 = lib->getBookById("0189d9be-2fd0-b4b6-7300-20fab0b5cdc8");
-  EXPECT_EQ(book2.getTitle(), "TED talks - Business");
-  EXPECT_EQ(book2.getName(), "");
-  EXPECT_EQ(book2.getFlavour(), "");
+  EXPECT_EQ(book2.getTitle(), "TED\"talks\" - Business");
+  EXPECT_EQ(book2.getName(), "ted_en_business");
+  EXPECT_EQ(book2.getFlavour(), "nodet");
   EXPECT_EQ(book2.getLanguages(), Langs{ "eng" });
   EXPECT_EQ(book2.getCommaSeparatedLanguages(), "eng");
   EXPECT_EQ(book2.getDate(), "2018-07-23");
@@ -309,11 +386,18 @@ class LibraryTest : public ::testing::Test {
      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
   }
 
-    kiwix::Bookmark createBookmark(const std::string &id) {
-        kiwix::Bookmark bookmark;
-        bookmark.setBookId(id);
-        return bookmark;
-    };
+  kiwix::Bookmark createBookmark(const std::string &id, const std::string& url="", const std::string& title="") {
+    kiwix::Bookmark bookmark;
+    bookmark.setBookId(id);
+    bookmark.setUrl(url);
+    bookmark.setTitle(title);
+    return bookmark;
+  };
+
+  kiwix::Bookmark createBookmark(const kiwix::Book& book, const std::string& url="", const std::string& title="") {
+    kiwix::Bookmark bookmark(book, url, title);
+    return bookmark;
+  };
 
   TitleCollection ids2Titles(const BookIdCollection& ids) {
     TitleCollection titles;
@@ -327,14 +411,35 @@ class LibraryTest : public ::testing::Test {
   std::shared_ptr<kiwix::Library> lib;
 };
 
+TEST_F(LibraryTest, createBookMark)
+{
+  auto bookId = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+  auto book = lib->getBookById(bookId);
+
+  auto bookmark = createBookmark(book, "/a/url", "A title");
+
+  EXPECT_EQ(bookmark.getUrl(), "/a/url");
+  EXPECT_EQ(bookmark.getTitle(), "A title");
+  EXPECT_EQ(bookmark.getBookId(), bookId);
+  EXPECT_EQ(bookmark.getBookName(), book.getName());
+  EXPECT_EQ(bookmark.getBookName(), "wikipedia_fr_tunisie");
+  EXPECT_EQ(bookmark.getBookTitle(), book.getTitle());
+  EXPECT_EQ(bookmark.getDate(), book.getDate());
+  EXPECT_EQ(bookmark.getBookFlavour(), book.getFlavour());
+  EXPECT_EQ(bookmark.getLanguage(), book.getCommaSeparatedLanguages());
+}
+
 TEST_F(LibraryTest, getBookMarksTest)
 {
-    auto bookId1 = lib->getBooksIds()[0];
-    auto bookId2 = lib->getBooksIds()[1];
+    auto bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+    auto bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
 
-    lib->addBookmark(createBookmark(bookId1));
-    lib->addBookmark(createBookmark("invalid-bookmark-id"));
-    lib->addBookmark(createBookmark(bookId2));
+    auto book1 = lib->getBookById(bookId1);
+    auto book2 = lib->getBookById(bookId2);
+
+    lib->addBookmark(createBookmark(book1));
+    lib->addBookmark(createBookmark("invalid-book-id"));
+    lib->addBookmark(createBookmark(book2));
     auto onlyValidBookmarks = lib->getBookmarks();
     auto allBookmarks = lib->getBookmarks(false);
 
@@ -342,13 +447,284 @@ TEST_F(LibraryTest, getBookMarksTest)
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
 
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
-    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-bookmark-id");
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+}
+
+TEST_F(LibraryTest, bookmarksSerializationTest)
+{
+    auto bookId1 = lib->getBooksIds()[0];
+    auto bookId2 = lib->getBooksIds()[1];
+
+    auto book1 = lib->getBookById(bookId1);
+    auto book2 = lib->getBookById(bookId2);
+
+    // Create bookmarks using three different ways.
+    lib->addBookmark(createBookmark(bookId1, "a/url", "Article title1"));
+    lib->addBookmark(createBookmark("invalid-book-id", "another/url", "Unknown title"));
+    lib->addBookmark(createBookmark(book2, "a/url/2", "Article title2"));
+
+    lib->writeBookmarksToFile("__test__bookmarks.xml");
+
+    // Build a new library
+    auto new_lib = kiwix::Library::create();
+    {
+      kiwix::Manager manager(new_lib);
+      manager.readOpds(sampleOpdsStream, "foo.urlHost");
+      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
+      manager.readBookmarkFile("__test__bookmarks.xml");
+    }
+    std::remove("__test__bookmarks.xml");
+
+    auto onlyValidBookmarks = new_lib->getBookmarks();
+    auto allBookmarks = new_lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 2);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+
+    ASSERT_EQ(allBookmarks.size(), 3);
+    auto bookmark1 = allBookmarks[0];
+    EXPECT_EQ(bookmark1.getBookId(), bookId1);
+    EXPECT_EQ(bookmark1.getBookTitle(), book1.getTitle());
+    EXPECT_EQ(bookmark1.getBookName(), book1.getName());
+    EXPECT_EQ(bookmark1.getBookFlavour(), book1.getFlavour());
+    EXPECT_EQ(bookmark1.getUrl(), "a/url");
+    EXPECT_EQ(bookmark1.getTitle(), "Article title1");
+    EXPECT_EQ(bookmark1.getLanguage(), book1.getCommaSeparatedLanguages());
+    EXPECT_EQ(bookmark1.getDate(), book1.getDate());
+
+    auto bookmark2 = allBookmarks[1];
+    EXPECT_EQ(bookmark2.getBookId(), "invalid-book-id");
+    EXPECT_EQ(bookmark2.getBookTitle(), "");
+    EXPECT_EQ(bookmark2.getBookName(), "");
+    EXPECT_EQ(bookmark2.getBookFlavour(), "");
+    EXPECT_EQ(bookmark2.getUrl(), "another/url");
+    EXPECT_EQ(bookmark2.getTitle(), "Unknown title");
+    EXPECT_EQ(bookmark2.getLanguage(), "");
+    EXPECT_EQ(bookmark2.getDate(), "");
+
+    auto bookmark3 = allBookmarks[2];
+    EXPECT_EQ(bookmark3.getBookId(), bookId2);
+    EXPECT_EQ(bookmark3.getBookTitle(), book2.getTitle());
+    EXPECT_EQ(bookmark3.getBookName(), book2.getName());
+    EXPECT_EQ(bookmark3.getBookFlavour(), book2.getFlavour());
+    EXPECT_EQ(bookmark3.getUrl(), "a/url/2");
+    EXPECT_EQ(bookmark3.getTitle(), "Article title2");
+    EXPECT_EQ(bookmark3.getLanguage(), book2.getCommaSeparatedLanguages());
+    EXPECT_EQ(bookmark3.getDate(), book2.getDate());
+}
+
+TEST_F(LibraryTest, MigrateBookmark)
+{
+    std::string bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+    std::string bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
+
+    auto book1 = lib->getBookById(bookId1);
+    auto book1Flavour = lib->getBookById(bookId1+"_flavour");
+    auto book2 = lib->getBookById(bookId2);
+
+    lib->addBookmark(createBookmark(book1));
+    lib->addBookmark(createBookmark("invalid-book-id"));
+    lib->addBookmark(createBookmark(book2));
+
+    auto wrongIdBookmark = createBookmark(book1);
+    wrongIdBookmark.setBookId("wrong-book-id");
+    lib->addBookmark(wrongIdBookmark);
+
+    auto wrongIdBookmarkNoName = createBookmark(book2);
+    wrongIdBookmarkNoName.setBookId("wrong-book-id-noname");
+    wrongIdBookmarkNoName.setBookName("");
+    lib->addBookmark(wrongIdBookmarkNoName);
+
+    auto wrongIdFlavourBookmark = createBookmark(book1Flavour);
+    wrongIdFlavourBookmark.setBookId("wrong-book-flavour-id");
+    lib->addBookmark(wrongIdFlavourBookmark);
+
+    auto onlyValidBookmarks = lib->getBookmarks();
+    auto allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 2);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+
+    ASSERT_EQ(allBookmarks.size(), 6);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), "wrong-book-id");
+    EXPECT_EQ(allBookmarks[4].getBookId(), "wrong-book-id-noname");
+    EXPECT_EQ(allBookmarks[5].getBookId(), "wrong-book-flavour-id");
+
+    ASSERT_EQ(lib->migrateBookmarks("no-existant-book"), 0);
+
+    ASSERT_EQ(lib->migrateBookmarks(), std::make_tuple(3, 4));
+
+    onlyValidBookmarks = lib->getBookmarks();
+    allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 5);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId1+"_updated1yearlater");
+    EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[4].getBookId(), bookId1+"_updated1yearlater_flavour");
+
+    ASSERT_EQ(allBookmarks.size(), 6);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId1+"_updated1yearlater");
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
+
+    ASSERT_EQ(lib->migrateBookmarks(), std::make_tuple(0, 1));
+
+    ASSERT_EQ(lib->migrateBookmarks(bookId1), 1);
+    allBookmarks = lib->getBookmarks(false);
+    ASSERT_EQ(allBookmarks.size(), 6);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId1+"_updated1yearlater");
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId1+"_updated1yearlater");
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
+
+    ASSERT_EQ(lib->migrateBookmarks(bookId1, bookId2), 0); // No more bookId1 bookmark
+
+    ASSERT_EQ(lib->migrateBookmarks(bookId1+"_updated1yearlater", bookId2), 2);
+    onlyValidBookmarks = lib->getBookmarks();
+    allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 5);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[4].getBookId(), bookId1+"_updated1yearlater_flavour");
+
+    ASSERT_EQ(allBookmarks.size(), 6);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
+
+    ASSERT_EQ(lib->migrateBookmarks("invalid-book-id", bookId1), 1);
+
+    onlyValidBookmarks = lib->getBookmarks();
+    allBookmarks = lib->getBookmarks(false);
+
+    ASSERT_EQ(onlyValidBookmarks.size(), 6);
+    EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId1);
+    EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[4].getBookId(), bookId2);
+    EXPECT_EQ(onlyValidBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
+
+
+    ASSERT_EQ(allBookmarks.size(), 6);
+    EXPECT_EQ(allBookmarks[0].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[1].getBookId(), bookId1);
+    EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[3].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[4].getBookId(), bookId2);
+    EXPECT_EQ(allBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdOlder)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
+
+    auto book = lib->getBookById(bookId);
+
+    auto validBookmark = createBookmark(book);
+    lib->addBookmark(validBookmark);
+
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::UPGRADE_ONLY), bookId+"_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdNewer)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
+
+    auto book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getDate(), "2019-10-08");
+
+    auto validBookmark = createBookmark(book);
+    // Make the bookmark more recent than any books in the library.
+    // (But still pointing to existing book)
+    validBookmark.setDate("2020-10-08");
+    lib->addBookmark(validBookmark);
+
+    //  The best book for the bookmark is bookId...
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::UPGRADE_ONLY), bookId);
+    // but there is not migration to do as the bookmark already point to it.
+    ASSERT_EQ(lib->migrateBookmarks(bookId, kiwix::UPGRADE_ONLY), 0);
+
+    ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::ALLOW_DOWNGRADE), bookId);
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdInvalidOlder)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
+
+    auto book = lib->getBookById(bookId);
+
+    auto invalidBookmark = createBookmark(book);
+    invalidBookmark.setBookId("invalid-book-id");
+    lib->addBookmark(invalidBookmark);
+
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::UPGRADE_ONLY), bookId+"_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdInvalidNewer)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
+
+    auto book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getDate(), "2018-10-08");
+
+    auto invalidBookmark = createBookmark(book);
+    invalidBookmark.setBookId("invalid-book-id");
+    invalidBookmark.setDate("2020-10-08");
+    lib->addBookmark(invalidBookmark);
+
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::UPGRADE_ONLY), "");
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdFlavour)
+{
+    auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd_flavour");
+
+    auto book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getDate(), "2018-10-08");
+
+    auto invalidBookmark = createBookmark(book);
+    invalidBookmark.setBookId("invalid-book-id");
+    invalidBookmark.setDate("2020-10-08");
+    lib->addBookmark(invalidBookmark);
+
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::UPGRADE_ONLY), "");
+    ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour");
+}
+
+TEST_F(LibraryTest, GetBestTargetBookIdName)
+{
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "novid"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "other_flavour"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour");
+    ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "other_flavour", "2020-12-12"), "");
 }
 
 TEST_F(LibraryTest, sanityCheck)
 {
-  EXPECT_EQ(lib->getBookCount(true, true), 12U);
+  EXPECT_EQ(lib->getBookCount(true, true), 16U);
   EXPECT_EQ(lib->getBooksLanguages(),
             std::vector<std::string>({"deu", "eng", "fra", "ita", "spa"})
   );
@@ -400,6 +776,10 @@ TEST_F(LibraryTest, filterLocal)
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().local(false),
+    "Business talks about TED",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
@@ -407,7 +787,7 @@ TEST_F(LibraryTest, filterLocal)
     "Mathématiques",
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -416,6 +796,10 @@ TEST_F(LibraryTest, filterLocal)
 TEST_F(LibraryTest, filterRemote)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().remote(true),
+    "Business talks about TED",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
@@ -424,7 +808,7 @@ TEST_F(LibraryTest, filterRemote)
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -437,24 +821,45 @@ TEST_F(LibraryTest, filterRemote)
 TEST_F(LibraryTest, filterByLanguage)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().lang("eng"),
+    "Business talks about TED",
     "Granblue Fantasy Wiki",
     "Islam Stack Exchange",
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business"
+    "TED\"talks\" - Business"
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("lang:eng"),
+    "Business talks about TED",
     "Granblue Fantasy Wiki",
     "Islam Stack Exchange",
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business"
+    "TED\"talks\" - Business"
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("eng"),
+    /* no results */
+  );
+}
+
+TEST_F(LibraryTest, filterByFlavour)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().flavour("full"),
+    "Géographie par Wikipédia",
+    "Tania Louis",
+    "Wikiquote"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("flavour:full"),
+    "Géographie par Wikipédia",
+    "Tania Louis",
+    "Wikiquote"
+  );
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("full"),
     /* no results */
   );
 }
@@ -558,6 +963,9 @@ TEST_F(LibraryTest, filterByQuery)
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki"),
     "An example ZIM archive", // due to the "wikibooks" tag
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
     "Mathématiques", // due to the "wikipedia" tag
@@ -576,6 +984,10 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query(""),
     "An example ZIM archive",
+    "Business talks about TED",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
@@ -584,7 +996,7 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -593,6 +1005,9 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
 TEST_F(LibraryTest, filterByCreator)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
     "Mathématiques",
@@ -634,6 +1049,9 @@ TEST_F(LibraryTest, filterByCreator)
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("creator:Wikipedia"),
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
     "Mathématiques",
@@ -742,6 +1160,9 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia"),
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Géographie par Wikipédia",
     "Mathématiques", // due to the "wikipedia" tag
     "Ray Charles"
@@ -749,10 +1170,16 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL),
     "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Ray Charles"
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia").maxSize(100000000UL).local(false),
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie"
   );
 }
@@ -810,6 +1237,10 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter(),
     "An example ZIM archive",
+    "Business talks about TED",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
+    "Encyclopédie de la Tunisie",
     "Encyclopédie de la Tunisie",
     "Granblue Fantasy Wiki",
     "Géographie par Wikipédia",
@@ -818,7 +1249,7 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
     "Movies & TV Stack Exchange",
     "Mythology & Folklore Stack Exchange",
     "Ray Charles",
-    "TED talks - Business",
+    "TED\"talks\" - Business",
     "Tania Louis",
     "Wikiquote"
   );
@@ -832,7 +1263,7 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
 
   const uint64_t rev2 = lib->getRevision();
 
-  EXPECT_EQ(9u, lib->removeBooksNotUpdatedSince(rev));
+  EXPECT_EQ(13u, lib->removeBooksNotUpdatedSince(rev));
 
   EXPECT_GT(lib->getRevision(), rev2);
 

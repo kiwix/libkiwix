@@ -110,7 +110,7 @@ Library::~Library() = default;
 
 bool Library::addBook(const Book& book)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   ++m_revision;
   /* Try to find it */
   updateBookDB(book);
@@ -141,13 +141,13 @@ bool Library::addBook(const Book& book)
 
 void Library::addBookmark(const Bookmark& bookmark)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   m_bookmarks.push_back(bookmark);
 }
 
 bool Library::removeBookmark(const std::string& zimId, const std::string& url)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   for(auto it=m_bookmarks.begin(); it!=m_bookmarks.end(); it++) {
     if (it->getBookId() == zimId && it->getUrl() == url) {
       m_bookmarks.erase(it);
@@ -155,6 +155,159 @@ bool Library::removeBookmark(const std::string& zimId, const std::string& url)
     }
   }
   return false;
+}
+
+std::tuple<int, int> Library::migrateBookmarks(MigrationMode migrationMode) {
+  std::set<std::string> sourceBooks;
+  int invalidBookmarks = 0;
+  {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    for(auto& bookmark:m_bookmarks) {
+      if (m_books.find(bookmark.getBookId()) == m_books.end()) {
+        invalidBookmarks += 1;
+        sourceBooks.insert(bookmark.getBookId());
+      }
+    }
+  }
+  int changed = 0;
+  for(auto& sourceBook:sourceBooks) {
+    changed += migrateBookmarks(sourceBook, migrationMode);
+  }
+  return std::make_tuple(changed, invalidBookmarks);
+}
+
+std::string Library::getBestFromBookCollection(BookIdCollection books, const Bookmark& bookmark, MigrationMode migrationMode) const {
+  // This function try to get the best book for a bookmark from a book collection.
+  // It assumes that all books in the collection are "acceptable".
+  // (this definiton is not clear but for now it is book's name is equal to bookmark's bookName)
+  //
+  // The algorithm first sort the colletion by "flavour equality" and date.
+  // "flavour equality" is if book's flavour is same that bookmark's flavour (let's say "flavourA" here)
+  // So we have the sorted collection:
+  // - flavourA, date 5
+  // - flavourA, date 4
+  // - flavourB, date 6
+  // - flavourC, date 5
+  // - flavourB, date 3
+  //
+  // Then, depending of migrationMode:
+  // - If ALLOW_DOWNGRADE => take the first one
+  // - If UPGRADE_ONLY => loop on books until we find a book newer than bookmark.
+  //   So if bookmark date is 5 => flavourB, date 6
+  //      if bookmark date is 4 => flavourA, date 5
+  //      if bookmark date is 7 => No book
+
+  if (books.empty()) {
+    return "";
+  }
+
+  sort(books, DATE, false);
+  stable_sort(books.begin(), books.end(), [&](const std::string& bookId1, const std::string& bookId2) {
+    const auto& book1 = getBookById(bookId1);
+    const auto& book2 = getBookById(bookId2);
+    bool same_flavour1 = book1.getFlavour() == bookmark.getBookFlavour();
+    bool same_flavour2 = book2.getFlavour() == bookmark.getBookFlavour();
+    // return True if bookId1 is before bookId2, ie if same_flavour1 and not same_flavour2
+    return same_flavour1 > same_flavour2;
+  });
+
+  if (migrationMode == ALLOW_DOWNGRADE) {
+    return books[0];
+  } else {
+    for (const auto& bookId: books) {
+      const auto& book = getBookById(bookId);
+      if (book.getDate() >= bookmark.getDate()) {
+        return bookId;
+      }
+    }
+  }
+
+  return "";
+}
+
+std::string remove_quote(std::string input) {
+  std::replace(input.begin(), input.end(), '"', ' ');
+  return input;
+}
+
+std::string Library::getBestTargetBookId(const std::string& bookName, const std::string& preferedFlavour, const std::string& minDate) const {
+  // Let's reuse our algorithm based on bookmark.
+  MigrationMode migrationMode = UPGRADE_ONLY;
+  auto bookmark = Bookmark();
+  bookmark.setBookName(bookName);
+  bookmark.setBookFlavour(preferedFlavour);
+
+  if (minDate.empty()) {
+    migrationMode = ALLOW_DOWNGRADE;
+  } else {
+    bookmark.setDate(minDate);
+  }
+
+  return getBestTargetBookId(bookmark, migrationMode);
+}
+
+std::string Library::getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const {
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
+  // Search for a existing book with the same name
+  auto book_filter = Filter();
+  if (!bookmark.getBookName().empty()) {
+    book_filter.name(bookmark.getBookName());
+  } else {
+    // We don't have a name stored (older bookmarks)
+    // Fallback on title (All bookmarks should have one, but let's be safe against wrongly filled bookmark)
+    if (bookmark.getBookTitle().empty()) {
+        // No bookName nor bookTitle, no way to find target book.
+        return "";
+    }
+    book_filter.query("title:\"" + remove_quote(bookmark.getBookTitle()) + "\"");
+  }
+  auto targetBooks = filter(book_filter);
+  auto bestBook = getBestFromBookCollection(targetBooks, bookmark, migrationMode);
+  if (bestBook.empty()) {
+    try {
+      getBookById(bookmark.getBookId());
+      return bookmark.getBookId();
+    } catch (std::out_of_range&) {}
+  }
+  return bestBook;
+}
+
+int Library::migrateBookmarks(const std::string& sourceBookId, MigrationMode migrationMode) {
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
+  Bookmark firstBookmarkToChange;
+  for(auto& bookmark:m_bookmarks) {
+    if (bookmark.getBookId() == sourceBookId) {
+      firstBookmarkToChange = bookmark;
+      break;
+    }
+  }
+
+  if (firstBookmarkToChange.getBookId().empty()) {
+    return 0;
+  }
+
+  std::string betterBook = getBestTargetBookId(firstBookmarkToChange, migrationMode);
+
+  if (betterBook.empty()) {
+    return 0;
+  }
+
+  return migrateBookmarks(sourceBookId, betterBook);
+}
+
+int Library::migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId) {
+  if (sourceBookId == targetBookId) {
+    return 0;
+  }
+  int changed = 0;
+  for (auto& bookmark:m_bookmarks) {
+    if (bookmark.getBookId() == sourceBookId) {
+      bookmark.setBookId(targetBookId);
+      changed +=1;
+    }
+  }
+  return changed;
 }
 
 
@@ -166,7 +319,7 @@ void Library::dropCache(const std::string& id)
 
 bool Library::removeBookById(const std::string& id)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   m_bookDB->delete_document("Q" + id);
   dropCache(id);
   // We do not change the cache size here
@@ -184,7 +337,7 @@ bool Library::removeBookById(const std::string& id)
 
 Library::Revision Library::getRevision() const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   return m_revision;
 }
 
@@ -192,7 +345,7 @@ uint32_t Library::removeBooksNotUpdatedSince(Revision libraryRevision)
 {
   BookIdCollection booksToRemove;
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     for ( const auto& entry : m_books) {
       if ( entry.second.lastUpdatedRevision <= libraryRevision ) {
         booksToRemove.push_back(entry.first);
@@ -217,7 +370,7 @@ const Book& Library::getBookById(const std::string& id) const
 
 Book Library::getBookByIdThreadSafe(const std::string& id) const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   return getBookById(id);
 }
 
@@ -275,7 +428,7 @@ std::shared_ptr<ZimSearcher> Library::getSearcherByIds(const BookIdSet& ids)
 unsigned int Library::getBookCount(const bool localBooks,
                                    const bool remoteBooks) const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   return getBookCount_not_protected(localBooks, remoteBooks);
 }
 
@@ -288,7 +441,7 @@ bool Library::writeToFile(const std::string& path) const
   dumper.setBaseDir(baseDir);
   std::string xml;
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     xml = dumper.dumpLibXMLContent(allBookIds);
   };
   return writeTextFile(path, xml);
@@ -304,7 +457,7 @@ bool Library::writeBookmarksToFile(const std::string& path) const
 
 Library::AttributeCounts Library::getBookAttributeCounts(BookStrPropMemFn p) const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   AttributeCounts propValueCounts;
 
   for (const auto& pair: m_books) {
@@ -336,7 +489,7 @@ std::vector<std::string> Library::getBooksLanguages() const
 
 Library::AttributeCounts Library::getBooksLanguagesWithCounts() const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   AttributeCounts langsWithCounts;
 
   for (const auto& pair: m_books) {
@@ -352,7 +505,7 @@ Library::AttributeCounts Library::getBooksLanguagesWithCounts() const
 
 std::vector<std::string> Library::getBooksCategories() const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   std::set<std::string> categories;
 
   for (const auto& pair: m_books) {
@@ -383,7 +536,7 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
   }
   std::vector<kiwix::Bookmark> validBookmarks;
   auto booksId = getBooksIds();
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   for(auto& bookmark:m_bookmarks) {
     if (std::find(booksId.begin(), booksId.end(), bookmark.getBookId()) != booksId.end()) {
       validBookmarks.push_back(bookmark);
@@ -394,7 +547,7 @@ const std::vector<kiwix::Bookmark> Library::getBookmarks(bool onlyValidBookmarks
 
 Library::BookIdCollection Library::getBooksIds() const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   BookIdCollection bookIds;
 
   for (auto& pair: m_books) {
@@ -437,6 +590,7 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(normalizeText(book.getCreator()),   1, "A");
   indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
   doc.add_term("XN"+normalizeText(book.getName()));
+  indexer.index_text(normalizeText(book.getFlavour()),  1, "XF");
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
@@ -477,6 +631,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("title", "S");
   queryParser.add_prefix("description", "XD");
   queryParser.add_prefix("name", "XN");
+  queryParser.add_prefix("flavour", "XF");
   queryParser.add_prefix("category", "XC");
   queryParser.add_prefix("lang", "L");
   queryParser.add_prefix("publisher", "XP");
@@ -501,6 +656,11 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
 Xapian::Query nameQuery(const std::string& name)
 {
   return Xapian::Query("XN" + normalizeText(name));
+}
+
+Xapian::Query flavourQuery(const std::string& name)
+{
+  return Xapian::Query("XF" + normalizeText(name));
 }
 
 Xapian::Query multipleParamQuery(const std::string& commaSeparatedList, const std::string& prefix)
@@ -570,6 +730,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   if ( filter.hasName() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, nameQuery(filter.getName()));
   }
+  if ( filter.hasFlavour() )  {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, flavourQuery(filter.getFlavour()));     
+  }
   if ( filter.hasCategory() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, categoryQuery(filter.getCategory()));
   }
@@ -600,7 +763,7 @@ Library::BookIdCollection Library::filterViaBookDB(const Filter& filter) const
 
   BookIdCollection bookIds;
 
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   Xapian::Enquire enquire(*m_bookDB);
   enquire.set_query(query);
   const auto results = enquire.get_mset(0, m_books.size());
@@ -615,7 +778,7 @@ Library::BookIdCollection Library::filter(const Filter& filter) const
 {
   BookIdCollection result;
   const auto preliminaryResult = filterViaBookDB(filter);
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   for(auto id : preliminaryResult) {
     if(filter.accept(m_books.at(id))) {
       result.push_back(id);
@@ -689,7 +852,7 @@ void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool asc
   // NOTE: for the entire duration of the sort. Will need to obtain (under a
   // NOTE: lock) the required atributes from the books once, and then the
   // NOTE: sorting will run on a copy of data without locking.
-  std::lock_guard<std::mutex> lock(m_mutex);
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
   switch(sort) {
     case TITLE:
       std::sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this, ascending));
@@ -735,6 +898,7 @@ enum filterTypes {
   QUERY = FLAG(12),
   NAME = FLAG(13),
   CATEGORY = FLAG(14),
+  FLAVOUR = FLAG(15),
 };
 
 Filter& Filter::local(bool accept)
@@ -836,6 +1000,13 @@ Filter& Filter::name(std::string name)
   activeFilters |= NAME;
   return *this;
 }
+  
+Filter& Filter::flavour(std::string flavour)
+{
+  _flavour = flavour;
+  activeFilters |= FLAVOUR;
+  return *this;
+}
 
 Filter& Filter::clearLang()
 {
@@ -880,6 +1051,12 @@ bool Filter::hasCreator() const
 {
   return ACTIVE(_CREATOR);
 }
+
+bool Filter::hasFlavour() const
+{
+  return ACTIVE(FLAVOUR);
+}
+
 
 bool Filter::accept(const Book& book) const
 {

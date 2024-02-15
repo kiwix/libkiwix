@@ -18,6 +18,7 @@
  */
 
 #include "bookmark.h"
+#include "book.h"
 
 #include <pugixml.hpp>
 
@@ -27,6 +28,17 @@ namespace kiwix
 Bookmark::Bookmark()
 {
 }
+
+Bookmark::Bookmark(const Book& book, const std::string& path, const std::string& title):
+  m_bookId(book.getId()),
+  m_bookTitle(book.getTitle()),
+  m_bookName(book.getName()),
+  m_bookFlavour(book.getFlavour()),
+  m_url(path),
+  m_title(title),
+  m_language(book.getCommaSeparatedLanguages()),
+  m_date(book.getDate())
+{}
 
 /* Destructor */
 Bookmark::~Bookmark()
@@ -38,6 +50,8 @@ void Bookmark::updateFromXml(const pugi::xml_node& node)
   auto bookNode = node.child("book");
   m_bookId = bookNode.child("id").child_value();
   m_bookTitle = bookNode.child("title").child_value();
+  m_bookName = bookNode.child("name").child_value();
+  m_bookFlavour = bookNode.child("flavour").child_value();
   m_language = bookNode.child("language").child_value();
   m_date = bookNode.child("date").child_value();
   m_title = node.child("title").child_value();

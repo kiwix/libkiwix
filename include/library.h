@@ -55,6 +55,22 @@ enum supportedListMode {
   NOVALID = 1 << 5
 };
 
+enum MigrationMode {
+  /** When migrating bookmarks, do not allow to migrate to an older book than the currently pointed one
+   * (or date stored in the bookmark if book is invalid)
+   *
+   * If no newer books are found, no upgrade is made.
+   */
+  UPGRADE_ONLY = 0,
+
+  /** Try hard to do a migration. This mostly does:
+   * - Try to find a newer book.
+   * - If book is invalid: find a best book, potentially older.
+   * Older book will never be returned if current book is a valid one.
+   */
+  ALLOW_DOWNGRADE = 1,
+};
+
 class Filter {
   public: // types
     using Tags = std::vector<std::string>;
@@ -71,6 +87,7 @@ class Filter {
     std::string _query;
     bool _queryIsPartial;
     std::string _name;
+    std::string _flavour;
 
   public: // functions
     Filter();
@@ -130,6 +147,7 @@ class Filter {
     Filter& maxSize(size_t size);
     Filter& query(std::string query, bool partial=true);
     Filter& name(std::string name);
+    Filter& flavour(std::string flavour);
     Filter& clearLang();
     Filter& clearCategory();
 
@@ -151,6 +169,9 @@ class Filter {
 
     bool hasCreator() const;
     const std::string& getCreator() const { return _creator; }
+
+    bool hasFlavour() const;
+    const std::string& getFlavour() const { return _flavour; }
 
     const Tags& getAcceptTags() const { return _acceptTags; }
     const Tags& getRejectTags() const { return _rejectTags; }
@@ -250,13 +271,73 @@ class Library: public std::enable_shared_from_this<Library>
   void addBookmark(const Bookmark& bookmark);
 
   /**
-   * Remove a bookmarkk
+   * Remove a bookmark
    *
    * @param zimId The zimId of the bookmark.
    * @param url The url of the bookmark.
    * @return True if the bookmark has been removed.
    */
   bool removeBookmark(const std::string& zimId, const std::string& url);
+
+  /**
+   * Migrate all invalid bookmarks.
+   *
+   * All invalid bookmarks (ie pointing to unknown books, no check is made on bookmark pointing to
+   * invalid articles of valid book) will be migrated (if possible) to a better book.
+   * "Better book", will be determined using method `getBestTargetBookId`.
+   *
+   * @return A tuple<int, int>: <The number of bookmarks updated>, <Number of invalid bookmarks before migration was performed>.
+   */
+  std::tuple<int, int> migrateBookmarks(MigrationMode migrationMode = ALLOW_DOWNGRADE);
+
+  /**
+   * Migrate all bookmarks associated to a specific book.
+   *
+   * All bookmarks associated to `sourceBookId` book will be migrated to a better book.
+   * "Better book", will be determined using method `getBestTargetBookId`.
+   *
+   * @param sourceBookId the source bookId of the bookmarks to migrate.
+   * @param migrationMode how we will find the best book.
+   * @return The number of bookmarks updated.
+   */
+  int migrateBookmarks(const std::string& sourceBookId, MigrationMode migrationMode = UPGRADE_ONLY);
+
+  /**
+   * Migrate bookmarks
+   *
+   * Migrate all bookmarks pointing to `source` to `destination`.
+   *
+   * @param sourceBookId the source bookId of the bookmarks to migrate.
+   * @param targetBookId the destination bookId to migrate the bookmarks to.
+   * @return The number of bookmarks updated.
+   */
+  int migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId);
+ 
+  /**
+   * Get the best available bookId for a bookmark.
+   *
+   * Given a bookmark, return the best available bookId.
+   * "best available bookId" is determined using heuristitcs based on book name, flavour and date.
+   *
+   * @param bookmark The bookmark to search the bookId for.
+   * @param migrationMode The migration mode to use.
+   * @return A bookId. Potentially empty string if no suitable book found.
+   */
+  std::string getBestTargetBookId(const Bookmark& bookmark, MigrationMode migrationMode) const;
+
+  /**
+   * Get the best bookId for a combination of book's name, flavour and date.
+   *
+   * Given a bookName (mandatory), try to find the best book.
+   * If preferedFlavour is given, will try to find a book with the same flavour. If not found, return a book with a different flavour.
+   * If minDate is given, return a book newer than minDate. If not found, return a empty bookId.
+   *
+   * @param bookName The name of the book
+   * @param preferedFlavour The prefered flavour.
+   * @param minDate the minimal book date acceptable. Must be a string in the format "YYYY-MM-DD".
+   * @return A bookId corresponding to the query, or empty string if not found.
+   */
+  std::string getBestTargetBookId(const std::string& bookName, const std::string& preferedFlavour="", const std::string& minDate="") const;
 
   // XXX: This is a non-thread-safe operation
   const Book& getBookById(const std::string& id) const;
@@ -403,12 +484,13 @@ private: // functions
   AttributeCounts getBookAttributeCounts(BookStrPropMemFn p) const;
   std::vector<std::string> getBookPropValueSet(BookStrPropMemFn p) const;
   BookIdCollection filterViaBookDB(const Filter& filter) const;
+  std::string getBestFromBookCollection(BookIdCollection books, const Bookmark& bookmark, MigrationMode migrationMode) const;
   unsigned int getBookCount_not_protected(const bool localBooks, const bool remoteBooks) const;
   void updateBookDB(const Book& book);
   void dropCache(const std::string& bookId);
 
 private: //data
-  mutable std::mutex m_mutex;
+  mutable std::recursive_mutex m_mutex;
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
   using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
