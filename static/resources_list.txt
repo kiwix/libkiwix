@@ -17,6 +17,7 @@ skin/fonts/Poppins.ttf
 skin/fonts/Roboto.ttf
 skin/search_results.css
 skin/blank.html
+skin/polyfills.js
 skin/viewer.js
 skin/i18n.js
 skin/languages.js

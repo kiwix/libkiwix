@@ -146,6 +146,8 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/hash.png?cacheid=f836e872" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/magnet.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/magnet.png?cacheid=73b6bddf" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/polyfills.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/polyfills.js?cacheid=a0e0343d" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search-icon.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=b10ae7ed" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search_results.css" },
@@ -285,6 +287,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
+    <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=9ccd43fd" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
@@ -318,6 +321,7 @@ R"EXPECTEDRESULT(                                <img src="${root}/skin/download
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fad9" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=e014a885" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
+    <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=9ccd43fd" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=5fc4badf" defer></script>
