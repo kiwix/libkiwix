@@ -25,6 +25,13 @@
 	"home-button-text": "Przejdź do głównej strony '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Przejdź do losowo wybranej strony",
 	"searchbox-tooltip": "Szukaj '{{BOOK_TITLE}}'",
+	"search": "Szukaj",
+	"book-filtering-all-categories": "Wszystkie Kategorie",
+	"book-filtering-all-languages": "Wszystkie języki",
+	"download": "Pobierz",
+	"direct-download-link-text": "Bezpośrednio",
+	"direct-download-alt-text": "bezpośrednie pobieranie",
+	"torrent-download-link-text": "Plik torrent",
 	"welcome-to-kiwix-server": "Witamy na serwerze Kiwix",
 	"download-links-title": "Pobierz książkę",
 	"preview-book": "Podgląd"

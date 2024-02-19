@@ -1,9 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Adriendelucca",
 			"Gomoko",
+			"Melimeli",
 			"Stephane",
 			"Thibaut120094",
+			"Urhixidur",
 			"Verdy p",
 			"Vikoula5",
 			"Wladek92"
@@ -31,6 +34,11 @@
 	"500-page-text": "Une erreur de serveur interne s'est produite. Nous en sommes désolés :/",
 	"fulltext-search-unavailable": "Recherche en texte intégral non disponible",
 	"no-search-results": "Le moteur de recherche en texte intégral n’est pas disponible pour ce contenu.",
+	"search-results-page-title": "Rechercher : {{SEARCH_PATTERN}}",
+	"search-results-page-header": "Résultats <b>{{START}}-{{END}}</b> sur<b> {{COUNT}}</b> pour <b>\"{{{SEARCH_PATTERN}}}\"</b>",
+	"empty-search-results-page-header": "Aucun résultat n’a été trouvé pour <b>« {{{SEARCH_PATTERN}}} »</b>",
+	"search-result-book-info": "à partir de {{BOOK_TITLE}}",
+	"word-count": "{{COUNT}} mots",
 	"library-button-text": "Aller à la page de bienvenue",
 	"home-button-text": "Aller à la page principale de « {{BOOK_TITLE}} »",
 	"random-page-button-text": "Aller à une page sélectionnée aléatoirement",
