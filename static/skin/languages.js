@@ -7,7 +7,12 @@ const uiLanguages = [
   {
     "iso_code": "bn",
     "self_name": "বাংলা",
-    "translation_count": 12
+    "translation_count": 14
+  },
+  {
+    "iso_code": "br",
+    "self_name": "brezhoneg",
+    "translation_count": 35
   },
   {
     "iso_code": "cs",
@@ -15,9 +20,14 @@ const uiLanguages = [
     "translation_count": 25
   },
   {
+    "iso_code": "dag",
+    "self_name": "Silimiinsili",
+    "translation_count": 24
+  },
+  {
     "iso_code": "de",
     "self_name": "Deutsch",
-    "translation_count": 49
+    "translation_count": 57
   },
   {
     "iso_code": "en",
@@ -37,12 +47,17 @@ const uiLanguages = [
   {
     "iso_code": "fr",
     "self_name": "Français",
-    "translation_count": 52
+    "translation_count": 57
+  },
+  {
+    "iso_code": "ha",
+    "self_name": "Turanci",
+    "translation_count": 57
   },
   {
     "iso_code": "he",
     "self_name": "עברית",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "hi",
@@ -60,9 +75,14 @@ const uiLanguages = [
     "translation_count": 49
   },
   {
+    "iso_code": "ig",
+    "self_name": "Bekee",
+    "translation_count": 57
+  },
+  {
     "iso_code": "it",
     "self_name": "italiano",
-    "translation_count": 29
+    "translation_count": 34
   },
   {
     "iso_code": "ja",
@@ -87,7 +107,7 @@ const uiLanguages = [
   {
     "iso_code": "mk",
     "self_name": "македонски",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "ms",
@@ -112,12 +132,12 @@ const uiLanguages = [
   {
     "iso_code": "pl",
     "self_name": "Polski",
-    "translation_count": 24
+    "translation_count": 31
   },
   {
     "iso_code": "ru",
     "self_name": "русский",
-    "translation_count": 45
+    "translation_count": 57
   },
   {
     "iso_code": "sc",
@@ -137,7 +157,7 @@ const uiLanguages = [
   {
     "iso_code": "sl",
     "self_name": "slovenščina",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "sq",
@@ -147,7 +167,7 @@ const uiLanguages = [
   {
     "iso_code": "sv",
     "self_name": "Svenska",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "te",
@@ -157,16 +177,16 @@ const uiLanguages = [
   {
     "iso_code": "tr",
     "self_name": "Türkçe",
-    "translation_count": 25
+    "translation_count": 57
   },
   {
     "iso_code": "zh-hans",
     "self_name": "英语",
-    "translation_count": 16
+    "translation_count": 54
   },
   {
     "iso_code": "zh-hant",
     "self_name": "繁體中文",
-    "translation_count": 52
+    "translation_count": 57
   }
 ]
