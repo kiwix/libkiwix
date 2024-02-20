@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Jopparn",
+			"Rofiatmustapha12",
 			"Sabelöga",
 			"WikiPhoenix"
 		]
@@ -28,6 +29,11 @@
 	"500-page-text": "Ett internt serverfel uppstod. Vi ber om ursäkt för det :/",
 	"fulltext-search-unavailable": "Fulltextsökning är inte tillgänglig",
 	"no-search-results": "Sökmaskinen för fulltext är inte tillgänglig för detta innehåll.",
+	"search-results-page-title": "Sök: {{SEARCH_PATTERN}}",
+	"search-results-page-header": "Resultat <b>{{START}}-{{END}}</b> av <b>{{COUNT}}</b> för <b>\"{{{SEARCH_PATTERN}}}\"</b>",
+	"empty-search-results-page-header": "Inga resultat hittades för <b>\"{{{SEARCH_PATTERN}}}\"</b>",
+	"search-result-book-info": "från {{BOOK_TITLE}}",
+	"word-count": "{{COUNT}} ord",
 	"library-button-text": "Gå till hemsidan",
 	"home-button-text": "Gå till huvudsidan för \"{{BOOK_TITLE}}\"",
 	"random-page-button-text": "Gå till en slumpmässigt utvald sida",

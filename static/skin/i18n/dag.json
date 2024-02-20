@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kalakpagh"
+		]
+	},
+	"name": "Silimiinsili",
+	"no-such-book": "Lala buku kani:{{BOOK_NAME}}",
+	"too-many-books": "Buku nima pam ka bɛ daa suhi ({{NB_BOOKS}}) din ni ka tariga nyɛ {{LIMIT}}",
+	"no-book-found": "Buku kani lu zahim a ni piigi yaɣa shɛli",
+	"url-not-found": "URL \"{{url}}\" shɛli bɛ ni daa suhi daa kani n-ti tum tumda ŋɔ.",
+	"suggest-search": "Niŋmi lahabali pali vihigu zaŋ n-ti <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
+	"random-article-failure": "Oops! Zaɣisiya ni di gahim piigi lahabali :(",
+	"404-page-title": "Lahabali kani",
+	"404-page-heading": "Kani",
+	"500-page-title": "Puuni tum tumda chiriŋ",
+	"500-page-heading": "Puuni tum tumda chiriŋ",
+	"500-page-text": "Puuni tum tumda chiriŋ niŋya. Ti niŋ yolitem zaŋ jɛndi li :/",
+	"fulltext-search-unavailable": "Lahabali pali vihigu kani",
+	"search-results-page-title": "Vihima:{{SEARCH_PATTERN}}",
+	"search-results-page-header": "Chaɣili nima <b>{{START}}-{{END}}</b> of <b>{{COUNT}}</b> for <b>\"{{{SEARCH_PATTERN}}}\"</b>",
+	"empty-search-results-page-header": "Chaɣili daa kani zaŋ n-ti\n <b>\"{{{SEARCH_PATTERN}}}\"</b>",
+	"search-result-book-info": "yina {{BOOK_TITLE}}",
+	"word-count": "{{COUNT}} bachi nima",
+	"library-button-text": "Cham solɔɣu",
+	"home-button-text": "Cham yaɣili maŋmaŋ zaŋ n-ti\n'{{BOOK_TITLE}}'",
+	"random-page-button-text": "Cham gahim piigi yaɣili",
+	"searchbox-tooltip": "Vihima '{{BOOK_TITLE}}'",
+	"confusion-of-tongues": "Buku nima ayi bee gari balli koŋkoba nyɛ din yɛn be vihigu ŋɔ ni ka di ni tooi chɛ ka di laasabu wali."
+}

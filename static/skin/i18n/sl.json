@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Eleassar",
-			"Kelson"
+			"Kelson",
+			"Rofiatmustapha12"
 		]
 	},
 	"name": "slovenščina",
@@ -27,6 +28,11 @@
 	"500-page-text": "Prišlo je do notranje napake strežnika. Žal nam je za to. :/",
 	"fulltext-search-unavailable": "Iskanje po celotnem besedilu ni na voljo",
 	"no-search-results": "Iskalnik po celotnem besedilu za to vsebino ni na voljo.",
+	"search-results-page-title": "Iskanje: {{SEARCH_PATTERN}}",
+	"search-results-page-header": "Zadetki <b>{{START}}–{{END}}</b> od <b>{{COUNT}}</b> za »<b>{{{SEARCH_PATTERN}}}</b>«",
+	"empty-search-results-page-header": "Ni zadetkov za »<b>{{{SEARCH_PATTERN}}}</b>«",
+	"search-result-book-info": "iz {{BOOK_TITLE}}",
+	"word-count": "{{COUNT}} besed",
 	"library-button-text": "Pojdite na pozdravno stran",
 	"home-button-text": "Pojdite na glavno stran »{{BOOK_TITLE}}«",
 	"random-page-button-text": "Pojdite na naključno izbrano stran",

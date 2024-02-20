@@ -8,6 +8,8 @@
 	"404-page-heading": "পাওয়া যায়নি",
 	"500-page-title": "অভ্যন্তরীণ সার্ভার ত্রুটি",
 	"500-page-heading": "অভ্যন্তরীণ সার্ভার ত্রুটি",
+	"search-result-book-info": "{{BOOK_TITLE}} থেকে",
+	"word-count": "{{COUNT}}টি শব্দ",
 	"library-button-text": "স্বাগত পাতায় চলুন",
 	"home-button-text": "'{{BOOK_TITLE}}'-এর প্রধান পাতায় চলুন",
 	"searchbox-tooltip": "'{{BOOK_TITLE}}' অনুসন্ধান করুন",

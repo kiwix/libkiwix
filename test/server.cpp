@@ -84,7 +84,7 @@ const ResourceCollection resources200Compressible{
   // TODO: implement cache management of i18n resources
   //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
-  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=9ccd43fd" },
+  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=5be77f5c" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
@@ -289,7 +289,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" defer></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=9ccd43fd" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=5be77f5c" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=ce19da2a" defer></script>
@@ -323,7 +323,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fa
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
-    <script type="text/javascript" src="./skin/languages.js?cacheid=9ccd43fd" defer></script>
+    <script type="text/javascript" src="./skin/languages.js?cacheid=5be77f5c" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=5fc4badf" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
@@ -1137,7 +1137,12 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "bn",
     "self_name": "বাংলা",
-    "translation_count": 12
+    "translation_count": 14
+  },
+  {
+    "iso_code": "br",
+    "self_name": "brezhoneg",
+    "translation_count": 35
   },
   {
     "iso_code": "cs",
@@ -1145,9 +1150,14 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
     "translation_count": 25
   },
   {
+    "iso_code": "dag",
+    "self_name": "Silimiinsili",
+    "translation_count": 24
+  },
+  {
     "iso_code": "de",
     "self_name": "Deutsch",
-    "translation_count": 49
+    "translation_count": 57
   },
   {
     "iso_code": "en",
@@ -1167,12 +1177,17 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "fr",
     "self_name": "Français",
-    "translation_count": 52
+    "translation_count": 57
+  },
+  {
+    "iso_code": "ha",
+    "self_name": "Turanci",
+    "translation_count": 57
   },
   {
     "iso_code": "he",
     "self_name": "עברית",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "hi",
@@ -1190,9 +1205,14 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
     "translation_count": 49
   },
   {
+    "iso_code": "ig",
+    "self_name": "Bekee",
+    "translation_count": 57
+  },
+  {
     "iso_code": "it",
     "self_name": "italiano",
-    "translation_count": 29
+    "translation_count": 34
   },
   {
     "iso_code": "ja",
@@ -1217,7 +1237,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "mk",
     "self_name": "македонски",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "ms",
@@ -1242,12 +1262,12 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "pl",
     "self_name": "Polski",
-    "translation_count": 24
+    "translation_count": 31
   },
   {
     "iso_code": "ru",
     "self_name": "русский",
-    "translation_count": 45
+    "translation_count": 57
   },
   {
     "iso_code": "sc",
@@ -1267,7 +1287,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "sl",
     "self_name": "slovenščina",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "sq",
@@ -1277,7 +1297,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "sv",
     "self_name": "Svenska",
-    "translation_count": 52
+    "translation_count": 57
   },
   {
     "iso_code": "te",
@@ -1287,17 +1307,17 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "tr",
     "self_name": "Türkçe",
-    "translation_count": 25
+    "translation_count": 57
   },
   {
     "iso_code": "zh-hans",
     "self_name": "英语",
-    "translation_count": 16
+    "translation_count": 54
   },
   {
     "iso_code": "zh-hant",
     "self_name": "繁體中文",
-    "translation_count": 52
+    "translation_count": 57
   }
 ])EXPECTEDRESPONSE");
 }
