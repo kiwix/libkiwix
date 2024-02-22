@@ -1,16 +1,25 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kalakpagh"
+			"Kalakpagh",
+			"Ruky Wunpini"
 		]
 	},
 	"name": "Silimiinsili",
+	"suggest-full-text-search": "Gbubi la '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Lala buku kani:{{BOOK_NAME}}",
 	"too-many-books": "Buku nima pam ka bɛ daa suhi ({{NB_BOOKS}}) din ni ka tariga nyɛ {{LIMIT}}",
 	"no-book-found": "Buku kani lu zahim a ni piigi yaɣa shɛli",
 	"url-not-found": "URL \"{{url}}\" shɛli bɛ ni daa suhi daa kani n-ti tum tumda ŋɔ.",
 	"suggest-search": "Niŋmi lahabali pali vihigu zaŋ n-ti <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Oops! Zaɣisiya ni di gahim piigi lahabali :(",
+	"invalid-raw-data-type": "{{DATATYPE}} nyɛla din suhibu bi niŋ viɛnyɛla zaŋ n-ti lahabali kahili.",
+	"invalid-request": "URL \"{{{url}}}\" shɛli bɛ ni daa suhi ŋɔ nyɛla din bi suhi viɛnyɛla.",
+	"no-value-for-arg": "Dariza shɛli bi ti zaŋ n-ti nangban'kpeeni {{ARGUMENT}}",
+	"no-query": "Yɛlshɛli bi yiina",
+	"raw-entry-not-found": "Ku tooi nya {{DATATYPE}} kpɛbu {{ENTRY}}",
+	"400-page-title": "Suhigu din bi niŋ viɛnyɛla",
+	"400-page-heading": "Suhigu din bi niŋ viɛnyɛla",
 	"404-page-title": "Lahabali kani",
 	"404-page-heading": "Kani",
 	"500-page-title": "Puuni tum tumda chiriŋ",
@@ -26,5 +35,21 @@
 	"home-button-text": "Cham yaɣili maŋmaŋ zaŋ n-ti\n'{{BOOK_TITLE}}'",
 	"random-page-button-text": "Cham gahim piigi yaɣili",
 	"searchbox-tooltip": "Vihima '{{BOOK_TITLE}}'",
-	"confusion-of-tongues": "Buku nima ayi bee gari balli koŋkoba nyɛ din yɛn be vihigu ŋɔ ni ka di ni tooi chɛ ka di laasabu wali."
+	"confusion-of-tongues": "Buku nima ayi bee gari balli koŋkoba nyɛ din yɛn be vihigu ŋɔ ni ka di ni tooi chɛ ka di laasabu wali.",
+	"welcome-page-overzealous-filter": "Labisibu kani. A ni yu ni a\n<a href=\"{{URL}}\">reset filter</a>?",
+	"powered-by-kiwix-html": "Din niŋ li nyɛ &nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",
+	"search": "Vihima",
+	"book-filtering-all-categories": "Pubu zaa",
+	"book-filtering-all-languages": "Bala zaa",
+	"count-of-matching-books": "{{COUNT}} Buku(nima)",
+	"download": "Yihibu",
+	"direct-download-link-text": "Tibi",
+	"direct-download-alt-text": "Tibi deebu",
+	"hash-download-link-text": "Sha256 hash",
+	"hash-download-alt-text": "Deebu daliŋ",
+	"welcome-to-kiwix-server": "Maraba Kiwix tum tumda",
+	"download-links-heading": "Deemi soli zaŋ n-ti <b><i>{{BOOK_TITLE}}</i></b>",
+	"download-links-title": "Yaa mi buku",
+	"preview-book": "Labi lihi",
+	"unknown-error": "Chiriŋ din bi tooi baŋ"
 }
