@@ -1,3 +1,14 @@
+libkiwix 13.1.0
+===============
+
+ * Server:
+  - Properly translated error pages (@veloman-yunkan #1032)
+  - Properly translated search result page (@veloman-yunkan #1046)
+  - Default UI language is resolved in frontend (@veloman-yunkan #1044)
+  - Better support of older Web browsers by polyfilling replaceAll() (@veloman-yunkan #1054)
+ * New API to migrate bookmarks between books (@mgautierfr #1043)
+ * Fixed compilation on Haiku OS (@Begasus #1048)
+
 libkiwix 13.0.0
 ===============
 
@@ -53,8 +64,6 @@ libkiwix 12.1.0
  * Remove libkiwix android publisher from the repository (@kelson42 #884)
  * Various fixes of meson and CI. (@mgautierfr @kelson42)
 
-
-
 libkiwix 12.0.0
 ===============
 
@@ -93,7 +102,6 @@ libkiwix 12.0.0
    - Introduce fake `test` language to test i18n (@veloman-yunkan #848)
  * Fix documentation (@kelson42 #816)
  * Udpate translation (#787 #839 #847)
-
 
 libkiwix 11.0.0
 ===============
