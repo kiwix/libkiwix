@@ -479,11 +479,11 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     auto onlyValidBookmarks = new_lib->getBookmarks();
     auto allBookmarks = new_lib->getBookmarks(false);
 
-    ASSERT_EQ(onlyValidBookmarks.size(), 2);
+    ASSERT_EQ(onlyValidBookmarks.size(), 2U);
     EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
 
-    ASSERT_EQ(allBookmarks.size(), 3);
+    ASSERT_EQ(allBookmarks.size(), 3U);
     auto bookmark1 = allBookmarks[0];
     EXPECT_EQ(bookmark1.getBookId(), bookId1);
     EXPECT_EQ(bookmark1.getBookTitle(), book1.getTitle());
@@ -544,11 +544,11 @@ TEST_F(LibraryTest, MigrateBookmark)
     auto onlyValidBookmarks = lib->getBookmarks();
     auto allBookmarks = lib->getBookmarks(false);
 
-    ASSERT_EQ(onlyValidBookmarks.size(), 2);
+    ASSERT_EQ(onlyValidBookmarks.size(), 2U);
     EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
 
-    ASSERT_EQ(allBookmarks.size(), 6);
+    ASSERT_EQ(allBookmarks.size(), 6U);
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
@@ -563,14 +563,14 @@ TEST_F(LibraryTest, MigrateBookmark)
     onlyValidBookmarks = lib->getBookmarks();
     allBookmarks = lib->getBookmarks(false);
 
-    ASSERT_EQ(onlyValidBookmarks.size(), 5);
+    ASSERT_EQ(onlyValidBookmarks.size(), 5U);
     EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
     EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId1+"_updated1yearlater");
     EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
     EXPECT_EQ(onlyValidBookmarks[4].getBookId(), bookId1+"_updated1yearlater_flavour");
 
-    ASSERT_EQ(allBookmarks.size(), 6);
+    ASSERT_EQ(allBookmarks.size(), 6U);
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId1);
     EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
@@ -582,7 +582,7 @@ TEST_F(LibraryTest, MigrateBookmark)
 
     ASSERT_EQ(lib->migrateBookmarks(bookId1), 1);
     allBookmarks = lib->getBookmarks(false);
-    ASSERT_EQ(allBookmarks.size(), 6);
+    ASSERT_EQ(allBookmarks.size(), 6U);
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId1+"_updated1yearlater");
     EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
@@ -596,14 +596,14 @@ TEST_F(LibraryTest, MigrateBookmark)
     onlyValidBookmarks = lib->getBookmarks();
     allBookmarks = lib->getBookmarks(false);
 
-    ASSERT_EQ(onlyValidBookmarks.size(), 5);
+    ASSERT_EQ(onlyValidBookmarks.size(), 5U);
     EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId2);
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId2);
     EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId2);
     EXPECT_EQ(onlyValidBookmarks[3].getBookId(), bookId2);
     EXPECT_EQ(onlyValidBookmarks[4].getBookId(), bookId1+"_updated1yearlater_flavour");
 
-    ASSERT_EQ(allBookmarks.size(), 6);
+    ASSERT_EQ(allBookmarks.size(), 6U);
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId2);
     EXPECT_EQ(allBookmarks[1].getBookId(), "invalid-book-id");
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
@@ -616,7 +616,7 @@ TEST_F(LibraryTest, MigrateBookmark)
     onlyValidBookmarks = lib->getBookmarks();
     allBookmarks = lib->getBookmarks(false);
 
-    ASSERT_EQ(onlyValidBookmarks.size(), 6);
+    ASSERT_EQ(onlyValidBookmarks.size(), 6U);
     EXPECT_EQ(onlyValidBookmarks[0].getBookId(), bookId2);
     EXPECT_EQ(onlyValidBookmarks[1].getBookId(), bookId1);
     EXPECT_EQ(onlyValidBookmarks[2].getBookId(), bookId2);
@@ -625,7 +625,7 @@ TEST_F(LibraryTest, MigrateBookmark)
     EXPECT_EQ(onlyValidBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
 
 
-    ASSERT_EQ(allBookmarks.size(), 6);
+    ASSERT_EQ(allBookmarks.size(), 6U);
     EXPECT_EQ(allBookmarks[0].getBookId(), bookId2);
     EXPECT_EQ(allBookmarks[1].getBookId(), bookId1);
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
