@@ -177,7 +177,16 @@ class Downloader
   /**
    * Start a new download.
    *
-   * This method is thread safe and return a pointer to a newly created `Download`.
+   * This method is thread safe and returns a pointer to a newly created
+   * `Download` or an existing one with a matching URI. In the latter case
+   * the options parameter is ignored, which can lead to surprising results.
+   * For example, if the old and new download requests (sharing the same URI)
+   * have different values for the download directory or output file name
+   * options, after the download is reported to be complete the downloaded file
+   * will be present only at the location specified for the first request.
+   * Also, due to the above peculiarity there is no straightforward way to
+   * repeat a completed or cancelled download whose files have been deleted.
+   *
    * User should call `update` on the returned `Download` to have an accurate status.
    *
    * @param uri: The uri of the thing to download.
