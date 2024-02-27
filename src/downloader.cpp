@@ -166,13 +166,27 @@ std::vector<std::string> Downloader::getDownloadIds() const {
   return ret;
 }
 
+namespace
+{
+
+bool downloadCanBeReused(const Download& d,
+                         const std::string& uri,
+                         const Downloader::Options& /*options*/)
+{
+  const auto& uris = d.getUris();
+  const bool sameURI = std::find(uris.begin(), uris.end(), uri) != uris.end();
+
+  return sameURI;
+}
+
+} // unnamed namespace
+
 std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const Options& options)
 {
   std::unique_lock<std::mutex> lock(m_lock);
   for (auto& p: m_knownDownloads) {
     auto& d = p.second;
-    auto& uris = d->getUris();
-    if (std::find(uris.begin(), uris.end(), uri) != uris.end())
+    if ( downloadCanBeReused(*d, uri, options) )
       return d;
   }
   std::vector<std::string> uris = {uri};
