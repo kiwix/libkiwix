@@ -187,8 +187,6 @@ class Downloader
    * have different values for the download directory or output file name
    * options, after the download is reported to be complete the downloaded file
    * will be present only at the location specified for the first request.
-   * Also, due to the above peculiarity there is no straightforward way to
-   * repeat a completed or cancelled download whose files have been deleted.
    *
    * User should call `update` on the returned `Download` to have an accurate status.
    *

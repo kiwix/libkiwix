@@ -18,6 +18,7 @@
  */
 
 #include "downloader.h"
+#include "tools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
 
@@ -176,7 +177,25 @@ bool downloadCanBeReused(const Download& d,
   const auto& uris = d.getUris();
   const bool sameURI = std::find(uris.begin(), uris.end(), uri) != uris.end();
 
-  return sameURI;
+  if ( !sameURI )
+    return false;
+
+  switch ( d.getStatus() ) {
+  case Download::K_ERROR:
+  case Download::K_UNKNOWN:
+  case Download::K_REMOVED:
+    return false;
+
+  case Download::K_ACTIVE:
+  case Download::K_WAITING:
+  case Download::K_PAUSED:
+    return true; // XXX: what if options are different?
+
+  case Download::K_COMPLETE:
+    return fileExists(d.getPath()); // XXX: what if options are different?
+  }
+
+  return false;
 }
 
 } // unnamed namespace
