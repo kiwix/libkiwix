@@ -166,7 +166,7 @@ std::vector<std::string> Downloader::getDownloadIds() const {
   return ret;
 }
 
-std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
+std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const Options& options)
 {
   std::unique_lock<std::mutex> lock(m_lock);
   for (auto& p: m_knownDownloads) {

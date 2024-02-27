@@ -168,7 +168,10 @@ class Download {
  */
 class Downloader
 {
- public:
+ public: // types
+  typedef std::vector<std::pair<std::string, std::string>> Options;
+
+ public: // functions
   Downloader();
   virtual ~Downloader();
 
@@ -193,7 +196,7 @@ class Downloader
    * @param options: A series of pair <option_name, option_value> to pass to aria.
    * @return: The newly created Download.
    */
-  std::shared_ptr<Download> startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
+  std::shared_ptr<Download> startDownload(const std::string& uri, const Options& options = {});
 
   /**
    * Get a download corrsponding to a download id (did)
@@ -215,7 +218,7 @@ class Downloader
    */
   std::vector<std::string> getDownloadIds() const;
 
- private:
+ private: // data
   mutable std::mutex m_lock;
   std::map<std::string, std::shared_ptr<Download>> m_knownDownloads;
   std::shared_ptr<Aria2> mp_aria;
