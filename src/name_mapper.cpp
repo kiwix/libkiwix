@@ -38,9 +38,16 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
     if (aliasName == bookName) {
       continue;
     }
+
+    mapName(library, aliasName, bookId);
+  }
+}
+
+void HumanReadableNameMapper::mapName(const Library& library, std::string aliasName, std::string bookId) {
     if (m_nameToId.find(aliasName) == m_nameToId.end()) {
       m_nameToId[aliasName] = bookId;
     } else {
+      const auto& currentBook = library.getBookById(bookId);
       auto alreadyPresentPath = library.getBookById(m_nameToId[aliasName]).getPath();
       std::cerr << "Path collision: " << alreadyPresentPath
                 << " and " << currentBook.getPath()
@@ -48,7 +55,6 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
                 << " Therefore, only " << alreadyPresentPath
                 << " will be served." << std::endl;
     }
-  }
 }
 
 std::string HumanReadableNameMapper::getNameForId(const std::string& id) const {
