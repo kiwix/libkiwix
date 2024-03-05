@@ -194,6 +194,23 @@ struct SearchResult
         SearchResult{LINK, TITLE, SNIPPET, BOOK_TITLE, WORDCOUNT}
 
 
+const SearchResult SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM {
+  /*link*/   "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
+  /*title*/  "If You Go Away",
+  /*snippet*/    R"SNIPPET(...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......)SNIPPET",
+  /*bookTitle*/  "Ray Charles",
+  /*wordCount*/  "204"
+};
+
+
+const SearchResult SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM {
+  /*link*/   "/ROOT%23%3F/content/example/Wikibooks.html",
+  /*title*/  "Wikibooks",
+  /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
+  /*bookTitle*/  "Wikibooks",
+  /*wordCount*/  "538"
+};
+
 
 const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
   SEARCH_RESULT(
@@ -1342,21 +1359,8 @@ TEST(ServerSearchTest, searchResults)
       /* totalResultCount */ 2,
       /* firstResultIndex */ 1,
       /* results */          {
-        SEARCH_RESULT(
-          /*link*/   "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
-          /*title*/  "If You Go Away",
-          /*snippet*/    R"SNIPPET(...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "204"
-        ),
-
-        SEARCH_RESULT(
-          /*link*/   "/ROOT%23%3F/content/example/Wikibooks.html",
-          /*title*/  "Wikibooks",
-          /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
-          /*bookTitle*/  "Wikibooks",
-          /*wordCount*/  "538"
-        )
+        SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
+        SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
       },
       /* pagination */       {}
     },
@@ -1369,21 +1373,8 @@ TEST(ServerSearchTest, searchResults)
        /* totalResultCount */ 2,
        /* firstResultIndex */ 1,
        /* results */          {
-         SEARCH_RESULT(
-           /*link*/   "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
-           /*title*/  "If You Go Away",
-           /*snippet*/    R"SNIPPET(...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......)SNIPPET",
-           /*bookTitle*/  "Ray Charles",
-           /*wordCount*/  "204"
-         ),
-
-        SEARCH_RESULT(
-          /*link*/   "/ROOT%23%3F/content/example/Wikibooks.html",
-          /*title*/  "Wikibooks",
-          /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
-          /*bookTitle*/  "Wikibooks",
-          /*wordCount*/  "538"
-        )
+        SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
+        SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
       },
       /* pagination */       {}
     },
