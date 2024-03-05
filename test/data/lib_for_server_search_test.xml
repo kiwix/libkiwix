@@ -1,4 +1,4 @@
 <library version="20110515">
-  <book id="5dc0b3af-5df2-0925-f0ca-d2bf75e78af6" path="example.zim" title="Wikibooks" description="testZim" language="eng" creator="test" publisher="test" tags="_ftindex:yes;_ftindex:yes;_pictures:yes;_videos:yes;_details:yes" date="2021-04-17" mediaCount="22" size="253" />
+  <book id="5dc0b3af-5df2-0925-f0ca-d2bf75e78af6" path="example.zim" title="Wikibooks" description="testZim" language="eng" creator="test" publisher="test" name="bookname_of_example_zim" tags="_ftindex:yes;_ftindex:yes;_pictures:yes;_videos:yes;_details:yes" date="2021-04-17" mediaCount="22" size="253" />
   <book id="6f1d19d0-633f-087b-fb55-7ac324ff9baf" path="zimfile.zim" title="Ray Charles" description="Wikipedia articles about Ray Charles" language="eng" creator="Wikipedia" publisher="Kiwix" name="wikipedia_en_ray_charles" flavour="_mini" tags="wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes" date="2020-03-31" articleCount="129" mediaCount="45" size="555" />
 </library>
