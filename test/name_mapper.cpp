@@ -67,6 +67,25 @@ const std::string ZERO_FOUR_NAME_CONFLICT_MSG =
     " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
     " Therefore, only /data/zero_four_2021-10.zim will be served.\n";
 
+const std::string ZERO_SIX_NAME_CONFLICT_MSG =
+    "Path collision: /data/zërô + SIX.zim and "
+    "/data/zero_plus_six.zim can't share the same URL path 'zero_plus_six'."
+    " Therefore, only /data/zërô + SIX.zim will be served.\n";
+
+const std::string ZERO_SEVEN_NAME_CONFLICT_MSG =
+    "Path collision: /data/subdir/zero_seven.zim and"
+    " /data/zero_seven.zim can't share the same URL path 'zero_seven'."
+    " Therefore, only /data/subdir/zero_seven.zim will be served.\n";
+
+// Name conflicts in the default mode (without the --nodatealiases is off
+const std::string DEFAULT_NAME_CONFLICTS = ZERO_SIX_NAME_CONFLICT_MSG
+                                         + ZERO_SEVEN_NAME_CONFLICT_MSG;
+
+// Name conflicts in --nodatealiases mode
+const std::string ALL_NAME_CONFLICTS = ZERO_FOUR_NAME_CONFLICT_MSG
+                                     + ZERO_SIX_NAME_CONFLICT_MSG
+                                     + ZERO_SEVEN_NAME_CONFLICT_MSG;
+
 } // unnamed namespace
 
 void checkUnaliasedEntriesInNameMapper(const kiwix::NameMapper& nm)
@@ -98,15 +117,15 @@ void checkUnaliasedEntriesInNameMapper(const kiwix::NameMapper& nm)
   EXPECT_EQ("05-a",       nm.getIdForName("zero_five-a"));
   EXPECT_EQ("05-b",       nm.getIdForName("zero_five-b"));
 
-  EXPECT_EQ("06plus",     nm.getIdForName("zero_plus_six"));
-  EXPECT_EQ("07-super",   nm.getIdForName("zero_seven"));
+  EXPECT_EQ("06+",        nm.getIdForName("zero_plus_six"));
+  EXPECT_EQ("07-sub",     nm.getIdForName("zero_seven"));
 }
 
 TEST_F(NameMapperTest, HumanReadableNameMapperWithoutAliases)
 {
   CapturedStderr stderror;
   kiwix::HumanReadableNameMapper nm(*lib, false);
-  EXPECT_EQ("", std::string(stderror));
+  EXPECT_EQ(DEFAULT_NAME_CONFLICTS, std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
@@ -121,7 +140,7 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
 {
   CapturedStderr stderror;
   kiwix::HumanReadableNameMapper nm(*lib, true);
-  EXPECT_EQ(ZERO_FOUR_NAME_CONFLICT_MSG, std::string(stderror));
+  EXPECT_EQ(ALL_NAME_CONFLICTS, std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
@@ -136,7 +155,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithoutAliases)
 {
   CapturedStderr stderror;
   kiwix::UpdatableNameMapper nm(lib, false);
-  EXPECT_EQ("", std::string(stderror));
+  EXPECT_EQ(DEFAULT_NAME_CONFLICTS, std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
@@ -152,7 +171,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithAliases)
 {
   CapturedStderr stderror;
   kiwix::UpdatableNameMapper nm(lib, true);
-  EXPECT_EQ(ZERO_FOUR_NAME_CONFLICT_MSG, std::string(stderror));
+  EXPECT_EQ(ALL_NAME_CONFLICTS, std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
@@ -161,7 +180,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithAliases)
     CapturedStderr nmUpdateStderror;
     lib->removeBookById("04-2021-10");
     nm.update();
-    EXPECT_EQ("", std::string(nmUpdateStderror));
+    EXPECT_EQ(DEFAULT_NAME_CONFLICTS, std::string(nmUpdateStderror));
   }
   EXPECT_EQ("04-2021-11", nm.getIdForName("zero_four"));
   EXPECT_THROW(nm.getNameForId("04-2021-10"), std::out_of_range);

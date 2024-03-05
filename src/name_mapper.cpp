@@ -29,7 +29,7 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
     auto& currentBook = library.getBookById(bookId);
     auto bookName = currentBook.getHumanReadableIdFromPath();
     m_idToName[bookId] = bookName;
-    m_nameToId[bookName] = bookId;
+    mapName(library, bookName, bookId);
 
     if (!withAlias)
       continue;
