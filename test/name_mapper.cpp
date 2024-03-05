@@ -55,6 +55,12 @@ public:
   operator std::string() const { return buffer.str(); }
 };
 
+
+const std::string ZERO_FOUR_NAME_CONFLICT_MSG =
+    "Path collision: /data/zero_four_2021-10.zim and"
+    " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
+    " Therefore, only /data/zero_four_2021-10.zim will be served.\n";
+
 } // unnamed namespace
 
 void checkUnaliasedEntriesInNameMapper(const kiwix::NameMapper& nm)
@@ -91,12 +97,7 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
 {
   CapturedStderr stderror;
   kiwix::HumanReadableNameMapper nm(*lib, true);
-  EXPECT_EQ(
-      "Path collision: /data/zero_four_2021-10.zim and"
-      " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
-      " Therefore, only /data/zero_four_2021-10.zim will be served.\n"
-      , std::string(stderror)
-  );
+  EXPECT_EQ(ZERO_FOUR_NAME_CONFLICT_MSG, std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
@@ -127,12 +128,7 @@ TEST_F(NameMapperTest, UpdatableNameMapperWithAliases)
 {
   CapturedStderr stderror;
   kiwix::UpdatableNameMapper nm(lib, true);
-  EXPECT_EQ(
-      "Path collision: /data/zero_four_2021-10.zim and"
-      " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
-      " Therefore, only /data/zero_four_2021-10.zim will be served.\n"
-      , std::string(stderror)
-  );
+  EXPECT_EQ(ZERO_FOUR_NAME_CONFLICT_MSG, std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
