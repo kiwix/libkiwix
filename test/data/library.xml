@@ -1,8 +1,8 @@
 <library version="1.0">
   <book
         id="raycharles"
-        path="./zimfile.zim"
-        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
+        path="./zimfile_raycharles.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim"
         title="Ray Charles"
         description="Wikipedia articles about Ray Charles"
         language="eng"
@@ -19,8 +19,8 @@
       ></book>
   <book
         id="raycharles_uncategorized"
-        path="./zimfile.zim"
-        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
+        path="./zimfile_raycharles_uncategorized.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim"
         title="Ray (uncategorized) Charles"
         description="No category is assigned to this library entry."
         language="rus,eng"
