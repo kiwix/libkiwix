@@ -1409,6 +1409,36 @@ TEST(ServerSearchTest, searchResults)
       /* pagination */       {}
     },
 
+    // books.filter.name filters by the book name
+    {
+       /* query */          "pattern=travel"
+                            "&books.filter.name=wikipedia_en_ray_charles",
+       /* start */            0,
+       /* resultsPerPage */   10,
+       /* totalResultCount */ 1,
+       /* firstResultIndex */ 1,
+       /* results */          {
+        SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM
+      },
+
+      /* pagination */       {}
+    },
+
+    // books.filter.name filters by the book name
+    {
+      /* query */          "pattern=travel"
+                           "&books.filter.name=bookname_of_example_zim",
+      /* start */            0,
+      /* resultsPerPage */   10,
+      /* totalResultCount */ 1,
+      /* firstResultIndex */ 1,
+      /* results */          {
+        SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
+      },
+
+      /* pagination */       {}
+    },
+
     // Adding a book (without match) doesn't change the results
     {
       /* query */          "pattern=jazz"
