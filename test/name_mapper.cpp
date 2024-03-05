@@ -63,19 +63,19 @@ public:
 
 
 const std::string ZERO_FOUR_NAME_CONFLICT_MSG =
-    "Path collision: /data/zero_four_2021-10.zim and"
-    " /data/zero_four_2021-11.zim can't share the same URL path 'zero_four'."
-    " Therefore, only /data/zero_four_2021-10.zim will be served.\n";
+    "Path collision: '/data/zero_four_2021-10.zim' and"
+    " '/data/zero_four_2021-11.zim' can't share the same URL path 'zero_four'."
+    " Therefore, only '/data/zero_four_2021-10.zim' will be served.\n";
 
 const std::string ZERO_SIX_NAME_CONFLICT_MSG =
-    "Path collision: /data/zërô + SIX.zim and "
-    "/data/zero_plus_six.zim can't share the same URL path 'zero_plus_six'."
-    " Therefore, only /data/zërô + SIX.zim will be served.\n";
+    "Path collision: '/data/zërô + SIX.zim' and "
+    "'/data/zero_plus_six.zim' can't share the same URL path 'zero_plus_six'."
+    " Therefore, only '/data/zërô + SIX.zim' will be served.\n";
 
 const std::string ZERO_SEVEN_NAME_CONFLICT_MSG =
-    "Path collision: /data/subdir/zero_seven.zim and"
-    " /data/zero_seven.zim can't share the same URL path 'zero_seven'."
-    " Therefore, only /data/subdir/zero_seven.zim will be served.\n";
+    "Path collision: '/data/subdir/zero_seven.zim' and"
+    " '/data/zero_seven.zim' can't share the same URL path 'zero_seven'."
+    " Therefore, only '/data/subdir/zero_seven.zim' will be served.\n";
 
 // Name conflicts in the default mode (without the --nodatealiases is off
 const std::string DEFAULT_NAME_CONFLICTS = ZERO_SIX_NAME_CONFLICT_MSG

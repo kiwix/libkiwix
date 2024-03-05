@@ -47,11 +47,11 @@ void HumanReadableNameMapper::mapName(const Library& library, std::string name, 
   } else {
     const auto& currentBook = library.getBookById(bookId);
     auto alreadyPresentPath = library.getBookById(m_nameToId[name]).getPath();
-    std::cerr << "Path collision: " << alreadyPresentPath
-              << " and " << currentBook.getPath()
-              << " can't share the same URL path '" << name << "'."
-              << " Therefore, only " << alreadyPresentPath
-              << " will be served." << std::endl;
+    std::cerr << "Path collision: '" << alreadyPresentPath
+              << "' and '" << currentBook.getPath()
+              << "' can't share the same URL path '" << name << "'."
+              << " Therefore, only '" << alreadyPresentPath
+              << "' will be served." << std::endl;
   }
 }
 
