@@ -194,6 +194,23 @@ struct SearchResult
         SearchResult{LINK, TITLE, SNIPPET, BOOK_TITLE, WORDCOUNT}
 
 
+const SearchResult SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM {
+  /*link*/   "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
+  /*title*/  "If You Go Away",
+  /*snippet*/    R"SNIPPET(...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......)SNIPPET",
+  /*bookTitle*/  "Ray Charles",
+  /*wordCount*/  "204"
+};
+
+
+const SearchResult SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM {
+  /*link*/   "/ROOT%23%3F/content/example/Wikibooks.html",
+  /*title*/  "Wikibooks",
+  /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
+  /*bookTitle*/  "Wikibooks",
+  /*wordCount*/  "538"
+};
+
 
 const std::vector<SearchResult> LARGE_SEARCH_RESULTS = {
   SEARCH_RESULT(
@@ -1342,21 +1359,8 @@ TEST(ServerSearchTest, searchResults)
       /* totalResultCount */ 2,
       /* firstResultIndex */ 1,
       /* results */          {
-        SEARCH_RESULT(
-          /*link*/   "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
-          /*title*/  "If You Go Away",
-          /*snippet*/    R"SNIPPET(...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "204"
-        ),
-
-        SEARCH_RESULT(
-          /*link*/   "/ROOT%23%3F/content/example/Wikibooks.html",
-          /*title*/  "Wikibooks",
-          /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
-          /*bookTitle*/  "Wikibooks",
-          /*wordCount*/  "538"
-        )
+        SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
+        SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
       },
       /* pagination */       {}
     },
@@ -1369,22 +1373,69 @@ TEST(ServerSearchTest, searchResults)
        /* totalResultCount */ 2,
        /* firstResultIndex */ 1,
        /* results */          {
-         SEARCH_RESULT(
-           /*link*/   "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
-           /*title*/  "If You Go Away",
-           /*snippet*/    R"SNIPPET(...<b>Travel</b> On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the Billboard Hot 100, and went to #8 in the UK. The complex melody is partly derivative of classical music - the poignant "But if you stay..." passage comes from Franz Liszt's......)SNIPPET",
-           /*bookTitle*/  "Ray Charles",
-           /*wordCount*/  "204"
-         ),
-
-        SEARCH_RESULT(
-          /*link*/   "/ROOT%23%3F/content/example/Wikibooks.html",
-          /*title*/  "Wikibooks",
-          /*snippet*/    R"SNIPPET(...<b>Travel</b> guide Wikidata Knowledge database Commons Media repository Meta Coordination MediaWiki MediaWiki software Phabricator MediaWiki bug tracker Wikimedia Labs MediaWiki development The Wikimedia Foundation is a non-profit organization that depends on your voluntarism and donations to operate. If you find Wikibooks or other projects hosted by the Wikimedia Foundation useful, please volunteer or make a donation. Your donations primarily helps to purchase server equipment, launch new projects......)SNIPPET",
-          /*bookTitle*/  "Wikibooks",
-          /*wordCount*/  "538"
-        )
+        SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
+        SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
       },
+      /* pagination */       {}
+    },
+
+    // books.name filters by the name of the ZIM file
+    {
+      /* query */          "pattern=travel"
+                           "&books.name=zimfile",
+      /* start */            0,
+      /* resultsPerPage */   10,
+      /* totalResultCount */ 1,
+      /* firstResultIndex */ 1,
+      /* results */          {
+        SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM
+      },
+
+      /* pagination */       {}
+    },
+
+    // books.name filters by the name of the ZIM file
+    {
+      /* query */          "pattern=travel"
+                           "&books.name=example",
+      /* start */            0,
+      /* resultsPerPage */   10,
+      /* totalResultCount */ 1,
+      /* firstResultIndex */ 1,
+      /* results */          {
+        SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
+      },
+
+      /* pagination */       {}
+    },
+
+    // books.filter.name filters by the book name
+    {
+       /* query */          "pattern=travel"
+                            "&books.filter.name=wikipedia_en_ray_charles",
+       /* start */            0,
+       /* resultsPerPage */   10,
+       /* totalResultCount */ 1,
+       /* firstResultIndex */ 1,
+       /* results */          {
+        SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM
+      },
+
+      /* pagination */       {}
+    },
+
+    // books.filter.name filters by the book name
+    {
+      /* query */          "pattern=travel"
+                           "&books.filter.name=bookname_of_example_zim",
+      /* start */            0,
+      /* resultsPerPage */   10,
+      /* totalResultCount */ 1,
+      /* firstResultIndex */ 1,
+      /* results */          {
+        SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
+      },
+
       /* pagination */       {}
     },
 
@@ -1521,7 +1572,10 @@ TEST(ServerSearchTest, searchResults)
   }
 }
 
-std::string expectedConfusionOfTonguesErrorHtml(std::string url)
+std::string invalidRequestErrorHtml(std::string url,
+                                    std::string errorMsgId,
+                                    std::string errorMsgParamsJSON,
+                                    std::string errorText)
 {
   return R"(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -1530,7 +1584,7 @@ std::string expectedConfusionOfTonguesErrorHtml(std::string url)
     <title>Invalid request</title>
     <script>
       window.KIWIX_RESPONSE_TEMPLATE = )" + ERROR_HTML_TEMPLATE_JS_STRING + R"(;
-      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : ")" + url + R"(" } } }, { "p" : { "msgid" : "confusion-of-tongues", "params" : { } } } ] };
+      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : ")" + url + R"(" } } }, { "p" : { "msgid" : ")" + errorMsgId + R"(", "params" : )" + errorMsgParamsJSON + R"( } } ] };
     </script>
   </head>
   <body>
@@ -1539,11 +1593,22 @@ std::string expectedConfusionOfTonguesErrorHtml(std::string url)
       The requested URL ")" + url + R"(" is not a valid request.
     </p>
     <p>
-      Two or more books in different languages would participate in search, which may lead to confusing results.
+      )" + errorText + R"(
     </p>
   </body>
 </html>
 )";
+}
+
+const char CONFUSION_OF_TONGUES_ERROR_TEXT[] = "Two or more books in different languages would participate in search, which may lead to confusing results.";
+
+std::string expectedConfusionOfTonguesErrorHtml(std::string url)
+{
+  return invalidRequestErrorHtml(url,
+    /* errorMsgId */             "confusion-of-tongues",
+    /* errorMsgParamsJSON */     "{ }",
+    /* errorText */              CONFUSION_OF_TONGUES_ERROR_TEXT
+  );
 }
 
 std::string expectedConfusionOfTonguesErrorXml(std::string url)
@@ -1551,7 +1616,7 @@ std::string expectedConfusionOfTonguesErrorXml(std::string url)
   return R"(<?xml version="1.0" encoding="UTF-8">
 <error>Invalid request</error>
 <detail>The requested URL ")" + url + R"(" is not a valid request.</detail>
-<detail>Two or more books in different languages would participate in search, which may lead to confusing results.</detail>
+<detail>)" + CONFUSION_OF_TONGUES_ERROR_TEXT + R"(</detail>
 )";
 }
 
@@ -1589,5 +1654,52 @@ TEST(ServerSearchTest, searchInMultilanguageBookSetIsDenied)
       EXPECT_EQ(r->status, 400) << ctx;
       EXPECT_EQ(r->body, expectedConfusionOfTonguesErrorXml(url)) << ctx;
     }
+  }
+}
+
+std::string noSuchBookErrorHtml(std::string url, std::string bookName)
+{
+  return invalidRequestErrorHtml(url,
+    /* errorMsgId */             "no-such-book",
+    /* errorMsgParamsJSON */     "{ \"BOOK_NAME\" : \"" + bookName + "\" }",
+    /* errorText */              "No such book: " + bookName
+  );
+}
+
+std::string noBookFoundErrorHtml(std::string url)
+{
+  return invalidRequestErrorHtml(url,
+    /* errorMsgId */             "no-book-found",
+    /* errorMsgParamsJSON */     "{ }",
+    /* errorText */              "No book matches selection criteria"
+  );
+}
+
+TEST(ServerSearchTest, bookSelectionNegativeTests)
+{
+  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS,
+                    "./test/lib_for_server_search_test.xml");
+
+  {
+    // books.name (unlike books.filter.name) DOESN'T consider the book name
+    // and reports an error (surprise!)
+    const std::string bookName = "wikipedia_en_ray_charles";
+    const std::string q = "pattern=travel&books.name=" + bookName;
+    const std::string url = "/ROOT%23%3F/search?" + q;
+
+    const auto r = zfs.GET(url.c_str());
+    EXPECT_EQ(r->status, 400);
+    EXPECT_EQ(r->body, noSuchBookErrorHtml(url, bookName));
+  }
+
+  {
+    // books.filter.name (unlike books.name) DOESN'T consider the ZIM file name
+    // and reports an error (differently from books.name)
+    const std::string q = "pattern=travel&books.filter.name=zimfile";
+    const std::string url = "/ROOT%23%3F/search?" + q;
+
+    const auto r = zfs.GET(url.c_str());
+    EXPECT_EQ(r->status, 400);
+    EXPECT_EQ(r->body, noBookFoundErrorHtml(url));
   }
 }
