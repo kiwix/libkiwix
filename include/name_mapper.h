@@ -54,6 +54,9 @@ class HumanReadableNameMapper : public NameMapper {
     virtual ~HumanReadableNameMapper() = default;
     virtual std::string getNameForId(const std::string& id) const;
     virtual std::string getIdForName(const std::string& name) const;
+
+  private:
+    void mapName(const kiwix::Library& lib, std::string name, std::string id);
 };
 
 class UpdatableNameMapper : public NameMapper {

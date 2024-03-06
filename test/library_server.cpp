@@ -129,11 +129,11 @@ std::string maskVariableOPDSFeedData(std::string s)
   "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n" \
   "          type=\"image/png;width=48;height=48;scale=1\"/>\n    ", \
   CONTENT_NAME, \
-  "zimfile", \
+  "zimfile_raycharles", \
   "569344"\
 )
 
-#define RAY_CHARLES_CATALOG_ENTRY           _RAY_CHARLES_CATALOG_ENTRY("zimfile")
+#define RAY_CHARLES_CATALOG_ENTRY           _RAY_CHARLES_CATALOG_ENTRY("zimfile_raycharles")
 #define RAY_CHARLES_CATALOG_ENTRY_NO_MAPPER _RAY_CHARLES_CATALOG_ENTRY("raycharles")
 
 #define UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY CATALOG_ENTRY(\
@@ -145,8 +145,8 @@ std::string maskVariableOPDSFeedData(std::string s)
   "",\
   "public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no",\
   "",\
-  "zimfile", \
-  "zimfile", \
+  "zimfile_raycharles_uncategorized", \
+  "zimfile_raycharles_uncategorized", \
   "125952"\
 )
 
@@ -1110,10 +1110,10 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "                <div class=\"book__link__wrapper\">\n" \
   "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48)></div>\n" \
   "                    <div class=\"book__header\">\n" \
-  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile\">Ray Charles</a></div>\n" \
-  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile\">Download</a></span></div>\n" \
+  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile_raycharles\">Ray Charles</a></div>\n" \
+  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile_raycharles\">Download</a></span></div>\n" \
   "                    </div>\n" \
-  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles\" title=\"Preview\" aria-label=\"Preview\">\n" \
   "                      <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
   "                    </a>\n" \
   "              </div>\n" \
@@ -1130,10 +1130,10 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "                <div class=\"book__link__wrapper\">\n" \
   "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles_uncategorized/?size=48)></div>\n" \
   "                    <div class=\"book__header\">\n" \
-  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile\">Ray (uncategorized) Charles</a></div>\n" \
-  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile\">Download</a></span></div>\n" \
+  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile_raycharles_uncategorized\">Ray (uncategorized) Charles</a></div>\n" \
+  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized\">Download</a></span></div>\n" \
   "                    </div>\n" \
-  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles_uncategorized\" title=\"Preview\" aria-label=\"Preview\">\n" \
   "                      <div class=\"book__description\" title=\"No category is assigned to this library entry.\">No category is assigned to this library entry.</div>\n" \
   "                    </a>\n" \
   "              </div>\n" \
@@ -1224,16 +1224,16 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    <div class=\"downloadLinksTitle\">\n" \
   "        Download links for <b><i>Ray (uncategorized) Charles</i></b>\n" \
   "    </div>\n" \
-  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim\" download>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim\" download>\n" \
   "        <div>Direct</div>\n" \
   "    </a>\n" \
-  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim.sha256\" download>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim.sha256\" download>\n" \
   "        <div>Sha256 hash</div>\n" \
   "    </a>\n" \
-  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim.magnet\" target=\"_blank\">\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim.magnet\" target=\"_blank\">\n" \
   "        <div>Magnet link</div>\n" \
   "    </a>\n" \
-  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim.torrent\" download>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim.torrent\" download>\n" \
   "        <div>Torrent file</div>\n" \
   "    </a>\n" \
   "</body>\n" \
@@ -1273,7 +1273,7 @@ TEST_F(LibraryServerTest, noJS) {
             FINAL_HTML_TEXT);
 
   // no_js_download
-  r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile");
+  r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, RAY_CHARLES_UNCTZ_DOWNLOAD);
 }

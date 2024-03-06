@@ -29,25 +29,29 @@ HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool w
     auto& currentBook = library.getBookById(bookId);
     auto bookName = currentBook.getHumanReadableIdFromPath();
     m_idToName[bookId] = bookName;
-    m_nameToId[bookName] = bookId;
+    mapName(library, bookName, bookId);
 
     if (!withAlias)
       continue;
 
     auto aliasName = replaceRegex(bookName, "", "_[[:digit:]]{4}-[[:digit:]]{2}$");
-    if (aliasName == bookName) {
-      continue;
+    if (aliasName != bookName) {
+      mapName(library, aliasName, bookId);
     }
-    if (m_nameToId.find(aliasName) == m_nameToId.end()) {
-      m_nameToId[aliasName] = bookId;
-    } else {
-      auto alreadyPresentPath = library.getBookById(m_nameToId[aliasName]).getPath();
-      std::cerr << "Path collision: " << alreadyPresentPath
-                << " and " << currentBook.getPath()
-                << " can't share the same URL path '" << aliasName << "'."
-                << " Therefore, only " << alreadyPresentPath
-                << " will be served." << std::endl;
-    }
+  }
+}
+
+void HumanReadableNameMapper::mapName(const Library& library, std::string name, std::string bookId) {
+  if (m_nameToId.find(name) == m_nameToId.end()) {
+    m_nameToId[name] = bookId;
+  } else {
+    const auto& currentBook = library.getBookById(bookId);
+    auto alreadyPresentPath = library.getBookById(m_nameToId[name]).getPath();
+    std::cerr << "Path collision: '" << alreadyPresentPath
+              << "' and '" << currentBook.getPath()
+              << "' can't share the same URL path '" << name << "'."
+              << " Therefore, only '" << alreadyPresentPath
+              << "' will be served." << std::endl;
   }
 }
 
