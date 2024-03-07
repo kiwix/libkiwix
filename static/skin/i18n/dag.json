@@ -42,14 +42,14 @@
 	"book-filtering-all-categories": "Pubu zaa",
 	"book-filtering-all-languages": "Bala zaa",
 	"count-of-matching-books": "{{COUNT}} Buku(nima)",
-	"download": "Yihibu",
+	"download": "Deebu",
 	"direct-download-link-text": "Tibi",
 	"direct-download-alt-text": "Tibi deebu",
 	"hash-download-link-text": "Sha256 hash",
 	"hash-download-alt-text": "Deebu daliŋ",
 	"welcome-to-kiwix-server": "Maraba Kiwix tum tumda",
 	"download-links-heading": "Deemi soli zaŋ n-ti <b><i>{{BOOK_TITLE}}</i></b>",
-	"download-links-title": "Yaa mi buku",
-	"preview-book": "Labi lihi",
+	"download-links-title": "Deemi buku",
+	"preview-book": "Daŋyuli",
 	"unknown-error": "Chiriŋ din bi tooi baŋ"
 }

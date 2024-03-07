@@ -26,5 +26,6 @@
 	"torrent-download-link-text": "Torrent-tiedosto",
 	"filter-by-tag": "Suodata tunnisteen ”{{TAG}}” mukaan",
 	"download-links-title": "Lataa kirja",
-	"preview-book": "Esikatsele"
+	"preview-book": "Esikatsele",
+	"unknown-error": "Tuntematon virhe"
 }
