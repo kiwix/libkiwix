@@ -34,6 +34,7 @@ skin/i18n/skr-arab.json
 skin/i18n/sl.json
 skin/i18n/sq.json
 skin/i18n/sv.json
+skin/i18n/sw.json
 skin/i18n/te.json
 skin/i18n/test.json
 skin/i18n/tr.json

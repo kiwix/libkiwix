@@ -22,7 +22,7 @@ const uiLanguages = [
   {
     "iso_code": "dag",
     "self_name": "Silimiinsili",
-    "translation_count": 24
+    "translation_count": 48
   },
   {
     "iso_code": "de",
@@ -42,7 +42,7 @@ const uiLanguages = [
   {
     "iso_code": "fi",
     "self_name": "suomi",
-    "translation_count": 22
+    "translation_count": 23
   },
   {
     "iso_code": "fr",
@@ -167,6 +167,11 @@ const uiLanguages = [
   {
     "iso_code": "sv",
     "self_name": "Svenska",
+    "translation_count": 57
+  },
+  {
+    "iso_code": "sw",
+    "self_name": "Kiswahili",
     "translation_count": 57
   },
   {
