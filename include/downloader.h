@@ -168,7 +168,10 @@ class Download {
  */
 class Downloader
 {
- public:
+ public: // types
+  typedef std::vector<std::pair<std::string, std::string>> Options;
+
+ public: // functions
   Downloader();
   virtual ~Downloader();
 
@@ -177,14 +180,21 @@ class Downloader
   /**
    * Start a new download.
    *
-   * This method is thread safe and return a pointer to a newly created `Download`.
+   * This method is thread safe and returns a pointer to a newly created
+   * `Download` or an existing one with a matching URI. In the latter case
+   * the options parameter is ignored, which can lead to surprising results.
+   * For example, if the old and new download requests (sharing the same URI)
+   * have different values for the download directory or output file name
+   * options, after the download is reported to be complete the downloaded file
+   * will be present only at the location specified for the first request.
+   *
    * User should call `update` on the returned `Download` to have an accurate status.
    *
    * @param uri: The uri of the thing to download.
    * @param options: A series of pair <option_name, option_value> to pass to aria.
    * @return: The newly created Download.
    */
-  std::shared_ptr<Download> startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options = {});
+  std::shared_ptr<Download> startDownload(const std::string& uri, const Options& options = {});
 
   /**
    * Get a download corrsponding to a download id (did)
@@ -206,7 +216,7 @@ class Downloader
    */
   std::vector<std::string> getDownloadIds() const;
 
- private:
+ private: // data
   mutable std::mutex m_lock;
   std::map<std::string, std::shared_ptr<Download>> m_knownDownloads;
   std::shared_ptr<Aria2> mp_aria;

@@ -18,6 +18,7 @@
  */
 
 #include "downloader.h"
+#include "tools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
 
@@ -166,13 +167,45 @@ std::vector<std::string> Downloader::getDownloadIds() const {
   return ret;
 }
 
-std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const std::vector<std::pair<std::string, std::string>>& options)
+namespace
+{
+
+bool downloadCanBeReused(const Download& d,
+                         const std::string& uri,
+                         const Downloader::Options& /*options*/)
+{
+  const auto& uris = d.getUris();
+  const bool sameURI = std::find(uris.begin(), uris.end(), uri) != uris.end();
+
+  if ( !sameURI )
+    return false;
+
+  switch ( d.getStatus() ) {
+  case Download::K_ERROR:
+  case Download::K_UNKNOWN:
+  case Download::K_REMOVED:
+    return false;
+
+  case Download::K_ACTIVE:
+  case Download::K_WAITING:
+  case Download::K_PAUSED:
+    return true; // XXX: what if options are different?
+
+  case Download::K_COMPLETE:
+    return fileExists(d.getPath()); // XXX: what if options are different?
+  }
+
+  return false;
+}
+
+} // unnamed namespace
+
+std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const Options& options)
 {
   std::unique_lock<std::mutex> lock(m_lock);
   for (auto& p: m_knownDownloads) {
     auto& d = p.second;
-    auto& uris = d->getUris();
-    if (std::find(uris.begin(), uris.end(), uri) != uris.end())
+    if ( downloadCanBeReused(*d, uri, options) )
       return d;
   }
   std::vector<std::string> uris = {uri};
