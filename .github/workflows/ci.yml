@@ -14,9 +14,19 @@ jobs:
         os:
           - macos-13
         target:
-          - native_dyn
-          - iOS_arm64
-          - iOS_x86_64
+          - macos-x86_64-dyn
+          - ios-arm64-dyn
+          - ios-x86_64-dyn
+        include:
+          - target: macos-x86_64-dyn
+            arch_name: x86_64-apple-darwin
+            run_test: true
+          - target: ios-arm64-dyn
+            arch_name: aarch64-apple-ios
+            run_test: true
+          - target: ios-x86_64-dyn
+            arch_name: x86-apple-ios-simulator
+            run_test: true
     runs-on: ${{ matrix.os }}
 
     env:
@@ -43,23 +53,23 @@ jobs:
 
       - name: Compile
         env:
-          PKG_CONFIG_PATH: ${{env.HOME}}/BUILD_${{matrix.target}}/INSTALL/lib/pkgconfig
+          PKG_CONFIG_PATH: ${{env.HOME}}/BUILD_${{matrix.arch_name}}/INSTALL/lib/pkgconfig
           CPPFLAGS: -I${{env.HOME}}/BUILD_native_dyn/INSTALL/include
           MESON_OPTION: --default-library=shared -Db_coverage=true
-          MESON_CROSSFILE: ${{env.HOME}}/BUILD_${{matrix.target}}/meson_cross_file.txt
+          MESON_CROSSFILE: ${{env.HOME}}/BUILD_${{matrix.arch_name}}/meson_cross_file.txt
         shell: bash
         run: |
-          if [[ ! "${{matrix.target}}" =~ native_.* ]]; then
+          if [ -e $MESON_CROSSFILE ]; then
             MESON_OPTION="$MESON_OPTION --cross-file $MESON_CROSSFILE -Dstatic-linkage=true"
           fi
           meson . build ${MESON_OPTION}
           ninja -C build
 
       - name: Test libkiwix
-        if: startsWith(matrix.target, 'native_')
+        if: matrix.run_test
         env:
           SKIP_BIG_MEMORY_TEST: 1
-          LD_LIBRARY_PATH: ${{env.HOME}}/BUILD_native_dyn/INSTALL/lib:${{env.HOME}}/BUILD_native_dyn/INSTALL/lib64
+          LD_LIBRARY_PATH: ${{env.HOME}}/BUILD_${{matrix.arch_name}}/INSTALL/lib:${{env.HOME}}/BUILD_${{matrix.arch_name}}/INSTALL/lib64
         run: meson test -C build --verbose
 
   Linux:
@@ -67,37 +77,49 @@ jobs:
       fail-fast: false
       matrix:
         name:
-          - native_static
-          - native_dyn
-          - android_arm
-          - android_arm64
-          - win32_static
-          - win32_dyn
+          - linux-x86_64-static
+          - linux-x86_64-dyn
+          - android-arm
+          - android-arm64
+          - win32-static
+          - win32-dyn
         include:
-          - name: native_static
-            target: native_static
+          - target: linux-x86_64-static
             image_variant: focal
             lib_postfix: '/x86_64-linux-gnu'
-          - name: native_dyn
-            target: native_dyn
+            arch_name: linux-x86_64
+            run_test: true
+            coverage: true
+          - target: linux-x86_64-dyn
             image_variant: focal
             lib_postfix: '/x86_64-linux-gnu'
-          - name: android_arm
-            target: android_arm
+            arch_name: linux-x86_64
+            run_test: true
+            coverage: true
+          - target: android-arm
             image_variant: focal
             lib_postfix: '/arm-linux-androideabi'
-          - name: android_arm64
-            target: android_arm64
+            arch_name: arm-linux-androideabi
+            run_test: false
+            coverage: false
+          - target: android-arm64
             image_variant: focal
             lib_postfix: '/aarch64-linux-android'
-          - name: win32_static
-            target: win32_static
+            arch_name: aarch64-linux-android
+            run_test: false
+            coverage: false
+          - target: win32-static
             image_variant: f35
             lib_postfix: '64'
-          - name: win32_dyn
-            target: win32_dyn
+            arch_name: i686-w64-mingw32
+            run_test: false
+            coverage: false
+          - target: win32-dyn
             image_variant: f35
             lib_postfix: '64'
+            arch_name: i686-w64-mingw32
+            run_test: false
+            coverage: false
     env:
       HOME: /home/runner
     runs-on: ubuntu-20.04
@@ -114,38 +136,40 @@ jobs:
       shell: bash
       run: |
         meson --version
-        if [[ "${{matrix.target}}" =~ .*_dyn ]]; then
+        if [[ "${{matrix.target}}" =~ .*-dyn ]]; then
           MESON_OPTION="--default-library=shared"
         else
           MESON_OPTION="--default-library=static"
         fi
-        if [[ "${{matrix.target}}" =~ native_.* ]]; then
+        if [ -e "${{env.HOME}}/BUILD_${{matrix.arch_name}}/meson_cross_file.txt" ]; then
           MESON_OPTION="$MESON_OPTION -Db_coverage=true"
         else
-          MESON_OPTION="$MESON_OPTION --cross-file $HOME/BUILD_${{matrix.target}}/meson_cross_file.txt"
+          MESON_OPTION="$MESON_OPTION --cross-file ${{env.HOME}}/BUILD_${{matrix.arch_name}}/meson_cross_file.txt"
         fi
-        if [[ "${{matrix.target}}" =~ android_.* ]]; then
+        if [[ "${{matrix.target}}" =~ android-.* ]]; then
           MESON_OPTION="$MESON_OPTION -Dstatic-linkage=true"
         fi
         meson . build ${MESON_OPTION}
         cd build
         ninja
       env:
-        PKG_CONFIG_PATH: "/home/runner/BUILD_${{matrix.target}}/INSTALL/lib/pkgconfig:/home/runner/BUILD_${{matrix.target}}/INSTALL/lib${{matrix.lib_postfix}}/pkgconfig"
-        CPPFLAGS: "-I/home/runner/BUILD_${{matrix.target}}/INSTALL/include"
+        PKG_CONFIG_PATH: "/home/runner/BUILD_${{matrix.arch_name}}/INSTALL/lib/pkgconfig:/home/runner/BUILD_${{matrix.arch_name}}/INSTALL/lib${{matrix.lib_postfix}}/pkgconfig"
+        CPPFLAGS: "-I/home/runner/BUILD_${{matrix.arch_name}}/INSTALL/include"
     - name: Test
-      if: startsWith(matrix.target, 'native_')
+      if: matrix.run_test
       shell: bash
       run: |
         cd build
         meson test --verbose
-        ninja coverage
+        if [[ "${{matrix.coverage}}" = "true"]]; then
+          ninja coverage
+        fi
       env:
-        LD_LIBRARY_PATH: "/home/runner/BUILD_${{matrix.target}}/INSTALL/lib:/home/runner/BUILD_${{matrix.target}}/INSTALL/lib${{matrix.lib_postfix}}"
+        LD_LIBRARY_PATH: "/home/runner/BUILD_${{matrix.arch_name}}/INSTALL/lib:/home/runner/BUILD_${{matrix.arch_name}}/INSTALL/lib${{matrix.lib_postfix}}"
         SKIP_BIG_MEMORY_TEST: 1
 
     - name: Publish coverage
-      if: startsWith(matrix.target, 'native_')
+      if: matrix.coverage
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
