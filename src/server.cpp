@@ -51,6 +51,7 @@ bool Server::start() {
     m_withTaskbar,
     m_withLibraryButton,
     m_blockExternalLinks,
+    m_ipv6,
     m_indexTemplateString,
     m_ipConnectionLimit));
   return mp_server->start();
@@ -82,6 +83,11 @@ int Server::getPort()
 std::string Server::getAddress()
 {
   return mp_server->getAddress();
+}
+
+bool Server::isAddressIPv6()
+{
+  return mp_server->isAddressIPv6();
 }
 
 }

@@ -103,6 +103,7 @@ class InternalServer {
                    bool withTaskbar,
                    bool withLibraryButton,
                    bool blockExternalLinks,
+                   bool ipv6,
                    std::string indexTemplateString,
                    int ipConnectionLimit);
     virtual ~InternalServer();
@@ -118,6 +119,7 @@ class InternalServer {
     void stop();
     std::string getAddress() { return m_addr; }
     int getPort() { return m_port; }
+    bool isAddressIPv6() { return m_ipv6; }
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
@@ -174,6 +176,7 @@ class InternalServer {
     bool m_withTaskbar;
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
+    bool m_ipv6;
     std::string m_indexTemplateString;
     int m_ipConnectionLimit;
     struct MHD_Daemon* mp_daemon;

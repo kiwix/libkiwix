@@ -416,6 +416,7 @@ InternalServer::InternalServer(LibraryPtr library,
                                bool withTaskbar,
                                bool withLibraryButton,
                                bool blockExternalLinks,
+                               bool ipv6,
                                std::string indexTemplateString,
                                int ipConnectionLimit) :
   m_addr(addr),
@@ -428,6 +429,7 @@ InternalServer::InternalServer(LibraryPtr library,
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
+  m_ipv6(ipv6),
   m_indexTemplateString(indexTemplateString.empty() ? RESOURCE::templates::index_html : indexTemplateString),
   m_ipConnectionLimit(ipConnectionLimit),
   mp_daemon(nullptr),
@@ -451,28 +453,43 @@ bool InternalServer::start() {
   if (m_verbose.load())
     flags |= MHD_USE_DEBUG;
 
-  struct sockaddr_in sockAddr;
-  memset(&sockAddr, 0, sizeof(sockAddr));
-  sockAddr.sin_family = AF_INET;
-  sockAddr.sin_port = htons(m_port);
+
+  struct sockaddr_in sockAddr4={0};
+  sockAddr4.sin_family = AF_INET;
+  sockAddr4.sin_port = htons(m_port);
+  struct sockaddr_in6 sockAddr6={0};
+  sockAddr6.sin6_family = AF_INET6;
+  sockAddr6.sin6_port = htons(m_port);
+
   if (m_addr.empty()) {
     if (0 != INADDR_ANY) {
-      sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+      sockAddr6.sin6_addr = in6addr_any;
+      sockAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
     }
-    m_addr = kiwix::getBestPublicIp();
-  } else {
-    if (inet_pton(AF_INET, m_addr.c_str(), &(sockAddr.sin_addr.s_addr)) == 0) {
-      std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
+    m_addr = kiwix::getBestPublicIp(m_ipv6);
+    std::cout<<m_addr<<std::endl;
+  } else if (inet_pton(AF_INET6, m_addr.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1 ) {
+    m_ipv6 = true;
+  } else if (inet_pton(AF_INET, m_addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1) {
+    if (m_ipv6) {
+      std::cerr << "Ip address " << m_addr << "  is not a valid ipv6 address" << std::endl;
       return false;
     }
+  } else {
+    std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
+    return false;
   }
+
+  if (m_ipv6)
+    flags|=MHD_USE_DUAL_STACK;
+
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
                             NULL,
                             NULL,
                             &staticHandlerCallback,
                             this,
-                            MHD_OPTION_SOCK_ADDR, &sockAddr,
+                            MHD_OPTION_SOCK_ADDR, m_ipv6?(struct sockaddr*)&sockAddr6:(struct sockaddr*)&sockAddr4,
                             MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
                             MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);

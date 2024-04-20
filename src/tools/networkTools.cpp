@@ -32,12 +32,14 @@
 #include <stdexcept>
 
 #ifdef _WIN32
+#include <iphlpapi.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iostream>
 #else
 #include <unistd.h>
-#include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <ifaddrs.h>
 #include <sys/socket.h>
 #include <net/if.h>
 #include <netdb.h>
@@ -75,90 +77,131 @@ std::string kiwix::download(const std::string& url) {
   return ss.str();
 }
 
-std::map<std::string, std::string> kiwix::getNetworkInterfaces() {
-  std::map<std::string, std::string> interfaces;
-
 #ifdef _WIN32
-  SOCKET sd = WSASocket(AF_INET, SOCK_DGRAM, 0, 0, 0, 0);
-  if (sd == INVALID_SOCKET) {
-    std::cerr << "Failed to get a socket. Error " << WSAGetLastError() << std::endl;
-    return interfaces;
-  }
 
-  INTERFACE_INFO InterfaceList[20];
-  unsigned long nBytesReturned;
-  if (WSAIoctl(sd, SIO_GET_INTERFACE_LIST, 0, 0, &InterfaceList,
-      sizeof(InterfaceList), &nBytesReturned, 0, 0) == SOCKET_ERROR) {
-    std::cerr << "Failed calling WSAIoctl: error " << WSAGetLastError() << std::endl;
-    return interfaces;
-  }
+std::map<std::string,ip_addr> kiwix::getNetworkInterfacesWin() {
+  std::map<std::string,ip_addr> interfaces;
 
-  int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
-  for (int i = 0; i < nNumInterfaces; ++i) {
-    sockaddr_in *pAddress;
-    pAddress = (sockaddr_in *) & (InterfaceList[i].iiAddress.AddressIn);
-    if(pAddress->sin_family == AF_INET) {
-    /* Add to the map */
-    std::string interfaceName = std::string(inet_ntoa(pAddress->sin_addr));
-    interfaces[interfaceName] = interfaceName;
-    }
-  }
-#else
-  /* Get Network interfaces information */
-  char buf[16384];
-  struct ifconf ifconf;
-  int fd = socket(PF_INET, SOCK_DGRAM, 0); /* Only IPV4 */
-  ifconf.ifc_len = sizeof(buf);
-  ifconf.ifc_buf=buf;
-  if(ioctl(fd, SIOCGIFCONF, &ifconf)!=0) {
-    perror("ioctl(SIOCGIFCONF)");
-  }
+  const int working_buffer_size = 15000;
+  const int max_tries = 3;
 
-  /* Go through each interface */
-  struct ifreq *ifreq;
-  ifreq = ifconf.ifc_req;
-  for (int i = 0; i < ifconf.ifc_len; ) {
-    if (ifreq->ifr_addr.sa_family == AF_INET) {
-      /* Get the network interface ip */
-      char host[128] = { 0 };
-      const int error = getnameinfo(&(ifreq->ifr_addr), sizeof(ifreq->ifr_addr),
-                                    host, sizeof(host),
-                                    0, 0, NI_NUMERICHOST);
-      if (!error) {
-        std::string interfaceName = std::string(ifreq->ifr_name);
-        std::string interfaceIp = std::string(host);
-        /* Add to the map */
-        interfaces[interfaceName] = interfaceIp;
-      } else {
-        perror("getnameinfo()");
-      }
+  ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
+
+  // default to unspecified address family (both)
+  ULONG family = AF_UNSPEC;
+
+  ULONG outBufLen = working_buffer_size;
+  ULONG Iterations = 0;
+  DWORD dwRetVal = 0;
+  PIP_ADAPTER_ADDRESSES interfacesHead = NULL;
+
+  // Successively allocate the required memory until GetAdaptersAddresses does not
+  // results in ERROR_BUFFER_OVERFLOW for a maximum of max_tries
+  do{
+
+    interfacesHead = (IP_ADAPTER_ADDRESSES *) malloc(outBufLen);
+    if (interfacesHead == NULL) {
+      std::cerr << "Memory allocation failed for IP_ADAPTER_ADDRESSES struct" << std::endl;
+      return interfaces;
     }
 
-    /* some systems have ifr_addr.sa_len and adjust the length that
-     * way, but not mine. weird */
-    size_t len;
-#ifndef __linux__
-    len = IFNAMSIZ + ifreq->ifr_addr.sa_len;
-#else
-    len = sizeof(*ifreq);
-#endif
-    ifreq = (struct ifreq*)((char*)ifreq+len);
-    i += len;
+    dwRetVal = GetAdaptersAddresses(family, flags, NULL, interfacesHead, &outBufLen);
+
+  } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < max_tries));
+
+  if (dwRetVal == NO_ERROR) {
+    PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
+    unsigned int i = 0;
+    for (PIP_ADAPTER_ADDRESSES temp = interfacesHead; temp != NULL;
+    temp = temp->Next) {
+      pUnicast = temp->FirstUnicastAddress;
+            if (pUnicast != NULL) {
+                for (i = 0; pUnicast != NULL; i++){
+                  if (pUnicast->Address.lpSockaddr->sa_family == AF_INET)
+                  {
+                      sockaddr_in *si = (sockaddr_in *)(pUnicast->Address.lpSockaddr);
+                      char host[INET_ADDRSTRLEN]={0};
+                      inet_ntop(AF_INET, &(si->sin_addr), host, sizeof(host));
+                      interfaces[temp->AdapterName].addr=host;
+                  }
+                  else if (pUnicast->Address.lpSockaddr->sa_family == AF_INET6)
+                  {
+                      sockaddr_in6 *si = (sockaddr_in6 *)(pUnicast->Address.lpSockaddr);
+                      char host[INET6_ADDRSTRLEN]={0};
+                      inet_ntop(AF_INET6, &(si->sin6_addr), host, sizeof(host));
+                      if (!IN6_IS_ADDR_LINKLOCAL(&(si->sin6_addr)))
+                        interfaces[temp->AdapterName].addr6=host;
+                  }
+                  pUnicast = pUnicast->Next;
+                }
+            }
+    }
+  } else {
+    std::cerr << "Call to GetAdaptersAddresses failed with error: "<< dwRetVal << std::endl;
   }
-#endif
+
+  if (interfacesHead) free(interfacesHead);
+
   return interfaces;
 }
 
-std::string kiwix::getBestPublicIp() {
-  auto interfaces = getNetworkInterfaces();
+#else
+
+std::map<std::string,ip_addr> kiwix::getNetworkInterfacesPosix() {
+  std::map<std::string,ip_addr> interfaces;
+
+  struct ifaddrs *interfacesHead;
+  if (getifaddrs(&interfacesHead) == -1) {
+      perror("getifaddrs");
+  }
+
+  for (ifaddrs *temp = interfacesHead; temp != NULL; temp = temp->ifa_next) {
+      if (temp->ifa_addr == NULL) continue;
+
+      if (temp->ifa_addr->sa_family == AF_INET) {
+          sockaddr_in *si = (sockaddr_in *)(temp->ifa_addr);
+          char host[INET_ADDRSTRLEN] = {0};
+          inet_ntop(AF_INET, &(si->sin_addr), host, sizeof(host));
+          interfaces[temp->ifa_name].addr=host;
+      } else if (temp->ifa_addr->sa_family == AF_INET6) {
+          sockaddr_in6 *si = (sockaddr_in6 *)(temp->ifa_addr);
+          char host[INET6_ADDRSTRLEN] = {0};
+          inet_ntop(AF_INET6, &(si->sin6_addr), host, sizeof(host));
+          if (!IN6_IS_ADDR_LINKLOCAL(&(si->sin6_addr)))
+            interfaces[temp->ifa_name].addr6=host;
+      }
+  }
+
+  freeifaddrs(interfacesHead);
+
+  return interfaces;
+}
+
+#endif
+
+std::map<std::string,ip_addr> kiwix::getNetworkInterfaces() {
+  std::map<std::string,ip_addr> interfaces;
+
+#ifdef _WIN32
+  return getNetworkInterfacesWin();
+#else
+  return getNetworkInterfacesPosix();
+#endif
+
+}
+
+std::string kiwix::getBestPublicIp(bool ipv6) {
+  ip_addr bestPublicIp = ip_addr{"127.0.0.1","::1"};
+  std::map<std::string,ip_addr>  interfaces = getNetworkInterfaces();
 
 #ifndef _WIN32
   const char* const prioritizedNames[] =
       { "eth0", "eth1", "wlan0", "wlan1", "en0", "en1" };
   for(auto name: prioritizedNames) {
-    auto it = interfaces.find(name);
-    if(it != interfaces.end()) {
-      return it->second;
+    auto it=interfaces.find(name);
+    if(it != interfaces.end() && !(ipv6 && (*it).second.addr6.empty())) {
+      bestPublicIp = (*it).second;
+      break;
     }
   }
 #endif
@@ -166,12 +209,12 @@ std::string kiwix::getBestPublicIp() {
   const char* const prefixes[] = { "192.168", "172.16.", "10.0" };
   for(auto prefix : prefixes){
     for(auto& itr : interfaces) {
-      auto interfaceIp = itr.second;
-      if (interfaceIp.find(prefix) == 0) {
-        return interfaceIp;
+      std::string interfaceIp(itr.second.addr);
+      if (interfaceIp.find(prefix) == 0 && !(ipv6 && itr.second.addr6.empty())) {
+        bestPublicIp = itr.second;
+        break;
       }
     }
   }
-
-  return "127.0.0.1";
+  return ipv6 ? bestPublicIp.addr6 : bestPublicIp.addr;
 }

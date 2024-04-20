@@ -62,8 +62,10 @@ namespace kiwix
         { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
        void setBlockExternalLinks(bool blockExternalLinks)
         { m_blockExternalLinks = blockExternalLinks; }
+       void setIPv6(bool ipv6) { m_ipv6 = ipv6; }
        int getPort();
        std::string getAddress();
+       bool isAddressIPv6();
 
      protected:
        std::shared_ptr<Library> mp_library;
@@ -78,6 +80,7 @@ namespace kiwix
        bool m_withTaskbar = true;
        bool m_withLibraryButton = true;
        bool m_blockExternalLinks = false;
+       bool m_ipv6 = false;
        int m_ipConnectionLimit = 0;
        std::unique_ptr<InternalServer> mp_server;
   };
