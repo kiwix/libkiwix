@@ -416,7 +416,7 @@ InternalServer::InternalServer(LibraryPtr library,
                                bool withTaskbar,
                                bool withLibraryButton,
                                bool blockExternalLinks,
-                               bool ipv6,
+                               IpMode ipMode,
                                std::string indexTemplateString,
                                int ipConnectionLimit) :
   m_addr(addr),
@@ -429,7 +429,7 @@ InternalServer::InternalServer(LibraryPtr library,
   m_withTaskbar(withTaskbar),
   m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
-  m_ipv6(ipv6),
+  m_ipMode(ipMode),
   m_indexTemplateString(indexTemplateString.empty() ? RESOURCE::templates::index_html : indexTemplateString),
   m_ipConnectionLimit(ipConnectionLimit),
   mp_daemon(nullptr),
@@ -466,22 +466,27 @@ bool InternalServer::start() {
       sockAddr6.sin6_addr = in6addr_any;
       sockAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
     }
-    m_addr = kiwix::getBestPublicIp(m_ipv6);
-    std::cout<<m_addr<<std::endl;
-  } else if (inet_pton(AF_INET6, m_addr.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1 ) {
-    m_ipv6 = true;
-  } else if (inet_pton(AF_INET, m_addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1) {
-    if (m_ipv6) {
-      std::cerr << "Ip address " << m_addr << "  is not a valid ipv6 address" << std::endl;
+    m_addr = kiwix::getBestPublicIp(m_ipMode == IpMode::ipv6 || m_ipMode == IpMode::all);
+  } else {
+    bool ipv6 = inet_pton(AF_INET6, m_addr.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1;
+    bool ipv4 = inet_pton(AF_INET, m_addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1;
+    if (ipv6){
+       m_ipMode = IpMode::all;
+    } else if (!ipv4) {
+      std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
       return false;
     }
-  } else {
-    std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
-    return false;
   }
 
-  if (m_ipv6)
+  if (m_ipMode == IpMode::all) {
     flags|=MHD_USE_DUAL_STACK;
+  } else if (m_ipMode == IpMode::ipv6) {
+    flags|=MHD_USE_IPv6;
+  }
+
+  struct sockaddr* sockaddr = (m_ipMode==IpMode::all || m_ipMode==IpMode::ipv6)
+                              ? (struct sockaddr*)&sockAddr6
+                              : (struct sockaddr*)&sockAddr4;
 
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
@@ -489,7 +494,7 @@ bool InternalServer::start() {
                             NULL,
                             &staticHandlerCallback,
                             this,
-                            MHD_OPTION_SOCK_ADDR, m_ipv6?(struct sockaddr*)&sockAddr6:(struct sockaddr*)&sockAddr4,
+                            MHD_OPTION_SOCK_ADDR, sockaddr,
                             MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
                             MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);

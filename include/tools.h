@@ -25,12 +25,12 @@
 #include <map>
 #include <cstdint>
 
-struct ip_addr{
+namespace kiwix {
+struct IpAddress{
     std::string addr;
     std::string addr6;
 };
 
-namespace kiwix {
 typedef std::pair<std::string, std::string> LangNameCodePair;
 typedef std::vector<LangNameCodePair> FeedLanguages;
 typedef std::vector<std::string> FeedCategories;
@@ -220,23 +220,11 @@ bool fileReadable(const std::string& path);
  */
 std::string getMimeTypeForFile(const std::string& filename);
 
-/** Provides all available network interfaces on Windows
- *
- * This function provides the available IPv4 and IPv6 network interfaces
- */
-std::map<std::string,ip_addr> getNetworkInterfacesWin();
-
-/** Provides all available network interfaces on Posix
- *
- * This function provides the available IPv4 and IPv6 network interfaces
- */
-std::map<std::string,ip_addr> getNetworkInterfacesPosix();
-
 /** Provides all available network interfaces
  *
  * This function provides the available IPv4 and IPv6 network interfaces
  */
-std::map<std::string,ip_addr> getNetworkInterfaces();
+std::map<std::string,IpAddress> getNetworkInterfaces();
 
 /** Provides the best IP address
  * This function provides the best IP address from the list given by getNetworkInterfaces

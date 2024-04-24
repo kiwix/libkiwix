@@ -79,8 +79,8 @@ std::string kiwix::download(const std::string& url) {
 
 #ifdef _WIN32
 
-std::map<std::string,ip_addr> kiwix::getNetworkInterfacesWin() {
-  std::map<std::string,ip_addr> interfaces;
+std::map<std::string,kiwix::IpAddress> getNetworkInterfacesWin() {
+  std::map<std::string,kiwix::IpAddress> interfaces;
 
   const int working_buffer_size = 15000;
   const int max_tries = 3;
@@ -98,7 +98,6 @@ std::map<std::string,ip_addr> kiwix::getNetworkInterfacesWin() {
   // Successively allocate the required memory until GetAdaptersAddresses does not
   // results in ERROR_BUFFER_OVERFLOW for a maximum of max_tries
   do{
-
     interfacesHead = (IP_ADAPTER_ADDRESSES *) malloc(outBufLen);
     if (interfacesHead == NULL) {
       std::cerr << "Memory allocation failed for IP_ADAPTER_ADDRESSES struct" << std::endl;
@@ -106,7 +105,6 @@ std::map<std::string,ip_addr> kiwix::getNetworkInterfacesWin() {
     }
 
     dwRetVal = GetAdaptersAddresses(family, flags, NULL, interfacesHead, &outBufLen);
-
   } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < max_tries));
 
   if (dwRetVal == NO_ERROR) {
@@ -147,8 +145,8 @@ std::map<std::string,ip_addr> kiwix::getNetworkInterfacesWin() {
 
 #else
 
-std::map<std::string,ip_addr> kiwix::getNetworkInterfacesPosix() {
-  std::map<std::string,ip_addr> interfaces;
+std::map<std::string,kiwix::IpAddress> getNetworkInterfacesPosix() {
+  std::map<std::string,kiwix::IpAddress> interfaces;
 
   struct ifaddrs *interfacesHead;
   if (getifaddrs(&interfacesHead) == -1) {
@@ -179,20 +177,17 @@ std::map<std::string,ip_addr> kiwix::getNetworkInterfacesPosix() {
 
 #endif
 
-std::map<std::string,ip_addr> kiwix::getNetworkInterfaces() {
-  std::map<std::string,ip_addr> interfaces;
-
+std::map<std::string,kiwix::IpAddress> kiwix::getNetworkInterfaces() {
 #ifdef _WIN32
   return getNetworkInterfacesWin();
 #else
   return getNetworkInterfacesPosix();
 #endif
-
 }
 
 std::string kiwix::getBestPublicIp(bool ipv6) {
-  ip_addr bestPublicIp = ip_addr{"127.0.0.1","::1"};
-  std::map<std::string,ip_addr>  interfaces = getNetworkInterfaces();
+  kiwix::IpAddress bestPublicIp = kiwix::IpAddress{"127.0.0.1","::1"};
+  std::map<std::string,kiwix::IpAddress>  interfaces = getNetworkInterfaces();
 
 #ifndef _WIN32
   const char* const prioritizedNames[] =
