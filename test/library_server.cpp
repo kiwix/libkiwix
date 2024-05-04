@@ -1171,7 +1171,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "        </div>\n" \
   "      </div>\n" \
   "      <form id='kiwixSearchForm' class='kiwixNav__SearchForm' action=\"/ROOT%23%3F/nojs\">\n" \
-  "        <input type=\"text\" name=\"q\" placeholder=\"Search\" id=\"searchFilter\" class='kiwixSearch filter' value=\"\">\n" \
+  "        <input type=\"text\" name=\"q\" accesskey=\"s\" placeholder=\"Search\" id=\"searchFilter\" class='kiwixSearch filter' value=\"\">\n" \
   "        <input type=\"submit\" class=\"kiwixButton kiwixButtonHover\" value=\"Search\"/>\n" \
   "      </form>\n" \
   "    </div>\n"
