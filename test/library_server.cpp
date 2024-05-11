@@ -1228,13 +1228,13 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "        <div>Direct</div>\n" \
   "    </a>\n" \
   "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim.sha256\" download>\n" \
-  "        <div>Sha256 hash</div>\n" \
+  "        <div>SHA-256 checksum</div>\n" \
   "    </a>\n" \
   "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim.magnet\" target=\"_blank\">\n" \
   "        <div>Magnet link</div>\n" \
   "    </a>\n" \
   "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim.torrent\" download>\n" \
-  "        <div>Torrent file</div>\n" \
+  "        <div>BitTorrent</div>\n" \
   "    </a>\n" \
   "</body>\n" \
   "</html>"
