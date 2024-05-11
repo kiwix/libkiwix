@@ -486,9 +486,8 @@
     function addTagElement(tagValue, resetFilter) {
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.style.display = 'inline-block';
-        const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
-        tagElement.innerHTML = `${humanFriendlyTagValue}`;
-        const tagMessage = $t("stop-filtering-by-tag", {TAG: humanFriendlyTagValue});
+        tagElement.innerHTML = `${tagValue}`;
+        const tagMessage = $t("stop-filtering-by-tag", {TAG: tagValue});
         tagElement.setAttribute('aria-label', tagMessage);
         tagElement.setAttribute('title', tagMessage);
         if (resetFilter)
