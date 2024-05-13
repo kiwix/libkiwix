@@ -179,7 +179,7 @@
             <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(langCode)}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
             </div>
-            ${downloadLink ? `<div class="book__download"><img src="${root}/skin/download-white.svg"><span data-link="${downloadLink}">${$t("download")} ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
+            ${downloadLink ? `<div class="book__download" data-link="${downloadLink}" data-size="${humanFriendlyZimSize}"><img src="${root}/skin/download-white.svg"><span>${$t("download")} ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div></div>`;
         return divTag;
     }
@@ -265,6 +265,7 @@
     }
 
     function insertModal(button) {
+        const downloadSize = button.getAttribute('data-size');
         const downloadLink = button.getAttribute('data-link');
         button.addEventListener('click', async (event) => {
             event.preventDefault();
@@ -274,7 +275,7 @@
                     <div class="modal-heading">
                         <div class="modal-title">
                             <div>
-                                Download
+                                Download - ${downloadSize}
                             </div>
                         </div>
                         <div onclick="closeModal()" class="modal-close-button">
@@ -434,7 +435,7 @@
         booksToDelete.forEach(book => {iso.remove(book);});
         books.forEach((book) => {
             iso.insert(generateBookHtml(book, sort))
-            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download span`);
+            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download`);
             if (downloadButton) {
                 insertModal(downloadButton);
             }

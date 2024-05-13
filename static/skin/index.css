@@ -215,6 +215,7 @@
 }
 
 .book__download {
+    cursor: pointer;
     font-size: 1.2rem;
     background: #00b4e4;
     padding: 8px;
@@ -231,7 +232,6 @@
 }
 
 .book__download > span {
-    cursor: pointer;
     text-decoration: none;
     position: relative;
     font-family: roboto;
