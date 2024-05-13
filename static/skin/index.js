@@ -139,6 +139,19 @@
         return spanElement.outerHTML;
     }
 
+    function downloadButtonText(zimSize) {
+      return $t("download") + (zimSize ? ` - ${zimSize}`: '');
+    }
+
+    function downloadButtonHtml(url, zimSize) {
+        return url
+             ? `<div class="book__download" data-link="${url}" data-size="${zimSize}">
+                  <img src="${root}/skin/download-white.svg?KIWIXCACHEID">
+                  <span ">${downloadButtonText(zimSize)}</span>
+                </div>`
+             : '';
+    }
+
     function generateBookHtml(book, sort = false) {
         const link = book.querySelector('link[type="text/html"]').getAttribute('href');
         let iconUrl;
@@ -183,6 +196,7 @@
         }
         const faviconAttr = iconUrl != undefined ? `style="background-image: url('${iconUrl}')"` : '';
         const languageAttr = langCode != '' ? `title="${language}" aria-label="${language}"` : 'style="background-color: transparent"';
+
         divTag.innerHTML = `
             <div class="book__wrapper">
             <a class="book__link" href="${viewerLink}" data-hover="Preview">
@@ -190,13 +204,15 @@
             <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
                 <div id="book__title">${title}</div>
-                ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">${$t("download")} ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
             </div>
             </a>
+            <div class="book__meta">
             <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(langCode)}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
+            </div>
+            ${downloadButtonHtml(downloadLink, humanFriendlyZimSize)}
             </div></div>`;
         return divTag;
     }
@@ -282,6 +298,7 @@
     }
 
     function insertModal(button) {
+        const downloadSize = button.getAttribute('data-size');
         const downloadLink = button.getAttribute('data-link');
         button.addEventListener('click', async (event) => {
             event.preventDefault();
@@ -291,7 +308,7 @@
                     <div class="modal-heading">
                         <div class="modal-title">
                             <div>
-                                Download
+                                ${downloadButtonText(downloadSize)}
                             </div>
                         </div>
                         <div onclick="closeModal()" class="modal-close-button">
@@ -451,7 +468,7 @@
         booksToDelete.forEach(book => {iso.remove(book);});
         books.forEach((book) => {
             iso.insert(generateBookHtml(book, sort))
-            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download span`);
+            const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download`);
             if (downloadButton) {
                 insertModal(downloadButton);
             }

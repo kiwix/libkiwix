@@ -4,6 +4,7 @@ skin/magnet.png
 skin/feed.svg
 skin/langSelector.svg
 skin/download.png
+skin/download-white.svg
 skin/hash.png
 skin/search-icon.svg
 skin/iso6391To3.js

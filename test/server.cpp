@@ -61,9 +61,9 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=2781f198" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=a534f84d" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=480ca6b4" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=8f4b6a1e" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -114,6 +114,8 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/caret.png?cacheid=22b942b4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/download.png?cacheid=a39aa502" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download-white.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989"},
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/android-chrome-192x192.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/android-chrome-192x192.png?cacheid=bfac158b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/android-chrome-512x512.png" },
@@ -279,7 +281,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
     {
       /* url */ "/ROOT%23%3F/",
 R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
-      href="/ROOT%23%3F/skin/index.css?cacheid=2781f198"
+      href="/ROOT%23%3F/skin/index.css?cacheid=a534f84d"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -292,7 +294,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=ee7d95b5" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=480ca6b4" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=8f4b6a1e" defer></script>
         <img src="/ROOT%23%3F/skin/feed.svg?cacheid=055b333f"
         <img src="/ROOT%23%3F/skin/langSelector.svg?cacheid=00b59961"
 )EXPECTEDRESULT"
@@ -310,7 +312,8 @@ R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10a
     },
     {
       /* url */ "/ROOT%23%3F/skin/index.js",
-R"EXPECTEDRESULT(                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
+R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cacheid=079ab989">
+                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
                                 <img src="${root}/skin/hash.png?cacheid=f836e872" alt="${$t("hash-download-alt-text")}" />
                                 <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="${$t("magnet-alt-text")}" />
                                 <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="${$t("torrent-download-alt-text")}" />
