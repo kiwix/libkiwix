@@ -171,13 +171,15 @@
             <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
                 <div id="book__title">${title}</div>
-                ${downloadLink ? `<div class="book__download"><span data-link="${downloadLink}">${$t("download")} ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div>
             <div class="book__description" title="${description}">${description}</div>
             </div>
             </a>
+            <div class="book__meta">
             <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(langCode)}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
+            </div>
+            ${downloadLink ? `<div class="book__download"><img src="${root}/skin/download-white.svg"><span data-link="${downloadLink}">${$t("download")} ${humanFriendlyZimSize ? ` - ${humanFriendlyZimSize}</span></div>`: ''}` : ''}
             </div></div>`;
         return divTag;
     }
