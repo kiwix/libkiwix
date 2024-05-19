@@ -38,7 +38,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 160px;
+    max-width: 30ch;
 }
 
 .kiwix .kiwix_centered {
