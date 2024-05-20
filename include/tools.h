@@ -38,22 +38,28 @@ typedef std::vector<std::string> FeedCategories;
 std::string getCurrentDirectory();
 
 /**
- * Return the data directory.
+ * Return the data directory
  *
- * The data directory is a directory where to put data (zim files, ...)
- * It depends of the platform and it may be changed by user using environment variable.
+ * The data directory is the default directory where downloaded files
+ * should be saved (it can be overriden via the options parameter of
+ * `kiwix::Downloader::startDownload()`).
  *
- * The resolution order is :
- * - `KIWIX_DATA_DIR` env variable (if set).
- * - On Windows :
- *    . `$APPDATA/kiwix` if $APPDATA is set
- *    . `$USERPROFILE/kiwix` if $USERPROFILE is set
- * - Else :
- *    . `$XDG_DATA_HOME/kiwix`if $XDG_DATA_HOME is set
- *    . `$HOME/.local/share/kiwx` if $HOWE is set
- * - current directory
+ * Its path can vary and is determined as follows:
  *
- * @return the path of the data directory (utf8 encoded)
+ * * `$KIWIX_DATA_DIR` if `$KIWIX_DATA_DIR` environment variable set, *otherwise...*
+ * * On Windows:
+ *
+ *   * `$APPDATA/kiwix` if environment variable `$APPDATA` set, *otherwise...*
+ *   * `$USERPROFILE/kiwix` if environment variable `$USERPROFILE` set, *otherwise...*
+ *
+ * * On other Operating Systems:
+ *
+ *   * `$XDG_DATA_HOME/kiwix` if environment variable `$XDG_DATA_HOME` set, *otherwise...*
+ *   * `$HOME/.local/share/kiwx` if environment variable `$HOME` set, *otherwise...*
+ *
+ * * Current working directory.
+ *
+ * @return the path of the data directory (UTF-8 encoded)
  */
 std::string getDataDirectory();
 
