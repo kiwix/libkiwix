@@ -27,6 +27,7 @@ skin/i18n/nl.json
 skin/i18n/nqo.json
 skin/i18n/or.json
 skin/i18n/pl.json
+skin/i18n/pt-br.json
 skin/i18n/ru.json
 skin/i18n/sc.json
 skin/i18n/sk.json
