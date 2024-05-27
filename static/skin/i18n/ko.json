@@ -15,5 +15,7 @@
 	"500-page-heading": "내부 서버 오류",
 	"fulltext-search-unavailable": "전문 검색을 사용할 수 없습니다",
 	"random-page-button-text": "무작위로 선택된 문서로 이동",
+	"hash-download-link-text": "SHA-256 체크섬",
+	"torrent-download-link-text": "비트토렌트",
 	"preview-book": "미리 보기"
 }

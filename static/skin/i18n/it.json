@@ -37,6 +37,10 @@
 	"book-filtering-all-languages": "Tutte le lingue",
 	"count-of-matching-books": "{{COUNT}} libro/i",
 	"download": "Scarica",
+	"direct-download-alt-text": "Scarica direttamente tramite HTTP(S)",
+	"magnet-alt-text": "Scarica tramite collegamento Magnet",
+	"torrent-download-link-text": "BitTorrent",
+	"torrent-download-alt-text": "Scarica tramite BitTorrent",
 	"download-links-title": "Scarica libro",
 	"preview-book": "Anteprima",
 	"unknown-error": "Errore sconosciuto"

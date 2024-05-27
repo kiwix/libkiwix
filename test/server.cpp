@@ -84,7 +84,7 @@ const ResourceCollection resources200Compressible{
   // TODO: implement cache management of i18n resources
   //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
-  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=355e4885" },
+  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=ee7d95b5" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
@@ -289,7 +289,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" defer></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=355e4885" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=ee7d95b5" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=436e0a63" defer></script>
@@ -323,7 +323,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fa
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
-    <script type="text/javascript" src="./skin/languages.js?cacheid=355e4885" defer></script>
+    <script type="text/javascript" src="./skin/languages.js?cacheid=ee7d95b5" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=5fc4badf" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
@@ -1160,6 +1160,11 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
     "translation_count": 57
   },
   {
+    "iso_code": "el",
+    "self_name": "Αγγλικά",
+    "translation_count": 23
+  },
+  {
     "iso_code": "en",
     "self_name": "English",
     "translation_count": 58
@@ -1167,12 +1172,12 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "es",
     "self_name": "español",
-    "translation_count": 48
+    "translation_count": 49
   },
   {
     "iso_code": "fi",
     "self_name": "suomi",
-    "translation_count": 23
+    "translation_count": 29
   },
   {
     "iso_code": "fr",
@@ -1202,7 +1207,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "ia",
     "self_name": "interlingua",
-    "translation_count": 49
+    "translation_count": 57
   },
   {
     "iso_code": "ig",
@@ -1212,7 +1217,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "it",
     "self_name": "italiano",
-    "translation_count": 34
+    "translation_count": 38
   },
   {
     "iso_code": "ja",
@@ -1222,7 +1227,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "ko",
     "self_name": "한국어",
-    "translation_count": 13
+    "translation_count": 15
   },
   {
     "iso_code": "ku-latn",
@@ -1263,6 +1268,11 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
     "iso_code": "pl",
     "self_name": "Polski",
     "translation_count": 31
+  },
+  {
+    "iso_code": "pt-br",
+    "self_name": "Português",
+    "translation_count": 35
   },
   {
     "iso_code": "ru",
@@ -1316,8 +1326,8 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   },
   {
     "iso_code": "zh-hans",
-    "self_name": "英语",
-    "translation_count": 54
+    "self_name": "简体中文",
+    "translation_count": 57
   },
   {
     "iso_code": "zh-hant",

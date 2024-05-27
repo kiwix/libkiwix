@@ -30,6 +30,11 @@ const uiLanguages = [
     "translation_count": 57
   },
   {
+    "iso_code": "el",
+    "self_name": "Αγγλικά",
+    "translation_count": 23
+  },
+  {
     "iso_code": "en",
     "self_name": "English",
     "translation_count": 58
@@ -37,12 +42,12 @@ const uiLanguages = [
   {
     "iso_code": "es",
     "self_name": "español",
-    "translation_count": 48
+    "translation_count": 49
   },
   {
     "iso_code": "fi",
     "self_name": "suomi",
-    "translation_count": 23
+    "translation_count": 29
   },
   {
     "iso_code": "fr",
@@ -72,7 +77,7 @@ const uiLanguages = [
   {
     "iso_code": "ia",
     "self_name": "interlingua",
-    "translation_count": 49
+    "translation_count": 57
   },
   {
     "iso_code": "ig",
@@ -82,7 +87,7 @@ const uiLanguages = [
   {
     "iso_code": "it",
     "self_name": "italiano",
-    "translation_count": 34
+    "translation_count": 38
   },
   {
     "iso_code": "ja",
@@ -92,7 +97,7 @@ const uiLanguages = [
   {
     "iso_code": "ko",
     "self_name": "한국어",
-    "translation_count": 13
+    "translation_count": 15
   },
   {
     "iso_code": "ku-latn",
@@ -133,6 +138,11 @@ const uiLanguages = [
     "iso_code": "pl",
     "self_name": "Polski",
     "translation_count": 31
+  },
+  {
+    "iso_code": "pt-br",
+    "self_name": "Português",
+    "translation_count": 35
   },
   {
     "iso_code": "ru",
@@ -186,8 +196,8 @@ const uiLanguages = [
   },
   {
     "iso_code": "zh-hans",
-    "self_name": "英语",
-    "translation_count": 54
+    "self_name": "简体中文",
+    "translation_count": 57
   },
   {
     "iso_code": "zh-hant",
