@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"AlexanderFF",
 			"Fitoschido",
 			"Ovruni",
 			"SpikeShroom",
@@ -45,13 +46,14 @@
 	"hash-download-alt-text": "descargar hash",
 	"magnet-link-text": "Enlace magnético",
 	"magnet-alt-text": "Descargar link magnético",
-	"torrent-download-link-text": "Archivo de torrent",
-	"torrent-download-alt-text": "descargar torrent",
+	"torrent-download-link-text": "BitTorrent",
+	"torrent-download-alt-text": "Descargar a través de BitTorrent",
 	"filter-by-tag": "Filtrar por etiqueta \"{{TAG}}\"",
 	"stop-filtering-by-tag": "Dejar de filtrar por etiqueta \"{{TAG}}\"",
 	"library-opds-feed-parameterised": "Feed OPDS de la biblioteca: entradas que coinciden con {{#LANG}}\nLanguage: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategory: {{CATEGORY}} {{/CATEGORY}} {{#TAG}}\nEtiqueta: {{TAG}} {{/TAG}}{{#Q}}\nConsulta: {{Q}} {{/Q}}",
 	"welcome-to-kiwix-server": "Bienvenido al servidor Kiwix",
 	"download-links-heading": "Enlaces de descarga para <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Descargar libro",
-	"preview-book": "Previsualizar"
+	"preview-book": "Previsualizar",
+	"unknown-error": "Error desconocido"
 }
