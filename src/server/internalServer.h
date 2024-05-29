@@ -103,6 +103,7 @@ class InternalServer {
                    bool withTaskbar,
                    bool withLibraryButton,
                    bool blockExternalLinks,
+                   IpMode ipMode,
                    std::string indexTemplateString,
                    int ipConnectionLimit);
     virtual ~InternalServer();
@@ -118,6 +119,7 @@ class InternalServer {
     void stop();
     std::string getAddress() { return m_addr; }
     int getPort() { return m_port; }
+    IpMode getIpMode() const { return m_ipMode; }
 
   private: // functions
     std::unique_ptr<Response> handle_request(const RequestContext& request);
@@ -174,6 +176,7 @@ class InternalServer {
     bool m_withTaskbar;
     bool m_withLibraryButton;
     bool m_blockExternalLinks;
+    IpMode m_ipMode;
     std::string m_indexTemplateString;
     int m_ipConnectionLimit;
     struct MHD_Daemon* mp_daemon;

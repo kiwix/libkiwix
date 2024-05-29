@@ -51,6 +51,7 @@ bool Server::start() {
     m_withTaskbar,
     m_withLibraryButton,
     m_blockExternalLinks,
+    m_ipMode,
     m_indexTemplateString,
     m_ipConnectionLimit));
   return mp_server->start();
@@ -82,6 +83,11 @@ int Server::getPort()
 std::string Server::getAddress()
 {
   return mp_server->getAddress();
+}
+
+IpMode Server::getIpMode() const
+{
+  return mp_server->getIpMode();
 }
 
 }
