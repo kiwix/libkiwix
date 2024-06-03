@@ -191,7 +191,7 @@ std::map<std::string, IpAddress> getNetworkInterfacesPosix() {
 
 } // unnamed namespace
 
-std::map<std::string, IpAddress> getNetworkInterfaces() {
+std::map<std::string, IpAddress> getNetworkInterfacesIPv4Or6() {
 #ifdef _WIN32
   return getNetworkInterfacesWin();
 #else
@@ -199,9 +199,22 @@ std::map<std::string, IpAddress> getNetworkInterfaces() {
 #endif
 }
 
+std::map<std::string, std::string> getNetworkInterfaces() {
+  std::map<std::string, std::string> result;
+  for ( const auto& kv : getNetworkInterfacesIPv4Or6() ) {
+      const std::string& interfaceName = kv.first;
+      const auto& ipAddresses = kv.second;
+      if ( !ipAddresses.addr.empty() ) {
+        result[interfaceName] = ipAddresses.addr;
+      }
+  }
+  return result;
+}
+
+
 std::string getBestPublicIp(bool ipv6) {
   IpAddress bestPublicIp = IpAddress{"127.0.0.1","::1"};
-  std::map<std::string, IpAddress> interfaces = getNetworkInterfaces();
+  std::map<std::string, IpAddress> interfaces = getNetworkInterfacesIPv4Or6();
 
 #ifndef _WIN32
   const char* const prioritizedNames[] =

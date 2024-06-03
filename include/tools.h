@@ -25,10 +25,13 @@
 #include <map>
 #include <cstdint>
 
-namespace kiwix {
-struct IpAddress{
-    std::string addr;
-    std::string addr6;
+namespace kiwix
+{
+
+struct IpAddress
+{
+    std::string addr;  // IPv4 address
+    std::string addr6; // IPv6 address
 };
 
 typedef std::pair<std::string, std::string> LangNameCodePair;
@@ -223,11 +226,21 @@ std::string getMimeTypeForFile(const std::string& filename);
 /** Provides all available network interfaces
  *
  * This function provides the available IPv4 and IPv6 network interfaces
+ * as a map from the interface name to its IPv4 and/or IPv6 address(es).
  */
-std::map<std::string,IpAddress> getNetworkInterfaces();
+std::map<std::string, IpAddress> getNetworkInterfacesIPv4Or6();
+
+/** Provides all available IPv4 network interfaces
+ *
+ * This function provides the available IPv4 network interfaces
+ * as a map from the interface name to its IPv4 address.
+ *
+ * Provided for backward compatibility with libkiwix v13.1.0.
+ */
+std::map<std::string, std::string> getNetworkInterfaces();
 
 /** Provides the best IP address
- * This function provides the best IP address from the list given by getNetworkInterfaces
+ * This function provides the best IP address from the list given by getNetworkInterfacesIPv4Or6()
  */
 std::string getBestPublicIp(bool ipv6);
 
