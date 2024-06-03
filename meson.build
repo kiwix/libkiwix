@@ -48,11 +48,14 @@ if host_machine.system() == 'windows' and static_deps
 endif
 
 if host_machine.system() == 'windows'
-     add_project_arguments('-DNOMINMAX', language: 'cpp')
-     extra_libs += ['-liphlpapi']
-else
-     extra_link_args = []
+  add_project_arguments('-DNOMINMAX', language: 'cpp')
+  extra_libs += ['-liphlpapi']
 endif
+
+if build_machine.system() == 'windows'
+  extra_libs += ['-lshlwapi', '-lwinmm']
+endif
+
 
 all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep]
 

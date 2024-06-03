@@ -77,7 +77,7 @@ if gtest_dep.found() and not meson.is_cross_build()
                               implicit_include_directories: false,
                               include_directories : inc,
                               link_with : libkiwix,
-                              link_args: extra_link_args,
+                              link_args: extra_libs,
                               dependencies : all_deps + [gtest_dep],
                              build_rpath : '$ORIGIN')
         test(test_name, test_exe, timeout : 160)
