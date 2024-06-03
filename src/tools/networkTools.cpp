@@ -49,6 +49,12 @@
 #include <sys/sockio.h>
 #endif
 
+namespace kiwix
+{
+
+namespace
+{
+
 size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdata)
 {
   auto str = static_cast<std::stringstream*>(userdata);
@@ -56,7 +62,9 @@ size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdat
   return nmemb;
 }
 
-std::string kiwix::download(const std::string& url) {
+} // unnamed namespace
+
+std::string download(const std::string& url) {
   auto curl = curl_easy_init();
   std::stringstream ss;
   curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -77,10 +85,14 @@ std::string kiwix::download(const std::string& url) {
   return ss.str();
 }
 
+
+namespace
+{
+
 #ifdef _WIN32
 
-std::map<std::string,kiwix::IpAddress> getNetworkInterfacesWin() {
-  std::map<std::string,kiwix::IpAddress> interfaces;
+std::map<std::string, IpAddress> getNetworkInterfacesWin() {
+  std::map<std::string, IpAddress> interfaces;
 
   const int working_buffer_size = 15000;
   const int max_tries = 3;
@@ -145,8 +157,8 @@ std::map<std::string,kiwix::IpAddress> getNetworkInterfacesWin() {
 
 #else
 
-std::map<std::string,kiwix::IpAddress> getNetworkInterfacesPosix() {
-  std::map<std::string,kiwix::IpAddress> interfaces;
+std::map<std::string, IpAddress> getNetworkInterfacesPosix() {
+  std::map<std::string, IpAddress> interfaces;
 
   struct ifaddrs *interfacesHead;
   if (getifaddrs(&interfacesHead) == -1) {
@@ -177,7 +189,9 @@ std::map<std::string,kiwix::IpAddress> getNetworkInterfacesPosix() {
 
 #endif
 
-std::map<std::string,kiwix::IpAddress> kiwix::getNetworkInterfaces() {
+} // unnamed namespace
+
+std::map<std::string, IpAddress> getNetworkInterfaces() {
 #ifdef _WIN32
   return getNetworkInterfacesWin();
 #else
@@ -185,9 +199,9 @@ std::map<std::string,kiwix::IpAddress> kiwix::getNetworkInterfaces() {
 #endif
 }
 
-std::string kiwix::getBestPublicIp(bool ipv6) {
-  kiwix::IpAddress bestPublicIp = kiwix::IpAddress{"127.0.0.1","::1"};
-  std::map<std::string,kiwix::IpAddress>  interfaces = getNetworkInterfaces();
+std::string getBestPublicIp(bool ipv6) {
+  IpAddress bestPublicIp = IpAddress{"127.0.0.1","::1"};
+  std::map<std::string, IpAddress> interfaces = getNetworkInterfaces();
 
 #ifndef _WIN32
   const char* const prioritizedNames[] =
@@ -215,7 +229,9 @@ std::string kiwix::getBestPublicIp(bool ipv6) {
 }
 
 
-std::string kiwix::getBestPublicIp()
+std::string getBestPublicIp()
 {
   return getBestPublicIp(false);
 }
+
+} // namespace kiwix
