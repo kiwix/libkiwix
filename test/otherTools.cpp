@@ -233,3 +233,30 @@ TEST(I18n, parseUserLanguagePreferences)
       "{fr, 1}{en, 0.5}"
   );
 }
+
+#include "../include/tools.h"
+
+TEST(networkTools, getNetworkInterfacesIPv4Or6)
+{
+  for ( const auto& kv : kiwix::getNetworkInterfacesIPv4Or6() ) {
+    std::cout << kv.first << " : IPv4 addr = " << kv.second.addr
+                          << " ; IPv6 addr = " << kv.second.addr6
+                          << std::endl;
+  }
+}
+
+TEST(networkTools, getNetworkInterfaces)
+{
+  for ( const auto& kv : kiwix::getNetworkInterfaces() ) {
+    std::cout << kv.first << " : IPv4 addr = " << kv.second << std::endl;
+  }
+}
+
+TEST(networkTools, getBestPublicIp)
+{
+  using kiwix::getBestPublicIp;
+
+  std::cout << "getBestPublicIp(true)  " << getBestPublicIp(true)  << std::endl;
+  std::cout << "getBestPublicIp(false) " << getBestPublicIp(false) << std::endl;
+  std::cout << "getBestPublicIp()      " << getBestPublicIp()      << std::endl;
+}
