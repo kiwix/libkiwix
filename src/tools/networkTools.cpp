@@ -213,3 +213,9 @@ std::string kiwix::getBestPublicIp(bool ipv6) {
   }
   return ipv6 ? bestPublicIp.addr6 : bestPublicIp.addr;
 }
+
+
+std::string kiwix::getBestPublicIp()
+{
+  return getBestPublicIp(false);
+}

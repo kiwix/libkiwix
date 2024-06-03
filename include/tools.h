@@ -231,6 +231,12 @@ std::map<std::string,IpAddress> getNetworkInterfaces();
  */
 std::string getBestPublicIp(bool ipv6);
 
+/** Provides the best IPv4 adddress
+ * Equivalent to getBestPublicIp(false). Provided for backward compatibility
+ * with libkiwix v13.1.0.
+ */
+std::string getBestPublicIp();
+
 /** Converts file size to human readable format.
  *
  * This function will convert a number to its equivalent size using units.
@@ -242,15 +248,15 @@ std::string beautifyFileSize(uint64_t number);
 
 /**
  * Load languages stored in an OPDS stream.
- * 
+ *
  * @param content the OPDS stream.
- * @return vector containing pairs of language code and their corresponding full language name. 
+ * @return vector containing pairs of language code and their corresponding full language name.
  */
 FeedLanguages readLanguagesFromFeed(const std::string& content);
 
 /**
  * Load categories stored in an OPDS stream .
- * 
+ *
  * @param content the OPDS stream.
  * @return vector containing category strings.
  */
@@ -258,7 +264,7 @@ FeedCategories readCategoriesFromFeed(const std::string& content);
 
 /**
  * Retrieve the full language name associated with a given ISO 639-3 language code.
- * 
+ *
  * @param lang ISO 639-3 language code.
  * @return full language name.
  */
