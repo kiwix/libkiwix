@@ -78,15 +78,21 @@
         return result;
     }
 
+    function humanFriendlyNumStr(num, precision) {
+        const n = Math.abs(num).toFixed().length;
+        return num.toFixed(Math.max(0, precision - n));
+    }
+
     const humanFriendlySize = (fileSize) => {
         if (fileSize === 0) {
             return '';
         }
-        const units = ['bytes', 'kB', 'MB', 'GB', 'TB'];
-        let quotient = Math.floor(Math.log10(fileSize) / 3);
-        quotient = quotient < units.length ? quotient : units.length - 1;
-        fileSize /= (1000 ** quotient);
-        return `${+fileSize.toFixed(2)} ${units[quotient]}`;
+        const units = ['bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
+        let quotient = Math.floor(Math.log2(fileSize) / 10);
+        quotient = Math.min(quotient, units.length - 1);
+        fileSize /= (1024 ** quotient);
+        const fileSizeStr = humanFriendlyNumStr(fileSize, 3);
+        return `${fileSizeStr} ${units[quotient]}`;
     };
 
     const humanFriendlyTitle = (title) => {
