@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"IMayBeABitShy",
+			"Justman10000",
 			"Lucas Werkmeister",
 			"Rofiatmustapha12",
 			"ThisCarthing"
@@ -47,13 +48,13 @@
 	"count-of-matching-books": "{{COUNT}} Bücher",
 	"download": "Herunterladen",
 	"direct-download-link-text": "Direkt",
-	"direct-download-alt-text": "direkt herunterladen",
-	"hash-download-link-text": "Sha256 Hash",
-	"hash-download-alt-text": "Hash herunterladen",
+	"direct-download-alt-text": "Direktes Herunterladen über HTTP(S)",
+	"hash-download-link-text": "SHA-256 Prüfsumme",
+	"hash-download-alt-text": "SHA-256-Dateiprüfsumme anzeigen",
 	"magnet-link-text": "Magnet Link",
-	"magnet-alt-text": "Magnet Link herunterladen",
-	"torrent-download-link-text": "Torrent-Datei",
-	"torrent-download-alt-text": "Torrent herunterladen",
+	"magnet-alt-text": "Download über Magnet-Link",
+	"torrent-download-link-text": "BitTorrent",
+	"torrent-download-alt-text": "Herunterladen über BitTorrent",
 	"library-opds-feed-all-entries": "ODPS Feed der Bibliothek - Alle Einträge",
 	"filter-by-tag": "Nach Tag \"{{TAG}}\" filtern",
 	"stop-filtering-by-tag": "Filterung nach Tag \"{{TAG}}\" aufheben",

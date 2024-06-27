@@ -7,6 +7,10 @@
 		]
 	},
 	"name": "Lëtzebuergesch",
+	"suggest-full-text-search": "enthält '{{{SEARCH_TERMS}}}'...",
+	"no-such-book": "Buch net fonnt: {{BOOK_NAME}}",
+	"too-many-books": "Ze vill Bicher ugefrot ({{NB_BOOKS}}), d'Limitt läit bei {{LIMIT}}",
+	"url-not-found": "Déi ugefroten URL „{{url}}“ gouf op dësem Server net fonnt.",
 	"suggest-search": "Maacht eng Volltext-Sich fir <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Ups! Et konnt keen zoufällegen Artikel ausgewielt ginn :(",
 	"404-page-title": "Inhalt net fonnt",
@@ -15,6 +19,11 @@
 	"500-page-heading": "Interne Feeler um Server",
 	"500-page-text": "Et ass en interne Serverfeeler opgetrueden. Mir entschëllegen eis dofir :/",
 	"fulltext-search-unavailable": "Volltext-Sich net verfügbar",
+	"search-results-page-title": "Sichen: {{SEARCH_PATTERN}}",
+	"search-results-page-header": "Resultater <b>{{START}}-{{END}}</b> vu(n) <b>{{COUNT}}</b> fir <b>„{{{SEARCH_PATTERN}}}“</b>",
+	"empty-search-results-page-header": "Keng Resultater fonnt fir <b>„{{{SEARCH_PATTERN}}}“</b>",
+	"search-result-book-info": "aus {{BOOK_TITLE}}",
+	"word-count": "{{COUNT}} Wierder",
 	"home-button-text": "Gitt op d'Haaptsäit vun '{{BOOK_TITLE}}'",
 	"random-page-button-text": "Gitt op eng zoufälleg gewielte Säit",
 	"searchbox-tooltip": "No '{{BOOK_TITLE}}' sichen",
@@ -25,6 +34,7 @@
 	"count-of-matching-books": "{{COUNT}} Buch/Bicher",
 	"download": "Eroflueden",
 	"direct-download-link-text": "Direkt",
+	"torrent-download-link-text": "BitTorrent",
 	"download-links-title": "Buch eroflueden",
 	"unknown-error": "Onbekannte Feeler"
 }
