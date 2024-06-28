@@ -151,11 +151,15 @@ Downloader::Downloader() :
 /* Destructor */
 Downloader::~Downloader()
 {
+    close();
 }
 
 void Downloader::close()
 {
-  mp_aria->close();
+  if ( mp_aria ) {
+      mp_aria->close();
+      mp_aria.reset();
+  }
 }
 
 std::vector<std::string> Downloader::getDownloadIds() const {
