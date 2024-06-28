@@ -97,20 +97,30 @@ Aria2::Aria2():
   curl_easy_setopt(p_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(p_curl, CURLOPT_POST, 1L);
   curl_easy_setopt(p_curl, CURLOPT_ERRORBUFFER, curlErrorBuffer);
+  curl_easy_setopt(p_curl, CURLOPT_TIMEOUT_MS, 100);
 
-  int watchdog = 50;
-  while(--watchdog) {
+  typedef std::chrono::duration<double> Seconds;
+
+  const double MAX_WAITING_TIME_SECONDS = 0.5;
+  const auto t0 = std::chrono::steady_clock::now();
+  bool maxWaitingTimeWasExceeded = false;
+
+  CURLcode res = CURLE_OK;
+  while ( !maxWaitingTimeWasExceeded ) {
     sleep(10);
     curlErrorBuffer[0] = 0;
-    auto res = curl_easy_perform(p_curl);
+    res = curl_easy_perform(p_curl);
     if (res == CURLE_OK) {
       break;
-    } else if (watchdog == 1) {
-      LOG_ARIA_ERROR();
     }
+
+    const auto dt = std::chrono::steady_clock::now() - t0;
+    const double elapsedTime = std::chrono::duration_cast<Seconds>(dt).count();
+    maxWaitingTimeWasExceeded = elapsedTime > MAX_WAITING_TIME_SECONDS;
   }
   curl_easy_cleanup(p_curl);
-  if (!watchdog) {
+  if ( maxWaitingTimeWasExceeded ) {
+    LOG_ARIA_ERROR();
     throw std::runtime_error("Cannot connect to aria2c rpc. Aria2c launch cmd : " + launchCmd);
   }
 }
