@@ -117,6 +117,9 @@ Aria2::Aria2():
 
 void Aria2::close()
 {
+  MethodCall methodCall("aria2.pauseAll", m_secret);
+  doRequest(methodCall);
+
   saveSession();
   shutdown();
 }
