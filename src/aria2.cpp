@@ -4,6 +4,7 @@
 #include "xmlrpc.h"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 #include <sstream>
 #include <thread>
 #include <chrono>
@@ -29,6 +30,31 @@
 
 namespace kiwix {
 
+namespace {
+
+void pauseAnyActiveDownloads(const std::string& ariaSessionFilePath)
+{
+    std::ifstream inputFile(ariaSessionFilePath);
+    if ( !inputFile )
+        return;
+
+    std::ostringstream ss;
+    std::string line;
+    while ( std::getline(inputFile, line) ) {
+        if ( !startsWith(line, " pause=") ) {
+            ss << line << "\n";
+        }
+        if ( !line.empty() && line[0] != ' ' && line[0] != '#' ) {
+            ss << " pause=true\n";
+        }
+    }
+
+    std::ofstream outputFile(ariaSessionFilePath);
+    outputFile << ss.str();
+}
+
+} // unnamed namespace
+
 Aria2::Aria2():
   mp_aria(nullptr),
   m_port(42042),
@@ -41,6 +67,7 @@ Aria2::Aria2():
   std::string rpc_port = "--rpc-listen-port=" + to_string(m_port);
   std::string download_dir = "--dir=" + getDataDirectory();
   std::string session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
+  pauseAnyActiveDownloads(session_file);
   std::string session = "--save-session=" + session_file;
   std::string inputFile = "--input-file=" + session_file;
 //  std::string log_dir = "--log=\"" + logDir + "\"";
@@ -127,9 +154,6 @@ Aria2::Aria2():
 
 void Aria2::close()
 {
-  MethodCall methodCall("aria2.pauseAll", m_secret);
-  doRequest(methodCall);
-
   saveSession();
   shutdown();
 }
