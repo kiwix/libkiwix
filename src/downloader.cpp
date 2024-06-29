@@ -151,14 +151,19 @@ Downloader::Downloader() :
 /* Destructor */
 Downloader::~Downloader()
 {
-    close();
+  close();
 }
 
 void Downloader::close()
 {
   if ( mp_aria ) {
+    try {
       mp_aria->close();
-      mp_aria.reset();
+    } catch (const std::exception& err) {
+      std::cerr << "ERROR: Failed to save the downloader state: "
+                << err.what() << std::endl;
+    }
+    mp_aria.reset();
   }
 }
 
