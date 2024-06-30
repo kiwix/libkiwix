@@ -4,6 +4,7 @@
 #include "xmlrpc.h"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 #include <sstream>
 #include <thread>
 #include <chrono>
@@ -29,6 +30,31 @@
 
 namespace kiwix {
 
+namespace {
+
+void pauseAnyActiveDownloads(const std::string& ariaSessionFilePath)
+{
+    std::ifstream inputFile(ariaSessionFilePath);
+    if ( !inputFile )
+        return;
+
+    std::ostringstream ss;
+    std::string line;
+    while ( std::getline(inputFile, line) ) {
+        if ( !startsWith(line, " pause=") ) {
+            ss << line << "\n";
+        }
+        if ( !line.empty() && line[0] != ' ' && line[0] != '#' ) {
+            ss << " pause=true\n";
+        }
+    }
+
+    std::ofstream outputFile(ariaSessionFilePath);
+    outputFile << ss.str();
+}
+
+} // unnamed namespace
+
 Aria2::Aria2():
   mp_aria(nullptr),
   m_port(42042),
@@ -41,6 +67,7 @@ Aria2::Aria2():
   std::string rpc_port = "--rpc-listen-port=" + to_string(m_port);
   std::string download_dir = "--dir=" + getDataDirectory();
   std::string session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
+  pauseAnyActiveDownloads(session_file);
   std::string session = "--save-session=" + session_file;
   std::string inputFile = "--input-file=" + session_file;
 //  std::string log_dir = "--log=\"" + logDir + "\"";
@@ -97,20 +124,30 @@ Aria2::Aria2():
   curl_easy_setopt(p_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(p_curl, CURLOPT_POST, 1L);
   curl_easy_setopt(p_curl, CURLOPT_ERRORBUFFER, curlErrorBuffer);
+  curl_easy_setopt(p_curl, CURLOPT_TIMEOUT_MS, 100);
 
-  int watchdog = 50;
-  while(--watchdog) {
+  typedef std::chrono::duration<double> Seconds;
+
+  const double MAX_WAITING_TIME_SECONDS = 0.5;
+  const auto t0 = std::chrono::steady_clock::now();
+  bool maxWaitingTimeWasExceeded = false;
+
+  CURLcode res = CURLE_OK;
+  while ( !maxWaitingTimeWasExceeded ) {
     sleep(10);
     curlErrorBuffer[0] = 0;
-    auto res = curl_easy_perform(p_curl);
+    res = curl_easy_perform(p_curl);
     if (res == CURLE_OK) {
       break;
-    } else if (watchdog == 1) {
-      LOG_ARIA_ERROR();
     }
+
+    const auto dt = std::chrono::steady_clock::now() - t0;
+    const double elapsedTime = std::chrono::duration_cast<Seconds>(dt).count();
+    maxWaitingTimeWasExceeded = elapsedTime > MAX_WAITING_TIME_SECONDS;
   }
   curl_easy_cleanup(p_curl);
-  if (!watchdog) {
+  if ( maxWaitingTimeWasExceeded ) {
+    LOG_ARIA_ERROR();
     throw std::runtime_error("Cannot connect to aria2c rpc. Aria2c launch cmd : " + launchCmd);
   }
 }

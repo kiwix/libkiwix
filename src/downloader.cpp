@@ -151,11 +151,20 @@ Downloader::Downloader() :
 /* Destructor */
 Downloader::~Downloader()
 {
+  close();
 }
 
 void Downloader::close()
 {
-  mp_aria->close();
+  if ( mp_aria ) {
+    try {
+      mp_aria->close();
+    } catch (const std::exception& err) {
+      std::cerr << "ERROR: Failed to save the downloader state: "
+                << err.what() << std::endl;
+    }
+    mp_aria.reset();
+  }
 }
 
 std::vector<std::string> Downloader::getDownloadIds() const {
