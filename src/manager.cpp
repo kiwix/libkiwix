@@ -143,7 +143,9 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
     m_totalBooks = strtoull(libraryNode.child("totalResults").child_value(), 0, 0);
     m_startIndex = strtoull(libraryNode.child("startIndex").child_value(), 0, 0);
     m_itemsPerPage = strtoull(libraryNode.child("itemsPerPage").child_value(), 0, 0);
+    m_hasSearchResult = true;
   } catch(...) {
+    m_hasSearchResult = false;
     return false;
   }
 
