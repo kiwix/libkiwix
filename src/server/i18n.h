@@ -20,6 +20,7 @@
 #ifndef KIWIX_SERVER_I18N
 #define KIWIX_SERVER_I18N
 
+#include <tools.h>
 #include <map>
 #include <string>
 #include <mustache.hpp>
@@ -39,8 +40,6 @@ struct I18nStringTable {
 
   const char* get(const std::string& key) const;
 };
-
-std::string getTranslatedString(const std::string& lang, const std::string& key);
 
 namespace i18n
 {

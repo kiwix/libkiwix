@@ -282,5 +282,14 @@ FeedCategories readCategoriesFromFeed(const std::string& content);
  * @return full language name.
  */
 std::string getLanguageSelfName(const std::string& lang);
+
+/**
+ * Retrieve the translation corresponding to key in language lang
+ *
+ * @param lang ISO 639-3 language code.
+ * @param key translation key string
+ * @return translated key
+ */
+std::string getTranslatedString(const std::string& lang, const std::string& key);
 }
 #endif // KIWIX_TOOLS_H
