@@ -32,6 +32,13 @@
 
 #include <iostream>
 #include <iomanip>
+#include <regex>
+
+#ifdef _WIN32
+    const std::regex reservedCharsReg("[<>:\"/\\\\|?*]");
+#else
+    const std::regex reservedCharsReg("/");
+#endif
 
 /* tell ICU where to find its dat file (tables) */
 void kiwix::loadICUExternalTables()
@@ -438,4 +445,9 @@ std::vector<std::string> kiwix::getTitleVariants(const std::string& title) {
 template<>
 std::string kiwix::extractFromString(const std::string& str) {
   return str;
+}
+
+std::string kiwix::getSlugifiedFileName(const std::string& filename)
+{
+  return std::regex_replace(filename, reservedCharsReg, "_"); 
 }
