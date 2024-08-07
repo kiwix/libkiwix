@@ -3,7 +3,7 @@ Priority: optional
 Maintainer: Kiwix team <kiwix@kiwix.org>
 Build-Depends: debhelper-compat (= 13),
  meson,
- pkg-config,
+ pkgconf,
  libzim-dev (>= 7.2.0~),
  libcurl4-gnutls-dev,
  libicu-dev,
