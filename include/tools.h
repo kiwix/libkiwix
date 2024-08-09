@@ -45,32 +45,6 @@ typedef std::vector<std::string> FeedCategories;
  */
 std::string getCurrentDirectory();
 
-/**
- * Return the data directory
- *
- * The data directory is the default directory where downloaded files
- * should be saved (it can be overriden via the options parameter of
- * `kiwix::Downloader::startDownload()`).
- *
- * Its path can vary and is determined as follows:
- *
- * * `$KIWIX_DATA_DIR` if `$KIWIX_DATA_DIR` environment variable set, *otherwise...*
- * * On Windows:
- *
- *   * `$APPDATA/kiwix` if environment variable `$APPDATA` set, *otherwise...*
- *   * `$USERPROFILE/kiwix` if environment variable `$USERPROFILE` set, *otherwise...*
- *
- * * On other Operating Systems:
- *
- *   * `$XDG_DATA_HOME/kiwix` if environment variable `$XDG_DATA_HOME` set, *otherwise...*
- *   * `$HOME/.local/share/kiwx` if environment variable `$HOME` set, *otherwise...*
- *
- * * Current working directory.
- *
- * @return the path of the data directory (UTF-8 encoded)
- */
-std::string getDataDirectory();
-
 /** Return the path of the executable
  *
  * Some application may be packaged in auto extractible archive (Appimage) and the

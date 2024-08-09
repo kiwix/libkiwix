@@ -125,8 +125,8 @@ void Download::cancelDownload()
 }
 
 /* Constructor */
-Downloader::Downloader() :
-  mp_aria(new Aria2())
+Downloader::Downloader(std::string sessionFileDir) :
+  mp_aria(new Aria2(sessionFileDir))
 {
   try {
     for (auto gid : mp_aria->tellWaiting()) {

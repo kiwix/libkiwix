@@ -172,7 +172,7 @@ class Downloader
   typedef std::vector<std::pair<std::string, std::string>> Options;
 
  public: // functions
-  Downloader();
+  explicit Downloader(std::string sessionFileDir);
   virtual ~Downloader();
 
   void close();
