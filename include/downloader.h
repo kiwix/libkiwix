@@ -172,7 +172,7 @@ class Downloader
   typedef std::vector<std::pair<std::string, std::string>> Options;
 
  public: // functions
-  Downloader();
+  explicit Downloader(std::string sessionFileDir);
   virtual ~Downloader();
 
   void close();
@@ -194,7 +194,7 @@ class Downloader
    * @param options: A series of pair <option_name, option_value> to pass to aria.
    * @return: The newly created Download.
    */
-  std::shared_ptr<Download> startDownload(const std::string& uri, const Options& options = {});
+  std::shared_ptr<Download> startDownload(const std::string& uri, const std::string& downloadDir, Options options = {});
 
   /**
    * Get a download corrsponding to a download id (did)
