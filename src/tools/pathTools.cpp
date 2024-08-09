@@ -320,7 +320,7 @@ bool kiwix::fileReadable(const std::string& path)
 #endif
 }
 
-bool makeDirectory(const std::string& path)
+bool kiwix::makeDirectory(const std::string& path)
 {
 #ifdef _WIN32
   int status = _wmkdir(Utf8ToWide(path).c_str());

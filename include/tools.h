@@ -214,6 +214,8 @@ bool fileExists(const std::string& path);
  */
 bool fileReadable(const std::string& path);
 
+bool makeDirectory(const std::string& path);
+
 /** Provides mimetype from filename.
  *
  * This function provides mimetype from file-name.
