@@ -55,17 +55,15 @@ void pauseAnyActiveDownloads(const std::string& ariaSessionFilePath)
 
 } // unnamed namespace
 
-Aria2::Aria2():
+Aria2::Aria2(std::string sessionFileDir):
   mp_aria(nullptr),
   m_port(42042),
   m_secret(getNewRpcSecret())
 {
-  m_downloadDir = getDataDirectory();
-  makeDirectory(m_downloadDir);
   std::vector<const char*> callCmd;
 
   std::string rpc_port = "--rpc-listen-port=" + to_string(m_port);
-  std::string session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
+  std::string session_file = appendToDirectory(sessionFileDir, "kiwix.session");
   pauseAnyActiveDownloads(session_file);
   std::string session = "--save-session=" + session_file;
   std::string inputFile = "--input-file=" + session_file;

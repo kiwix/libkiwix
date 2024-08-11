@@ -172,7 +172,12 @@ class Downloader
   typedef std::vector<std::pair<std::string, std::string>> Options;
 
  public: // functions
-  Downloader();
+  /*
+  * Create a new Downloader object.
+  *
+  * @param sessionFileDir: The directory where aria2 will store its session file.
+  */
+  explicit Downloader(std::string sessionFileDir);
   virtual ~Downloader();
 
   void close();
