@@ -320,16 +320,6 @@ bool kiwix::fileReadable(const std::string& path)
 #endif
 }
 
-bool makeDirectory(const std::string& path)
-{
-#ifdef _WIN32
-  int status = _wmkdir(Utf8ToWide(path).c_str());
-#else
-  int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-#endif
-  return status == 0;
-}
-
 std::string makeTmpDirectory()
 {
 #ifdef _WIN32
