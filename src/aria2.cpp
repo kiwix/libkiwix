@@ -65,7 +65,6 @@ Aria2::Aria2():
   std::vector<const char*> callCmd;
 
   std::string rpc_port = "--rpc-listen-port=" + to_string(m_port);
-  std::string download_dir = "--dir=" + getDataDirectory();
   std::string session_file = appendToDirectory(getDataDirectory(), "kiwix.session");
   pauseAnyActiveDownloads(session_file);
   std::string session = "--save-session=" + session_file;
@@ -94,7 +93,6 @@ Aria2::Aria2():
   callCmd.push_back("--enable-rpc");
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());
-  callCmd.push_back(download_dir.c_str());
   if (fileReadable(session_file)) {
     callCmd.push_back(inputFile.c_str());
   }
