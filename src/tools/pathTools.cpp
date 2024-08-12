@@ -320,6 +320,16 @@ bool kiwix::fileReadable(const std::string& path)
 #endif
 }
 
+bool makeDirectory(const std::string& path)
+{
+#ifdef _WIN32
+  int status = _wmkdir(Utf8ToWide(path).c_str());
+#else
+  int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#endif
+  return status == 0;
+}
+
 std::string makeTmpDirectory()
 {
 #ifdef _WIN32
@@ -426,6 +436,52 @@ std::string kiwix::getCurrentDirectory()
   free(a_cwd);
 #endif
   return ret;
+}
+
+std::string kiwix::getDataDirectory()
+{
+// Try to get the dataDir from the `KIWIX_DATA_DIR` env var
+#ifdef _WIN32
+  wchar_t* cDataDir = ::_wgetenv(L"KIWIX_DATA_DIR");
+  if (cDataDir != nullptr) {
+    return WideToUtf8(cDataDir);
+  }
+#else
+  char* cDataDir = ::getenv("KIWIX_DATA_DIR");
+  if (cDataDir != nullptr) {
+    return cDataDir;
+  }
+#endif
+
+// Compute the dataDir from the user directory.
+  std::string dataDir;
+#ifdef _WIN32
+  cDataDir = ::_wgetenv(L"APPDATA");
+  if (cDataDir == nullptr)
+    cDataDir = ::_wgetenv(L"USERPROFILE");
+  if (cDataDir != nullptr)
+    dataDir = WideToUtf8(cDataDir);
+#else
+  cDataDir = ::getenv("XDG_DATA_HOME");
+  if (cDataDir != nullptr) {
+    dataDir = cDataDir;
+  } else {
+    cDataDir = ::getenv("HOME");
+    if (cDataDir != nullptr) {
+      dataDir = cDataDir;
+      dataDir = appendToDirectory(dataDir, ".local");
+      dataDir = appendToDirectory(dataDir, "share");
+    }
+  }
+#endif
+  if (!dataDir.empty()) {
+    dataDir = appendToDirectory(dataDir, "kiwix");
+    makeDirectory(dataDir);
+    return dataDir;
+  }
+
+// Let's use the currentDirectory
+  return getCurrentDirectory();
 }
 
 static std::map<std::string, std::string> extMimeTypes = {

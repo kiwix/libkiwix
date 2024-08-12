@@ -22,10 +22,11 @@ class Aria2
     std::unique_ptr<Subprocess> mp_aria;
     int m_port;
     std::string m_secret;
+    std::string m_downloadDir;
     std::string doRequest(const MethodCall& methodCall);
 
   public:
-    explicit Aria2(std::string sessionFileDir);
+    Aria2();
     virtual ~Aria2() = default;
     void close();
 

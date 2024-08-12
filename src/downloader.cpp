@@ -125,8 +125,8 @@ void Download::cancelDownload()
 }
 
 /* Constructor */
-Downloader::Downloader(std::string sessionFileDir) :
-  mp_aria(new Aria2(sessionFileDir))
+Downloader::Downloader() :
+  mp_aria(new Aria2())
 {
   try {
     for (auto gid : mp_aria->tellWaiting()) {
@@ -209,13 +209,9 @@ bool downloadCanBeReused(const Download& d,
 
 } // unnamed namespace
 
-std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const std::string& downloadDir, Options options)
+std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, const Options& options)
 {
   std::unique_lock<std::mutex> lock(m_lock);
-  options.erase(std::remove_if(options.begin(), options.end(), [](const auto& option) {
-    return option.first == "dir";
-  }), options.end());
-  options.push_back({"dir", downloadDir});
   for (auto& p: m_knownDownloads) {
     auto& d = p.second;
     if ( downloadCanBeReused(*d, uri, options) )

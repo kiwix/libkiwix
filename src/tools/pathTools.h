@@ -29,6 +29,7 @@ std::wstring Utf8ToWide(const std::string& str);
 
 unsigned int getFileSize(const std::string& path);
 std::string getFileSizeAsString(const std::string& path);
+bool makeDirectory(const std::string& path);
 std::string makeTmpDirectory();
 bool copyFile(const std::string& sourcePath, const std::string& destPath);
 bool writeTextFile(const std::string& path, const std::string& content);
