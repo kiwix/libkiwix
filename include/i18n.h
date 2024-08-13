@@ -85,6 +85,8 @@ inline ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
   return ParameterizedMessage(msgId, noParams);
 }
 
+std::string translateBookCategory(const std::string& lang, const std::string& category);
+
 } // namespace kiwix
 
 #endif // KIWIX_I18N

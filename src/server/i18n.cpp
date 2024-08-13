@@ -193,4 +193,13 @@ std::string selectMostSuitableLanguage(const UserLangPreferences& prefs)
   return bestLangSoFar;
 }
 
+std::string translateBookCategory(const std::string& lang, const std::string& category)
+{
+    try {
+        return getTranslatedString(lang, "book-category." + category);
+    } catch (...) {
+        return category;
+    }
+}
+
 } // namespace kiwix

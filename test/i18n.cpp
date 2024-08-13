@@ -48,3 +48,17 @@ TEST(ParameterizedMessage, messagesWithParameters)
     EXPECT_EQ(msg.getText("test"), "Filter [I18N] by [TESTING] tag \"\"");
   }
 }
+
+TEST(I18n, translateBookCategory)
+{
+
+  EXPECT_EQ(translateBookCategory("en",   "ted"), "Ted");
+  EXPECT_EQ(translateBookCategory("test", "ted"), "[I18N] Ted [TESTING]");
+
+  EXPECT_EQ(translateBookCategory("en",   "stack_exchange"), "Stack Exchange");
+  EXPECT_EQ(translateBookCategory("test", "stack_exchange"), "[I18N] Stack Exchange [TESTING]");
+
+  // unknown categories are simply not translated
+  EXPECT_EQ(translateBookCategory("en", "Qwerty"), "Qwerty");
+  EXPECT_EQ(translateBookCategory("test", "Qwerty"), "Qwerty");
+}
