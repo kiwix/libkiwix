@@ -3,7 +3,7 @@
 #include "tools/otherTools.h"
 #include "tools.h"
 #include "tools/regexTools.h"
-#include "server/i18n.h"
+#include "server/i18n_utils.h"
 
 namespace kiwix
 {
@@ -77,7 +77,7 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
     const auto tags = bookObj.getTags();
     const auto downloadAvailable = (bookObj.getUrl() != "");
     std::string faviconAttr = "style=background-image:url(" + bookIconUrl + ")";
-    
+
     booksData.push_back(kainjow::mustache::object{
       {"id", contentId},
       {"title", bookTitle},

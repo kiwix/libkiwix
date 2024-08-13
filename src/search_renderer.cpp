@@ -32,7 +32,7 @@
 #include "libkiwix-resources.h"
 #include "tools/stringTools.h"
 
-#include "server/i18n.h"
+#include "server/i18n_utils.h"
 
 namespace kiwix
 {

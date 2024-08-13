@@ -1,4 +1,4 @@
-#include "../src/server/i18n.h"
+#include "../src/server/i18n_utils.h"
 #include "gtest/gtest.h"
 
 using namespace kiwix;

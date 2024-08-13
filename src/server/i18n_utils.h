@@ -17,8 +17,8 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_SERVER_I18N
-#define KIWIX_SERVER_I18N
+#ifndef KIWIX_SERVER_I18N_UTILS
+#define KIWIX_SERVER_I18N_UTILS
 
 #include <map>
 #include <string>
@@ -135,4 +135,4 @@ std::string selectMostSuitableLanguage(const UserLangPreferences& prefs);
 
 } // namespace kiwix
 
-#endif // KIWIX_SERVER_I18N
+#endif // KIWIX_SERVER_I18N_UTILS

@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "i18n.h"
+#include "i18n_utils.h"
 
 #include "tools/otherTools.h"
 

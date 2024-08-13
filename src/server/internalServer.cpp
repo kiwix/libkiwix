@@ -54,7 +54,7 @@ extern "C" {
 #include "search_renderer.h"
 #include "opds_dumper.h"
 #include "html_dumper.h"
-#include "i18n.h"
+#include "i18n_utils.h"
 
 #include <zim/uuid.h>
 #include <zim/error.h>

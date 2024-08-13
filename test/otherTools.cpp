@@ -20,7 +20,7 @@
 #include "gtest/gtest.h"
 #include "../src/tools/otherTools.h"
 #include "zim/suggestion_iterator.h"
-#include "../src/server/i18n.h"
+#include "../src/server/i18n_utils.h"
 
 #include <regex>
 
