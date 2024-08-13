@@ -10,7 +10,8 @@ headers = [
   'kiwixserve.h',
   'name_mapper.h',
   'tools.h',
-  'version.h'
+  'version.h',
+  'i18n.h'
 ]
 
 install_headers(headers, subdir:'kiwix')

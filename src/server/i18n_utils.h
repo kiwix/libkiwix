@@ -20,8 +20,7 @@
 #ifndef KIWIX_SERVER_I18N_UTILS
 #define KIWIX_SERVER_I18N_UTILS
 
-#include <map>
-#include <string>
+#include "i18n.h"
 #include <mustache.hpp>
 
 namespace kiwix
@@ -40,35 +39,8 @@ struct I18nStringTable {
   const char* get(const std::string& key) const;
 };
 
-std::string getTranslatedString(const std::string& lang, const std::string& key);
-
 namespace i18n
 {
-
-typedef std::map<std::string, std::string> Parameters;
-
-std::string expandParameterizedString(const std::string& lang,
-                                      const std::string& key,
-                                      const Parameters& params);
-
-class GetTranslatedString
-{
-public:
-  explicit GetTranslatedString(const std::string& lang) : m_lang(lang) {}
-
-  std::string operator()(const std::string& key) const
-  {
-    return getTranslatedString(m_lang, key);
-  }
-
-  std::string operator()(const std::string& key, const Parameters& params) const
-  {
-    return expandParameterizedString(m_lang, key, params);
-  }
-
-private:
-  const std::string m_lang;
-};
 
 class GetTranslatedStringWithMsgId
 {
@@ -93,33 +65,6 @@ private:
 };
 
 } // namespace i18n
-
-class ParameterizedMessage
-{
-public: // types
-  typedef i18n::Parameters Parameters;
-
-public: // functions
-  ParameterizedMessage(const std::string& msgId, const Parameters& params)
-    : msgId(msgId)
-    , params(params)
-  {}
-
-  std::string getText(const std::string& lang) const;
-
-  const std::string& getMsgId()  const { return msgId; }
-  const Parameters&  getParams() const { return params; }
-
-private: // data
-  const std::string msgId;
-  const Parameters  params;
-};
-
-inline ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
-{
-  const ParameterizedMessage::Parameters noParams;
-  return ParameterizedMessage(msgId, noParams);
-}
 
 struct LangPreference
 {
