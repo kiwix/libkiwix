@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Veloman Yunkan <veloman.yunkan@gmail.com>
+ * Copyright 2024 Veloman Yunkan <veloman.yunkan@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -17,28 +17,14 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_SERVER_I18N
-#define KIWIX_SERVER_I18N
+#ifndef KIWIX_I18N
+#define KIWIX_I18N
 
 #include <map>
 #include <string>
-#include <mustache.hpp>
 
 namespace kiwix
 {
-
-struct I18nString {
-  const char* const key;
-  const char* const value;
-};
-
-struct I18nStringTable {
-  const char* const lang;
-  const size_t entryCount;
-  const I18nString* const entries;
-
-  const char* get(const std::string& key) const;
-};
 
 std::string getTranslatedString(const std::string& lang, const std::string& key);
 
@@ -64,28 +50,6 @@ public:
   std::string operator()(const std::string& key, const Parameters& params) const
   {
     return expandParameterizedString(m_lang, key, params);
-  }
-
-private:
-  const std::string m_lang;
-};
-
-class GetTranslatedStringWithMsgId
-{
-  typedef kainjow::mustache::basic_data<std::string> MustacheString;
-  typedef std::pair<std::string, MustacheString> MsgIdAndTranslation;
-
-public:
-  explicit GetTranslatedStringWithMsgId(const std::string& lang) : m_lang(lang) {}
-
-  MsgIdAndTranslation operator()(const std::string& key) const
-  {
-    return {key, getTranslatedString(m_lang, key)};
-  }
-
-  MsgIdAndTranslation operator()(const std::string& key, const Parameters& params) const
-  {
-    return {key, expandParameterizedString(m_lang, key, params)};
   }
 
 private:
@@ -121,18 +85,8 @@ inline ParameterizedMessage nonParameterizedMessage(const std::string& msgId)
   return ParameterizedMessage(msgId, noParams);
 }
 
-struct LangPreference
-{
-  const std::string lang;
-  const float preference;
-};
-
-typedef std::vector<LangPreference> UserLangPreferences;
-
-UserLangPreferences parseUserLanguagePreferences(const std::string& s);
-
-std::string selectMostSuitableLanguage(const UserLangPreferences& prefs);
+std::string translateBookCategory(const std::string& lang, const std::string& category);
 
 } // namespace kiwix
 
-#endif // KIWIX_SERVER_I18N
+#endif // KIWIX_I18N

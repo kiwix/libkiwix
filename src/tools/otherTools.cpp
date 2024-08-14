@@ -32,7 +32,7 @@
 #endif
 
 #include "tools/stringTools.h"
-#include "server/i18n.h"
+#include "server/i18n_utils.h"
 #include "libkiwix-resources.h"
 
 #include <map>

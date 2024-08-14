@@ -27,7 +27,7 @@
 #include <mustache.hpp>
 #include "byte_range.h"
 #include "etag.h"
-#include "i18n.h"
+#include "i18n_utils.h"
 
 #include <zim/item.h>
 

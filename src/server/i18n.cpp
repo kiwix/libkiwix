@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "i18n.h"
+#include "i18n_utils.h"
 
 #include "tools/otherTools.h"
 
@@ -191,6 +191,15 @@ std::string selectMostSuitableLanguage(const UserLangPreferences& prefs)
     }
   }
   return bestLangSoFar;
+}
+
+std::string translateBookCategory(const std::string& lang, const std::string& category)
+{
+    try {
+        return getTranslatedString(lang, "book-category." + category);
+    } catch (...) {
+        return category;
+    }
 }
 
 } // namespace kiwix

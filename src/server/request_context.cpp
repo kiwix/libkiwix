@@ -28,7 +28,7 @@
 #include <cctype>
 
 #include "tools/stringTools.h"
-#include "i18n.h"
+#include "i18n_utils.h"
 
 namespace kiwix {
 
