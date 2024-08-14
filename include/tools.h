@@ -282,5 +282,14 @@ FeedCategories readCategoriesFromFeed(const std::string& content);
  * @return full language name.
  */
 std::string getLanguageSelfName(const std::string& lang);
+
+/**
+ * Slugifies the filename by converting any characters reserved by the operating
+ * system to '_'. Note filename is only the file name and not a path.
+ *
+ * @param filename Valid UTF-8 encoded file name string. 
+ * @return slugified string.
+ */
+std::string getSlugifiedFileName(const std::string& filename);
 }
 #endif // KIWIX_TOOLS_H
