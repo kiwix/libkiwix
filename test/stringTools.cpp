@@ -19,6 +19,7 @@
 
 #include "gtest/gtest.h"
 #include "../src/tools/stringTools.h"
+#include "../include/tools.h"
 #include <string>
 #include <vector>
 
@@ -168,6 +169,19 @@ TEST(stringTools, stripSuffix)
   EXPECT_EQ(stripSuffix("abc123", "123"), "abc");
   EXPECT_EQ(stripSuffix("abc123", "123456789"), "abc123");
   EXPECT_EQ(stripSuffix("abc123", "987"), "abc123");
+}
+
+TEST(stringTools, getSlugifiedFileName)
+{
+  EXPECT_EQ(getSlugifiedFileName("abc123.png"), "abc123.png");
+  EXPECT_EQ(getSlugifiedFileName("/"), "_");
+  EXPECT_EQ(getSlugifiedFileName("abc/123.pdf"), "abc_123.pdf");
+  EXPECT_EQ(getSlugifiedFileName("abc//123.yaml"), "abc__123.yaml");
+  EXPECT_EQ(getSlugifiedFileName("//abc//123//"), "__abc__123__");
+#ifdef _WIN32
+  EXPECT_EQ(getSlugifiedFileName(R"(<>:"/\\|?*)"), "__________");
+  EXPECT_EQ(getSlugifiedFileName(R"(<abc>:"/123\\|?*<.txt>)"), "_abc____123______.txt_");
+#endif
 }
 
 };
