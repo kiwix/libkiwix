@@ -172,7 +172,12 @@ class Downloader
   typedef std::vector<std::pair<std::string, std::string>> Options;
 
  public: // functions
-  Downloader();
+  /*
+  * Create a new Downloader object.
+  *
+  * @param sessionFileDir: The directory where aria2 will store its session file.
+  */
+  explicit Downloader(std::string sessionFileDir);
   virtual ~Downloader();
 
   void close();
@@ -191,10 +196,11 @@ class Downloader
    * User should call `update` on the returned `Download` to have an accurate status.
    *
    * @param uri: The uri of the thing to download.
+   * @param downloadDir: The download directory where the thing should be stored (takes precedence over any "dir" in `options`).
    * @param options: A series of pair <option_name, option_value> to pass to aria.
    * @return: The newly created Download.
    */
-  std::shared_ptr<Download> startDownload(const std::string& uri, const Options& options = {});
+  std::shared_ptr<Download> startDownload(const std::string& uri, const std::string& downloadDir, Options options = {});
 
   /**
    * Get a download corrsponding to a download id (did)
