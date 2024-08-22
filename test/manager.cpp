@@ -25,11 +25,23 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     EXPECT_EQ(book.getUrl(), url);
 }
 
+
+
+#if _WIN32
+# define UNITTEST_ZIM_PATH "zimfiles\\unittest.zim"
+# define LIB_ABS_PATH  "C:\\data\\lib.xml"
+# define ZIM_ABS_PATH  "C:\\data\\zimfiles\\unittest.zim"
+#else
+# define UNITTEST_ZIM_PATH "zimfiles/unittest.zim"
+# define LIB_ABS_PATH "/data/lib.xml"
+# define ZIM_ABS_PATH "/data/zimfiles/unittest.zim"
+#endif
+
 const char sampleLibraryXML[] = R"(
 <library version="1.0">
   <book
         id="0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2"
-        path="zimfiles/unittest.zim"
+        path=")" UNITTEST_ZIM_PATH R"("
         url="https://example.com/zimfiles/unittest.zim"
         title="Unit Test"
         description="Wikipedia articles about unit testing"
@@ -51,9 +63,9 @@ TEST(ManagerTest, readXml)
     auto lib = kiwix::Library::create();
     kiwix::Manager manager = kiwix::Manager(lib);
 
-    EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, "/data/lib.xml", true));
+    EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, LIB_ABS_PATH, true));
     kiwix::Book book = lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
-    EXPECT_EQ("/data/zimfiles/unittest.zim", book.getPath());
+    EXPECT_EQ(ZIM_ABS_PATH, book.getPath());
     EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl());
     EXPECT_EQ("Unit Test", book.getTitle());
     EXPECT_EQ("Wikipedia articles about unit testing", book.getDescription());
