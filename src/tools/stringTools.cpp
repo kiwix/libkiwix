@@ -257,7 +257,7 @@ std::string kiwix::urlDecode(const std::string& value, bool component)
 
     // If there aren't enough characters left for this to be a
     // valid escape code, just use the character and move on
-    if (it > value.end() - 3) {
+    if (value.end() - it < 3) {
       os << *it;
       continue;
     }
