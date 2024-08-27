@@ -267,11 +267,21 @@ const char * sampleOpdsStream = R"(
 
 )";
 
+#ifdef _WIN32
+# define ZIMFILE_PATH ".\\zimfile.zim"
+# define EXAMPLE_PATH ".\\example.zim"
+# define LIBRARY_PATH ".\\test\\library.xml"
+#else
+# define ZIMFILE_PATH "./zimfile.zim"
+# define EXAMPLE_PATH "./example.zim"
+# define LIBRARY_PATH "./test/library.xml"
+#endif
+
 const char sampleLibraryXML[] = R"(
 <library version="1.0">
   <book
         id="raycharles"
-        path="./zimfile.zim"
+        path=")" ZIMFILE_PATH R"("
         url="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim"
         title="Ray Charles"
         description="Wikipedia articles about Ray Charles"
@@ -287,7 +297,7 @@ const char sampleLibraryXML[] = R"(
       ></book>
   <book
         id="example"
-        path="./example.zim"
+        path=")" EXAMPLE_PATH R"("
         title="An example ZIM archive"
         description="An eXaMpLe book added to the catalog via XML"
         language="deu"
@@ -383,7 +393,7 @@ class LibraryTest : public ::testing::Test {
   void SetUp() override {
      kiwix::Manager manager(lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
-     manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
+     manager.readXml(sampleLibraryXML, false, LIBRARY_PATH, true);
   }
 
   kiwix::Bookmark createBookmark(const std::string &id, const std::string& url="", const std::string& title="") {

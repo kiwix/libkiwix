@@ -71,7 +71,7 @@ class Resource:
         for base_dir in base_dirs:
             try:
                 with open(os.path.join(base_dir, filename), 'rb') as f:
-                    self.data = f.read()
+                    self.data = f.read().replace(b"\r\n", b"\n")
                 found = True
                 break
             except FileNotFoundError:

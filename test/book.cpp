@@ -15,11 +15,19 @@ struct XMLDoc : pugi::xml_document
 
 } // unnamed namespace
 
+#if _WIN32
+# define DATA_ABS_PATH "C:\\data\\zim"
+# define ZARA_ABS_PATH "C:\\data\\zim\\zara.zim"
+#else
+# define DATA_ABS_PATH "/data/zim"
+# define ZARA_ABS_PATH "/data/zim/zara.zim"
+#endif
+
 TEST(BookTest, updateFromXMLTest)
 {
     const XMLDoc xml(R"(
       <book id="zara"
-            path="./zara.zim"
+            path="zara.zim"
             url="https://who.org/zara.zim"
             title="Catch an infection in 24 hours"
             description="Complete guide to contagious diseases"
@@ -40,9 +48,9 @@ TEST(BookTest, updateFromXMLTest)
     )");
 
     kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "/data/zim");
+    book.updateFromXml(xml.child("book"), DATA_ABS_PATH);
 
-    EXPECT_EQ(book.getPath(), "/data/zim/zara.zim");
+    EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
     EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
     EXPECT_EQ(book.getTitle(), "Catch an infection in 24 hours");
     EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");

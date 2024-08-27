@@ -7,6 +7,23 @@
 namespace
 {
 
+#if _WIN32
+const char libraryXML[] = R"(
+<library version="1.0">
+  <book id="01"         path="C:\data\zero_one.zim">         </book>
+  <book id="02"         path="C:\data\zero two.zim">         </book>
+  <book id="03"         path="C:\data\ZERO thrêë.zim">       </book>
+  <book id="04-2021-10" path="C:\data\zero_four_2021-10.zim"></book>
+  <book id="04-2021-11" path="C:\data\zero_four_2021-11.zim"></book>
+  <book id="05-a"       path="C:\data\zero_five-a.zim" name="zero_five"></book>
+  <book id="05-b"       path="C:\data\zero_five-b.zim" name="zero_five"></book>
+  <book id="06+"        path="C:\data\zërô + SIX.zim"></book>
+  <book id="06plus"     path="C:\data\zero_plus_six.zim"></book>
+  <book id="07-super"   path="C:\data\zero_seven.zim"></book>
+  <book id="07-sub"     path="C:\data\subdir\zero_seven.zim"></book>
+</library>
+)";
+#else
 const char libraryXML[] = R"(
 <library version="1.0">
   <book id="01"         path="/data/zero_one.zim">         </book>
@@ -22,6 +39,7 @@ const char libraryXML[] = R"(
   <book id="07-sub"     path="/data/subdir/zero_seven.zim"></book>
 </library>
 )";
+#endif
 
 class NameMapperTest : public ::testing::Test {
  public:
@@ -61,7 +79,22 @@ public:
   operator std::string() const { return buffer.str(); }
 };
 
+#if _WIN32
+const std::string ZERO_FOUR_NAME_CONFLICT_MSG =
+    "Path collision: 'C:\\data\\zero_four_2021-10.zim' and"
+    " 'C:\\data\\zero_four_2021-11.zim' can't share the same URL path 'zero_four'."
+    " Therefore, only 'C:\\data\\zero_four_2021-10.zim' will be served.\n";
 
+const std::string ZERO_SIX_NAME_CONFLICT_MSG =
+    "Path collision: 'C:\\data\\zërô + SIX.zim' and "
+    "'C:\\data\\zero_plus_six.zim' can't share the same URL path 'zero_plus_six'."
+    " Therefore, only 'C:\\data\\zërô + SIX.zim' will be served.\n";
+
+const std::string ZERO_SEVEN_NAME_CONFLICT_MSG =
+    "Path collision: 'C:\\data\\subdir\\zero_seven.zim' and"
+    " 'C:\\data\\zero_seven.zim' can't share the same URL path 'zero_seven'."
+    " Therefore, only 'C:\\data\\subdir\\zero_seven.zim' will be served.\n";
+#else
 const std::string ZERO_FOUR_NAME_CONFLICT_MSG =
     "Path collision: '/data/zero_four_2021-10.zim' and"
     " '/data/zero_four_2021-11.zim' can't share the same URL path 'zero_four'."
@@ -76,6 +109,7 @@ const std::string ZERO_SEVEN_NAME_CONFLICT_MSG =
     "Path collision: '/data/subdir/zero_seven.zim' and"
     " '/data/zero_seven.zim' can't share the same URL path 'zero_seven'."
     " Therefore, only '/data/subdir/zero_seven.zim' will be served.\n";
+#endif
 
 // Name conflicts in the default mode (without the --nodatealiases is off
 const std::string DEFAULT_NAME_CONFLICTS = ZERO_SIX_NAME_CONFLICT_MSG
