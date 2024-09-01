@@ -146,6 +146,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
     m_hasSearchResult = true;
   } catch(...) {
     m_hasSearchResult = false;
+    return false;
   }
 
   for (pugi::xml_node entryNode = libraryNode.child("entry"); entryNode;
