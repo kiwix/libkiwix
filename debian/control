@@ -35,11 +35,12 @@ Description: library of common code for Kiwix (development)
  .
  This package contains development files.
 
-Package: libkiwix10
+Package: libkiwix14
 Architecture: any
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}, aria2
-Conflicts: libkiwix0, libkiwix3, libkiwix9
+Conflicts: libkiwix0, libkiwix3, libkiwix9, libkiwix10, libkiwix11, libkiwix12, libkiwix13
+Replaces: libkiwix0, libkiwix3, libkiwix9, libkiwix10, libkiwix11, libkiwix12, libkiwix13
 Description: library of common code for Kiwix
  Kiwix is an offline Wikipedia reader. libkiwix provides the
  software core for Kiwix, and contains the code shared by all
