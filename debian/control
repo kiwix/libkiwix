@@ -22,7 +22,7 @@ Package: libkiwix-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: libkiwix10 (= ${binary:Version}), ${misc:Depends}, python3,
+Depends: libkiwix14 (= ${binary:Version}), ${misc:Depends}, python3,
  libzim-dev (>= 9.0.0~),
  libicu-dev,
  libpugixml-dev,
