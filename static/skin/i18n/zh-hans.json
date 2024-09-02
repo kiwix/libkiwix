@@ -65,5 +65,15 @@
 	"download-links-heading": "下载<b><i>{{BOOK_TITLE}}</i></b>的链接",
 	"download-links-title": "下载书籍",
 	"preview-book": "预览",
-	"unknown-error": "未知错误"
+	"unknown-error": "未知错误",
+	"book-category.wikibooks": "维基教科书",
+	"book-category.wikinews": "维基新闻",
+	"book-category.wikipedia": "维基百科",
+	"book-category.wikiquote": "维基语录",
+	"book-category.wikisource": "维基文库",
+	"book-category.wikispecies": "维基物种",
+	"book-category.wikiversity": "维基学院",
+	"book-category.wikivoyage": "维基导游",
+	"book-category.wiktionary": "维基词典",
+	"book-category.other": "其他"
 }

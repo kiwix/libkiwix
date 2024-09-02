@@ -3,6 +3,7 @@
 		"authors": [
 			"Adriendelucca",
 			"Gomoko",
+			"Goombiis",
 			"Melimeli",
 			"Stephane",
 			"Thibaut120094",
@@ -67,5 +68,15 @@
 	"download-links-heading": "Liens de téléchargement pour <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Télécharger le livre",
 	"preview-book": "Aperçu",
-	"unknown-error": "Erreur inconnue"
+	"unknown-error": "Erreur inconnue",
+	"book-category.wikibooks": "Wikilivres",
+	"book-category.wikinews": "Wikinews",
+	"book-category.wikipedia": "Wikipédia",
+	"book-category.wikiquote": "Wikiquote",
+	"book-category.wikisource": "Wikisource",
+	"book-category.wikispecies": "Wikispecies",
+	"book-category.wikiversity": "Wikiversité",
+	"book-category.wikivoyage": "Wikivoyage",
+	"book-category.wiktionary": "Wiktionnaire",
+	"book-category.other": "Autre"
 }
