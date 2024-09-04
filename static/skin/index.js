@@ -121,9 +121,9 @@
 
     function generateTagLink(tagValue) {
         tagValue = tagValue.toLowerCase();
-        const humanFriendlyTagValue = humanFriendlyTitle(tagValue);
-        const tagMessage = $t("filter-by-tag", {TAG: humanFriendlyTagValue});
-        return `<span class='tag__link' aria-label='${tagMessage}' title='${tagMessage}' data-tag=${tagValue}>${humanFriendlyTagValue}</span>`
+        const htmlEncodedTagValue = htmlEncode(tagValue);
+        const tagMessage = $t("filter-by-tag", {TAG: tagValue});
+        return `<span class='tag__link' aria-label='${tagMessage}' title='${tagMessage}' data-tag=${htmlEncodedTagValue}>${htmlEncodedTagValue}</span>`
     }
 
     function generateBookHtml(book, sort = false) {
