@@ -105,6 +105,14 @@
         return '';
     }
 
+    // Borrowed from https://stackoverflow.com/a/1912522
+    function htmlDecode(input){
+      var e = document.createElement('textarea');
+      e.innerHTML = input;
+      // handle case of empty input
+      return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
     function htmlEncode(str) {
         return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => `&#${i.charCodeAt(0)};`);
     }
@@ -121,9 +129,14 @@
 
     function generateTagLink(tagValue) {
         tagValue = tagValue.toLowerCase();
-        const htmlEncodedTagValue = htmlEncode(tagValue);
         const tagMessage = $t("filter-by-tag", {TAG: tagValue});
-        return `<span class='tag__link' aria-label='${tagMessage}' title='${tagMessage}' data-tag=${htmlEncodedTagValue}>${htmlEncodedTagValue}</span>`
+        const spanElement = document.createElement("span");
+        spanElement.className = 'tag__link';
+        spanElement.setAttribute('aria-label', tagMessage);
+        spanElement.setAttribute('title', tagMessage);
+        spanElement.setAttribute('data-tag', tagValue);
+        spanElement.innerHTML = htmlEncode(tagValue);
+        return spanElement.outerHTML;
     }
 
     function generateBookHtml(book, sort = false) {
@@ -144,7 +157,7 @@
             const mulLangList = langCodesList.filter(x => languages.hasOwnProperty(x)).map(x => languages[x]);
             language = mulLangList.join(', ');
         }
-        const tags = getInnerHtml(book, 'tags');
+        const tags = htmlDecode(getInnerHtml(book, 'tags'));
         const tagList = tags.split(';').filter(tag => {return !(tag.startsWith('_'))});
         const tagFilterLinks = tagList.map((tagValue) => generateTagLink(tagValue));
         const tagHtml = tagFilterLinks.join(' | ');
@@ -492,7 +505,7 @@
     function addTagElement(tagValue, resetFilter) {
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.style.display = 'inline-block';
-        tagElement.innerHTML = `${tagValue}`;
+        tagElement.innerHTML = htmlEncode(tagValue);
         const tagMessage = $t("stop-filtering-by-tag", {TAG: tagValue});
         tagElement.setAttribute('aria-label', tagMessage);
         tagElement.setAttribute('title', tagMessage);
