@@ -310,6 +310,12 @@ function blockLink(url) {
        : url;
 }
 
+function urlMustBeHandledByAnExternalApp(url) {
+  const WHITELISTED_URL_SCHEMATA = ['http:', 'https:', 'about:', 'javascript:'];
+
+  return WHITELISTED_URL_SCHEMATA.indexOf(url.protocol) == -1;
+}
+
 function isExternalUrl(url) {
   if ( url.startsWith(window.location.origin) )
     return false;
@@ -334,7 +340,13 @@ function onClickEvent(e) {
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
   if (target !== null && "href" in target) {
     const target_href = getRealHref(target);
-    if (isExternalUrl(target_href)) {
+    const target_url = new URL(target_href, iframeDocument.location);
+    const isExternalAppUrl = urlMustBeHandledByAnExternalApp(target_url);
+    if ( isExternalAppUrl && !viewerSettings.linkBlockingEnabled ) {
+        target.setAttribute("target", "_blank");
+    }
+
+    if (isExternalAppUrl || isExternalUrl(target_href)) {
       const possiblyBlockedLink = blockLink(target_href);
       if ( e.ctrlKey || e.shiftKey ) {
         // The link will be loaded in a new tab/window - update the link
@@ -343,6 +355,7 @@ function onClickEvent(e) {
       } else {
         // Load the external URL in the viewer window (rather than iframe)
         contentIframe.contentWindow.parent.location = possiblyBlockedLink;
+        e.preventDefault();
       }
     }
   }
