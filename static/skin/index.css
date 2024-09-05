@@ -231,6 +231,7 @@
     position: relative;
     width: var(--tile-width);
     left: calc(0px - var(--tile-border-width));
+    text-decoration: none;
 }
 
 .book__download > img {
@@ -239,7 +240,6 @@
 }
 
 .book__download > span {
-    text-decoration: none;
     position: relative;
     font-family: roboto;
     color: white;
