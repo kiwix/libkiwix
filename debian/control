@@ -23,7 +23,7 @@ Section: libdevel
 Architecture: any
 Multi-Arch: same
 Depends: libkiwix14 (= ${binary:Version}), ${misc:Depends}, python3,
- libzim-dev (>= 9.0.0~),
+ libzim-dev (>= 9.0.0), libzim-dev (<< 10.0.0),
  libicu-dev,
  libpugixml-dev,
  libcurl4-gnutls-dev,
