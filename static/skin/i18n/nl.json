@@ -3,6 +3,7 @@
 		"authors": [
 			"Kelson",
 			"McDutchie",
+			"Siebrand",
 			"Vistaus"
 		]
 	},
@@ -24,8 +25,12 @@
 	"404-page-heading": "Niet gevonden",
 	"500-page-title": "Interne serverfout",
 	"500-page-heading": "Interne serverfout",
+	"500-page-text": "Er is een interne serverfout opgetreden. Dat spijt ons",
 	"fulltext-search-unavailable": "Zoeken in volledige tekst is niet beschikbaar",
 	"no-search-results": "De zoekmachine voor volledige tekst is niet beschikbaar voor deze inhoud.",
+	"search-results-page-title": "Zoeken: {{SEARCH_PATTERN}}",
+	"search-result-book-info": "uit {{BOOK_TITLE}}",
+	"word-count": "{{COUNT}} woorden",
 	"library-button-text": "Naar de welkomstpagina",
 	"home-button-text": "Naar de hoofdpagina van ‘{{BOOK_TITLE}}’",
 	"random-page-button-text": "Naar een willekeurig geselecteerde pagina gaan",
@@ -53,5 +58,6 @@
 	"welcome-to-kiwix-server": "Welkom bij de Kiwix-server",
 	"download-links-heading": "Downloadkoppelingen voor <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Boek downloaden",
-	"preview-book": "Voorvertoning"
+	"preview-book": "Voorvertoning",
+	"unknown-error": "Onbekende fout"
 }

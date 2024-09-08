@@ -3,7 +3,8 @@
 		"authors": [
 			"Eduardoaddad",
 			"Obiru",
-			"Re demz"
+			"Re demz",
+			"YoReaper"
 		]
 	},
 	"name": "Português",
@@ -31,10 +32,10 @@
 	"book-filtering-all-languages": "Todos os idiomas",
 	"count-of-matching-books": "{{COUNT}} livro(s)",
 	"download": "Baixar",
-	"hash-download-link-text": "Hash sha256",
-	"hash-download-alt-text": "baixar hash",
-	"torrent-download-link-text": "Arquivo torrent",
-	"torrent-download-alt-text": "baixar torrent",
+	"hash-download-link-text": "Verificação SHA-256",
+	"hash-download-alt-text": "Exibir arquivo de verificação SHA-256",
+	"torrent-download-link-text": "BitTorrent",
+	"torrent-download-alt-text": "Baixar via BitTorrent",
 	"welcome-to-kiwix-server": "Bem vindo ao servidor Kiwix",
 	"download-links-heading": "Links para baixar <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Download do livro",

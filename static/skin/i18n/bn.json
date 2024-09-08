@@ -16,5 +16,15 @@
 	"search": "অনুসন্ধান",
 	"welcome-to-kiwix-server": "কিউইক্স সার্ভারে স্বাগতম",
 	"download-links-title": "বই ডাউনলোড করুন",
-	"preview-book": "প্রাকদর্শন"
+	"preview-book": "প্রাকদর্শন",
+	"book-category.wikibooks": "উইকিবই",
+	"book-category.wikinews": "উইকিসংবাদ",
+	"book-category.wikipedia": "উইকিপিডিয়া",
+	"book-category.wikiquote": "উইকিউক্তি",
+	"book-category.wikisource": "উইকিসংকলন",
+	"book-category.wikispecies": "উইকিপ্রজাতি",
+	"book-category.wikiversity": "উইকিবিশ্ববিদ্যালয়",
+	"book-category.wikivoyage": "উইকিভ্রমণ",
+	"book-category.wiktionary": "উইকিঅভিধান",
+	"book-category.other": "অন্যান্য"
 }

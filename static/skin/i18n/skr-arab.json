@@ -22,5 +22,16 @@
 	"torrent-download-link-text": "ٹورنٹ فائل",
 	"torrent-download-alt-text": "ٹورںٹ ݙاؤن لوڈ کرو",
 	"download-links-title": "کتاب ڈاؤن لوڈ کرو",
-	"preview-book": "پیشگی ݙکھالا"
+	"preview-book": "پیشگی ݙکھالا",
+	"book-category.vikidia": "وکی ڈیا",
+	"book-category.wikibooks": "وکی کتاباں",
+	"book-category.wikinews": "وکی خبراں",
+	"book-category.wikipedia": "وکیپیڈیا",
+	"book-category.wikiquote": "وکی ٻول",
+	"book-category.wikisource": "وکی ماخذ",
+	"book-category.wikispecies": "وکی سپیشیز",
+	"book-category.wikiversity": "وکی ورسٹی",
+	"book-category.wikivoyage": "وکی سیرسپاٹا",
+	"book-category.wiktionary": "وکشنری",
+	"book-category.other": "ٻیا"
 }

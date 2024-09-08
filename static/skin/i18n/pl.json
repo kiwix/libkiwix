@@ -34,5 +34,6 @@
 	"torrent-download-link-text": "Plik torrent",
 	"welcome-to-kiwix-server": "Witamy na serwerze Kiwix",
 	"download-links-title": "Pobierz książkę",
-	"preview-book": "Podgląd"
+	"preview-book": "Podgląd",
+	"book-category.other": "Inne"
 }

@@ -52,5 +52,15 @@
 	"welcome-to-kiwix-server": "कीविक्स सर्वर में आपका स्वागत है",
 	"download-links-heading": "<b><i>{{BOOK_TITLE}}</i></b> के लिए डाउनलोड लिंक",
 	"download-links-title": "पुस्तक डाउनलोड करें",
-	"preview-book": "पूर्वावलोकन"
+	"preview-book": "पूर्वावलोकन",
+	"book-category.wikibooks": "विकिपुस्तक",
+	"book-category.wikinews": "विकिसमाचार",
+	"book-category.wikipedia": "विकिपीडिया",
+	"book-category.wikiquote": "विकिसूक्ति",
+	"book-category.wikisource": "विकिस्रोत",
+	"book-category.wikispecies": "विकिप्रजाति",
+	"book-category.wikiversity": "विकिविश्वविद्यालय",
+	"book-category.wikivoyage": "विकियात्रा",
+	"book-category.wiktionary": "विकिकोश",
+	"book-category.other": "अन्य"
 }

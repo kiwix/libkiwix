@@ -36,5 +36,16 @@
 	"direct-download-link-text": "Direkt",
 	"torrent-download-link-text": "BitTorrent",
 	"download-links-title": "Buch eroflueden",
-	"unknown-error": "Onbekannte Feeler"
+	"unknown-error": "Onbekannte Feeler",
+	"book-category.stack_exchange": "Stack Exchange",
+	"book-category.wikibooks": "Wikibooks",
+	"book-category.wikinews": "Wikinews",
+	"book-category.wikipedia": "Wikipedia",
+	"book-category.wikiquote": "Wikiquote",
+	"book-category.wikisource": "Wikisource",
+	"book-category.wikispecies": "Wikispecies",
+	"book-category.wikiversity": "Wikiversity",
+	"book-category.wikivoyage": "Wikivoyage",
+	"book-category.wiktionary": "Wiktionnaire",
+	"book-category.other": "Anerer"
 }

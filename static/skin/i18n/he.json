@@ -60,5 +60,17 @@
 	"download-links-heading": "הורדת קישורים עבור <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "הורדת ספר",
 	"preview-book": "תצוגה מקדימה",
-	"unknown-error": "שגיאה בלתי־ידועה"
+	"unknown-error": "שגיאה בלתי־ידועה",
+	"book-category.gutenberg": "גוטנברג",
+	"book-category.vikidia": "ויקידיה",
+	"book-category.wikibooks": "ויקיספר",
+	"book-category.wikinews": "ויקיחדשות",
+	"book-category.wikipedia": "ויקיפדיה",
+	"book-category.wikiquote": "ויקיציטוט",
+	"book-category.wikisource": "ויקיטקסט (Wikisource)",
+	"book-category.wikispecies": "ויקימינים",
+	"book-category.wikiversity": "ויקיברסיטה",
+	"book-category.wikivoyage": "ויקימסע",
+	"book-category.wiktionary": "ויקימילון",
+	"book-category.other": "אחר"
 }
