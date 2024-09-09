@@ -61,7 +61,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=e0600dde" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=2781f198" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=480ca6b4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
@@ -279,7 +279,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
     {
       /* url */ "/ROOT%23%3F/",
 R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
-      href="/ROOT%23%3F/skin/index.css?cacheid=e0600dde"
+      href="/ROOT%23%3F/skin/index.css?cacheid=2781f198"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
