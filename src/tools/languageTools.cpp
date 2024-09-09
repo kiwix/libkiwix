@@ -68,6 +68,7 @@ void fillLanguagesMap()
         const kiwix::ICULanguageInfo lang(*icuLangPtr);
         iso639_3.insert({lang.iso3Code(), lang.selfName()});
     }
+    iso639_3.erase("mul");
 }
 
 } // unnamed namespace
