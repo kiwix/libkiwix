@@ -335,6 +335,13 @@ function getRealHref(target) {
   return target_href;
 }
 
+function setHrefAvoidingWombatRewriting(target, url) {
+  const old_no_rewrite = target._no_rewrite;
+  target._no_rewrite = true;
+  target.setAttribute("href", url);
+  target._no_rewrite = old_no_rewrite;
+}
+
 function onClickEvent(e) {
   const iframeDocument = contentIframe.contentDocument;
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
@@ -351,7 +358,7 @@ function onClickEvent(e) {
       if ( e.ctrlKey || e.shiftKey ) {
         // The link will be loaded in a new tab/window - update the link
         // and let the browser handle the rest.
-        target.setAttribute("href", possiblyBlockedLink);
+        setHrefAvoidingWombatRewriting(target, possiblyBlockedLink);
       } else {
         // Load the external URL in the viewer window (rather than iframe)
         contentIframe.contentWindow.parent.location = possiblyBlockedLink;
