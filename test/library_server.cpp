@@ -1033,7 +1033,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    />\n" \
   "    <link\n" \
   "      type=\"text/css\"\n" \
-  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=2781f198\"\n" \
+  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=ae79e41a\"\n" \
   "      rel=\"Stylesheet\"\n" \
   "    />\n" \
   "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3\">\n" \
@@ -1066,17 +1066,10 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "      .tag__link {\n" \
   "        pointer-events: none;\n" \
   "      }\n\n" \
-  "      .book__link__wrapper {\n" \
-  "        grid-column: 1 / 3;\n" \
-  "        grid-row: 1 / 3;\n" \
-  "      }\n\n" \
-  "      .book__link {\n" \
-  "        grid-row: 2 / 3;\n" \
-  "      }\n\n" \
   "      .kiwixHomeBody__results {\n" \
   "        flex-basis: 100%;\n" \
   "      }\n\n" \
-  "      #book__title>a, .book__download a {\n" \
+  "      #book__title>a {\n" \
   "        text-decoration: none;\n" \
   "        all: unset;\n" \
   "      }\n" \
@@ -1087,62 +1080,83 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
 
 #define CHARLES_RAY_BOOK_HTML \
   "        <div class=\"book__wrapper\">\n" \
-  "                <div class=\"book__link__wrapper\">\n" \
-  "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/charlesray/?size=48)></div>\n" \
-  "                    <div class=\"book__header\">\n" \
-  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile%26other\">Charles, Ray</a></div>\n" \
-  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile%26other\">Download</a></span></div>\n" \
-  "                    </div>\n" \
-  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile%26other\" title=\"Preview\" aria-label=\"Preview\">\n" \
-  "                      <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
-  "                    </a>\n" \
-  "              </div>\n" \
-  "            <div class=\"book__languageTag\" >fra</div>\n" \
-  "            <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
-  "                <span class=\"tag__link\" aria-label='unittest' title='unittest'>unittest</span>\n" \
-  "                <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile%26other\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "            <div class=\"book__link__wrapper\">\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/charlesray/?size=48)></div>\n" \
+  "            <div class=\"book__header\">\n" \
+  "                <div id=\"book__title\">Charles, Ray</div>\n" \
   "            </div>\n" \
-  "        </div>\n" \
+  "            <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
+  "            </div>\n" \
+  "            </a>\n" \
+  "            <div class=\"book__meta\">\n" \
+  "              <div class=\"book__languageTag\" >fra</div>\n" \
+  "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                  <span class=\"tag__link\" aria-label='unittest' title='unittest'>unittest</span>\n" \
+  "                  <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "              </div>\n" \
+  "              </div>\n" \
+  "            </div>\n" \
+  "            <div>\n" \
+  "              <a class=\"book__download\" href=\"/ROOT%23%3F/nojs/download/zimfile%26other\">\n" \
+  "                <img src=\"/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989\">\n" \
+  "                <span>Download</span>\n" \
+  "              </a>\n" \
+  "            </div>\n" \
   "        </div>\n"
 
 #define RAY_CHARLES_BOOK_HTML \
   "        <div class=\"book__wrapper\">\n" \
-  "                <div class=\"book__link__wrapper\">\n" \
-  "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48)></div>\n" \
-  "                    <div class=\"book__header\">\n" \
-  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile_raycharles\">Ray Charles</a></div>\n" \
-  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile_raycharles\">Download</a></span></div>\n" \
-  "                    </div>\n" \
-  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles\" title=\"Preview\" aria-label=\"Preview\">\n" \
-  "                      <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
-  "                    </a>\n" \
-  "              </div>\n" \
-  "            <div class=\"book__languageTag\" >eng</div>\n" \
-  "            <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
-  "                <span class=\"tag__link\" aria-label='public_tag_without_a_value' title='public_tag_without_a_value'>public_tag_without_a_value</span>\n" \
-  "                <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "            <div class=\"book__link__wrapper\">\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48)></div>\n" \
+  "            <div class=\"book__header\">\n" \
+  "                <div id=\"book__title\">Ray Charles</div>\n" \
   "            </div>\n" \
-  "        </div>\n" \
+  "            <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
+  "            </div>\n" \
+  "            </a>\n" \
+  "            <div class=\"book__meta\">\n" \
+  "              <div class=\"book__languageTag\" >eng</div>\n" \
+  "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                  <span class=\"tag__link\" aria-label='public_tag_without_a_value' title='public_tag_without_a_value'>public_tag_without_a_value</span>\n" \
+  "                  <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "              </div>\n" \
+  "              </div>\n" \
+  "            </div>\n" \
+  "            <div>\n" \
+  "              <a class=\"book__download\" href=\"/ROOT%23%3F/nojs/download/zimfile_raycharles\">\n" \
+  "                <img src=\"/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989\">\n" \
+  "                <span>Download</span>\n" \
+  "              </a>\n" \
+  "            </div>\n" \
   "        </div>\n"
 
 #define RAY_CHARLES_UNCTZ_BOOK_HTML \
   "        <div class=\"book__wrapper\">\n" \
-  "                <div class=\"book__link__wrapper\">\n" \
-  "                    <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles_uncategorized/?size=48)></div>\n" \
-  "                    <div class=\"book__header\">\n" \
-  "                        <div id=\"book__title\"><a href=\"/ROOT%23%3F/content/zimfile_raycharles_uncategorized\">Ray (uncategorized) Charles</a></div>\n" \
-  "                        <div class=\"book__download\"><span><a href=\"/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized\">Download</a></span></div>\n" \
-  "                    </div>\n" \
-  "                    <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles_uncategorized\" title=\"Preview\" aria-label=\"Preview\">\n" \
-  "                      <div class=\"book__description\" title=\"No category is assigned to this library entry.\">No category is assigned to this library entry.</div>\n" \
-  "                    </a>\n" \
-  "              </div>\n" \
-  "            <div class=\"book__languageTag\" >rus,eng</div>\n" \
-  "            <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
-  "                <span class=\"tag__link\" aria-label='public_tag_with_a_value:value_of_a_public_tag' title='public_tag_with_a_value:value_of_a_public_tag'>public_tag_with_a_value:value_of_a_public_tag</span>\n" \
-  "                <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles_uncategorized\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "            <div class=\"book__link__wrapper\">\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles_uncategorized/?size=48)></div>\n" \
+  "            <div class=\"book__header\">\n" \
+  "                <div id=\"book__title\">Ray (uncategorized) Charles</div>\n" \
   "            </div>\n" \
-  "        </div>\n" \
+  "            <div class=\"book__description\" title=\"No category is assigned to this library entry.\">No category is assigned to this library entry.</div>\n" \
+  "            </div>\n" \
+  "            </a>\n" \
+  "            <div class=\"book__meta\">\n" \
+  "              <div class=\"book__languageTag\" >rus,eng</div>\n" \
+  "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                  <span class=\"tag__link\" aria-label='public_tag_with_a_value:value_of_a_public_tag' title='public_tag_with_a_value:value_of_a_public_tag'>public_tag_with_a_value:value_of_a_public_tag</span>\n" \
+  "                  <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
+  "              </div>\n" \
+  "              </div>\n" \
+  "            </div>\n" \
+  "            <div>\n" \
+  "              <a class=\"book__download\" href=\"/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized\">\n" \
+  "                <img src=\"/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989\">\n" \
+  "                <span>Download</span>\n" \
+  "              </a>\n" \
+  "            </div>\n" \
   "        </div>\n"
 
 #define FINAL_HTML_TEXT \
