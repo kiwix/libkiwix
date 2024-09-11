@@ -359,6 +359,57 @@ R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/search_results
   }
 }
 
+std::string getCacheIdFromUrl(const std::string& url)
+{
+  const std::string q("?cacheid=");
+  const auto i = url.find(q);
+  return i == std::string::npos ? "" : url.substr(i + q.size());
+}
+
+std::string runExternalCmdAndGetItsOutput(const std::string& cmd)
+{
+  std::string cmdOutput;
+
+#ifdef _WIN32
+#define popen _popen
+#define pclose _pclose
+#endif
+
+  if (FILE* pPipe = popen(cmd.c_str(), "r"))
+  {
+    char buf[128];
+    while (fgets(buf, 128, pPipe)) {
+        cmdOutput += std::string(buf, buf+128);
+    }
+
+    pclose(pPipe);
+  }
+
+  return cmdOutput;
+}
+
+std::string getSha1OfResponseData(const std::string& url)
+{
+  const std::string pythonScript =
+    "import urllib.request as req; "
+    "import hashlib; "
+    "print(hashlib.sha1(req.urlopen('" + url + "').read()).hexdigest())";
+  const std::string cmd = "python3 -c \"" + pythonScript + "\"";
+  return runExternalCmdAndGetItsOutput(cmd);
+}
+
+TEST_F(ServerTest, CacheIdsOfStaticResourcesMatchTheSha1HashOfResourceContent)
+{
+  for ( const Resource& res : all200Resources() ) {
+    if ( res.kind == STATIC_CONTENT ) {
+      const TestContext ctx{ {"url", res.url} };
+      const std::string fullUrl = "http://localhost:" + std::to_string(SERVER_PORT) + res.url;
+      const std::string sha1 = getSha1OfResponseData(fullUrl);
+      ASSERT_EQ(sha1.substr(0, 8), getCacheIdFromUrl(res.url)) << ctx;
+    }
+  }
+}
+
 const char* urls400[] = {
   "/ROOT%23%3F/search",
   "/ROOT%23%3F/search?content=zimfile",
