@@ -61,6 +61,12 @@ resource_decl_template = """{namespaces_open}
 extern const std::string {identifier};
 {namespaces_close}"""
 
+BINARY_RESOURCE_EXTENSIONS = ('.png', '.ttf', '.ico')
+
+def is_binary_resource(filename):
+    _, extension = os.path.splitext(filename)
+    return extension in BINARY_RESOURCE_EXTENSIONS
+
 class Resource:
     def __init__(self, base_dirs, filename, cacheid=None):
         filename = filename
@@ -71,7 +77,9 @@ class Resource:
         for base_dir in base_dirs:
             try:
                 with open(os.path.join(base_dir, filename), 'rb') as f:
-                    self.data = f.read().replace(b"\r\n", b"\n")
+                    self.data = f.read()
+                    if not is_binary_resource(filename):
+                        self.data = self.data.replace(b"\r\n", b"\n")
                 found = True
                 break
             except FileNotFoundError:
