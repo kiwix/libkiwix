@@ -38,7 +38,7 @@ templates/catalog_v2_entry.xml
 templates/catalog_v2_partial_entry.xml
 templates/catalog_v2_categories.xml
 templates/catalog_v2_languages.xml
-templates/url_of_search_results_css
+templates/url_of_search_results_css.tmpl
 templates/viewer_settings.js
 templates/no_js_library_page.html
 templates/no_js_download.html
