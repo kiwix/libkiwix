@@ -61,11 +61,31 @@ resource_decl_template = """{namespaces_open}
 extern const std::string {identifier};
 {namespaces_close}"""
 
-BINARY_RESOURCE_EXTENSIONS = ('.png', '.ttf', '.ico')
+BINARY_RESOURCE_EXTENSIONS = {'.ico', '.png', '.ttf'}
+
+TEXT_RESOURCE_EXTENSIONS = {
+    '.css',
+    '.html',
+    '.js',
+    '.json',
+    '.svg',
+    '.tmpl',
+    '.webmanifest',
+    '.xml',
+}
+
+if not BINARY_RESOURCE_EXTENSIONS.isdisjoint(TEXT_RESOURCE_EXTENSIONS):
+    raise RuntimeError(f"The following file type extensions are declared to be both binary and text: {BINARY_RESOURCE_EXTENSIONS.intersection(TEXT_RESOURCE_EXTENSIONS)}")
 
 def is_binary_resource(filename):
     _, extension = os.path.splitext(filename)
-    return extension in BINARY_RESOURCE_EXTENSIONS
+    is_binary = extension in BINARY_RESOURCE_EXTENSIONS
+    is_text = extension in TEXT_RESOURCE_EXTENSIONS
+    if not is_binary and not is_text:
+        # all file type extensions of static resources must be listed
+        # in either BINARY_RESOURCE_EXTENSIONS or TEXT_RESOURCE_EXTENSIONS
+        raise RuntimeError(f"Unknown file type extension: {extension}")
+    return is_binary
 
 class Resource:
     def __init__(self, base_dirs, filename, cacheid=None):
