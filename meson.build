@@ -89,3 +89,10 @@ configure_file(output : 'kiwix.pc',
                install_dir: get_option('libdir')+'/pkgconfig'
               )
 
+pkg_mod = import('pkgconfig')
+pkg_mod.generate(libraries : [libkiwix] + extra_libs,
+                 version : meson.project_version(),
+                 name : 'libkiwix',
+                 filebase : 'libkiwix',
+                 description : 'A library that contains useful primitives that Kiwix readers have in common',
+                 extra_cflags: extra_cflags)
