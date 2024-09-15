@@ -74,20 +74,6 @@ if get_option('doc')
   subdir('docs')
 endif
 
-pkg_requires = ['libzim', 'icu-i18n', 'pugixml', 'libcurl', 'libmicrohttpd', 'xapian-core']
-
-pkg_conf = configuration_data()
-pkg_conf.set('prefix', get_option('prefix'))
-pkg_conf.set('requires', ' '.join(pkg_requires))
-pkg_conf.set('extra_libs', ' '.join(extra_libs))
-pkg_conf.set('extra_cflags', extra_cflags)
-pkg_conf.set('version', meson.project_version())
-configure_file(output : 'kiwix.pc',
-               configuration : pkg_conf,
-               input : 'kiwix.pc.in',
-               install_dir: get_option('libdir')+'/pkgconfig'
-              )
-
 pkg_mod = import('pkgconfig')
 pkg_mod.generate(libraries : [libkiwix] + extra_libs,
                  version : meson.project_version(),
