@@ -35,11 +35,10 @@ else
   error('Cannot found header mustache.hpp')
 endif
 
-libzim_dep = dependency('libzim', version:'>=9.0.0', static:static_deps)
-libzim_dep = dependency('libzim', version:'<10.0.0', static:static_deps)
+libzim_dep = dependency('libzim', version:['>=9.0.0', '<10.0.0'], static:static_deps)
 
 if not compiler.has_header_symbol('zim/zim.h', 'LIBZIM_WITH_XAPIAN', dependencies: libzim_dep)
-  error('Libzim seems to be compiled without xapian. Xapian support is mandatory.')
+  error('Libzim seems to be compiled without Xapian. Xapian support is mandatory.')
 endif
 
 
