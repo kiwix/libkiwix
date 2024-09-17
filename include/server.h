@@ -64,8 +64,8 @@ namespace kiwix
        void setBlockExternalLinks(bool blockExternalLinks)
         { m_blockExternalLinks = blockExternalLinks; }
        void setIpMode(IpMode mode) { m_ipMode = mode; }
-       int getPort();
-       std::string getAddress();
+       int getPort() const;
+       IpAddress getAddress() const;
        IpMode getIpMode() const;
 
      protected:

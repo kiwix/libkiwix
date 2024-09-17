@@ -117,8 +117,8 @@ class InternalServer {
                                void** cont_cls);
     bool start();
     void stop();
-    std::string getAddress() { return m_addr; }
-    int getPort() { return m_port; }
+    IpAddress getAddress() const { return m_addr; }
+    int getPort() const { return m_port; }
     IpMode getIpMode() const { return m_ipMode; }
 
   private: // functions
