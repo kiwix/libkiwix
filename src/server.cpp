@@ -75,12 +75,25 @@ void Server::setRoot(const std::string& root)
   }
 }
 
+void Server::setAddress(const std::string& addr) 
+{
+  if (addr.empty())
+    return;
+
+  if (addr.find(':') != std::string::npos) { // IPv6
+    for (char ch : addr) if (ch == '[' or ch == ']') ch = '\0'; // Clean possible brackets
+    m_addr.addr6 = addr;
+  } else {
+    m_addr.addr = addr;
+  }
+}
+
 int Server::getPort() const
 {
   return mp_server->getPort();
 }
 
-std::string Server::getAddress()
+IpAddress Server::getAddress() const
 {
   return mp_server->getAddress();
 }

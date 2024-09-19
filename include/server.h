@@ -22,7 +22,7 @@
 
 #include <string>
 #include <memory>
-#include "common.h"
+#include "tools.h"
 
 namespace kiwix
 {
@@ -52,7 +52,7 @@ namespace kiwix
        void stop();
 
        void setRoot(const std::string& root);
-       void setAddress(const std::string& addr) { m_addr = addr; }
+       void setAddress(const std::string& addr);
        void setPort(int port) { m_port = port; }
        void setNbThreads(int threads) { m_nbThreads = threads; }
        void setMultiZimSearchLimit(unsigned int limit) { m_multizimSearchLimit = limit; }
@@ -72,7 +72,7 @@ namespace kiwix
        std::shared_ptr<Library> mp_library;
        std::shared_ptr<NameMapper> mp_nameMapper;
        std::string m_root = "";
-       std::string m_addr = "";
+       IpAddress m_addr;
        std::string m_indexTemplateString = "";
        int m_port = 80;
        int m_nbThreads = 1;

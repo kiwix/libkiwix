@@ -211,39 +211,36 @@ std::map<std::string, std::string> getNetworkInterfaces() {
   return result;
 }
 
-
-std::string getBestPublicIp(bool ipv6) {
-  IpAddress bestPublicIp = IpAddress{"127.0.0.1","::1"};
+IpAddress getBestPublicIps(IpMode mode) {
+  IpAddress bestPublicIps = IpAddress{"127.0.0.1","::1"};
   std::map<std::string, IpAddress> interfaces = getNetworkInterfacesIPv4Or6();
 
 #ifndef _WIN32
   const char* const prioritizedNames[] = { "eth0", "eth1", "wlan0", "wlan1", "en0", "en1" };
   for(auto name: prioritizedNames) {
-    auto it=interfaces.find(name);
-    if(it != interfaces.end() && !(ipv6 && (*it).second.addr6.empty())) {
-      bestPublicIp = (*it).second;
-      break;
-    }
+    const auto it = interfaces.find(name);
+    if(it == interfaces.end()) continue;
+    const IpAddress& interfaceIps = (*it).second;
+    if(!bestPublicIps.empty4() && interfaceIps.valid4(mode)) bestPublicIps.addr = interfaceIps.addr;
+    if(!bestPublicIps.empty6() && interfaceIps.valid6(mode)) bestPublicIps.addr6 = interfaceIps.addr6;
   }
 #endif
 
   const char* const prefixes[] = { "192.168", "172.16.", "10.0" };
   for(auto prefix : prefixes){
     for(auto& itr : interfaces) {
-      std::string interfaceIp(itr.second.addr);
-      if (interfaceIp.find(prefix) == 0 && !(ipv6 && itr.second.addr6.empty())) {
-        bestPublicIp = itr.second;
-        break;
-      }
+      const IpAddress& interfaceIps = itr.second;
+      if(!bestPublicIps.empty4() && interfaceIps.valid4(mode) && interfaceIps.addr.find(prefix) == 0) bestPublicIps.addr = interfaceIps.addr;
+      if(!bestPublicIps.empty6() && interfaceIps.valid6(mode)) bestPublicIps.addr6 = interfaceIps.addr6;
     }
   }
-  return ipv6 ? bestPublicIp.addr6 : bestPublicIp.addr;
-}
 
+  return bestPublicIps;
+}
 
 std::string getBestPublicIp()
 {
-  return getBestPublicIp(false);
+  return getBestPublicIps(IpMode::ipv4).addr;
 }
 
 } // namespace kiwix

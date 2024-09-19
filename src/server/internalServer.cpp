@@ -407,7 +407,7 @@ public:
 
 InternalServer::InternalServer(LibraryPtr library,
                                std::shared_ptr<NameMapper> nameMapper,
-                               std::string addr,
+                               IpAddress addr,
                                int port,
                                std::string root,
                                int nbThreads,
@@ -462,18 +462,21 @@ bool InternalServer::start() {
   sockAddr6.sin6_port = htons(m_port);
 
   if (m_addr.empty()) {
-    if (0 != INADDR_ANY) {
-      sockAddr6.sin6_addr = in6addr_any;
-      sockAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
-    }
-    m_addr = kiwix::getBestPublicIp(m_ipMode == IpMode::ipv6 || m_ipMode == IpMode::all);
+    sockAddr6.sin6_addr = in6addr_any;
+    sockAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
+    m_addr = kiwix::getBestPublicIps(m_ipMode);
   } else {
-    bool ipv6 = inet_pton(AF_INET6, m_addr.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1;
-    bool ipv4 = inet_pton(AF_INET, m_addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1;
+    bool ipv6 = inet_pton(AF_INET6, m_addr.addr6.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1;
+    bool ipv4 = inet_pton(AF_INET, m_addr.addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1;
+
     if (ipv6){
-       m_ipMode = IpMode::all;
+       m_ipMode = IpMode::ipv6;
     } else if (!ipv4) {
-      std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
+      if(!m_addr.addr.empty())
+        std::cerr << "Ip address " << m_addr.addr << "  is not a valid ip address" << std::endl;
+      else
+        std::cerr << "Ip address " << m_addr.addr6 << "  is not a valid ip address" << std::endl;
+        
       return false;
     }
   }

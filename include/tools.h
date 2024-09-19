@@ -24,6 +24,7 @@
 #include <vector>
 #include <map>
 #include <cstdint>
+#include "common.h"
 
 namespace kiwix
 {
@@ -32,6 +33,12 @@ struct IpAddress
 {
     std::string addr;  // IPv4 address
     std::string addr6; // IPv6 address
+
+    bool empty() const { return addr.empty() && addr6.empty(); }
+    bool empty4() const { return addr.empty(); }
+    bool empty6() const { return addr6.empty(); }
+    bool valid4(IpMode mode) const { return (mode == IpMode::ipv4 || mode == IpMode::all) && !this->empty4(); }
+    bool valid6(IpMode mode) const { return (mode == IpMode::ipv6 || mode == IpMode::all) && !this->empty6(); }
 };
 
 typedef std::pair<std::string, std::string> LangNameCodePair;
@@ -216,7 +223,7 @@ std::map<std::string, std::string> getNetworkInterfaces();
 /** Provides the best IP address
  * This function provides the best IP address from the list given by getNetworkInterfacesIPv4Or6()
  */
-std::string getBestPublicIp(bool ipv6);
+IpAddress getBestPublicIps(IpMode mode);
 
 /** Provides the best IPv4 adddress
  * Equivalent to getBestPublicIp(false). Provided for backward compatibility

@@ -27,6 +27,7 @@ extern "C" {
 
 #include "library.h"
 #include "name_mapper.h"
+#include "tools.h"
 
 #include <zim/search.h>
 #include <zim/suggestion.h>
@@ -94,7 +95,7 @@ class InternalServer {
   public:
     InternalServer(LibraryPtr library,
                    std::shared_ptr<NameMapper> nameMapper,
-                   std::string addr,
+                   IpAddress addr,
                    int port,
                    std::string root,
                    int nbThreads,
@@ -166,7 +167,7 @@ class InternalServer {
     typedef ConcurrentCache<std::string, std::shared_ptr<LockableSuggestionSearcher>> SuggestionSearcherCache;
 
   private: // data
-    std::string m_addr;
+    IpAddress m_addr;
     int m_port;
     std::string m_root;                   // URI-encoded
     std::string m_rootPrefixOfDecodedURL; // URI-decoded
