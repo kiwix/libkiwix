@@ -217,8 +217,7 @@ std::string getBestPublicIp(bool ipv6) {
   std::map<std::string, IpAddress> interfaces = getNetworkInterfacesIPv4Or6();
 
 #ifndef _WIN32
-  const char* const prioritizedNames[] =
-      { "eth0", "eth1", "wlan0", "wlan1", "en0", "en1" };
+  const char* const prioritizedNames[] = { "eth0", "eth1", "wlan0", "wlan1", "en0", "en1" };
   for(auto name: prioritizedNames) {
     auto it=interfaces.find(name);
     if(it != interfaces.end() && !(ipv6 && (*it).second.addr6.empty())) {
