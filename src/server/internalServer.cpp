@@ -472,11 +472,8 @@ bool InternalServer::start() {
     if (ipv6){
        m_ipMode = IpMode::ipv6;
     } else if (!ipv4) {
-      if(!m_addr.addr.empty())
-        std::cerr << "Ip address " << m_addr.addr << "  is not a valid ip address" << std::endl;
-      else
-        std::cerr << "Ip address " << m_addr.addr6 << "  is not a valid ip address" << std::endl;
-        
+      const std::string& address = m_addr.addr.empty() ? m_addr.addr6 : m_addr.addr;
+      std::cerr << "IP address " << address << " is not a valid IP address" << std::endl;
       return false;
     }
   }
