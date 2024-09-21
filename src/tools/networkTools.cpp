@@ -243,4 +243,16 @@ std::string getBestPublicIp()
   return getBestPublicIps(IpMode::ipv4).addr;
 }
 
+bool ipAvailable(const IpAddress& addr) 
+{
+  auto interfaces = kiwix::getNetworkInterfacesIPv4Or6();
+  for (const auto& interface : interfaces) {
+    IpAddress interfaceIps = interface.second;
+    if (!interfaceIps.empty4() && interfaceIps.addr == addr.addr) return true;
+    if (!interfaceIps.empty6() && interfaceIps.addr6 == addr.addr6) return true;
+  }
+
+  return false;
+}
+
 } // namespace kiwix

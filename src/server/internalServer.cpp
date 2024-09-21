@@ -476,6 +476,11 @@ bool InternalServer::start() {
       std::cerr << "IP address " << address << " is not a valid IP address" << std::endl;
       return false;
     }
+
+    if (!ipAvailable(m_addr)) {
+      std::cerr << "IP address " << (m_addr.addr.empty() ? m_addr.addr6 : m_addr.addr) << " is not available on this system" << std::endl;
+      return false;
+    }
   }
 
   if (m_ipMode == IpMode::all) {

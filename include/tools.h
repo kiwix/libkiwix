@@ -231,6 +231,15 @@ IpAddress getBestPublicIps(IpMode mode);
  */
 std::string getBestPublicIp();
 
+/** Checks if IP address is available
+ *
+ * Check if the given IP address is configured on any network interface of the system
+ *
+ * @param addr the IP address to check.
+ * @return true if the IP address is available on the system.
+ */
+bool ipAvailable(const IpAddress& addr);
+
 /** Converts file size to human readable format.
  *
  * This function will convert a number to its equivalent size using units.
