@@ -85,6 +85,19 @@ namespace kiwix {
 namespace
 {
 
+bool ipAvailable(const std::string addr)
+{
+  auto interfaces = kiwix::getNetworkInterfacesIPv4Or6();
+
+  for (const auto& [_, interfaceIps] : interfaces) {
+    if ((interfaceIps.addr == addr) || (interfaceIps.addr6 == addr)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 inline std::string normalizeRootUrl(std::string rootUrl)
 {
   while ( !rootUrl.empty() && rootUrl.back() == '/' )
@@ -483,6 +496,11 @@ bool InternalServer::start() {
       std::cerr << "ERROR: invalid IP address: " << addr << std::endl;
       return false;
     } 
+
+    if (!ipAvailable(addr)) {
+      std::cerr << "ERROR: IP address is not available on this system: " << addr << std::endl;
+      return false;
+    }
 
     m_ipMode = !m_addr.addr.empty() ? IpMode::IPV4 : IpMode::IPV6; 
   }
