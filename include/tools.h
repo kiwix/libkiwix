@@ -24,6 +24,7 @@
 #include <vector>
 #include <map>
 #include <cstdint>
+#include "common.h"
 
 namespace kiwix
 {
@@ -214,9 +215,10 @@ std::map<std::string, IpAddress> getNetworkInterfacesIPv4Or6();
 std::map<std::string, std::string> getNetworkInterfaces();
 
 /** Provides the best IP address
- * This function provides the best IP address from the list given by getNetworkInterfacesIPv4Or6()
+ * This function provides the best IP addresses for both ipv4 and ipv6 protocols,
+ * in an IpAddress struct, based on the list given by getNetworkInterfacesIPv4Or6()
  */
-std::string getBestPublicIp(bool ipv6);
+IpAddress getBestPublicIps();
 
 /** Provides the best IPv4 adddress
  * Equivalent to getBestPublicIp(false). Provided for backward compatibility

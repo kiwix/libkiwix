@@ -18,6 +18,7 @@
  */
 
 #include "gtest/gtest.h"
+#include "../include/tools.h"
 #include "../src/tools/otherTools.h"
 #include "zim/suggestion_iterator.h"
 #include "../src/server/i18n_utils.h"
@@ -252,11 +253,8 @@ TEST(networkTools, getNetworkInterfaces)
   }
 }
 
-TEST(networkTools, getBestPublicIp)
+TEST(networkTools, getBestPublicIps)
 {
-  using kiwix::getBestPublicIp;
-
-  std::cout << "getBestPublicIp(true)  " << getBestPublicIp(true)  << std::endl;
-  std::cout << "getBestPublicIp(false) " << getBestPublicIp(false) << std::endl;
-  std::cout << "getBestPublicIp()      " << getBestPublicIp()      << std::endl;
+  std::cout << "getBestPublicIps(): " << "[" << kiwix::getBestPublicIps().addr << ", " << kiwix::getBestPublicIps().addr6 << "]" << std::endl;
+  std::cout << "getBestPublicIp(): " << kiwix::getBestPublicIp() << std::endl;
 }

@@ -16,7 +16,7 @@
 
 namespace kiwix {
 
-enum class IpMode { IPV4, IPV6, ALL };
+enum class IpMode { IPV4, IPV6, ALL, AUTO }; // AUTO: Server decides the protocol
 typedef zim::size_type size_type;
 typedef zim::offset_type offset_type;
 

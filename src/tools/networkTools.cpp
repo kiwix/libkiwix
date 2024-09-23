@@ -19,6 +19,7 @@
  */
 
 #include "tools.h"
+#include "stringTools.h"
 #include <tools/networkTools.h>
 
 #include <stdio.h>
@@ -62,6 +63,12 @@ size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdat
   return nmemb;
 }
 
+void updatePublicIpAddress(IpAddress& publicIpAddr, const IpAddress& interfaceIpAddr) 
+{
+  if (publicIpAddr.addr.empty())  publicIpAddr.addr  = interfaceIpAddr.addr;
+  if (publicIpAddr.addr6.empty()) publicIpAddr.addr6 = interfaceIpAddr.addr6;
+}
+
 } // unnamed namespace
 
 std::string download(const std::string& url) {
@@ -84,7 +91,6 @@ std::string download(const std::string& url) {
   }
   return ss.str();
 }
-
 
 namespace
 {
@@ -211,39 +217,35 @@ std::map<std::string, std::string> getNetworkInterfaces() {
   return result;
 }
 
-
-std::string getBestPublicIp(bool ipv6) {
-  IpAddress bestPublicIp = IpAddress{"127.0.0.1","::1"};
+IpAddress getBestPublicIps() {
+  IpAddress bestPublicIps;
   std::map<std::string, IpAddress> interfaces = getNetworkInterfacesIPv4Or6();
-
 #ifndef _WIN32
   const char* const prioritizedNames[] = { "eth0", "eth1", "wlan0", "wlan1", "en0", "en1" };
-  for(auto name: prioritizedNames) {
-    auto it=interfaces.find(name);
-    if(it != interfaces.end() && !(ipv6 && (*it).second.addr6.empty())) {
-      bestPublicIp = (*it).second;
-      break;
+  for (const auto& name : prioritizedNames) {
+    const auto it = interfaces.find(name);
+    if (it != interfaces.end()) {
+      updatePublicIpAddress(bestPublicIps, it->second);
     }
   }
 #endif
-
-  const char* const prefixes[] = { "192.168", "172.16.", "10.0" };
-  for(auto prefix : prefixes){
-    for(auto& itr : interfaces) {
-      std::string interfaceIp(itr.second.addr);
-      if (interfaceIp.find(prefix) == 0 && !(ipv6 && itr.second.addr6.empty())) {
-        bestPublicIp = itr.second;
-        break;
+  const char* const v4prefixes[] = { "192.168", "172.16", "10.0", "169.254" };
+  for (const auto& prefix : v4prefixes) {
+    for (const auto& [_, interfaceIps] : interfaces) {
+      if (kiwix::startsWith(interfaceIps.addr, prefix)) {
+        updatePublicIpAddress(bestPublicIps, interfaceIps);
       }
     }
   }
-  return ipv6 ? bestPublicIp.addr6 : bestPublicIp.addr;
-}
 
+  updatePublicIpAddress(bestPublicIps, {"127.0.0.1", "::1"});
+
+  return bestPublicIps;
+}
 
 std::string getBestPublicIp()
 {
-  return getBestPublicIp(false);
+  return getBestPublicIps().addr;
 }
 
 } // namespace kiwix
