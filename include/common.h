@@ -16,7 +16,7 @@
 
 namespace kiwix {
 
-enum class IpMode { ipv4, ipv6, all };
+enum class IpMode { IPV4, IPV6, ALL };
 typedef zim::size_type size_type;
 typedef zim::offset_type offset_type;
 

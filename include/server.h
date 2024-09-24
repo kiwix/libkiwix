@@ -81,7 +81,7 @@ namespace kiwix
        bool m_withTaskbar = true;
        bool m_withLibraryButton = true;
        bool m_blockExternalLinks = false;
-       IpMode m_ipMode = IpMode::ipv4;
+       IpMode m_ipMode = IpMode::IPV4;
        int m_ipConnectionLimit = 0;
        std::unique_ptr<InternalServer> mp_server;
   };

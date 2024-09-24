@@ -466,25 +466,25 @@ bool InternalServer::start() {
       sockAddr6.sin6_addr = in6addr_any;
       sockAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
     }
-    m_addr = kiwix::getBestPublicIp(m_ipMode == IpMode::ipv6 || m_ipMode == IpMode::all);
+    m_addr = kiwix::getBestPublicIp(m_ipMode == IpMode::IPV6 || m_ipMode == IpMode::ALL);
   } else {
     bool ipv6 = inet_pton(AF_INET6, m_addr.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1;
     bool ipv4 = inet_pton(AF_INET, m_addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1;
     if (ipv6){
-       m_ipMode = IpMode::all;
+       m_ipMode = IpMode::ALL;
     } else if (!ipv4) {
       std::cerr << "Ip address " << m_addr << "  is not a valid ip address" << std::endl;
       return false;
     }
   }
 
-  if (m_ipMode == IpMode::all) {
+  if (m_ipMode == IpMode::ALL) {
     flags|=MHD_USE_DUAL_STACK;
-  } else if (m_ipMode == IpMode::ipv6) {
+  } else if (m_ipMode == IpMode::IPV6) {
     flags|=MHD_USE_IPv6;
   }
 
-  struct sockaddr* sockaddr = (m_ipMode==IpMode::all || m_ipMode==IpMode::ipv6)
+  struct sockaddr* sockaddr = (m_ipMode==IpMode::ALL || m_ipMode==IpMode::IPV6)
                               ? (struct sockaddr*)&sockAddr6
                               : (struct sockaddr*)&sockAddr4;
 
