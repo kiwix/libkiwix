@@ -645,8 +645,6 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   //queryParser.set_stemmer(Xapian::Stem(iso639_3ToXapian(???)));
   //queryParser.set_stemming_strategy(Xapian::QueryParser::STEM_SOME);
   const auto flags = Xapian::QueryParser::FLAG_PHRASE
-                   | Xapian::QueryParser::FLAG_BOOLEAN
-                   | Xapian::QueryParser::FLAG_BOOLEAN_ANY_CASE
                    | Xapian::QueryParser::FLAG_LOVEHATE
                    | Xapian::QueryParser::FLAG_WILDCARD
                    | partialQueryFlag;
