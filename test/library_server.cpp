@@ -778,6 +778,130 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
   );
 }
 
+TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
+{
+  {
+  // 'or' acts as a Xapian boolean operator, resulting in malformed query
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=Or");
+  EXPECT_EQ(r->status, 500);
+  }
+
+  {
+  // 'and' acts as a Xapian boolean operator, resulting in malformed query
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=and");
+  EXPECT_EQ(r->status, 500);
+  }
+
+  {
+  // 'not' acts as a Xapian boolean operator, resulting in malformed query
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=not");
+  EXPECT_EQ(r->status, 500);
+  }
+
+  {
+  // 'xor' acts as a Xapian boolean operator, resulting in malformed query
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=xor");
+  EXPECT_EQ(r->status, 500);
+  }
+
+  {
+  // 'or' acts as a Xapian boolean operator
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=wikipedia%20or%20library");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20or%20library")
+    "  <title>Filtered Entries (q=wikipedia%20or%20library)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>3</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>3</itemsPerPage>\n"
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+  }
+
+  {
+  // 'and' acts as a Xapian boolean operator
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=wikipedia%20and%20articles");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20and%20articles")
+    "  <title>Filtered Entries (q=wikipedia%20and%20articles)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>2</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>2</itemsPerPage>\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+  }
+
+  {
+  // 'near' doesn't act as a Xapian query operator
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=near");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=near")
+    "  <title>Filtered Entries (q=near)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+  }
+
+  {
+  // 'adj' doesn't act as a Xapian query operator
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=adj");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=adj")
+    "  <title>Filtered Entries (q=adj)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+  }
+
+  {
+  // 'near' doesn't act as a Xapian query operator
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=charles%20near%20why");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=charles%20near%20why")
+    "  <title>Filtered Entries (q=charles%20near%20why)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>0</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>0</itemsPerPage>\n"
+    "</feed>\n"
+  );
+  }
+
+  {
+  // 'adj' doesn't act as a Xapian query operator
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=charles%20adj%20why");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=charles%20adj%20why")
+    "  <title>Filtered Entries (q=charles%20adj%20why)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>0</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>0</itemsPerPage>\n"
+    "</feed>\n"
+  );
+  }
+}
+
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
 {
   {
