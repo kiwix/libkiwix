@@ -103,7 +103,7 @@ std::string maskVariableOPDSFeedData(std::string s)
 #define _CHARLES_RAY_CATALOG_ENTRY(CONTENT_NAME) CATALOG_ENTRY(  \
   "charlesray",   \
   "Charles, Ray", \
-  "Wikipedia articles about Ray Charles", \
+  "Wikipedia articles about Ray Charles or why and when one should go to library", \
   "fra", \
   "wikipedia_fr_ray_charles",\
   "jazz",\
@@ -120,7 +120,7 @@ std::string maskVariableOPDSFeedData(std::string s)
 #define _RAY_CHARLES_CATALOG_ENTRY(CONTENT_NAME) CATALOG_ENTRY(\
   "raycharles",\
   "Ray Charles",\
-  "Wikipedia articles about Ray Charles",\
+  "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)",\
   "eng",\
   "wikipedia_en_ray_charles",\
   "wikipedia",\
@@ -139,7 +139,7 @@ std::string maskVariableOPDSFeedData(std::string s)
 #define UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY CATALOG_ENTRY(\
   "raycharles_uncategorized",\
   "Ray (uncategorized) Charles",\
-  "No category is assigned to this library entry.",\
+  "No category is assigned to this library entry (neither adj nor xor was considered a good option)",\
   "rus,eng",\
   "wikipedia_ru_ray_charles",\
   "",\
@@ -199,8 +199,8 @@ TEST_F(LibraryServerTest, catalog_search_by_phrase)
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
     CATALOG_LINK_TAGS
-    RAY_CHARLES_CATALOG_ENTRY
     CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
 }
@@ -218,8 +218,8 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>3</itemsPerPage>\n"
     CATALOG_LINK_TAGS
-    RAY_CHARLES_CATALOG_ENTRY
     CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
     UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
@@ -239,8 +239,8 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
       CATALOG_LINK_TAGS
-      RAY_CHARLES_CATALOG_ENTRY
       CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
   }
@@ -275,8 +275,8 @@ TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
     CATALOG_LINK_TAGS
-    RAY_CHARLES_CATALOG_ENTRY
     CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
 }
@@ -331,8 +331,8 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
       CATALOG_LINK_TAGS
-      RAY_CHARLES_CATALOG_ENTRY
       CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
   }
@@ -772,8 +772,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
-    RAY_CHARLES_CATALOG_ENTRY
     CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
 }
@@ -841,8 +841,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
-      RAY_CHARLES_CATALOG_ENTRY
       CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
       "</feed>\n"
     );
   }
@@ -1086,7 +1086,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            <div class=\"book__header\">\n" \
   "                <div id=\"book__title\">Charles, Ray</div>\n" \
   "            </div>\n" \
-  "            <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
+  "            <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles or why and when one should go to library\">Wikipedia articles about Ray Charles or why and when one should go to library</div>\n" \
   "            </div>\n" \
   "            </a>\n" \
   "            <div class=\"book__meta\">\n" \
@@ -1113,7 +1113,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            <div class=\"book__header\">\n" \
   "                <div id=\"book__title\">Ray Charles</div>\n" \
   "            </div>\n" \
-  "            <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles\">Wikipedia articles about Ray Charles</div>\n" \
+  "            <div class=\"book__description\" title=\"Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)\">Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)</div>\n" \
   "            </div>\n" \
   "            </a>\n" \
   "            <div class=\"book__meta\">\n" \
@@ -1140,7 +1140,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            <div class=\"book__header\">\n" \
   "                <div id=\"book__title\">Ray (uncategorized) Charles</div>\n" \
   "            </div>\n" \
-  "            <div class=\"book__description\" title=\"No category is assigned to this library entry.\">No category is assigned to this library entry.</div>\n" \
+  "            <div class=\"book__description\" title=\"No category is assigned to this library entry (neither adj nor xor was considered a good option)\">No category is assigned to this library entry (neither adj nor xor was considered a good option)</div>\n" \
   "            </div>\n" \
   "            </a>\n" \
   "            <div class=\"book__meta\">\n" \
