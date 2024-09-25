@@ -781,27 +781,67 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
 TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 {
   {
-  // 'or' acts as a Xapian boolean operator, resulting in malformed query
+  // 'or' doesn't act as a Xapian boolean operator
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=Or");
-  EXPECT_EQ(r->status, 500);
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=Or")
+    "  <title>Filtered Entries (q=Or)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
   }
 
   {
-  // 'and' acts as a Xapian boolean operator, resulting in malformed query
+  // 'and' doesn't act as a Xapian boolean operator
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=and");
-  EXPECT_EQ(r->status, 500);
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=and")
+    "  <title>Filtered Entries (q=and)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    "</feed>\n"
+  );
   }
 
   {
-  // 'not' acts as a Xapian boolean operator, resulting in malformed query
+  // 'not' doesn't act as a Xapian boolean operator
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=not");
-  EXPECT_EQ(r->status, 500);
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=not")
+    "  <title>Filtered Entries (q=not)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
   }
 
   {
-  // 'xor' acts as a Xapian boolean operator, resulting in malformed query
+  // 'xor' doesn't act as a Xapian boolean operator
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=xor");
-  EXPECT_EQ(r->status, 500);
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=xor")
+    "  <title>Filtered Entries (q=xor)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
   }
 
   {
@@ -812,12 +852,10 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20or%20library")
     "  <title>Filtered Entries (q=wikipedia%20or%20library)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <totalResults>3</totalResults>\n"
+    "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
-    "  <itemsPerPage>3</itemsPerPage>\n"
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "  <itemsPerPage>1</itemsPerPage>\n"
     CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
   }
@@ -830,11 +868,10 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20and%20articles")
     "  <title>Filtered Entries (q=wikipedia%20and%20articles)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <totalResults>2</totalResults>\n"
+    "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
-    "  <itemsPerPage>2</itemsPerPage>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
     CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
   );
   }
