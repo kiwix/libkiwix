@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Gouri"
+			"Gouri",
+			"Psubhashish"
 		]
 	},
 	"name": "ଓଡ଼ିଆ",
@@ -10,7 +11,7 @@
 	"too-many-books": "ଅତ୍ୟଧିକ ବହି ଅନୁରୋଧ (${{NB_BOOKS}}) ଯେଉଁଠାରେ ସୀମା ${{LIMIT}} |",
 	"no-book-found": "କୌଣସି ପୁସ୍ତକ ଚଯ଼ନ ମାନଦଣ୍ଡ ସହ ମେଳ ଖାଉନାହିଁ ।",
 	"url-not-found": "ଅନୁରୋଧ କରାଯାଇଥିବା URL \"{{url}}\" ଏହି ସର୍ଭରରେ ମିଳିଲା ନାହିଁ |",
-	"suggest-search": "<a href=\"${{{SEARCH_URL}}}\">${{PATTERN}} for</a> ପାଇଁ ଏକ ସମ୍ପୂର୍ଣ୍ଣ ପାଠ ସନ୍ଧାନ କର |",
+	"suggest-search": "<a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a> ପାଇଁ ପୂରା ପାଠ ଖୋଜନ୍ତୁ |",
 	"random-article-failure": "ଓହୋ! ଏକ ଅନିୟମିତ ପ୍ରବନ୍ଧ ବାଛିବାରେ ବିଫଳ :(",
 	"invalid-raw-data-type": "{{DATATYPE}} କଞ୍ଚା ବିଷୟବସ୍ତୁ ପାଇଁ ଏକ ବ valid ଧ ଅନୁରୋଧ ନୁହେଁ |",
 	"no-value-for-arg": "ଯୁକ୍ତି ପାଇଁ କୌଣସି ମୂଲ୍ଯ଼ ପ୍ରଦାନ କରାଯାଇନାହିଁ ${{ARGUMENT}}",
