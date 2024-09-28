@@ -1,3 +1,31 @@
+libkiwix 14.0.0
+===============
+
+ * Server:
+  - Support of IPv6 (@veloman-yunkan @aryanA101a #1074 #1093)
+  - Better public IP configuration/detection (@sgourdas #1132)
+  - Fix API errors in catalog searches if Xapian keyword in used (@veloman-yunkan #1137)
+  - Clearly define which Web browsers are supported (@kelson42 @rgaudin @jaifroid @benoit74 #1132)
+  - Improve welcome page download buttons (@veloman-yunkan #1094)
+  - Better handling of external (non-HTTP) links (@veloman-yunkan #1123)
+  - Fix book illustration size on welcome page to 48x48 pixels (@veloman-yunkan #1127)
+  - Remove "Multiple Languages" in language filter (@veloman-yunkan #1098)
+  - Stop transforming tags casing (@kelson42 @veloman-yunkan #1079 #1121)
+  - ZIM file size consistently advertised in MiB (@harsha-mangena #1132)
+  - Few new supported languages in the filter (@kelson42 #1080)
+  - Improve accesskeys (@kelson42 #1075)
+  - Add OpenSearch <link> to head of pages (@kelson42 #1070)
+ * Compilation/Packaging:
+  - Multiple fixes around deb packaging (@kelson42 #1108 #1114 #1135)
+  - Generating of libkiwix.pc via Meson (@veloman-yunkan #1133)
+  - Native Windows CI/CD (@mgautierfr @kelson42 #1113 #1125)
+  - Better check (maximum) libzim version (@kelson42 #1124)
+  - Multiple automated tests improvements (@veloman-yunkan #1068 #1067)
+ * Other:
+  - Deleted supported env. variable `$KIWIX_DATA_DIR` and `kiwix::getDataDirectory()` (@sgourdas #1107)
+  - New string slugification for filenames (@shaopenglin #1105)
+  - Multiple improvements around aria2c download mgmt. (@veloman-yunkan #1097)
+
 libkiwix 13.1.0
 ===============
 
