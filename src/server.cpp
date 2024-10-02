@@ -75,12 +75,24 @@ void Server::setRoot(const std::string& root)
   }
 }
 
-int Server::getPort()
+// FIXME: this method is implemented under the assumption that it is invoked only once (per object).
+void Server::setAddress(const std::string& addr)
+{
+  if (addr.empty()) return;
+
+  if (addr.find(':') != std::string::npos) { // IPv6
+    m_addr.addr6 = (addr[0] == '[') ? addr.substr(1, addr.length() - 2) : addr; // Remove brackets if any
+  } else {
+    m_addr.addr = addr;
+  }
+}
+
+int Server::getPort() const
 {
   return mp_server->getPort();
 }
 
-std::string Server::getAddress()
+IpAddress Server::getAddress() const
 {
   return mp_server->getAddress();
 }
