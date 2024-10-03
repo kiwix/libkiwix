@@ -63,7 +63,7 @@ size_t write_callback_to_iss(char* ptr, size_t size, size_t nmemb, void* userdat
   return nmemb;
 }
 
-void updatePublicIpAddress(IpAddress& publicIpAddr, const IpAddress& interfaceIpAddr) 
+void updatePublicIpAddress(IpAddress& publicIpAddr, const IpAddress& interfaceIpAddr)
 {
   if (publicIpAddr.addr.empty())  publicIpAddr.addr  = interfaceIpAddr.addr;
   if (publicIpAddr.addr6.empty()) publicIpAddr.addr6 = interfaceIpAddr.addr6;
@@ -231,7 +231,8 @@ IpAddress getBestPublicIps() {
 #endif
   const char* const v4prefixes[] = { "192.168", "172.16", "10.0", "169.254" };
   for (const auto& prefix : v4prefixes) {
-    for (const auto& [_, interfaceIps] : interfaces) {
+    for (const auto& kv : interfaces) {
+      const auto& interfaceIps = kv.second;
       if (kiwix::startsWith(interfaceIps.addr, prefix)) {
         updatePublicIpAddress(bestPublicIps, interfaceIps);
       }
