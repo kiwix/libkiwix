@@ -515,7 +515,22 @@ bool InternalServer::start() {
   struct sockaddr* sockaddr = (m_ipMode==IpMode::ALL || m_ipMode==IpMode::IPV6)
                               ? (struct sockaddr*)&sockAddr6
                               : (struct sockaddr*)&sockAddr4;
+#ifdef _WIN32
+  SOCKET sock = INVALID_SOCKET;
+  if (m_ipMode == IpMode::ALL || m_ipMode == IpMode::IPV6) {
+    if ((sock = socket(AF_INET6, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+      std::cerr << "ERROR: Failed to create IPv6 socket" << std::endl;
+      return false;
+    }
 
+    int opt = 0;
+    if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&opt, sizeof(opt)) != 0) {
+      std::cerr << "ERROR: Failed to set IPV6_V6ONLY option" << std::endl;
+      closesocket(sock);
+      return false;
+    }
+  }
+#endif
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
                             NULL,
@@ -523,6 +538,9 @@ bool InternalServer::start() {
                             &staticHandlerCallback,
                             this,
                             MHD_OPTION_SOCK_ADDR, sockaddr,
+#ifdef _WIN32
+                            (sock == INVALID_SOCKET) ? MHD_OPTION_END : MHD_OPTION_LISTEN_SOCKET, sock,
+#endif
                             MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
                             MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);
@@ -531,6 +549,9 @@ bool InternalServer::start() {
               << " is maybe already occupied or need more permissions to be open. "
                  "Please try as root or with a port number higher or equal to 1024."
               << std::endl;
+#ifdef _WIN32
+    if (sock != INVALID_SOCKET) closesocket(sock);
+#endif
     return false;
   }
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
