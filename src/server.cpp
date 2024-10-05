@@ -75,9 +75,11 @@ void Server::setRoot(const std::string& root)
   }
 }
 
-// FIXME: this method is implemented under the assumption that it is invoked only once (per object).
 void Server::setAddress(const std::string& addr)
 {
+  m_addr.addr.clear();
+  m_addr.addr6.clear();
+
   if (addr.empty()) return;
 
   if (addr.find(':') != std::string::npos) { // IPv6
