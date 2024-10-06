@@ -529,6 +529,12 @@ bool InternalServer::start() {
       closesocket(sock);
       return false;
     }
+
+    if (::bind(sock, (struct sockaddr*)&sockAddr6, sizeof(sockAddr6)) == SOCKET_ERROR) {
+      std::cerr << "ERROR: Failed to bind IPv6 socket" << std::endl;
+      closesocket(sock);
+      return false;
+    }
   }
 #endif
   mp_daemon = MHD_start_daemon(flags,
