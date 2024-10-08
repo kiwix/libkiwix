@@ -60,5 +60,15 @@
 	"download-links-heading": "Discargar ligamines pro <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Discargar libro",
 	"preview-book": "Previsualisation",
-	"unknown-error": "Error incognite"
+	"unknown-error": "Error incognite",
+	"book-category.wikibooks": "Wikilibros",
+	"book-category.wikinews": "Wikinovas",
+	"book-category.wikipedia": "Wikipedia",
+	"book-category.wikiquote": "Wikiquote",
+	"book-category.wikisource": "Wikisource",
+	"book-category.wikispecies": "Wikispecies",
+	"book-category.wikiversity": "Wikiversitate",
+	"book-category.wikivoyage": "Wikiviage",
+	"book-category.wiktionary": "Wiktionario",
+	"book-category.other": "Altere"
 }

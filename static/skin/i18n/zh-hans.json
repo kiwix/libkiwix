@@ -17,7 +17,7 @@
 	"no-book-found": "没有符合搜索要求的图书",
 	"url-not-found": "在此服务器上找不到请求的 URL：{{url}}",
 	"suggest-search": "对<a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>进行全文搜索",
-	"random-article-failure": "抱歉！ 随机条目失败了 (⁠〒⁠﹏⁠〒⁠) 【好生草的表情（】",
+	"random-article-failure": "抱歉！ 随机条目失败了 (⁠〒⁠﹏⁠〒⁠)",
 	"invalid-raw-data-type": "{{DATATYPE}} 对原请求无效。",
 	"invalid-request": "请求的URL无效：{{{url}}}",
 	"no-value-for-arg": "参数{{ARGUMENT}}无值",
