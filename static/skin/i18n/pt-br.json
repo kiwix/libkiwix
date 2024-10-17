@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Eduardoaddad",
+			"Klgor1803",
 			"Obiru",
 			"Re demz",
 			"YoReaper"
@@ -9,6 +10,10 @@
 	},
 	"name": "Português",
 	"suggest-full-text-search": "Contendo '{{{SEARCH_TERMS}}}'...",
+	"no-such-book": "Não existe o livro: {{BOOK_NAME}}",
+	"too-many-books": "Muitos livros solicitados {{NB_BOOKS}} mas o limite é {{LIMIT}}",
+	"no-book-found": "Nenhum livro corresponde os critérios de seleção",
+	"url-not-found": "O URL \"{{url}}\" não foi encontrado neste servidor.",
 	"400-page-title": "Requisição inválida",
 	"400-page-heading": "Requisição inválida",
 	"404-page-title": "Conteúdo não encontrado",
