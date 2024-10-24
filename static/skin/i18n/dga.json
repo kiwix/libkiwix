@@ -1,8 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
-			"Alhaji Yakubu",
-			"Amire80"
+			"Alhaji Yakubu"
 		]
 	},
 	"welcome-page-overzealous-filter": "Duoro kyebe. <a href=\"{{URL}}\">E na boɔra ka fo</a>?",
