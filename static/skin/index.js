@@ -238,7 +238,8 @@
             let finalValue = (keysToURIEncode.indexOf(key) >= 0) ? encodeURIComponent(value) : value;
             output += `&${key}=${finalValue}`;
         }
-        return output;
+        // exclude first char so the first params are not prefixed with &
+        return output.substring(1);
     }
 
     /* hack for library.kiwix.org magnet links (created by MirrorBrain)
