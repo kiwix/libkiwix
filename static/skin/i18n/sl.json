@@ -10,7 +10,7 @@
 	"suggest-full-text-search": "vsebuje »{{{SEARCH_TERMS}}}« ...",
 	"no-such-book": "Ni take knjige: {{BOOK_NAME}}",
 	"too-many-books": "Preveč zahtevanih knjig ({{NB_BOOKS}}), omejitev je {{LIMIT}}",
-	"no-book-found": "Izbirnim merilom ne ustreza nobena knjiga",
+	"no-book-found": "Izbranim merilom ne ustreza nobena knjiga",
 	"url-not-found": "Zahtevanega URL-ja »{{url}}« v tem strežniku ni bilo mogoče najti.",
 	"suggest-search": "Preiščite celotno besedilo za <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Ups! Ni bilo mogoče izbrati naključnega članka :(",
