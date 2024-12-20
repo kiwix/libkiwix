@@ -39,8 +39,6 @@ jobs:
         run: |
           brew update
           brew install ninja meson
-        env:
-          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
 
       - name: Install dependencies
         uses: kiwix/kiwix-build/actions/dl_deps_archive@main
