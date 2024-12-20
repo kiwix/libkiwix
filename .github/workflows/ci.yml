@@ -38,7 +38,7 @@ jobs:
       - name: Install packages
         run: |
           brew update
-          brew install pkg-config ninja meson
+          brew install ninja meson
         env:
           HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
 
