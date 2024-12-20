@@ -33,14 +33,12 @@ jobs:
       HOME: /Users/runner
     steps:
       - name: Retrieve source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install packages
         run: |
           brew update
-          brew install pkg-config ninja meson
-        env:
-          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+          brew install ninja meson
 
       - name: Install dependencies
         uses: kiwix/kiwix-build/actions/dl_deps_archive@main
@@ -155,7 +153,7 @@ jobs:
       image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:38"
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Install dependencies
       uses: kiwix/kiwix-build/actions/dl_deps_archive@main
       with:
