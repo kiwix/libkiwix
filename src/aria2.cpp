@@ -124,7 +124,7 @@ Aria2::Aria2(std::string sessionFileDir):
 
   typedef std::chrono::duration<double> Seconds;
 
-  const double MAX_WAITING_TIME_SECONDS = 0.5;
+  const double MAX_WAITING_TIME_SECONDS = 1;
   const auto t0 = std::chrono::steady_clock::now();
   bool maxWaitingTimeWasExceeded = false;
 
