@@ -40,8 +40,10 @@ if not compiler.links(atomics_program,
   extra_libs += ['-latomic']
 endif
 
-if (compiler.get_id() == 'gcc' and build_machine.system() == 'linux') or host_machine.system() == 'freebsd'
-  # C++ std::thread is implemented using pthread on linux by gcc
+# C++ std::thread is implemented using pthread on Linux by GCC, and on FreeBSD
+# for both GCC and LLVM.
+if (host_machine.system() == 'linux' and compiler.get_id() == 'gcc') or \
+   host_machine.system() == 'freebsd'
   thread_dep = dependency('threads')
 else
   thread_dep = dependency('', required:false)
