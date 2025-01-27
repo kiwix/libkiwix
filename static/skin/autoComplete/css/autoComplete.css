@@ -23,6 +23,7 @@
 
 .autoComplete_wrapper > ul {
   position: absolute;
+  width: fit-content;
   max-height: 226px;
   overflow-y: scroll;
   top: 100%;

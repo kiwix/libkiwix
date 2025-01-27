@@ -57,7 +57,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=85f07174" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
@@ -323,7 +323,7 @@ R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cac
       /* url */ "/ROOT%23%3F/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fad9" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=80d56607" rel="Stylesheet" />
-    <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=ef30cd42" rel="Stylesheet" />
+    <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=85f07174" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=ee7d95b5" defer></script>
