@@ -57,7 +57,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=85f07174" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
@@ -75,7 +75,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=80d56607" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=aca897b0" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=8ca16f13" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -323,11 +323,11 @@ R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cac
       /* url */ "/ROOT%23%3F/viewer",
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fad9" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=80d56607" rel="Stylesheet" />
-    <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=85f07174" rel="Stylesheet" />
+    <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=ee7d95b5" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=aca897b0" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=8ca16f13" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
