@@ -352,6 +352,10 @@ function linkShouldBeOpenedInANewWindow(linkElement, mouseEvent) {
       || mouseEvent.metaKey /* on Macs */;
 }
 
+function goingToOpenALinkToAnUndisplayableResource(url) {
+  return !navigator.pdfViewerEnabled && url.pathname.endsWith('.pdf');
+}
+
 function onClickEvent(e) {
   const iframeDocument = contentIframe.contentDocument;
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
@@ -359,7 +363,8 @@ function onClickEvent(e) {
     const target_href = getRealHref(target);
     const target_url = new URL(target_href, iframeDocument.location);
     const isExternalAppUrl = urlMustBeHandledByAnExternalApp(target_url);
-    if ( isExternalAppUrl && !viewerSettings.linkBlockingEnabled ) {
+    if ( (isExternalAppUrl && !viewerSettings.linkBlockingEnabled)
+         || goingToOpenALinkToAnUndisplayableResource(target_url) ) {
         target.setAttribute("target", "_blank");
     }
 
