@@ -92,7 +92,10 @@ function makeJSLink(jsCodeString, linkText, linkAttr="") {
   // in the JS code we have to URI-encode a second time.
   // (see https://stackoverflow.com/questions/33721510)
   const uriEncodedJSCode = encodeURIComponent(jsCodeString);
-  return `<a ${linkAttr} href="javascript:${uriEncodedJSCode}">${linkText}</a>`;
+  const linkPlainText = htmlDecode(linkText, "text/html");
+  linkAttr += ` href="javascript:${uriEncodedJSCode}"`;
+  linkAttr += ` title="${linkPlainText}"`;
+  return `<a ${linkAttr}>${linkText}</a>`;
 }
 
 function suggestionsApiURL()
