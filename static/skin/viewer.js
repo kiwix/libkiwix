@@ -345,6 +345,13 @@ function setHrefAvoidingWombatRewriting(target, url) {
   target._no_rewrite = old_no_rewrite;
 }
 
+function linkShouldBeOpenedInANewWindow(linkElement, mouseEvent) {
+  return linkElement.getAttribute("target") == "_blank"
+      || mouseEvent.ctrlKey
+      || mouseEvent.shiftKey
+      || mouseEvent.metaKey /* on Macs */;
+}
+
 function onClickEvent(e) {
   const iframeDocument = contentIframe.contentDocument;
   const target = matchingAncestorElement(e.target, iframeDocument, "a");
@@ -358,7 +365,7 @@ function onClickEvent(e) {
 
     if (isExternalAppUrl || isExternalUrl(target_href)) {
       const possiblyBlockedLink = blockLink(target_href);
-      if ( e.ctrlKey || e.shiftKey ) {
+      if ( linkShouldBeOpenedInANewWindow(target, e) ) {
         // The link will be loaded in a new tab/window - update the link
         // and let the browser handle the rest.
         setHrefAvoidingWombatRewriting(target, possiblyBlockedLink);
