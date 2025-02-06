@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Jopparn",
+			"Larsa",
 			"Rofiatmustapha12",
 			"Sabelöga",
 			"WikiPhoenix"
@@ -55,12 +56,22 @@
 	"torrent-download-link-text": "BitTorrent",
 	"torrent-download-alt-text": "Ladda ner via BitTorrent",
 	"library-opds-feed-all-entries": "Library OPDS Feed - Alla poster",
-	"filter-by-tag": "Filtrera efter taggen \"{{TAG}}\"",
-	"stop-filtering-by-tag": "Sluta filtrera efter taggen \"{{TAG}}\"",
+	"filter-by-tag": "Filtrera efter taggen \"{{{TAG}}}\"",
+	"stop-filtering-by-tag": "Sluta filtrera efter taggen \"{{{TAG}}}\"",
 	"library-opds-feed-parameterised": "Library OPDS Feed - poster som matchar {{#LANG}}\nSpråk: {{LANG}} {{/LANG}}{{#CATEGORY}}\nKategori: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTagg: {{TAG}} {{/TAG}}{{#Q}}\nFråga: {{Q}} {{/Q}}",
 	"welcome-to-kiwix-server": "Välkommen till Kiwix Server",
 	"download-links-heading": "Nedladdningslänkar för <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Ladda ned bok",
 	"preview-book": "Förhandsgranska",
-	"unknown-error": "Okänt fel"
+	"unknown-error": "Okänt fel",
+	"book-category.wikibooks": "Wikibooks",
+	"book-category.wikinews": "Wikinews",
+	"book-category.wikipedia": "Wikipedia",
+	"book-category.wikiquote": "Wikiquote",
+	"book-category.wikisource": "Wikisource",
+	"book-category.wikispecies": "Wikispecies",
+	"book-category.wikiversity": "Wikiversity",
+	"book-category.wikivoyage": "Wikivoyage",
+	"book-category.wiktionary": "Wiktionary",
+	"book-category.other": "Övriga"
 }

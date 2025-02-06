@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Asma",
+			"Hamoudak",
 			"Ravan",
 			"محمد أحمد عبد الفتاح"
 		]
@@ -12,7 +13,7 @@
 	"no-book-found": "لا يوجد كتاب يطابق معايير الاختيار",
 	"url-not-found": "لم يتم العثور على عنوان URL المطلوب \"{{url}}\" على هذا الخادم.",
 	"suggest-search": "قم بإجراء بحث عن النص الكامل لـ <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
-	"random-article-failure": "مع الأسف! فشل اختيار مقال عشوائي :(",
+	"random-article-failure": "للأسف ! فشل في اختيار مقال عشوائي  :(",
 	"invalid-raw-data-type": "{{DATATYPE}} ليس طلبًا صالحًا للمحتوى الأولي.",
 	"no-value-for-arg": "لم يتم تقديم قيمة للوسيطة {{ARGUMENT}}",
 	"no-query": "لم يتم تقديم ملخص.",
@@ -21,13 +22,17 @@
 	"400-page-heading": "طلب غير صالح",
 	"404-page-title": "المحتوى غير موجود",
 	"404-page-heading": "لم يتم العثور عليه",
-	"500-page-title": "خطأ في الخادم الداخلي",
-	"500-page-heading": "خطأ في الخادم الداخلي",
-	"fulltext-search-unavailable": "البحث عن النص الكامل غير متاح",
-	"no-search-results": "محرك البحث عن النص الكامل غير متاح لهذا المحتوى.",
-	"library-button-text": "اذهب لصفحة الترحيب",
+	"500-page-title": "خطأ داخلي بالخادم",
+	"500-page-heading": "خطأ داخلي بالخادم",
+	"fulltext-search-unavailable": "البحث في كامل النص غير متاح",
+	"no-search-results": "محرك البحث في كامل النص غير متوفر لهذا المحتوي.",
+	"library-button-text": "توجه إلي صفحة الترحيب",
 	"home-button-text": "انتقل إلى الصفحة الرئيسية لـ \"{{BOOK_TITLE}}\"",
 	"random-page-button-text": "اذهب إلى صفحة عشوائية",
 	"searchbox-tooltip": "بحث \"{{BOOK_TITLE}}\"",
-	"confusion-of-tongues": "قد يشارك في البحث كتابان أو أكثر بلغات مختلفة، مما قد يؤدي إلى نتائج محيرة."
+	"confusion-of-tongues": "قد يشارك في البحث كتابان أو أكثر بلغات مختلفة، مما قد يؤدي إلى نتائج محيرة.",
+	"magnet-link-text": "رابط جذب {رابط جاذب}",
+	"magnet-alt-text": "التحميل {التنزيل} عن طريق/بواسطة رابط الجذب\n{الرابط الجاذب}",
+	"torrent-download-link-text": "بت تورنت",
+	"torrent-download-alt-text": "التحميل {التنزيل} عن طريق/بواسطة بت تورنت"
 }
