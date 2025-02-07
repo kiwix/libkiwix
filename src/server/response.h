@@ -145,6 +145,13 @@ protected: //data
   std::unique_ptr<Data> m_data;
 };
 
+struct NewHTTP404Response : ContentResponseBlueprint
+{
+  NewHTTP404Response(const RequestContext& request,
+                     const std::string& root,
+                     const std::string& urlPath);
+};
+
 struct HTTPErrorResponse : ContentResponseBlueprint
 {
   HTTPErrorResponse(const RequestContext& request,

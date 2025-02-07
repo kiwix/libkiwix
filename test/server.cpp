@@ -58,6 +58,8 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/error.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/error.css?cacheid=c49d1586" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
@@ -106,6 +108,8 @@ const ResourceCollection resources200Compressible{
 };
 
 const ResourceCollection resources200Uncompressible{
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/404.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/404.svg?cacheid=b6d648af" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.png?cacheid=4f5c6882" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blank.html" },
@@ -338,6 +342,12 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=3948b8
     {
       /* url */ "/ROOT%23%3F/content/zimfile/A/index",
       ""
+    },
+    {
+      /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=c49d1586" rel="Stylesheet" />
+        <img src="/ROOT%23%3F/skin/404.svg?cacheid=b6d648af"
+)EXPECTEDRESULT"
     },
     {
       // Searching in a ZIM file without a full-text index returns

@@ -1,6 +1,7 @@
 skin/caret.png
 skin/bittorrent.png
 skin/magnet.png
+skin/404.svg
 skin/feed.svg
 skin/langSelector.svg
 skin/download.png
@@ -11,9 +12,11 @@ skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
 skin/autoComplete/autoComplete.min.js
+skin/error.css
 skin/kiwix.css
 skin/taskbar.css
 skin/index.css
+skin/fonts/DMSans-Regular.ttf
 skin/fonts/Poppins.ttf
 skin/fonts/Roboto.ttf
 skin/search_results.css
@@ -42,6 +45,7 @@ templates/url_of_search_results_css.tmpl
 templates/viewer_settings.js
 templates/no_js_library_page.html
 templates/no_js_download.html
+templates/sexy404.html
 opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
