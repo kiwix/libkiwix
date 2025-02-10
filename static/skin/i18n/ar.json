@@ -31,6 +31,8 @@
 	"random-page-button-text": "اذهب إلى صفحة عشوائية",
 	"searchbox-tooltip": "بحث \"{{BOOK_TITLE}}\"",
 	"confusion-of-tongues": "قد يشارك في البحث كتابان أو أكثر بلغات مختلفة، مما قد يؤدي إلى نتائج محيرة.",
+	"hash-download-link-text": "المجموع الإختباري لخوارزمية SHA-256",
+	"hash-download-alt-text": "عرض المجموع الإختباري لخوارزمية SHA-256 للملف",
 	"magnet-link-text": "رابط جذب {رابط جاذب}",
 	"magnet-alt-text": "التحميل {التنزيل} عن طريق/بواسطة رابط الجذب\n{الرابط الجاذب}",
 	"torrent-download-link-text": "بت تورنت",
