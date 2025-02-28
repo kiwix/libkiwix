@@ -424,6 +424,10 @@ function setup_external_link_blocker() {
 let viewerSetupComplete = false;
 
 function on_content_load() {
+  const loader = document.getElementById("kiwix__loader");
+
+  contentIframe.classList.remove("hidden");
+  loader.style.display = "none";
   if ( viewerSetupComplete ) {
     handle_content_url_change();
   }
@@ -612,6 +616,12 @@ function updateUIText() {
 
   setTitle(document.getElementById("kiwix_serve_taskbar_random_button"),
            $t("random-page-button-text"));
+
+  // Add translation for loading text as soon as translations are available
+  const loadingTextElement = document.getElementById("kiwix__loading_text");
+  if (loadingTextElement) {
+    loadingTextElement.textContent = $t("text-loading-content");
+  }
 }
 
 function finishViewerSetupOnceTranslationsAreLoaded()

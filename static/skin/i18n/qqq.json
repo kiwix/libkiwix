@@ -80,5 +80,6 @@
 	"book-category.wikiversity": "Name for the category of Wikiversity books",
 	"book-category.wikivoyage": "Name for the category of Wikivoyage books",
 	"book-category.wiktionary": "Name for the category of Wiktionary books",
-	"book-category.other": "Books not belonging to any special category are listed under this one"
+	"book-category.other": "Books not belonging to any special category are listed under this one",
+	"text-loading-content": "Text displayed while content is being loaded"
 }

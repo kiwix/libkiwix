@@ -1189,7 +1189,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    <title>Welcome to Kiwix Server</title>\n" \
   "    <link\n" \
   "      type=\"text/css\"\n" \
-  "      href=\"/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9\"\n" \
+  "      href=\"/ROOT%23%3F/skin/kiwix.css?cacheid=3948b846\"\n" \
   "      rel=\"Stylesheet\"\n" \
   "    />\n" \
   "    <link\n" \

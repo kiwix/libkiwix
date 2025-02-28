@@ -65,4 +65,5 @@
 	, "book-category.wikivoyage": "[I18N] Wikivoyage [TESTING]"
 	, "book-category.wiktionary": "[I18N] Wiktionary [TESTING]"
 	, "book-category.other": "[I18N] Other [TESTING]"
+	, "text-loading-content": "[I18N TESTING] Loading content"
 }

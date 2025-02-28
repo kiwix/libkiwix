@@ -15,6 +15,35 @@ body {
     box-sizing: border-box;
 }
 
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap; /* Prevents text from wrapping */
+  min-width: fit-content; /* Ensures the container doesn’t shrink */
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
 ::selection {
     background-color: #00b4e4;
     color: white;
@@ -94,6 +123,11 @@ body {
   float: right;
   cursor: pointer;
   height: 30px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @font-face {
