@@ -100,7 +100,7 @@ label[for="kiwix_button_show_toggle"],
 .kiwix #kiwixtoolbar #kiwixsearchform input[type='text'] {
     left: 0;
     box-sizing: border-box !important;
-    width: 100%;
+    width: 115%;
     height: 30px !important;
     line-height: 20px !important;
     border: 1px solid #b5b2b2 !important;
