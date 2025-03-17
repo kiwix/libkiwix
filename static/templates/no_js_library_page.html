@@ -118,7 +118,7 @@
             </div>
             </a>
             <div class="book__meta">
-              <div class="book__languageTag" {{languageAttr}}>{{langCode}}</div>
+              <div class="book__languageTag" title="{{langTag.langFullString}}" aria-label="{{langTag.langFullString}}">{{langTag.langShortString}}</div>
               <div class="book__tags"><div class="book__tags--wrapper">
                   {{#tagList}}
                   <span class="tag__link" aria-label='{{tag}}' title='{{tag}}'>{{tag}}</span>

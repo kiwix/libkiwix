@@ -27,6 +27,30 @@ std::string humanFriendlyTitle(std::string title)
   return humanFriendlyString;
 }
 
+kainjow::mustache::object getLangTag(const std::vector<std::string>& bookLanguages) {
+  std::string langShortString = "";
+  std::string langFullString = "???";
+  
+  //if more than 1 languages then show "mul" else show the language
+  if(bookLanguages.size() > 1) {
+    std::vector<std::string> mulLanguages;
+    langShortString = "mul";
+    for (const auto& lang : bookLanguages) {
+      const std::string fullLang = getLanguageSelfName(lang);
+      mulLanguages.push_back(fullLang);
+    }
+    langFullString = kiwix::join(mulLanguages, ",");
+  } else if(bookLanguages.size() == 1) {
+    langShortString = bookLanguages[0];
+    langFullString = getLanguageSelfName(langShortString);
+  }
+  
+  kainjow::mustache::object langTag;
+    langTag["langShortString"] = langShortString;
+    langTag["langFullString"] = langFullString;
+  return langTag;
+}
+
 kainjow::mustache::list getTagList(std::string tags)
 {
   const auto tagsList = kiwix::split(tags, ";", true, false);
@@ -72,17 +96,16 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
       contentId = urlEncode(nameMapper->getNameForId(bookId));
     } catch (...) {}
     const auto bookDescription = bookObj.getDescription();
-    const auto langCode = bookObj.getCommaSeparatedLanguages();
     const auto bookIconUrl = rootLocation + "/catalog/v2/illustration/" + bookId +  "/?size=48";
     const auto tags = bookObj.getTags();
     const auto downloadAvailable = (bookObj.getUrl() != "");
+    const auto langTagObj = getLangTag(bookObj.getLanguages());
     std::string faviconAttr = "style=background-image:url(" + bookIconUrl + ")";
-
     booksData.push_back(kainjow::mustache::object{
       {"id", contentId},
       {"title", bookTitle},
       {"description", bookDescription},
-      {"langCode", langCode},
+      {"langTag", langTagObj},
       {"faviconAttr", faviconAttr},
       {"tagList", getTagList(tags)},
       {"downloadAvailable", downloadAvailable}

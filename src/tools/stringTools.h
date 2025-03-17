@@ -66,6 +66,9 @@ std::string ucAll(const std::string& word);
 std::string lcAll(const std::string& word);
 std::string ucFirst(const std::string& word);
 std::string lcFirst(const std::string& word);
+
+/* This function is broken, related Github issue 
+ * https://github.com/kiwix/libkiwix/issues/1188 */ 
 std::string toTitle(const std::string& word);
 
 std::string normalize(const std::string& word);

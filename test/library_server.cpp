@@ -1251,7 +1251,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            </div>\n" \
   "            </a>\n" \
   "            <div class=\"book__meta\">\n" \
-  "              <div class=\"book__languageTag\" >fra</div>\n" \
+  "              <div class=\"book__languageTag\" title=\"français\" aria-label=\"français\">fra</div>\n" \
   "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
   "                  <span class=\"tag__link\" aria-label='unittest' title='unittest'>unittest</span>\n" \
   "                  <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
@@ -1278,7 +1278,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            </div>\n" \
   "            </a>\n" \
   "            <div class=\"book__meta\">\n" \
-  "              <div class=\"book__languageTag\" >eng</div>\n" \
+  "              <div class=\"book__languageTag\" title=\"English\" aria-label=\"English\">eng</div>\n" \
   "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
   "                  <span class=\"tag__link\" aria-label='public_tag_without_a_value' title='public_tag_without_a_value'>public_tag_without_a_value</span>\n" \
   "                  <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
@@ -1305,7 +1305,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            </div>\n" \
   "            </a>\n" \
   "            <div class=\"book__meta\">\n" \
-  "              <div class=\"book__languageTag\" >rus,eng</div>\n" \
+  "              <div class=\"book__languageTag\" title=\"русский,English\" aria-label=\"русский,English\">mul</div>\n" \
   "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
   "                  <span class=\"tag__link\" aria-label='public_tag_with_a_value:value_of_a_public_tag' title='public_tag_with_a_value:value_of_a_public_tag'>public_tag_with_a_value:value_of_a_public_tag</span>\n" \
   "                  <span class=\"tag__link\" aria-label='wikipedia' title='wikipedia'>wikipedia</span>\n" \
