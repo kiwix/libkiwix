@@ -14,7 +14,6 @@ skin/autoComplete/autoComplete.min.js
 skin/kiwix.css
 skin/taskbar.css
 skin/index.css
-skin/fonts/DMMono-Regular.ttf
 skin/fonts/DMSans-Regular.ttf
 skin/fonts/Poppins.ttf
 skin/fonts/Roboto.ttf
