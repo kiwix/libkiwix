@@ -33,6 +33,10 @@
   </head>
 
   <body style="margin:0" onload="setupViewer()">
+    <div class="loader" id="kiwix__loader">
+      <div class="spinner"></div>
+      <span id="kiwix__loading_text">Loading content...</span>
+    </div>
     <div class="kiwix" style="display:none" id="kiwixtoolbarwrapper">
       <div id="kiwixtoolbar" class="ui-widget-header">
         <div class="kiwix_centered">
@@ -78,7 +82,7 @@
       </div>
     </div>
 
-    <iframe id="content_iframe"
+    <iframe id="content_iframe" class="hidden"
             referrerpolicy="no-referrer"
             onload="on_content_load()"
             src="./skin/blank.html?KIWIXCACHEID" title="ZIM content" width="100%"

@@ -69,13 +69,13 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/kiwix.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=3948b846" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=80d56607" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=787e61d4" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=d6f747f5" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -280,7 +280,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=3948b846"
       href="/ROOT%23%3F/skin/index.css?cacheid=ae79e41a"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
@@ -321,13 +321,13 @@ R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cac
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fad9" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=3948b846" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=80d56607" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=ee7d95b5" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=787e61d4" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=d6f747f5" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
