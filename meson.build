@@ -22,11 +22,11 @@ atomics_program = '''
 using namespace std;
 
 int main() {
-  volatile atomic_bool a_b = true;
-  volatile atomic_ullong a_ull = -1;
+  volatile atomic_bool a_b(true);
+  volatile atomic_ullong a_ull(-1);
   // Next two lines are to cover atomic<socket_t> from 'httplib.h'.
-  volatile atomic<uint32_t> a_u32 = -1;
-  volatile atomic<uint64_t> a_u64 = -1;
+  volatile atomic<uint32_t> a_u32(-1);
+  volatile atomic<uint64_t> a_u64(-1);
 
   return atomic_load(&a_b) == false && atomic_load(&a_ull) == 0 &&
     atomic_load(&a_u32) == 0 && atomic_load(&a_u64) == 0;
