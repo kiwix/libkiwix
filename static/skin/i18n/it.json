@@ -43,5 +43,6 @@
 	"torrent-download-alt-text": "Scarica tramite BitTorrent",
 	"download-links-title": "Scarica libro",
 	"preview-book": "Anteprima",
-	"unknown-error": "Errore sconosciuto"
+	"unknown-error": "Errore sconosciuto",
+	"text-loading-content": "Caricamento contenuto"
 }
