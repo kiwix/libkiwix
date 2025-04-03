@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Joeamj",
 			"Peggy",
 			"Wangombe"
 		]
@@ -60,5 +61,6 @@
 	"download-links-heading": "Pakua viungo vya <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Pakua vitabu",
 	"preview-book": "Hakiki",
-	"unknown-error": "Hitilafu isiyojulikana"
+	"unknown-error": "Hitilafu isiyojulikana",
+	"text-loading-content": "Inapakia Maudhui"
 }
