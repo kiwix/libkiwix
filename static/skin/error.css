@@ -26,7 +26,7 @@ header {
   margin-bottom: 15%;
 }
 
-header svg {
+header img {
   width: 60%;
   min-width: 200px;
   max-width: 500px;
@@ -66,7 +66,7 @@ header, .intro {
   word-break: break-all;
 }
 
-.intro code svg {
+.intro code img {
   width: .8em;
   vertical-align: middle;
 }
@@ -124,7 +124,7 @@ header, .intro {
     margin-top: 5em;
   }
 
-  header svg {
+  header img {
     width: 50%;
   }
 
@@ -152,7 +152,7 @@ header, .intro {
 
 /* 2xl: 1536px+ */
 @media (width >= 96rem) {
-  header svg {
+  header img {
     width: 25%;
     min-width: 200px;
     max-width: 500px;
