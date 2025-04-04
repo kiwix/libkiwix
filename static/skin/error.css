@@ -60,17 +60,6 @@ header, .intro {
   font-size: 1.1em;
 }
 
-.intro code a, .intro code a:active, .intro code a:visited {
-  color: #00b4e4;
-  text-decoration: none;
-  word-break: break-all;
-}
-
-.intro code img {
-  width: .8em;
-  vertical-align: middle;
-}
-
 .advice {
   width: 80%;
   margin: auto;
