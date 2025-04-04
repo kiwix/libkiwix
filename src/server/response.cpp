@@ -368,6 +368,21 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
   return r;
 }
 
+NewHTTP404Response::NewHTTP404Response(const RequestContext& request,
+                                       const std::string& root,
+                                       const std::string& urlPath)
+  : ContentResponseBlueprint(&request,
+                             MHD_HTTP_NOT_FOUND,
+                             "text/html; charset=utf-8",
+                             RESOURCE::templates::sexy404_html,
+                             /*includeKiwixResponseData=*/false)
+{
+  *this->m_data = Data(Data::Object{
+                    {"root", root },
+                    {"url_path", urlPath}
+  });
+}
+
 HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
