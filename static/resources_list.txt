@@ -11,6 +11,7 @@ skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
 skin/autoComplete/autoComplete.min.js
+skin/error.css
 skin/kiwix.css
 skin/taskbar.css
 skin/index.css
