@@ -24,6 +24,8 @@
 	"400-page-heading": "Heading of the 400 error page",
 	"404-page-title": "Title of the 404 error page",
 	"404-page-heading": "Heading of the 404 error page",
+	"new-404-page-title": "Title of the 404 error page",
+	"new-404-page-heading": "Heading of the 404 error page",
 	"500-page-title": "Title of the 500 error page",
 	"500-page-heading": "Heading of the 500 error page",
 	"500-page-text": "Text of the 500 error page",

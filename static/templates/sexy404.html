@@ -3,8 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Page not found</title>
+    <title>{{PAGE_TITLE}}</title>
     <link type="text/css" href="{{root}}/skin/error.css?KIWIXCACHEID" rel="Stylesheet" />
+{{#KIWIX_RESPONSE_DATA}}    <script>
+      window.KIWIX_RESPONSE_TEMPLATE = "{{KIWIX_RESPONSE_TEMPLATE}}";
+      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};
+    </script>{{/KIWIX_RESPONSE_DATA}}
   </head>
   <body>
     <header>
@@ -14,7 +18,7 @@
              title="Not found!">
     </header>
     <section class="intro">
-      <h1>Oops. Page not found.</h1>
+      <h1>{{PAGE_HEADING}}</h1>
       <p>The requested path was not found:</p>
       <p><code>{{url_path}}</code></p>
     </section>

@@ -243,6 +243,11 @@ public:
     };
   }
 
+  static Data fromMsgId(const std::string& nonParameterizedMsgId)
+  {
+    return from(nonParameterizedMessage(nonParameterizedMsgId));
+  }
+
   std::string asJSON() const;
   void dumpJSON(std::ostream& os) const;
 
@@ -375,11 +380,13 @@ NewHTTP404Response::NewHTTP404Response(const RequestContext& request,
                              MHD_HTTP_NOT_FOUND,
                              "text/html; charset=utf-8",
                              RESOURCE::templates::sexy404_html,
-                             /*includeKiwixResponseData=*/false)
+                             /*includeKiwixResponseData=*/true)
 {
   *this->m_data = Data(Data::Object{
                     {"root", root },
-                    {"url_path", urlPath}
+                    {"url_path", urlPath},
+                    {"PAGE_TITLE",   Data::fromMsgId("new-404-page-title")},
+                    {"PAGE_HEADING", Data::fromMsgId("new-404-page-heading")},
   });
 }
 
@@ -398,8 +405,8 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
   Data::List emptyList;
   *this->m_data = Data(Data::Object{
                     {"CSS_URL", Data::onlyAsNonEmptyValue(cssUrl) },
-                    {"PAGE_TITLE",   Data::from(nonParameterizedMessage(pageTitleMsgId))},
-                    {"PAGE_HEADING", Data::from(nonParameterizedMessage(headingMsgId))},
+                    {"PAGE_TITLE",   Data::fromMsgId(pageTitleMsgId)},
+                    {"PAGE_HEADING", Data::fromMsgId(headingMsgId)},
                     {"details", emptyList}
   });
 }

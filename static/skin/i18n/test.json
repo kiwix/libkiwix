@@ -13,6 +13,8 @@
 	, "400-page-heading": "[I18N TESTING] -400 karma for an invalid request"
 	, "404-page-title": "[I18N TESTING] Not Found - Try Again"
 	, "404-page-heading": "[I18N TESTING] Content not found, but at least the server is alive"
+	, "new-404-page-title" : "Page [I18N] not [TESTING] found"
+	, "new-404-page-heading" : "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
 	, "library-button-text": "[I18N TESTING] Navigate to the welcome page"
 	, "home-button-text": "[I18N TESTING] Jump to the main page of '{{BOOK_TITLE}}'"
 	, "random-page-button-text": "[I18N TESTING] I am tired of determinism"

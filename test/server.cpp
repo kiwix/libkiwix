@@ -346,6 +346,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=3948b8
     {
       /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=c49d1586" rel="Stylesheet" />
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=c49d1586&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;Not found!&quot;\n             aria-label=&quot;Not found!&quot;\n             title=&quot;Not found!&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;The requested path was not found:&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;The content you&apos;re looking for may still be available, but it might be located at a different place within the ZIM file.&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;Please:&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;Try using the search function to find the content you want&lt;/li&gt;\n          &lt;li&gt;Look for keywords or titles related to the information you&apos;re seeking&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;This approach should help you locate the desired content, even if the original link isn&apos;t working properly.&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
         <img src="/ROOT%23%3F/skin/404.svg?cacheid=b6d648af"
 )EXPECTEDRESULT"
     },
@@ -922,9 +923,17 @@ std::string htmlEscape(std::string s)
   return s;
 }
 
+std::string escapeJsString(std::string s)
+{
+  s = replace(s, "</script>", "</scr\\ipt>");
+  s = replace(s, "\"", "\\\"");
+  return s;
+}
+
 std::string expectedSexy404ErrorHtml(const std::string& url)
 {
   const auto htmlSafeUrl = htmlEscape(url);
+  const auto jsSafeUrl = escapeJsString(url);
 
   return R"RAWSTRINGLITERAL(<!DOCTYPE html>
 <html>
@@ -933,6 +942,14 @@ std::string expectedSexy404ErrorHtml(const std::string& url)
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Page not found</title>
     <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=c49d1586" rel="Stylesheet" />
+    <script>
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=c49d1586&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;Not found!&quot;\n             aria-label=&quot;Not found!&quot;\n             title=&quot;Not found!&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;The requested path was not found:&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;The content you&apos;re looking for may still be available, but it might be located at a different place within the ZIM file.&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;Please:&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;Try using the search function to find the content you want&lt;/li&gt;\n          &lt;li&gt;Look for keywords or titles related to the information you&apos;re seeking&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;This approach should help you locate the desired content, even if the original link isn&apos;t working properly.&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+      window.KIWIX_RESPONSE_DATA = { "PAGE_HEADING" : { "msgid" : "new-404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "new-404-page-title", "params" : { } }, "root" : "/ROOT%23%3F", "url_path" : ")RAWSTRINGLITERAL"
+  +         // inject the URL
+  jsSafeUrl // inject the URL
+  +         // inject the URL
+  R"RAWSTRINGLITERAL(" };
+    </script>
   </head>
   <body>
     <header>
@@ -1458,37 +1475,37 @@ TEST_F(ServerTest, UserLanguageControl)
       "Default user language is English",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "userlang URL query parameter is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "userlang URL query parameter is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "'Accept-Language: *' is handled",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "Accept-Language: header is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "userlang query parameter takes precedence over Accept-Language",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "Most suitable language is selected from the Accept-Language header",
@@ -1496,7 +1513,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // with quality values) the most suitable language is selected.
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "Most suitable language is selected from the Accept-Language header",
@@ -1504,7 +1521,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // with quality values) the most suitable language is selected.
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
   };
 
