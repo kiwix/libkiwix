@@ -243,6 +243,11 @@ public:
     };
   }
 
+  static Data fromMsgId(const std::string& nonParameterizedMsgId)
+  {
+    return from(nonParameterizedMessage(nonParameterizedMsgId));
+  }
+
   std::string asJSON() const;
   void dumpJSON(std::ostream& os) const;
 
@@ -380,10 +385,10 @@ NewHTTP404Response::NewHTTP404Response(const RequestContext& request,
   *this->m_data = Data(Data::Object{
                     {"root", root },
                     {"url_path", urlPath},
-                    {"PAGE_TITLE",   Data::from(nonParameterizedMessage("new-404-page-title"))},
-                    {"PAGE_HEADING", Data::from(nonParameterizedMessage("new-404-page-heading"))},
-                    {"404_img_text", Data::from(nonParameterizedMessage("404-img-text"))},
-                    {"path_was_not_found_msg", Data::from(nonParameterizedMessage("path-was-not-found"))},
+                    {"PAGE_TITLE",   Data::fromMsgId("new-404-page-title")},
+                    {"PAGE_HEADING", Data::fromMsgId("new-404-page-heading")},
+                    {"404_img_text", Data::fromMsgId("404-img-text")},
+                    {"path_was_not_found_msg", Data::fromMsgId("path-was-not-found")},
   });
 }
 
@@ -402,8 +407,8 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
   Data::List emptyList;
   *this->m_data = Data(Data::Object{
                     {"CSS_URL", Data::onlyAsNonEmptyValue(cssUrl) },
-                    {"PAGE_TITLE",   Data::from(nonParameterizedMessage(pageTitleMsgId))},
-                    {"PAGE_HEADING", Data::from(nonParameterizedMessage(headingMsgId))},
+                    {"PAGE_TITLE",   Data::fromMsgId(pageTitleMsgId)},
+                    {"PAGE_HEADING", Data::fromMsgId(headingMsgId)},
                     {"details", emptyList}
   });
 }
