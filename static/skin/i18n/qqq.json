@@ -26,6 +26,8 @@
 	"404-page-heading": "Heading of the 404 error page",
 	"new-404-page-title": "Title of the 404 error page",
 	"new-404-page-heading": "Heading of the 404 error page",
+	"404-img-text": "Fallback text for the image on the 404 error page",
+	"path-was-not-found": "Message telling that the URL path was not found (to be followed by the actual path)",
 	"500-page-title": "Title of the 500 error page",
 	"500-page-heading": "Heading of the 500 error page",
 	"500-page-text": "Text of the 500 error page",

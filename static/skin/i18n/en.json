@@ -22,6 +22,8 @@
 	, "404-page-heading" : "Not Found"
 	, "new-404-page-title" : "Page not found"
 	, "new-404-page-heading" : "Oops. Page not found."
+	, "404-img-text": "Not found!"
+	, "path-was-not-found": "The requested path was not found:"
 	, "500-page-title" : "Internal Server Error"
 	, "500-page-heading" : "Internal Server Error"
 	, "500-page-text": "An internal server error occured. We are sorry about that :/"
