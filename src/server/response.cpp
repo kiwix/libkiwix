@@ -387,6 +387,8 @@ NewHTTP404Response::NewHTTP404Response(const RequestContext& request,
                     {"url_path", urlPath},
                     {"PAGE_TITLE",   Data::fromMsgId("new-404-page-title")},
                     {"PAGE_HEADING", Data::fromMsgId("new-404-page-heading")},
+                    {"404_img_text", Data::fromMsgId("404-img-text")},
+                    {"path_was_not_found_msg", Data::fromMsgId("path-was-not-found")},
   });
 }
 
