@@ -1121,15 +1121,6 @@ InternalServer::search_catalog(const RequestContext& request,
 namespace
 {
 
-ParameterizedMessage suggestSearchMsg(const std::string& searchURL, const std::string& pattern)
-{
-  return ParameterizedMessage("suggest-search",
-                              {
-                                { "PATTERN",    pattern   },
-                                { "SEARCH_URL", searchURL }
-                              });
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // The content security policy below is set on responses to the /content
 // endpoint in order to prevent the ZIM content from interfering with the
@@ -1183,9 +1174,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   } catch (const std::out_of_range& e) {}
 
   if (archive == nullptr) {
-    const std::string searchURL = m_root + "/search?pattern=" + kiwix::urlEncode(pattern);
-    return UrlNotFoundResponse(request)
-           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
+    return NewHTTP404Response(request, m_root, m_root + url);
   }
 
   const std::string archiveUuid(archive->getUuid());
@@ -1230,9 +1219,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
     if (m_verbose.load())
       printf("Failed to find %s\n", urlStr.c_str());
 
-    std::string searchURL = m_root + "/search?content=" + bookName + "&pattern=" + kiwix::urlEncode(pattern);
-    return UrlNotFoundResponse(request)
-           + suggestSearchMsg(searchURL, kiwix::urlDecode(pattern));
+    return NewHTTP404Response(request, m_root, m_root + url);
   }
 }
 
