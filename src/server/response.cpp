@@ -248,6 +248,18 @@ public:
     return from(nonParameterizedMessage(nonParameterizedMsgId));
   }
 
+  static Data staticMultiParagraphText(const std::string& msgIdPrefix, size_t n)
+  {
+    Object paragraphs;
+    for ( size_t i = 1; i <= n; ++i ) {
+      std::ostringstream oss;
+      oss << "p" << i;
+      const std::string pId = oss.str();
+      paragraphs[pId] = fromMsgId(msgIdPrefix + "." + pId);
+    }
+    return paragraphs;
+  }
+
   std::string asJSON() const;
   void dumpJSON(std::ostream& os) const;
 
@@ -389,6 +401,7 @@ NewHTTP404Response::NewHTTP404Response(const RequestContext& request,
                     {"PAGE_HEADING", Data::fromMsgId("new-404-page-heading")},
                     {"404_img_text", Data::fromMsgId("404-img-text")},
                     {"path_was_not_found_msg", Data::fromMsgId("path-was-not-found")},
+                    {"advice", Data::staticMultiParagraphText("404-advice", 5)},
   });
 }
 
