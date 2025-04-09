@@ -1417,37 +1417,37 @@ TEST_F(ServerTest, UserLanguageControl)
       "Default user language is English",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "userlang URL query parameter is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "userlang URL query parameter is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "'Accept-Language: *' is handled",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "Accept-Language: header is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "userlang query parameter takes precedence over Accept-Language",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "Most suitable language is selected from the Accept-Language header",
@@ -1455,7 +1455,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // with quality values) the most suitable language is selected.
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "Most suitable language is selected from the Accept-Language header",
@@ -1463,7 +1463,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // with quality values) the most suitable language is selected.
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
   };
 
