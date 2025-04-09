@@ -417,7 +417,7 @@ BlockExternalLinkResponse::BlockExternalLinkResponse(const RequestContext& reque
   *this->m_data = Data(Data::Object{
                     {"root", root },
                     {"external_link_detected", Data::fromMsgId("external-link-detected") },
-                    {"source", externalUrl },
+                    {"url", externalUrl },
   });
 }
 
