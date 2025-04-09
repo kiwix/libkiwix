@@ -59,7 +59,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=ae79e41a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
@@ -75,7 +75,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=80d56607" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=787e61d4" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=ec091144" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -290,7 +290,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=2158fad9"
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=ee7d95b5" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
@@ -325,9 +325,9 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=2158fa
     <link type="text/css" href="./skin/taskbar.css?cacheid=80d56607" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
-    <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=ee7d95b5" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=787e61d4" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=ec091144" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
