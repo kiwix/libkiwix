@@ -92,6 +92,8 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/entries" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/partial_entries" },
 
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catch/external?source=www.example.com" },
+
   { DYNAMIC_CONTENT, "/ROOT%23%3F/search?content=zimfile&pattern=a" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile&term=ray" },
@@ -171,8 +173,6 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/searchdescription.xml" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
-
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catch/external?source=www.example.com" },
 
   { ZIM_CONTENT,     "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
