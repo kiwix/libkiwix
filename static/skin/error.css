@@ -60,6 +60,12 @@ header, .intro {
   font-size: 1.1em;
 }
 
+.intro a, .intro a:active, .intro a:visited {
+  color: #00b4e4;
+  text-decoration: none;
+  word-break: break-all;
+}
+
 .advice {
   width: 80%;
   margin: auto;
