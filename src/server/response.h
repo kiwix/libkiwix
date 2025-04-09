@@ -197,6 +197,13 @@ class ItemResponse : public Response {
     std::string m_mimeType;
 };
 
+struct BlockExternalLinkResponse : ContentResponseBlueprint
+{
+  BlockExternalLinkResponse(const RequestContext& request,
+                            const std::string& root,
+                            const std::string& externalUrl);
+};
+
 }
 
 #endif //KIWIXLIB_SERVER_RESPONSE_H

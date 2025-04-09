@@ -22,6 +22,7 @@
 	, "404-advice.p3": "[I18N TESTING] Check the spelling of the URL path"
 	, "404-advice.p4": "[I18N TESTING] Press the dice button"
 	, "404-advice.p5": "Good luck! [I18N TESTING]"
+	, "external-link-detected" : "External [I18] Link [TESTING] Detected"
 	, "library-button-text": "[I18N TESTING] Navigate to the welcome page"
 	, "home-button-text": "[I18N TESTING] Jump to the main page of '{{BOOK_TITLE}}'"
 	, "random-page-button-text": "[I18N TESTING] I am tired of determinism"

@@ -405,6 +405,22 @@ NewHTTP404Response::NewHTTP404Response(const RequestContext& request,
   });
 }
 
+BlockExternalLinkResponse::BlockExternalLinkResponse(const RequestContext& request,
+                                       const std::string& root,
+                                       const std::string& externalUrl)
+  : ContentResponseBlueprint(&request,
+                             MHD_HTTP_OK,
+                             "text/html; charset=utf-8",
+                             RESOURCE::templates::captured_external_html,
+                             /*includeKiwixResponseData=*/true)
+{
+  *this->m_data = Data(Data::Object{
+                    {"root", root },
+                    {"external_link_detected", Data::fromMsgId("external-link-detected") },
+                    {"source", externalUrl },
+  });
+}
+
 HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
