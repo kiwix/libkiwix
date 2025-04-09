@@ -58,6 +58,7 @@ header, .intro {
 .intro code {
   font-family: monospace;
   font-size: 1.1em;
+  word-break: break-all;
 }
 
 .intro a, .intro a:active, .intro a:visited {
