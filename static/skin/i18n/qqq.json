@@ -36,6 +36,7 @@
 	"500-page-title": "Title of the 500 error page",
 	"500-page-heading": "Heading of the 500 error page",
 	"500-page-text": "Text of the 500 error page",
+	"external-link-detected" : "Title & heading of the external link blocker page",
 	"fulltext-search-unavailable": "Title of the error page returned when search is attempted in a book without fulltext search database",
 	"no-search-results": "Text of the error page returned when search is attempted in a book without fulltext search database",
 	"search-results-page-title": "Title of the search results page",

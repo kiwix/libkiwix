@@ -1085,9 +1085,7 @@ std::unique_ptr<Response> InternalServer::handle_captured_external(const Request
     return UrlNotFoundResponse(request);
   }
 
-  auto data = get_default_data();
-  data.set("source", source);
-  return ContentResponse::build(RESOURCE::templates::captured_external_html, data, "text/html; charset=utf-8");
+  return BlockExternalLinkResponse(request, m_root, source);
 }
 
 std::unique_ptr<Response> InternalServer::handle_catch(const RequestContext& request)

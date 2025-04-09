@@ -3,8 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>External Link Detected</title>
+    <title>{{external_link_detected}}</title>
     <link type="text/css" href="{{root}}/skin/error.css?KIWIXCACHEID" rel="Stylesheet" />
+{{#KIWIX_RESPONSE_DATA}}    <script>
+      window.KIWIX_RESPONSE_TEMPLATE = "{{KIWIX_RESPONSE_TEMPLATE}}";
+      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};
+    </script>{{/KIWIX_RESPONSE_DATA}}
   </head>
   <body>
     <header>
@@ -14,7 +18,7 @@
              title="Caution!">
     </header>
     <section class="intro">
-      <h1>External Link Detected</h1>
+      <h1>{{external_link_detected}}</h1>
       <p>You are about to leave Kiwix's ZIM reader to go online to</p>
       <p><a href="{{source}}">{{ source }}</a></p>
     </section>

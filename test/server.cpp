@@ -94,6 +94,8 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/entries" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/partial_entries" },
 
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catch/external?source=www.example.com" },
+
   { DYNAMIC_CONTENT, "/ROOT%23%3F/search?content=zimfile&pattern=a" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile&term=ray" },
@@ -177,8 +179,6 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/searchdescription.xml" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
-
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catch/external?source=www.example.com" },
 
   { ZIM_CONTENT,     "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
@@ -355,6 +355,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cach
     {
       /* url */ "/ROOT%23%3F/catch/external?source=https%3A%2F%2Fkiwix.org",
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{external_link_detected}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/blocklink.svg?cacheid=bd56b116&quot;\n             alt=&quot;Caution!&quot;\n             aria-label=&quot;Caution!&quot;\n             title=&quot;Caution!&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{external_link_detected}}&lt;/h1&gt;\n      &lt;p&gt;You are about to leave Kiwix&apos;s ZIM reader to go online to&lt;/p&gt;\n      &lt;p&gt;&lt;a href=&quot;{{source}}&quot;&gt;{{ source }}&lt;/a&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;The link you&apos;re trying to access is not part of your offline package and requires an internet connection.&lt;/p&gt;\n      &lt;p&gt;If you can go online, you can attempt to open the link.&lt;/p&gt;\n      &lt;p&gt;You can otherwise return to your ZIM&apos;s offline content by using your browser&apos;s back button.&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
         <img src="/ROOT%23%3F/skin/blocklink.svg?cacheid=bd56b116"
 )EXPECTEDRESULT"
     },
