@@ -23,7 +23,8 @@ const Translations = {
       return;
 
     const errorMsg = `Error loading translations for language '${lang}': `;
-    this.promises[lang] = fetch(`./skin/i18n/${lang}.json`).then(async (resp) => {
+    const translationJsonUrl = import.meta.resolve(`./i18n/${lang}.json`);
+    this.promises[lang] = fetch(translationJsonUrl).then(async (resp) => {
       if ( resp.ok ) {
         this.data[lang] = JSON.parse(await resp.text());
       } else {
@@ -190,8 +191,40 @@ function initUILanguageSelector(activeLanguage, languageChangeCallback) {
   languageSelector.onchange = languageChangeCallback;
 }
 
+function parseDom(html) {
+  const domParser = new DOMParser();
+  return domParser.parseFromString(html, "text/html").documentElement;
+}
+
+function translatePageInWindow(w) {
+  if ( w.KIWIX_RESPONSE_TEMPLATE && w.KIWIX_RESPONSE_DATA ) {
+    const template = parseDom(w.KIWIX_RESPONSE_TEMPLATE).textContent;
+
+    // w.KIWIX_RESPONSE_DATA may belong to a different context and running
+    // I18n.render() on it directly won't work correctly
+    // because the type checks (obj.__proto__ == ???.prototype) in
+    // I18n.instantiateParameterizedMessages() will fail (String.prototype
+    // refers to different objects in different contexts).
+    // Work arround that issue by copying the object into our context.
+    const params = JSON.parse(JSON.stringify(w.KIWIX_RESPONSE_DATA));
+
+    const newHtml = I18n.render(template, params);
+    w.document.documentElement.innerHTML = parseDom(newHtml).innerHTML;
+  }
+}
+
+function translateSelf() {
+  if ( window.KIWIX_RESPONSE_TEMPLATE && window.KIWIX_RESPONSE_DATA ) {
+    setUserLanguage(getUserLanguage(), () => {
+      translatePageInWindow(window)
+    });
+  }
+};
+
 window.$t = $t;
 window.getUserLanguage = getUserLanguage;
 window.setUserLanguage = setUserLanguage;
 window.initUILanguageSelector = initUILanguageSelector;
+window.translatePageInWindow = translatePageInWindow;
 window.I18n = I18n;
+window.addEventListener('load', translateSelf);
