@@ -14,19 +14,19 @@
   <body>
     <header>
         <img src="{{root}}/skin/blocklink.svg?KIWIXCACHEID"
-             alt="Caution!"
-             aria-label="Caution!"
-             title="Caution!">
+             alt="{{caution_warning}}"
+             aria-label="{{caution_warning}}"
+             title="{{caution_warning}}">
     </header>
     <section class="intro">
       <h1>{{external_link_detected}}</h1>
-      <p>You are about to leave Kiwix's ZIM reader to go online to</p>
+      <p>{{external_link_intro}}</p>
       <p><a href="{{url}}">{{ url }}</a></p>
     </section>
     <section class="advice">
-      <p>The link you're trying to access is not part of your offline package and requires an internet connection.</p>
-      <p>If you can go online, you can attempt to open the link.</p>
-      <p>You can otherwise return to your ZIM's offline content by using your browser's back button.</p>
+      <p>{{advice.p1}}</p>
+      <p>{{advice.p2}}</p>
+      <p>{{advice.p3}}</p>
     </section>
   </body>
 </html>
