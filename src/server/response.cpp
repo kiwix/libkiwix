@@ -418,6 +418,9 @@ BlockExternalLinkResponse::BlockExternalLinkResponse(const RequestContext& reque
                     {"root", root },
                     {"external_link_detected", Data::fromMsgId("external-link-detected") },
                     {"url", externalUrl },
+                    {"caution_warning", Data::fromMsgId("caution-warning") },
+                    {"external_link_intro", Data::fromMsgId("external-link-intro") },
+                    {"advice", Data::staticMultiParagraphText("external-link-advice", 3)},
   });
 }
 
