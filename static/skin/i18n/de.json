@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"AnnaTheProgrammer777",
 			"IMayBeABitShy",
 			"Justman10000",
 			"Lucas Werkmeister",
@@ -56,12 +57,22 @@
 	"torrent-download-link-text": "BitTorrent",
 	"torrent-download-alt-text": "Herunterladen über BitTorrent",
 	"library-opds-feed-all-entries": "ODPS Feed der Bibliothek - Alle Einträge",
-	"filter-by-tag": "Nach Tag \"{{TAG}}\" filtern",
-	"stop-filtering-by-tag": "Filterung nach Tag \"{{TAG}}\" aufheben",
+	"filter-by-tag": "Nach Tag \"{{{TAG}}}\" filtern",
+	"stop-filtering-by-tag": "Filterung nach Tag \"{{{TAG}}}\" aufheben",
 	"library-opds-feed-parameterised": "ODPS Feed der Bibliothek - Einträge mit {{#LANG}\nSprache {{LANG}} {{/LANG}}{{#CATEGORY}}\nKategorie: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTag: {{TAG}}{{/TAG}}{{#Q}}\nQuery: {{Q}} {{/Q}}",
 	"welcome-to-kiwix-server": "Wilkommen beim Kiwix Server",
 	"download-links-heading": "Download Links für <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Buch herunterladen",
 	"preview-book": "Vorschau",
-	"unknown-error": "Unbekannter Fehler"
+	"unknown-error": "Unbekannter Fehler",
+	"book-category.wikibooks": "Wikibooks",
+	"book-category.wikinews": "Wikinews",
+	"book-category.wikipedia": "Wikipedia",
+	"book-category.wikiquote": "Wikiquote",
+	"book-category.wikisource": "Wikisource",
+	"book-category.wikispecies": "Wikispecies",
+	"book-category.wikiversity": "Wikiversity",
+	"book-category.wikivoyage": "Wikivoyage",
+	"book-category.wiktionary": "Wiktionary",
+	"book-category.other": "Andere"
 }
