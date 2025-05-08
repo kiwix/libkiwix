@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"Joeamj",
+			"Muddyb",
 			"Peggy",
 			"Wangombe"
 		]
@@ -40,7 +42,7 @@
 	"welcome-page-overzealous-filter": "Hakuna matokeo. Je, ungependa <a href=\"{{URL}}\">kuweka upya kichujio</a> ?",
 	"powered-by-kiwix-html": "Inaendeshwa na <a href=\"https://kiwix.org\">Kiwix</a>",
 	"search": "Tafuta",
-	"book-filtering-all-categories": "Kategoria Zote",
+	"book-filtering-all-categories": "Jamii Zote",
 	"book-filtering-all-languages": "Lugha zote",
 	"count-of-matching-books": "Vitabu {{COUNT}}",
 	"download": "Pakua",
@@ -60,5 +62,6 @@
 	"download-links-heading": "Pakua viungo vya <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Pakua vitabu",
 	"preview-book": "Hakiki",
-	"unknown-error": "Hitilafu isiyojulikana"
+	"unknown-error": "Hitilafu isiyojulikana",
+	"text-loading-content": "Inapakia Maudhui"
 }

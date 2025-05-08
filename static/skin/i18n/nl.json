@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"ABPMAB",
 			"Kelson",
 			"McDutchie",
 			"Siebrand",
@@ -72,5 +73,6 @@
 	"book-category.wikiversity": "Wikiversity",
 	"book-category.wikivoyage": "Wikivoyage",
 	"book-category.wiktionary": "WikiWoordenboek",
-	"book-category.other": "Overige"
+	"book-category.other": "Overige",
+	"text-loading-content": "Inhoud laden"
 }

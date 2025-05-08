@@ -13,7 +13,7 @@
 	"url-not-found": "Le URL reuqestate \"{{url}}\" non ha essite trovate sur iste servitor.",
 	"suggest-search": "Facer un recerca in texto complete de <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Ups! Non poteva eliger un articulo aleatori :(",
-	"invalid-raw-data-type": "{{DATATYPE}} non es un request valide pro contento crude.",
+	"invalid-raw-data-type": "{{DATATYPE}} non es un requesta valide pro contento brute.",
 	"invalid-request": "Le URL requestate “{{{url}}}” non es un requesta valide.",
 	"no-value-for-arg": "Necun valor fornite pro le argumento {{ARGUMENT}}",
 	"no-query": "Necun consulta fornite.",
