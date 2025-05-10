@@ -15,6 +15,7 @@ skin/i18n/he.json
 skin/i18n/hi.json
 skin/i18n/hy.json
 skin/i18n/ia.json
+skin/i18n/id.json
 skin/i18n/ig.json
 skin/i18n/it.json
 skin/i18n/ja.json
@@ -23,11 +24,14 @@ skin/i18n/ku-latn.json
 skin/i18n/lb.json
 skin/i18n/mk.json
 skin/i18n/ms.json
+skin/i18n/nb.json
 skin/i18n/nl.json
 skin/i18n/nqo.json
 skin/i18n/or.json
 skin/i18n/pl.json
 skin/i18n/pt-br.json
+skin/i18n/pt.json
+skin/i18n/ro.json
 skin/i18n/ru.json
 skin/i18n/sc.json
 skin/i18n/sk.json

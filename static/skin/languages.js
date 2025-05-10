@@ -2,12 +2,12 @@ const uiLanguages = [
   {
     "iso_code": "ar",
     "self_name": "الإنجليزية",
-    "translation_count": 25
+    "translation_count": 43
   },
   {
     "iso_code": "bn",
     "self_name": "বাংলা",
-    "translation_count": 14
+    "translation_count": 24
   },
   {
     "iso_code": "br",
@@ -27,7 +27,7 @@ const uiLanguages = [
   {
     "iso_code": "de",
     "self_name": "Deutsch",
-    "translation_count": 57
+    "translation_count": 67
   },
   {
     "iso_code": "el",
@@ -37,12 +37,12 @@ const uiLanguages = [
   {
     "iso_code": "en",
     "self_name": "English",
-    "translation_count": 58
+    "translation_count": 77
   },
   {
     "iso_code": "es",
     "self_name": "español",
-    "translation_count": 49
+    "translation_count": 67
   },
   {
     "iso_code": "fi",
@@ -52,7 +52,7 @@ const uiLanguages = [
   {
     "iso_code": "fr",
     "self_name": "Français",
-    "translation_count": 57
+    "translation_count": 68
   },
   {
     "iso_code": "ha",
@@ -62,22 +62,27 @@ const uiLanguages = [
   {
     "iso_code": "he",
     "self_name": "עברית",
-    "translation_count": 57
+    "translation_count": 69
   },
   {
     "iso_code": "hi",
     "self_name": "हिन्दी",
-    "translation_count": 49
+    "translation_count": 59
   },
   {
     "iso_code": "hy",
     "self_name": "Հայերեն",
-    "translation_count": 15
+    "translation_count": 25
   },
   {
     "iso_code": "ia",
     "self_name": "interlingua",
-    "translation_count": 57
+    "translation_count": 67
+  },
+  {
+    "iso_code": "id",
+    "self_name": "Bahasa Inggris",
+    "translation_count": 68
   },
   {
     "iso_code": "ig",
@@ -87,7 +92,7 @@ const uiLanguages = [
   {
     "iso_code": "it",
     "self_name": "italiano",
-    "translation_count": 38
+    "translation_count": 54
   },
   {
     "iso_code": "ja",
@@ -97,7 +102,7 @@ const uiLanguages = [
   {
     "iso_code": "ko",
     "self_name": "한국어",
-    "translation_count": 15
+    "translation_count": 64
   },
   {
     "iso_code": "ku-latn",
@@ -107,12 +112,12 @@ const uiLanguages = [
   {
     "iso_code": "lb",
     "self_name": "Lëtzebuergesch",
-    "translation_count": 22
+    "translation_count": 43
   },
   {
     "iso_code": "mk",
     "self_name": "македонски",
-    "translation_count": 57
+    "translation_count": 76
   },
   {
     "iso_code": "ms",
@@ -120,9 +125,14 @@ const uiLanguages = [
     "translation_count": 14
   },
   {
+    "iso_code": "nb",
+    "self_name": "Engelsk",
+    "translation_count": 50
+  },
+  {
     "iso_code": "nl",
     "self_name": "Nederlands",
-    "translation_count": 49
+    "translation_count": 68
   },
   {
     "iso_code": "nqo",
@@ -137,17 +147,27 @@ const uiLanguages = [
   {
     "iso_code": "pl",
     "self_name": "Polski",
-    "translation_count": 31
+    "translation_count": 32
   },
   {
     "iso_code": "pt-br",
     "self_name": "Português",
-    "translation_count": 35
+    "translation_count": 65
+  },
+  {
+    "iso_code": "pt",
+    "self_name": "português",
+    "translation_count": 67
+  },
+  {
+    "iso_code": "ro",
+    "self_name": "Engleză",
+    "translation_count": 67
   },
   {
     "iso_code": "ru",
     "self_name": "русский",
-    "translation_count": 57
+    "translation_count": 67
   },
   {
     "iso_code": "sc",
@@ -162,7 +182,7 @@ const uiLanguages = [
   {
     "iso_code": "skr-arab",
     "self_name": "سرائیکی",
-    "translation_count": 20
+    "translation_count": 31
   },
   {
     "iso_code": "sl",
@@ -172,17 +192,17 @@ const uiLanguages = [
   {
     "iso_code": "sq",
     "self_name": "Shqip",
-    "translation_count": 49
+    "translation_count": 67
   },
   {
     "iso_code": "sv",
     "self_name": "Svenska",
-    "translation_count": 57
+    "translation_count": 67
   },
   {
     "iso_code": "sw",
     "self_name": "Kiswahili",
-    "translation_count": 57
+    "translation_count": 58
   },
   {
     "iso_code": "te",
@@ -197,11 +217,11 @@ const uiLanguages = [
   {
     "iso_code": "zh-hans",
     "self_name": "简体中文",
-    "translation_count": 57
+    "translation_count": 68
   },
   {
     "iso_code": "zh-hant",
     "self_name": "繁體中文",
-    "translation_count": 57
+    "translation_count": 76
   }
 ]
