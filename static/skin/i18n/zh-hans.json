@@ -4,6 +4,7 @@
 			"GuoPC",
 			"IceButBin",
 			"Kichin",
+			"Prmsh",
 			"StarrySky",
 			"Sunai",
 			"XtexChooser",
@@ -75,5 +76,6 @@
 	"book-category.wikiversity": "维基学院",
 	"book-category.wikivoyage": "维基导游",
 	"book-category.wiktionary": "维基词典",
-	"book-category.other": "其他"
+	"book-category.other": "其他",
+	"text-loading-content": "内容加载中"
 }

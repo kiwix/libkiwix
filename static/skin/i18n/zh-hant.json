@@ -54,8 +54,8 @@
 	"torrent-download-link-text": "BitTorrent",
 	"torrent-download-alt-text": "透過 BitTorrent 下載",
 	"library-opds-feed-all-entries": "圖書館 OPDS 摘要 - 所有項目",
-	"filter-by-tag": "依標籤「{{TAG}}」篩選",
-	"stop-filtering-by-tag": "停止依標籤「{{TAG}}」篩選",
+	"filter-by-tag": "依標籤「{{{TAG}}}」篩選",
+	"stop-filtering-by-tag": "停止依標籤「{{{TAG}}}」篩選",
 	"library-opds-feed-parameterised": "圖書館 OPDS 摘要 - 項目符合 {{#LANG}}\n語言：{{LANG}} {{/LANG}}{{#CATEGORY}}\n分類：{{CATEGORY}} {{/CATEGORY}}{{#TAG}}\n標籤：{{TAG}} {{/TAG}}{{#Q}}\n查詢：{{Q}} {{/Q}}",
 	"welcome-to-kiwix-server": "歡迎來到 Kiwix 伺服器",
 	"download-links-heading": "下載<b><i>{{BOOK_TITLE}}</i></b>的連結",
@@ -79,5 +79,6 @@
 	"book-category.wikiversity": "維基學院",
 	"book-category.wikivoyage": "維基導遊",
 	"book-category.wiktionary": "維基詞典",
-	"book-category.other": "其他"
+	"book-category.other": "其他",
+	"text-loading-content": "正在載入內容"
 }
