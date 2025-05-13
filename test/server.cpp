@@ -828,74 +828,6 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/invalid-book/whatever" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "whatever", "SEARCH_URL" : "/ROOT%23%3F/search?pattern=whatever" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/invalid-book/whatever" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?pattern=whatever">whatever</a>
-    </p>
-)"  },
-
-    { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/invalid-article" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "invalid-article", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=invalid-article" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/zimfile/invalid-article" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=invalid-article">invalid-article</a>
-    </p>
-)"  },
-
-    { /* url */ R"(/ROOT%23%3F/content/"><svg onload=alert(1)>)",
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/\"><svg onload%3Dalert(1)>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "\"><svg onload=alert(1)>", "SEARCH_URL" : "/ROOT%23%3F/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/&quot;&gt;&lt;svg onload%3Dalert(1)&gt;" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
-    </p>
-)"  },
-
-    { /* url */ R"(/ROOT%23%3F/content/zimfile/"><svg onload=alert(1)>)",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/\"><svg onload%3Dalert(1)>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "\"><svg onload=alert(1)>", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/zimfile/&quot;&gt;&lt;svg onload%3Dalert(1)&gt;" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
-    </p>
-)"  },
-
-    // XXX: This test case is against a "</script>" string appearing inside
-    // XXX: javascript code that will confuse the HTML parser
-    { /* url */ R"(/ROOT%23%3F/content/zimfile/</script>)",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/</scr\ipt>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "script>", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=script%3E" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/zimfile/&lt;/script&gt;" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=script%3E">script&gt;</a>
-    </p>
-)"  },
-
     { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
       book_name=="zimfile" &&
@@ -978,6 +910,85 @@ TEST_F(ServerTest, Http404HtmlError)
     const auto r = zfs1_->GET(t.url.c_str());
     EXPECT_EQ(r->status, 404) << ctx;
     EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
+  }
+}
+
+std::string htmlEscape(std::string s)
+{
+  s = replace(s, "&", "&amp;");
+  s = replace(s, "<", "&lt;");
+  s = replace(s, ">", "&gt;");
+  s = replace(s, "\"", "&quot;");
+  return s;
+}
+
+std::string expectedSexy404ErrorHtml(const std::string& url)
+{
+  const auto htmlSafeUrl = htmlEscape(url);
+
+  return R"RAWSTRINGLITERAL(<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Page not found</title>
+    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=c49d1586" rel="Stylesheet" />
+  </head>
+  <body>
+    <header>
+        <img src="/ROOT%23%3F/skin/404.svg?cacheid=b6d648af"
+             alt="Not found!"
+             aria-label="Not found!"
+             title="Not found!">
+    </header>
+    <section class="intro">
+      <h1>Oops. Page not found.</h1>
+      <p>The requested path was not found:</p>
+      <p><code>)RAWSTRINGLITERAL"
+  +           // inject the URL
+  htmlSafeUrl // inject the URL
+  +           // inject the URL
+  R"RAWSTRINGLITERAL(</code></p>
+    </section>
+    <section class="advice">
+      <p>The content you're looking for may still be available, but it might be located at a different place within the ZIM file.</p>
+      <p class="list-intro">Please:</p>
+      <ul>
+          <li>Try using the search function to find the content you want</li>
+          <li>Look for keywords or titles related to the information you're seeking</li>
+      </ul>
+      <p>This approach should help you locate the desired content, even if the original link isn't working properly.</p>
+    </section>
+  </body>
+</html>
+)RAWSTRINGLITERAL";
+}
+
+TEST_F(ServerTest, HttpSexy404HtmlError)
+{
+  using namespace TestingOfHtmlResponses;
+  const std::vector<std::string> testUrls {
+    // XXX: Nicer 404 error page no longer hints whether the error
+    // XXX: is because of the missing book/ZIM-file or a missing article
+    // XXX: inside a valid/existing book/ZIM-file. However it makes sense
+    // XXX: to preserve both cases.
+    "/ROOT%23%3F/content/invalid-book/whatever",
+    "/ROOT%23%3F/content/zimfile/invalid-article",
+
+    // malicious URLs
+    R"(/ROOT%23%3F/content/"><svg onload=alert(1)>)",
+    R"(/ROOT%23%3F/content/zimfile/"><svg onload=alert(1)>)",
+
+    // XXX: This test case is against a "</script>" string appearing inside
+    // XXX: javascript code that will confuse the HTML parser
+    R"(/ROOT%23%3F/content/zimfile/</script>)",
+  };
+
+  for ( const auto& url : testUrls ) {
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(r->status, 404) << ctx;
+    EXPECT_EQ(r->body, expectedSexy404ErrorHtml(url)) << ctx;
   }
 }
 
