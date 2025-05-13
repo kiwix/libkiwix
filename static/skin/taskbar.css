@@ -32,6 +32,13 @@
 
 .kiwix_searchform {
     width: 20em;
+    max-width: 40%;
+}
+
+#kiwixsearchbox {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden; 
 }
 
 #kiwix_serve_taskbar_home_button button {
@@ -170,7 +177,7 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
     }
 
     .kiwix_searchform {
-        width: 36%;
+        width: 50%;
     }
 
     .height_separator {
@@ -180,7 +187,7 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
 
 @media(max-width:419px) {
     .kiwix_searchform {
-        width: 80%;
+        width: 85%;
     }
 
     .kiwix_button_cont {
