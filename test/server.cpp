@@ -829,21 +829,6 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
-      expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/invalid-article" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "invalid-article", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=invalid-article" } } } ] })" &&
-      expected_body==R"(
-    <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
-    <p>
-      [I18N TESTING] URL not found: /ROOT%23%3F/content/zimfile/invalid-article
-    </p>
-    <p>
-      [I18N TESTING] Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=invalid-article">invalid-article</a>
-    </p>
-)"  },
-
     { /* url */ "/ROOT%23%3F/raw/no-such-book/meta/Title",
       expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/raw/no-such-book/meta/Title" } } }, { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "no-such-book" } } } ] })" &&
       expected_body==R"(
@@ -932,8 +917,9 @@ std::string escapeJsString(std::string s)
 
 std::string expectedSexy404ErrorHtml(const std::string& url)
 {
-  const auto htmlSafeUrl = htmlEscape(url);
-  const auto jsSafeUrl = escapeJsString(url);
+  const auto urlWithoutQuery = replace(url, "\\?.*$", "");
+  const auto htmlSafeUrl = htmlEscape(urlWithoutQuery);
+  const auto jsSafeUrl = escapeJsString(urlWithoutQuery);
 
   const std::string englishText[] = {
     "Page not found",
@@ -947,7 +933,20 @@ std::string expectedSexy404ErrorHtml(const std::string& url)
     "This approach should help you locate the desired content, even if the original link isn&apos;t working properly."
   };
 
-  const std::string* const t = englishText;
+  const std::string translatedText[] = {
+    "Page [I18N] not [TESTING] found",
+    "[I18N] Not found! [TESTING]",
+    "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave.",
+    "[I18N TESTING] The requested path was not found (in fact, nothing was found instead, either):",
+    "Sh*t happens. [I18N TESTING] Take it easy!",
+    "[I18N TESTING] Try one of the following:",
+    "[I18N TESTING] Check the spelling of the URL path",
+    "[I18N TESTING] Press the dice button",
+    "Good luck! [I18N TESTING]"
+  };
+
+  const bool shouldTranslate = url.find("userlang=test") != std::string::npos;
+  const std::string* const t = shouldTranslate ? translatedText : englishText;
 
   return R"RAWSTRINGLITERAL(<!DOCTYPE html>
 <html>
@@ -1004,7 +1003,9 @@ TEST_F(ServerTest, HttpSexy404HtmlError)
     // XXX: inside a valid/existing book/ZIM-file. However it makes sense
     // XXX: to preserve both cases.
     "/ROOT%23%3F/content/invalid-book/whatever",
+    "/ROOT%23%3F/content/invalid-book/whatever?userlang=test",
     "/ROOT%23%3F/content/zimfile/invalid-article",
+    "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
 
     // malicious URLs
     R"(/ROOT%23%3F/content/"><svg onload=alert(1)>)",
