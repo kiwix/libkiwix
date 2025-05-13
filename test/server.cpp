@@ -935,12 +935,26 @@ std::string expectedSexy404ErrorHtml(const std::string& url)
   const auto htmlSafeUrl = htmlEscape(url);
   const auto jsSafeUrl = escapeJsString(url);
 
+  const std::string englishText[] = {
+    "Page not found",
+    "Not found!",
+    "Oops. Page not found.",
+    "The requested path was not found:",
+    "The content you&apos;re looking for may still be available, but it might be located at a different place within the ZIM file.",
+    "Please:",
+    "Try using the search function to find the content you want",
+    "Look for keywords or titles related to the information you&apos;re seeking",
+    "This approach should help you locate the desired content, even if the original link isn&apos;t working properly."
+  };
+
+  const std::string* const t = englishText;
+
   return R"RAWSTRINGLITERAL(<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Page not found</title>
+    <title>)RAWSTRINGLITERAL" + t[0] + R"RAWSTRINGLITERAL(</title>
     <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=c49d1586" rel="Stylesheet" />
     <script>
       window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=c49d1586&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;{{404_img_text}}&quot;\n             aria-label=&quot;{{404_img_text}}&quot;\n             title=&quot;{{404_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{path_was_not_found_msg}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;{{advice.p3}}&lt;/li&gt;\n          &lt;li&gt;{{advice.p4}}&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;{{advice.p5}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
@@ -954,13 +968,13 @@ std::string expectedSexy404ErrorHtml(const std::string& url)
   <body>
     <header>
         <img src="/ROOT%23%3F/skin/404.svg?cacheid=b6d648af"
-             alt="Not found!"
-             aria-label="Not found!"
-             title="Not found!">
+             alt=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL("
+             aria-label=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL("
+             title=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL(">
     </header>
     <section class="intro">
-      <h1>Oops. Page not found.</h1>
-      <p>The requested path was not found:</p>
+      <h1>)RAWSTRINGLITERAL" + t[2] + R"RAWSTRINGLITERAL(</h1>
+      <p>)RAWSTRINGLITERAL" + t[3] + R"RAWSTRINGLITERAL(</p>
       <p><code>)RAWSTRINGLITERAL"
   +           // inject the URL
   htmlSafeUrl // inject the URL
@@ -968,13 +982,13 @@ std::string expectedSexy404ErrorHtml(const std::string& url)
   R"RAWSTRINGLITERAL(</code></p>
     </section>
     <section class="advice">
-      <p>The content you&apos;re looking for may still be available, but it might be located at a different place within the ZIM file.</p>
-      <p class="list-intro">Please:</p>
+      <p>)RAWSTRINGLITERAL" + t[4] + R"RAWSTRINGLITERAL(</p>
+      <p class="list-intro">)RAWSTRINGLITERAL" + t[5] + R"RAWSTRINGLITERAL(</p>
       <ul>
-          <li>Try using the search function to find the content you want</li>
-          <li>Look for keywords or titles related to the information you&apos;re seeking</li>
+          <li>)RAWSTRINGLITERAL" + t[6] + R"RAWSTRINGLITERAL(</li>
+          <li>)RAWSTRINGLITERAL" + t[7] + R"RAWSTRINGLITERAL(</li>
       </ul>
-      <p>This approach should help you locate the desired content, even if the original link isn&apos;t working properly.</p>
+      <p>)RAWSTRINGLITERAL" + t[8] + R"RAWSTRINGLITERAL(</p>
     </section>
   </body>
 </html>
