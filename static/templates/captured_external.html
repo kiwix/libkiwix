@@ -1,14 +1,27 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="UTF-8" />
-  <title>External link blocked</title>
-</head>
-<body class="kiwix">
-<h1>External link blocked</h1>
-<p>This instance of Kiwix protects you from accidentally going to external (out-of ZIM) links.</p>
-<p>If you intend to go to such locations, please click the link below.</p>
-<p><a href="{{ source }}">Go to {{ source }}</a></p>
-<div id="kiwixfooter">Powered by <a href="https://kiwix.org">Kiwix</a></div>
-</body>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>External Link Detected</title>
+    <link type="text/css" href="{{root}}/skin/error.css?KIWIXCACHEID" rel="Stylesheet" />
+  </head>
+  <body>
+    <header>
+        <img src="{{root}}/skin/blocklink.svg?KIWIXCACHEID"
+             alt="Caution!"
+             aria-label="Caution!"
+             title="Caution!">
+    </header>
+    <section class="intro">
+      <h1>External Link Detected</h1>
+      <p>You are about to leave Kiwix's ZIM reader to go online to</p>
+      <p><a href="{{source}}">{{ source }}</a></p>
+    </section>
+    <section class="advice">
+      <p>The link you're trying to access is not part of your offline package and requires an internet connection.</p>
+      <p>If you can go online, you can attempt to open the link.</p>
+      <p>You can otherwise return to your ZIM's offline content by using your browser's back button.</p>
+    </section>
+  </body>
 </html>

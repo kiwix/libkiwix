@@ -2,6 +2,7 @@ skin/caret.png
 skin/bittorrent.png
 skin/magnet.png
 skin/404.svg
+skin/blocklink.svg
 skin/feed.svg
 skin/langSelector.svg
 skin/download.png
