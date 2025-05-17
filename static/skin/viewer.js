@@ -262,22 +262,7 @@ function handle_location_hash_change() {
 }
 
 function translateErrorPageIfNeeded() {
-  const cw = contentIframe.contentWindow;
-  if ( cw.KIWIX_RESPONSE_TEMPLATE && cw.KIWIX_RESPONSE_DATA ) {
-    const template = htmlDecode(cw.KIWIX_RESPONSE_TEMPLATE);
-
-    // cw.KIWIX_RESPONSE_DATA belongs to the iframe context and running
-    // I18n.render() on it directly in the top context doesn't work correctly
-    // because the type checks (obj.__proto__ == ???.prototype) in
-    // I18n.instantiateParameterizedMessages() always fail (String.prototype
-    // refers to different objects in different contexts).
-    // Work arround that issue by copying the object into our context.
-    const params = JSON.parse(JSON.stringify(cw.KIWIX_RESPONSE_DATA));
-
-    const html = I18n.render(template, params);
-    const htmlDoc = new DOMParser().parseFromString(html, "text/html");
-    cw.document.documentElement.innerHTML = htmlDoc.documentElement.innerHTML;
-  }
+  translatePageInWindow(contentIframe.contentWindow);
 }
 
 function handle_content_url_change() {

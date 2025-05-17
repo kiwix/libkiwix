@@ -58,8 +58,10 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/error.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=ae79e41a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
@@ -75,7 +77,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=80d56607" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=d6f747f5" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=7f05bf6c" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -92,6 +94,8 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/entries" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/partial_entries" },
 
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/catch/external?source=www.example.com" },
+
   { DYNAMIC_CONTENT, "/ROOT%23%3F/search?content=zimfile&pattern=a" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile&term=ray" },
@@ -106,10 +110,14 @@ const ResourceCollection resources200Compressible{
 };
 
 const ResourceCollection resources200Uncompressible{
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/404.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/404.svg?cacheid=b6d648af" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.png?cacheid=4f5c6882" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blank.html" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/blank.html?cacheid=6b1fa032" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blocklink.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/blocklink.svg?cacheid=bd56b116" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/caret.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/caret.png?cacheid=22b942b4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download.png" },
@@ -171,8 +179,6 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/searchdescription.xml" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=48" },
-
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catch/external?source=www.example.com" },
 
   { ZIM_CONTENT,     "/ROOT%23%3F/content/zimfile/I/m/Ray_Charles_classic_piano_pose.jpg" },
 
@@ -290,7 +296,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=3948b846"
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=071abc9a" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=a83f0e13" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
@@ -325,9 +331,9 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=3948b8
     <link type="text/css" href="./skin/taskbar.css?cacheid=80d56607" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
-    <script type="module" src="./skin/i18n.js?cacheid=071abc9a" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=a83f0e13" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=d6f747f5" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=7f05bf6c" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
@@ -338,6 +344,21 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=3948b8
     {
       /* url */ "/ROOT%23%3F/content/zimfile/A/index",
       ""
+    },
+    {
+      /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;{{404_img_text}}&quot;\n             aria-label=&quot;{{404_img_text}}&quot;\n             title=&quot;{{404_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{path_was_not_found_msg}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;{{advice.p3}}&lt;/li&gt;\n          &lt;li&gt;{{advice.p4}}&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;{{advice.p5}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+        <img src="/ROOT%23%3F/skin/404.svg?cacheid=b6d648af"
+)EXPECTEDRESULT"
+    },
+    {
+      /* url */ "/ROOT%23%3F/catch/external?source=https%3A%2F%2Fkiwix.org",
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1"></script>
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{external_link_detected}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script type=&quot;module&quot; src=&quot;{{root}}/skin/i18n.js?cacheid=e9a10ac1&quot;&gt;&lt;/script&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/blocklink.svg?cacheid=bd56b116&quot;\n             alt=&quot;{{caution_warning}}&quot;\n             aria-label=&quot;{{caution_warning}}&quot;\n             title=&quot;{{caution_warning}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{external_link_detected}}&lt;/h1&gt;\n      &lt;p&gt;{{external_link_intro}}&lt;/p&gt;\n      &lt;p&gt;&lt;a href=&quot;{{url}}&quot;&gt;{{ url }}&lt;/a&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p3}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+        <img src="/ROOT%23%3F/skin/blocklink.svg?cacheid=bd56b116"
+)EXPECTEDRESULT"
     },
     {
       // Searching in a ZIM file without a full-text index returns
@@ -818,89 +839,6 @@ TEST_F(ServerTest, Http404HtmlError)
     </p>
 )"  },
 
-    { /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/invalid-book/whatever" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "whatever", "SEARCH_URL" : "/ROOT%23%3F/search?pattern=whatever" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/invalid-book/whatever" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?pattern=whatever">whatever</a>
-    </p>
-)"  },
-
-    { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/invalid-article" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "invalid-article", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=invalid-article" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/zimfile/invalid-article" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=invalid-article">invalid-article</a>
-    </p>
-)"  },
-
-    { /* url */ R"(/ROOT%23%3F/content/"><svg onload=alert(1)>)",
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/\"><svg onload%3Dalert(1)>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "\"><svg onload=alert(1)>", "SEARCH_URL" : "/ROOT%23%3F/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/&quot;&gt;&lt;svg onload%3Dalert(1)&gt;" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
-    </p>
-)"  },
-
-    { /* url */ R"(/ROOT%23%3F/content/zimfile/"><svg onload=alert(1)>)",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/\"><svg onload%3Dalert(1)>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "\"><svg onload=alert(1)>", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/zimfile/&quot;&gt;&lt;svg onload%3Dalert(1)&gt;" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=%22%3E%3Csvg%20onload%3Dalert(1)%3E">&quot;&gt;&lt;svg onload=alert(1)&gt;</a>
-    </p>
-)"  },
-
-    // XXX: This test case is against a "</script>" string appearing inside
-    // XXX: javascript code that will confuse the HTML parser
-    { /* url */ R"(/ROOT%23%3F/content/zimfile/</script>)",
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/</scr\ipt>" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "script>", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=script%3E" } } } ] })" &&
-      expected_body==R"(
-    <h1>Not Found</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/content/zimfile/&lt;/script&gt;" was not found on this server.
-    </p>
-    <p>
-      Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=script%3E">script&gt;</a>
-    </p>
-)"  },
-
-    { /* url */ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
-      expected_page_title=="[I18N TESTING] Not Found - Try Again" &&
-      book_name=="zimfile" &&
-      book_title=="Ray Charles" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/content/zimfile/invalid-article" } } }, { "p" : { "msgid" : "suggest-search", "params" : { "PATTERN" : "invalid-article", "SEARCH_URL" : "/ROOT%23%3F/search?content=zimfile&pattern=invalid-article" } } } ] })" &&
-      expected_body==R"(
-    <h1>[I18N TESTING] Content not found, but at least the server is alive</h1>
-    <p>
-      [I18N TESTING] URL not found: /ROOT%23%3F/content/zimfile/invalid-article
-    </p>
-    <p>
-      [I18N TESTING] Make a full text search for <a href="/ROOT%23%3F/search?content=zimfile&pattern=invalid-article">invalid-article</a>
-    </p>
-)"  },
-
     { /* url */ "/ROOT%23%3F/raw/no-such-book/meta/Title",
       expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3F/raw/no-such-book/meta/Title" } } }, { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "no-such-book" } } } ] })" &&
       expected_body==R"(
@@ -968,6 +906,131 @@ TEST_F(ServerTest, Http404HtmlError)
     const auto r = zfs1_->GET(t.url.c_str());
     EXPECT_EQ(r->status, 404) << ctx;
     EXPECT_EQ(r->body, t.expectedResponse()) << ctx;
+  }
+}
+
+std::string htmlEscape(std::string s)
+{
+  s = replace(s, "&", "&amp;");
+  s = replace(s, "<", "&lt;");
+  s = replace(s, ">", "&gt;");
+  s = replace(s, "\"", "&quot;");
+  return s;
+}
+
+std::string escapeJsString(std::string s)
+{
+  s = replace(s, "</script>", "</scr\\ipt>");
+  s = replace(s, "\"", "\\\"");
+  return s;
+}
+
+std::string expectedSexy404ErrorHtml(const std::string& url)
+{
+  const auto urlWithoutQuery = replace(url, "\\?.*$", "");
+  const auto htmlSafeUrl = htmlEscape(urlWithoutQuery);
+  const auto jsSafeUrl = escapeJsString(urlWithoutQuery);
+
+  const std::string englishText[] = {
+    "Page not found",
+    "Not found!",
+    "Oops. Page not found.",
+    "The requested path was not found:",
+    "The content you&apos;re looking for may still be available, but it might be located at a different place within the ZIM file.",
+    "Please:",
+    "Try using the search function to find the content you want",
+    "Look for keywords or titles related to the information you&apos;re seeking",
+    "This approach should help you locate the desired content, even if the original link isn&apos;t working properly."
+  };
+
+  const std::string translatedText[] = {
+    "Page [I18N] not [TESTING] found",
+    "[I18N] Not found! [TESTING]",
+    "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave.",
+    "[I18N TESTING] The requested path was not found (in fact, nothing was found instead, either):",
+    "Sh*t happens. [I18N TESTING] Take it easy!",
+    "[I18N TESTING] Try one of the following:",
+    "[I18N TESTING] Check the spelling of the URL path",
+    "[I18N TESTING] Press the dice button",
+    "Good luck! [I18N TESTING]"
+  };
+
+  const bool shouldTranslate = url.find("userlang=test") != std::string::npos;
+  const std::string* const t = shouldTranslate ? translatedText : englishText;
+
+  return R"RAWSTRINGLITERAL(<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>)RAWSTRINGLITERAL" + t[0] + R"RAWSTRINGLITERAL(</title>
+    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
+    <script>
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;{{404_img_text}}&quot;\n             aria-label=&quot;{{404_img_text}}&quot;\n             title=&quot;{{404_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{path_was_not_found_msg}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;{{advice.p3}}&lt;/li&gt;\n          &lt;li&gt;{{advice.p4}}&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;{{advice.p5}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+      window.KIWIX_RESPONSE_DATA = { "404_img_text" : { "msgid" : "404-img-text", "params" : { } }, "PAGE_HEADING" : { "msgid" : "new-404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "new-404-page-title", "params" : { } }, "advice" : { "p1" : { "msgid" : "404-advice.p1", "params" : { } }, "p2" : { "msgid" : "404-advice.p2", "params" : { } }, "p3" : { "msgid" : "404-advice.p3", "params" : { } }, "p4" : { "msgid" : "404-advice.p4", "params" : { } }, "p5" : { "msgid" : "404-advice.p5", "params" : { } } }, "path_was_not_found_msg" : { "msgid" : "path-was-not-found", "params" : { } }, "root" : "/ROOT%23%3F", "url_path" : ")RAWSTRINGLITERAL"
+  +         // inject the URL
+  jsSafeUrl // inject the URL
+  +         // inject the URL
+  R"RAWSTRINGLITERAL(" };
+    </script>
+  </head>
+  <body>
+    <header>
+        <img src="/ROOT%23%3F/skin/404.svg?cacheid=b6d648af"
+             alt=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL("
+             aria-label=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL("
+             title=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL(">
+    </header>
+    <section class="intro">
+      <h1>)RAWSTRINGLITERAL" + t[2] + R"RAWSTRINGLITERAL(</h1>
+      <p>)RAWSTRINGLITERAL" + t[3] + R"RAWSTRINGLITERAL(</p>
+      <p><code>)RAWSTRINGLITERAL"
+  +           // inject the URL
+  htmlSafeUrl // inject the URL
+  +           // inject the URL
+  R"RAWSTRINGLITERAL(</code></p>
+    </section>
+    <section class="advice">
+      <p>)RAWSTRINGLITERAL" + t[4] + R"RAWSTRINGLITERAL(</p>
+      <p class="list-intro">)RAWSTRINGLITERAL" + t[5] + R"RAWSTRINGLITERAL(</p>
+      <ul>
+          <li>)RAWSTRINGLITERAL" + t[6] + R"RAWSTRINGLITERAL(</li>
+          <li>)RAWSTRINGLITERAL" + t[7] + R"RAWSTRINGLITERAL(</li>
+      </ul>
+      <p>)RAWSTRINGLITERAL" + t[8] + R"RAWSTRINGLITERAL(</p>
+    </section>
+  </body>
+</html>
+)RAWSTRINGLITERAL";
+}
+
+TEST_F(ServerTest, HttpSexy404HtmlError)
+{
+  using namespace TestingOfHtmlResponses;
+  const std::vector<std::string> testUrls {
+    // XXX: Nicer 404 error page no longer hints whether the error
+    // XXX: is because of the missing book/ZIM-file or a missing article
+    // XXX: inside a valid/existing book/ZIM-file. However it makes sense
+    // XXX: to preserve both cases.
+    "/ROOT%23%3F/content/invalid-book/whatever",
+    "/ROOT%23%3F/content/invalid-book/whatever?userlang=test",
+    "/ROOT%23%3F/content/zimfile/invalid-article",
+    "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
+
+    // malicious URLs
+    R"(/ROOT%23%3F/content/"><svg onload=alert(1)>)",
+    R"(/ROOT%23%3F/content/zimfile/"><svg onload=alert(1)>)",
+
+    // XXX: This test case is against a "</script>" string appearing inside
+    // XXX: javascript code that will confuse the HTML parser
+    R"(/ROOT%23%3F/content/zimfile/</script>)",
+  };
+
+  for ( const auto& url : testUrls ) {
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(r->status, 404) << ctx;
+    EXPECT_EQ(r->body, expectedSexy404ErrorHtml(url)) << ctx;
   }
 }
 
@@ -1437,37 +1500,37 @@ TEST_F(ServerTest, UserLanguageControl)
       "Default user language is English",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "userlang URL query parameter is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "userlang URL query parameter is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=test",
       /*Accept-Language:*/ "",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "'Accept-Language: *' is handled",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "*",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "Accept-Language: header is respected",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "userlang query parameter takes precedence over Accept-Language",
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article?userlang=en",
       /*Accept-Language:*/ "test",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
     {
       "Most suitable language is selected from the Accept-Language header",
@@ -1475,7 +1538,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // with quality values) the most suitable language is selected.
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.9, en;q=0.2",
-      /* expected <h1> */ "[I18N TESTING] Content not found, but at least the server is alive"
+      /* expected <h1> */ "[I18N TESTING] Oops. Larry Page could not be reached. He may be on paternity leave."
     },
     {
       "Most suitable language is selected from the Accept-Language header",
@@ -1483,7 +1546,7 @@ TEST_F(ServerTest, UserLanguageControl)
       // with quality values) the most suitable language is selected.
       /*url*/ "/ROOT%23%3F/content/zimfile/invalid-article",
       /*Accept-Language:*/ "test;q=0.2, en;q=0.9",
-      /* expected <h1> */ "Not Found"
+      /* expected <h1> */ "Oops. Page not found."
     },
   };
 

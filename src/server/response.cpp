@@ -243,6 +243,23 @@ public:
     };
   }
 
+  static Data fromMsgId(const std::string& nonParameterizedMsgId)
+  {
+    return from(nonParameterizedMessage(nonParameterizedMsgId));
+  }
+
+  static Data staticMultiParagraphText(const std::string& msgIdPrefix, size_t n)
+  {
+    Object paragraphs;
+    for ( size_t i = 1; i <= n; ++i ) {
+      std::ostringstream oss;
+      oss << "p" << i;
+      const std::string pId = oss.str();
+      paragraphs[pId] = fromMsgId(msgIdPrefix + "." + pId);
+    }
+    return paragraphs;
+  }
+
   std::string asJSON() const;
   void dumpJSON(std::ostream& os) const;
 
@@ -368,6 +385,45 @@ std::unique_ptr<ContentResponse> ContentResponseBlueprint::generateResponseObjec
   return r;
 }
 
+NewHTTP404Response::NewHTTP404Response(const RequestContext& request,
+                                       const std::string& root,
+                                       const std::string& urlPath)
+  : ContentResponseBlueprint(&request,
+                             MHD_HTTP_NOT_FOUND,
+                             "text/html; charset=utf-8",
+                             RESOURCE::templates::sexy404_html,
+                             /*includeKiwixResponseData=*/true)
+{
+  *this->m_data = Data(Data::Object{
+                    {"root", root },
+                    {"url_path", urlPath},
+                    {"PAGE_TITLE",   Data::fromMsgId("new-404-page-title")},
+                    {"PAGE_HEADING", Data::fromMsgId("new-404-page-heading")},
+                    {"404_img_text", Data::fromMsgId("404-img-text")},
+                    {"path_was_not_found_msg", Data::fromMsgId("path-was-not-found")},
+                    {"advice", Data::staticMultiParagraphText("404-advice", 5)},
+  });
+}
+
+BlockExternalLinkResponse::BlockExternalLinkResponse(const RequestContext& request,
+                                       const std::string& root,
+                                       const std::string& externalUrl)
+  : ContentResponseBlueprint(&request,
+                             MHD_HTTP_OK,
+                             "text/html; charset=utf-8",
+                             RESOURCE::templates::captured_external_html,
+                             /*includeKiwixResponseData=*/true)
+{
+  *this->m_data = Data(Data::Object{
+                    {"root", root },
+                    {"external_link_detected", Data::fromMsgId("external-link-detected") },
+                    {"url", externalUrl },
+                    {"caution_warning", Data::fromMsgId("caution-warning") },
+                    {"external_link_intro", Data::fromMsgId("external-link-intro") },
+                    {"advice", Data::staticMultiParagraphText("external-link-advice", 3)},
+  });
+}
+
 HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
                                      int httpStatusCode,
                                      const std::string& pageTitleMsgId,
@@ -383,8 +439,8 @@ HTTPErrorResponse::HTTPErrorResponse(const RequestContext& request,
   Data::List emptyList;
   *this->m_data = Data(Data::Object{
                     {"CSS_URL", Data::onlyAsNonEmptyValue(cssUrl) },
-                    {"PAGE_TITLE",   Data::from(nonParameterizedMessage(pageTitleMsgId))},
-                    {"PAGE_HEADING", Data::from(nonParameterizedMessage(headingMsgId))},
+                    {"PAGE_TITLE",   Data::fromMsgId(pageTitleMsgId)},
+                    {"PAGE_HEADING", Data::fromMsgId(headingMsgId)},
                     {"details", emptyList}
   });
 }
