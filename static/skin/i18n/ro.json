@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"MSClaudiu"
+			"MSClaudiu",
+			"Trotinel Iftode"
 		]
 	},
 	"name": "Engleză",
@@ -24,6 +25,7 @@
 	"500-page-title": "Eroare internă de server",
 	"500-page-heading": "Eroare internă de server",
 	"500-page-text": "A apărut o eroare internă de server. Ne pare rau pentru asta :/",
+	"external-link-intro": "Ești pe cale să părăsești cititorul ZIM al Kiwix pentru a te conecta la...",
 	"fulltext-search-unavailable": "Căutarea text integral indisponibilă",
 	"no-search-results": "Motorul de căutare textintegral nu este disponibil pentru acest conținut.",
 	"search-results-page-title": "Căutare: {{SEARCH_PATTERN}}",
