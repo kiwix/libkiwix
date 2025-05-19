@@ -180,9 +180,12 @@ struct HTTP400Response : HTTPErrorResponse
   explicit HTTP400Response(const RequestContext& request);
 };
 
-struct HTTP500Response : HTTPErrorResponse
+struct HTTP500Response : ContentResponseBlueprint
 {
-  explicit HTTP500Response(const RequestContext& request);
+  HTTP500Response(const RequestContext& request,
+                  const std::string& root,
+                  const std::string& urlPath,
+                  const std::string& error = "");
 };
 
 class ItemResponse : public Response {

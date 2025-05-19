@@ -112,6 +112,8 @@ const ResourceCollection resources200Compressible{
 const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/404.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/404.svg?cacheid=b6d648af" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/500.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/500.svg?cacheid=32eb0f20" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.png?cacheid=4f5c6882" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blank.html" },
@@ -1006,7 +1008,6 @@ std::string expectedSexy404ErrorHtml(const std::string& url)
 
 TEST_F(ServerTest, HttpSexy404HtmlError)
 {
-  using namespace TestingOfHtmlResponses;
   const std::vector<std::string> testUrls {
     // XXX: Nicer 404 error page no longer hints whether the error
     // XXX: is because of the missing book/ZIM-file or a missing article
@@ -1209,35 +1210,79 @@ TEST_F(ServerTest, HttpXmlError)
   }
 }
 
-TEST_F(ServerTest, 500)
+std::string expectedSexy500ErrorHtml(const std::string& url)
 {
-  const std::string expectedBody = R"(<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+  const auto urlWithoutQuery = replace(url, "\\?.*$", "");
+  const auto htmlSafeUrl = htmlEscape(urlWithoutQuery);
+  const auto jsSafeUrl = escapeJsString(urlWithoutQuery);
+
+  const std::string englishText[] = {
+    "Internal Server Error",
+    "Page isn&apos;t working",
+    "Oops. Page isn&apos;t working.",
+    "The requested path cannot be properly delivered:",
+  };
+
+  const std::string translatedText[] = {
+    "[I18N] Internal Server Error [TESTING]",
+    "Page [I18N] isn&apos;t [TESTING] working",
+    "Oops. [I18N] Page isn&apos;t [TESTING] working.",
+    "The requested path [I18N TESTING] cannot be properly delivered:",
+  };
+
+  const bool shouldTranslate = url.find("userlang=test") != std::string::npos;
+  const std::string* const t = shouldTranslate ? translatedText : englishText;
+
+  return R"RAWSTRINGLITERAL(<!DOCTYPE html>
+<html>
   <head>
-    <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
-    <title>Internal Server Error</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>)RAWSTRINGLITERAL" + t[0] + R"RAWSTRINGLITERAL(</title>
+    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
     <script>
-      window.KIWIX_RESPONSE_TEMPLATE = )" + ERROR_HTML_TEMPLATE_JS_STRING + R"(;
-      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "500-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "500-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "500-page-text", "params" : { } } }, { "p" : { "msgid" : "non-translated-text", "params" : { "MSG" : "Entry redirect_loop.html is a redirect entry." } } } ] };
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/500.svg?cacheid=32eb0f20&quot;\n             alt=&quot;{{500_img_text}}&quot;\n             aria-label=&quot;{{500_img_text}}&quot;\n             title=&quot;{{500_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{PAGE_TEXT}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+      window.KIWIX_RESPONSE_DATA = { "500_img_text" : { "msgid" : "500-img-text", "params" : { } }, "PAGE_HEADING" : { "msgid" : "500-page-heading", "params" : { } }, "PAGE_TEXT" : { "msgid" : "500-page-text", "params" : { } }, "PAGE_TITLE" : { "msgid" : "500-page-title", "params" : { } }, "root" : "/ROOT%23%3F", "url_path" : ")RAWSTRINGLITERAL"
+  +         // inject the URL
+  jsSafeUrl // inject the URL
+  +         // inject the URL
+  R"RAWSTRINGLITERAL(" };
     </script>
   </head>
   <body>
-    <h1>Internal Server Error</h1>
-    <p>
-      An internal server error occured. We are sorry about that :/
-    </p>
-    <p>
-      Entry redirect_loop.html is a redirect entry.
-    </p>
+    <header>
+        <img src="/ROOT%23%3F/skin/500.svg?cacheid=32eb0f20"
+             alt=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL("
+             aria-label=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL("
+             title=")RAWSTRINGLITERAL" + t[1] + R"RAWSTRINGLITERAL(">
+    </header>
+    <section class="intro">
+      <h1>)RAWSTRINGLITERAL" + t[2] + R"RAWSTRINGLITERAL(</h1>
+      <p>)RAWSTRINGLITERAL" + t[3] + R"RAWSTRINGLITERAL(</p>
+      <p><code>)RAWSTRINGLITERAL"
+  +           // inject the URL
+  htmlSafeUrl // inject the URL
+  +           // inject the URL
+  R"RAWSTRINGLITERAL(</code></p>
+    </section>
   </body>
 </html>
-)";
+)RAWSTRINGLITERAL";
+}
 
-  {
-  const auto r = zfs1_->GET("/ROOT%23%3F/content/poor/A/redirect_loop.html");
-  EXPECT_EQ(r->status, 500);
-  EXPECT_EQ(r->body, expectedBody);
-  EXPECT_EQ(r->get_header_value("Content-Type"), "text/html; charset=utf-8");
+TEST_F(ServerTest, 500)
+{
+  const std::vector<std::string> testUrls {
+    "/ROOT%23%3F/content/poor/A/redirect_loop.html",
+    "/ROOT%23%3F/content/poor/A/redirect_loop.html?userlang=test",
+  };
+
+  for ( const auto& url : testUrls ) {
+    const TestContext ctx{ {"url", url} };
+    const auto r = zfs1_->GET(url.c_str());
+    EXPECT_EQ(r->status, 500) << ctx;
+    EXPECT_EQ(r->get_header_value("Content-Type"), "text/html; charset=utf-8") << ctx;
+    EXPECT_EQ(r->body, expectedSexy500ErrorHtml(url)) << ctx;
   }
 }
 

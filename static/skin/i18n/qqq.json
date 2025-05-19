@@ -36,6 +36,7 @@
 	"500-page-title": "Title of the 500 error page",
 	"500-page-heading": "Heading of the 500 error page",
 	"500-page-text": "Text of the 500 error page",
+	"500-img-text": "Fallback text for the image on the 500 error page",
 	"external-link-detected": "Title & heading of the external link blocker page",
 	"caution-warning": "Warning of action that shouldn't be carried out carelessly",
 	"external-link-intro": "Message introducing the external link (to be followed by the actual link)",

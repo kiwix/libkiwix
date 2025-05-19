@@ -709,12 +709,10 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     return Response::build_redirect(contentUrl + query);
   } catch (std::exception& e) {
     fprintf(stderr, "===== Unhandled error : %s\n", e.what());
-    return HTTP500Response(request)
-         + ParameterizedMessage("non-translated-text", {{"MSG", e.what()}});
+    return HTTP500Response(request, m_root, request.get_full_url(), e.what());
   } catch (...) {
     fprintf(stderr, "===== Unhandled unknown error\n");
-    return HTTP500Response(request)
-         + nonParameterizedMessage("unknown-error");
+    return HTTP500Response(request, m_root, request.get_full_url());
   }
 }
 
