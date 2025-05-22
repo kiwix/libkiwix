@@ -2,6 +2,7 @@ skin/caret.png
 skin/bittorrent.png
 skin/magnet.png
 skin/404.svg
+skin/500.svg
 skin/blocklink.svg
 skin/feed.svg
 skin/langSelector.svg
@@ -47,6 +48,7 @@ templates/viewer_settings.js
 templates/no_js_library_page.html
 templates/no_js_download.html
 templates/sexy404.html
+templates/sexy500.html
 opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
