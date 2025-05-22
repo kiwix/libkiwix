@@ -1210,7 +1210,8 @@ TEST_F(ServerTest, HttpXmlError)
   }
 }
 
-std::string expectedSexy500ErrorHtml(const std::string& url)
+std::string expectedSexy500ErrorHtml(const std::string& url,
+                                     const std::string& error)
 {
   const auto urlWithoutQuery = replace(url, "\\?.*$", "");
   const auto htmlSafeUrl = htmlEscape(urlWithoutQuery);
@@ -1241,8 +1242,12 @@ std::string expectedSexy500ErrorHtml(const std::string& url)
     <title>)RAWSTRINGLITERAL" + t[0] + R"RAWSTRINGLITERAL(</title>
     <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
     <script>
-      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/500.svg?cacheid=32eb0f20&quot;\n             alt=&quot;{{500_img_text}}&quot;\n             aria-label=&quot;{{500_img_text}}&quot;\n             title=&quot;{{500_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{PAGE_TEXT}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
-      window.KIWIX_RESPONSE_DATA = { "500_img_text" : { "msgid" : "500-img-text", "params" : { } }, "PAGE_HEADING" : { "msgid" : "500-page-heading", "params" : { } }, "PAGE_TEXT" : { "msgid" : "500-page-text", "params" : { } }, "PAGE_TITLE" : { "msgid" : "500-page-title", "params" : { } }, "root" : "/ROOT%23%3F", "url_path" : ")RAWSTRINGLITERAL"
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/500.svg?cacheid=32eb0f20&quot;\n             alt=&quot;{{500_img_text}}&quot;\n             aria-label=&quot;{{500_img_text}}&quot;\n             title=&quot;{{500_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{PAGE_TEXT}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n{{#error}}\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{error}}&lt;/p&gt;\n    &lt;/section&gt;\n{{/error}}\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+      window.KIWIX_RESPONSE_DATA = { "500_img_text" : { "msgid" : "500-img-text", "params" : { } }, "PAGE_HEADING" : { "msgid" : "500-page-heading", "params" : { } }, "PAGE_TEXT" : { "msgid" : "500-page-text", "params" : { } }, "PAGE_TITLE" : { "msgid" : "500-page-title", "params" : { } }, "error" : ")RAWSTRINGLITERAL"
+  +                     // inject the error
+  escapeJsString(error) // inject the error
+  +                     // inject the error
+  R"RAWSTRINGLITERAL(", "root" : "/ROOT%23%3F", "url_path" : ")RAWSTRINGLITERAL"
   +         // inject the URL
   jsSafeUrl // inject the URL
   +         // inject the URL
@@ -1265,6 +1270,9 @@ std::string expectedSexy500ErrorHtml(const std::string& url)
   +           // inject the URL
   R"RAWSTRINGLITERAL(</code></p>
     </section>
+    <section class="advice">
+      <p>)RAWSTRINGLITERAL" + error + R"RAWSTRINGLITERAL(</p>
+    </section>
   </body>
 </html>
 )RAWSTRINGLITERAL";
@@ -1272,17 +1280,28 @@ std::string expectedSexy500ErrorHtml(const std::string& url)
 
 TEST_F(ServerTest, 500)
 {
-  const std::vector<std::string> testUrls {
-    "/ROOT%23%3F/content/poor/A/redirect_loop.html",
-    "/ROOT%23%3F/content/poor/A/redirect_loop.html?userlang=test",
+  struct TestData {
+    const std::string url;
+    const std::string error;
+  };
+  const TestData testData[] = {
+    {
+      "/ROOT%23%3F/content/poor/A/redirect_loop.html",
+      "Entry redirect_loop.html is a redirect entry."
+    },
+
+    {
+      "/ROOT%23%3F/content/poor/A/redirect_loop.html?userlang=test",
+      "Entry redirect_loop.html is a redirect entry."
+    }
   };
 
-  for ( const auto& url : testUrls ) {
-    const TestContext ctx{ {"url", url} };
-    const auto r = zfs1_->GET(url.c_str());
+  for ( const auto& td : testData ) {
+    const TestContext ctx{ {"url", td.url} };
+    const auto r = zfs1_->GET(td.url.c_str());
     EXPECT_EQ(r->status, 500) << ctx;
     EXPECT_EQ(r->get_header_value("Content-Type"), "text/html; charset=utf-8") << ctx;
-    EXPECT_EQ(r->body, expectedSexy500ErrorHtml(url)) << ctx;
+    EXPECT_EQ(r->body, expectedSexy500ErrorHtml(td.url, td.error)) << ctx;
   }
 }
 

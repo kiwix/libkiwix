@@ -494,21 +494,27 @@ HTTP400Response::HTTP400Response(const RequestContext& request)
 HTTP500Response::HTTP500Response(const RequestContext& request,
                                  const std::string& root,
                                  const std::string& urlPath,
-                                 const std::string& /*errorText*/)
+                                 const std::string& errorText)
   : ContentResponseBlueprint(&request,
                              MHD_HTTP_INTERNAL_SERVER_ERROR,
                              "text/html; charset=utf-8",
                              RESOURCE::templates::sexy500_html,
                              /*includeKiwixResponseData=*/true)
 {
-  *this->m_data = Data(Data::Object{
-                    {"root", root },
-                    {"url_path", urlPath},
-                    {"PAGE_TITLE",   Data::fromMsgId("500-page-title")},
-                    {"PAGE_HEADING", Data::fromMsgId("500-page-heading")},
-                    {"PAGE_TEXT",    Data::fromMsgId("500-page-text")},
-                    {"500_img_text", Data::fromMsgId("500-img-text")},
-  });
+  auto pageParams = Data::Object{
+    {"root", root },
+    {"url_path", urlPath},
+    {"PAGE_TITLE",   Data::fromMsgId("500-page-title")},
+    {"PAGE_HEADING", Data::fromMsgId("500-page-heading")},
+    {"PAGE_TEXT",    Data::fromMsgId("500-page-text")},
+    {"500_img_text", Data::fromMsgId("500-img-text")},
+  };
+
+  if ( !errorText.empty() ) {
+    pageParams["error"] = errorText;
+  }
+
+  *this->m_data = Data(pageParams);
 }
 
 std::unique_ptr<Response> Response::build_416(size_t resourceLength)
