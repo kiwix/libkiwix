@@ -775,6 +775,7 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   const auto queryString = request.get_optional_param("term", std::string());
+  const auto mode = request.get_optional_param("mode", std::string());
   const auto start = request.get_optional_param<unsigned int>("start", 0);
   unsigned int count = request.get_optional_param<unsigned int>("count", 10);
   if (count == 0) {
@@ -793,12 +794,16 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   );
   const auto lock(searcher->getLock());
   auto search = searcher->suggest(queryString);
-  auto srs = search.getResults(start, count);
 
-  for(auto& suggestion: srs) {
-    results.add(suggestion);
+  if ( start == 0 && mode == "smart") {
+    for(const auto& suggestion: search.getSmartSuggestions(count)) {
+      results.add(suggestion);
+    }
+  } else {
+    for(const auto& suggestion: search.getResults(start, count)) {
+      results.add(suggestion);
+    }
   }
-
 
   /* Propose the fulltext search if possible */
   if (archive->hasFulltextIndex()) {

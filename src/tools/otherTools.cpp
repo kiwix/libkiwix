@@ -384,9 +384,13 @@ void kiwix::Suggestions::add(const zim::SuggestionItem& suggestion)
                           : suggestion.getTitle();
 
   result.set("label", escapeForJSON(label, DONT_ESCAPE_QUOTE));
-  result.set("value", escapeForJSON(suggestion.getTitle(), DONT_ESCAPE_QUOTE));
-  result.set("kind", "path");
-  result.set("path", escapeForJSON(suggestion.getPath(), DONT_ESCAPE_QUOTE));
+  if ( suggestion.getPath().empty() ) {
+    result.set("kind", "modifiedquery");
+  } else {
+    result.set("kind", "path");
+    result.set("value", escapeForJSON(suggestion.getTitle(), DONT_ESCAPE_QUOTE));
+    result.set("path", escapeForJSON(suggestion.getPath(), DONT_ESCAPE_QUOTE));
+  }
   result.set("first", m_data.is_empty_list());
   m_data.push_back(result);
 }

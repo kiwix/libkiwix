@@ -102,7 +102,7 @@ function suggestionsApiURL()
 {
   const uriEncodedBookName = encodeURIComponent(currentBook);
   const userLang = viewerState.uiLanguage;
-  return `${root}/suggest?userlang=${userLang}&content=${uriEncodedBookName}`;
+  return `${root}/suggest?userlang=${userLang}&mode=smart&content=${uriEncodedBookName}`;
 }
 
 function setTitle(element, text) {
@@ -186,9 +186,13 @@ function closeSuggestions() {
   }
 }
 
+function setSearchQuery(text) {
+  document.getElementById("kiwixsearchbox").value = text;
+}
+
 function updateSearchBoxForLocationChange() {
   closeSuggestions();
-  document.getElementById("kiwixsearchbox").value = getSearchPattern();
+  setSearchQuery(getSearchPattern());
 }
 
 function updateSearchBoxForBookChange() {
@@ -464,7 +468,8 @@ function setupSuggestions() {
       resultItem: {
         element: (item, data) => {
           const uriEncodedBookName = encodeURIComponent(currentBook);
-          let url;
+          const linkText = htmlDecode(data.value.label);
+          let url, modifiedQuery;
           if (data.value.kind == "path") {
             // The double quote and backslash symbols are included in the list
             // of special symbols to URI-encode so that the resulting URL can
@@ -473,15 +478,18 @@ function setupSuggestions() {
             const path = htmlDecode(data.value.path);
             const quasiUriEncodedPath = quasiUriEncode(path, '#?"\\');
             url = `/content/${uriEncodedBookName}/${quasiUriEncodedPath}`;
-          } else {
+          } else if (data.value.kind == "pattern") {
             const pattern = encodeURIComponent(htmlDecode(data.value.value));
             url = `/search?content=${uriEncodedBookName}&pattern=${pattern}`;
+          } else { // data.value.kind == "modifiedquery"
+            modifiedQuery = htmlDecode(linkText);
           }
           // url can't contain any double quote and/or backslash symbols
           // since they should have been URI-encoded. Therefore putting it
           // inside double quotes should result in valid javascript.
-          const jsAction = `gotoUrl("${url}")`;
-          const linkText = htmlDecode(data.value.label);
+          const jsAction = url
+                         ? `gotoUrl("${url}")`
+                         : `setSearchQuery("${modifiedQuery}")`;
           item.innerHTML = makeJSLink(jsAction, linkText, 'class="suggest"');
         },
         highlight: "autoComplete_highlight",
