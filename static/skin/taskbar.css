@@ -34,6 +34,12 @@
     width: 20em;
 }
 
+#kiwixsearchbox {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 #kiwix_serve_taskbar_home_button button {
     overflow: hidden;
     text-overflow: ellipsis;
