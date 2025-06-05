@@ -3,6 +3,7 @@
 		"authors": [
 			"Asma",
 			"Hamoudak",
+			"Meno25",
 			"Ravan",
 			"محمد أحمد عبد الفتاح"
 		]
@@ -23,7 +24,7 @@
 	"404-page-title": "المحتوى غير موجود",
 	"404-page-heading": "لم يتم العثور عليه",
 	"500-page-title": "خطأ داخلي بالخادم",
-	"500-page-heading": "خطأ داخلي بالخادم",
+	"500-page-heading": "عفواً، الصفحة لا تعمل.",
 	"fulltext-search-unavailable": "البحث في كامل النص غير متاح",
 	"no-search-results": "محرك البحث في كامل النص غير متوفر لهذا المحتوي.",
 	"library-button-text": "توجه إلي صفحة الترحيب",
