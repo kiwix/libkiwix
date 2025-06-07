@@ -70,6 +70,8 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/print.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/print.css?cacheid=65b1c1d2" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/kiwix.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=3948b846" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
@@ -332,6 +334,7 @@ R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cac
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=3948b846" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=42e90cb9" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
+    <link type="text/css" href="./skin/print.css?cacheid=65b1c1d2" media="print" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=a83f0e13" defer></script>
