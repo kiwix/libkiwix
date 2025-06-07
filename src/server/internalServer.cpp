@@ -1021,11 +1021,11 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
     return response;
   }
 
-  const auto start = max(1u, request.get_optional_param("start", 1u));
+  const auto start = max(0u, request.get_optional_param("start", 0u));
   const auto pageLength = getSearchPageSize(request);
 
   /* Get the results */
-  SearchRenderer renderer(search->getResults(start-1, pageLength), start,
+  SearchRenderer renderer(search->getResults(start, pageLength), start,
                           search->getEstimatedMatches());
   renderer.setSearchPattern(searchInfo.pattern);
   renderer.setSearchBookQuery(searchInfo.bookFilterQuery);

@@ -224,8 +224,8 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
   kainjow::mustache::data results;
   results.set("items", items);
   results.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  results.set("start", kiwix::beautifyInteger(resultStart));
-  results.set("end", kiwix::beautifyInteger(std::min(resultStart+pageLength-1, estimatedResultCount)));
+  results.set("start", kiwix::beautifyInteger(resultStart+1));
+  results.set("end", kiwix::beautifyInteger(std::min(resultStart+pageLength, estimatedResultCount)));
 
   // pagination
   auto pagination = buildPagination(
