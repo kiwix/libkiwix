@@ -13,6 +13,7 @@ html {
 body {
     position: relative;
     box-sizing: border-box;
+    background: #f9f9f9;
 }
 
 .loader {
@@ -99,6 +100,10 @@ body {
 
 .modal-content {
     padding: 20px;
+}
+
+#content_iframe {
+    background: #f9f9f9;
 }
 
 #uiLanguageSelector {
