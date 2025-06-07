@@ -101,6 +101,10 @@ body {
     padding: 20px;
 }
 
+#content_iframe {
+    background: #f9f9f9;
+}
+
 #uiLanguageSelector {
   display: none;
 }
