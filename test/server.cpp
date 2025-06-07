@@ -164,6 +164,8 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=b10ae7ed" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search_results.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/print.css" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/print.css?cacheid=65b1c1d2" },
 
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Title" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Description" },
@@ -332,6 +334,7 @@ R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cac
 R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e64" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=42e90cb9" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
+    <link type="text/css" href="./skin/print.css?cacheid=65b1c1d2" media="print" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=a83f0e13" defer></script>
