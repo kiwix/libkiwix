@@ -1134,6 +1134,7 @@ const std::string CONTENT_CSP_HEADER =
             "allow-same-origin "
             "allow-modals "
             "allow-popups "
+            "allow-popups-to-escape-sandbox "
             "allow-forms "
             "allow-downloads;";
 
