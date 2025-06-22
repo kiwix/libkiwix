@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-13
+          - macos-14
         target:
           - macos-x86_64-dyn
           - ios-arm64-dyn
