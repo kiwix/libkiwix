@@ -1200,10 +1200,13 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3\">\n" \
   "    <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625\">\n" \
   "    <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc\">\n" \
-  "    <link rel=\"manifest\" href=\"/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb\">\n" \
+  "    <link rel=\"icon\" type=\"image/png\" sizes=\"192x192\" href=\"/ROOT%23%3F/skin/favicon/android-chrome-192x192.png?cacheid=bfac158b\">\n" \
+  "    <link rel=\"icon\" type=\"image/png\" sizes=\"512x512\" href=\"/ROOT%23%3F/skin/favicon/android-chrome-512x512.png?cacheid=380c3653\">\n" \
+  "    <link rel=\"manifest\" href=\"/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=4192804f\" crossorigin=\"use-credentials\" type=\"application/manifest+json\">\n" \
   "    <link rel=\"mask-icon\" href=\"/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95\" color=\"#5bbad5\">\n" \
   "    <link rel=\"shortcut icon\" href=\"/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314\">\n" \
   "    <meta name=\"msapplication-TileColor\" content=\"#da532c\">\n" \
+  "    <meta name=\"msapplication-TileImage\" content=\"/ROOT%23%3F/skin/favicon/mstile-144x144.png?cacheid=c25a7641\">\n" \
   "    <meta name=\"msapplication-config\" content=\"/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a\">\n" \
   "    <meta name=\"theme-color\" content=\"#ffffff\">\n" \
   "    <style>\n" \
