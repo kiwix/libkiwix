@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"YeBoy371",
 			"Ykhwong"
 		]
 	},
@@ -21,9 +22,14 @@
 	"400-page-heading": "잘못된 요청",
 	"404-page-title": "내용이 없습니다",
 	"404-page-heading": "찾을 수 없음",
+	"new-404-page-title": "페이지를 찾을 수 없습니다",
+	"new-404-page-heading": "이런. 페이지를 찾을 수 없습니다.",
+	"404-img-text": "찾을 수 없습니다!",
 	"500-page-title": "내부 서버 오류",
-	"500-page-heading": "내부 서버 오류",
+	"500-page-heading": "죄송합니다. 문서가 동작하지 않습니다.",
 	"500-page-text": "내부 서버 오류가 발생했습니다. 죄송합니다 :/",
+	"500-img-text": "문서가 동작하지 않습니다",
+	"caution-warning": "경고!",
 	"fulltext-search-unavailable": "전문 검색을 사용할 수 없습니다",
 	"no-search-results": "이 콘텐츠에는 전문 검색 엔진을 사용할 수 없습니다.",
 	"search-results-page-title": "검색: {{SEARCH_PATTERN}}",
