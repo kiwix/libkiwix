@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"YeBoy371",
 			"Ykhwong"
 		]
 	},
@@ -21,9 +22,17 @@
 	"400-page-heading": "잘못된 요청",
 	"404-page-title": "내용이 없습니다",
 	"404-page-heading": "찾을 수 없음",
+	"new-404-page-title": "페이지를 찾을 수 없습니다",
+	"new-404-page-heading": "이런. 페이지를 찾을 수 없습니다.",
+	"404-img-text": "찾을 수 없습니다!",
+	"path-was-not-found": "요청한 경로를 찾을 수 없습니다:",
+	"404-advice.p3": "원하는 콘텐츠를 찾으려면 검색 기능을 사용해 보세요",
 	"500-page-title": "내부 서버 오류",
-	"500-page-heading": "내부 서버 오류",
-	"500-page-text": "내부 서버 오류가 발생했습니다. 죄송합니다 :/",
+	"500-page-heading": "죄송합니다. 문서가 동작하지 않습니다.",
+	"500-page-text": "요청된 경로를 제대로 전달할 수 없습니다:",
+	"500-img-text": "문서가 동작하지 않습니다",
+	"external-link-detected": "외부 링크가 발견되었습니다",
+	"caution-warning": "경고!",
 	"fulltext-search-unavailable": "전문 검색을 사용할 수 없습니다",
 	"no-search-results": "이 콘텐츠에는 전문 검색 엔진을 사용할 수 없습니다.",
 	"search-results-page-title": "검색: {{SEARCH_PATTERN}}",
@@ -31,8 +40,9 @@
 	"empty-search-results-page-header": "<b>\"{{{SEARCH_PATTERN}}}\"</b>의 결과가 없습니다",
 	"search-result-book-info": "{{BOOK_TITLE}}에서",
 	"word-count": "단어 {{COUNT}}개",
+	"home-button-text": "'{{{BOOK_TITLE}}}'의 메인 페이지로 이동",
 	"random-page-button-text": "무작위로 선택된 문서로 이동",
-	"searchbox-tooltip": "'{{BOOK_TITLE}}' 검색",
+	"searchbox-tooltip": "'{{{BOOK_TITLE}}}' 검색",
 	"welcome-page-overzealous-filter": "결과가 없습니다. <a href=\"{{URL}}\">필터를 재설정</a>하시겠습니까?",
 	"powered-by-kiwix-html": "<a href=\"https://kiwix.org\">Kiwix</a>에서 제공",
 	"search": "검색",

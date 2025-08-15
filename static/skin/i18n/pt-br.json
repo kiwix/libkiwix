@@ -27,6 +27,7 @@
 	"500-page-title": "Erro interno do servidor",
 	"500-page-heading": "Erro interno do servidor",
 	"500-page-text": "Aconteceu um erro interno do servidor. Nós pedimos desculpas sobre isso :/",
+	"caution-warning": "Cuidado!",
 	"fulltext-search-unavailable": "Busca por texto completo está indisponível",
 	"no-search-results": "O motor de busca de texto completo não está disponível para este conteúdo.",
 	"search-results-page-title": "Buscar: {{SEARCH_PATTERN}}",

@@ -13,6 +13,7 @@ skin/i18n/fr.json
 skin/i18n/ha.json
 skin/i18n/he.json
 skin/i18n/hi.json
+skin/i18n/hu.json
 skin/i18n/hy.json
 skin/i18n/ia.json
 skin/i18n/id.json

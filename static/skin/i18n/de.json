@@ -5,6 +5,7 @@
 			"IMayBeABitShy",
 			"Justman10000",
 			"Lucas Werkmeister",
+			"MoritzMT20",
 			"Rofiatmustapha12",
 			"ThisCarthing"
 		]
@@ -37,9 +38,9 @@
 	"search-result-book-info": "von {{BOOK_TITLE}}",
 	"word-count": "{{COUNT}} Wörter",
 	"library-button-text": "Zur Willkommensseite gehen",
-	"home-button-text": "Zur Hauptseite von '{{BOOK_TITLE}}' gehen",
+	"home-button-text": "Zur Hauptseite von '{{{BOOK_TITLE}}}' gehen",
 	"random-page-button-text": "Zu einer zufällig ausgewählten Seite gehen",
-	"searchbox-tooltip": "Nach '{{BOOK_TITLE}}' suchen",
+	"searchbox-tooltip": "'{{{BOOK_TITLE}}}' durchsuchen",
 	"confusion-of-tongues": "Zwei oder mehr Bücher unterschiedlicher Sprachen werden durchsucht, was zu unübersichtlichen Ergebnissen führen kann.",
 	"welcome-page-overzealous-filter": "Keine Ergebnisse gefunden. Möchten Sie den <a href=\"{{URL}}\">Filter zurücksetzen</a>?",
 	"powered-by-kiwix-html": "Angetrieben durch &nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",
