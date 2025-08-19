@@ -758,8 +758,8 @@ struct TestData
                        ? R"(No results were found for <b>"PATTERN"</b>)"
                        : R"(Results <b>FIRSTRESULT-LASTRESULT</b> of <b>RESULTCOUNT</b> for <b>"PATTERN"</b>)";
 
-    const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size() - 1);
-    header = replace(header, "FIRSTRESULT", std::to_string(firstResultIndex));
+    const size_t lastResultIndex = std::min(totalResultCount, firstResultIndex + results.size());
+    header = replace(header, "FIRSTRESULT", std::to_string(firstResultIndex+1));
     header = replace(header, "LASTRESULT",  std::to_string(lastResultIndex));
     header = replace(header, "RESULTCOUNT", std::to_string(totalResultCount));
     header = replace(header, "PATTERN",     getPattern());
@@ -940,7 +940,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */          {},
       /* pagination */       {}
     },
@@ -951,7 +951,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */          {},
       /* pagination */       {}
     },
@@ -961,7 +961,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 1,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         SEARCH_RESULT(
           /*link*/       "/ROOT%23%3F/content/zimfile/A/We_Gonna_Move_to_the_Outskirts_of_Town",
@@ -979,7 +979,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         SEARCH_RESULT(
           /*link*/       "/ROOT%23%3F/content/zimfile/A/Eleanor_Rigby",
@@ -1005,7 +1005,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            0,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         SEARCH_RESULT(
           /*link*/       "/ROOT%23%3F/content/zimfile/A/Eleanor_Rigby",
@@ -1028,10 +1028,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
-      /* start */            1,
+      /* start */            0,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         SEARCH_RESULT(
           /*link*/       "/ROOT%23%3F/content/zimfile/A/Eleanor_Rigby",
@@ -1057,7 +1057,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ LARGE_SEARCH_RESULTS,
       /* pagination */ {}
     },
@@ -1068,7 +1068,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ LARGE_SEARCH_RESULTS,
       /* pagination */ {}
     },
@@ -1078,7 +1078,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         LARGE_SEARCH_RESULTS[0],
         LARGE_SEARCH_RESULTS[1],
@@ -1099,10 +1099,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            6,
+      /* start */            5,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 6,
+      /* firstResultIndex */ 5,
       /* results */ {
         LARGE_SEARCH_RESULTS[5],
         LARGE_SEARCH_RESULTS[6],
@@ -1124,10 +1124,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            11,
+      /* start */            10,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 11,
+      /* firstResultIndex */ 10,
       /* results */ {
         LARGE_SEARCH_RESULTS[10],
         LARGE_SEARCH_RESULTS[11],
@@ -1150,10 +1150,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            16,
+      /* start */            15,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 16,
+      /* firstResultIndex */ 15,
       /* results */ {
         LARGE_SEARCH_RESULTS[15],
         LARGE_SEARCH_RESULTS[16],
@@ -1177,10 +1177,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */            "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            21,
+      /* start */            20,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 21,
+      /* firstResultIndex */ 20,
       /* results */ {
         LARGE_SEARCH_RESULTS[20],
         LARGE_SEARCH_RESULTS[21],
@@ -1204,10 +1204,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            26,
+      /* start */            25,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 26,
+      /* firstResultIndex */ 25,
       /* results */ {
         LARGE_SEARCH_RESULTS[25],
         LARGE_SEARCH_RESULTS[26],
@@ -1231,10 +1231,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            31,
+      /* start */            30,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 31,
+      /* firstResultIndex */ 30,
       /* results */ {
         LARGE_SEARCH_RESULTS[30],
         LARGE_SEARCH_RESULTS[31],
@@ -1257,10 +1257,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            36,
+      /* start */            35,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 36,
+      /* firstResultIndex */ 35,
       /* results */ {
         LARGE_SEARCH_RESULTS[35],
         LARGE_SEARCH_RESULTS[36],
@@ -1282,10 +1282,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            41,
+      /* start */            40,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 41,
+      /* firstResultIndex */ 40,
       /* results */ {
         LARGE_SEARCH_RESULTS[40],
         LARGE_SEARCH_RESULTS[41],
@@ -1305,10 +1305,10 @@ TEST(ServerSearchTest, searchResults)
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            22,
+      /* start */            21,
       /* resultsPerPage */   3,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 22,
+      /* firstResultIndex */ 21,
       /* results */ {
         LARGE_SEARCH_RESULTS[21],
         LARGE_SEARCH_RESULTS[22],
@@ -1334,10 +1334,10 @@ TEST(ServerSearchTest, searchResults)
     // works, not how it should work!
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            46,
+      /* start */            45,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 46,
+      /* firstResultIndex */ 45,
       /* results */ {},
 
       /* pagination */ {
@@ -1357,7 +1357,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            0,
       /* resultsPerPage */   10,
       /* totalResultCount */ 2,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
@@ -1371,7 +1371,7 @@ TEST(ServerSearchTest, searchResults)
        /* start */            0,
        /* resultsPerPage */   10,
        /* totalResultCount */ 2,
-       /* firstResultIndex */ 1,
+       /* firstResultIndex */ 0,
        /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
@@ -1386,7 +1386,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            0,
       /* resultsPerPage */   10,
       /* totalResultCount */ 1,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM
       },
@@ -1401,7 +1401,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            0,
       /* resultsPerPage */   10,
       /* totalResultCount */ 1,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
       },
@@ -1416,7 +1416,7 @@ TEST(ServerSearchTest, searchResults)
        /* start */            0,
        /* resultsPerPage */   10,
        /* totalResultCount */ 1,
-       /* firstResultIndex */ 1,
+       /* firstResultIndex */ 0,
        /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM
       },
@@ -1431,7 +1431,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            0,
       /* resultsPerPage */   10,
       /* totalResultCount */ 1,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
       },
@@ -1447,7 +1447,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   100,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ LARGE_SEARCH_RESULTS,
       /* pagination */ {}
     },
@@ -1458,7 +1458,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         LARGE_SEARCH_RESULTS[0],
         LARGE_SEARCH_RESULTS[1],
@@ -1483,7 +1483,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         LARGE_SEARCH_RESULTS[0],
         LARGE_SEARCH_RESULTS[1],
@@ -1509,7 +1509,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         LARGE_SEARCH_RESULTS[0],
         LARGE_SEARCH_RESULTS[1],
@@ -1536,7 +1536,7 @@ TEST(ServerSearchTest, searchResults)
       /* start */            -1,
       /* resultsPerPage */   5,
       /* totalResultCount */ 44,
-      /* firstResultIndex */ 1,
+      /* firstResultIndex */ 0,
       /* results */ {
         LARGE_SEARCH_RESULTS[0],
         LARGE_SEARCH_RESULTS[1],
