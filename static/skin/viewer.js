@@ -10,6 +10,8 @@ let viewerState = {
   uiLanguage: 'en',
 };
 
+const FULL_ROOT_URL = `${window.location.origin}${root}`;
+
 function dropUserLang(query) {
   const q = new URLSearchParams(query);
   q.delete('userlang');
@@ -347,6 +349,12 @@ function onClickEvent(e) {
   if (target !== null && "href" in target) {
     const target_href = getRealHref(target);
     const target_url = new URL(target_href, iframeDocument.location);
+    if ( target_url.href.startsWith(`${FULL_ROOT_URL}/viewer#`) &&
+         !linkShouldBeOpenedInANewWindow(target, e) ) {
+      contentIframe.contentWindow.parent.location = target_url;
+      e.preventDefault();
+      return;
+    }
     const isExternalAppUrl = urlMustBeHandledByAnExternalApp(target_url);
     if ( (isExternalAppUrl && !viewerSettings.linkBlockingEnabled)
          || goingToOpenALinkToAnUndisplayableResource(target_url) ) {
@@ -398,13 +406,23 @@ this.Element && function(ElementPrototype) {
     }
 }(Element.prototype);
 
-function setup_external_link_blocker() {
-  setupEventHandler(contentIframe.contentDocument, 'a', 'click', onClickEvent);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // End of external link blocking
 ////////////////////////////////////////////////////////////////////////////////
+
+const internalUrlPrefix = `${FULL_ROOT_URL}/content/`;
+
+function setup_chaperon_mode() {
+  setupEventHandler(contentIframe.contentDocument, 'a', 'click', onClickEvent);
+  const links = contentIframe.contentDocument.getElementsByTagName('a');
+  for ( const a of links ) {
+    // XXX: wombat's possible involvement with href not taken into account
+    if ( a.hasAttribute('href') && a.href.startsWith(internalUrlPrefix) ) {
+      const userUrl = a.href.substr(internalUrlPrefix.length);
+      a.href = `${root}/viewer#${userUrl}`;
+    }
+  }
+}
 
 let viewerSetupComplete = false;
 
@@ -416,7 +434,7 @@ function on_content_load() {
   if ( viewerSetupComplete ) {
     handle_content_url_change();
   }
-  setup_external_link_blocker();
+  setup_chaperon_mode();
 }
 
 function htmlDecode(input) {
