@@ -106,7 +106,8 @@ class InternalServer {
                    bool blockExternalLinks,
                    IpMode ipMode,
                    std::string indexTemplateString,
-                   int ipConnectionLimit);
+                   int ipConnectionLimit,
+                   bool catalogOnlyMode);
     virtual ~InternalServer();
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
@@ -192,6 +193,8 @@ class InternalServer {
 
     class CustomizedResources;
     std::unique_ptr<CustomizedResources> m_customizedResources;
+
+    const bool m_catalogOnlyMode;
 };
 
 }

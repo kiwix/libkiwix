@@ -125,9 +125,12 @@ std::string getSearchComponent(const RequestContext& request)
     return query.empty() ? query : "?" + query;
 }
 
-Filter get_search_filter(const RequestContext& request, const std::string& prefix="")
+Filter get_search_filter(const RequestContext& request, const std::string& prefix="", bool catalogOnlyMode = false)
 {
-    auto filter = kiwix::Filter().valid(true).local(true);
+    auto filter = kiwix::Filter();
+    if ( !catalogOnlyMode ) {
+      filter.valid(true).local(true);
+    }
     try {
       filter.query(request.get_argument(prefix+"q"));
     } catch (const std::out_of_range&) {}
@@ -432,7 +435,8 @@ InternalServer::InternalServer(LibraryPtr library,
                                bool blockExternalLinks,
                                IpMode ipMode,
                                std::string indexTemplateString,
-                               int ipConnectionLimit) :
+                               int ipConnectionLimit,
+                               bool catalogOnlyMode) :
   m_addr(addr),
   m_port(port),
   m_root(normalizeRootUrl(root)),
@@ -451,7 +455,8 @@ InternalServer::InternalServer(LibraryPtr library,
   mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
-  m_customizedResources(new CustomizedResources)
+  m_customizedResources(new CustomizedResources),
+  m_catalogOnlyMode(catalogOnlyMode)
 {
   m_root = urlEncode(m_root);
 }
@@ -1103,7 +1108,7 @@ std::vector<std::string>
 InternalServer::search_catalog(const RequestContext& request,
                                kiwix::OPDSDumper& opdsDumper)
 {
-    const auto filter = get_search_filter(request);
+    const auto filter = get_search_filter(request, "", m_catalogOnlyMode);
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
     const long count = request.get_optional_param("count", 10L);

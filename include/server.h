@@ -63,6 +63,7 @@ namespace kiwix
         { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
        void setBlockExternalLinks(bool blockExternalLinks)
         { m_blockExternalLinks = blockExternalLinks; }
+       void setCatalogOnlyMode(bool enable) { m_catalogOnlyMode = enable; }
        void setIpMode(IpMode mode) { m_ipMode = mode; }
        int getPort() const;
        IpAddress getAddress() const;
@@ -83,6 +84,7 @@ namespace kiwix
        bool m_blockExternalLinks = false;
        IpMode m_ipMode = IpMode::AUTO;
        int m_ipConnectionLimit = 0;
+       bool m_catalogOnlyMode = false;
        std::unique_ptr<InternalServer> mp_server;
   };
 }

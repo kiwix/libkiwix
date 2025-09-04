@@ -24,8 +24,8 @@
 
 namespace kiwix {
 
-HumanReadableNameMapper::HumanReadableNameMapper(kiwix::Library& library, bool withAlias) {
-  for (auto& bookId: library.filter(kiwix::Filter().local(true).valid(true))) {
+HumanReadableNameMapper::HumanReadableNameMapper(const kiwix::Library& library, bool withAlias) {
+  for (auto& bookId: library.filter(kiwix::Filter())) {
     auto& currentBook = library.getBookById(bookId);
     auto bookName = currentBook.getHumanReadableIdFromPath();
     m_idToName[bookId] = bookName;
