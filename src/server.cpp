@@ -53,7 +53,8 @@ bool Server::start() {
     m_blockExternalLinks,
     m_ipMode,
     m_indexTemplateString,
-    m_ipConnectionLimit));
+    m_ipConnectionLimit,
+    m_catalogOnlyMode));
   return mp_server->start();
 }
 

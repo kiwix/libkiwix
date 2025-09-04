@@ -50,7 +50,7 @@ class HumanReadableNameMapper : public NameMapper {
     std::map<std::string, std::string> m_nameToId;
 
   public:
-    HumanReadableNameMapper(kiwix::Library& library, bool withAlias);
+    HumanReadableNameMapper(const kiwix::Library& library, bool withAlias);
     virtual ~HumanReadableNameMapper() = default;
     virtual std::string getNameForId(const std::string& id) const;
     virtual std::string getIdForName(const std::string& name) const;

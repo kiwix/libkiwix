@@ -150,6 +150,30 @@ std::string maskVariableOPDSFeedData(std::string s)
   "125952"\
 )
 
+#define INACCESSIBLEZIMFILE_CATALOG_ENTRY \
+"  <entry>\n" \
+"    <id>urn:uuid:inaccessiblezim</id>\n" \
+"    <title>Catalog of all catalogs</title>\n" \
+"    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n" \
+"    <summary>Testing that running kiwix-serve without access to ZIM files doesn&apos;t lead to a catastrophe</summary>\n" \
+"    <language>cat</language>\n" \
+"    <name>catalog_of_all_catalogs</name>\n" \
+"    <flavour></flavour>\n" \
+"    <category>cats</category>\n" \
+"    <tags>unittest;_category:cats</tags>\n" \
+"    <articleCount>12107</articleCount>\n" \
+"    <mediaCount>8</mediaCount>\n" \
+"    <link type=\"text/html\" href=\"/ROOT%23%3F/content/nosuchzimfile\" />\n" \
+"    <author>\n" \
+"      <name>Catherine of Catalonia</name>\n" \
+"    </author>\n" \
+"    <publisher>\n" \
+"      <name>Caterpillar</name>\n" \
+"    </publisher>\n" \
+"    <dc:issued>2025-09-04T00:00:00Z</dc:issued>\n" \
+"    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim\" length=\"20736925696\" />\n" \
+"  </entry>\n"
+
 TEST_F(LibraryServerTest, catalog_root_xml)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/root.xml");
@@ -691,6 +715,24 @@ TEST_F(LibraryServerTest, catalog_v2_entries)
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "\n"
     CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
+{
+  resetServer(ZimFileServer::CATALOG_ONLY_MODE);
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("")
+    "  <title>All Entries</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    INACCESSIBLEZIMFILE_CATALOG_ENTRY
     RAY_CHARLES_CATALOG_ENTRY
     UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
     "</feed>\n"
