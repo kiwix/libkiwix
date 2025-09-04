@@ -51,4 +51,21 @@
         size="556"
         favicon="faviconMimeType_attribute_is_absent"
       ></book>
+  <book
+        id="inaccessiblezim"
+        path="./nosuchzimfile.zim"
+        url="https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim"
+        title="Catalog of all catalogs"
+        description="Testing that running kiwix-serve without access to ZIM files doesn't lead to a catastrophe"
+        language="cat"
+        creator="Catherine of Catalonia"
+        publisher="Caterpillar"
+        date="2025-09-04"
+        name="catalog_of_all_catalogs"
+        tags="unittest;_category:cats"
+        articleCount="12107"
+        mediaCount="8"
+        size="20250904"
+        favicon="Catania Cathedral"
+      ></book>
 </library>

@@ -561,6 +561,15 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
 
   <entry>
+    <title>cats</title>
+    <link rel="subsection"
+          href="/ROOT%23%3F/catalog/v2/entries?category=cats"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries with category of 'cats'.</content>
+  </entry>
+  <entry>
     <title>jazz</title>
     <link rel="subsection"
           href="/ROOT%23%3F/catalog/v2/entries?category=jazz"
@@ -602,6 +611,16 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
   <title>List of languages</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
 
+  <entry>
+    <title>català</title>
+    <dc:language>cat</dc:language>
+    <thr:count>1</thr:count>
+    <link rel="subsection"
+          href="/ROOT%23%3F/catalog/v2/entries?lang=cat"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+  </entry>
   <entry>
     <title>English</title>
     <dc:language>eng</dc:language>
@@ -1332,6 +1351,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "        <div class=\"kiwixNav__select\">\n" \
   "          <select name=\"lang\" id=\"languageFilter\" class='kiwixNav__kiwixFilter filter' form=\"kiwixSearchForm\">\n" \
   "            <option value=\"\" selected>All languages</option>\n" \
+  "            <option value=\"cat\">català</option>\n" \
   "            <option value=\"eng\"" SELECTED_ENG ">English</option>\n" \
   "            <option value=\"fra\">français</option>\n" \
   "            <option value=\"rus\">русский</option>\n" \
@@ -1340,6 +1360,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "        <div class=\"kiwixNav__select\">\n" \
   "          <select name=\"category\" id=\"categoryFilter\" class='kiwixNav__kiwixFilter filter' form=\"kiwixSearchForm\">\n" \
   "            <option value=\"\">All categories</option>\n" \
+  "            <option value=\"cats\">Cats</option>\n" \
   "            <option value=\"jazz\">Jazz</option>\n" \
   "            <option value=\"wikipedia\">Wikipedia</option>\n" \
   "          </select>\n" \
