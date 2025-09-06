@@ -23,6 +23,11 @@
 #include "tools/pathTools.h"
 
 #include <pugixml.hpp>
+#include <filesystem>
+#include <iostream>
+#include <set>
+
+namespace fs = std::filesystem;
 
 namespace kiwix
 {
@@ -249,6 +254,46 @@ bool Manager::addBookFromPath(const std::string& pathToOpen,
   return !(
       this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData)
           .empty());
+}
+
+void Manager::addBooksFromDirectory(const std::string& path,
+                                    const bool skipInvalid,
+                                    const bool verboseFlag)
+{
+  std::set<std::string> iteratedDirs;
+  std::queue<std::string> dirQueue;
+  dirQueue.push(fs::absolute(path).u8string());
+
+  while (!dirQueue.empty()) {
+    const auto currentPath = dirQueue.front();
+    dirQueue.pop();
+    if (verboseFlag)
+      std::cout << "Iterating over directory: " << currentPath << std::endl;
+    for (const auto& dirEntry : fs::directory_iterator(currentPath)) {
+      auto resolvedPath = dirEntry.path();
+      if (fs::is_symlink(dirEntry)) {
+        resolvedPath = fs::canonical(dirEntry.path());
+      }
+      const std::string pathString = resolvedPath.u8string();
+      if (fs::is_directory(resolvedPath)) {
+        if (iteratedDirs.find(pathString) == iteratedDirs.end())
+          dirQueue.push(pathString);
+        else if (verboseFlag)
+          std::cout << "Already iterated over " << pathString << ". Skipping..." << std::endl;
+      } else {
+        if (!this->addBookFromPath(pathString, pathString, "", false)) {
+          if (skipInvalid)
+            std::cerr << "Skipping invalid file: " << pathString << std::endl;
+          else {
+            throw std::runtime_error("Unable to add file: " + pathString + " into the library.");
+          }
+        }
+      }
+    }
+    if (verboseFlag)
+      std::cout << "Completed iterating over directory: " << currentPath << std::endl;
+    iteratedDirs.insert(currentPath);
+  }
 }
 
 bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)
