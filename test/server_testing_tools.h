@@ -72,6 +72,7 @@ public: // types
   struct Cfg
   {
     std::string root = "ROOT#?";
+    std::string contentServerUrl = "";
     Options options = DEFAULT_OPTIONS;
 
     Cfg(Options opts = DEFAULT_OPTIONS) : options(opts) {}
@@ -151,6 +152,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   server->setBlockExternalLinks(cfg.options & BLOCK_EXTERNAL_LINKS);
   server->setMultiZimSearchLimit(3);
   server->setCatalogOnlyMode(cfg.options & CATALOG_ONLY_MODE);
+  server->setContentServerUrl(cfg.contentServerUrl);
   if (!indexTemplateString.empty()) {
     server->setIndexTemplateString(indexTemplateString);
   }

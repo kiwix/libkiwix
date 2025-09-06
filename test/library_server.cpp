@@ -18,9 +18,11 @@ protected:
   const int PORT = 8002;
 
 protected:
-  void resetServer(ZimFileServer::Options options) {
+  void resetServer(ZimFileServer::Options options, std::string contentServerUrl="") {
+    ZimFileServer::Cfg cfg(options);
+    cfg.contentServerUrl = contentServerUrl;
     zfs1_.reset();
-    zfs1_.reset(new ZimFileServer(PORT, options, "./test/library.xml"));
+    zfs1_.reset(new ZimFileServer(PORT, cfg, "./test/library.xml"));
   }
 
   void SetUp() override {
@@ -88,7 +90,10 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>" TAGS "</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    " EXTRA_LINK "<link type=\"text/html\" href=\"/ROOT%23%3F/content/" CONTENT_NAME "\" />\n"               \
+    "    " EXTRA_LINK "<link rel=\"http://opds-spec.org/acquisition/preview\"\n" \
+    "          href=\"/ROOT%23%3F/viewer#" CONTENT_NAME "\"\n" \
+    "          type=\"text/html\"/>\n"               \
+    "    <link type=\"text/html\" href=\"/ROOT%23%3F/content/" CONTENT_NAME "\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
     "    </author>\n"                                                   \
@@ -163,6 +168,9 @@ std::string maskVariableOPDSFeedData(std::string s)
 "    <tags>unittest;_category:cats</tags>\n" \
 "    <articleCount>12107</articleCount>\n" \
 "    <mediaCount>8</mediaCount>\n" \
+"    <link rel=\"http://opds-spec.org/acquisition/preview\"\n" \
+"          href=\"/ROOT%23%3F/viewer#nosuchzimfile\"\n" \
+"          type=\"text/html\"/>\n"               \
 "    <link type=\"text/html\" href=\"/ROOT%23%3F/content/nosuchzimfile\" />\n" \
 "    <author>\n" \
 "      <name>Catherine of Catalonia</name>\n" \
@@ -723,7 +731,13 @@ TEST_F(LibraryServerTest, catalog_v2_entries)
 
 TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
 {
-  resetServer(ZimFileServer::CATALOG_ONLY_MODE);
+  const std::string contentServerUrl = "https://demo.kiwix.org";
+  const auto fixContentLinks = [=](std::string s) -> std::string {
+    s = replace(s, "/ROOT%23%3F/viewer", contentServerUrl + "/viewer");
+    s = replace(s, "/ROOT%23%3F/content", contentServerUrl + "/content");
+    return s;
+  };
+  resetServer(ZimFileServer::CATALOG_ONLY_MODE, contentServerUrl);
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
@@ -731,10 +745,10 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    INACCESSIBLEZIMFILE_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    + fixContentLinks(CHARLES_RAY_CATALOG_ENTRY)
+    + fixContentLinks(INACCESSIBLEZIMFILE_CATALOG_ENTRY)
+    + fixContentLinks(RAY_CHARLES_CATALOG_ENTRY)
+    + fixContentLinks(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY) +
     "</feed>\n"
   );
 }
