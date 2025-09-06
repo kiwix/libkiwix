@@ -436,7 +436,8 @@ InternalServer::InternalServer(LibraryPtr library,
                                IpMode ipMode,
                                std::string indexTemplateString,
                                int ipConnectionLimit,
-                               bool catalogOnlyMode) :
+                               bool catalogOnlyMode,
+                               std::string contentServerUrl) :
   m_addr(addr),
   m_port(port),
   m_root(normalizeRootUrl(root)),
@@ -456,7 +457,8 @@ InternalServer::InternalServer(LibraryPtr library,
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources),
-  m_catalogOnlyMode(catalogOnlyMode)
+  m_catalogOnlyMode(catalogOnlyMode),
+  m_contentServerUrl(contentServerUrl)
 {
   m_root = urlEncode(m_root);
 }
