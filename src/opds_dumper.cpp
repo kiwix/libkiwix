@@ -51,7 +51,6 @@ typedef kainjow::mustache::list IllustrationInfo;
 IllustrationInfo getBookIllustrationInfo(const Book& book)
 {
     kainjow::mustache::list illustrations;
-    if ( book.isPathValid() ) {
       for ( const auto& illustration : book.getIllustrations() ) {
         // For now, we are handling only sizexsize@1 illustration.
         // So we can simply pass one size to mustache.
@@ -60,7 +59,6 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
           {"icon_mimetype", illustration->mimeType}
         });
       }
-    }
     return illustrations;
 }
 
