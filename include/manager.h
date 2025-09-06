@@ -155,6 +155,17 @@ class Manager
                        const std::string& url = "",
                        const bool checkMetaData = false);
 
+  /**
+   * Add books from a directory into the libary.
+   * 
+   * @param path          The path of the directory to scan.
+   * @param path          If the function should stop for an invalid file.
+   * @param verboseFlag   Verbose logs flag.
+   */
+  void addBooksFromDirectory(const std::string& path,
+                             const bool skipInvalid = true,
+                             const bool verboseFlag = false);
+
   std::string writableLibraryPath;
 
   bool m_hasSearchResult = false;
