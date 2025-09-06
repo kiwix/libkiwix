@@ -51,6 +51,13 @@ class LibraryDumper
   void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
 
   /**
+   * Set the URL of the content server.
+   *
+   * @param url the URL of the content server to use.
+   */
+  void setContentServerUrl(const std::string& url) { this->contentServerUrl = url; }
+
+  /**
    * Set some informations about the search results.
    *
    * @param totalResult the total number of results of the search.
@@ -58,10 +65,10 @@ class LibraryDumper
    * @param count the number of result of the current set (or page).
    */
   void setOpenSearchInfo(int totalResult, int startIndex, int count);
-  
+
   /**
    * Sets user default language
-   * 
+   *
    * @param userLang the user language to be set
    */
   void setUserLanguage(std::string userLang) { this->m_userLang = userLang; }
@@ -81,6 +88,7 @@ class LibraryDumper
   const kiwix::NameMapper* const nameMapper;
   std::string libraryId;
   std::string rootLocation;
+  std::string contentServerUrl;
   std::string m_userLang;
   int m_totalResults;
   int m_startIndex;

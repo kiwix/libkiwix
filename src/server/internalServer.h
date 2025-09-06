@@ -106,7 +106,9 @@ class InternalServer {
                    bool blockExternalLinks,
                    IpMode ipMode,
                    std::string indexTemplateString,
-                   int ipConnectionLimit);
+                   int ipConnectionLimit,
+                   bool catalogOnlyMode,
+                   std::string zimViewerURL);
     virtual ~InternalServer();
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
@@ -160,6 +162,7 @@ class InternalServer {
     std::string getLibraryId() const;
 
     std::string getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const;
+    OPDSDumper getOPDSDumper() const;
 
   private: // types
     class LockableSuggestionSearcher;
@@ -192,6 +195,9 @@ class InternalServer {
 
     class CustomizedResources;
     std::unique_ptr<CustomizedResources> m_customizedResources;
+
+    const bool m_catalogOnlyMode;
+    const std::string m_contentServerUrl;
 };
 
 }

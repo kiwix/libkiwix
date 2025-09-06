@@ -88,6 +88,7 @@ TEST(Manager, reload)
   manager.reload({ "./test/library.xml" });
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
+        "inaccessiblezim",
         "raycharles",
         "raycharles_uncategorized"
   }));
@@ -95,12 +96,14 @@ TEST(Manager, reload)
   lib->removeBookById("raycharles");
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
+        "inaccessiblezim",
         "raycharles_uncategorized"
   }));
 
   manager.reload({ "./test/library.xml" });
   EXPECT_EQ(lib->getBooksIds(), kiwix::Library::BookIdCollection({
         "charlesray",
+        "inaccessiblezim",
         "raycharles",
         "raycharles_uncategorized"
   }));
