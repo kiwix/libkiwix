@@ -152,8 +152,21 @@
              : '';
     }
 
+    function addBookPreviewLink(html, bookXml) {
+        const bookContentLink = bookXml.querySelector('link[type="text/html"]');
+        if ( !bookContentLink )
+          return html;
+
+        const urlComponents = bookContentLink.getAttribute('href').split('/');
+        // bookContentLink URL = ROOT_URL/content/BOOK_NAME
+        const bookName = urlComponents.pop();
+        urlComponents.pop(); // drop 'content' component
+        const viewerLink = urlComponents.join('/') + `/viewer#${bookName}`;
+
+        return `<a class="book__link" href="${viewerLink}" data-hover="Preview">${html}</a>`;
+    }
+
     function generateBookHtml(book, sort = false) {
-        const link = book.querySelector('link[type="text/html"]').getAttribute('href');
         let iconUrl;
         book.querySelectorAll('link[rel="http://opds-spec.org/image/thumbnail"]').forEach(link => {
             if (link.getAttribute('type').split(';')[1] == 'width=48' && !iconUrl) {
@@ -183,9 +196,6 @@
         } catch {
             downloadLink = '';
         }
-        const bookName = link.split('/').pop();
-        const viewerLink = `${root}/viewer#${bookName}`;
-
         const humanFriendlyZimSize = humanFriendlySize(zimSize);
 
         const divTag = document.createElement('div');
@@ -197,9 +207,7 @@
         const faviconAttr = iconUrl != undefined ? `style="background-image: url('${iconUrl}')"` : '';
         const languageAttr = langCode != '' ? `title="${language}" aria-label="${language}"` : 'style="background-color: transparent"';
 
-        divTag.innerHTML = `
-            <div class="book__wrapper">
-            <a class="book__link" href="${viewerLink}" data-hover="Preview">
+        let bookLinkWrapper = `
             <div class="book__link__wrapper">
             <div class="book__icon" ${faviconAttr}></div>
             <div class="book__header">
@@ -207,7 +215,11 @@
             </div>
             <div class="book__description" title="${description}">${description}</div>
             </div>
-            </a>
+        `;
+
+        divTag.innerHTML = `
+            <div class="book__wrapper">
+            ${addBookPreviewLink(bookLinkWrapper, book)}
             <div class="book__meta">
             <div class="book__languageTag" ${languageAttr}>${getLanguageCodeToDisplay(langCode)}</div>
             <div class="book__tags"><div class="book__tags--wrapper">${tagHtml}</div></div>
