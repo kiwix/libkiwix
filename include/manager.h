@@ -156,10 +156,10 @@ class Manager
                        const bool checkMetaData = false);
 
   /**
-   * Add books from a directory into the libary.
+   * Add all books from the directory tree into the library.
    * 
    * @param path          The path of the directory to scan.
-   * @param path          If the function should stop for an invalid file.
+   * @param skipInvalid          If the function should stop for an invalid file.
    * @param verboseFlag   Verbose logs flag.
    */
   void addBooksFromDirectory(const std::string& path,
