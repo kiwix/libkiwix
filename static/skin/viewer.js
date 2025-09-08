@@ -267,11 +267,18 @@ function translateErrorPageIfNeeded() {
   translatePageInWindow(contentIframe.contentWindow);
 }
 
+
+let iframeLocationHref = null;
+
 function handle_content_url_change() {
+  if ( iframeLocationHref == contentIframe.contentWindow.location.href )
+    return;
+
   const iframeLocation = contentIframe.contentWindow.location;
+  iframeLocationHref = iframeLocation.href;
   console.log('handle_content_url_change: ' + iframeLocation.href);
   document.title = contentIframe.contentDocument.title;
-  const iframeContentUrl = iframeLocation.pathname;
+  const iframeContentUrl = iframeLocation.pathname + iframeLocation.hash;
   const iframeContentQuery = iframeLocation.search;
   const newHash = iframeUrl2UserUrl(iframeContentUrl, iframeContentQuery);
   history.replaceState(viewerState, null, makeURL(location.search, newHash));
@@ -431,9 +438,8 @@ function on_content_load() {
 
   contentIframe.classList.remove("hidden");
   loader.style.display = "none";
-  if ( viewerSetupComplete ) {
-    handle_content_url_change();
-  }
+  contentIframe.contentWindow.onhashchange = handle_content_url_change;
+  setInterval(handle_content_url_change, 100);
   setup_chaperon_mode();
 }
 
