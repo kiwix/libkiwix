@@ -857,12 +857,17 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
   HTMLDumper htmlDumper(mp_library.get(), mp_nameMapper.get());
   htmlDumper.setRootLocation(m_root);
   htmlDumper.setLibraryId(getLibraryId());
+  if ( !m_contentServerUrl.empty() ) {
+    htmlDumper.setContentServerUrl(m_contentServerUrl);
+  } else if ( !m_catalogOnlyMode ) {
+    htmlDumper.setContentServerUrl(m_root);
+  }
   auto userLang = request.get_user_language();
   htmlDumper.setUserLanguage(userLang);
   std::string content;
 
   if (urlParts.size() == 1) {
-    auto filter = get_search_filter(request);
+    auto filter = get_search_filter(request, "", m_catalogOnlyMode);
     try {
       if (request.get_argument("category") == "") {
         filter.clearCategory();

@@ -1388,6 +1388,32 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            </div>\n" \
   "        </div>\n"
 
+#define INACCESSIBLEZIMFILE_BOOK_HTML \
+  "        <div class=\"book__wrapper\">\n" \
+  "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/nosuchzimfile\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "            <div class=\"book__link__wrapper\">\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/inaccessiblezim/?size=48)></div>\n" \
+  "            <div class=\"book__header\">\n" \
+  "                <div id=\"book__title\">Catalog of all catalogs</div>\n" \
+  "            </div>\n" \
+  "            <div class=\"book__description\" title=\"Testing that running kiwix-serve without access to ZIM files doesn&apos;t lead to a catastrophe\">Testing that running kiwix-serve without access to ZIM files doesn&apos;t lead to a catastrophe</div>\n" \
+  "            </div>\n" \
+  "            </a>\n" \
+  "            <div class=\"book__meta\">\n" \
+  "              <div class=\"book__languageTag\" title=\"català\" aria-label=\"català\">cat</div>\n" \
+  "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                  <span class=\"tag__link\" aria-label='unittest' title='unittest'>unittest</span>\n" \
+  "              </div>\n" \
+  "              </div>\n" \
+  "            </div>\n" \
+  "            <div>\n" \
+  "              <a class=\"book__download\" href=\"/ROOT%23%3F/nojs/download/nosuchzimfile\">\n" \
+  "                <img src=\"/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989\">\n" \
+  "                <span>Download</span>\n" \
+  "              </a>\n" \
+  "            </div>\n" \
+  "        </div>\n"
+
 #define FINAL_HTML_TEXT \
   "        </div>\n" \
   "    </div>\n" \
@@ -1521,6 +1547,27 @@ TEST_F(LibraryServerTest, noJS) {
   r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, RAY_CHARLES_UNCTZ_DOWNLOAD);
+}
+
+TEST_F(LibraryServerTest, noJS_catalogOnlyMode) {
+  const std::string contentServerUrl = "https://demo.kiwix.org";
+  const auto fixContentLinks = [=](std::string s) -> std::string {
+    s = replace(s, "/ROOT%23%3F/content", contentServerUrl + "/content");
+    return s;
+  };
+  resetServer(ZimFileServer::CATALOG_ONLY_MODE, contentServerUrl);
+
+  auto r = zfs1_->GET("/ROOT%23%3F/nojs");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+            HTML_PREAMBLE
+            FILTERS_HTML("")
+            HOME_BODY_TEXT("4")
+            + fixContentLinks(CHARLES_RAY_BOOK_HTML)
+            + fixContentLinks(INACCESSIBLEZIMFILE_BOOK_HTML)
+            + fixContentLinks(RAY_CHARLES_BOOK_HTML)
+            + fixContentLinks(RAY_CHARLES_UNCTZ_BOOK_HTML)
+            + FINAL_HTML_TEXT);
 }
 
 #undef EXPECT_SEARCH_RESULTS
