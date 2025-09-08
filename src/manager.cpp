@@ -263,12 +263,15 @@ void Manager::addBooksFromDirectory(const std::string& path,
   std::set<std::string> iteratedDirs;
   std::queue<std::string> dirQueue;
   dirQueue.push(fs::absolute(path).u8string());
+  int totalBooksAdded = 0;
+  if (verboseFlag)
+    std::cout << "Starting BFS traversal at root directory: " << dirQueue.front() << std::endl;
 
   while (!dirQueue.empty()) {
     const auto currentPath = dirQueue.front();
     dirQueue.pop();
     if (verboseFlag)
-      std::cout << "Iterating over directory: " << currentPath << std::endl;
+      std::cout << "Visiting directory: " << currentPath << std::endl;
     for (const auto& dirEntry : fs::directory_iterator(currentPath)) {
       auto resolvedPath = dirEntry.path();
       if (fs::is_symlink(dirEntry)) {
@@ -287,13 +290,17 @@ void Manager::addBooksFromDirectory(const std::string& path,
           else {
             throw std::runtime_error("Unable to add file: " + pathString + " into the library.");
           }
+        } else if (verboseFlag) {
+          std::cout << "Added " << pathString << " into the library." << std::endl;
+          totalBooksAdded++;
         }
       }
     }
-    if (verboseFlag)
-      std::cout << "Completed iterating over directory: " << currentPath << std::endl;
     iteratedDirs.insert(currentPath);
   }
+
+  if (verboseFlag)
+    std::cout << "Traversal completed. Total books added: " << totalBooksAdded << std::endl;
 }
 
 bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)
