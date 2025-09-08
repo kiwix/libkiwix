@@ -267,8 +267,15 @@ function translateErrorPageIfNeeded() {
   translatePageInWindow(contentIframe.contentWindow);
 }
 
+
+let iframeLocationHref = null;
+
 function handle_content_url_change() {
+  if ( iframeLocationHref == contentIframe.contentWindow.location.href )
+    return;
+
   const iframeLocation = contentIframe.contentWindow.location;
+  iframeLocationHref = iframeLocation.href;
   console.log('handle_content_url_change: ' + iframeLocation.href);
   document.title = contentIframe.contentDocument.title;
   const iframeContentUrl = iframeLocation.pathname + iframeLocation.hash;
@@ -432,9 +439,7 @@ function on_content_load() {
   contentIframe.classList.remove("hidden");
   loader.style.display = "none";
   contentIframe.contentWindow.onhashchange = handle_content_url_change;
-  if ( viewerSetupComplete ) {
-    handle_content_url_change();
-  }
+  setInterval(handle_content_url_change, 100);
   setup_chaperon_mode();
 }
 
