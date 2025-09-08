@@ -159,11 +159,9 @@ class Manager
    * Add all books from the directory tree into the library.
    * 
    * @param path          The path of the directory to scan.
-   * @param skipInvalid          If the function should stop for an invalid file.
    * @param verboseFlag   Verbose logs flag.
    */
   void addBooksFromDirectory(const std::string& path,
-                             const bool skipInvalid = true,
                              const bool verboseFlag = false);
 
   std::string writableLibraryPath;

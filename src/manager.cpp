@@ -257,7 +257,6 @@ bool Manager::addBookFromPath(const std::string& pathToOpen,
 }
 
 void Manager::addBooksFromDirectory(const std::string& path,
-                                    const bool skipInvalid,
                                     const bool verboseFlag)
 {
   std::set<std::string> iteratedDirs;
@@ -285,11 +284,7 @@ void Manager::addBooksFromDirectory(const std::string& path,
           std::cout << "Already iterated over " << pathString << ". Skipping..." << std::endl;
       } else {
         if (!this->addBookFromPath(pathString, pathString, "", false)) {
-          if (skipInvalid)
-            std::cerr << "Skipping invalid file: " << pathString << std::endl;
-          else {
-            throw std::runtime_error("Unable to add file: " + pathString + " into the library.");
-          }
+          std::cerr << "Could not add " << pathString << " into the library." << std::endl;
         } else if (verboseFlag) {
           std::cout << "Added " << pathString << " into the library." << std::endl;
           totalBooksAdded++;
