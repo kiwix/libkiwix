@@ -26,6 +26,7 @@
 #include <filesystem>
 #include <iostream>
 #include <set>
+#include <queue>
 
 namespace fs = std::filesystem;
 
@@ -264,7 +265,7 @@ void Manager::addBooksFromDirectory(const std::string& path,
   dirQueue.push(fs::absolute(path).u8string());
   int totalBooksAdded = 0;
   if (verboseFlag)
-    std::cout << "Starting BFS traversal at root directory: " << dirQueue.front() << std::endl;
+    std::cout << "Adding books from the directory tree: " << dirQueue.front() << std::endl;
 
   while (!dirQueue.empty()) {
     const auto currentPath = dirQueue.front();
@@ -282,13 +283,15 @@ void Manager::addBooksFromDirectory(const std::string& path,
           dirQueue.push(pathString);
         else if (verboseFlag)
           std::cout << "Already iterated over " << pathString << ". Skipping..." << std::endl;
-      } else {
+      } else if (resolvedPath.extension() == ".zim" || resolvedPath.extension() == ".zimaa") {
         if (!this->addBookFromPath(pathString, pathString, "", false)) {
           std::cerr << "Could not add " << pathString << " into the library." << std::endl;
         } else if (verboseFlag) {
           std::cout << "Added " << pathString << " into the library." << std::endl;
           totalBooksAdded++;
         }
+      } else if (verboseFlag) {
+        std::cout << "Skipped " << pathString << " - unsupported file type or permission denied." << std::endl;
       }
     }
     iteratedDirs.insert(currentPath);
