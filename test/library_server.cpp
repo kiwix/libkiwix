@@ -18,9 +18,11 @@ protected:
   const int PORT = 8002;
 
 protected:
-  void resetServer(ZimFileServer::Options options) {
+  void resetServer(ZimFileServer::Options options, std::string contentServerUrl="") {
+    ZimFileServer::Cfg cfg(options);
+    cfg.contentServerUrl = contentServerUrl;
     zfs1_.reset();
-    zfs1_.reset(new ZimFileServer(PORT, options, "./test/library.xml"));
+    zfs1_.reset(new ZimFileServer(PORT, cfg, "./test/library.xml"));
   }
 
   void SetUp() override {
@@ -149,6 +151,30 @@ std::string maskVariableOPDSFeedData(std::string s)
   "zimfile_raycharles_uncategorized", \
   "125952"\
 )
+
+#define INACCESSIBLEZIMFILE_CATALOG_ENTRY \
+"  <entry>\n" \
+"    <id>urn:uuid:inaccessiblezim</id>\n" \
+"    <title>Catalog of all catalogs</title>\n" \
+"    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n" \
+"    <summary>Testing that running kiwix-serve without access to ZIM files doesn&apos;t lead to a catastrophe</summary>\n" \
+"    <language>cat</language>\n" \
+"    <name>catalog_of_all_catalogs</name>\n" \
+"    <flavour></flavour>\n" \
+"    <category>cats</category>\n" \
+"    <tags>unittest;_category:cats</tags>\n" \
+"    <articleCount>12107</articleCount>\n" \
+"    <mediaCount>8</mediaCount>\n" \
+"    <link type=\"text/html\" href=\"/ROOT%23%3F/content/nosuchzimfile\" />\n" \
+"    <author>\n" \
+"      <name>Catherine of Catalonia</name>\n" \
+"    </author>\n" \
+"    <publisher>\n" \
+"      <name>Caterpillar</name>\n" \
+"    </publisher>\n" \
+"    <dc:issued>2025-09-04T00:00:00Z</dc:issued>\n" \
+"    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim\" length=\"20736925696\" />\n" \
+"  </entry>\n"
 
 TEST_F(LibraryServerTest, catalog_root_xml)
 {
@@ -561,6 +587,15 @@ TEST_F(LibraryServerTest, catalog_v2_categories)
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
 
   <entry>
+    <title>cats</title>
+    <link rel="subsection"
+          href="/ROOT%23%3F/catalog/v2/entries?category=cats"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+    <content type="text">All entries with category of 'cats'.</content>
+  </entry>
+  <entry>
     <title>jazz</title>
     <link rel="subsection"
           href="/ROOT%23%3F/catalog/v2/entries?category=jazz"
@@ -602,6 +637,16 @@ TEST_F(LibraryServerTest, catalog_v2_languages)
   <title>List of languages</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
 
+  <entry>
+    <title>català</title>
+    <dc:language>cat</dc:language>
+    <thr:count>1</thr:count>
+    <link rel="subsection"
+          href="/ROOT%23%3F/catalog/v2/entries?lang=cat"
+          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <id>12345678-90ab-cdef-1234-567890abcdef</id>
+  </entry>
   <entry>
     <title>English</title>
     <dc:language>eng</dc:language>
@@ -674,6 +719,29 @@ TEST_F(LibraryServerTest, catalog_v2_entries)
     CHARLES_RAY_CATALOG_ENTRY
     RAY_CHARLES_CATALOG_ENTRY
     UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
+{
+  const std::string contentServerUrl = "https://demo.kiwix.org";
+  const auto fixContentLinks = [=](std::string s) -> std::string {
+    s = replace(s, "/ROOT%23%3F/content", contentServerUrl + "/content");
+    return s;
+  };
+  resetServer(ZimFileServer::CATALOG_ONLY_MODE, contentServerUrl);
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("")
+    "  <title>All Entries</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
+    + fixContentLinks(CHARLES_RAY_CATALOG_ENTRY)
+    + fixContentLinks(INACCESSIBLEZIMFILE_CATALOG_ENTRY)
+    + fixContentLinks(RAY_CHARLES_CATALOG_ENTRY)
+    + fixContentLinks(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY) +
     "</feed>\n"
   );
 }
@@ -1320,6 +1388,32 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "            </div>\n" \
   "        </div>\n"
 
+#define INACCESSIBLEZIMFILE_BOOK_HTML \
+  "        <div class=\"book__wrapper\">\n" \
+  "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/nosuchzimfile\" title=\"Preview\" aria-label=\"Preview\">\n" \
+  "            <div class=\"book__link__wrapper\">\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/inaccessiblezim/?size=48)></div>\n" \
+  "            <div class=\"book__header\">\n" \
+  "                <div id=\"book__title\">Catalog of all catalogs</div>\n" \
+  "            </div>\n" \
+  "            <div class=\"book__description\" title=\"Testing that running kiwix-serve without access to ZIM files doesn&apos;t lead to a catastrophe\">Testing that running kiwix-serve without access to ZIM files doesn&apos;t lead to a catastrophe</div>\n" \
+  "            </div>\n" \
+  "            </a>\n" \
+  "            <div class=\"book__meta\">\n" \
+  "              <div class=\"book__languageTag\" title=\"català\" aria-label=\"català\">cat</div>\n" \
+  "              <div class=\"book__tags\"><div class=\"book__tags--wrapper\">\n" \
+  "                  <span class=\"tag__link\" aria-label='unittest' title='unittest'>unittest</span>\n" \
+  "              </div>\n" \
+  "              </div>\n" \
+  "            </div>\n" \
+  "            <div>\n" \
+  "              <a class=\"book__download\" href=\"/ROOT%23%3F/nojs/download/nosuchzimfile\">\n" \
+  "                <img src=\"/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989\">\n" \
+  "                <span>Download</span>\n" \
+  "              </a>\n" \
+  "            </div>\n" \
+  "        </div>\n"
+
 #define FINAL_HTML_TEXT \
   "        </div>\n" \
   "    </div>\n" \
@@ -1332,6 +1426,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "        <div class=\"kiwixNav__select\">\n" \
   "          <select name=\"lang\" id=\"languageFilter\" class='kiwixNav__kiwixFilter filter' form=\"kiwixSearchForm\">\n" \
   "            <option value=\"\" selected>All languages</option>\n" \
+  "            <option value=\"cat\">català</option>\n" \
   "            <option value=\"eng\"" SELECTED_ENG ">English</option>\n" \
   "            <option value=\"fra\">français</option>\n" \
   "            <option value=\"rus\">русский</option>\n" \
@@ -1340,6 +1435,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "        <div class=\"kiwixNav__select\">\n" \
   "          <select name=\"category\" id=\"categoryFilter\" class='kiwixNav__kiwixFilter filter' form=\"kiwixSearchForm\">\n" \
   "            <option value=\"\">All categories</option>\n" \
+  "            <option value=\"cats\">Cats</option>\n" \
   "            <option value=\"jazz\">Jazz</option>\n" \
   "            <option value=\"wikipedia\">Wikipedia</option>\n" \
   "          </select>\n" \
@@ -1451,6 +1547,27 @@ TEST_F(LibraryServerTest, noJS) {
   r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, RAY_CHARLES_UNCTZ_DOWNLOAD);
+}
+
+TEST_F(LibraryServerTest, noJS_catalogOnlyMode) {
+  const std::string contentServerUrl = "https://demo.kiwix.org";
+  const auto fixContentLinks = [=](std::string s) -> std::string {
+    s = replace(s, "/ROOT%23%3F/content", contentServerUrl + "/content");
+    return s;
+  };
+  resetServer(ZimFileServer::CATALOG_ONLY_MODE, contentServerUrl);
+
+  auto r = zfs1_->GET("/ROOT%23%3F/nojs");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body,
+            HTML_PREAMBLE
+            FILTERS_HTML("")
+            HOME_BODY_TEXT("4")
+            + fixContentLinks(CHARLES_RAY_BOOK_HTML)
+            + fixContentLinks(INACCESSIBLEZIMFILE_BOOK_HTML)
+            + fixContentLinks(RAY_CHARLES_BOOK_HTML)
+            + fixContentLinks(RAY_CHARLES_UNCTZ_BOOK_HTML)
+            + FINAL_HTML_TEXT);
 }
 
 #undef EXPECT_SEARCH_RESULTS

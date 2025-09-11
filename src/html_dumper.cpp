@@ -30,7 +30,7 @@ std::string humanFriendlyTitle(std::string title)
 kainjow::mustache::object getLangTag(const std::vector<std::string>& bookLanguages) {
   std::string langShortString = "";
   std::string langFullString = "???";
-  
+
   //if more than 1 languages then show "mul" else show the language
   if(bookLanguages.size() > 1) {
     std::vector<std::string> mulLanguages;
@@ -44,7 +44,7 @@ kainjow::mustache::object getLangTag(const std::vector<std::string>& bookLanguag
     langShortString = bookLanguages[0];
     langFullString = getLanguageSelfName(langShortString);
   }
-  
+
   kainjow::mustache::object langTag;
     langTag["langShortString"] = langShortString;
     langTag["langFullString"] = langFullString;
@@ -130,6 +130,7 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
              RESOURCE::templates::no_js_library_page_html,
              kainjow::mustache::object{
                {"root", rootLocation},
+               {"contentServerUrl", onlyAsNonEmptyMustacheValue(contentServerUrl)},
                {"books", booksData },
                {"searchQuery", searchQuery},
                {"languages", languages},

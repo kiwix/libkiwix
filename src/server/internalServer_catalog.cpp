@@ -51,6 +51,19 @@ const std::string opdsMimeType[] = {
 
 } // unnamed namespace
 
+OPDSDumper InternalServer::getOPDSDumper() const
+{
+  kiwix::OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
+  opdsDumper.setRootLocation(m_root);
+  opdsDumper.setLibraryId(getLibraryId());
+  if ( !m_contentServerUrl.empty() ) {
+    opdsDumper.setContentServerUrl(m_contentServerUrl);
+  } else if ( !m_catalogOnlyMode ) {
+    opdsDumper.setContentServerUrl(m_root);
+  }
+  return opdsDumper;
+}
+
 std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& request)
 {
   if (m_verbose.load()) {
@@ -80,9 +93,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
-  opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(getLibraryId());
+  kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   std::vector<std::string> bookIdsToDump;
   if (url == "root.xml") {
     uuid = zim::Uuid::generate(host);
@@ -158,9 +169,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
 {
-  OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
-  opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(getLibraryId());
+  kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   const auto bookIds = search_catalog(request, opdsDumper);
   const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
   return ContentResponse::build(
@@ -177,9 +186,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
     return UrlNotFoundResponse(request);
   }
 
-  OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
-  opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(getLibraryId());
+  kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
              opdsFeed,
@@ -189,9 +196,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
-  opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(getLibraryId());
+  kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   return ContentResponse::build(
              opdsDumper.categoriesOPDSFeed(),
              opdsMimeType[OPDS_NAVIGATION_FEED]
@@ -200,9 +205,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const Req
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const RequestContext& request)
 {
-  OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
-  opdsDumper.setRootLocation(m_root);
-  opdsDumper.setLibraryId(getLibraryId());
+  kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   return ContentResponse::build(
              opdsDumper.languagesOPDSFeed(),
              opdsMimeType[OPDS_NAVIGATION_FEED]
