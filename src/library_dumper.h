@@ -51,11 +51,11 @@ class LibraryDumper
   void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
 
   /**
-   * Set the URL of the content server.
+   * Set the URL for accessing book content
    *
-   * @param url the URL of the content server to use.
+   * @param url the URL of the /content endpoint of the content server
    */
-  void setContentServerUrl(const std::string& url) { this->contentServerUrl = url; }
+  void setContentAccessUrl(const std::string& url) { this->contentAccessUrl = url; }
 
   /**
    * Set some informations about the search results.
@@ -88,7 +88,7 @@ class LibraryDumper
   const kiwix::NameMapper* const nameMapper;
   std::string libraryId;
   std::string rootLocation;
-  std::string contentServerUrl;
+  std::string contentAccessUrl;
   std::string m_userLang;
   int m_totalResults;
   int m_startIndex;

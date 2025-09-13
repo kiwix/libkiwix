@@ -858,9 +858,9 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
   htmlDumper.setRootLocation(m_root);
   htmlDumper.setLibraryId(getLibraryId());
   if ( !m_contentServerUrl.empty() ) {
-    htmlDumper.setContentServerUrl(m_contentServerUrl + "/content");
+    htmlDumper.setContentAccessUrl(m_contentServerUrl + "/content");
   } else if ( !m_catalogOnlyMode ) {
-    htmlDumper.setContentServerUrl(m_root + "/content");
+    htmlDumper.setContentAccessUrl(m_root + "/content");
   }
   auto userLang = request.get_user_language();
   htmlDumper.setUserLanguage(userLang);

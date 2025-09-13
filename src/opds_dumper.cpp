@@ -64,13 +64,13 @@ IllustrationInfo getBookIllustrationInfo(const Book& book)
 
 std::string fullEntryXML(const Book& book,
                          const std::string& rootLocation,
-                         const std::string& contentServerUrl,
+                         const std::string& contentAccessUrl,
                          const std::string& contentId)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
       {"root",  rootLocation},
-      {"contentServerUrl",  onlyAsNonEmptyMustacheValue(contentServerUrl)},
+      {"contentAccessUrl",  onlyAsNonEmptyMustacheValue(contentAccessUrl)},
       {"id", book.getId()},
       {"name", book.getName()},
       {"title", book.getTitle()},
@@ -111,7 +111,7 @@ BooksData getBooksData(const Library* library,
                        const NameMapper* nameMapper,
                        const std::vector<std::string>& bookIds,
                        const std::string& rootLocation,
-                       const std::string& contentServerUrl,
+                       const std::string& contentAccessUrl,
                        bool partial)
 {
   BooksData booksData;
@@ -121,7 +121,7 @@ BooksData getBooksData(const Library* library,
       const std::string contentId = nameMapper->getNameForId(bookId);
       const auto entryXML = partial
                           ? partialEntryXML(book, rootLocation)
-                          : fullEntryXML(book, rootLocation, contentServerUrl, contentId);
+                          : fullEntryXML(book, rootLocation, contentAccessUrl, contentId);
       booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -136,7 +136,7 @@ BooksData getBooksData(const Library* library,
 
 string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
 {
-  const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentServerUrl, false);
+  const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, false);
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
      {"root", rootLocation},
@@ -154,7 +154,7 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
   const auto endpointRoot = rootLocation + "/catalog/v2";
-  const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentServerUrl, partial);
+  const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const std::string url = endpoint + (query.empty() ? "" : "?" + query);
@@ -179,7 +179,7 @@ std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
   const std::string contentId = nameMapper->getNameForId(bookId);
   return XML_HEADER
          + "\n"
-         + fullEntryXML(book, rootLocation, contentServerUrl, contentId);
+         + fullEntryXML(book, rootLocation, contentAccessUrl, contentId);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const

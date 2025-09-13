@@ -130,7 +130,7 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
              RESOURCE::templates::no_js_library_page_html,
              kainjow::mustache::object{
                {"root", rootLocation},
-               {"contentServerUrl", onlyAsNonEmptyMustacheValue(contentServerUrl)},
+               {"contentAccessUrl", onlyAsNonEmptyMustacheValue(contentAccessUrl)},
                {"books", booksData },
                {"searchQuery", searchQuery},
                {"languages", languages},
