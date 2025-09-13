@@ -90,6 +90,7 @@ class SearchInfo {
 
 typedef kainjow::mustache::data MustacheData;
 class OPDSDumper;
+class LibraryDumper;
 
 class InternalServer {
   public:
@@ -163,6 +164,7 @@ class InternalServer {
 
     std::string getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const;
     OPDSDumper getOPDSDumper() const;
+    void setContentAccessUrl(LibraryDumper& libDumper) const;
 
   private: // types
     class LockableSuggestionSearcher;
