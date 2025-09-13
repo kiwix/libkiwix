@@ -850,6 +850,15 @@ std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, c
   );
 }
 
+void InternalServer::setContentAccessUrl(LibraryDumper& libDumper) const
+{
+  if ( !m_contentServerUrl.empty() ) {
+    libDumper.setContentAccessUrl(m_contentServerUrl + "/content");
+  } else if ( !m_catalogOnlyMode ) {
+    libDumper.setContentAccessUrl(m_root + "/content");
+  }
+}
+
 std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& request)
 {
   const auto url = request.get_url();
@@ -857,11 +866,7 @@ std::unique_ptr<Response> InternalServer::handle_no_js(const RequestContext& req
   HTMLDumper htmlDumper(mp_library.get(), mp_nameMapper.get());
   htmlDumper.setRootLocation(m_root);
   htmlDumper.setLibraryId(getLibraryId());
-  if ( !m_contentServerUrl.empty() ) {
-    htmlDumper.setContentAccessUrl(m_contentServerUrl + "/content");
-  } else if ( !m_catalogOnlyMode ) {
-    htmlDumper.setContentAccessUrl(m_root + "/content");
-  }
+  setContentAccessUrl(htmlDumper);
   auto userLang = request.get_user_language();
   htmlDumper.setUserLanguage(userLang);
   std::string content;

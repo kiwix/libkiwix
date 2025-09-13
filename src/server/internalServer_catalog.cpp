@@ -56,11 +56,7 @@ OPDSDumper InternalServer::getOPDSDumper() const
   kiwix::OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
-  if ( !m_contentServerUrl.empty() ) {
-    opdsDumper.setContentAccessUrl(m_contentServerUrl + "/content");
-  } else if ( !m_catalogOnlyMode ) {
-    opdsDumper.setContentAccessUrl(m_root + "/content");
-  }
+  setContentAccessUrl(opdsDumper);
   return opdsDumper;
 }
 
