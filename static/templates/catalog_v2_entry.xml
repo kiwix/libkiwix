@@ -13,7 +13,7 @@
     {{#icons}}<link rel="http://opds-spec.org/image/thumbnail"
           href="{{root}}/catalog/v2/illustration/{{{id}}}/?size={{icon_size}}"
           type="{{icon_mimetype}};width={{icon_size}};height={{icon_size}};scale=1"/>
-    {{/icons}}{{#contentServerUrl}}<link type="text/html" href="{{contentServerUrl}}/content/{{{content_id}}}" />
+    {{/icons}}{{#contentServerUrl}}<link type="text/html" href="{{contentServerUrl}}/{{{content_id}}}" />
     {{/contentServerUrl}}
     <author>
       <name>{{author_name}}</name>

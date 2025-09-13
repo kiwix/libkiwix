@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link type="root" href="{{root}}">
     <title>{{translations.welcome-to-kiwix-server}}</title>
     <link
       type="text/css"
@@ -108,7 +107,7 @@
         <h3 class="kiwixHomeBody__results">{{translations.count-of-matching-books}}</h3>
         {{#books}}
         <div class="book__wrapper">
-            {{#contentServerUrl}}<a class="book__link" href="{{contentServerUrl}}/content/{{id}}" title="{{translations.preview-book}}" aria-label="{{translations.preview-book}}">{{/contentServerUrl}}
+            {{#contentServerUrl}}<a class="book__link" href="{{contentServerUrl}}/{{id}}" title="{{translations.preview-book}}" aria-label="{{translations.preview-book}}">{{/contentServerUrl}}
             <div class="book__link__wrapper">
             <div class="book__icon" {{faviconAttr}}></div>
             <div class="book__header">

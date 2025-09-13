@@ -18,11 +18,15 @@ protected:
   const int PORT = 8002;
 
 protected:
+  void resetServer(ZimFileServer::Cfg cfg) {
+    zfs1_.reset();
+    zfs1_.reset(new ZimFileServer(PORT, cfg, "./test/library.xml"));
+  }
+
   void resetServer(ZimFileServer::Options options, std::string contentServerUrl="") {
     ZimFileServer::Cfg cfg(options);
     cfg.contentServerUrl = contentServerUrl;
-    zfs1_.reset();
-    zfs1_.reset(new ZimFileServer(PORT, cfg, "./test/library.xml"));
+    resetServer(cfg);
   }
 
   void SetUp() override {
@@ -733,7 +737,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
   resetServer(ZimFileServer::CATALOG_ONLY_MODE, contentServerUrl);
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
   EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+
+  const std::string expectedOPDS =
     CATALOG_V2_ENTRIES_PREAMBLE("")
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
@@ -742,8 +747,27 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
     + fixContentLinks(INACCESSIBLEZIMFILE_CATALOG_ENTRY)
     + fixContentLinks(RAY_CHARLES_CATALOG_ENTRY)
     + fixContentLinks(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY) +
-    "</feed>\n"
-  );
+    "</feed>\n";
+
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expectedOPDS);
+
+  { // test with empty rootLocation
+    const auto fixRoot = [=](std::string s) -> std::string {
+      s = replace(s, "/ROOT%23%3F/", "/");
+      s = replace(s, "/ROOT%23%3F/", "/");
+      return s;
+    };
+
+    ZimFileServer::Cfg serverCfg;
+    serverCfg.root = "";
+    serverCfg.options = ZimFileServer::CATALOG_ONLY_MODE;
+    serverCfg.contentServerUrl = contentServerUrl;
+    resetServer(serverCfg);
+
+    const auto r = zfs1_->GET("/catalog/v2/entries");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body), fixRoot(expectedOPDS));
+  }
 }
 
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
@@ -1253,7 +1277,6 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "  <head>\n" \
   "    <meta charset=\"UTF-8\" />\n" \
   "    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n" \
-  "    <link type=\"root\" href=\"/ROOT%23%3F\">\n" \
   "    <title>Welcome to Kiwix Server</title>\n" \
   "    <link\n" \
   "      type=\"text/css\"\n" \
@@ -1555,11 +1578,13 @@ TEST_F(LibraryServerTest, noJS_catalogOnlyMode) {
     s = replace(s, "/ROOT%23%3F/content", contentServerUrl + "/content");
     return s;
   };
+
   resetServer(ZimFileServer::CATALOG_ONLY_MODE, contentServerUrl);
 
   auto r = zfs1_->GET("/ROOT%23%3F/nojs");
   EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(r->body,
+
+  const std::string expectedHTML =
             HTML_PREAMBLE
             FILTERS_HTML("")
             HOME_BODY_TEXT("4")
@@ -1567,7 +1592,27 @@ TEST_F(LibraryServerTest, noJS_catalogOnlyMode) {
             + fixContentLinks(INACCESSIBLEZIMFILE_BOOK_HTML)
             + fixContentLinks(RAY_CHARLES_BOOK_HTML)
             + fixContentLinks(RAY_CHARLES_UNCTZ_BOOK_HTML)
-            + FINAL_HTML_TEXT);
+            + FINAL_HTML_TEXT;
+
+  EXPECT_EQ(r->body, expectedHTML);
+
+  { // test with empty rootLocation
+    const auto fixRoot = [=](std::string s) -> std::string {
+      s = replace(s, "/ROOT%23%3F/", "/");
+      return s;
+    };
+
+    ZimFileServer::Cfg serverCfg;
+    serverCfg.root = "";
+    serverCfg.options = ZimFileServer::CATALOG_ONLY_MODE;
+    serverCfg.contentServerUrl = contentServerUrl;
+
+    resetServer(serverCfg);
+
+    auto r = zfs1_->GET("/nojs");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(r->body, fixRoot(expectedHTML));
+  }
 }
 
 #undef EXPECT_SEARCH_RESULTS

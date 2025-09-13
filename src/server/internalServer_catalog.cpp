@@ -57,9 +57,9 @@ OPDSDumper InternalServer::getOPDSDumper() const
   opdsDumper.setRootLocation(m_root);
   opdsDumper.setLibraryId(getLibraryId());
   if ( !m_contentServerUrl.empty() ) {
-    opdsDumper.setContentServerUrl(m_contentServerUrl);
+    opdsDumper.setContentServerUrl(m_contentServerUrl + "/content");
   } else if ( !m_catalogOnlyMode ) {
-    opdsDumper.setContentServerUrl(m_root);
+    opdsDumper.setContentServerUrl(m_root + "/content");
   }
   return opdsDumper;
 }
