@@ -82,10 +82,11 @@ void Book::update(const zim::Archive& archive) {
   m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
 
   m_illustrations.clear();
-  for ( const auto illustrationSize : archive.getIllustrationSizes() ) {
+  for ( const auto& illustrationInfo : archive.getIllustrationInfos() ) {
     const auto illustration = std::make_shared<Illustration>();
-    const zim::Item illustrationItem = archive.getIllustrationItem(illustrationSize);
-    illustration->width = illustration->height = illustrationSize;
+    const zim::Item illustrationItem = archive.getIllustrationItem(illustrationInfo);
+    illustration->width = illustrationInfo.width;
+    illustration->height = illustrationInfo.height;
     illustration->mimeType = illustrationItem.getMimetype();
     illustration->data = illustrationItem.getData();
     // NOTE: illustration->url is left uninitialized
