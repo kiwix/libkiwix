@@ -686,7 +686,10 @@ Xapian::Query langQuery(const std::string& commaSeparatedLanguageList)
 {
   return multipleParamQuery(commaSeparatedLanguageList, "L");
 }
-
+Xapian::Query idQuery(const std::string& commaSeparatedIdList)
+{
+  return multipleParamQuery(commaSeparatedIdList, "Q");
+}
 Xapian::Query publisherQuery(const std::string& publisher)
 {
   Xapian::QueryParser queryParser;
@@ -742,6 +745,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   }
   if ( filter.hasCreator() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, creatorQuery(filter.getCreator()));
+  }
+  if (filter.hasId()) {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, idQuery(filter.getId()));
   }
   if ( !filter.getAcceptTags().empty() || !filter.getRejectTags().empty() ) {
     const auto tq = tagsQuery(filter.getAcceptTags(), filter.getRejectTags());
@@ -897,6 +903,7 @@ enum filterTypes {
   NAME = FLAG(13),
   CATEGORY = FLAG(14),
   FLAVOUR = FLAG(15),
+  ID = FLAG(16)
 };
 
 Filter& Filter::local(bool accept)
@@ -962,7 +969,12 @@ Filter& Filter::lang(std::string lang)
   activeFilters |= LANG;
   return *this;
 }
-
+Filter& Filter::id(std::string id)
+{
+  _id = id;
+  activeFilters |= ID;
+  return *this;
+}
 Filter& Filter::publisher(std::string publisher)
 {
   _publisher = publisher;
@@ -1038,6 +1050,11 @@ bool Filter::hasCategory() const
 bool Filter::hasLang() const
 {
   return ACTIVE(LANG);
+}
+
+bool Filter::hasId() const
+{
+  return ACTIVE(ID);
 }
 
 bool Filter::hasPublisher() const
