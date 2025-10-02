@@ -252,9 +252,29 @@ function setIframeUrl(path) {
   }
   contentIframe.contentWindow.location.replace(path);
 }
+async function getBookNameFromUUID(uuid) {
+  const url = `${root}/catalog/v2/entries?id=${uuid}`;
+  return await fetch(url).then(async (resp) => {
+    const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
+    const result = parseInt(data.querySelector('totalResults').innerHTML);
+    let bookName;
+    if (result > 0) {
+      const bookContentLink = data.querySelector('link[type="text/html"]');
+      const urlComponents = bookContentLink.getAttribute('href').split('/');
+      bookName = urlComponents.pop();
+    } else {
+      bookName = null
+    }
+    return bookName;
+  });
+}
 
-function handle_location_hash_change() {
-  const hash = window.location.hash.slice(1);
+async function handle_location_hash_change() {
+  hash = window.location.hash.slice(1);
+  //this regex exact matches zim UUIDS
+  if (hash.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/) != null) {
+    hash = await getBookNameFromUUID(hash)
+  }
   console.log("handle_location_hash_change: " + hash);
   updateCurrentBookIfNeeded(hash);
   setIframeUrl(userUrl2IframeUrl(hash));
