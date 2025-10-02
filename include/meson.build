@@ -7,6 +7,7 @@ headers = [
   'downloader.h',
   'search_renderer.h',
   'server.h',
+  'spelling_correction.h',
   'kiwixserve.h',
   'name_mapper.h',
   'tools.h',

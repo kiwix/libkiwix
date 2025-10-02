@@ -15,7 +15,8 @@ tests = [
     'server_helper',
     'lrucache',
     'i18n',
-    'response'
+    'response',
+    'spelling_correction'
 ]
 
 if build_machine.system() != 'windows'
@@ -42,6 +43,7 @@ if gtest_dep.found() and not meson.is_cross_build()
       'zimfile_raycharles_uncategorized.zim',
       'corner_cases#&.zim',
       'poor.zim',
+      'spelling_correction_test.zim',
       'library.xml',
       'lib_for_server_search_test.xml',
       'customized_resources.txt',

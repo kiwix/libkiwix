@@ -31,6 +31,7 @@ kiwix_sources = [
   'server/internalServer_catalog.cpp',
   'server/i18n.cpp',
   'opds_catalog.cpp',
+  'spelling_correction.cpp',
   'version.cpp'
 ]
 kiwix_sources += lib_resources
