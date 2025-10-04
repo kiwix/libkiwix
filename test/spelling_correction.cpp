@@ -19,27 +19,45 @@
 
 #include "gtest/gtest.h"
 #include "../include/spelling_correction.h"
+#include "../src/tools/pathTools.h"
 #include "zim/archive.h"
 
 #include <filesystem>
+
+#include <xapian.h>
 
 const std::string TEST_DB_PATH = "./spellings.db";
 
 class SpellingCorrectionTest : public ::testing::Test
 {
-  void removeDb()
-  {
-    std::filesystem::remove_all(TEST_DB_PATH);
-  }
-
 protected:
   void SetUp() override {
-    removeDb();
+    tmpDirPath = makeTmpDirectory();
+    archive = std::make_unique<zim::Archive>("./test/spelling_correction_test.zim");
   }
 
   void TearDown() override {
-    removeDb();
+    std::filesystem::permissions(
+        tmpDirPath,
+        std::filesystem::perms::owner_write,
+        std::filesystem::perm_options::add
+    );
+    std::filesystem::remove_all(tmpDirPath);
   }
+
+  void makeTmpDirReadOnly() {
+    using std::filesystem::perms;
+
+    std::filesystem::permissions(
+        tmpDirPath,
+        perms::owner_write | perms::group_write | perms::others_write,
+        std::filesystem::perm_options::remove
+    );
+  }
+
+protected:
+  std::filesystem::path tmpDirPath;
+  std::unique_ptr<zim::Archive> archive;
 };
 
 void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
@@ -169,9 +187,29 @@ void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
   EXPECT_THROW(spellingsDB.getSpellingCorrections("Kung", 2), std::runtime_error);
 }
 
+TEST_F(SpellingCorrectionTest, SpellingsDBCannotBeCreatedInAReadOnlyDirectory)
+{
+  makeTmpDirReadOnly();
+
+  EXPECT_THROW(
+    const kiwix::SpellingsDB spellingsDB(*archive, tmpDirPath / "spellings.db"),
+    Xapian::DatabaseCreateError
+  );
+}
+
 TEST_F(SpellingCorrectionTest, allInOne)
 {
-  const auto archive = zim::Archive("./test/spelling_correction_test.zim");
-  kiwix::SpellingsDB spellingsDB(archive, TEST_DB_PATH);
-  testSpellingCorrections(spellingsDB);
+  const auto spellingsDbPath = tmpDirPath / "spellings.db";
+
+  {
+    const kiwix::SpellingsDB spellingsDB(*archive, spellingsDbPath);
+    testSpellingCorrections(spellingsDB);
+  }
+
+  makeTmpDirReadOnly();
+
+  {
+    const kiwix::SpellingsDB spellingsDB(*archive, spellingsDbPath);
+    testSpellingCorrections(spellingsDB);
+  }
 }

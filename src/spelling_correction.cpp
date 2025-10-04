@@ -39,19 +39,37 @@ std::vector<std::string> getAllTitles(const zim::Archive& a)
   return result;
 }
 
+void createXapianDB(std::string path, const zim::Archive& archive)
+{
+  const int flags = Xapian::DB_BACKEND_GLASS|Xapian::DB_CREATE;
+  const auto tmpDbPath = path + ".tmp";
+  Xapian::WritableDatabase db(tmpDbPath, flags);
+  for (const auto& t : getAllTitles(archive)) {
+    db.add_spelling(t);
+  }
+  db.commit();
+  db.compact(path, Xapian::DBCOMPACT_SINGLE_FILE);
+  db.close();
+  std::filesystem::remove_all(tmpDbPath);
+}
+
 std::unique_ptr<Xapian::Database> openOrCreateXapianDB(std::string path, const zim::Archive& archive)
 {
-  auto db(std::make_unique<Xapian::WritableDatabase>(path, Xapian::DB_BACKEND_GLASS));
-  for (const auto& t : getAllTitles(archive)) {
-    db->add_spelling(t);
+  try
+  {
+    return std::make_unique<Xapian::Database>(path);
   }
-  return std::move(db);
+  catch (const Xapian::DatabaseOpeningError& )
+  {
+    createXapianDB(path, archive);
+    return std::make_unique<Xapian::Database>(path);
+  }
 }
 
 } // unnamed namespace
 
-SpellingsDB::SpellingsDB(const zim::Archive& archive, std::string path)
-  : impl_(openOrCreateXapianDB(path, archive))
+SpellingsDB::SpellingsDB(const zim::Archive& archive, std::filesystem::path path)
+  : impl_(openOrCreateXapianDB(path.string(), archive))
 {
 }
 

@@ -20,6 +20,7 @@
 #ifndef KIWIX_SPELLING_CORRECTION_H
 #define KIWIX_SPELLING_CORRECTION_H
 
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
@@ -40,7 +41,7 @@ namespace kiwix
 class SpellingsDB
 {
 public: // functions
-  explicit SpellingsDB(const zim::Archive& archive, std::string path);
+  SpellingsDB(const zim::Archive& archive, std::filesystem::path path);
   ~SpellingsDB();
 
   SpellingsDB(const SpellingsDB& ) = delete;
