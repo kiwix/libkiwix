@@ -42,16 +42,13 @@ protected:
   }
 };
 
+void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
+{
 #define EXPECT_SPELLING_CORRECTION(query, maxSuggestions, parenthesizedExpectedResult) \
   EXPECT_EQ(                                                                   \
       spellingsDB.getSpellingCorrections(query, maxSuggestions),               \
       std::vector<std::string> parenthesizedExpectedResult                     \
   )
-
-TEST_F(SpellingCorrectionTest, allInOne)
-{
-  const auto archive = zim::Archive("./test/spelling_correction_test.zim");
-  kiwix::SpellingsDB spellingsDB(archive, TEST_DB_PATH);
 
   EXPECT_SPELLING_CORRECTION("", 1, ({}));
 
@@ -170,4 +167,11 @@ TEST_F(SpellingCorrectionTest, allInOne)
   // Only one spelling correction can be requested
   // EXPECT_SPELLING_CORRECTION("Kung",  2, ({"King", "Kong"}));
   EXPECT_THROW(spellingsDB.getSpellingCorrections("Kung", 2), std::runtime_error);
+}
+
+TEST_F(SpellingCorrectionTest, allInOne)
+{
+  const auto archive = zim::Archive("./test/spelling_correction_test.zim");
+  kiwix::SpellingsDB spellingsDB(archive, TEST_DB_PATH);
+  testSpellingCorrections(spellingsDB);
 }
