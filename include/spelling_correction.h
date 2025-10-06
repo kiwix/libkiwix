@@ -41,7 +41,7 @@ namespace kiwix
 class SpellingsDB
 {
 public: // functions
-  SpellingsDB(const zim::Archive& archive, std::filesystem::path path);
+  SpellingsDB(const zim::Archive& archive, std::filesystem::path cacheDirPath);
   ~SpellingsDB();
 
   SpellingsDB(const SpellingsDB& ) = delete;

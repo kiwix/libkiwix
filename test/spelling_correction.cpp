@@ -192,14 +192,14 @@ TEST_F(SpellingCorrectionTest, SpellingsDBCannotBeCreatedInAReadOnlyDirectory)
   makeTmpDirReadOnly();
 
   EXPECT_THROW(
-    const kiwix::SpellingsDB spellingsDB(*archive, tmpDirPath / "spellings.db"),
+    const kiwix::SpellingsDB spellingsDB(*archive, tmpDirPath),
     Xapian::DatabaseCreateError
   );
 }
 
 TEST_F(SpellingCorrectionTest, allInOne)
 {
-  const auto spellingsDbPath = tmpDirPath / "spellings.db";
+  const auto spellingsDbPath = tmpDirPath;
 
   {
     const kiwix::SpellingsDB spellingsDB(*archive, spellingsDbPath);

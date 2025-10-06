@@ -20,6 +20,7 @@
 #include "spelling_correction.h"
 #include "zim/archive.h"
 
+#include <sstream>
 #include <stdexcept>
 
 #include <xapian.h>
@@ -53,8 +54,21 @@ void createXapianDB(std::string path, const zim::Archive& archive)
   std::filesystem::remove_all(tmpDbPath);
 }
 
-std::unique_ptr<Xapian::Database> openOrCreateXapianDB(std::string path, const zim::Archive& archive)
+std::string spellingsDBPathForZIMArchive(std::filesystem::path cacheDirPath, const zim::Archive& a)
 {
+  // The version of spellings DB must be updated each time an important change
+  // to the implementation is made that renders using the previous version
+  // impossible or undesirable.
+  const char SPELLINGS_DB_VERSION[] = "0.1";
+
+  std::ostringstream filename;
+  filename << a.getUuid() << ".spellingsdb.v" << SPELLINGS_DB_VERSION;
+  return (cacheDirPath / filename.str()).string();
+}
+
+std::unique_ptr<Xapian::Database> openOrCreateXapianDB(std::filesystem::path cacheDirPath, const zim::Archive& archive)
+{
+  const auto path = spellingsDBPathForZIMArchive(cacheDirPath, archive);
   try
   {
     return std::make_unique<Xapian::Database>(path);
@@ -68,8 +82,8 @@ std::unique_ptr<Xapian::Database> openOrCreateXapianDB(std::string path, const z
 
 } // unnamed namespace
 
-SpellingsDB::SpellingsDB(const zim::Archive& archive, std::filesystem::path path)
-  : impl_(openOrCreateXapianDB(path.string(), archive))
+SpellingsDB::SpellingsDB(const zim::Archive& archive, std::filesystem::path cacheDirPath)
+  : impl_(openOrCreateXapianDB(cacheDirPath, archive))
 {
 }
 
