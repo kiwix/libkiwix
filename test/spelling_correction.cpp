@@ -37,22 +37,7 @@ protected:
   }
 
   void TearDown() override {
-    std::filesystem::permissions(
-        tmpDirPath,
-        std::filesystem::perms::owner_write,
-        std::filesystem::perm_options::add
-    );
     std::filesystem::remove_all(tmpDirPath);
-  }
-
-  void makeTmpDirReadOnly() {
-    using std::filesystem::perms;
-
-    std::filesystem::permissions(
-        tmpDirPath,
-        perms::owner_write | perms::group_write | perms::others_write,
-        std::filesystem::perm_options::remove
-    );
   }
 
 protected:
@@ -192,29 +177,41 @@ void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
   EXPECT_THROW(spellingsDB.getSpellingCorrections("Kung", 2), std::runtime_error);
 }
 
-TEST_F(SpellingCorrectionTest, SpellingsDBCannotBeCreatedInAReadOnlyDirectory)
-{
-  makeTmpDirReadOnly();
+using StrCollection = std::vector<std::string>;
 
-  EXPECT_THROW(
-    const kiwix::SpellingsDB spellingsDB(*archive, tmpDirPath),
-    Xapian::DatabaseCreateError
-  );
+StrCollection directoryEntries(std::filesystem::path dirPath)
+{
+  StrCollection result;
+  for ( const auto& dirEntry : std::filesystem::directory_iterator(dirPath) ) {
+    result.push_back(dirEntry.path().string());
+  }
+  return result;
 }
 
 TEST_F(SpellingCorrectionTest, allInOne)
 {
-  const auto spellingsDbPath = tmpDirPath;
-
+  const auto tmpDirModTime0 = std::filesystem::last_write_time(tmpDirPath);
+  ASSERT_TRUE(directoryEntries(tmpDirPath).empty());
   {
-    const kiwix::SpellingsDB spellingsDB(*archive, spellingsDbPath);
+    const kiwix::SpellingsDB spellingsDB(*archive, tmpDirPath);
     testSpellingCorrections(spellingsDB);
   }
 
-  makeTmpDirReadOnly();
+  const auto tmpDirModTime1 = std::filesystem::last_write_time(tmpDirPath);
+
+  const auto spellingsDbPath = tmpDirPath / "554c9707-897e-097a-53ba-1b1306d8bb88.spellingsdb.v0.1";
+
+  const StrCollection EXPECTED_DIR_CONTENT{ spellingsDbPath.string() };
+  ASSERT_EQ(directoryEntries(tmpDirPath), EXPECTED_DIR_CONTENT);
+  ASSERT_LT(tmpDirModTime0, tmpDirModTime1);
+  const auto fileModTime = std::filesystem::last_write_time(spellingsDbPath);
 
   {
-    const kiwix::SpellingsDB spellingsDB(*archive, spellingsDbPath);
+    const kiwix::SpellingsDB spellingsDB(*archive, tmpDirPath);
     testSpellingCorrections(spellingsDB);
   }
+
+  ASSERT_EQ(directoryEntries(tmpDirPath), EXPECTED_DIR_CONTENT );
+  ASSERT_EQ(tmpDirModTime1, std::filesystem::last_write_time(tmpDirPath));
+  ASSERT_EQ(fileModTime,    std::filesystem::last_write_time(spellingsDbPath));
 }
