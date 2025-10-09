@@ -94,14 +94,19 @@ void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
   EXPECT_SPELLING_CORRECTION("Camera", 1, ({"Kamera"}));
   EXPECT_SPELLING_CORRECTION("Kaos", 1, ({"Chaos"}));
 
-  // The spelling correction "Lax -> Lachs" is not returned because the max
-  // edit distance is capped at (length(query_word) - 1) which reduces our
-  // passed value of the max edit distance argument from 3 to 2. This
-  // change was brought by
+  // The spelling correction "Lax -> Lachs" is affected by commit
   // https://github.com/xapian/xapian/commit/0cbe35de5c392623388946e6769aa03f912fdde4
-  // and first appears in v1.4.19 release of Xapian.
-  //EXPECT_SPELLING_CORRECTION("Lax", 1, ({"Lachs"}));
-  EXPECT_SPELLING_CORRECTION("Lax", 1, ({}));
+  // which caps the edit distance at (length(query_word) - 1). As a result, the
+  // max edit distance parameter that we pass into get_spelling_suggestion() is
+  // reduced from 3 to 2 and is below the edit distance of "Lachs" from "Lax".
+  const auto xapianVersion = std::make_tuple(Xapian::major_version(),
+                                             Xapian::minor_version(),
+                                             Xapian::revision());
+  if ( xapianVersion < std::make_tuple(1, 4, 19) ) {
+    EXPECT_SPELLING_CORRECTION("Lax", 1, ({"Lachs"}));
+  } else {
+    EXPECT_SPELLING_CORRECTION("Lax", 1, ({}));
+  }
 
   EXPECT_SPELLING_CORRECTION("Mont", 1, ({"Mond"}));
   EXPECT_SPELLING_CORRECTION("Umweltstandart", 1, ({"Umweltstandard"}));
