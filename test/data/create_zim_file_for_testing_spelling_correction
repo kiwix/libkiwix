@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+
+mydir=$(readlink -f "$(dirname "$0")")
+myname=$(basename "$0")
+cd "$mydir"
+
+zimfilename='spelling_correction_test.zim'
+
+rm -f "$zimfilename"
+
+datadir=$(mktemp -d --tmpdir $myname.XXXXXX)
+function cleanup()
+{
+    rm -rf "$datadir"
+}
+trap cleanup EXIT SIGINT SIGQUIT SIGHUP SIGTERM
+
+generate_html_file()
+{
+  local word="$1"
+  local letter_count=${#word}
+  local letters=""
+  local i
+  for (( i=0; i<letter_count; ++i ));
+  do
+    local l=${word:i:1}
+    if (( i == letter_count - 1 ))
+    then
+      letters+="and '$l'"
+    else
+      letters+="'$l', "
+    fi
+  done
+
+  cat >"$word".html <<END
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <title>$word</title>
+ </head>
+ <body>
+  <p>'$word' is a word consisting of the letters $letters.</p>
+ </body>
+</html>
+END
+}
+
+generate_zim_file_data()
+{
+  local titles=(
+      "Abenteuer"
+      "Applaus"
+      "Assistent"
+      "Attacke"
+      "Bewandtnis"
+      "Biene"
+      "Botschafter"
+      "Chaos"
+      "Entgelt"
+      "Entzündung"
+      "Fahrradschloss"
+      "Führerschein"
+      "Gral"
+      "Hierarchie"
+      "Honig"
+      "Impfung"
+      "Kamera"
+      "Konkurrenz"
+      "Lachs"
+      "Mond"
+      "Pflaster"
+      "Phänomen"
+      "Prise"
+      "Schirmmütze"
+      "Sohn"
+      "Stuhl"
+      "Teller"
+      "Thermoskanne"
+      "Trog"
+      "Umweltstandard"
+      "Unfug"
+      "Wohnzimmer"
+      "Zunge"
+      "aber"
+      "abonnieren"
+      "amtieren"
+      "attestieren"
+      "ausleeren"
+      "beißen"
+      "ebenfalls"
+      "enttäuschen"
+      "fort"
+      "gefleckt"
+      "gefährlich"
+      "gestern"
+      "gewähren"
+      "hässlich"
+      "konkurrieren"
+      "kämmen"
+      "lustig"
+      "müssen"
+      "nämlich"
+      "runterfallen"
+      "sanft"
+      "schubsen"
+      "seit"
+      "vorgestern"
+      "wahrscheinlich"
+
+      "Willkommen"
+
+      # Entries for demonstrating shortcomings of the PoC implementation
+      "Lorem ipsum"
+      "King"
+      "Kong"
+    )
+
+    local t
+    (
+    cd "$datadir"
+    cp "$mydir"/../../static/skin/favicon/favicon-32x32.png favicon.png
+    for t in "${titles[@]}";
+    do
+      generate_html_file "$t"
+    done
+    )
+}
+
+generate_zim_file_data
+zimwriterfs --withoutFTIndex --dont-check-arguments \
+            -w Willkommen.html \
+            -I favicon.png \
+            -l deu \
+            -n spelling_correction_test \
+            -t "Spelling corrections test" \
+            -d "ZIM file for testing spelling corrections" \
+            -c "Kiwix" \
+            -p "Kiwix" \
+            $datadir \
+            "$zimfilename" \
+&& echo "$zimfilename was successfully created" \
+|| echo '!!! Failed to create' "$zimfilename" '!!!' >&2
