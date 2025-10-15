@@ -79,6 +79,7 @@ class Filter {
     uint64_t activeFilters;
     Tags _acceptTags;
     Tags _rejectTags;
+    std::string _id;
     std::string _category;
     std::string _lang;
     std::string _publisher;
@@ -141,7 +142,7 @@ class Filter {
      *  which case a book in any of those languages will match).
      */
     Filter& lang(std::string lang);
-
+    Filter& id(std::string id);
     Filter& publisher(std::string publisher);
     Filter& creator(std::string creator);
     Filter& maxSize(size_t size);
@@ -154,7 +155,8 @@ class Filter {
     bool hasQuery() const;
     const std::string& getQuery() const { return _query; }
     bool queryIsPartial() const { return _queryIsPartial; }
-
+    bool hasId() const;
+    const std::string& getId() const { return _id; }
     bool hasName() const;
     const std::string& getName() const { return _name; }
 
