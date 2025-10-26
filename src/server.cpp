@@ -29,6 +29,22 @@
 
 namespace kiwix {
 
+namespace
+{
+
+std::string makeServerUrl(std::string host, int port, std::string root)
+{
+  const int httpDefaultPort = 80;
+
+  if (port == httpDefaultPort) {
+    return "http://" + host + root;
+  } else {
+    return "http://" + host + ":" + std::to_string(port) + root;
+  }
+}
+
+}  // unnamed namespace
+
 Server::Server(LibraryPtr library, std::shared_ptr<NameMapper> nameMapper) :
   mp_library(library),
   mp_nameMapper(nameMapper),
@@ -110,6 +126,18 @@ IpAddress Server::getAddress() const
 IpMode Server::getIpMode() const
 {
   return mp_server->getIpMode();
+}
+
+std::vector<std::string> Server::getServerAccessUrls() const
+{
+  std::vector<std::string> result;
+  if (!m_addr.addr.empty()) {
+    result.push_back(makeServerUrl(m_addr.addr, m_port, m_root));
+  }
+  if (!m_addr.addr6.empty()) {
+    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", m_port, m_root));
+  }
+  return result;
 }
 
 }
