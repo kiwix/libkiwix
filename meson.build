@@ -48,7 +48,14 @@ if (host_machine.system() == 'linux' and compiler.get_id() == 'gcc') or \
 else
   thread_dep = dependency('', required:false)
 endif
+
 libicu_dep = dependency('icu-i18n', static:static_deps)
+if libicu_dep.version().version_compare('>= 76')
+  libicu_deps = [libicu_dep, dependency('icu-uc', static:static_deps)]
+else
+  libicu_deps = [libicu_dep]
+endif
+
 pugixml_dep = dependency('pugixml', static:static_deps)
 libcurl_dep = dependency('libcurl', static:static_deps)
 microhttpd_dep = dependency('libmicrohttpd', static:static_deps)
@@ -86,7 +93,11 @@ if build_machine.system() == 'windows'
 endif
 
 
-all_deps = [thread_dep, libicu_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep]
+# Dependencies as string
+all_deps = [thread_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep]
+
+# Dependencies as array
+all_deps += libicu_deps
 
 inc = include_directories('include', extra_include)
 
