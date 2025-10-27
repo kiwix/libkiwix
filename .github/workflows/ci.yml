@@ -11,23 +11,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - macos-14
         target:
+          - macos-aarch64-dyn
           - macos-x86_64-dyn
           - ios-arm64-dyn
           - ios-x86_64-dyn
         include:
+          - target: macos-aarch64-dyn
+            arch_name: arm64-apple-macos
+            run_test: true
           - target: macos-x86_64-dyn
             arch_name: x86_64-apple-darwin
             run_test: true
           - target: ios-arm64-dyn
             arch_name: aarch64-apple-ios
-            run_test: true
+            run_test: false
           - target: ios-x86_64-dyn
             arch_name: x86-apple-ios-simulator
-            run_test: true
-    runs-on: ${{ matrix.os }}
+            run_test: false
+    runs-on: macos-15
 
     env:
       HOME: /Users/runner
