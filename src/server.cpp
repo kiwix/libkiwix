@@ -75,12 +75,12 @@ void Server::stop() {
 void Server::setRoot(const std::string& root)
 {
   m_root = root;
-  if (m_root[0] != '/') {
-    m_root = "/" + m_root;
-  }
-  if (m_root.back() == '/') {
-    m_root.erase(m_root.size() - 1);
-  }
+  while (!m_root.empty() && m_root.back() == '/')
+    m_root.pop_back();
+
+  while (!m_root.empty() && m_root.front() == '/')
+    m_root = m_root.substr(1);
+  m_root = m_root.empty() ? m_root : "/" + m_root;
 }
 
 void Server::setAddress(const std::string& addr)
