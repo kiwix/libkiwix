@@ -56,7 +56,13 @@ bool Server::start() {
     m_ipConnectionLimit,
     m_catalogOnlyMode,
     m_contentServerUrl));
-  return mp_server->start();
+  if (mp_server->start()) {
+    // this syncs m_addr of InternalServer and Server as they may diverge
+    m_addr = mp_server->getAddress();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void Server::stop() {
@@ -93,12 +99,12 @@ void Server::setAddress(const std::string& addr)
 
 int Server::getPort() const
 {
-  return mp_server->getPort();
+  return m_port;
 }
 
 IpAddress Server::getAddress() const
 {
-  return mp_server->getAddress();
+  return m_addr;
 }
 
 IpMode Server::getIpMode() const
