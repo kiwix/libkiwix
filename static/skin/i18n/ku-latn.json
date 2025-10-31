@@ -4,7 +4,6 @@
 			"Bikarhêner"
 		]
 	},
-	"name": "kurdî",
 	"suggest-full-text-search": "'{{{SEARCH_TERMS}}}' dihewîne...",
 	"no-such-book": "Kitêbeke wisa nîne: {{BOOK_NAME}}",
 	"too-many-books": "Pir zêde kitêb hatiye xwestin ({{NB_BOOKS}}) ku sînor {{LIMIT}} ye",

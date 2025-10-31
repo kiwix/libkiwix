@@ -10,7 +10,6 @@
 			"ThisCarthing"
 		]
 	},
-	"name": "Deutsch",
 	"suggest-full-text-search": "enthält '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Buch nicht gefunden: {{BOOK_NAME}}",
 	"too-many-books": "Zu viele Bücher angefragt ({{NB_BOOKS}}), die Beschränkung liegt bei {{LIMIT}}",

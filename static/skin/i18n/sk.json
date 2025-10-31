@@ -4,7 +4,6 @@
 			"Yardom78"
 		]
 	},
-	"name": "slovenčina",
 	"suggest-full-text-search": "obsahuje '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Žiadna kniha ako: {{BOOK_NAME}}",
 	"too-many-books": "Príliš veľa požadovaných kníh ({{NB_BOOKS}}), limit je {{LIMIT}}",

@@ -4,7 +4,6 @@
 			"Besnik b"
 		]
 	},
-	"name": "Shqip",
 	"suggest-full-text-search": "që përmban '{{{SEARCH_TERMS}}}'…",
 	"no-such-book": "S’ka libër të tillë: {{BOOK_NAME}}",
 	"too-many-books": "U kërkuan shumë libra ({{NB_BOOKS}}), teksa kufiri është {{LIMIT}}",

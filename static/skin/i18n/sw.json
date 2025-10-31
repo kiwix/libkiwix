@@ -7,7 +7,6 @@
 			"Wangombe"
 		]
 	},
-	"name": "Kiswahili",
 	"suggest-full-text-search": "ina '{{{SEARCH_TERMS}}}}'...",
 	"no-such-book": "Hakuna kitabu kama hiki: {{BOOK_NAME}}",
 	"too-many-books": "Vitabu vingi mno vimeombwa ({{NB_BOOKS}}) ambapo kikomo ni {{LIMIT}}",

@@ -7,7 +7,6 @@
 			"Samoasambia"
 		]
 	},
-	"name": "suomi",
 	"suggest-full-text-search": "sisältää '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Kirjaa {{BOOK_NAME}} ei ole olemassa",
 	"url-not-found": "Pyydettyä URL-osoitetta \"{{url}}\" ei löytynyt tältä palvelimelta.",

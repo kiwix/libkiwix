@@ -6,7 +6,6 @@
 			"Ανώνυμος Βικιπαιδιστής"
 		]
 	},
-	"name": "Αγγλικά",
 	"no-such-book": "Δεν υπάρχει τέτοιο βιβλίο: {{BOOK_NAME}}",
 	"welcome-page-overzealous-filter": "Κανένα αποτέλεσμα. Θέλετε να <a href=\"{{URL}}\">επαναφέρετε το φίλτρο</a>;",
 	"powered-by-kiwix-html": "Με την υποστήριξη by&nbsp;<a href=\"https://kiwix.org\">Kiwix</a>",

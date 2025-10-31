@@ -5,7 +5,6 @@
 			"YaronSh"
 		]
 	},
-	"name": "עברית",
 	"suggest-full-text-search": "מכיל '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "אין ספר כזה: {{BOOK_NAME}}",
 	"too-many-books": "נתבקשו יותר ספרים ({{NB_BOOKS}}) והמגבלה היא {{LIMIT}}",

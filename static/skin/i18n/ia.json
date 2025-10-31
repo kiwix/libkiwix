@@ -5,7 +5,6 @@
 			"McDutchie"
 		]
 	},
-	"name": "interlingua",
 	"suggest-full-text-search": "continente '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Necun tal libro: {{BOOK_NAME}}",
 	"too-many-books": "Troppo de libros demandate ({{NB_BOOKS}}); le limite es {{LIMIT}}",

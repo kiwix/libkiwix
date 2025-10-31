@@ -8,7 +8,6 @@
 			"YoReaper"
 		]
 	},
-	"name": "Português",
 	"suggest-full-text-search": "Contendo '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Não existe o livro: {{BOOK_NAME}}",
 	"too-many-books": "Muitos livros solicitados {{NB_BOOKS}} mas o limite é {{LIMIT}}",

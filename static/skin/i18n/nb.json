@@ -4,7 +4,6 @@
 			"TorgeirS"
 		]
 	},
-	"name": "Engelsk",
 	"suggest-full-text-search": "inneholder '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Finner ingen slik bok: {{BOOK_NAME}}",
 	"too-many-books": "Det er forespurt for mange bøker {{NB_BOOKS}} der grensen er {{LIMIT}}",

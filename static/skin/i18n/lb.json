@@ -6,7 +6,6 @@
 			"Volvox"
 		]
 	},
-	"name": "Lëtzebuergesch",
 	"suggest-full-text-search": "enthält '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Buch net fonnt: {{BOOK_NAME}}",
 	"too-many-books": "Ze vill Bicher ugefrot ({{NB_BOOKS}}), d'Limitt läit bei {{LIMIT}}",

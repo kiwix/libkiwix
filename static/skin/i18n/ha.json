@@ -8,7 +8,6 @@
 			"Yusuf Sa'adu"
 		]
 	},
-	"name": "Turanci",
 	"suggest-full-text-search": "dauke da ''{{{SEARCH_TERMS}}}''...",
 	"no-such-book": "Babu irin wannan littafin: {{BOOK_NAME}}",
 	"too-many-books": "An nemi littattafai da yawa ({{NB_BOOKS}}) inda iyaka shine {{LIMIT}}",

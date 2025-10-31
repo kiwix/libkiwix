@@ -4,7 +4,6 @@
 			"Kareyac"
 		]
 	},
-	"name": "Fake language for i18n testing"
 	, "suggest-full-text-search": "[I18N TESTING] cOnTaInInG '{{{SEARCH_TERMS}}}'..."
 	, "no-such-book": "[I18N TESTING] No such book: {{BOOK_NAME}}. Sorry."
 	, "url-not-found": "[I18N TESTING] URL not found: {{url}}"

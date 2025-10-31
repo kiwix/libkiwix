@@ -6,7 +6,6 @@
 			"Oby Ezeilo"
 		]
 	},
-	"name": "Bekee",
 	"suggest-full-text-search": "nwere {{{SEARCH_TERMS}}}'",
 	"no-such-book": "Enweghị akwụkwọ dị otú a: {{BOOK_NAME}}",
 	"too-many-books": "Arịrịọ ọtụtụ akwụkwọ ({{NB_BOOKS}}) ebe oke bụ {{LIMIT}}",

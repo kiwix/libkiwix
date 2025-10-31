@@ -9,7 +9,6 @@
 			"Wheelygay"
 		]
 	},
-	"name": "italiano",
 	"suggest-full-text-search": "contenente '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Nessun libro con questo nome: {{BOOK_NAME}}",
 	"too-many-books": "Troppi libri richiesti ({{NB_BOOKS}}) dove il limite è {{LIMIT}}",

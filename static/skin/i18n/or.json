@@ -5,7 +5,6 @@
 			"Psubhashish"
 		]
 	},
-	"name": "ଓଡ଼ିଆ",
 	"suggest-full-text-search": "${{{SEARCH_TERMS}}} ଧାରଣ କରିଛି ...",
 	"no-such-book": "ଏପରି କୌଣସି ପୁସ୍ତକ ନାହିଁଃ ${{BOOK_NAME}}",
 	"too-many-books": "ଅତ୍ୟଧିକ ବହି ଅନୁରୋଧ (${{NB_BOOKS}}) ଯେଉଁଠାରେ ସୀମା ${{LIMIT}} |",

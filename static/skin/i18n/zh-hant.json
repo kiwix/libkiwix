@@ -6,7 +6,6 @@
 			"Winston Sung"
 		]
 	},
-	"name": "繁體中文",
 	"suggest-full-text-search": "正在包含「{{{SEARCH_TERMS}}}」…",
 	"no-such-book": "沒有這樣的書籍：{{BOOK_NAME}}",
 	"too-many-books": "請求太多個書籍（{{NB_BOOKS}}），上限是 {{LIMIT}} 個",

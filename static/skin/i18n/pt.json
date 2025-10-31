@@ -4,7 +4,6 @@
 			"B3rnas"
 		]
 	},
-	"name": "português",
 	"suggest-full-text-search": "contendo '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Não existe o livro: {{BOOK_NAME}}",
 	"too-many-books": "Demasiadas solicitações de livros ({{NB_BOOKS}}) onde o limite é {{LIMIT}}",

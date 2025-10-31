@@ -5,7 +5,6 @@
 			"Ykhwong"
 		]
 	},
-	"name": "한국어",
 	"suggest-full-text-search": "'{{{SEARCH_TERMS}}}' 포함...",
 	"no-such-book": "해당 책이 없습니다: {{BOOK_NAME}}",
 	"too-many-books": "요청된 책이 너무 많습니다. ({{NB_BOOKS}}) 한도는 {{LIMIT}}입니다.",

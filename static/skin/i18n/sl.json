@@ -6,7 +6,6 @@
 			"Rofiatmustapha12"
 		]
 	},
-	"name": "slovenščina",
 	"suggest-full-text-search": "vsebuje »{{{SEARCH_TERMS}}}« ...",
 	"no-such-book": "Ni take knjige: {{BOOK_NAME}}",
 	"too-many-books": "Preveč zahtevanih knjig ({{NB_BOOKS}}), omejitev je {{LIMIT}}",

@@ -4,7 +4,6 @@
 			"Akmaie Ajam"
 		]
 	},
-	"name": "Bahasa Inggris",
 	"suggest-full-text-search": "mengandung '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Tidak ada buku seperti ini: {{BOOK_NAME}}",
 	"too-many-books": "Terlalu banyak buku yang diminta ({{NB_BOOKS}}) dimana batasnya adalah {{LIMIT}}",

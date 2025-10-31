@@ -3,7 +3,6 @@
 		"authors": [
 		]
 	},
-	"name":"English",
 	"suggest-full-text-search" : "containing '{{{SEARCH_TERMS}}}'..."
 	, "no-such-book" : "No such book: {{BOOK_NAME}}"
 	, "too-many-books" : "Too many books requested ({{NB_BOOKS}}) where limit is {{LIMIT}}"

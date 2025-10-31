@@ -5,7 +5,6 @@
 			"Rofiatmustapha12"
 		]
 	},
-	"name": "Türkçe",
 	"suggest-full-text-search": "'{{{SEARCH_TERMS}}}' içeriyor...",
 	"no-such-book": "Böyle bir kitap yok: {{BOOK_NAME}}",
 	"too-many-books": "Sınır {{LIMIT}} olduğunda çok fazla ({{NB_BOOKS}}) kitap istendi",

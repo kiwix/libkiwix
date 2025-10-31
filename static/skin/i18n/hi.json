@@ -5,7 +5,6 @@
 			"Juuz0"
 		]
 	},
-	"name": "हिन्दी",
 	"suggest-full-text-search": "जिसमें '{{{SEARCH_TERMS}}}' शामिल है...",
 	"no-such-book": "ऐसी कोई किताब नहीं: {{BOOK_NAME}}",
 	"too-many-books": "बहुत सारी पुस्तकों का अनुरोध किया गया है ({{NB_BOOKS}}) जहां सीमा {{LIMIT}} है",

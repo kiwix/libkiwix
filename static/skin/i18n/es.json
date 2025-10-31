@@ -10,7 +10,6 @@
 			"Vis4valentine"
 		]
 	},
-	"name": "Español",
 	"suggest-full-text-search": "que contenga \"{{{SEARCH_TERMS}}}\"...",
 	"no-such-book": "No existe el libro: {{BOOK_NAME}}",
 	"too-many-books": "Demasiadas solicitudes de libros ({{NB_BOOKS}}) donde el límite es {{LIMIT}}",

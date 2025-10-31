@@ -5,7 +5,6 @@
 			"Ruky Wunpini"
 		]
 	},
-	"name": "Silimiinsili",
 	"suggest-full-text-search": "Gbubi la '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Lala buku kani:{{BOOK_NAME}}",
 	"too-many-books": "Buku nima pam ka bɛ daa suhi ({{NB_BOOKS}}) din ni ka tariga nyɛ {{LIMIT}}",

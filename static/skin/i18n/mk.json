@@ -5,7 +5,6 @@
 			"Kelson"
 		]
 	},
-	"name": "македонски",
 	"suggest-full-text-search": "содржи „{{{SEARCH_TERMS}}}“...",
 	"no-such-book": "Нема книга нарчена {{BOOK_NAME}}",
 	"too-many-books": "Побаравте премногу книги ({{NB_BOOKS}}). Ограничени сте на {{LIMIT}}",

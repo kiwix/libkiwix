@@ -11,7 +11,6 @@
 			"Smavrina"
 		]
 	},
-	"name": "русский",
 	"suggest-full-text-search": "содержащее '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Такой книги нет: {{BOOK_NAME}}",
 	"too-many-books": "Запрошено слишком много книг ({{NB_BOOKS}}), максимальное количество — {{LIMIT}}.",

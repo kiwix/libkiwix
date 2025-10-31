@@ -8,7 +8,6 @@
 			"WikiPhoenix"
 		]
 	},
-	"name": "Svenska",
 	"suggest-full-text-search": "innehåller '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Ingen sådan bok: {{BOOK_NAME}}",
 	"too-many-books": "För många böcker begärda ({{NB_BOOKS}}) där gränsen är {{LIMIT}}",

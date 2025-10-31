@@ -8,7 +8,6 @@
 			"Vistaus"
 		]
 	},
-	"name": "Nederlands",
 	"suggest-full-text-search": "bevat ‘{{{SEARCH_TERMS}}}’…",
 	"no-such-book": "Boek bestaat niet: {{BOOK_NAME}}",
 	"too-many-books": "Er zijn teveel boeken opgevraagd ({{NB_BOOKS}}). De limiet is {{LIMIT}}.",

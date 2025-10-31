@@ -5,7 +5,6 @@
 			"WaldiSt"
 		]
 	},
-	"name": "Polski",
 	"suggest-full-text-search": "zawierający '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Brak takiej książki: {{BOOK_NAME}}",
 	"url-not-found": "Żądany adres URL „{{url}}” nie został znaleziony na tym serwerze.",

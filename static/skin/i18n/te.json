@@ -6,7 +6,6 @@
 			"V Bhavya"
 		]
 	},
-	"name": "ఇంగ్లీషు",
 	"suggest-full-text-search": "'{{{SEARCH_TERMS}}}'ని కలిగి ఉంది...",
 	"no-such-book": "అలాంటి పుస్తకం లేదు: {{BOOK_NAME}}",
 	"too-many-books": "పరిమితి {{LIMIT}} ఉన్న చాలా పుస్తకాలు అభ్యర్థించబడ్డాయి ({{NB_BOOKS}})",

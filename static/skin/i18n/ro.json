@@ -5,7 +5,6 @@
 			"Trotinel Iftode"
 		]
 	},
-	"name": "Engleză",
 	"suggest-full-text-search": "care conține '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Nu există o astfel de carte: {{BOOK_NAME}}",
 	"too-many-books": "Prea multe cărți solicitate ({{NB_BOOKS}}) unde limita este {{LIMIT}}",

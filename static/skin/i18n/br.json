@@ -5,7 +5,6 @@
 			"Y-M D"
 		]
 	},
-	"name": "brezhoneg",
 	"suggest-full-text-search": "E lec'h emañ \"{{{SEARCH_TERMS}}}\"...",
 	"no-such-book": "N’eus ket eus al levr-mañ: {{BOOK_NAME}}",
 	"no-book-found": "N’eus levr ebet a glot gant an dezverkoù-se",
