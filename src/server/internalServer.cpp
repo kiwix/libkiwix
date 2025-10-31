@@ -99,16 +99,6 @@ bool ipAvailable(const std::string addr)
   return false;
 }
 
-inline std::string normalizeRootUrl(std::string rootUrl)
-{
-  while ( !rootUrl.empty() && rootUrl.back() == '/' )
-    rootUrl.pop_back();
-
-  while ( !rootUrl.empty() && rootUrl.front() == '/' )
-    rootUrl = rootUrl.substr(1);
-  return rootUrl.empty() ? rootUrl : "/" + rootUrl;
-}
-
 std::string
 fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
 {
@@ -440,7 +430,7 @@ InternalServer::InternalServer(LibraryPtr library,
                                std::string contentServerUrl) :
   m_addr(addr),
   m_port(port),
-  m_root(normalizeRootUrl(root)),
+  m_root(root),
   m_rootPrefixOfDecodedURL(m_root),
   m_nbThreads(nbThreads),
   m_multizimSearchLimit(multizimSearchLimit),

@@ -29,6 +29,22 @@
 
 namespace kiwix {
 
+namespace
+{
+
+std::string makeServerUrl(std::string host, int port, std::string root)
+{
+  const int httpDefaultPort = 80;
+
+  if (port == httpDefaultPort) {
+    return "http://" + host + root;
+  } else {
+    return "http://" + host + ":" + std::to_string(port) + root;
+  }
+}
+
+}  // unnamed namespace
+
 Server::Server(LibraryPtr library, std::shared_ptr<NameMapper> nameMapper) :
   mp_library(library),
   mp_nameMapper(nameMapper),
@@ -56,7 +72,13 @@ bool Server::start() {
     m_ipConnectionLimit,
     m_catalogOnlyMode,
     m_contentServerUrl));
-  return mp_server->start();
+  if (mp_server->start()) {
+    // this syncs m_addr of InternalServer and Server as they may diverge
+    m_addr = mp_server->getAddress();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void Server::stop() {
@@ -69,12 +91,12 @@ void Server::stop() {
 void Server::setRoot(const std::string& root)
 {
   m_root = root;
-  if (m_root[0] != '/') {
-    m_root = "/" + m_root;
-  }
-  if (m_root.back() == '/') {
-    m_root.erase(m_root.size() - 1);
-  }
+  while (!m_root.empty() && m_root.back() == '/')
+    m_root.pop_back();
+
+  while (!m_root.empty() && m_root.front() == '/')
+    m_root = m_root.substr(1);
+  m_root = m_root.empty() ? m_root : "/" + m_root;
 }
 
 void Server::setAddress(const std::string& addr)
@@ -93,17 +115,29 @@ void Server::setAddress(const std::string& addr)
 
 int Server::getPort() const
 {
-  return mp_server->getPort();
+  return m_port;
 }
 
 IpAddress Server::getAddress() const
 {
-  return mp_server->getAddress();
+  return m_addr;
 }
 
 IpMode Server::getIpMode() const
 {
   return mp_server->getIpMode();
+}
+
+std::vector<std::string> Server::getServerAccessUrls() const
+{
+  std::vector<std::string> result;
+  if (!m_addr.addr.empty()) {
+    result.push_back(makeServerUrl(m_addr.addr, m_port, m_root));
+  }
+  if (!m_addr.addr6.empty()) {
+    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", m_port, m_root));
+  }
+  return result;
 }
 
 }

@@ -69,6 +69,7 @@ namespace kiwix
        int getPort() const;
        IpAddress getAddress() const;
        IpMode getIpMode() const;
+       std::vector<std::string> getServerAccessUrls() const;
 
      protected:
        std::shared_ptr<Library> mp_library;
