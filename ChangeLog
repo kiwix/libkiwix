@@ -1,3 +1,23 @@
+libkiwix 14.1.0
+===============
+
+ * Server:
+  - Viewer detects & tracks intrapage navigation anchors too (@veloman-yunkan #1213)
+  - Add support for catalog only mode (@veloman-yunkan #1219)
+  - Add API which returns server access url (@vighnesh-sawant #1234)
+  - Fix chrome searchbar placeholder text overflow (@aditii2712 #1185)
+  - Fix magnet link queryStyring (@rgaudin #1160)
+  - Improve chrome printing stylesheet (@kelson42 #1202)
+  - Default white background (@kelson42 #1205)
+
+ * Other:
+  - Switched to the new libzim illustrations API (@veloman-yunkan #1226)
+  - Stop building Windows with DEBUG symbols in CI (@kelson42 #1165)
+  - Update many things in the CI/CD (@kelson42 #1203 #1194 #1209 #1207 #1235)
+  - Requires now libzim 9.4.0 (@kelson42 #1231)
+  - Fix compilation for FreeBSD (@OICe2 #1173 #1174)
+  - Wait up to 1s to let aria2c to start before complaining (@kelson42 #1169)
+
 libkiwix 14.0.0
 ===============
 
