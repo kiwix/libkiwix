@@ -10,24 +10,103 @@
     .downloadLinksTitle {
         text-align: center;
         font-size: 32px;
-        margin-bottom: 8px;
+        margin-bottom: 24px;
+    }
+    
+    .download-widget {
+        max-width: 500px;
+        margin: 0 auto;
+        font-family: system-ui, sans-serif;
+    }
+    
+    .download-option {
+        display: block;
+        margin-bottom: 12px;
+        text-decoration: none;
+    }
+    
+    .download-btn {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        background: #f8f9fa;
+        border: 2px solid #dee2e6;
+        border-radius: 10px;
+        color: #495057;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .download-btn:hover {
+        background: #e9ecef;
+        border-color: #6c757d;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        color: #212529;
+        text-decoration: none;
+    }
+    
+    .download-btn .icon {
+        margin-right: 12px;
+        font-size: 18px;
+    }
+    
+    .checksum-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #eee;
+    }
+    
+    .checksum-btn {
+        background: #fff3cd;
+        border-color: #ffeaa7;
+        color: #856404;
+    }
+    
+    .checksum-btn:hover {
+        background: #ffeaa7;
+        border-color: #fdcb6e;
+        color: #856404;
     }
 </style>
 <body>
     <div class="downloadLinksTitle">
         {{{translations.download-links-heading}}}
     </div>
-    <a href="{{url}}" download>
-        <div>{{translations.direct-download-link-text}}</div>
-    </a>
-    <a href="{{url}}.sha256" download>
-        <div>{{translations.hash-download-link-text}}</div>
-    </a>
-    <a href="{{url}}.magnet" target="_blank">
-        <div>{{translations.magnet-link-text}}</div>
-    </a>
-    <a href="{{url}}.torrent" download>
-        <div>{{translations.torrent-download-link-text}}</div>
-    </a>
+    
+    <div class="download-widget">
+        <!-- Direct Download - First -->
+        <a href="{{url}}" download class="download-option">
+            <div class="download-btn">
+                <span class="icon">⬇️</span>
+                {{translations.direct-download-link-text}}
+            </div>
+        </a>
+        
+        <!-- Torrent Download - Second -->
+        <a href="{{url}}.torrent" download class="download-option">
+            <div class="download-btn">
+                <span class="icon">🧲</span>
+                {{translations.torrent-download-link-text}}
+            </div>
+        </a>
+        
+        <!-- Magnet Link - Third -->
+        <a href="{{url}}.magnet" target="_blank" class="download-option">
+            <div class="download-btn">
+                <span class="icon">🔗</span>
+                {{translations.magnet-link-text}}
+            </div>
+        </a>
+        
+        <!-- Checksum - With vertical spacing -->
+        <div class="download-option checksum-section">
+            <a href="{{url}}.sha256" download class="download-btn checksum-btn">
+                <span class="icon">🔒</span>
+                {{translations.hash-download-link-text}}
+            </a>
+        </div>
+    </div>
 </body>
 </html>
