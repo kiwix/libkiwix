@@ -21,7 +21,7 @@
       <title>{{title}}</title>
       <link>{{absolutePath}}</link>
       {{#snippet}}
-        <description>{{>snippet}}...</description>
+        <description>{{{snippet}}}...</description>
       {{/snippet}}
       {{#bookTitle}}
         <book>
