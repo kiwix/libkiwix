@@ -66,6 +66,7 @@ extern "C" {
 
 #include <atomic>
 #include <string>
+#include <regex>
 #include <vector>
 #include <chrono>
 #include <fstream>
@@ -142,6 +143,9 @@ Filter get_search_filter(const RequestContext& request, const std::string& prefi
     try {
       filter.rejectTags(kiwix::split(request.get_argument(prefix+"notag"), ";"));
     } catch (...) {}
+    try {
+      filter.id(request.get_argument(prefix + "id"));
+    } catch (const std::out_of_range&) {}
     return filter;
 }
 
@@ -1169,11 +1173,20 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   const std::string contentPrefix = "/content/";
   const bool isContentPrefixedUrl = startsWith(url, contentPrefix);
   const size_t prefixLength = isContentPrefixedUrl ? contentPrefix.size() : 1;
-  const std::string bookName = request.get_url_part(isContentPrefixedUrl);
+  const std::regex uuid_regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
+  const std::string requestedBookNameOrUUID = request.get_url_part(isContentPrefixedUrl);
   std::shared_ptr<zim::Archive> archive;
+  std::string bookName;
   try {
-    const std::string bookId = mp_nameMapper->getIdForName(bookName);
+    std::string bookId;
+    if (std::regex_match(requestedBookNameOrUUID, uuid_regex)) {
+      bookId = requestedBookNameOrUUID;
+    } else {
+      bookId = mp_nameMapper->getIdForName(requestedBookNameOrUUID);
+    }
+
+    bookName = mp_nameMapper->getNameForId(bookId);
     archive = mp_library->getArchiveById(bookId);
   } catch (const std::out_of_range& e) {}
 
@@ -1186,7 +1199,7 @@ std::unique_ptr<Response> InternalServer::handle_content(const RequestContext& r
   if ( etag )
     return Response::build_304(etag);
 
-  auto urlStr = url.substr(prefixLength + bookName.size());
+  auto urlStr = url.substr(prefixLength + requestedBookNameOrUUID.size());
   if (urlStr[0] == '/') {
     urlStr = urlStr.substr(1);
   }
