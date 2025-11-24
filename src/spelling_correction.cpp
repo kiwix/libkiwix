@@ -20,6 +20,7 @@
 #include "spelling_correction.h"
 #include "zim/archive.h"
 
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 
@@ -86,17 +87,26 @@ SET UTF-8
 TRY qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM
 )";
 
+std::unique_ptr<std::istream> getAffDataStream()
+{
+  const char* const userAffFilePath = ::getenv("KIWIX_NUSPELL_AFF_FILE_PATH");
+  if ( userAffFilePath ) {
+    return std::make_unique<std::ifstream>(userAffFilePath);
+  }
+
+  return std::make_unique<std::istringstream>(nuspellAffFileData);
+}
+
 std::unique_ptr<nuspell::Dictionary> createNuspellDictionary(const zim::Archive& archive)
 {
   auto d = std::make_unique<nuspell::Dictionary>();
   const auto& allTitles = getAllTitles(archive);
-  std::istringstream affSS(nuspellAffFileData);
   std::stringstream dicSS;
   dicSS << allTitles.size() << "\n";
   for ( const auto& t : allTitles ) {
     dicSS << t << "\n";
   }
-  d->load_aff_dic(affSS, dicSS);
+  d->load_aff_dic(*getAffDataStream(), dicSS);
   return d;
 }
 
