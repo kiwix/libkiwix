@@ -271,10 +271,12 @@ function translateErrorPageIfNeeded() {
 let iframeLocationHref = null;
 
 function handle_content_url_change() {
-  if ( iframeLocationHref == contentIframe.contentWindow.location.href )
+  const iframeLocation = contentIframe.contentWindow.location;
+
+  if ( iframeLocationHref == iframeLocation.href ||
+       !iframeLocation.pathname.startsWith(root + '/content/') )
     return;
 
-  const iframeLocation = contentIframe.contentWindow.location;
   iframeLocationHref = iframeLocation.href;
   console.log('handle_content_url_change: ' + iframeLocation.href);
   document.title = contentIframe.contentDocument.title;
