@@ -588,6 +588,7 @@ function setupViewer() {
 
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
+    finishViewerSetup();
     return;
   }
 
@@ -636,6 +637,11 @@ function updateUIText() {
 function finishViewerSetupOnceTranslationsAreLoaded()
 {
   updateUIText();
+  finishViewerSetup();
+}
+
+function finishViewerSetup()
+{
   handle_location_hash_change();
 
   window.onhashchange = handle_location_hash_change;
