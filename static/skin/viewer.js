@@ -433,8 +433,6 @@ function setup_chaperon_mode() {
   }
 }
 
-let viewerSetupComplete = false;
-
 function on_content_load() {
   const loader = document.getElementById("kiwix__loader");
 
@@ -590,6 +588,7 @@ function setupViewer() {
 
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
+    finishViewerSetup();
     return;
   }
 
@@ -638,10 +637,13 @@ function updateUIText() {
 function finishViewerSetupOnceTranslationsAreLoaded()
 {
   updateUIText();
+  finishViewerSetup();
+}
+
+function finishViewerSetup()
+{
   handle_location_hash_change();
 
   window.onhashchange = handle_location_hash_change;
   window.onpopstate = handle_history_state_change;
-
-  viewerSetupComplete = true;
 }
