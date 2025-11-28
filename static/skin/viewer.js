@@ -433,8 +433,6 @@ function setup_chaperon_mode() {
   }
 }
 
-let viewerSetupComplete = false;
-
 function on_content_load() {
   const loader = document.getElementById("kiwix__loader");
 
@@ -642,6 +640,4 @@ function finishViewerSetupOnceTranslationsAreLoaded()
 
   window.onhashchange = handle_location_hash_change;
   window.onpopstate = handle_history_state_change;
-
-  viewerSetupComplete = true;
 }
