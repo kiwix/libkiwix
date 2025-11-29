@@ -63,12 +63,13 @@ zlib_dep = dependency('zlib', static:static_deps)
 xapian_dep = dependency('xapian-core', static:static_deps)
 libtorrent_dep = dependency('libtorrent-rasterbar', static:static_deps)
 
-if compiler.has_header('mustache.hpp', args: '-I' + meson.source_root() + '/include')
-  extra_include = []
-elif compiler.has_header('mustache.hpp')
+
+if compiler.has_header('mustache.hpp')
   extra_include = []
 elif compiler.has_header('mustache.hpp', args: '-I/usr/include/kainjow')
   extra_include = ['/usr/include/kainjow']
+elif compiler.has_header('mustache.hpp', args: '-I/opt/homebrew/include')
+  extra_include = []
 else
   error('Cannot found header mustache.hpp')
 endif
