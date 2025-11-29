@@ -16,7 +16,8 @@ tests = [
     'lrucache',
     'i18n',
     'response',
-    'spelling_correction'
+    'spelling_correction',
+    'libtorrent'
 ]
 
 if build_machine.system() != 'windows'

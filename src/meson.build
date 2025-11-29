@@ -12,6 +12,7 @@ kiwix_sources = [
   'search_renderer.cpp',
   'subprocess.cpp',
   'aria2.cpp',
+  'libtorrent.cpp',
   'tools/base64.cpp',
   'tools/pathTools.cpp',
   'tools/regexTools.cpp',

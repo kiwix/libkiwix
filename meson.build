@@ -61,8 +61,11 @@ libcurl_dep = dependency('libcurl', static:static_deps)
 microhttpd_dep = dependency('libmicrohttpd', static:static_deps)
 zlib_dep = dependency('zlib', static:static_deps)
 xapian_dep = dependency('xapian-core', static:static_deps)
+libtorrent_dep = dependency('libtorrent-rasterbar', static:static_deps)
 
-if compiler.has_header('mustache.hpp')
+if compiler.has_header('mustache.hpp', args: '-I' + meson.source_root() + '/include')
+  extra_include = []
+elif compiler.has_header('mustache.hpp')
   extra_include = []
 elif compiler.has_header('mustache.hpp', args: '-I/usr/include/kainjow')
   extra_include = ['/usr/include/kainjow']
@@ -94,12 +97,15 @@ endif
 
 
 # Dependencies as string
-all_deps = [thread_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep]
+all_deps = [thread_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep, libtorrent_dep]
 
 # Dependencies as array
 all_deps += libicu_deps
 
-inc = include_directories('include', extra_include)
+# Add boost include path for libtorrent
+boost_include = include_directories('/opt/homebrew/include')
+
+inc = include_directories('include', extra_include, '/opt/homebrew/include')
 
 conf = configuration_data()
 conf.set('LIBKIWIX_VERSION', '"@0@"'.format(meson.project_version()))
