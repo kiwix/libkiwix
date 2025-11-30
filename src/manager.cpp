@@ -277,7 +277,12 @@ void Manager::addBooksFromDirectory(const std::string& path,
     for (const auto& dirEntry : fs::directory_iterator(currentPath)) {
       auto resolvedPath = dirEntry.path();
       if (fs::is_symlink(dirEntry)) {
-        resolvedPath = fs::canonical(dirEntry.path());
+        try {
+          resolvedPath = fs::canonical(dirEntry.path());
+        } catch (const std::exception& e) {
+          std::cerr << "Could not resolve symlink " << resolvedPath.u8string() << " to a valid path. Skipping..." << std::endl;
+          continue;
+        }
       }
       const std::string pathString = resolvedPath.u8string();
       std::string resolvedPathExtension = resolvedPath.extension();
