@@ -27,6 +27,8 @@
 #include <iostream>
 #include <set>
 #include <queue>
+#include <cctype>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 
@@ -278,12 +280,15 @@ void Manager::addBooksFromDirectory(const std::string& path,
         resolvedPath = fs::canonical(dirEntry.path());
       }
       const std::string pathString = resolvedPath.u8string();
+      std::string resolvedPathExtension = resolvedPath.extension();
+      std::transform(resolvedPathExtension.begin(), resolvedPathExtension.end(), resolvedPathExtension.begin(),
+          [](unsigned char c){ return std::tolower(c); });
       if (fs::is_directory(resolvedPath)) {
         if (iteratedDirs.find(pathString) == iteratedDirs.end())
           dirQueue.push(pathString);
         else if (verboseFlag)
           std::cout << "Already iterated over " << pathString << ". Skipping..." << std::endl;
-      } else if (resolvedPath.extension() == ".zim" || resolvedPath.extension() == ".zimaa") {
+      } else if (resolvedPathExtension == ".zim" || resolvedPathExtension == ".zimaa") {
         if (!this->addBookFromPath(pathString, pathString, "", false)) {
           std::cerr << "Could not add " << pathString << " into the library." << std::endl;
         } else if (verboseFlag) {
