@@ -1,3 +1,11 @@
+libkiwix 14.1.1
+===============
+
+* Server:
+  - Fix regression for kiwix-serve --nosearchbar (@veloman-yunkan #1250)
+  - Avoid results content interpretation... crash in fulltext search (@vighnesh-sawant #1241)
+  - Fix for intermittent /content/blank.html errors (@veloman-yunkan #1249)
+
 libkiwix 14.1.0
 ===============
 

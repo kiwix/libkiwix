@@ -1,5 +1,5 @@
 project('libkiwix', 'cpp',
-  version : '14.1.0',
+  version : '14.1.1',
   license : 'GPLv3+',
   default_options : ['c_std=c11', 'cpp_std=c++17', 'werror=true'])
 
