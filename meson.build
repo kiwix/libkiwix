@@ -63,13 +63,10 @@ zlib_dep = dependency('zlib', static:static_deps)
 xapian_dep = dependency('xapian-core', static:static_deps)
 libtorrent_dep = dependency('libtorrent-rasterbar', static:static_deps)
 
-
 if compiler.has_header('mustache.hpp')
   extra_include = []
 elif compiler.has_header('mustache.hpp', args: '-I/usr/include/kainjow')
   extra_include = ['/usr/include/kainjow']
-elif compiler.has_header('mustache.hpp', args: '-I/opt/homebrew/include')
-  extra_include = []
 else
   error('Cannot found header mustache.hpp')
 endif
@@ -103,10 +100,7 @@ all_deps = [thread_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zl
 # Dependencies as array
 all_deps += libicu_deps
 
-# Add boost include path for libtorrent
-boost_include = include_directories('/opt/homebrew/include')
-
-inc = include_directories('include', extra_include, '/opt/homebrew/include')
+inc = include_directories('include', extra_include)
 
 conf = configuration_data()
 conf.set('LIBKIWIX_VERSION', '"@0@"'.format(meson.project_version()))
