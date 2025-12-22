@@ -1033,6 +1033,16 @@ TEST(ServerSearchTest, searchResults)
     },
 
     {
+      /* query */          "pattern=yellow%20submarine&books.id=" RAYCHARLESZIMID,
+      /* start */            0,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 1,
+      /* firstResultIndex */ 0,
+      /* results */          { YELLOW_SEARCH_RESULTS[0] },
+      /* pagination */       {}
+    },
+
+    {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID
                            "&userlang=test",
       /* start */            -1,
