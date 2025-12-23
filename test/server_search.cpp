@@ -689,6 +689,24 @@ bool isSubSnippet(std::string subSnippet, const std::string& superSnippet)
 #define  RAYCHARLESZIMID "6f1d19d0-633f-087b-fb55-7ac324ff9baf"
 #define  EXAMPLEZIMID    "5dc0b3af-5df2-0925-f0ca-d2bf75e78af6"
 
+const std::vector<SearchResult> YELLOW_SEARCH_RESULTS = {
+  SEARCH_RESULT(
+    /*link*/        "/ROOT%23%3F/content/zimfile/A/Eleanor_Rigby",
+    /*title*/       "Eleanor Rigby",
+    /*snippet*/     R"SNIPPET(...-side "<b>Yellow</b> Submarine" (double A-side) Released 5)SNIPPET" "\xC2\xA0" "August" "\xC2\xA0" "1966" "\xC2\xA0" R"SNIPPET((1966-08-05) Format 7-inch single Recorded 28–29 April &amp; 6 June 1966 Studio EMI, London Genre Baroque pop, art rock Length 2:08 Label Parlophone (UK), Capitol (US) Songwriter(s) Lennon–McCartney Producer(s) George Martin The Beatles singles chronology "Paperback Writer" (1966) "Eleanor Rigby" / "<b>Yellow</b> Submarine" (1966) "Strawberry Fields Forever" / "Penny Lane" (1967) Music video "Eleanor Rigby" on YouTube The song continued the......)SNIPPET",
+    /*bookTitle*/  "Ray Charles",
+    /*wordCount*/  "201"
+  ),
+
+  SEARCH_RESULT(
+    /*link*/        "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
+    /*title*/       "If You Go Away",
+    /*snippet*/     R"SNIPPET(...standard and has been recorded by many artists, including Greta Keller, for whom some say McKuen wrote the lyrics. "If You Go Away" Single by Damita Jo from the album If You Go Away B-side "<b>Yellow</b> Days" Released 1966 Genre Jazz Length 3:49 Label Epic Records Songwriter(s) Jacques Brel, Rod McKuen Producer(s) Bob Morgan Damita Jo singles chronology "Gotta Travel On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the......)SNIPPET",
+    /*bookTitle*/  "Ray Charles",
+    /*wordCount*/  "204"
+  )
+};
+
 struct TestData
 {
   struct PaginationEntry
@@ -980,23 +998,7 @@ TEST(ServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */ {
-        SEARCH_RESULT(
-          /*link*/       "/ROOT%23%3F/content/zimfile/A/Eleanor_Rigby",
-          /*title*/      "Eleanor Rigby",
-          /*snippet*/    R"SNIPPET(...-side "<b>Yellow</b> Submarine" (double A-side) Released 5 August 1966 (1966-08-05) Format 7-inch single Recorded 28–29 April &amp; 6 June 1966 Studio EMI, London Genre Baroque pop, art rock Length 2:08 Label Parlophone (UK), Capitol (US) Songwriter(s) Lennon–McCartney Producer(s) George Martin The Beatles singles chronology "Paperback Writer" (1966) "Eleanor Rigby" / "<b>Yellow</b> Submarine" (1966) "Strawberry Fields Forever" / "Penny Lane" (1967) Music video "Eleanor Rigby" on YouTube The song continued the......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "201"
-        ),
-
-        SEARCH_RESULT(
-          /*link*/       "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
-          /*title*/      "If You Go Away",
-          /*snippet*/    R"SNIPPET(...standard and has been recorded by many artists, including Greta Keller, for whom some say McKuen wrote the lyrics. "If You Go Away" Single by Damita Jo from the album If You Go Away B-side "<b>Yellow</b> Days" Released 1966 Genre Jazz Length 3:49 Label Epic Records Songwriter(s) Jacques Brel, Rod McKuen Producer(s) Bob Morgan Damita Jo singles chronology "Gotta Travel On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "204"
-        )
-      },
+      /* results */          YELLOW_SEARCH_RESULTS,
       /* pagination */ {}
     },
 
@@ -1006,23 +1008,7 @@ TEST(ServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */ {
-        SEARCH_RESULT(
-          /*link*/       "/ROOT%23%3F/content/zimfile/A/Eleanor_Rigby",
-          /*title*/      "Eleanor Rigby",
-          /*snippet*/    R"SNIPPET(...-side "<b>Yellow</b> Submarine" (double A-side) Released 5 August 1966 (1966-08-05) Format 7-inch single Recorded 28–29 April &amp; 6 June 1966 Studio EMI, London Genre Baroque pop, art rock Length 2:08 Label Parlophone (UK), Capitol (US) Songwriter(s) Lennon–McCartney Producer(s) George Martin The Beatles singles chronology "Paperback Writer" (1966) "Eleanor Rigby" / "<b>Yellow</b> Submarine" (1966) "Strawberry Fields Forever" / "Penny Lane" (1967) Music video "Eleanor Rigby" on YouTube The song continued the......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "201"
-        ),
-
-        SEARCH_RESULT(
-          /*link*/       "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
-          /*title*/      "If You Go Away",
-          /*snippet*/    R"SNIPPET(...standard and has been recorded by many artists, including Greta Keller, for whom some say McKuen wrote the lyrics. "If You Go Away" Single by Damita Jo from the album If You Go Away B-side "<b>Yellow</b> Days" Released 1966 Genre Jazz Length 3:49 Label Epic Records Songwriter(s) Jacques Brel, Rod McKuen Producer(s) Bob Morgan Damita Jo singles chronology "Gotta Travel On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "204"
-        )
-      },
+      /* results */         YELLOW_SEARCH_RESULTS,
       /* pagination */ {}
     },
 
@@ -1032,23 +1018,7 @@ TEST(ServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */ {
-        SEARCH_RESULT(
-          /*link*/       "/ROOT%23%3F/content/zimfile/A/Eleanor_Rigby",
-          /*title*/      "Eleanor Rigby",
-          /*snippet*/    R"SNIPPET(...-side "<b>Yellow</b> Submarine" (double A-side) Released 5 August 1966 (1966-08-05) Format 7-inch single Recorded 28–29 April &amp; 6 June 1966 Studio EMI, London Genre Baroque pop, art rock Length 2:08 Label Parlophone (UK), Capitol (US) Songwriter(s) Lennon–McCartney Producer(s) George Martin The Beatles singles chronology "Paperback Writer" (1966) "Eleanor Rigby" / "<b>Yellow</b> Submarine" (1966) "Strawberry Fields Forever" / "Penny Lane" (1967) Music video "Eleanor Rigby" on YouTube The song continued the......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "201"
-        ),
-
-        SEARCH_RESULT(
-          /*link*/       "/ROOT%23%3F/content/zimfile/A/If_You_Go_Away",
-          /*title*/      "If You Go Away",
-          /*snippet*/    R"SNIPPET(...standard and has been recorded by many artists, including Greta Keller, for whom some say McKuen wrote the lyrics. "If You Go Away" Single by Damita Jo from the album If You Go Away B-side "<b>Yellow</b> Days" Released 1966 Genre Jazz Length 3:49 Label Epic Records Songwriter(s) Jacques Brel, Rod McKuen Producer(s) Bob Morgan Damita Jo singles chronology "Gotta Travel On" (1965) "If You Go Away" (1966) "Walk Away" (1967) Damita Jo reached #10 on the Adult Contemporary chart and #68 on the Billboard Hot 100 in 1966 for her version of the song. Terry Jacks recorded a version of the song which was released as a single in 1974 and reached #29 on the Adult Contemporary chart, #68 on the......)SNIPPET",
-          /*bookTitle*/  "Ray Charles",
-          /*wordCount*/  "204"
-        )
-      },
+      /* results */          YELLOW_SEARCH_RESULTS,
       /* pagination */ {}
     },
 
@@ -1060,6 +1030,16 @@ TEST(ServerSearchTest, searchResults)
       /* firstResultIndex */ 0,
       /* results */ LARGE_SEARCH_RESULTS,
       /* pagination */ {}
+    },
+
+    {
+      /* query */          "pattern=yellow%20submarine&books.id=" RAYCHARLESZIMID,
+      /* start */            0,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 1,
+      /* firstResultIndex */ 0,
+      /* results */          { YELLOW_SEARCH_RESULTS[0] },
+      /* pagination */       {}
     },
 
     {
