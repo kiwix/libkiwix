@@ -83,6 +83,7 @@ function quasiUriEncode(s, specialSymbols) {
 
 function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
+  if (!searchbox.value.trim()) { return;}
   const q = encodeURIComponent(searchbox.value);
   gotoUrl(`/search?books.name=${currentBook}&pattern=${q}&userlang=${viewerState.uiLanguage}`);
 }
