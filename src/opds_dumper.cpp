@@ -145,7 +145,8 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
-     {"books", booksData }
+     {"books", booksData },
+     {"logo_url","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Kiwix_logo_v3.svg/960px-Kiwix_logo_v3.svg.png?20200429085806"}
   };
 
   return render_template(RESOURCE::templates::catalog_entries_xml, template_data);
@@ -167,7 +168,8 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
-     {"books", booksData }
+     {"books", booksData },
+     {"logo_url","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Kiwix_logo_v3.svg/960px-Kiwix_logo_v3.svg.png?20200429085806"}
   };
 
   return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);
