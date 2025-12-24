@@ -4,6 +4,8 @@
   <id>{{feed_id}}</id>
   <title>{{^filter}}All zims{{/filter}}{{#filter}}Filtered zims ({{filter}}){{/filter}}</title>
   <updated>{{date}}</updated>
+  <logo>{{logo_url}}</logo>
+  <icon>{{logo_url}}</icon>
 {{#filter}}
   <totalResults>{{totalResults}}</totalResults>
   <startIndex>{{startIndex}}</startIndex>
