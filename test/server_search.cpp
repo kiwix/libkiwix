@@ -1013,12 +1013,12 @@ TEST(ServerSearchTest, searchResults)
     },
 
     {
-      /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
+      /* query */          "pattern=%20yellow%20&books.id=" RAYCHARLESZIMID,
       /* start */            0,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */          YELLOW_SEARCH_RESULTS,
+      /* results */         YELLOW_SEARCH_RESULTS,
       /* pagination */ {}
     },
 
@@ -1682,4 +1682,5 @@ TEST(ServerSearchTest, bookSelectionNegativeTests)
     EXPECT_EQ(r->status, 400);
     EXPECT_EQ(r->body, noBookFoundErrorHtml(url));
   }
+
 }
