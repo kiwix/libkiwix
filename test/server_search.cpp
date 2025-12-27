@@ -954,6 +954,26 @@ TEST(ServerSearchTest, searchResults)
 {
   const TestData testData[] = {
     {
+      /* query */          "pattern=&books.id=" RAYCHARLESZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 0,
+      /* firstResultIndex */ 0,
+      /* results */          {},
+      /* pagination */       {}
+    },
+
+    {
+      /* query */           "pattern=%20&books.id=" RAYCHARLESZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 0,
+      /* firstResultIndex */ 0,
+      /* results */          {},
+      /* pagination */       {}
+    },
+
+    {
       /* query */          "pattern=velomanyunkan&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
@@ -1013,7 +1033,7 @@ TEST(ServerSearchTest, searchResults)
     },
 
     {
-      /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
+      /* query */          "pattern=%20yellow%20&books.id=" RAYCHARLESZIMID,
       /* start */            0,
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
@@ -1021,6 +1041,7 @@ TEST(ServerSearchTest, searchResults)
       /* results */          YELLOW_SEARCH_RESULTS,
       /* pagination */ {}
     },
+
 
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
