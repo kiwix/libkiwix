@@ -202,9 +202,9 @@ std::string Library::getBestFromBookCollection(BookIdCollection books, const Boo
   }
 
   sort(books, DATE, false);
-  stable_sort(books.begin(), books.end(), [&](const std::string& bookId1, const std::string& bookId2) {
-    const auto& book1 = getBookById(bookId1);
-    const auto& book2 = getBookById(bookId2);
+  std::stable_sort(books.begin(), books.end(), [&](const std::string& bookId1, const std::string& bookId2) {
+    const auto book1 = getBookById(bookId1);
+    const auto book2 = getBookById(bookId2);
     bool same_flavour1 = book1.getFlavour() == bookmark.getBookFlavour();
     bool same_flavour2 = book2.getFlavour() == bookmark.getBookFlavour();
     // return True if bookId1 is before bookId2, ie if same_flavour1 and not same_flavour2
@@ -215,7 +215,7 @@ std::string Library::getBestFromBookCollection(BookIdCollection books, const Boo
     return books[0];
   } else {
     for (const auto& bookId: books) {
-      const auto& book = getBookById(bookId);
+      const auto book = getBookById(bookId);
       if (book.getDate() >= bookmark.getDate()) {
         return bookId;
       }
@@ -361,7 +361,7 @@ uint32_t Library::removeBooksNotUpdatedSince(Revision libraryRevision)
   return countOfRemovedBooks;
 }
 
-const Book& Library::getBookById(const std::string& id) const
+Book Library::getBookById(const std::string& id) const
 {
   // XXX: Doesn't make sense to lock this operation since it cannot
   // XXX: guarantee thread-safety because of its return type
@@ -374,7 +374,7 @@ Book Library::getBookByIdThreadSafe(const std::string& id) const
   return getBookById(id);
 }
 
-const Book& Library::getBookByPath(const std::string& path) const
+Book Library::getBookByPath(const std::string& path) const
 {
   // XXX: Doesn't make sense to lock this operation since it cannot
   // XXX: guarantee thread-safety because of its return type

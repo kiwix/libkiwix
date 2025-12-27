@@ -340,9 +340,9 @@ class Library: public std::enable_shared_from_this<Library>
   std::string getBestTargetBookId(const std::string& bookName, const std::string& preferedFlavour="", const std::string& minDate="") const;
 
   // XXX: This is a non-thread-safe operation
-  const Book& getBookById(const std::string& id) const;
+  Book getBookById(const std::string& id) const;
   // XXX: This is a non-thread-safe operation
-  const Book& getBookByPath(const std::string& path) const;
+  Book getBookByPath(const std::string& path) const;
 
   Book getBookByIdThreadSafe(const std::string& id) const;
 
