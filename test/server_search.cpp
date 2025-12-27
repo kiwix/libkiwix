@@ -1683,3 +1683,14 @@ TEST(ServerSearchTest, bookSelectionNegativeTests)
     EXPECT_EQ(r->body, noBookFoundErrorHtml(url));
   }
 }
+
+TEST(ServerSearchTest, EmptyPatternReturns200) {
+  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS,
+                    "./test/lib_for_server_search_test.xml");
+
+  auto response = zfs.GET("/ROOT%23%3F/search?pattern=");
+  EXPECT_EQ(response->status, 200);
+
+  auto responseSpaces = zfs.GET("/ROOT%23%3F/search?pattern=%20%20");
+  EXPECT_EQ(responseSpaces->status, 200);
+}
