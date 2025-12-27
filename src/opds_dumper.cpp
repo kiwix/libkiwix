@@ -41,6 +41,7 @@ OPDSDumper::~OPDSDumper()
 
 namespace
 {
+const std::string kiwix_logo_url="static/skin/kiwix_logo.png";  
 
 const std::string XML_HEADER(R"(<?xml version="1.0" encoding="UTF-8"?>)");
 
@@ -146,7 +147,7 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
      {"books", booksData },
-     {"logo_url","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Kiwix_logo_v3.svg/960px-Kiwix_logo_v3.svg.png?20200429085806"}
+     {"logo_url", kiwix_logo_url}
   };
 
   return render_template(RESOURCE::templates::catalog_entries_xml, template_data);
@@ -169,7 +170,7 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
      {"books", booksData },
-     {"logo_url","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Kiwix_logo_v3.svg/960px-Kiwix_logo_v3.svg.png?20200429085806"}
+     {"logo_url", kiwix_logo_url}
   };
 
   return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);
