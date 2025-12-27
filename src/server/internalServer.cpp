@@ -334,7 +334,7 @@ SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
   if ( getLanguages(*mp_library, bookIds.second).size() != 1 ) {
     throw Error(nonParameterizedMessage("confusion-of-tongues"));
   }
-
+  
   auto pattern = request.get_optional_param<std::string>("pattern", "");
   GeoQuery geoQuery;
 
@@ -346,11 +346,7 @@ SearchInfo InternalServer::getSearchInfo(const RequestContext& request) const
     geoQuery = GeoQuery(latitude, longitude, distance);
   } catch(const std::out_of_range&) {}
     catch(const std::invalid_argument&) {}
-
-  if (!geoQuery && pattern.empty()) {
-    throw Error(nonParameterizedMessage("no-query"));
-  }
-
+  
   return SearchInfo(pattern, geoQuery, bookIds.second, bookIds.first);
 }
 
@@ -366,7 +362,7 @@ zim::Query SearchInfo::getZimQuery(bool verbose) const {
   if (verbose) {
     std::cout << "Performing query '" << pattern<< "'";
   }
-  query.setQuery(pattern);
+  query.setQuery(kiwix::trim(pattern));
   if (geoQuery) {
     if (verbose) {
       std::cout << " with geo query '" << geoQuery.distance << "&(" << geoQuery.latitude << ";" << geoQuery.longitude << ")'";
