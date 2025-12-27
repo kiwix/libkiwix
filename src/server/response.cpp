@@ -520,9 +520,7 @@ HTTP500Response::HTTP500Response(const RequestContext& request,
 std::unique_ptr<Response> Response::build_416(size_t resourceLength)
 {
   auto response = Response::build();
-// [FIXME] (compile with recent enough version of libmicrohttpd)
-//  response->set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
-  response->set_code(416);
+  response->set_code(MHD_HTTP_RANGE_NOT_SATISFIABLE);
   std::ostringstream oss;
   oss << "bytes */" << resourceLength;
   response->add_header(MHD_HTTP_HEADER_CONTENT_RANGE, oss.str());
