@@ -242,7 +242,7 @@ const std::string& Book::Illustration::getData() const
       try {
         data = download(url);
       } catch(...) {
-        std::cerr << "Cannot download favicon from " << url;
+        std::cerr << "Cannot download favicon from " << url << std::endl;
       }
     }
   }
