@@ -29,7 +29,8 @@
 #include <unicode/uniset.h>
 #include <unicode/ustring.h>
 
-
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <iomanip>
 #include <regex>
@@ -449,4 +450,12 @@ std::string kiwix::getSlugifiedFileName(const std::string& filename)
   const std::regex reservedCharsReg("/");
 #endif
   return std::regex_replace(filename, reservedCharsReg, "_"); 
+}
+
+std::string kiwix::trim(const std::string& s)
+{
+  auto is_space = [](unsigned char c) { return std::isspace(c); };
+  auto start = std::find_if_not(s.begin(), s.end(), is_space);
+  auto end = std::find_if_not(s.rbegin(), s.rend(), is_space).base();
+  return (start < end) ? std::string(start, end) : std::string();
 }
