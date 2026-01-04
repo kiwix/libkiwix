@@ -26,7 +26,7 @@ namespace kiwix {
 
 HumanReadableNameMapper::HumanReadableNameMapper(const kiwix::Library& library, bool withAlias) {
   for (auto& bookId: library.filter(kiwix::Filter())) {
-    auto currentBook = library.getBookById(bookId);
+    auto& currentBook = library.getBookById(bookId);
     auto bookName = currentBook.getHumanReadableIdFromPath();
     m_idToName[bookId] = bookName;
     mapName(library, bookName, bookId);
@@ -45,7 +45,7 @@ void HumanReadableNameMapper::mapName(const Library& library, std::string name, 
   if (m_nameToId.find(name) == m_nameToId.end()) {
     m_nameToId[name] = bookId;
   } else {
-    const auto currentBook = library.getBookById(bookId);
+    const auto& currentBook = library.getBookById(bookId);
     auto alreadyPresentPath = library.getBookById(m_nameToId[name]).getPath();
     std::cerr << "Path collision: '" << alreadyPresentPath
               << "' and '" << currentBook.getPath()
