@@ -122,7 +122,8 @@ kainjow::mustache::data buildQueryData
   std::ostringstream ss;
   ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern);
   ss << "&" << bookQuery;
-  query.set("unpaginatedQuery", ss.str());
+ // fixed the Issue #795: Force feed to return all items (no pagination)
+  query.set("unpaginatedQuery", ss.str() + "&count=-1");
   auto lang = extractValueFromQuery(bookQuery, "books.filter.lang");
   if(!lang.empty()) {
     query.set("lang", lang);
