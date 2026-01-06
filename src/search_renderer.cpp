@@ -121,9 +121,8 @@ kainjow::mustache::data buildQueryData
   query.set("pattern", kiwix::encodeDiples(pattern));
   std::ostringstream ss;
   ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern);
-  ss << "&" << bookQuery;
- // fixed the Issue #795: Force feed to return all items (no pagination)
-  query.set("unpaginatedQuery", ss.str() + "&count=-1");
+  ss << "&" << bookQuery << "&count=-1";
+  query.set("unpaginatedQuery", ss.str());
   auto lang = extractValueFromQuery(bookQuery, "books.filter.lang");
   if(!lang.empty()) {
     query.set("lang", lang);
