@@ -121,7 +121,7 @@ kainjow::mustache::data buildQueryData
   query.set("pattern", kiwix::encodeDiples(pattern));
   std::ostringstream ss;
   ss << searchProtocolPrefix << "?pattern=" << urlEncode(pattern);
-  ss << "&" << bookQuery;
+  ss << "&" << bookQuery << "&count=-1";
   query.set("unpaginatedQuery", ss.str());
   auto lang = extractValueFromQuery(bookQuery, "books.filter.lang");
   if(!lang.empty()) {
