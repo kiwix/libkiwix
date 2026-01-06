@@ -182,7 +182,6 @@ std::string maskVariableOPDSFeedData(std::string s)
 
 TEST_F(LibraryServerTest, catalog_root_xml)
 { 
-  const std::string base="http://localhost:"+std::to_string(PORT);
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/root.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
