@@ -52,7 +52,7 @@ class OPDSDumper : public LibraryDumper
    * @param query the query used to obtain the list of book ids
    * @return The OPDS feed.
    */
-  std::string dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const;
+  std::string dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query,const std::string& contentServerUrl) const;
 
   /**
    * Dump the OPDS feed.
@@ -62,7 +62,7 @@ class OPDSDumper : public LibraryDumper
    * @param partial whether the feed should include partial or complete entries
    * @return The OPDS feed.
    */
-  std::string dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const;
+  std::string dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial, const std::string& contentServerUrl) const;
 
   /**
    * Dump the OPDS complete entry document.
