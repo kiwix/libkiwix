@@ -100,7 +100,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   auto response = ContentResponse::build(
-      opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
+      opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query(),m_contentServerUrl),
       opdsMimeType[OPDS_ACQUISITION_FEED]);
   return std::move(response);
 }
@@ -167,7 +167,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const Reques
 {
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   const auto bookIds = search_catalog(request, opdsDumper);
-  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
+  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial, m_contentServerUrl);
   return ContentResponse::build(
              opdsFeed,
              opdsMimeType[OPDS_ACQUISITION_FEED]

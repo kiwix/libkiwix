@@ -41,7 +41,7 @@ OPDSDumper::~OPDSDumper()
 
 namespace
 {
-
+ 
 const std::string XML_HEADER(R"(<?xml version="1.0" encoding="UTF-8"?>)");
 
 typedef kainjow::mustache::data MustacheData;
@@ -134,8 +134,9 @@ BooksData getBooksData(const Library* library,
 
 } // unnamed namespace
 
-string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
+string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query, const std::string& contentServerUrl) const
 {
+  const std::string kiwix_logo_url = contentServerUrl + "/static/skin/favicon/favicon-32x32.png"; 
   const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, false);
   const kainjow::mustache::object template_data{
      {"date", gen_date_str()},
@@ -145,17 +146,18 @@ string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const s
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
-     {"books", booksData }
+     {"books", booksData },
+     {"logo_url", kiwix_logo_url}
   };
 
   return render_template(RESOURCE::templates::catalog_entries_xml, template_data);
 }
 
-string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
+string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial, const std::string& contentServerUrl) const
 {
   const auto endpointRoot = rootLocation + "/catalog/v2";
   const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, partial);
-
+  const std::string kiwix_logo_url = contentServerUrl + "/static/skin/favicon/favicon-32x32.png"; 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const std::string url = endpoint + (query.empty() ? "" : "?" + query);
   const kainjow::mustache::object template_data{
@@ -167,7 +169,8 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"totalResults", to_string(m_totalResults)},
      {"startIndex", to_string(m_startIndex)},
      {"itemsPerPage", to_string(m_count)},
-     {"books", booksData }
+     {"books", booksData },
+     {"logo_url", kiwix_logo_url}
   };
 
   return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);
