@@ -1019,7 +1019,7 @@ TEST(ServerSearchTest, searchResults)
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
       /* results */          YELLOW_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* pagination */       {}
     },
 
     {
@@ -1028,8 +1028,8 @@ TEST(ServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */         YELLOW_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* results */          YELLOW_SEARCH_RESULTS,
+      /* pagination */       {}
     },
 
     {
@@ -1039,18 +1039,7 @@ TEST(ServerSearchTest, searchResults)
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
       /* results */          YELLOW_SEARCH_RESULTS,
-      /* pagination */ {}
-    },
-
-
-    {
-      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            -1,
-      /* resultsPerPage */   100,
-      /* totalResultCount */ 44,
-      /* firstResultIndex */ 0,
-      /* results */ LARGE_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* pagination */       {}
     },
 
     {
@@ -1061,6 +1050,16 @@ TEST(ServerSearchTest, searchResults)
       /* firstResultIndex */ 0,
       /* results */          { YELLOW_SEARCH_RESULTS[0] },
       /* pagination */       {}
+    },
+
+    {
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   100,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 0,
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
     },
 
     {
