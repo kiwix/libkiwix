@@ -60,6 +60,8 @@ std::string escapeForJSON(const std::string& s, bool escapeQuote = true);
 std::string urlEncode(const std::string& value);
 std::string urlDecode(const std::string& value, bool component = false);
 
+std::string trim(const std::string& s);
+
 std::string join(const std::vector<std::string>& list, const std::string& sep);
 
 std::string ucAll(const std::string& word);

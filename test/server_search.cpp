@@ -954,6 +954,26 @@ TEST(ServerSearchTest, searchResults)
 {
   const TestData testData[] = {
     {
+      /* query */          "pattern=&books.id=" RAYCHARLESZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 0,
+      /* firstResultIndex */ 0,
+      /* results */          {},
+      /* pagination */       {}
+    },
+
+    {
+      /* query */           "pattern=%20&books.id=" RAYCHARLESZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 0,
+      /* firstResultIndex */ 0,
+      /* results */          {},
+      /* pagination */       {}
+    },
+
+    {
       /* query */          "pattern=velomanyunkan&books.id=" RAYCHARLESZIMID,
       /* start */            -1,
       /* resultsPerPage */   0,
@@ -999,17 +1019,7 @@ TEST(ServerSearchTest, searchResults)
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
       /* results */          YELLOW_SEARCH_RESULTS,
-      /* pagination */ {}
-    },
-
-    {
-      /* query */          "pattern=yellow&books.id=" RAYCHARLESZIMID,
-      /* start */            0,
-      /* resultsPerPage */   0,
-      /* totalResultCount */ 2,
-      /* firstResultIndex */ 0,
-      /* results */         YELLOW_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* pagination */       {}
     },
 
     {
@@ -1019,17 +1029,17 @@ TEST(ServerSearchTest, searchResults)
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
       /* results */          YELLOW_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* pagination */       {}
     },
 
     {
-      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
-      /* start */            -1,
-      /* resultsPerPage */   100,
-      /* totalResultCount */ 44,
+      /* query */          "pattern=%20yellow%20&books.id=" RAYCHARLESZIMID,
+      /* start */            0,
+      /* resultsPerPage */   0,
+      /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */ LARGE_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* results */          YELLOW_SEARCH_RESULTS,
+      /* pagination */       {}
     },
 
     {
@@ -1040,6 +1050,16 @@ TEST(ServerSearchTest, searchResults)
       /* firstResultIndex */ 0,
       /* results */          { YELLOW_SEARCH_RESULTS[0] },
       /* pagination */       {}
+    },
+
+    {
+      /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
+      /* start */            -1,
+      /* resultsPerPage */   100,
+      /* totalResultCount */ 44,
+      /* firstResultIndex */ 0,
+      /* results */ LARGE_SEARCH_RESULTS,
+      /* pagination */ {}
     },
 
     {

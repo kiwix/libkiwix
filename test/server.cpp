@@ -438,7 +438,6 @@ TEST_F(ServerTest, CacheIdsOfStaticResourcesMatchTheSha1HashOfResourceContent)
 
 const char* urls400[] = {
   "/ROOT%23%3F/search",
-  "/ROOT%23%3F/search?content=zimfile",
   "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT%23%3F/search?content=non-existing-book&pattern=asd<qwerty",
   "/ROOT%23%3F/search?books.name=non-exsitent-book&pattern=asd<qwerty",
@@ -1053,17 +1052,6 @@ TEST_F(ServerTest, Http400HtmlError)
       Too many books requested (4) where limit is 3
     </p>
 )"  },
-    { /* url */ "/ROOT%23%3F/search?content=zimfile",
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?content=zimfile" } } }, { "p" : { "msgid" : "no-query", "params" : { } } } ] })" &&
-      expected_body==R"(
-    <h1>Invalid request</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/search?content=zimfile" is not a valid request.
-    </p>
-    <p>
-      No query provided.
-    </p>
-)"  },
     { /* url */ "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty",
       expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty" } } }, { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "non-existing-book" } } } ] })" &&
       expected_body==R"(
@@ -1086,19 +1074,6 @@ TEST_F(ServerTest, Http400HtmlError)
       No such book: non-existing-book
     </p>
 )"  },
-    // There is a flaw in our way to handle query string, we cannot differenciate
-    // between `pattern` and `pattern=`
-    { /* url */ "/ROOT%23%3F/search?books.filter.lang=eng&pattern",
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?books.filter.lang=eng&pattern" } } }, { "p" : { "msgid" : "no-query", "params" : { } } } ] })" &&
-      expected_body==R"(
-    <h1>Invalid request</h1>
-    <p>
-      The requested URL "/ROOT%23%3F/search?books.filter.lang=eng&pattern" is not a valid request.
-    </p>
-    <p>
-      No query provided.
-    </p>
-)"  },
     { /* url */ "/ROOT%23%3F/search?pattern=foo",
       expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?pattern=foo" } } }, { "p" : { "msgid" : "too-many-books", "params" : { "LIMIT" : "3", "NB_BOOKS" : "4" } } } ] })" &&
       expected_body==R"(
@@ -1108,20 +1083,6 @@ TEST_F(ServerTest, Http400HtmlError)
     </p>
     <p>
       Too many books requested (4) where limit is 3
-    </p>
-)"  },
-
-    // Testing of translation
-    { /* url */ "/ROOT%23%3F/search?content=zimfile&userlang=test",
-      expected_page_title=="[I18N TESTING] Invalid request ($400 fine must be paid)" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "400-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "400-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "invalid-request", "params" : { "url" : "/ROOT%23%3F/search?content=zimfile&userlang=test" } } }, { "p" : { "msgid" : "no-query", "params" : { } } } ] })" &&
-      expected_body==R"(
-    <h1>[I18N TESTING] -400 karma for an invalid request</h1>
-    <p>
-      [I18N TESTING] Invalid URL: "/ROOT%23%3F/search?content=zimfile&userlang=test"
-    </p>
-    <p>
-      [I18N TESTING] Kiwix can read your thoughts but it is against GDPR. Please provide your query explicitly.
     </p>
 )"  },
   };
@@ -1154,20 +1115,6 @@ TEST_F(ServerTest, HttpXmlError)
   };
 
   const std::vector<TestData> testData{
-    { /* url */ "/ROOT%23%3F/search?format=xml",
-      /* HTTP status code */ 400,
-      /* expected response XML */ R"(
-<error>Invalid request</error>
-<detail>The requested URL "/ROOT%23%3F/search?format=xml" is not a valid request.</detail>
-<detail>Too many books requested (4) where limit is 3</detail>
-)"  },
-    { /* url */ "/ROOT%23%3F/search?format=xml&content=zimfile",
-      /* HTTP status code */ 400,
-      /* expected response XML */ R"(
-<error>Invalid request</error>
-<detail>The requested URL "/ROOT%23%3F/search?format=xml&content=zimfile" is not a valid request.</detail>
-<detail>No query provided.</detail>
-)"  },
     { /* url */ "/ROOT%23%3F/search?format=xml&content=non-existing-book&pattern=asdfqwerty",
       /* HTTP status code */ 400,
       /* expected response XML */ R"(
@@ -1181,15 +1128,6 @@ TEST_F(ServerTest, HttpXmlError)
 <error>Invalid request</error>
 <detail>The requested URL "/ROOT%23%3F/search?format=xml&content=non-existing-book&pattern=a%22%3Cscript%20foo%3E" is not a valid request.</detail>
 <detail>No such book: non-existing-book</detail>
-)"  },
-    // There is a flaw in our way to handle query string, we cannot differenciate
-    // between `pattern` and `pattern=`
-    { /* url */ "/ROOT%23%3F/search?format=xml&books.filter.lang=eng&pattern",
-      /* HTTP status code */ 400,
-      /* expected response XML */ R"(
-<error>Invalid request</error>
-<detail>The requested URL "/ROOT%23%3F/search?format=xml&books.filter.lang=eng&pattern" is not a valid request.</detail>
-<detail>No query provided.</detail>
 )"  },
     { /* url */ "/ROOT%23%3F/search?format=xml&pattern=foo",
       /* HTTP status code */ 400,
@@ -2362,4 +2300,9 @@ R"(const viewerSettings = {
 }
 )");
   }
+}
+
+TEST_F(ServerTest, EmptyPatternSearchDoesNotError)
+{
+  EXPECT_EQ(200, zfs1_->GET("/ROOT%23%3F/search?content=zimfile")->status);
 }

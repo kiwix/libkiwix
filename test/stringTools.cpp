@@ -184,4 +184,16 @@ TEST(stringTools, getSlugifiedFileName)
 #endif
 }
 
+TEST(stringTools, Trim)
+{
+    EXPECT_EQ(kiwix::trim(""), "");
+    EXPECT_EQ(kiwix::trim("abc123"), "abc123");
+    EXPECT_EQ(kiwix::trim("   abc123"), "abc123");
+    EXPECT_EQ(kiwix::trim("abc123   "), "abc123");
+    EXPECT_EQ(kiwix::trim("   abc123   "), "abc123");
+    EXPECT_EQ(kiwix::trim("abc 123"), "abc 123");
+    EXPECT_EQ(kiwix::trim("     "), "");
+    EXPECT_EQ(kiwix::trim("\t abc123 \n"), "abc123");
+}
+
 };
