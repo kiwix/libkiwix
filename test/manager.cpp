@@ -5,6 +5,7 @@
 #include "../include/tools.h"
 #include <iostream>
 #include <fstream>
+#include <kiwix/Error.h>
 
 TEST(ManagerTest, addBookFromPathAndGetIdTest)
 {
@@ -108,3 +109,44 @@ TEST(Manager, reload)
         "raycharles_uncategorized"
   }));
 }
+
+TEST(ManagerTest, addBookFromPathThrowsOnMissingFile)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_THROW(
+        manager.addBookFromPathAndGetId(
+            "/this/path/does/not/exist.zim",
+            "",
+            "",
+            false
+        ),
+        kiwix::FileNotFound
+    );
+}
+TEST(ManagerTest, addBookFromPathThrowsOnInvalidZim)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    const std::string fakeZim = "not_a_real_zim.zim";
+
+    // Create a fake file that is NOT a valid ZIM
+    std::ofstream out(fakeZim);
+    out << "this is not a zim file";
+    out.close();
+
+    EXPECT_THROW(
+        manager.addBookFromPathAndGetId(
+            fakeZim,
+            "",
+            "",
+            true
+        ),
+        kiwix::InvalidZim
+    );
+
+    std::remove(fakeZim.c_str());
+}
+
