@@ -210,10 +210,6 @@ bool Manager::readFile(
 }
 
 
-/* Add a book to the library.
- * @throws kiwix::KiwixError on failure
- * @return book id on success
- */
 std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
                                              const std::string& pathToSave,
                                              const std::string& url,
@@ -251,7 +247,6 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
   return book.getId();
 }
 
-}
 
 /* Wrapper over Manager::addBookFromPath which return a bool instead of a string
  */
