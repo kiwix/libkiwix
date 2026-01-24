@@ -18,6 +18,7 @@
  */
 
 #include "manager.h"
+#include "kiwix/Error.h"
 
 #include "tools.h"
 #include "tools/pathTools.h"
@@ -209,7 +210,9 @@ bool Manager::readFile(
 }
 
 
-/* Add a book to the library. Return empty string if failed, book id otherwise
+/* Add a book to the library.
+ * @throws kiwix::KiwixError on failure
+ * @return book id on success
  */
 std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
                                              const std::string& pathToSave,
@@ -218,25 +221,36 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
 {
   kiwix::Book book;
 
-  if (this->readBookFromPath(pathToOpen, &book)) {
-    if (!pathToSave.empty() && pathToSave != pathToOpen) {
-      book.setPath(isRelativePath(pathToSave)
-                ? computeAbsolutePath(
-                      removeLastPathElement(writableLibraryPath),
-                      pathToSave)
-                : pathToSave);
-    }
-
-    if (!checkMetaData
-        || (!book.getTitle().empty() && !book.getLanguages().empty()
-            && !book.getDate().empty())) {
-      book.setUrl(url);
-      manipulator.addBookToLibrary(book);
-      return book.getId();
-    }
+  if (!this->readBookFromPath(pathToOpen, &book)) {
+    throw kiwix::FileNotFound();
   }
 
-  return "";
+  if (!pathToSave.empty() && pathToSave != pathToOpen) {
+    book.setPath(isRelativePath(pathToSave)
+                   ? computeAbsolutePath(
+                         removeLastPathElement(writableLibraryPath),
+                         pathToSave)
+                   : pathToSave);
+  }
+
+  if (checkMetaData
+      && (book.getTitle().empty()
+          || book.getLanguages().empty()
+          || book.getDate().empty())) {
+    throw kiwix::InvalidZim();
+  }
+
+  book.setUrl(url);
+
+  try {
+    manipulator.addBookToLibrary(book);
+  } catch (...) {
+    throw kiwix::LibraryNotWritable();
+  }
+
+  return book.getId();
+}
+
 }
 
 /* Wrapper over Manager::addBookFromPath which return a bool instead of a string
