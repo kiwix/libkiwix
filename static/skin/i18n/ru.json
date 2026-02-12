@@ -6,6 +6,7 @@
 			"Lutece398",
 			"Okras",
 			"Pacha Tchernof",
+			"Putnik",
 			"Razno0",
 			"Rofiatmustapha12",
 			"Smavrina"
@@ -59,7 +60,7 @@
 	"torrent-download-link-text": "BitTorrent",
 	"torrent-download-alt-text": "Скачать через BitTorrent",
 	"library-opds-feed-all-entries": "Канал библиотеки OPDS – все записи",
-	"filter-by-tag": "Фильтровать по тегу \"{{{TAG}}}\"",
+	"filter-by-tag": "Фильтровать по тегу «{{{TAG}}}»",
 	"stop-filtering-by-tag": "Прекратить фильтрацию по тегу \"{{{TAG}}}\"",
 	"library-opds-feed-parameterised": "Канал OPDS библиотеки – записи, соответствующие {{#LANG}}\nLanguage: {{LANG}} {{/LANG}}{{#CATEGORY}}\nCategory: {{CATEGORY}} {{/CATEGORY}} {{#TAG}}\nTag: {{TAG}} {{/TAG}}{{#Q}}\nЗапрос: {{Q}} {{/Q}}",
 	"welcome-to-kiwix-server": "Добро пожаловать на сервер Kiwix",

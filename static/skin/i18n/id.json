@@ -1,15 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
-			"Akmaie Ajam"
+			"Akmaie Ajam",
+			"Bennylin",
+			"Penyuwangi"
 		]
 	},
 	"name": "Bahasa Inggris",
 	"suggest-full-text-search": "mengandung '{{{SEARCH_TERMS}}}'...",
 	"no-such-book": "Tidak ada buku seperti ini: {{BOOK_NAME}}",
-	"too-many-books": "Terlalu banyak buku yang diminta ({{NB_BOOKS}}) dimana batasnya adalah {{LIMIT}}",
+	"too-many-books": "Terlalu banyak buku yang diminta ({{NB_BOOKS}}), batasnya adalah {{LIMIT}}",
 	"no-book-found": "Tidak ada buku yang sesuai kriteria yang dipilih",
-	"url-not-found": "URL yang diminta \"{{url}}\" tidak ditemukan di server ini.",
+	"url-not-found": "URL yang diminta \"{{url}}\" tidak ditemukan di peladen ini.",
 	"suggest-search": "Lakukan pencarian teks lengkap untuk <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Waduh! Gagal memilih artikel acak :(",
 	"invalid-raw-data-type": "{{DATATYPE}} bukan permintaan yang sah untuk konten mentah.",
@@ -21,9 +23,9 @@
 	"400-page-heading": "Permintaan tidak sah",
 	"404-page-title": "Konten tidak ditemukan",
 	"404-page-heading": "Tidak Ditemukan",
-	"500-page-title": "Kesalahan Server Internal",
-	"500-page-heading": "Kesalahan Server Internal",
-	"500-page-text": "Terjadi kesalahan server internal. Kami mohon maaf atas hal ini :/",
+	"500-page-title": "Galat Peladen Internal",
+	"500-page-heading": "Aduh. Halaman tidak bekerja.",
+	"500-page-text": "Jalur yang diminta tidak dapat diantar dengan benar:",
 	"fulltext-search-unavailable": "Pencarian teks lengkap tidak tersedia",
 	"no-search-results": "Mesin pencari teks lengkap tidak tersedia untuk konten ini.",
 	"search-results-page-title": "Pencarian: {{SEARCH_PATTERN}}",
@@ -52,10 +54,10 @@
 	"torrent-download-link-text": "BitTorrent",
 	"torrent-download-alt-text": "Unduh melalui BitTorrent",
 	"library-opds-feed-all-entries": "Umpan OPDS Perpustakaan - Semua entri",
-	"filter-by-tag": "Saring berdasarkan tag \"{{{TAG}}}\"",
-	"stop-filtering-by-tag": "Berhenti penyaringan berdasarkan tag \"{{{TAG}}}\"",
-	"library-opds-feed-parameterised": "Umpan OPDS Perpustakaan - entri yang cocok dengan {{#LANG}}\nBahasa: {{LANG}} {{/LANG}}{{#CATEGORY}}\nKategori: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTag: {{TAG}} {{/TAG}}{{#Q}}\nKueri: {{Q}} {{/Q}}",
-	"welcome-to-kiwix-server": "Selamat datang di Server Kiwix",
+	"filter-by-tag": "Saring berdasarkan tanda \"{{{TAG}}}\"",
+	"stop-filtering-by-tag": "Hentikan penyaringan berdasarkan tanda \"{{{TAG}}}\"",
+	"library-opds-feed-parameterised": "Umpan OPDS Perpustakaan - entri yang cocok dengan {{#LANG}}\nBahasa: {{LANG}} {{/LANG}}{{#CATEGORY}}\nKategori: {{CATEGORY}} {{/CATEGORY}}{{#TAG}}\nTanda: {{TAG}} {{/TAG}}{{#Q}}\nKueri: {{Q}} {{/Q}}",
+	"welcome-to-kiwix-server": "Selamat datang di Peladen Kiwix",
 	"download-links-heading": "Tautan unduhan untuk <b><i>{{BOOK_TITLE}}</i></b>",
 	"download-links-title": "Unduh buku",
 	"preview-book": "Pratayang",
