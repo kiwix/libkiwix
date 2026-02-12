@@ -86,7 +86,7 @@ const ResourceCollection resources200Compressible{
   // TODO: implement cache management of i18n resources
   //{ STATIC_CONTENT, "/ROOT%23%3F/skin/i18n/test.json?cacheid=unknown" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
-  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=08955948" },
+  { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=d2d6933b" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
@@ -301,7 +301,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" defer></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=08955948" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=d2d6933b" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=4e232c58" defer></script>
@@ -337,7 +337,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e
     <link type="text/css" href="./skin/print.css?cacheid=65b1c1d2" media="print" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
-    <script type="text/javascript" src="./skin/languages.js?cacheid=08955948" defer></script>
+    <script type="text/javascript" src="./skin/languages.js?cacheid=d2d6933b" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=6192cae1" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
@@ -1284,7 +1284,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "el",
     "self_name": "Αγγλικά",
-    "translation_count": 23
+    "translation_count": 27
   },
   {
     "iso_code": "en",
@@ -1293,13 +1293,13 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   },
   {
     "iso_code": "es",
-    "self_name": "español",
-    "translation_count": 67
+    "self_name": "Español",
+    "translation_count": 92
   },
   {
     "iso_code": "fi",
     "self_name": "suomi",
-    "translation_count": 29
+    "translation_count": 49
   },
   {
     "iso_code": "fr",
@@ -1369,12 +1369,12 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "lb",
     "self_name": "Lëtzebuergesch",
-    "translation_count": 48
+    "translation_count": 49
   },
   {
     "iso_code": "mk",
     "self_name": "македонски",
-    "translation_count": 81
+    "translation_count": 92
   },
   {
     "iso_code": "ms",
@@ -1389,7 +1389,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "nl",
     "self_name": "Nederlands",
-    "translation_count": 68
+    "translation_count": 84
   },
   {
     "iso_code": "nqo",
@@ -1444,7 +1444,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "sl",
     "self_name": "slovenščina",
-    "translation_count": 57
+    "translation_count": 84
   },
   {
     "iso_code": "sq",
@@ -1454,7 +1454,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "sv",
     "self_name": "Svenska",
-    "translation_count": 67
+    "translation_count": 84
   },
   {
     "iso_code": "sw",
@@ -1474,7 +1474,7 @@ R"EXPECTEDRESPONSE(const uiLanguages = [
   {
     "iso_code": "zh-hans",
     "self_name": "简体中文",
-    "translation_count": 68
+    "translation_count": 84
   },
   {
     "iso_code": "zh-hant",
