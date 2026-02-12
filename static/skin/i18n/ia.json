@@ -10,7 +10,7 @@
 	"no-such-book": "Necun tal libro: {{BOOK_NAME}}",
 	"too-many-books": "Troppo de libros demandate ({{NB_BOOKS}}); le limite es {{LIMIT}}",
 	"no-book-found": "Necun libro corresponde al criterios de selection",
-	"url-not-found": "Le URL reuqestate \"{{url}}\" non ha essite trovate sur iste servitor.",
+	"url-not-found": "Le URL requestate “{{url}}” non ha essite trovate sur iste servitor.",
 	"suggest-search": "Facer un recerca in texto complete de <a href=\"{{{SEARCH_URL}}}\">{{PATTERN}}</a>",
 	"random-article-failure": "Ups! Non poteva eliger un articulo aleatori :(",
 	"invalid-raw-data-type": "{{DATATYPE}} non es un requesta valide pro contento brute.",

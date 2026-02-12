@@ -67,7 +67,7 @@
 	"direct-download-alt-text": "Direct downloaden via HTTP(S)",
 	"hash-download-link-text": "SHA-256-controlesom",
 	"hash-download-alt-text": "De SHA-256-controlesom van het bestand weergeven",
-	"magnet-link-text": "Magnet-link",
+	"magnet-link-text": "Magnet-koppeling",
 	"magnet-alt-text": "Downloaden via Magnet-link",
 	"torrent-download-link-text": "BitTorrent",
 	"torrent-download-alt-text": "Downloaden via BitTorrent",
