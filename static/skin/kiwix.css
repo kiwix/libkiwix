@@ -155,8 +155,6 @@ body {
 
 #uiDownloadButton{
   float: right;
-  cursor: pointer;
-  height: 24px;
   box-sizing: border-box !important;
   height: 30px !important;
   line-height: 20px !important;
