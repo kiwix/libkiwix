@@ -117,10 +117,22 @@
         return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => `&#${i.charCodeAt(0)};`);
     }
 
-    function viewPortToCount(){
-        const zoom = Math.floor((( window.outerWidth - 10 ) / window.innerWidth) * 100);
-        return Math.floor((window.innerHeight/(3*zoom) + 1)*(window.innerWidth/(2.5*zoom) + 1));
-    }
+   function viewPortToCount() {
+  // Use stable viewport size instead of outerWidth (Firefox devtools issue)
+  const width = document.documentElement.clientWidth || window.innerWidth;
+  const height = document.documentElement.clientHeight || window.innerHeight;
+
+  let zoom = 1;
+
+  if (window.innerWidth) {
+    zoom = Math.floor((width / window.innerWidth) * 100) || 1;
+  }
+
+  const rows = Math.floor(height / (3 * zoom) + 1);
+  const cols = Math.floor(width / (2.5 * zoom) + 1);
+
+  return rows * cols;
+}
 
     function getInnerHtml(node, query) {
         const queryNode = node.querySelector(query);
