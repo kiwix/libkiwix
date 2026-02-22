@@ -235,7 +235,7 @@ IpAddress getBestPublicIps() {
     }
   }
 #endif
-  const char* const v4prefixes[] = { "192.168", "172.16", "10.0" };
+  const char* const v4prefixes[] = { "192.168", "172.16", "10.211", "10.0" };
   for (const auto& prefix : v4prefixes) {
     for (const auto& kv : interfaces) {
       const auto& interfaceIps = kv.second;
