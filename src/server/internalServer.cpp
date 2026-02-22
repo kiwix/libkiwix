@@ -519,7 +519,7 @@ bool InternalServer::start() {
                             MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);
   if (mp_daemon == nullptr) {
-    std::cerr << "Unable to instantiate the HTTP daemon. The port " << m_port
+    std::cerr << "ERROR: Unable to instantiate the HTTP daemon. The port " << m_port
               << " is maybe already occupied or need more permissions to be open. "
                  "Please try as root or with a port number higher or equal to 1024."
               << std::endl;
