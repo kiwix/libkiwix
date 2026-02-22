@@ -450,7 +450,7 @@ InternalServer::InternalServer(LibraryPtr library,
 
 InternalServer::~InternalServer() = default;
 
-bool InternalServer::start() {
+bool InternalServer::startMHD() {
 #ifdef _WIN32
   int flags = MHD_USE_SELECT_INTERNALLY;
 #else
@@ -525,6 +525,14 @@ bool InternalServer::start() {
               << std::endl;
     return false;
   }
+  return true;
+}
+
+bool InternalServer::start() {
+  if ( !startMHD() ) {
+    return false;
+  }
+
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
   m_server_id = kiwix::to_string(server_start_time.count());
   return true;
