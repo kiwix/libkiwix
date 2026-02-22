@@ -85,6 +85,10 @@ namespace kiwix {
 namespace
 {
 
+void error(const std::string& msg) {
+  throw std::runtime_error(msg);
+}
+
 bool ipAvailable(const std::string addr)
 {
   auto interfaces = kiwix::getNetworkInterfacesIPv4Or6();
@@ -450,7 +454,7 @@ InternalServer::InternalServer(LibraryPtr library,
 
 InternalServer::~InternalServer() = default;
 
-bool InternalServer::startMHD() {
+void InternalServer::startMHD() {
 #ifdef _WIN32
   int flags = MHD_USE_SELECT_INTERNALLY;
 #else
@@ -478,21 +482,18 @@ bool InternalServer::startMHD() {
     const std::string addr = !m_addr.addr.empty() ? m_addr.addr : m_addr.addr6;
 
     if (m_ipMode != kiwix::IpMode::AUTO) {
-      std::cerr << "ERROR: When an IP address is provided the IP mode must not be set" << std::endl;
-      return false;
+      error("When an IP address is provided the IP mode must not be set");
     }
 
     bool validV4 = inet_pton(AF_INET, m_addr.addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1;
     bool validV6 = inet_pton(AF_INET6, m_addr.addr6.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1;
 
     if (!validV4 && !validV6) {
-      std::cerr << "ERROR: invalid IP address: " << addr << std::endl;
-      return false;
+      error("invalid IP address: " + addr);
     }
 
     if (!ipAvailable(addr)) {
-      std::cerr << "ERROR: IP address is not available on this system: " << addr << std::endl;
-      return false;
+      error("IP address is not available on this system: " + addr);
     }
 
     m_ipMode = !m_addr.addr.empty() ? IpMode::IPV4 : IpMode::IPV6;
@@ -519,17 +520,18 @@ bool InternalServer::startMHD() {
                             MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);
   if (mp_daemon == nullptr) {
-    std::cerr << "ERROR: Unable to instantiate the HTTP daemon. The port " << m_port
-              << " is maybe already occupied or need more permissions to be open. "
-                 "Please try as root or with a port number higher or equal to 1024."
-              << std::endl;
-    return false;
+    error("Unable to instantiate the HTTP daemon. "
+          "The port " + kiwix::to_string(m_port) + " is maybe already occupied"
+          " or need more permissions to be open. "
+          "Please try as root or with a port number higher or equal to 1024.");
   }
-  return true;
 }
 
 bool InternalServer::start() {
-  if ( !startMHD() ) {
+  try {
+    startMHD();
+  } catch (const std::runtime_error& err ) {
+    std::cerr << "ERROR: " << err.what() << std::endl;
     return false;
   }
 
