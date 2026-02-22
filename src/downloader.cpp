@@ -245,7 +245,7 @@ std::shared_ptr<Download> Downloader::getDownload(const std::string& did)
         return m_knownDownloads[gid];
       }
     }
-    throw e;
+    throw;
   }
 }
 

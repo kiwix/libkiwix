@@ -117,6 +117,10 @@ std::map<std::string, IpAddress> getNetworkInterfacesWin() {
   // Successively allocate the required memory until GetAdaptersAddresses does not
   // results in ERROR_BUFFER_OVERFLOW for a maximum of max_tries
   do{
+    if (interfacesHead) {
+      free(interfacesHead);
+      interfacesHead = NULL;
+    }
     interfacesHead = (IP_ADAPTER_ADDRESSES *) malloc(outBufLen);
     if (interfacesHead == NULL) {
       std::cerr << "Memory allocation failed for IP_ADAPTER_ADDRESSES struct" << std::endl;
@@ -124,6 +128,7 @@ std::map<std::string, IpAddress> getNetworkInterfacesWin() {
     }
 
     dwRetVal = GetAdaptersAddresses(family, flags, NULL, interfacesHead, &outBufLen);
+    Iterations++;
   } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < max_tries));
 
   if (dwRetVal == NO_ERROR) {
