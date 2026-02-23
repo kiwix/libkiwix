@@ -118,10 +118,19 @@ public: // functions
     v6.sin6_port   = htons(port);
   }
 
-  void setAnyAddress()
+  IpAddress setAnyAddress(IpMode ipMode)
   {
     v6.sin6_addr = in6addr_any;
     v4.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    IpAddress a = kiwix::getBestPublicIps();
+    if (ipMode == IpMode::IPV6) {
+      a.addr = "";
+    } else if (ipMode == IpMode::IPV4) {
+      a.addr6 = "";
+    }
+
+    return a;
   }
 
   IpMode setAddress(const IpAddress& a)
@@ -527,10 +536,7 @@ void InternalServer::startMHD() {
   InSockAddr inSockAddr(m_port);
   if (m_addr.addr.empty() && m_addr.addr6.empty()) { // No ip address provided
     if (m_ipMode == IpMode::AUTO) m_ipMode = IpMode::ALL;
-    inSockAddr.setAnyAddress();
-    IpAddress bestIps = kiwix::getBestPublicIps();
-    if (m_ipMode == IpMode::IPV4 || m_ipMode == IpMode::ALL) m_addr.addr = bestIps.addr;
-    if (m_ipMode == IpMode::IPV6 || m_ipMode == IpMode::ALL) m_addr.addr6 = bestIps.addr6;
+    m_addr = inSockAddr.setAnyAddress(m_ipMode);
   } else {
     if (m_ipMode != kiwix::IpMode::AUTO) {
       error("When an IP address is provided the IP mode must not be set");
