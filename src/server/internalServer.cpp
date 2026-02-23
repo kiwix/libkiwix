@@ -532,6 +532,21 @@ InternalServer::InternalServer(LibraryPtr library,
 
 InternalServer::~InternalServer() = default;
 
+struct MHD_Daemon* InternalServer::startMHD(int flags,
+                                            struct sockaddr* sockaddr)
+{
+  return MHD_start_daemon(flags,
+                          m_port,
+                          NULL,
+                          NULL,
+                          &staticHandlerCallback,
+                          this,
+                          MHD_OPTION_SOCK_ADDR, sockaddr,
+                          MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
+                          MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
+                          MHD_OPTION_END);
+}
+
 void InternalServer::startMHD() {
   InSockAddr inSockAddr(m_port);
   if (m_addr.addr.empty() && m_addr.addr6.empty()) { // No ip address provided
@@ -546,17 +561,7 @@ void InternalServer::startMHD() {
   }
 
   const int flags = getMHDFlags(m_ipMode, m_verbose.load());
-
-  mp_daemon = MHD_start_daemon(flags,
-                            m_port,
-                            NULL,
-                            NULL,
-                            &staticHandlerCallback,
-                            this,
-                            MHD_OPTION_SOCK_ADDR, inSockAddr.sockaddr(m_ipMode),
-                            MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
-                            MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
-                            MHD_OPTION_END);
+  mp_daemon = startMHD(flags, inSockAddr.sockaddr(m_ipMode));
   if (mp_daemon == nullptr) {
     error("Unable to instantiate the HTTP daemon. "
           "The port " + kiwix::to_string(m_port) + " is maybe already occupied"

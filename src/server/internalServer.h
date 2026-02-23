@@ -127,6 +127,7 @@ class InternalServer {
 
   private: // functions
     void startMHD();
+    struct MHD_Daemon* startMHD(int flags, struct sockaddr* sockaddr);
     std::unique_ptr<Response> handle_request(const RequestContext& request);
     std::unique_ptr<Response> build_redirect(const std::string& bookName, const zim::Item& item) const;
     std::unique_ptr<Response> build_homepage(const RequestContext& request);
