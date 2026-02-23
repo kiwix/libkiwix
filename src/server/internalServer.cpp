@@ -103,6 +103,43 @@ bool ipAvailable(const std::string addr)
   return false;
 }
 
+class InSockAddr
+{
+private: // data
+  struct sockaddr_in  v4 = {0};
+  struct sockaddr_in6 v6 = {0};
+
+public: // functions
+  explicit InSockAddr(int port)
+  {
+    v4.sin_family  = AF_INET;
+    v4.sin_port    = htons(port);
+    v6.sin6_family = AF_INET6;
+    v6.sin6_port   = htons(port);
+  }
+
+  void setAnyAddress()
+  {
+    v6.sin6_addr = in6addr_any;
+    v4.sin_addr.s_addr = htonl(INADDR_ANY);
+  }
+
+  bool setAddress(const IpAddress& a)
+  {
+    const int r1 = inet_pton(AF_INET,  a.addr.c_str(),  &v4.sin_addr.s_addr);
+    const int r2 = inet_pton(AF_INET6, a.addr6.c_str(), &v6.sin6_addr.s6_addr);
+    return r1 == 1 || r2 == 1;
+  }
+
+  struct sockaddr* sockaddr(IpMode ipMode) const
+  {
+    return (ipMode==IpMode::ALL || ipMode==IpMode::IPV6)
+         ? (struct sockaddr*)&v6
+         : (struct sockaddr*)&v4;
+  }
+
+};
+
 std::string
 fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
 {
@@ -464,17 +501,10 @@ void InternalServer::startMHD() {
     flags |= MHD_USE_DEBUG;
 
 
-  struct sockaddr_in sockAddr4={0};
-  sockAddr4.sin_family = AF_INET;
-  sockAddr4.sin_port = htons(m_port);
-  struct sockaddr_in6 sockAddr6={0};
-  sockAddr6.sin6_family = AF_INET6;
-  sockAddr6.sin6_port = htons(m_port);
-
+  InSockAddr inSockAddr(m_port);
   if (m_addr.addr.empty() && m_addr.addr6.empty()) { // No ip address provided
     if (m_ipMode == IpMode::AUTO) m_ipMode = IpMode::ALL;
-    sockAddr6.sin6_addr = in6addr_any;
-    sockAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
+    inSockAddr.setAnyAddress();
     IpAddress bestIps = kiwix::getBestPublicIps();
     if (m_ipMode == IpMode::IPV4 || m_ipMode == IpMode::ALL) m_addr.addr = bestIps.addr;
     if (m_ipMode == IpMode::IPV6 || m_ipMode == IpMode::ALL) m_addr.addr6 = bestIps.addr6;
@@ -485,10 +515,7 @@ void InternalServer::startMHD() {
       error("When an IP address is provided the IP mode must not be set");
     }
 
-    bool validV4 = inet_pton(AF_INET, m_addr.addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1;
-    bool validV6 = inet_pton(AF_INET6, m_addr.addr6.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1;
-
-    if (!validV4 && !validV6) {
+    if ( !inSockAddr.setAddress(m_addr) ) {
       error("invalid IP address: " + addr);
     }
 
@@ -505,17 +532,13 @@ void InternalServer::startMHD() {
     flags|=MHD_USE_IPv6;
   }
 
-  struct sockaddr* sockaddr = (m_ipMode==IpMode::ALL || m_ipMode==IpMode::IPV6)
-                              ? (struct sockaddr*)&sockAddr6
-                              : (struct sockaddr*)&sockAddr4;
-
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
                             NULL,
                             NULL,
                             &staticHandlerCallback,
                             this,
-                            MHD_OPTION_SOCK_ADDR, sockaddr,
+                            MHD_OPTION_SOCK_ADDR, inSockAddr.sockaddr(m_ipMode),
                             MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
                             MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
                             MHD_OPTION_END);
