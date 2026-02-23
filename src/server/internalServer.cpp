@@ -124,11 +124,22 @@ public: // functions
     v4.sin_addr.s_addr = htonl(INADDR_ANY);
   }
 
-  bool setAddress(const IpAddress& a)
+  IpMode setAddress(const IpAddress& a)
   {
+    const std::string addrStr = !a.addr.empty() ? a.addr : a.addr6;
+
     const int r1 = inet_pton(AF_INET,  a.addr.c_str(),  &v4.sin_addr.s_addr);
     const int r2 = inet_pton(AF_INET6, a.addr6.c_str(), &v6.sin6_addr.s6_addr);
-    return r1 == 1 || r2 == 1;
+
+    if ( r1 != 1 && r2 != 1 ) {
+      error("invalid IP address: " + addrStr);
+    }
+
+    if ( !ipAvailable(addrStr) ) {
+      error("IP address is not available on this system: " + addrStr);
+    }
+
+    return !a.addr.empty() ? IpMode::IPV4 : IpMode::IPV6;
   }
 
   struct sockaddr* sockaddr(IpMode ipMode) const
@@ -509,21 +520,11 @@ void InternalServer::startMHD() {
     if (m_ipMode == IpMode::IPV4 || m_ipMode == IpMode::ALL) m_addr.addr = bestIps.addr;
     if (m_ipMode == IpMode::IPV6 || m_ipMode == IpMode::ALL) m_addr.addr6 = bestIps.addr6;
   } else {
-    const std::string addr = !m_addr.addr.empty() ? m_addr.addr : m_addr.addr6;
-
     if (m_ipMode != kiwix::IpMode::AUTO) {
       error("When an IP address is provided the IP mode must not be set");
     }
 
-    if ( !inSockAddr.setAddress(m_addr) ) {
-      error("invalid IP address: " + addr);
-    }
-
-    if (!ipAvailable(addr)) {
-      error("IP address is not available on this system: " + addr);
-    }
-
-    m_ipMode = !m_addr.addr.empty() ? IpMode::IPV4 : IpMode::IPV6;
+    m_ipMode = inSockAddr.setAddress(m_addr);
   }
 
   if (m_ipMode == IpMode::ALL) {
