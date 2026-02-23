@@ -562,6 +562,15 @@ void InternalServer::startMHD() {
 
   const int flags = getMHDFlags(m_ipMode, m_verbose.load());
   mp_daemon = startMHD(flags, inSockAddr.sockaddr(m_ipMode));
+  if (mp_daemon == nullptr && m_ipMode == IpMode::ALL) {
+    // MHD_USE_DUAL_STACK (set in IpMode::ALL case) fails on systems with IPv6
+    // disabled. Let's retry in IPv4-only mode.
+    m_ipMode = IpMode::IPV4;
+    m_addr.addr6 = "";
+    const int flags = getMHDFlags(m_ipMode, m_verbose.load());
+    mp_daemon = startMHD(flags, inSockAddr.sockaddr(m_ipMode));
+  }
+
   if (mp_daemon == nullptr) {
     error("Unable to instantiate the HTTP daemon. "
           "The port " + kiwix::to_string(m_port) + " is maybe already occupied"
