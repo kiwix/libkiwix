@@ -151,6 +151,27 @@ public: // functions
 
 };
 
+int getMHDFlags(IpMode ipMode, bool verbose)
+{
+#ifdef _WIN32
+  int flags = MHD_USE_SELECT_INTERNALLY;
+#else
+  int flags = MHD_USE_POLL_INTERNALLY;
+#endif
+
+  if (ipMode == IpMode::ALL) {
+    flags |= MHD_USE_DUAL_STACK;
+  } else if (ipMode == IpMode::IPV6) {
+    flags |= MHD_USE_IPv6;
+  }
+
+  if (verbose) {
+    flags |= MHD_USE_DEBUG;
+  }
+
+  return flags;
+}
+
 std::string
 fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
 {
@@ -503,15 +524,6 @@ InternalServer::InternalServer(LibraryPtr library,
 InternalServer::~InternalServer() = default;
 
 void InternalServer::startMHD() {
-#ifdef _WIN32
-  int flags = MHD_USE_SELECT_INTERNALLY;
-#else
-  int flags = MHD_USE_POLL_INTERNALLY;
-#endif
-  if (m_verbose.load())
-    flags |= MHD_USE_DEBUG;
-
-
   InSockAddr inSockAddr(m_port);
   if (m_addr.addr.empty() && m_addr.addr6.empty()) { // No ip address provided
     if (m_ipMode == IpMode::AUTO) m_ipMode = IpMode::ALL;
@@ -527,11 +539,7 @@ void InternalServer::startMHD() {
     m_ipMode = inSockAddr.setAddress(m_addr);
   }
 
-  if (m_ipMode == IpMode::ALL) {
-    flags|=MHD_USE_DUAL_STACK;
-  } else if (m_ipMode == IpMode::IPV6) {
-    flags|=MHD_USE_IPv6;
-  }
+  const int flags = getMHDFlags(m_ipMode, m_verbose.load());
 
   mp_daemon = MHD_start_daemon(flags,
                             m_port,
