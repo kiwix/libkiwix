@@ -36,7 +36,7 @@
                 filteredParams.set(key, value);
             }
         }
-        const feedLink = `${root}/catalog/v2/entries?${filteredParams.toString()}`;
+        const feedLink = `${root}/catalog/v2/entries?count=-1&${filteredParams.toString()}`;
         document.querySelector('#headFeedLink').href = feedLink;
         document.querySelector('#feedLink').href = feedLink;
         setFeedToolTip();
