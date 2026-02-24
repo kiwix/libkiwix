@@ -155,6 +155,15 @@ class Manager
                        const std::string& url = "",
                        const bool checkMetaData = false);
 
+  /**
+   * Add all books from the directory tree into the library.
+   * 
+   * @param path          The path of the directory to scan.
+   * @param verboseFlag   Verbose logs flag.
+   */
+  void addBooksFromDirectory(const std::string& path,
+                             const bool verboseFlag = false);
+
   std::string writableLibraryPath;
 
   bool m_hasSearchResult = false;

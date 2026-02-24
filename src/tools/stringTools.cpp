@@ -74,11 +74,10 @@ std::string kiwix::removeAccents(const std::string& text)
   loadICUExternalTables();
   ucnv_setDefaultName("UTF-8");
   UErrorCode status = U_ZERO_ERROR;
-  auto removeAccentsTrans = icu::Transliterator::createInstance(
-      "Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status);
+  std::unique_ptr<icu::Transliterator> removeAccentsTrans(icu::Transliterator::createInstance(
+      "Lower; NFD; [:M:] remove; NFC", UTRANS_FORWARD, status));
   icu::UnicodeString ustring(text.c_str());
   removeAccentsTrans->transliterate(ustring);
-  delete removeAccentsTrans;
   std::string unaccentedText;
   ustring.toUTF8String(unaccentedText);
   return unaccentedText;

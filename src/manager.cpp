@@ -23,6 +23,14 @@
 #include "tools/pathTools.h"
 
 #include <pugixml.hpp>
+#include <filesystem>
+#include <iostream>
+#include <set>
+#include <queue>
+#include <cctype>
+#include <algorithm>
+
+namespace fs = std::filesystem;
 
 namespace kiwix
 {
@@ -249,6 +257,58 @@ bool Manager::addBookFromPath(const std::string& pathToOpen,
   return !(
       this->addBookFromPathAndGetId(pathToOpen, pathToSave, url, checkMetaData)
           .empty());
+}
+
+void Manager::addBooksFromDirectory(const std::string& path,
+                                    const bool verboseFlag)
+{
+  std::set<std::string> iteratedDirs;
+  std::queue<std::string> dirQueue;
+  dirQueue.push(fs::absolute(path).u8string());
+  int totalBooksAdded = 0;
+  if (verboseFlag)
+    std::cout << "Adding books from the directory tree: " << dirQueue.front() << std::endl;
+
+  while (!dirQueue.empty()) {
+    const auto currentPath = dirQueue.front();
+    dirQueue.pop();
+    if (verboseFlag)
+      std::cout << "Visiting directory: " << currentPath << std::endl;
+    for (const auto& dirEntry : fs::directory_iterator(currentPath)) {
+      auto resolvedPath = dirEntry.path();
+      if (fs::is_symlink(dirEntry)) {
+        try {
+          resolvedPath = fs::canonical(dirEntry.path());
+        } catch (const std::exception& e) {
+          std::cerr << "Could not resolve symlink " << resolvedPath.u8string() << " to a valid path. Skipping..." << std::endl;
+          continue;
+        }
+      }
+      const std::string pathString = resolvedPath.u8string();
+      std::string resolvedPathExtension = resolvedPath.extension().u8string();
+      std::transform(resolvedPathExtension.begin(), resolvedPathExtension.end(), resolvedPathExtension.begin(),
+          [](unsigned char c){ return std::tolower(c); });
+      if (fs::is_directory(resolvedPath)) {
+        if (iteratedDirs.find(pathString) == iteratedDirs.end())
+          dirQueue.push(pathString);
+        else if (verboseFlag)
+          std::cout << "Already iterated over " << pathString << ". Skipping..." << std::endl;
+      } else if (resolvedPathExtension == ".zim" || resolvedPathExtension == ".zimaa") {
+        if (!this->addBookFromPath(pathString, pathString, "", false)) {
+          std::cerr << "Could not add " << pathString << " into the library." << std::endl;
+        } else if (verboseFlag) {
+          std::cout << "Added " << pathString << " into the library." << std::endl;
+          totalBooksAdded++;
+        }
+      } else if (verboseFlag) {
+        std::cout << "Skipped " << pathString << " - unsupported file type or permission denied." << std::endl;
+      }
+    }
+    iteratedDirs.insert(currentPath);
+  }
+
+  if (verboseFlag)
+    std::cout << "Traversal completed. Total books added: " << totalBooksAdded << std::endl;
 }
 
 bool Manager::readBookFromPath(const std::string& path, kiwix::Book* book)

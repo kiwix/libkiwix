@@ -117,6 +117,10 @@ std::map<std::string, IpAddress> getNetworkInterfacesWin() {
   // Successively allocate the required memory until GetAdaptersAddresses does not
   // results in ERROR_BUFFER_OVERFLOW for a maximum of max_tries
   do{
+    if (interfacesHead) {
+      free(interfacesHead);
+      interfacesHead = NULL;
+    }
     interfacesHead = (IP_ADAPTER_ADDRESSES *) malloc(outBufLen);
     if (interfacesHead == NULL) {
       std::cerr << "Memory allocation failed for IP_ADAPTER_ADDRESSES struct" << std::endl;
@@ -124,6 +128,7 @@ std::map<std::string, IpAddress> getNetworkInterfacesWin() {
     }
 
     dwRetVal = GetAdaptersAddresses(family, flags, NULL, interfacesHead, &outBufLen);
+    Iterations++;
   } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < max_tries));
 
   if (dwRetVal == NO_ERROR) {
@@ -230,7 +235,7 @@ IpAddress getBestPublicIps() {
     }
   }
 #endif
-  const char* const v4prefixes[] = { "192.168", "172.16", "10.0" };
+  const char* const v4prefixes[] = { "192.168", "172.16", "10.211", "10.0" };
   for (const auto& prefix : v4prefixes) {
     for (const auto& kv : interfaces) {
       const auto& interfaceIps = kv.second;

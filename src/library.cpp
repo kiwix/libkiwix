@@ -202,7 +202,7 @@ std::string Library::getBestFromBookCollection(BookIdCollection books, const Boo
   }
 
   sort(books, DATE, false);
-  stable_sort(books.begin(), books.end(), [&](const std::string& bookId1, const std::string& bookId2) {
+  std::stable_sort(books.begin(), books.end(), [&](const std::string& bookId1, const std::string& bookId2) {
     const auto& book1 = getBookById(bookId1);
     const auto& book2 = getBookById(bookId2);
     bool same_flavour1 = book1.getFlavour() == bookmark.getBookFlavour();
