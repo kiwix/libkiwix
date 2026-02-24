@@ -18,7 +18,7 @@ import os
 # -- Project information -----------------------------------------------------
 
 project = 'libkiwix'
-copyright = '2022, libkiwix-team'
+copyright = '2026, libkiwix-team'
 author = 'libkiwix-team'
 
 

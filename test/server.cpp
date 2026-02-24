@@ -8,6 +8,8 @@
 
 #include "../src/tools/stringTools.h"
 
+#include "testing_tools.h"
+using namespace kiwix::testing;
 
 const std::string ROOT_PREFIX("/ROOT%23%3F");
 
@@ -2305,4 +2307,75 @@ R"(const viewerSettings = {
 TEST_F(ServerTest, EmptyPatternSearchDoesNotError)
 {
   EXPECT_EQ(200, zfs1_->GET("/ROOT%23%3F/search?content=zimfile")->status);
+}
+
+#define EXPECT_ERROR(MSG, SERVER_SETUP_CODE) \
+  { \
+    kiwix::Server server(kiwix::Library::create()); \
+    CapturedStderr stderror; \
+    SERVER_SETUP_CODE; \
+    EXPECT_FALSE(server.start()); \
+    EXPECT_EQ(std::string(stderror), std::string("ERROR: ") + MSG + "\n"); \
+  }
+
+TEST(ServerNegativeTest, IpAddressAndIpModeAreMutuallyExclusive)
+{
+  EXPECT_ERROR("When an IP address is provided the IP mode must not be set",
+    server.setAddress("127.0.0.1");
+    server.setIpMode(kiwix::IpMode::IPV4);
+  );
+
+  EXPECT_ERROR("When an IP address is provided the IP mode must not be set",
+    server.setAddress("[::1]");
+    server.setIpMode(kiwix::IpMode::IPV6);
+  );
+
+  EXPECT_ERROR("When an IP address is provided the IP mode must not be set",
+    server.setAddress("localhost");
+    server.setIpMode(kiwix::IpMode::ALL);
+  );
+}
+
+TEST(ServerNegativeTest, InvalidIpAddressDetection)
+{
+  EXPECT_ERROR("invalid IP address: 1.2.3",
+    server.setAddress("1.2.3");
+  );
+
+  EXPECT_ERROR("invalid IP address: 127.0.0.256",
+    server.setAddress("127.0.0.256");
+  );
+
+  EXPECT_ERROR("invalid IP address: localhost",
+    server.setAddress("localhost");
+  );
+
+  EXPECT_ERROR("invalid IP address: fe80::94d2:16e7:5f3e:89bx",
+    server.setAddress("[fe80::94d2:16e7:5f3e:89bx]");
+  );
+
+  // We assume that our unit tests won't be run on Google's DNS server
+  EXPECT_ERROR("IP address is not available on this system: 8.8.8.8",
+    server.setAddress("8.8.8.8");
+  );
+
+  // According to the spec, IPv6 addresses 2001:db8::/32 are reserved
+  // for documentation and example source code
+  EXPECT_ERROR("IP address is not available on this system: 2001:db8::",
+    server.setAddress("[2001:db8::]");
+  );
+}
+
+TEST(ServerNegativeTest, UnusablePort)
+{
+  // Occupy port 8910
+  httplib::Server portOccupant;
+  ASSERT_TRUE(portOccupant.bind_to_port("127.0.0.1", 8910));
+
+  // Try to listen on the same port
+  EXPECT_ERROR("Unable to instantiate the HTTP daemon. The port 8910 is maybe "
+               "already occupied or need more permissions to be open. Please "
+               "try as root or with a port number higher or equal to 1024.",
+    server.setPort(8910);
+  );
 }

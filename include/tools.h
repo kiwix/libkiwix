@@ -29,10 +29,13 @@
 namespace kiwix
 {
 
+/**
+ * An IPv4 and/or IPv6 address.
+ */
 struct IpAddress
 {
-    std::string addr;  // IPv4 address
-    std::string addr6; // IPv6 address
+    std::string addr;  /**< IPv4 address */
+    std::string addr6; /**< IPv6 address */
 };
 
 typedef std::pair<std::string, std::string> LangNameCodePair;
@@ -263,7 +266,7 @@ std::string getLanguageSelfName(const std::string& lang);
  * Slugifies the filename by converting any characters reserved by the operating
  * system to '_'. Note filename is only the file name and not a path.
  *
- * @param filename Valid UTF-8 encoded file name string. 
+ * @param filename Valid UTF-8 encoded file name string.
  * @return slugified string.
  */
 std::string getSlugifiedFileName(const std::string& filename);
