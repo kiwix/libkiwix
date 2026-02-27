@@ -42,7 +42,7 @@ namespace kiwix
        virtual ~Server();
 
        /**
-        * Serve the content.
+        * Start serving the content.
         */
        bool start();
 
@@ -51,9 +51,27 @@ namespace kiwix
         */
        void stop();
 
+       /**
+        * Set the path of the root URL served by this server instance.
+        */
        void setRoot(const std::string& root);
+
+       /**
+        * Set the IP address on which to listen for incoming connections.
+        *
+        * Specifying a non-empty IP address requires that the IpMode is
+        * [set](@ref setIpMode()) to `IpMode::AUTO` (which is the default).
+        * Otherwise, [starting](@ref start()) the server will fail.
+        */
        void setAddress(const std::string& addr);
+
+       /**
+        * Set the port on which to listen for incoming connections.
+        *
+        * Default port is 80, but using it requires special privileges.
+        */
        void setPort(int port) { m_port = port; }
+
        void setNbThreads(int threads) { m_nbThreads = threads; }
        void setMultiZimSearchLimit(unsigned int limit) { m_multizimSearchLimit = limit; }
        void setIpConnectionLimit(int limit) { m_ipConnectionLimit = limit; }
@@ -65,10 +83,50 @@ namespace kiwix
         { m_blockExternalLinks = blockExternalLinks; }
        void setCatalogOnlyMode(bool enable) { m_catalogOnlyMode = enable; }
        void setContentServerUrl(std::string url) { m_contentServerUrl = url; }
+
+       /**
+        * Listen for incoming connections on all IP addresses of the specified
+        * IP protocol family.
+        */
        void setIpMode(IpMode mode) { m_ipMode = mode; }
+
+       /**
+        * Get the port on which the server listens for incoming connections
+        */
        int getPort() const;
+
+       /**
+        * Get the IPv4 and/or IPv6 address(es) on which the server can be
+        * contacted.
+        *
+        * The server may actually be listening on other IP addresses as well
+        * (see `setIpMode()`).  The IP address(es) returned by this method
+        * represent the best-guess public IP address(es) accessible by the
+        * broadest set of clients.
+        */
        IpAddress getAddress() const;
+
+       /**
+        * Get the effective IpMode used by this server.
+        *
+        * The returned value may be different from the one configured via
+        * `setIpMode()`, since the server is expected to adjust to the
+        * constraints of the environment (e.g. `IpMode::ALL` can be converted
+        * to `IpMode::IPV4` on a system that does not support IPv6).
+        */
        IpMode getIpMode() const;
+
+       /**
+        * Get the list of HTTP URLs through which the server can be contacted.
+        *
+        * Each URL is composed of an IP address and optional port and includes
+        * the [root](@ref setRoot()) path component.
+        *
+        * In the current implementation at most 2 URLs may be returned - one
+        * for IPv4 and another for IPv6 protocol (whichever is available), as
+        * returned by `getAddress()`. Note, however, that the server may be
+        * also accessible via other IP-addresses/URLs (see `setIpMode()`).
+        */
        std::vector<std::string> getServerAccessUrls() const;
 
      protected:

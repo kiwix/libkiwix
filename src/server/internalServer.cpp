@@ -85,6 +85,10 @@ namespace kiwix {
 namespace
 {
 
+void error(const std::string& msg) {
+  throw std::runtime_error(msg);
+}
+
 bool ipAvailable(const std::string addr)
 {
   auto interfaces = kiwix::getNetworkInterfacesIPv4Or6();
@@ -97,6 +101,84 @@ bool ipAvailable(const std::string addr)
   }
 
   return false;
+}
+
+class InSockAddr
+{
+private: // data
+  struct sockaddr_in  v4 = {0};
+  struct sockaddr_in6 v6 = {0};
+
+public: // functions
+  explicit InSockAddr(int port)
+  {
+    v4.sin_family  = AF_INET;
+    v4.sin_port    = htons(port);
+    v6.sin6_family = AF_INET6;
+    v6.sin6_port   = htons(port);
+  }
+
+  IpAddress setAnyAddress(IpMode ipMode)
+  {
+    v6.sin6_addr = in6addr_any;
+    v4.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    IpAddress a = kiwix::getBestPublicIps();
+    if (ipMode == IpMode::IPV6) {
+      a.addr = "";
+    } else if (ipMode == IpMode::IPV4) {
+      a.addr6 = "";
+    }
+
+    return a;
+  }
+
+  IpMode setAddress(const IpAddress& a)
+  {
+    const std::string addrStr = !a.addr.empty() ? a.addr : a.addr6;
+
+    const int r1 = inet_pton(AF_INET,  a.addr.c_str(),  &v4.sin_addr.s_addr);
+    const int r2 = inet_pton(AF_INET6, a.addr6.c_str(), &v6.sin6_addr.s6_addr);
+
+    if ( r1 != 1 && r2 != 1 ) {
+      error("invalid IP address: " + addrStr);
+    }
+
+    if ( !ipAvailable(addrStr) ) {
+      error("IP address is not available on this system: " + addrStr);
+    }
+
+    return !a.addr.empty() ? IpMode::IPV4 : IpMode::IPV6;
+  }
+
+  struct sockaddr* sockaddr(IpMode ipMode) const
+  {
+    return (ipMode==IpMode::ALL || ipMode==IpMode::IPV6)
+         ? (struct sockaddr*)&v6
+         : (struct sockaddr*)&v4;
+  }
+
+};
+
+int getMHDFlags(IpMode ipMode, bool verbose)
+{
+#ifdef _WIN32
+  int flags = MHD_USE_SELECT_INTERNALLY;
+#else
+  int flags = MHD_USE_POLL_INTERNALLY;
+#endif
+
+  if (ipMode == IpMode::ALL) {
+    flags |= MHD_USE_DUAL_STACK;
+  } else if (ipMode == IpMode::IPV6) {
+    flags |= MHD_USE_IPv6;
+  }
+
+  if (verbose) {
+    flags |= MHD_USE_DEBUG;
+  }
+
+  return flags;
 }
 
 std::string
@@ -450,81 +532,61 @@ InternalServer::InternalServer(LibraryPtr library,
 
 InternalServer::~InternalServer() = default;
 
-bool InternalServer::start() {
-#ifdef _WIN32
-  int flags = MHD_USE_SELECT_INTERNALLY;
-#else
-  int flags = MHD_USE_POLL_INTERNALLY;
-#endif
-  if (m_verbose.load())
-    flags |= MHD_USE_DEBUG;
+struct MHD_Daemon* InternalServer::startMHD(int flags,
+                                            struct sockaddr* sockaddr)
+{
+  return MHD_start_daemon(flags,
+                          m_port,
+                          NULL,
+                          NULL,
+                          &staticHandlerCallback,
+                          this,
+                          MHD_OPTION_SOCK_ADDR, sockaddr,
+                          MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
+                          MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
+                          MHD_OPTION_END);
+}
 
-
-  struct sockaddr_in sockAddr4={0};
-  sockAddr4.sin_family = AF_INET;
-  sockAddr4.sin_port = htons(m_port);
-  struct sockaddr_in6 sockAddr6={0};
-  sockAddr6.sin6_family = AF_INET6;
-  sockAddr6.sin6_port = htons(m_port);
-
+void InternalServer::startMHD() {
+  InSockAddr inSockAddr(m_port);
   if (m_addr.addr.empty() && m_addr.addr6.empty()) { // No ip address provided
     if (m_ipMode == IpMode::AUTO) m_ipMode = IpMode::ALL;
-    sockAddr6.sin6_addr = in6addr_any;
-    sockAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
-    IpAddress bestIps = kiwix::getBestPublicIps();
-    if (m_ipMode == IpMode::IPV4 || m_ipMode == IpMode::ALL) m_addr.addr = bestIps.addr;
-    if (m_ipMode == IpMode::IPV6 || m_ipMode == IpMode::ALL) m_addr.addr6 = bestIps.addr6;
+    m_addr = inSockAddr.setAnyAddress(m_ipMode);
   } else {
-    const std::string addr = !m_addr.addr.empty() ? m_addr.addr : m_addr.addr6;
-
     if (m_ipMode != kiwix::IpMode::AUTO) {
-      std::cerr << "ERROR: When an IP address is provided the IP mode must not be set" << std::endl;
-      return false;
+      error("When an IP address is provided the IP mode must not be set");
     }
 
-    bool validV4 = inet_pton(AF_INET, m_addr.addr.c_str(), &(sockAddr4.sin_addr.s_addr)) == 1;
-    bool validV6 = inet_pton(AF_INET6, m_addr.addr6.c_str(), &(sockAddr6.sin6_addr.s6_addr)) == 1;
-
-    if (!validV4 && !validV6) {
-      std::cerr << "ERROR: invalid IP address: " << addr << std::endl;
-      return false;
-    }
-
-    if (!ipAvailable(addr)) {
-      std::cerr << "ERROR: IP address is not available on this system: " << addr << std::endl;
-      return false;
-    }
-
-    m_ipMode = !m_addr.addr.empty() ? IpMode::IPV4 : IpMode::IPV6;
+    m_ipMode = inSockAddr.setAddress(m_addr);
   }
 
-  if (m_ipMode == IpMode::ALL) {
-    flags|=MHD_USE_DUAL_STACK;
-  } else if (m_ipMode == IpMode::IPV6) {
-    flags|=MHD_USE_IPv6;
+  const int flags = getMHDFlags(m_ipMode, m_verbose.load());
+  mp_daemon = startMHD(flags, inSockAddr.sockaddr(m_ipMode));
+  if (mp_daemon == nullptr && m_ipMode == IpMode::ALL) {
+    // MHD_USE_DUAL_STACK (set in IpMode::ALL case) fails on systems with IPv6
+    // disabled. Let's retry in IPv4-only mode.
+    m_ipMode = IpMode::IPV4;
+    m_addr.addr6 = "";
+    const int flags = getMHDFlags(m_ipMode, m_verbose.load());
+    mp_daemon = startMHD(flags, inSockAddr.sockaddr(m_ipMode));
   }
 
-  struct sockaddr* sockaddr = (m_ipMode==IpMode::ALL || m_ipMode==IpMode::IPV6)
-                              ? (struct sockaddr*)&sockAddr6
-                              : (struct sockaddr*)&sockAddr4;
-
-  mp_daemon = MHD_start_daemon(flags,
-                            m_port,
-                            NULL,
-                            NULL,
-                            &staticHandlerCallback,
-                            this,
-                            MHD_OPTION_SOCK_ADDR, sockaddr,
-                            MHD_OPTION_THREAD_POOL_SIZE, m_nbThreads,
-                            MHD_OPTION_PER_IP_CONNECTION_LIMIT, m_ipConnectionLimit,
-                            MHD_OPTION_END);
   if (mp_daemon == nullptr) {
-    std::cerr << "Unable to instantiate the HTTP daemon. The port " << m_port
-              << " is maybe already occupied or need more permissions to be open. "
-                 "Please try as root or with a port number higher or equal to 1024."
-              << std::endl;
+    error("Unable to instantiate the HTTP daemon. "
+          "The port " + kiwix::to_string(m_port) + " is maybe already occupied"
+          " or need more permissions to be open. "
+          "Please try as root or with a port number higher or equal to 1024.");
+  }
+}
+
+bool InternalServer::start() {
+  try {
+    startMHD();
+  } catch (const std::runtime_error& err ) {
+    std::cerr << "ERROR: " << err.what() << std::endl;
     return false;
   }
+
   auto server_start_time = std::chrono::system_clock::now().time_since_epoch();
   m_server_id = kiwix::to_string(server_start_time.count());
   return true;

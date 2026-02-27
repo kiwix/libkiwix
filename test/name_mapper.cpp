@@ -2,6 +2,9 @@
 
 #include "../include/library.h"
 #include "../include/manager.h"
+#include "testing_tools.h"
+using namespace kiwix::testing;
+
 #include "gtest/gtest.h"
 
 namespace
@@ -56,27 +59,6 @@ class NameMapperTest : public ::testing::Test {
   }
 
   std::shared_ptr<kiwix::Library> lib;
-};
-
-class CapturedStderr
-{
-  std::ostringstream buffer;
-  std::streambuf* const sbuf;
-public:
-  CapturedStderr()
-    : sbuf(std::cerr.rdbuf())
-  {
-    std::cerr.rdbuf(buffer.rdbuf());
-  }
-
-  CapturedStderr(const CapturedStderr&) = delete;
-
-  ~CapturedStderr()
-  {
-    std::cerr.rdbuf(sbuf);
-  }
-
-  operator std::string() const { return buffer.str(); }
 };
 
 #if _WIN32
