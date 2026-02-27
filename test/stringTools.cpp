@@ -196,4 +196,35 @@ TEST(stringTools, Trim)
     EXPECT_EQ(kiwix::trim("\t abc123 \n"), "abc123");
 }
 
-};
+TEST(stringTools, removeAccents)
+{
+    EXPECT_EQ(kiwix::removeAccents(""), "");
+
+    EXPECT_EQ(kiwix::removeAccents("qwertyuiop[]\\"), "qwertyuiop[]\\");
+    EXPECT_EQ(kiwix::removeAccents("asdfghjkl;'"),    "asdfghjkl;'");
+    EXPECT_EQ(kiwix::removeAccents("zxcvbnm,./"),     "zxcvbnm,./");
+    EXPECT_EQ(kiwix::removeAccents("`1234567890-="),  "`1234567890-=");
+
+    // Surprise! removeAccents() changes case to lower
+    EXPECT_EQ(kiwix::removeAccents("QWERTYUIOP{}|"), "qwertyuiop{}|");
+    EXPECT_EQ(kiwix::removeAccents("ASDFGHJKL:\""),    "asdfghjkl:\"");
+    EXPECT_EQ(kiwix::removeAccents("ZXCVBNM<>?"),     "zxcvbnm<>?");
+    EXPECT_EQ(kiwix::removeAccents("~!@#$%^&*()_+"),  "~!@#$%^&*()_+");
+
+    // removeAccents() removes diacritics (while also changing case)
+    EXPECT_EQ(kiwix::removeAccents("åçêȟïñöş"), "acehinos");
+    EXPECT_EQ(kiwix::removeAccents("ÅÇÊȞÏÑÖŞ"), "acehinos");
+
+    // removeAccents() doesn't mess with certain letters of European scripts
+    EXPECT_EQ(kiwix::removeAccents("ßæœøł"), "ßæœøł");
+
+    // Case is changed for non-ASCII letters too
+    EXPECT_EQ(kiwix::removeAccents("ÆŒØŁΓΦΣԱԲԳДЖИ"),  "æœøłγφσաբգджи");
+
+    // removeAccents() doesn't mess with symbols derived from Latin letters
+    EXPECT_EQ(kiwix::removeAccents("$¢"), "$¢");
+
+    EXPECT_EQ(kiwix::removeAccents("Mïß Ůñîvèrsé"), "miß universe");
+}
+
+} // unnamed namespace
