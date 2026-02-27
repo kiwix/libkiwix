@@ -35,6 +35,28 @@
 #include <iomanip>
 #include <regex>
 
+namespace
+{
+
+bool isAsciiOnly(const std::string& s)
+{
+  for ( const unsigned char c : s ) {
+    if ( c >= 128 )
+      return false;
+  }
+  return true;
+}
+
+std::string asciiToLower(std::string s)
+{
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) {
+        return ('A' <= c && c <= 'Z') ? c - ('Z' - 'z') : c;
+        });
+    return s;
+}
+
+} // unnamed namespace
+
 /* tell ICU where to find its dat file (tables) */
 void kiwix::loadICUExternalTables()
 {
@@ -71,6 +93,9 @@ std::string kiwix::ICULanguageInfo::selfName() const
 
 std::string kiwix::removeAccents(const std::string& text)
 {
+  if ( isAsciiOnly(text) )
+    return asciiToLower(text);
+
   loadICUExternalTables();
   ucnv_setDefaultName("UTF-8");
   UErrorCode status = U_ZERO_ERROR;
@@ -448,7 +473,7 @@ std::string kiwix::getSlugifiedFileName(const std::string& filename)
 #else
   const std::regex reservedCharsReg("/");
 #endif
-  return std::regex_replace(filename, reservedCharsReg, "_"); 
+  return std::regex_replace(filename, reservedCharsReg, "_");
 }
 
 std::string kiwix::trim(const std::string& s)
