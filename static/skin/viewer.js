@@ -427,9 +427,13 @@ function setup_chaperon_mode() {
   const links = contentIframe.contentDocument.getElementsByTagName('a');
   for ( const a of links ) {
     // XXX: wombat's possible involvement with href not taken into account
-    if ( a.hasAttribute('href') && a.href.startsWith(internalUrlPrefix) ) {
-      const userUrl = a.href.substr(internalUrlPrefix.length);
-      a.href = `${root}/viewer#${userUrl}`;
+    if ( a.hasAttribute('href') ) {
+      if ( a.href.startsWith(internalUrlPrefix) ) {
+        const userUrl = a.href.substr(internalUrlPrefix.length);
+        a.href = `${root}/viewer#${userUrl}`;
+      } else {
+        a.href = blockLink(a.href);
+      }
     }
   }
 }
