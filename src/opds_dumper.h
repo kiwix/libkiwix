@@ -29,6 +29,7 @@
 #include "library.h"
 #include "name_mapper.h"
 #include "library_dumper.h"
+#include "server/request_context.h"
 
 using namespace std;
 

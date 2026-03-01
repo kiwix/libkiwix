@@ -17,6 +17,8 @@
 
   <title>{{^filter}}All Entries{{/filter}}{{#filter}}Filtered Entries ({{filter}}){{/filter}}</title>
   <updated>{{date}}</updated>
+  <logo>{{logo_url}}</logo>
+  <icon>{{logo_url}}</icon>
 {{#filter}}
   <totalResults>{{totalResults}}</totalResults>
   <startIndex>{{startIndex}}</startIndex>
