@@ -444,11 +444,11 @@ class Library: public std::enable_shared_from_this<Library>
 
 
   /**
-   * Sort (in place) bookIds using the given comparator.
+   * Sort (in place) bookIds using the given arguments.
    *
    * @param bookIds the list of book Ids to sort
-   * @param comparator how to sort the books
-   * @return The sorted list of books
+   * @param sortBy how to sort the books (UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER)
+   * @param ascending ascending or descending
    */
   void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending) const;
 
