@@ -72,6 +72,7 @@ body {
     background-color: #f7f7f7;
     border: 1px solid #ececec;
     border-radius: 3px;
+    font-size: 14px;
 }
 
 .modal-heading {
@@ -100,6 +101,28 @@ body {
 
 .modal-content {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.modal-content img{
+  height: 30px;
+  width: 30px;
+}
+ 
+.modal-content a{
+  display: flex;
+  align-items: center;
+  align-content: space-between;
+  gap: 15px;
+}
+
+.modal-content a div{
+  font-size: 16px;
+  text-decoration: none;
+  color: #444343;
 }
 
 #content_iframe {
@@ -128,6 +151,22 @@ body {
   float: right;
   cursor: pointer;
   height: 30px;
+}
+
+#uiDownloadButton{
+  float: right;
+  box-sizing: border-box !important;
+  height: 30px !important;
+  line-height: 20px !important;
+  margin-right: 5px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #b5b2b2 !important;
+  border-radius: 3px !important;
+  background-color: #ededed !important;
+  font-weight: normal !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  margin-bottom: -9px;
 }
 
 @keyframes spin {
