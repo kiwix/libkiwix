@@ -1,7 +1,26 @@
+libkiwix 14.2.0
+===============
+
+ * Server:
+  - Add 10.211 IPv4 range to known local ranges (@kelson42 #1273)
+  - Fix regression to properly deal with IPv4-only systems (@veloman-yunkan #1272)
+  - Improve mgmt of empty search input (@pippotadde #1255 #1258 #1259)
+  - Remove pagination for OPDS/Atom feed URL (@kelson42 #1274)
+  - Updated documentation of lang and category filters in catalog query API endpoints (@veloman-yunkan #804)
+
+ * Other
+  - Optimized (speed) removeAccents() for ASCII-only input (@veloman-yunkan #1276)
+  - Fix a few stability, correctness, and memory problems (@shbhmexe #1261)
+  - Introduce Manager::addBooksFromDirectory (@juuz0 #1220)
+
+ * Compilation
+  - Move MS Windows CI to 2025 runner (@kelson42 #1269)
+  - Fix readthedocs update process (@kelson42 #1247)
+
 libkiwix 14.1.1
 ===============
 
-* Server:
+ * Server:
   - Fix regression for kiwix-serve --nosearchbar (@veloman-yunkan #1250)
   - Avoid results content interpretation... crash in fulltext search (@vighnesh-sawant #1241)
   - Fix for intermittent /content/blank.html errors (@veloman-yunkan #1249)
