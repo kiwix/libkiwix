@@ -326,20 +326,25 @@ function isExternalUrl(url) {
 }
 
 function getRealHref(target) {
-  // In case of wombat in the middle, wombat will rewrite the href value to the original url (external link)
-  // This is not what we want. Let's ask wombat to not rewrite href
+  // In case of wombat in the middle, wombat will rewrite the href value to the
+  // original url (external link) This is not what we want. Let's ask wombat to
+  // not rewrite href
   const old_no_rewrite = target._no_rewrite;
   target._no_rewrite = true;
   const target_href = target.href;
   target._no_rewrite = old_no_rewrite;
+  console.log(`DBG: getRealHref(): target.href = ${target.href}`);
+  console.log(`DBG: getRealHref(): target_href = ${target_href}`);
   return target_href;
 }
 
 function setHrefAvoidingWombatRewriting(target, url) {
+  console.log(`DBG: setHrefAvoidingWombatRewriting(${target}, ${url})`);
   const old_no_rewrite = target._no_rewrite;
   target._no_rewrite = true;
   target.setAttribute("href", url);
   target._no_rewrite = old_no_rewrite;
+  console.log(`DBG: setHrefAvoidingWombatRewriting(): target.href = ${target.href}`);
 }
 
 function linkShouldBeOpenedInANewWindow(linkElement, mouseEvent) {
@@ -426,10 +431,14 @@ function setup_chaperon_mode() {
   setupEventHandler(contentIframe.contentDocument, 'a', 'click', onClickEvent);
   const links = contentIframe.contentDocument.getElementsByTagName('a');
   for ( const a of links ) {
-    // XXX: wombat's possible involvement with href not taken into account
-    if ( a.hasAttribute('href') && a.href.startsWith(internalUrlPrefix) ) {
-      const userUrl = a.href.substr(internalUrlPrefix.length);
-      a.href = `${root}/viewer#${userUrl}`;
+    if ( a.hasAttribute('href') ) {
+      const href = getRealHref(a);
+      if ( href.startsWith(internalUrlPrefix) ) {
+        const userUrl = href.substr(internalUrlPrefix.length);
+        setHrefAvoidingWombatRewriting(a, `${root}/viewer#${userUrl}`);
+      } else {
+        setHrefAvoidingWombatRewriting(a, blockLink(href));
+      }
     }
   }
 }
