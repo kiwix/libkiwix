@@ -688,6 +688,8 @@
         setInterval(updateNavVisibilityState, 250);
     };
 
+    window.getMagnetLink=getMagnetLink;
+    window.getFixedMirrorbrainMagnet=getFixedMirrorbrainMagnet;
     window.onload = () => { setUserLanguage(getUserLanguage(), onload); }
 })();
 

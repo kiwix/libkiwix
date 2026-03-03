@@ -65,6 +65,81 @@ function gotoRandomPage() {
   gotoUrl(`/random?content=${currentBook}`);
 }
 
+function downloadCurrentBook() {
+  const downloadButton = document.getElementById("kiwix_serve_download_zimfile");
+  if (!downloadButton || !currentBook) {
+    return;
+  }
+  
+  const downloadLink = downloadButton.getAttribute('data-link');
+  if (!downloadLink) {
+    return;
+  }
+  const showModal = async () => {
+    let magnetLinkHTML = '';
+    try {
+      const magnetLink = await getMagnetLink(downloadLink);
+      if (magnetLink) {
+        magnetLinkHTML = `<div class="modal-regular-download">
+          <a href="${magnetLink}" target="_blank">
+            <img src="./skin/magnet.png?KIWIXCACHEID" alt="Magnet link" />
+            <div>Magnet Link</div>
+          </a>
+        </div>`;
+      }
+    } catch (e) {
+      console.log("Could not fetch magnet link");
+    }
+    
+    const modalHTML = `<div class="modal-wrapper">
+      <div class="modal">
+        <div class="modal-heading">
+          <div class="modal-title">
+            <div>Download</div>
+          </div>
+          <div onclick="closeModal()" class="modal-close-button">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7071 1.70711C14.0976 1.31658 14.0976
+                  0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711
+                  0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417
+                 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834
+                 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7
+                  8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166
+                  14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z" fill="black" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-content">
+          <div class="modal-regular-download">
+            <a href="${downloadLink}" download>
+              <img src="./skin/download.png?KIWIXCACHEID" alt="Direct download" />
+              <div>Direct Download</div>
+            </a>
+          </div>
+          <div class="modal-regular-download">
+            <a href="${downloadLink}.sha256" download>
+              <img src="./skin/hash.png?KIWIXCACHEID" alt="SHA256 hash" />
+              <div>Download SHA256</div>
+            </a>
+          </div>
+          ${magnetLinkHTML}
+          <div class="modal-regular-download">
+            <a href="${downloadLink}.torrent" download>
+              <img src="./skin/bittorrent.png?KIWIXCACHEID" alt="Torrent download" />
+              <div>Download Torrent</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>`;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  };
+  
+  showModal();
+}
+
 // URI-encodes only the specified special symbols (note, however, that '%' is
 // always considered a special symbol).
 function quasiUriEncode(s, specialSymbols) {
@@ -124,12 +199,27 @@ function setCurrentBook(book, title) {
   homeButton.innerHTML = `<button>${title}</button>`;
   bookUIGroup.style.display = 'inline';
   updateSearchBoxForBookChange();
+  updateDownloadButton(book);
+}
+
+function updateDownloadButton(book) {
+  const downloadButton = document.getElementById('kiwix_serve_download_zimfile');
+  if (downloadButton && book) {
+    const downloadLink = `${root}/download/${book}.zim`;
+    downloadButton.setAttribute('data-link', downloadLink);
+    downloadButton.style.display = 'inline-block';
+    downloadButton.style.cursor = 'pointer';
+  }
 }
 
 function noCurrentBook() {
   currentBook = null;
   currentBookTitle = null;
   bookUIGroup.style.display = 'none';
+  const downloadButton = document.getElementById('kiwix_serve_download_zimfile');
+  if (downloadButton) {
+    downloadButton.style.display = 'none';
+  }
   updateSearchBoxForBookChange();
 }
 
