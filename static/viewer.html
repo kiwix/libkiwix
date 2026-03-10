@@ -16,6 +16,7 @@
     <script type="text/javascript" src="./viewer_settings.js"></script>
     <script type="module" src="./skin/i18n.js?KIWIXCACHEID" defer></script>
     <script type="text/javascript" src="./skin/languages.js?KIWIXCACHEID" defer></script>
+    <script type="text/javascript" src="./skin/lib.js?KIWIXCACHEID" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?KIWIXCACHEID" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?KIWIXCACHEID"></script>
     <script>
@@ -71,6 +72,13 @@
                 <button>&#x1F3B2;</button>
               </a>
             </span>
+            <a id="kiwix_serve_download_zimfile"
+                 title="Download the current zim file"
+                 accesskey="d"
+                 aria-label="Download the current zim file">
+                 <img id="uiDownloadButton"
+                 src="./skin/download.png?KIWIXCACHEID">
+            </a>
           </div>
         </div>
         <a onclick="window.modalUILanguageSelector.show()"
@@ -90,7 +98,5 @@
             style="border:0px">
     </iframe>
 
-    <script>
-    </script>
   </body>
 </html>

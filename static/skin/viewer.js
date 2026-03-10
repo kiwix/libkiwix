@@ -65,6 +65,7 @@ function gotoRandomPage() {
   gotoUrl(`/random?content=${currentBook}`);
 }
 
+
 // URI-encodes only the specified special symbols (note, however, that '%' is
 // always considered a special symbol).
 function quasiUriEncode(s, specialSymbols) {
@@ -124,12 +125,46 @@ function setCurrentBook(book, title) {
   homeButton.innerHTML = `<button>${title}</button>`;
   bookUIGroup.style.display = 'inline';
   updateSearchBoxForBookChange();
+  updateDownloadButton(book);
+}
+
+async function updateDownloadButton(book) {
+  const downloadButton = document.getElementById('kiwix_serve_download_zimfile');
+  if (!downloadButton) return;
+  if (!book) {
+    downloadButton.style.display = 'none';
+    return;
+  }
+
+  try{
+    const response= await fetch(`${root}/search?books.name=${book}&format=opds`);
+    const xml = await response.text();
+    const doc = new DOMParser().parseFromString(xml,'text/xml');
+    const downloadBookLink = doc.querySelector('link[type="application/x-zim"]');
+    if(!downloadBookLink){
+      downloadButton.style.display='none';
+      return;
+    }
+    const downloadLink = downloadBookLink.getAttribute('href').split('.meta4')[0];
+    const zimSize = parseInt(downloadBookLink.getAttribute('length'));
+    downloadButton.setAttribute('data-link', downloadLink);
+    downloadButton.setAttribute('data-size', zimSize);
+    downloadButton.style.display='inline';
+    downloadButton.style.cursor='pointer';
+    insertModal(downloadButton);
+  }  catch(e){
+    downloadButton.style.display='none';
+  }
 }
 
 function noCurrentBook() {
   currentBook = null;
   currentBookTitle = null;
   bookUIGroup.style.display = 'none';
+  const downloadButton = document.getElementById('kiwix_serve_download_zimfile');
+  if (downloadButton) {
+    downloadButton.style.display = 'none';
+  }
   updateSearchBoxForBookChange();
 }
 

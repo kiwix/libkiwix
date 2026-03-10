@@ -13,6 +13,7 @@ skin/search-icon.svg
 skin/iso6391To3.js
 skin/isotope.pkgd.min.js
 skin/index.js
+skin/lib.js
 skin/autoComplete/autoComplete.min.js
 skin/error.css
 skin/print.css

@@ -37,6 +37,7 @@
     <script type="text/javascript" src="{{root}}/skin/languages.js?KIWIXCACHEID" defer></script>
     <script src="{{root}}/skin/isotope.pkgd.min.js?KIWIXCACHEID" defer></script>
     <script src="{{root}}/skin/iso6391To3.js?KIWIXCACHEID"></script>
+    <script type="text/javascript" src="{{root}}/skin/lib.js?KIWIXCACHEID" defer></script>
     <script type="text/javascript" src="{{root}}/skin/index.js?KIWIXCACHEID" defer></script>
   </head>
   <body>
@@ -106,15 +107,4 @@
     <div class="loader" style="position: absolute; top: 50%"><div class="loader-spinner"></div></div>
     <div id="kiwixfooter" class="kiwixfooter">Powered by&nbsp;<a href="https://kiwix.org">Kiwix</a></div>
   </body>
-  <script>
-    function closeModal() {
-      for(modal of document.getElementsByClassName('modal-wrapper')) {
-        if ( modal.id == "uiLanguageSelector" ) {
-          window.modalUILanguageSelector.close();
-        } else {
-          modal.remove();
-        }
-      }
-    }
-  </script>
 </html>
