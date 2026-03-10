@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <title>Issues of link/URL handling by kiwix-serve viewer</title>
+  <style>
+    :target {
+        background-color: yellow;
+    }
+  </style>
+ </head>
+ <body>
+  <h1>List of issues</h1>
+  <h2><a name="1-circumvention-via-forced-new-tab">Issue#1</a></h2>
+  <p>
+    Link blocking can be circumvented by forcing the link to be opened in a new
+    tab via middle-click or context menu.
+  </p>
+
+  <h2><a name="2-firefox-csp-error">Issue#2</a></h2>
+  <p>
+    Firefox: Link click has no effect, Content-Security-Policy error reported
+    in console.
+  </p>
+
+  <h2><a name="3-chromium-csp-error">Issue#3</a></h2>
+  <p>
+    Chromium: Blocked content error is displayed in the viewer.
+  </p>
+
+  <h2><a name="4-link-not-blocked">Issue#4</a></h2>
+  <p>
+    Link is not blocked.
+  </p>
+
+  <h2><a name="5-firefox-cross-origin-errors-in-console">Issue#5</a></h2>
+  <p>
+    Firefox: Errors in console: "DOMException: Permission denied to get property
+    "href" on cross-origin object".
+  </p>
+
+ </body>
+</html>

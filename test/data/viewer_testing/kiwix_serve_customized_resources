@@ -1,0 +1,5 @@
+/content/viewer_testing/test.html text/html content/test.html
+/content/viewer_testing/anotherpage.html text/html content/anotherpage.html
+/content/viewer_testing/issues.html text/html content/issues.html
+/content/viewer_testing/kiwix.pdf application/pdf content/kiwix.pdf
+/raw/viewer_testing/meta/Title text/plain meta/Title
