@@ -67,19 +67,21 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=ae79e41a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=e3305ca0" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/lib.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=0e7b39fa" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/lib.js?cacheid=0ac345f5" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/kiwix.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=a9bdf3b4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=42e90cb9" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=6192cae1" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=79a93e72" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -292,7 +294,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=a9bdf3b4"
       href="/ROOT%23%3F/skin/index.css?cacheid=ae79e41a"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
@@ -306,7 +308,8 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=d2d6933b" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=e3305ca0" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/lib.js?cacheid=0ac345f5" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=0e7b39fa" defer></script>
         <img src="/ROOT%23%3F/skin/feed.svg?cacheid=055b333f"
         <img src="/ROOT%23%3F/skin/langSelector.svg?cacheid=00b59961"
 )EXPECTEDRESULT"
@@ -325,25 +328,31 @@ R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10a
     {
       /* url */ "/ROOT%23%3F/skin/index.js",
 R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cacheid=079ab989">
-                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
+)EXPECTEDRESULT"
+    },
+    {
+  /* url */ "/ROOT%23%3F/skin/lib.js",
+R"EXPECTEDRESULT(                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
                                 <img src="${root}/skin/hash.png?cacheid=f836e872" alt="${$t("hash-download-alt-text")}" />
                                 <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="${$t("magnet-alt-text")}" />
                                 <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="${$t("torrent-download-alt-text")}" />
 )EXPECTEDRESULT"
     },
-    {
+    { 
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e64" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=a9bdf3b4" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?cacheid=42e90cb9" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
     <link type="text/css" href="./skin/print.css?cacheid=65b1c1d2" media="print" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=d2d6933b" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=6192cae1" defer></script>
+    <script type="text/javascript" src="./skin/lib.js?cacheid=0ac345f5" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=79a93e72" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
+                 src="./skin/download.png?cacheid=a39aa502">
                src="./skin/langSelector.svg?cacheid=00b59961">
             src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
@@ -591,6 +600,8 @@ TEST_F(ServerTest, MimeTypes)
     { "/skin/blank.html",                  "text/html" },
     { "/skin/index.css",                   "text/css" },
     { "/skin/index.js",                    "application/javascript" },
+    { "/skin/lib.js",                      "application/javascript" },
+    { "/skin/lib.js",                      "application/javascript" },
     { "/catalog/root.xml",                 "application/atom+xml;profile=opds-catalog;kind=acquisition;charset=utf-8" },
     { "/catalog/v2/searchdescription.xml", "application/opensearchdescription+xml" },
     { "/catalog/v2/root.xml",              "application/atom+xml;profile=opds-catalog;kind=navigation;charset=utf-8" },
