@@ -16,7 +16,9 @@ or
 
 # Step 2:
 
-Open http://localhost:8080/viewer#viewer\_testing/test.html in your browser.
+Open http://localhost:8080/viewer#viewer\_testing/main.html in your browser
+and proceed to the test pages listed there.
+
 Don't forget to test both with Firefox and Chromium/Chrome.
 
 # Step 3:

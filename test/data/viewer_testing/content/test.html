@@ -63,6 +63,11 @@
   features from the previous columns).
   </p>
 
+  <p>
+  Issues referenced in the header of the column apply to the entire column or
+  most of its rows.
+  </p>
+
   <h2>External links</h2>
 
   <p>
@@ -81,6 +86,9 @@
         <th colspan=2></th>
         <th>Base case</th>
         <th>External link blocking</th>
+        <th>
+          Nested iframe (<a href="issues.html#8-nested-iframe-circumvents-link-blocking">8</a>)
+        </th>
       </tr>
     </thead>
     <tr>
@@ -91,6 +99,10 @@
       <td>
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
       </td>
+      <!--Nested iframe    -->
+      <td>
+        <a href="issues.html#6-link-loads-in-iframe">6</a>
+      </td>
     </tr>
     <tr>
       <td><a href="https://example.com" target="_blank">New tab</a></td>
@@ -99,6 +111,7 @@
       <td>
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
       </td>
+      <!--Nested iframe    --><td></td>
     </tr>
 
     <tr>
@@ -110,6 +123,10 @@
         <a href="issues.html#3-chromium-csp-error">3</a>
       </td>
       <!--Link blocking on --><td></td>
+      <!--Nested iframe    -->
+      <td>
+        <a href="issues.html#6-link-loads-in-iframe">6</a>
+      </td>
     </tr>
     <tr>
       <td><a href="javascript:window.open('https://example.com', '_blank')">New tab</a></td>
@@ -119,6 +136,7 @@
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
         <a href="issues.html#4-link-not-blocked">4</a>
       </td>
+      <!--Nested iframe    --><td></td>
     </tr>
 
     <tr>
@@ -129,6 +147,7 @@
       <td>
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
       </td>
+      <!--Nested iframe    --><td></td>
     </tr>
     <tr>
       <td><a href="mailto:someone@example.com" target="_blank">New tab</a></td>
@@ -137,6 +156,7 @@
       <td>
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
       </td>
+      <!--Nested iframe    --><td></td>
     </tr>
   </table>
 
@@ -158,6 +178,9 @@
         <th colspan=2></th>
         <th>Base case</th>
         <th>External link blocking</th>
+        <th>
+          Nested iframe (<a href="issues.html#7-new-tab-escapes-viewer">7</a>)
+        </th>
       </tr>
     </thead>
     <tr>
@@ -165,22 +188,26 @@
       <td><a href="#guidelines">Same tab</a></td>
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
     </tr>
     <tr>
       <td><a href="#guidelines" target="_blank">New tab</a></td>
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
     </tr>
     <tr>
       <th rowspan=2>HTML</th>
       <td><a href="anotherpage.html">Same tab</a></td>
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
     </tr>
     <tr>
       <td><a href="anotherpage.html" target="_blank">New tab</a></td>
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
     </tr>
 
     <tr>
@@ -191,6 +218,7 @@
         <a href="issues.html#5-firefox-cross-origin-errors-in-console">5</a>
       </td>
       <!--Link blocking on --><td></td>
+      <!--Nested iframe    --><td></td>
     </tr>
     <tr>
       <td><a href="./kiwix.pdf" target="_blank">New tab</a></td>
@@ -199,6 +227,7 @@
         <a href="issues.html#5-firefox-cross-origin-errors-in-console">5</a>
       </td>
       <!--Link blocking on --><td></td>
+      <!--Nested iframe    --><td></td>
     </tr>
   </table>
  </body>
