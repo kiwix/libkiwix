@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+mydir=$(dirname "$0")
+
+die()
+{
+    echo >&2 "ERROR: $@"
+    exit 1
+}
+
+if ! zimdump --version
+then
+    die "No zimdump in the PATH"
+fi
+
+cd "$mydir"
+rm -rf content/{_zim_static,wombatized}
+
+pids_to_kill=()
+set -ex
+cleanup()
+{
+    kill "${pids_to_kill[@]}"
+    wait
+}
+
+python3 -m http.server -d content 8080 &
+pids_to_kill+=($!)
+
+trap cleanup EXIT
+ip=$(docker network inspect bridge|jq '.[0].IPAM.Config|.[0].Gateway')
+ip=${ip#\"}
+ip=${ip%\"}
+
+mkdir zimit_output
+docker run --rm \
+           --volume "$(pwd)"/zimit_output:/output \
+           --add-host=wombatized:"$ip" \
+           ghcr.io/openzim/zimit:3.1.2 \
+           zimit --name="temp" \
+                 --zim-file="temp.zim" \
+                 --seeds="http://wombatized:8080/nestediframe.html" \
+                 --title="Temp" \
+                 --description="Temp" \
+                 #--favicon="https://wiki.kiwix.org/w/images/favicon.ico"
+
+zimdump dump --dir content/ zimit_output/temp.zim
+
+docker run --rm \
+           --volume "$(pwd)"/zimit_output:/output \
+           ghcr.io/openzim/zimit:3.1.2 \
+           bash -c "rm -vrf /output/*"
+
+rmdir zimit_output
