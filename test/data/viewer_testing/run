@@ -12,6 +12,17 @@ shift
 mydir=$(dirname "$0")
 cd "$mydir"
 
+if [ ! -d content/wombatized ]
+then
+    echo "Generating wombatized pages..."
+    if ! ./wombatize
+    then
+        echo "Encountered errors while generating wombatized pages. Exiting..."
+        exit 1
+    fi
+    echo "Successfully generated wombatized pages."
+fi
+
 export KIWIX_SERVE_CUSTOMIZED_RESOURCES=kiwix_serve_customized_resources
 
 "$kiwixserve" -p 8080 --library "$@" library.xml
