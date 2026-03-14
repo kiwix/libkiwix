@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]
+then
+  echo >&2 "Usage: $0 path-to-kiwix-serve [options ...]"
+  exit 1
+fi
+
+kiwixserve=$(readlink -f "$1")
+shift
+
+mydir=$(dirname "$0")
+cd "$mydir"
+
+export KIWIX_SERVE_CUSTOMIZED_RESOURCES=kiwix_serve_customized_resources
+
+"$kiwixserve" -p 8080 --library "$@" library.xml
