@@ -90,6 +90,9 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
   { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=d2d6933b" },
 
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/site.webmanifest" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=4192804f" },
+  
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
 
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/root.xml" },
@@ -154,8 +157,6 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/mstile-70x70.png?cacheid=64ffd9dc" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/site.webmanifest" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/hash.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/hash.png?cacheid=f836e872" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/magnet.png" },
@@ -297,9 +298,12 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
-    <link rel="manifest" href="/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb">
+    <link rel="icon" type="image/png" sizes="192x192" href="/ROOT%23%3F/skin/favicon/android-chrome-192x192.png?cacheid=bfac158b">
+    <link rel="icon" type="image/png" sizes="512x512" href="/ROOT%23%3F/skin/favicon/android-chrome-512x512.png?cacheid=380c3653">
+    <link rel="manifest" href="/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=4192804f" crossorigin="use-credentials" type="application/manifest+json">
     <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
+    <meta name="msapplication-TileImage" content="/ROOT%23%3F/skin/favicon/mstile-144x144.png?cacheid=c25a7641">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" defer></script>
