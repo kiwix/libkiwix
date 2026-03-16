@@ -89,6 +89,7 @@
         <th>
           Nested iframe (<a href="issues.html#8-nested-iframe-circumvents-link-blocking">8</a>)
         </th>
+        <th>Wombatization</th>
       </tr>
     </thead>
     <tr>
@@ -103,6 +104,7 @@
       <td>
         <a href="issues.html#6-link-loads-in-iframe">6</a>
       </td>
+      <!--Wombatization    --><td></td>
     </tr>
     <tr>
       <td><a href="https://example.com" target="_blank">New tab</a></td>
@@ -112,6 +114,7 @@
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
       </td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
 
     <tr>
@@ -127,6 +130,10 @@
       <td>
         <a href="issues.html#6-link-loads-in-iframe">6</a>
       </td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#9-url-not-found">9</a>
+      </td>
     </tr>
     <tr>
       <td><a href="javascript:window.open('https://example.com', '_blank')">New tab</a></td>
@@ -137,6 +144,10 @@
         <a href="issues.html#4-link-not-blocked">4</a>
       </td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#9-url-not-found">9</a>
+      </td>
     </tr>
 
     <tr>
@@ -148,6 +159,7 @@
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
       </td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
     <tr>
       <td><a href="mailto:someone@example.com" target="_blank">New tab</a></td>
@@ -157,6 +169,7 @@
         <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
       </td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
   </table>
 
@@ -181,6 +194,9 @@
         <th>
           Nested iframe (<a href="issues.html#7-new-tab-escapes-viewer">7</a>)
         </th>
+        <th>
+          Wombatization (<a href="issues.html#7-new-tab-escapes-viewer">7</a>)
+        </th>
       </tr>
     </thead>
     <tr>
@@ -189,12 +205,14 @@
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
     <tr>
       <td><a href="#guidelines" target="_blank">New tab</a></td>
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
     <tr>
       <th rowspan=2>HTML</th>
@@ -202,12 +220,14 @@
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
     <tr>
       <td><a href="anotherpage.html" target="_blank">New tab</a></td>
       <!--Base case        --><td>&#9989;</td>
       <!--Link blocking on --><td>&#9989;</td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
 
     <tr>
@@ -219,6 +239,7 @@
       </td>
       <!--Link blocking on --><td></td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
     <tr>
       <td><a href="./kiwix.pdf" target="_blank">New tab</a></td>
@@ -228,6 +249,7 @@
       </td>
       <!--Link blocking on --><td></td>
       <!--Nested iframe    --><td></td>
+      <!--Wombatization    --><td></td>
     </tr>
   </table>
  </body>
