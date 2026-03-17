@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+mydir=$(dirname "$0")
+
+cd "$mydir"
+sed -ne '1,/<body>/ p' content/test.html > content/dyntest.html
+cat >> content/dyntest.html <<'END'
+     Patience! Content will appear in <span id=countdown>2</span> seconds.
+ </body>
+ <script>
+    const bodyHtmlStr = `
+END
+sed -e '1,/<body>/ d; /<\/body>/,$ d' content/test.html >> content/dyntest.html
+cat >> content/dyntest.html <<'END'
+`;
+  function update() {
+    const countdown = document.getElementById('countdown');
+    const countdownVal = +countdown.innerHTML;
+    if ( countdownVal > 0 ) {
+      countdown.innerHTML = countdownVal - 1;
+      setTimeout(update, 1000);
+    } else {
+      document.getElementsByTagName('body')[0].innerHTML = bodyHtmlStr;
+    }
+  }
+  setTimeout(update, 1000);
+ </script>
+</html>
+END

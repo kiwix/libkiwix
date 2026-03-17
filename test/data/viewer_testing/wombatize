@@ -39,7 +39,7 @@ docker run --rm \
            ghcr.io/openzim/zimit:3.1.2 \
            zimit --name="temp" \
                  --zim-file="temp.zim" \
-                 --seeds="http://wombatized:8080/nestediframe.html" \
+                 --seeds="http://wombatized:8080/nestediframe.html,http://wombatized:8080/dyntest.html" \
                  --title="Temp" \
                  --description="Temp" \
                  #--favicon="https://wiki.kiwix.org/w/images/favicon.ico"

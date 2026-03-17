@@ -12,6 +12,11 @@ shift
 mydir=$(dirname "$0")
 cd "$mydir"
 
+if [ content/test.html -nt content/dyntest.html ]
+then
+    ./generate_dynamic_page
+fi
+
 if [ ! -d content/wombatized ]
 then
     echo "Generating wombatized pages..."
