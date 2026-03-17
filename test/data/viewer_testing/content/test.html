@@ -245,6 +245,30 @@
     </tr>
 
     <tr>
+      <th rowspan=2>HTML (with a fragment)</th>
+      <td><a href="target_page_for_a_hash_link.html#special-note">Same tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#10-wombatjs-drops-fragments-of-dynamically-created-links">10</a>
+      </td>
+    </tr>
+    <tr>
+      <td><a href="target_page_for_a_hash_link.html#special-note" target="_blank">New tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#10-wombatjs-drops-fragments-of-dynamically-created-links">10</a>
+      </td>
+    </tr>
+
+    <tr>
       <th rowspan=2>PDF</th>
       <td><a href="./kiwix.pdf">Same tab</a></td>
       <!--Base case        -->

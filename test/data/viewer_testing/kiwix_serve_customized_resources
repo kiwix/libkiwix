@@ -3,12 +3,14 @@
 /content/viewer_testing/test.html text/html content/test.html
 /content/viewer_testing/dyntest.html text/html content/dyntest.html
 /content/viewer_testing/anotherpage.html text/html content/anotherpage.html
+/content/viewer_testing/target_page_for_a_hash_link.html text/html content/target_page_for_a_hash_link.html
 /content/viewer_testing/issues.html text/html content/issues.html
 /content/viewer_testing/kiwix.pdf application/pdf content/kiwix.pdf
 /content/viewer_testing/wombatized/nestediframe.html text/html content/wombatized/nestediframe.html
 /content/viewer_testing/wombatized/test.html text/html content/wombatized/test.html
 /content/viewer_testing/wombatized/dyntest.html text/html content/wombatized/dyntest.html
 /content/viewer_testing/wombatized/anotherpage.html text/html content/wombatized/anotherpage.html
+/content/viewer_testing/wombatized/target_page_for_a_hash_link.html text/html content/wombatized/target_page_for_a_hash_link.html
 /content/viewer_testing/wombatized/issues.html text/html content/wombatized/issues.html
 /content/viewer_testing/wombatized/kiwix.pdf application/pdf content/wombatized/kiwix.pdf
 /content/viewer_testing/_zim_static/wombat.js application/javascript content/_zim_static/wombat.js
