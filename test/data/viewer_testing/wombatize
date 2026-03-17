@@ -24,7 +24,7 @@ cleanup()
     wait
 }
 
-python3 -m http.server -d content 8080 &
+python3 -m http.server -d content/plain 8080 &
 pids_to_kill+=($!)
 
 trap cleanup EXIT

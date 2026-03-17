@@ -9,15 +9,38 @@ fi
 kiwixserve=$(readlink -f "$1")
 shift
 
+set -x
 mydir=$(dirname "$0")
 cd "$mydir"
 
-if [ content/test.html -nt content/dyntest.html ]
+if [ content/plain/test.html -nt content/plain/dyntest.html ]
 then
     ./generate_dynamic_page
 fi
 
-if [ ! -d content/wombatized ]
+must_wombatize()
+{
+    if [ ! -d content/wombatized ]
+    then
+        return 0
+    fi
+
+    if [ ! -d content/_zim_static ]
+    then
+        return 0
+    fi
+
+    for f in content/plain/*
+    do
+        if [ "$f" -nt "${f/plain/wombatized}" ]
+        then
+            return 0
+        fi
+    done
+    return 1
+}
+
+if must_wombatize
 then
     echo "Generating wombatized pages..."
     if ! ./wombatize
