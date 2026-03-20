@@ -97,5 +97,6 @@
 	"book-category.wikivoyage": "Name for the category of Wikivoyage books",
 	"book-category.wiktionary": "Name for the category of Wiktionary books",
 	"book-category.other": "Books not belonging to any special category are listed under this one",
-	"text-loading-content": "Text displayed while content is being loaded"
+	"text-loading-content": "Text displayed while content is being loaded",
+	"table-of-content-button-text": "Tooltip of the button toggling table of content"
 }

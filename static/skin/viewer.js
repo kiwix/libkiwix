@@ -124,6 +124,7 @@ function setCurrentBook(book, title) {
   homeButton.innerHTML = `<button>${title}</button>`;
   bookUIGroup.style.display = 'inline';
   updateSearchBoxForBookChange();
+  syncTocUI();
 }
 
 function noCurrentBook() {
@@ -131,6 +132,7 @@ function noCurrentBook() {
   currentBookTitle = null;
   bookUIGroup.style.display = 'none';
   updateSearchBoxForBookChange();
+  syncTocUI();
 }
 
 function updateCurrentBookIfNeeded(userUrl) {
@@ -233,6 +235,13 @@ function handle_visual_viewport_change() {
            ? window.visualViewport.height
            : window.innerHeight;
   contentIframe.height = wh - contentIframe.offsetTop - 4;
+  document.body.style.setProperty("--kiwix-content-offset-top",
+                                  `${contentIframe.offsetTop}px`);
+}
+
+function handle_viewer_size_change() {
+  handle_visual_viewport_change();
+  syncTocUI()
 }
 
 function setIframeUrl(path) {
@@ -442,6 +451,7 @@ function on_content_load() {
   contentIframe.contentWindow.onhashchange = handle_content_url_change;
   setInterval(handle_content_url_change, 100);
   setup_chaperon_mode();
+  rebuildToc();
 }
 
 function htmlDecode(input) {
@@ -583,9 +593,9 @@ function setupViewer() {
   // Defer the call of handle_visual_viewport_change() until after the
   // presence or absence of the taskbar as determined by this function
   // has been settled.
-  setTimeout(handle_visual_viewport_change, 0);
+  setTimeout(handle_viewer_size_change, 0);
 
-  window.onresize = handle_visual_viewport_change;
+  window.onresize = handle_viewer_size_change;
 
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
@@ -607,6 +617,7 @@ function setupViewer() {
 
   initUILanguageSelector(viewerState.uiLanguage, changeUILanguage);
   setupSuggestions();
+  setupToc();
 
   // cybook hack
   if (navigator.userAgent.indexOf("bookeen/cybook") != -1) {
@@ -628,6 +639,9 @@ function updateUIText() {
   setTitle(document.getElementById("kiwix_serve_taskbar_random_button"),
            $t("random-page-button-text"));
 
+  setTitle(document.getElementById("kiwix_serve_taskbar_toc_button"),
+           $t("table-of-content-button-text"));
+
   // Add translation for loading text as soon as translations are available
   const loadingTextElement = document.getElementById("kiwix__loading_text");
   if (loadingTextElement) {
@@ -647,4 +661,119 @@ function finishViewerSetup()
 
   window.onhashchange = handle_location_hash_change;
   window.onpopstate = handle_history_state_change;
+}
+
+let tocState = {
+  headings : [],
+  expanded : false,
+  dockable : false
+};
+
+const TocPanelElement = document.getElementById("kiwix_toc_panel");
+const TocBackdropElement = document.getElementById("kiwix_toc_backdrop");
+const TocButtonElement = document.getElementById('kiwix_serve_taskbar_toc_button');
+const TOC_DOCKED_MIN_WIDTH = 1180;
+
+function syncTocUI() {
+  // Synchronize tocState and DOM 
+  const hasContent = tocState.headings.length > 0; // is TOC exists?
+  const shouldShow = tocState.expanded && hasContent; // should TOC show?
+  // A. Sync "TOC" button status on Navbar.
+  TocButtonElement.classList.toggle("button-disabled", !hasContent);
+  TocButtonElement.setAttribute("aria-disabled", String(!hasContent));
+  TocButtonElement.setAttribute("aria-expanded", String(shouldShow));
+  // B. Check page width to decide docking. Then sync with DOM.
+  tocState.dockable = hasContent && (window.innerWidth >= TOC_DOCKED_MIN_WIDTH);
+  document.body.classList.toggle("kiwix_toc_docked", tocState.dockable);
+  // C. Sync tocStatus to Panel DOM
+  TocPanelElement.classList.toggle("hidden", !shouldShow);
+  TocPanelElement.setAttribute("aria-hidden", String(!shouldShow));
+  // D. Sync tocStatus to Backdrop DOM. The alternative of Docking.
+  const showBackdrop = shouldShow && !tocState.dockable;
+  TocBackdropElement.classList.toggle("hidden", !showBackdrop);
+  // E. Push Main content to right if docking.
+  const isIframePushed = tocState.dockable && !shouldShow;
+  contentIframe.classList.toggle("kiwix_toc_panel_hidden", isIframePushed);
+}
+
+function switchToc() {
+  if (tocState.headings.length > 0) {
+    tocState.expanded = !tocState.expanded;
+    syncTocUI();
+  }
+}
+
+function closeToc() {
+  tocState.expanded = false;
+  syncTocUI();
+}
+
+function buildToc() {
+  const doc = contentIframe.contentDocument;
+  tocState.headings = [];
+
+  if (!doc) return;
+
+  const headings = Array.from(doc.querySelectorAll('h1, h2, h3'))
+    .filter(h => h.textContent.trim().length > 0);
+
+  if (headings.length <= 1 && headings[0]?.tagName === 'H1') return;
+
+  tocState.headings = headings.map((h, i) => {
+    if (!h.id) h.id = `kiwix_toc_h_${i}`;
+    return {
+      type: h.tagName,
+      title: h.textContent.trim(),
+      targetId: h.id
+    };
+  });
+}
+
+function renderToc() {
+  const list = document.getElementById('kiwix_toc_list');
+  list.innerHTML = "";
+  
+  tocState.headings.forEach(item => {
+    const li = document.createElement('li');
+    li.className = "kiwix_toc_item";
+    
+    const a = document.createElement('a');
+    a.textContent = item.title;
+    a.href = "#";
+    a.className = `toc-level-${item.type.toLowerCase()}`;
+    
+    a.onclick = (e) => {
+      e.preventDefault();
+      const target = contentIframe.contentDocument.getElementById(item.targetId);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+      
+      if (!tocState.dockable) closeToc();
+    };
+
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+}
+
+function rebuildToc() {
+  buildToc();
+  renderToc();
+  tocState.expanded = false; 
+  syncTocUI();
+}
+
+function setupToc() {
+  TocBackdropElement.onclick = closeToc;
+  window.onresize = syncTocUI; 
+  
+  document.addEventListener("click", (e) => {
+    if (tocState.expanded && !tocState.dockable && 
+        !TocPanelElement.contains(e.target) && !TocButtonElement.contains(e.target)) {
+      closeToc();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeToc();
+  });
 }
