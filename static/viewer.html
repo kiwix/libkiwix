@@ -70,6 +70,15 @@
                  onclick="gotoRandomPage()">
                 <button>&#x1F3B2;</button>
               </a>
+              <a id="kiwix_serve_taskbar_toc_button"
+                 title="View table of contents"
+                 accesskey="t"
+                 aria-label="View table of contents"
+                 aria-controls="kiwix_toc_panel"
+                 aria-expanded="false"
+                 onclick="switchToc()">
+                <button>TOC</button>
+              </a>
             </span>
           </div>
         </div>
@@ -89,6 +98,11 @@
             src="./skin/blank.html?KIWIXCACHEID" title="ZIM content" width="100%"
             style="border:0px">
     </iframe>
+
+    <div id="kiwix_toc_backdrop" class="hidden"></div>
+    <aside id="kiwix_toc_panel" class="hidden" aria-hidden="true">
+      <ul id="kiwix_toc_list"></ul>
+    </aside>
 
     <script>
     </script>
