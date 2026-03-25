@@ -228,12 +228,6 @@ function updateToolbarVisibilityState() {
   previousScrollTop = st;
 }
 
-function handle_visual_viewport_change() {
- // const wh = window.visualViewport
-   //        ? window.visualViewport.height
-     //      : window.innerHeight;
-  //  contentIframe.height = wh - contentIframe.offsetTop - 4;
-}
 
 function setIframeUrl(path) {
   try {
@@ -583,9 +577,7 @@ function setupViewer() {
   // Defer the call of handle_visual_viewport_change() until after the
   // presence or absence of the taskbar as determined by this function
   // has been settled.
-  setTimeout(handle_visual_viewport_change, 0);
 
-  window.onresize = handle_visual_viewport_change;
 
   const kiwixToolBarWrapper = document.getElementById('kiwixtoolbarwrapper');
   if ( ! viewerSettings.toolbarEnabled ) {
