@@ -346,9 +346,9 @@
                             </a>
                         </div>
                         <div class="modal-regular-download">
-                            <a href="${downloadLink}.sha256" download>
-                                <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
-                                <div>${$t("hash-download-link-text")}</div>
+                            <a href="${downloadLink}.torrent" download>
+                                <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
+                                <div>${$t("torrent-download-link-text")}</div>
                             </a>
                         </div>
                         ${magnetLink ?
@@ -359,9 +359,9 @@
                             </a>
                         </div>` : ``}
                         <div class="modal-regular-download">
-                            <a href="${downloadLink}.torrent" download>
-                                <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
-                                <div>${$t("torrent-download-link-text")}</div>
+                            <a href="${downloadLink}.sha256" download>
+                                <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
+                                <div class="checksum-spacing">${$t("hash-download-link-text")}</div>
                             </a>
                         </div>
                     </div>
