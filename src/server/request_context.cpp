@@ -51,14 +51,14 @@ RequestMethod str2RequestMethod(const std::string& method) {
 
 } // unnamed namespace
 
-RequestContext::RequestContext(const std::string& _rootLocation, // URI-encoded
-                               const std::string& unrootedUrl,   // URI-decoded
+RequestContext::RequestContext(const std::string& _fullUrl,   // URI-decoded
+                               int _rootPrefixLength,
                                const std::string& _method,
                                const std::string& version,
                                const NameValuePairs& headers,
                                const NameValuePairs& queryArgs) :
-  rootLocation(_rootLocation),
-  url(unrootedUrl),
+  fullUrl(_fullUrl),
+  rootPrefixLength(_rootPrefixLength),
   method(str2RequestMethod(_method)),
   version(version),
   requestIndex(s_requestIndex++),
@@ -128,7 +128,8 @@ void RequestContext::print_debug_info() const {
     printf("\n");
   }
   printf("Parsed : \n");
-  printf("url   : %s\n", url.c_str());
+  printf("full url: %s\n", fullUrl.c_str());
+  printf("derooted url: %s\n", get_url().c_str());
   printf("acceptEncodingGzip : %d\n", acceptEncodingGzip);
   printf("has_range : %d\n", byteRange_.kind() != ByteRange::NONE);
   printf("is_valid_url : %d\n", is_valid_url());
@@ -141,11 +142,14 @@ RequestMethod RequestContext::get_method() const {
 }
 
 std::string RequestContext::get_url() const {
-  return url;
+  return rootPrefixLength < 0
+       ? ""
+       : fullUrl.substr(rootPrefixLength);
 }
 
 std::string RequestContext::get_url_part(int number) const {
   size_t start = 1;
+  const std::string url = get_url();
   while(true) {
     auto found = url.find('/', start);
     if (number == 0) {
@@ -165,10 +169,14 @@ std::string RequestContext::get_url_part(int number) const {
 }
 
 std::string RequestContext::get_full_url() const {
-  return rootLocation + urlEncode(url);
+  return urlEncode(fullUrl);
 }
 
 bool RequestContext::is_valid_url() const {
+  if ( rootPrefixLength < 0 )
+    return false;
+
+  const std::string url = get_url();
   return url.empty() || url[0] == '/';
 }
 

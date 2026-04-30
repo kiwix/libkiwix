@@ -59,8 +59,8 @@ class RequestContext {
     typedef std::vector<std::pair<const char*, const char*>> NameValuePairs;
 
   public: // functions
-    RequestContext(const std::string& rootLocation, // URI-encoded
-                   const std::string& unrootedUrl,  // URI-decoded
+    RequestContext(const std::string& fullUrl,  // URI-decoded
+                   int rootPrefixLength,
                    const std::string& method,
                    const std::string& version,
                    const NameValuePairs& headers,
@@ -138,8 +138,8 @@ class RequestContext {
     };
 
   private: // data
-    std::string rootLocation;
-    std::string url;
+    const std::string fullUrl; // URI-decoded
+    const int rootPrefixLength;
     RequestMethod method;
     std::string version;
     unsigned long long requestIndex;
