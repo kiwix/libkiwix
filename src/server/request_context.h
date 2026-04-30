@@ -96,7 +96,6 @@ class RequestContext {
     std::string get_url() const;
     std::string get_url_part(int part) const;
     std::string get_full_url() const;
-    std::string get_root_path() const;
 
     std::string get_query() const { return queryString; }
 

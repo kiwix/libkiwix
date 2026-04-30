@@ -168,10 +168,6 @@ std::string RequestContext::get_full_url() const {
   return rootLocation + urlEncode(url);
 }
 
-std::string RequestContext::get_root_path() const {
-  return rootLocation.empty() ? "/" : rootLocation;
-}
-
 bool RequestContext::is_valid_url() const {
   return url.empty() || url[0] == '/';
 }
