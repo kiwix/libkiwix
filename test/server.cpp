@@ -9,6 +9,9 @@
 #include "../src/tools/stringTools.h"
 
 #include "testing_tools.h"
+
+#include "../src/server/microhttpd_wrapper.h" // for MHD_VERSION
+
 using namespace kiwix::testing;
 
 const std::string ROOT_PREFIX("/ROOT%23%3F");
