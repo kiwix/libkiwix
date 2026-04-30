@@ -439,6 +439,10 @@ TEST_F(ServerTest, CacheIdsOfStaticResourcesMatchTheSha1HashOfResourceContent)
 }
 
 const char* urls400[] = {
+#if MHD_VERSION >= 0x01000000
+  "/ROOT%23%",
+  "/ROOT%23%3",
+#endif // MHD_VERSION
   "/ROOT%23%3F/search",
   "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT%23%3F/search?content=non-existing-book&pattern=asd<qwerty",
@@ -461,8 +465,10 @@ const char* urls404[] = {
   "/",
   "/zimfile",
   "/ROOT",
+#if MHD_VERSION < 0x01000000
   "/ROOT%23%",
   "/ROOT%23%3",
+#endif // MHD_VERSION
   "/ROOT%23%3Fxyz",
   "/ROOT%23%3F/skin/non-existent-skin-resource",
   "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=wrongcacheid",
