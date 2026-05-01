@@ -9,6 +9,9 @@
 #include "../src/tools/stringTools.h"
 
 #include "testing_tools.h"
+
+#include "../src/server/microhttpd_wrapper.h" // for MHD_VERSION
+
 using namespace kiwix::testing;
 
 const std::string ROOT_PREFIX("/ROOT%23%3F");
@@ -785,6 +788,47 @@ TEST_F(ServerTest, Http404HtmlError)
 {
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn404HtmlResponse> testData{
+
+    // wrong root URL (root URL missing completely)
+    { /* url */ "/",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/" was not found on this server.
+    </p>
+)"  },
+
+    // (conspicuously) wrong root URL
+    { /* url */ "/WRONGROOT",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/WRONGROOT" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/WRONGROOT" was not found on this server.
+    </p>
+)"  },
+
+    // wrong root URL with the correct root URL appearing as a suffix
+    { /* url */ "/WRONGROOT/ROOT%23%3F",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/WRONGROOT/ROOT%23%3F" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/WRONGROOT/ROOT%23%3F" was not found on this server.
+    </p>
+)"  },
+
+    // wrong root URL (with the correct root URL appearing as a prefix)
+    { /* url */ "/ROOT%23%3FWRONGROOT",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3FWRONGROOT" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT%23%3FWRONGROOT" was not found on this server.
+    </p>
+)"  },
+
     { /* url */ "/ROOT%23%3F/random?content=non-existent-book",
       expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "non-existent-book" } } } ] })" &&
       expected_body==R"(
