@@ -12,7 +12,7 @@ RequestContext makeHttpGetRequest(const std::string& url,
                                   const RequestContext::NameValuePairs& headers,
                                   const RequestContext::NameValuePairs& queryArgs)
 {
-  return RequestContext("", url, "GET", "1.1", headers, queryArgs);
+  return RequestContext(url, 0, "GET", "1.1", headers, queryArgs);
 }
 
 std::string getResponseContent(const ContentResponseBlueprint& crb)

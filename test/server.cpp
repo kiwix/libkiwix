@@ -9,6 +9,9 @@
 #include "../src/tools/stringTools.h"
 
 #include "testing_tools.h"
+
+#include "../src/server/microhttpd_wrapper.h" // for MHD_VERSION
+
 using namespace kiwix::testing;
 
 const std::string ROOT_PREFIX("/ROOT%23%3F");
@@ -439,6 +442,10 @@ TEST_F(ServerTest, CacheIdsOfStaticResourcesMatchTheSha1HashOfResourceContent)
 }
 
 const char* urls400[] = {
+#if MHD_VERSION >= 0x01000000
+  "/ROOT%23%",
+  "/ROOT%23%3",
+#endif // MHD_VERSION
   "/ROOT%23%3F/search",
   "/ROOT%23%3F/search?content=non-existing-book&pattern=asdfqwerty",
   "/ROOT%23%3F/search?content=non-existing-book&pattern=asd<qwerty",
@@ -461,8 +468,10 @@ const char* urls404[] = {
   "/",
   "/zimfile",
   "/ROOT",
+#if MHD_VERSION < 0x01000000
   "/ROOT%23%",
   "/ROOT%23%3",
+#endif // MHD_VERSION
   "/ROOT%23%3Fxyz",
   "/ROOT%23%3F/skin/non-existent-skin-resource",
   "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=wrongcacheid",
@@ -779,6 +788,47 @@ TEST_F(ServerTest, Http404HtmlError)
 {
   using namespace TestingOfHtmlResponses;
   const std::vector<TestContentIn404HtmlResponse> testData{
+
+    // wrong root URL (root URL missing completely)
+    { /* url */ "/",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/" was not found on this server.
+    </p>
+)"  },
+
+    // (conspicuously) wrong root URL
+    { /* url */ "/WRONGROOT",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/WRONGROOT" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/WRONGROOT" was not found on this server.
+    </p>
+)"  },
+
+    // wrong root URL with the correct root URL appearing as a suffix
+    { /* url */ "/WRONGROOT/ROOT%23%3F",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/WRONGROOT/ROOT%23%3F" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/WRONGROOT/ROOT%23%3F" was not found on this server.
+    </p>
+)"  },
+
+    // wrong root URL (with the correct root URL appearing as a prefix)
+    { /* url */ "/ROOT%23%3FWRONGROOT",
+      expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "url-not-found", "params" : { "url" : "/ROOT%23%3FWRONGROOT" } } } ] })" &&
+      expected_body==R"(
+    <h1>Not Found</h1>
+    <p>
+      The requested URL "/ROOT%23%3FWRONGROOT" was not found on this server.
+    </p>
+)"  },
+
     { /* url */ "/ROOT%23%3F/random?content=non-existent-book",
       expected_kiwix_response_data==R"({ "CSS_URL" : false, "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "404-page-title", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-such-book", "params" : { "BOOK_NAME" : "non-existent-book" } } } ] })" &&
       expected_body==R"(

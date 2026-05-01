@@ -181,16 +181,6 @@ int getMHDFlags(IpMode ipMode, bool verbose)
   return flags;
 }
 
-std::string
-fullURL2LocalURL(const std::string& fullUrl, const std::string& rootLocation)
-{
-  if ( kiwix::startsWith(fullUrl, rootLocation) ) {
-    return fullUrl.substr(rootLocation.size());
-  } else {
-    return "INVALID URL";
-  }
-}
-
 std::string getSearchComponent(const RequestContext& request)
 {
     const std::string query = request.get_query();
@@ -645,11 +635,15 @@ MHD_Result InternalServer::handlerCallback(struct MHD_Connection* connection,
     printf("full_url  : %s\n", fullUrl);
   }
 
-  const auto url = fullURL2LocalURL(fullUrl, m_rootPrefixOfDecodedURL);
   RequestContext::NameValuePairs headers, queryArgs;
   MHD_get_connection_values(connection, MHD_HEADER_KIND, add_name_value_pair, &headers);
   MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, add_name_value_pair, &queryArgs);
-  RequestContext request(m_root, url, method, version, headers, queryArgs);
+
+  const int rootPrefixLen = kiwix::startsWith(fullUrl, m_rootPrefixOfDecodedURL)
+                          ? int(m_rootPrefixOfDecodedURL.size())
+                          : -1;
+
+  RequestContext request(fullUrl, rootPrefixLen, method, version, headers, queryArgs);
 
   if (m_verbose.load() ) {
     request.print_debug_info();
