@@ -367,7 +367,9 @@
             iso.insert(generateBookHtml(book, sort))
             const downloadButton = document.querySelector(`[data-id="${getInnerHtml(book, 'id')}"] .book__download`);
             if (downloadButton) {
-                insertDownloadZimModal(downloadButton, `${root}`);
+                const downloadSize = downloadButton.getAttribute('data-size');
+                const downloadLink = downloadButton.getAttribute('data-link');
+                insertDownloadZimModal(downloadButton, downloadLink, downloadSize, `${root}`);
             }
         });
         refreshTagLinks();
