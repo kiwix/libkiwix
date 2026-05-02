@@ -7,6 +7,16 @@
                    frame-src 'self';
                    object-src 'none';">
     <title>ZIM Viewer</title>
+    <style>
+      html {
+        height: 100%;
+      }
+      html, body, #content_iframe {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link type="text/css" href="./skin/kiwix.css?KIWIXCACHEID" rel="Stylesheet" />
     <link type="text/css" href="./skin/taskbar.css?KIWIXCACHEID" rel="Stylesheet" />
