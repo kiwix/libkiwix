@@ -442,7 +442,7 @@ TEST_F(ServerTest, CacheIdsOfStaticResourcesMatchTheSha1HashOfResourceContent)
 }
 
 const char* urls400[] = {
-#if MHD_VERSION >= 0x01000000
+#if MHD_VERSION >= 0x01000300
   "/ROOT%23%",
   "/ROOT%23%3",
 #endif // MHD_VERSION
@@ -468,7 +468,7 @@ const char* urls404[] = {
   "/",
   "/zimfile",
   "/ROOT",
-#if MHD_VERSION < 0x01000000
+#if MHD_VERSION < 0x01000300
   "/ROOT%23%",
   "/ROOT%23%3",
 #endif // MHD_VERSION
