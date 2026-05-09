@@ -1,3 +1,10 @@
+libkiwix 14.2.1
+===============
+
+ * Documentation fix (@bperlakih #1277)
+ * Fix kiwix-serve unit-test for libmicrohttpd 1.x (@veloman-yunkan #1293)
+ * Fix kiwix-server error message for requests with wrong root URL prefix (@veloman-yunkan #1294)
+
 libkiwix 14.2.0
 ===============
 
