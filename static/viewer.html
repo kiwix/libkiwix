@@ -26,6 +26,7 @@
     <script type="text/javascript" src="./viewer_settings.js"></script>
     <script type="module" src="./skin/i18n.js?KIWIXCACHEID" defer></script>
     <script type="text/javascript" src="./skin/languages.js?KIWIXCACHEID" defer></script>
+    <script type="text/javascript" src="./skin/download.js?KIWIXCACHEID" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?KIWIXCACHEID" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?KIWIXCACHEID"></script>
     <script>
@@ -79,6 +80,13 @@
                  aria-label="Go to a randomly selected page"
                  onclick="gotoRandomPage()">
                 <button>&#x1F3B2;</button>
+              </a>
+              <a id="kiwix_serve_taskbar_download_button"
+                 title="Download current ZIM file"
+                 accesskey="d"
+                 aria-label="Download current ZIM file"
+                 onclick="insertDownloadZimModal(downloadButton, `${root}`)">
+                <button>&#x21E9;</button>
               </a>
             </span>
           </div>
