@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Hakimi97",
 			"Tofeiku"
 		]
 	},
@@ -16,5 +17,6 @@
 	"download": "Muat turun",
 	"direct-download-link-text": "Langsung",
 	"direct-download-alt-text": "muat turun langsung",
-	"download-links-title": "Muat turun buku"
+	"download-links-title": "Muat turun buku",
+	"book-category.wikibooks": "Wikibuku"
 }
