@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"MathXplore",
+			"Tensama0415",
 			"もなー(偽物)"
 		]
 	},
@@ -22,12 +23,12 @@
 	"book-filtering-all-languages": "すべての言語",
 	"download": "ダウンロード",
 	"direct-download-link-text": "直ダウンロードリンク",
-	"direct-download-alt-text": "直ダウンロード",
-	"hash-download-link-text": "Sha256 ハッシュ",
-	"hash-download-alt-text": "ハッシュをダウンロード",
+	"direct-download-alt-text": "HTTP(S)で直ダウンロード",
+	"hash-download-link-text": "SHA-256チェックサム",
+	"hash-download-alt-text": "SHA-256ファイルチェックサムを表示",
 	"magnet-link-text": "マグネットリンク",
-	"magnet-alt-text": "マグネットをダウンロード",
-	"torrent-download-link-text": "Torrentファイル",
-	"torrent-download-alt-text": "Torrentをダウンロード",
+	"magnet-alt-text": "マグネットリンクでダウンロード",
+	"torrent-download-link-text": "BitTorrent",
+	"torrent-download-alt-text": "BitTorrentでダウンロード",
 	"preview-book": "プレビュー"
 }
