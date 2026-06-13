@@ -29,7 +29,7 @@ jobs:
           - target: ios-x86_64-dyn
             arch_name: x86-apple-ios-simulator
             run_test: false
-    runs-on: macos-15
+    runs-on: macos-26
 
     env:
       HOME: /Users/runner
