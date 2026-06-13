@@ -23,7 +23,7 @@ jobs:
           - ubuntu-jammy
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Determine which PPA we should upload to
       - name: PPA
