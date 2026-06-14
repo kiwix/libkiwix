@@ -29,13 +29,13 @@ jobs:
           - target: ios-x86_64-dyn
             arch_name: x86-apple-ios-simulator
             run_test: false
-    runs-on: macos-15
+    runs-on: macos-26
 
     env:
       HOME: /Users/runner
     steps:
       - name: Retrieve source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install packages
         run: |
@@ -69,16 +69,16 @@ jobs:
         run: meson test -C build --verbose
 
   Windows:
-    runs-on: windows-2025
+    runs-on: windows-2025-vs2026
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup python 3.10
-        uses: actions/setup-python@v5
+      - name: Setup python 3.13
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.10'
+          python-version: '3.13'
 
       - name: Install packages
         run:
@@ -120,43 +120,66 @@ jobs:
       matrix:
         target:
           - linux-x86_64-static
-          - linux-x86_64-dyn
+          - jammy-x86_64-dyn
+          - noble-x86_64-dyn
+          - resolute-x86_64-dyn
           - android-arm
           - android-arm64
-        image_variant: ['jammy']
         include:
           - target: linux-x86_64-static
+            image_variant: jammy
+            dl_deps_archive_target: linux-x86_64-static
             lib_postfix: '/x86_64-linux-gnu'
             arch_name: linux-x86_64
             run_test: true
             coverage: true
-          - target: linux-x86_64-dyn
+          - target: jammy-x86_64-dyn
+            image_variant: jammy
+            dl_deps_archive_target: linux-x86_64-dyn
             lib_postfix: '/x86_64-linux-gnu'
             arch_name: linux-x86_64
             run_test: true
-            coverage: true
+            coverage: false
+          - target: noble-x86_64-dyn
+            image_variant: noble
+            dl_deps_archive_target: linux-x86_64-dyn
+            lib_postfix: '/x86_64-linux-gnu'
+            arch_name: linux-x86_64
+            run_test: true
+            coverage: false
+          - target: resolute-x86_64-dyn
+            image_variant: resolute
+            dl_deps_archive_target: linux-x86_64-dyn
+            lib_postfix: '/x86_64-linux-gnu'
+            arch_name: linux-x86_64
+            run_test: true
+            coverage: false
           - target: android-arm
+            image_variant: jammy
+            dl_deps_archive_target: android-arm
             lib_postfix: '/arm-linux-androideabi'
             arch_name: arm-linux-androideabi
             run_test: false
             coverage: false
           - target: android-arm64
+            image_variant: jammy
+            dl_deps_archive_target: android-arm64
             lib_postfix: '/aarch64-linux-android'
             arch_name: aarch64-linux-android
             run_test: false
             coverage: false
     env:
       HOME: /home/runner
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
-      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:2025-06-07"
+      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:2026-04-25"
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Install dependencies
       uses: kiwix/kiwix-build/actions/dl_deps_archive@main
       with:
-        target_platform: ${{ matrix.target }}
+        target_platform: ${{ matrix.dl_deps_archive_target }}
     - name: Compile
       shell: bash
       run: |
