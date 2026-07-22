@@ -435,7 +435,6 @@ unsigned int Library::getBookCount(const bool localBooks,
 
 bool Library::writeToXMLFile(const std::string& path) const
 {
-  std::cout << "aaaaaa\n";
   const auto allBookIds = getBooksIds();
 
   auto baseDir = removeLastPathElement(path);
