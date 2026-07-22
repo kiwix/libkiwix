@@ -224,7 +224,7 @@ using ConstLibraryPtr = std::shared_ptr<const Library>;
 class Library: public std::enable_shared_from_this<Library>
 {
  public:
-  typedef uint64_t Revision;
+  typedef uint64_t Revision; // xxxx todo
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
   typedef std::set<std::string> BookIdSet;
@@ -361,12 +361,12 @@ class Library: public std::enable_shared_from_this<Library>
   bool removeBookById(const std::string& id);
 
   /**
-   * Write the library to a file.
+   * Write the library to a file as a library.xml.
    *
    * @param path the path of the file to write to.
    * @return True if the library has been correctly saved.
    */
-  bool writeToFile(const std::string& path) const;
+  bool writeToXMLFile(const std::string& path) const;
 
   /**
    * Write the library bookmarks to a file.
@@ -375,6 +375,14 @@ class Library: public std::enable_shared_from_this<Library>
    * @return True if the library has been correctly saved.
    */
   bool writeBookmarksToFile(const std::string& path) const;
+
+  /**
+   * Write the library to a file as an OPDS feed.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly saved.
+   */
+  bool writeToOPDSFile(const std::string& path) const;
 
   /**
    * Get the number of book in the library.
@@ -471,7 +479,8 @@ class Library: public std::enable_shared_from_this<Library>
   uint32_t removeBooksNotUpdatedSince(Revision rev);
 
   friend class OPDSDumper;
-  friend class libXMLDumper;
+  friend class LibXMLDumper;
+  friend class LibOPDSDumper;
 
 private: // types
   typedef const std::string& (Book::*BookStrPropMemFn)() const;

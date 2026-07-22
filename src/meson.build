@@ -4,6 +4,7 @@ kiwix_sources = [
   'library.cpp',
   'manager.cpp',
   'libxml_dumper.cpp',
+  'libopds_dumper.cpp',
   'opds_dumper.cpp',
   'html_dumper.cpp',
   'library_dumper.cpp',
