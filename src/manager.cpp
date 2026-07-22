@@ -143,7 +143,10 @@ bool Manager::readXml(const std::string& xml,
 
 
 
-bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& urlHost)
+bool Manager::parseOpdsDom(const pugi::xml_document& doc,
+                           const std::string& urlHost,
+                           bool readOnly,
+                           bool trustLibrary)
 {
   pugi::xml_node libraryNode = doc.child("feed");
 
@@ -160,8 +163,12 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
        entryNode = entryNode.next_sibling("entry")) {
     kiwix::Book book;
 
-    book.setReadOnly(false);
+    book.setReadOnly(readOnly);
     book.updateFromOpds(entryNode, urlHost);
+
+    if (!trustLibrary && !book.getPath().empty()) {
+      this->readBookFromPath(book.getPath(), &book);
+    }
 
     /* Update the book properties with the new importer */
     manipulator.addBookToLibrary(book);
@@ -179,7 +186,7 @@ bool Manager::readOpds(const std::string& content, const std::string& urlHost)
       = doc.load_buffer((void*)content.data(), content.size());
 
   if (result) {
-    this->parseOpdsDom(doc, urlHost);
+    this->parseOpdsDom(doc, urlHost, /*readOnly=*/false, /*trustLibrary=*/true);
     return true;
   }
 
@@ -187,9 +194,12 @@ bool Manager::readOpds(const std::string& content, const std::string& urlHost)
 }
 
 bool Manager::readFile(
+  FileFormat format,
   const std::string& path,
+  const std::string& urlHost,
   bool readOnly,
-  bool trustLibrary)
+  bool trustLibrary
+  )
 {
   bool retVal = true;
   pugi::xml_document doc;
@@ -201,7 +211,11 @@ bool Manager::readFile(
 #endif
 
   if (result) {
-    this->parseXmlDom(doc, readOnly, path, trustLibrary);
+    if (format == FileFormat::OPDS) {
+      this->parseOpdsDom(doc, urlHost, readOnly, trustLibrary);
+    } else {
+      this->parseXmlDom(doc, readOnly, path, trustLibrary);
+    }
   } else {
     retVal = false;
   }
@@ -360,7 +374,7 @@ void Manager::reload(const Paths& paths)
       if ( kiwix::isRelativePath(path) )
         path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
 
-      if (!readFile(path, false, true)) {
+      if (!readFile(FileFormat::XML, path, "", false, true)) {
         throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
       }
     }
