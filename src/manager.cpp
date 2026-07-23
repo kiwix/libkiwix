@@ -379,7 +379,7 @@ void Manager::reload(const Paths& paths)
   const auto libRevision = manipulator.getLibrary()->getRevision();
   for (std::string path : paths) {
     if (!path.empty()) {
-      if ( kiwix::isRelativePath(path) )
+      if (kiwix::isRelativePath(path))
         path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
 
       if (!readFile(path, "", false, true)) {
