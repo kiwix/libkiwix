@@ -42,9 +42,11 @@ LibOPDSDumper::~LibOPDSDumper()
 
 std::string LibOPDSDumper::handleBook(const Book& book) const
 {
-  // Local/offline dump: the book's own id is used as the content id, and
-  // there is no content-access URL to link to (no server involved).
-  return fullEntryXML(book, rootLocation, /*contentAccessUrl=*/"", /*contentId=*/book.getId());
+  // Local/offline dump: the book's own id is used as the content id, there
+  // is no content-access URL to link to (no server involved), and the
+  // book's local path is safe to expose as the rel="self" link.
+  return fullEntryXML(book, rootLocation, /*contentAccessUrl=*/"", /*contentId=*/book.getId(),
+                       /*selfPath=*/book.getPath()); // TODO, we can move getPath call inside the method, function, if we are ok to see it potentially for serve's opds output(web dump case)
 }
 
 std::string LibOPDSDumper::dumpOPDSContent(const std::vector<std::string>& bookIds)
