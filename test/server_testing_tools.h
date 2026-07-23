@@ -115,7 +115,7 @@ ZimFileServer::ZimFileServer(int serverPort, Cfg _cfg, std::string libraryFilePa
 {
   if ( kiwix::isRelativePath(libraryFilePath) )
     libraryFilePath = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), libraryFilePath);
-  manager.readFile(kiwix::Manager::FileFormat::XML, libraryFilePath, "", true, true);// TODO
+  manager.readFile(libraryFilePath, "", true, true);// TODO
   run(serverPort);
 }
 

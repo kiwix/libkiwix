@@ -194,7 +194,6 @@ bool Manager::readOpds(const std::string& content, const std::string& urlHost)
 }
 
 bool Manager::readFile(
-  FileFormat format,
   const std::string& path,
   const std::string& urlHost,
   bool readOnly,
@@ -203,14 +202,17 @@ bool Manager::readFile(
 {
   bool retVal = true;
   pugi::xml_document doc;
-
+  std::string libraryPath;
 #ifdef _WIN32
-  pugi::xml_parse_result result = doc.load_file(Utf8ToWide(path).c_str());
+  libraryPath = Utf8ToWide(path);
 #else
-  pugi::xml_parse_result result = doc.load_file(path.c_str());
+  libraryPath = path;
 #endif
 
-  if (result) {
+  if (pugi::xml_parse_result result = doc.load_file(libraryPath.c_str())) {
+    auto format = (kiwix::getFileContent(libraryPath).find("<feed") != std::string::npos)
+            ? kiwix::Manager::FileFormat::OPDS
+            : kiwix::Manager::FileFormat::XML;
     if (format == FileFormat::OPDS) {
       this->parseOpdsDom(doc, urlHost, readOnly, trustLibrary);
     } else {
@@ -374,7 +376,7 @@ void Manager::reload(const Paths& paths)
       if ( kiwix::isRelativePath(path) )
         path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
 
-      if (!readFile(FileFormat::XML, path, "", false, true)) {
+      if (!readFile(path, "", false, true)) {
         throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
       }
     }

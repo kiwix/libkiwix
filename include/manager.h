@@ -64,8 +64,7 @@ class Manager
   typedef std::vector<std::string> Paths;
 
   /**
-   * The format of the file passed to readFile(). We pland to remove this when
-   * library file will be remove fully. TODO
+   * The format of the file passed to readFile().
    */
   enum class FileFormat { XML, OPDS };
 
@@ -77,8 +76,6 @@ class Manager
    * Read a `library.xml` (or an OPDS feed) and add the books in the file to the
    * library.
    *
-   * @param format Whether the file is a `library.xml` (FileFormat::XML) or an
-   * OPDS feed (FileFormat::OPDS).
    * @param path The (utf8) path to the file.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
@@ -88,8 +85,7 @@ class Manager
    * FileFormat::XML.
    * @return True if file has been properly parsed.
    */
-  bool readFile(FileFormat format,
-                const std::string& path,
+  bool readFile(const std::string& path,
                 const std::string& urlHost,
                 bool readOnly = true,
                 bool trustLibrary = true);
