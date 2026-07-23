@@ -177,6 +177,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
 
     if (rel == "self") {
       m_path = linkNode.attribute("href").value();
+      m_pathValid = fileReadable(m_path);
     }
 
     if (rel == "http://opds-spec.org/acquisition/open-access") {
