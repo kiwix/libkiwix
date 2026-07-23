@@ -13,8 +13,7 @@
     {{#icons}}<link rel="http://opds-spec.org/image/thumbnail"
           href="{{root}}/catalog/v2/illustration/{{{id}}}/?size={{icon_size}}"
           type="{{icon_mimetype}};width={{icon_size}};height={{icon_size}};scale=1"/>
-    {{/icons}}
-    {{#contentAccessUrl}}<link type="text/html" href="{{contentAccessUrl}}/{{{content_id}}}" />
+    {{/icons}}{{#contentAccessUrl}}<link type="text/html" href="{{contentAccessUrl}}/{{{content_id}}}" />
     {{/contentAccessUrl}}
     <author>
       <name>{{author_name}}</name>
@@ -25,6 +24,5 @@
     <dc:issued>{{book_date}}</dc:issued>
     {{#url}}
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="{{{url}}}" length="{{{size}}}" />
-    {{/url}}
-    {{#self_path}}<link rel="self" href="{{self_path}}" type="application/x-zim"/>{{/self_path}}
+    {{/url}}{{#self_path}}<link rel="self" href="{{self_path}}" type="application/x-zim"/>{{/self_path}}
   </entry>
