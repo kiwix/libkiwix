@@ -116,7 +116,7 @@ class Manager
                bool trustLibrary = true);
 
   /**
-   * Load a library content stored in a OPDS stream.
+   * Load a library content stored in a OPDS stream.
    *
    * @param content The content of the OPDS stream.
    * @param readOnly Set if the library path could be overwritten later with
@@ -125,6 +125,8 @@ class Manager
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content, const std::string& urlHost);
+
+  FileFormat detectFormat(const std::string& libraryPath);
 
   /**
    * Load a bookmark file.

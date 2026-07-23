@@ -193,6 +193,14 @@ bool Manager::readOpds(const std::string& content, const std::string& urlHost)
   return false;
 }
 
+Manager::FileFormat Manager::detectFormat(const std::string& libraryPath)
+{
+  auto format
+      = (kiwix::getFileContent(libraryPath).find("<feed") != std::string::npos)
+            ? kiwix::Manager::FileFormat::OPDS
+            : kiwix::Manager::FileFormat::XML;
+  return format;
+}
 bool Manager::readFile(
   const std::string& path,
   const std::string& urlHost,
@@ -210,9 +218,7 @@ bool Manager::readFile(
 #endif
 
   if (pugi::xml_parse_result result = doc.load_file(libraryPath.c_str())) {
-    auto format = (kiwix::getFileContent(libraryPath).find("<feed") != std::string::npos)
-            ? kiwix::Manager::FileFormat::OPDS
-            : kiwix::Manager::FileFormat::XML;
+    FileFormat format = detectFormat(libraryPath);
     if (format == FileFormat::OPDS) {
       this->parseOpdsDom(doc, urlHost, readOnly, trustLibrary);
     } else {
