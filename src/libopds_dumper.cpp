@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Matthieu Gautier <mgautier@kymeria.fr>  TODO
+ * Copyright 2026 Hamazasp Avetisyan <hamik.avetisyan@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -46,7 +46,7 @@ std::string LibOPDSDumper::handleBook(const Book& book) const
   // is no content-access URL to link to (no server involved), and the
   // book's local path is safe to expose as the rel="self" link.
   return fullEntryXML(book, rootLocation, /*contentAccessUrl=*/"", /*contentId=*/book.getId(),
-                       /*selfPath=*/book.getPath()); // TODO, we can move getPath call inside the method, function, if we are ok to see it potentially for serve's opds output(web dump case)
+                       /*selfPath=*/book.getPath());
 }
 
 std::string LibOPDSDumper::dumpOPDSContent(const std::vector<std::string>& bookIds)

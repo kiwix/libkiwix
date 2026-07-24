@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Matthieu Gautier <mgautier@kymeria.fr> TODO
+ * Copyright 2026 Hamazasp Avetisyan <hamik.avetisyan@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
