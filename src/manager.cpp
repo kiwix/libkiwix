@@ -210,15 +210,14 @@ bool Manager::readFile(
 {
   bool retVal = true;
   pugi::xml_document doc;
-  const char* libraryPath;
 #ifdef _WIN32
-  libraryPath = Utf8ToWide(path).c_str();
+  pugi::xml_parse_result result = doc.load_file(Utf8ToWide(path).c_str());
 #else
-  libraryPath = path.c_str();
+  pugi::xml_parse_result result = doc.load_file(path.c_str());
 #endif
 
-  if (pugi::xml_parse_result result = doc.load_file(libraryPath)) {
-    FileFormat format = detectFormat(libraryPath);
+  if (result) {
+    FileFormat format = detectFormat(path);
     if (format == FileFormat::OPDS) {
       this->parseOpdsDom(doc, urlHost, readOnly, trustLibrary);
     } else {
