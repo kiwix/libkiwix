@@ -224,7 +224,7 @@ using ConstLibraryPtr = std::shared_ptr<const Library>;
 class Library: public std::enable_shared_from_this<Library>
 {
  public:
-  typedef uint64_t Revision; // xxxx todo
+  typedef uint64_t Revision;
   typedef std::vector<std::string> BookIdCollection;
   typedef std::map<std::string, int> AttributeCounts;
   typedef std::set<std::string> BookIdSet;
