@@ -63,20 +63,28 @@ class Manager
  public: // types
   typedef std::vector<std::string> Paths;
 
+  /**
+   * The format of the file passed to readFile().
+   */
+  enum class FileFormat { XML, OPDS };
+
  public: // functions
   explicit Manager(LibraryManipulator manipulator);
   explicit Manager(LibraryPtr library);
 
   /**
-   * Read a `library.xml` and add book in the file to the library.
+   * Read a `library.xml` (or an OPDS feed) and add the books in the file to the
+   * library.
    *
-   * @param path The (utf8) path to the `library.xml`.
+   * @param path The (utf8) path to the file.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
-   * @param trustLibrary use book metadata coming from XML.
+   * @param trustLibrary use book metadata coming from the file.
    * @return True if file has been properly parsed.
    */
-  bool readFile(const std::string& path, bool readOnly = true, bool trustLibrary = true);
+  bool readFile(const std::string& path,
+                bool readOnly = true,
+                bool trustLibrary = true);
 
   /**
    * Sync the contents of the library with one or more `library.xml` files.
@@ -104,7 +112,7 @@ class Manager
                bool trustLibrary = true);
 
   /**
-   * Load a library content stored in a OPDS stream.
+   * Load a library content stored in a OPDS stream.
    *
    * @param content The content of the OPDS stream.
    * @param readOnly Set if the library path could be overwritten later with
@@ -114,6 +122,7 @@ class Manager
    */
   bool readOpds(const std::string& content, const std::string& urlHost);
 
+  FileFormat detectFormat(const std::string& libraryPath);
 
   /**
    * Load a bookmark file.
@@ -180,9 +189,10 @@ class Manager
                    const std::string& libraryPath,
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
-                    const std::string& urlHost);
-
+                    const std::string& urlHost,
+                    bool readOnly,
+                    bool trustLibrary);
 };
-}
+}  // namespace kiwix
 
 #endif
