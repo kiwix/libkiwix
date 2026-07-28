@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Matthieu Gautier <mgautier@kymeria.fr>
+ * Copyright 2026 Hamazasp Avetisyan <hamik.avetisyan@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU  General Public License as published by
@@ -17,13 +17,11 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef KIWIX_LIBXML_DUMPER_H
-#define KIWIX_LIBXML_DUMPER_H
+#ifndef KIWIX_LIBOPDS_DUMPER_H
+#define KIWIX_LIBOPDS_DUMPER_H
 
 #include <string>
 #include <vector>
-
-#include <pugixml.hpp>
 
 #include "library.h"
 
@@ -31,38 +29,30 @@ namespace kiwix
 {
 
 /**
- * A tool to dump a `Library` into a basic library.xml
+ * A tool to dump a `Library` into a basic OPDS feed.
  *
  */
-class LibXMLDumper
+class LibOPDSDumper
 {
  public:
-  LibXMLDumper() = default;
-  LibXMLDumper(const Library* library);
-  ~LibXMLDumper();
+  LibOPDSDumper() = default;
+  LibOPDSDumper(const Library* library);
+  ~LibOPDSDumper();
 
   /**
-   * Dump the library.xml
+   * Dump the OPDS feed.
    *
-   * @param id The id of the library.
-   * @return The library.xml content.
+   * @param bookIds the ids of the books to include in the feed.
+   * @return The OPDS feed content.
    */
-  std::string dumpLibXMLContent(const std::vector<std::string>& bookIds);
-
-
-  /**
-   * Dump the bookmark of the library.
-   *
-   * @return The bookmark.xml content.
-   */
-  std::string dumpLibXMLBookmark();
+  std::string dumpOPDSContent(const std::vector<std::string>& bookIds);
 
   /**
-   * Set the base directory used.
+   * Set the root location used when generating urls.
    *
-   * @param baseDir the base directory to use.
+   * @param rootLocation the root location to use.
    */
-  void setBaseDir(const std::string& baseDir) { this->baseDir = baseDir; }
+  void setRootLocation(const std::string& rootLocation) { this->rootLocation = rootLocation; }
 
   /**
    * Set the library to dump.
@@ -73,11 +63,10 @@ class LibXMLDumper
 
  protected:
   const kiwix::Library* library = nullptr;
-  std::string baseDir;
+  std::string rootLocation;
  private:
-  void handleBook(Book book, pugi::xml_node root_node);
-  void handleBookmark(Bookmark bookmark, pugi::xml_node root_node);
+  std::string handleBook(const Book& book) const;
 };
 }
 
-#endif // KIWIX_OPDS_DUMPER_H
+#endif // KIWIX_LIBOPDS_DUMPER_H
