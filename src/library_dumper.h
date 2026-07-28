@@ -31,6 +31,21 @@
 namespace kiwix
 {
 
+class Book;
+
+/**
+ * Get the illustration data (size/mimetype) of a book, for use in OPDS entry rendering.
+ */
+kainjow::mustache::list getBookIllustrationInfo(const Book& book);
+
+/**
+ * Render the full OPDS entry XML for a book.
+ */
+std::string fullEntryXML(const Book& book,
+                          const std::string& rootLocation,
+                          const std::string& contentAccessUrl,
+                          const std::string& contentId);
+
 /**
  * A base class to dump Library in various formats.
  *
