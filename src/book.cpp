@@ -97,8 +97,6 @@ void Book::update(const zim::Archive& archive) {
 #define ATTR(name) node.attribute(name).value()
 void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
 {
-  std::cout << "bbbbbb\n";
-
   m_id = ATTR("id");
   std::string path = ATTR("path");
   if (isRelativePath(path)) {
@@ -149,7 +147,6 @@ static std::string fromOpdsDate(const std::string& date)
 #define VALUE(name) node.child(name).child_value()
 void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost)
 {
-  std::cout << "cccccc\n";
   m_id = VALUE("id");
   if (!m_id.compare(0, 9, "urn:uuid:")) {
     m_id.erase(0, 9);
