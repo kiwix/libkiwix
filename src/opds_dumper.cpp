@@ -75,7 +75,7 @@ BooksData getBooksData(const Library* library,
       const std::string contentId = nameMapper->getNameForId(bookId);
       const auto entryXML = partial
                           ? partialEntryXML(book, rootLocation)
-                          : fullEntryXML(book, rootLocation, contentAccessUrl, contentId);
+                          : fullEntryOpds(book, rootLocation, contentAccessUrl, contentId);
       booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -133,7 +133,7 @@ std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
   const std::string contentId = nameMapper->getNameForId(bookId);
   return XML_HEADER
          + "\n"
-         + fullEntryXML(book, rootLocation, contentAccessUrl, contentId);
+         + fullEntryOpds(book, rootLocation, contentAccessUrl, contentId);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed() const

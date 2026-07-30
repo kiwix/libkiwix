@@ -15,6 +15,7 @@ tests = [
     'libopds_dumper',
     'opds_dumper',
     'libxml_dumper',
+    'library_dumper',
     'server_helper',
     'lrucache',
     'i18n',

@@ -41,7 +41,7 @@ kainjow::mustache::list getBookIllustrationInfo(const Book& book);
 /**
  * Render the full OPDS entry XML for a book.
  */
-std::string fullEntryXML(const Book& book,
+std::string fullEntryOpds(const Book& book,
                           const std::string& rootLocation,
                           const std::string& contentAccessUrl,
                           const std::string& contentId);
@@ -73,7 +73,7 @@ class LibraryDumper
   void setContentAccessUrl(const std::string& url) { this->contentAccessUrl = url; }
 
   /**
-   * Set some informations about the search results.
+   * Set some information about the search results.
    *
    * @param totalResult the total number of results of the search.
    * @param startIndex the start index of the result.

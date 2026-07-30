@@ -25,7 +25,7 @@ kainjow::mustache::list getBookIllustrationInfo(const Book& book)
     return illustrations;
 }
 
-std::string fullEntryXML(const Book& book,
+std::string fullEntryOpds(const Book& book,
                          const std::string& rootLocation,
                          const std::string& contentAccessUrl,
                          const std::string& contentId)
