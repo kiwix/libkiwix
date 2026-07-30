@@ -121,6 +121,20 @@ TEST_F(LibOPDSDumperTest, dumpsRequestedBooksOnly)
   EXPECT_STREQ("123456", acquisitionLink.attribute("length").as_string());
 }
 
+TEST_F(LibOPDSDumperTest, rendersSelfLinkWithBookLocalPath)
+{
+  // Unlike the live HTTP catalog (OPDSDumper), the local/offline dump is
+  // expected to expose the book's local path as a rel="self" link.
+  const std::string opdsContent = dumper.dumpOPDSContent({"book1-id"});
+  const auto doc = parseOPDS(opdsContent);
+
+  const auto entry = doc.select_node("/feed/entry").node();
+  const auto selfLink = entry.select_node("link[@rel='self']").node();
+  ASSERT_TRUE(selfLink);
+  EXPECT_STREQ(lib->getBookById("book1-id").getPath().c_str(), selfLink.attribute("href").as_string());
+  EXPECT_STREQ("application/x-zim", selfLink.attribute("type").as_string());
+}
+
 TEST_F(LibOPDSDumperTest, dumpsAllRequestedBooksInOrder)
 {
   const std::string opdsContent = dumper.dumpOPDSContent({"book2-id", "book1-id"});

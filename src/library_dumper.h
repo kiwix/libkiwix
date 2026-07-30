@@ -40,11 +40,25 @@ kainjow::mustache::list getBookIllustrationInfo(const Book& book);
 
 /**
  * Render the full OPDS entry XML for a book.
+ *
+ * @param book The book to render the OPDS entry for.
+ * @param rootLocation The root URL/path the catalog is served from, used to
+ *                 build absolute links within the entry.
+ * @param contentAccessUrl The URL (or URL prefix) used to access the book's
+ *                 content itself (as opposed to the catalog entry).
+ * @param contentId The identifier of the book's content, used when building
+ *                 content access links.
+ * @param selfPath If non-empty, rendered as the entry's rel="self" link (its
+ *                 local file path). Only meant for local/offline dumps
+ *                 (LibOPDSDumper) - leave empty for the live HTTP catalog
+ *                 (OPDSDumper), which must not leak server-side filesystem
+ *                 paths to remote clients.
  */
 std::string fullEntryOpds(const Book& book,
                           const std::string& rootLocation,
                           const std::string& contentAccessUrl,
-                          const std::string& contentId);
+                          const std::string& contentId,
+                          const std::string& selfPath = "");
 
 /**
  * A base class to dump Library in various formats.

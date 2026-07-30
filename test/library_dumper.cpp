@@ -175,6 +175,32 @@ TEST(FullEntryOpdsTest, rendersThumbnailLinkForBookIllustration)
   EXPECT_STREQ("image/png;width=48;height=48;scale=1", link.attribute("type").as_string());
 }
 
+TEST(FullEntryOpdsTest, omitsSelfLinkWhenSelfPathIsEmpty)
+{
+  const Book book = createBook();
+  // selfPath left at its default ("") - mirrors how OPDSDumper calls this
+  // function for the live HTTP catalog, which must never leak a local path.
+  const auto entryXml = fullEntryOpds(book, "http://root.location", "", "book-id");
+  const auto doc = parseEntry(entryXml);
+
+  const auto entry = doc.select_node("/entry").node();
+  EXPECT_FALSE(entry.select_node("link[@rel='self']"));
+}
+
+TEST(FullEntryOpdsTest, rendersSelfLinkWhenSelfPathIsSet)
+{
+  const Book book = createBook();
+  const auto entryXml = fullEntryOpds(book, "http://root.location", "", "book-id",
+                                       /*selfPath=*/"/local/path/book.zim");
+  const auto doc = parseEntry(entryXml);
+
+  const auto entry = doc.select_node("/entry").node();
+  const auto link = entry.select_node("link[@rel='self']").node();
+  ASSERT_TRUE(link);
+  EXPECT_STREQ("/local/path/book.zim", link.attribute("href").as_string());
+  EXPECT_STREQ("application/x-zim", link.attribute("type").as_string());
+}
+
 TEST(FullEntryOpdsTest, specialCharactersInBookMetadataAreEscaped)
 {
   Book book = createBook();
