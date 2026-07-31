@@ -2426,6 +2426,7 @@ TEST(ServerNegativeTest, UnusablePort)
   EXPECT_ERROR("Unable to instantiate the HTTP daemon. The port 8910 is maybe "
                "already occupied or need more permissions to be open. Please "
                "try as root or with a port number higher or equal to 1024.",
+    server.setAddress("127.0.0.1");
     server.setPort(8910);
   );
 }
