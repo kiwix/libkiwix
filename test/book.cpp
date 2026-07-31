@@ -66,6 +66,49 @@ TEST(BookTest, updateFromXMLTest)
     EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
 }
 
+TEST(BookTest, updateFromOPDSTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <title>Catch an infection in 24 hours</title>
+        <summary>Complete guide to contagious diseases</summary>
+        <language>eng</language>
+        <name>who_contagious_diseases_en</name>
+        <tags>unittest;_category:medicine;_pictures:yes</tags>
+        <articleCount>123456</articleCount>
+        <mediaCount>234567</mediaCount>
+        <author>
+          <name>World Health Organization</name>
+        </author>
+        <publisher>
+          <name>WHO</name>
+        </publisher>
+        <dc:issued>2020-03-31T00:00:00Z</dc:issued>
+        <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://who.org/zara.zim" length="353974272" />
+        <link rel="http://opds-spec.org/image/thumbnail" type="text/plain" href="zara.fav" />
+        <link rel="self" href="zara.zim" type="application/x-zim"/>
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org/");
+
+    EXPECT_EQ(book.getPath(), "zara.zim");
+    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getTitle(), "Catch an infection in 24 hours");
+    EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");
+    EXPECT_EQ(book.getTags(), "unittest;_category:medicine;_pictures:yes");
+    EXPECT_EQ(book.getName(), "who_contagious_diseases_en");
+    EXPECT_EQ(book.getCategory(), "medicine");
+    EXPECT_EQ(book.getArticleCount(), 123456U);
+    EXPECT_EQ(book.getMediaCount(), 234567U);
+    EXPECT_EQ(book.getSize(), 345678U*1024U);
+    auto defaultIllustration = book.getIllustration(48);
+    EXPECT_EQ(defaultIllustration->mimeType, "text/plain");
+    EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
+}
+
 namespace
 {
 
@@ -74,6 +117,14 @@ kiwix::Book makeBook(const std::string& attr, const std::string& baseDir="")
     const XMLDoc xml("<book " + attr + "></book>");
     kiwix::Book book;
     book.updateFromXml(xml.child("book"), baseDir);
+    return book;
+}
+
+kiwix::Book makeBookFromOpds(const std::string& entryContent, const std::string& urlHost="")
+{
+    const XMLDoc opds("<entry>" + entryContent + "</entry>");
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), urlHost);
     return book;
 }
 
@@ -114,6 +165,44 @@ TEST(BookTest, updateFromXMLCategoryHandlingTest)
     )");
 
     EXPECT_EQ(book.getCategory(), "category_attribute_overrides_tags");
+  }
+}
+
+TEST(BookTest, updateFromOPDSCategoryHandlingTest)
+{
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <tags>_category:category_defined_via_tags_only</tags>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_defined_via_tags_only");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <category>category_defined_via_element_only</category>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_defined_via_element_only");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <category>category_element_overrides_tags</category>
+        <tags>_category:tags_override_category_element</tags>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_element_overrides_tags");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <tags>_category:tags_override_category_element</tags>
+        <category>category_element_overrides_tags</category>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_element_overrides_tags");
   }
 }
 
@@ -204,6 +293,32 @@ TEST(BookTest, getHumanReadableIdFromPath)
   EXPECT_EQ("3plus2",  path2HumanReadableId("3+2.zim"));
 }
 
+namespace
+{
+std::string opdsPath2HumanReadableId(const std::string& path)
+{
+    const kiwix::Book book = makeBookFromOpds(
+        "<id>xyz</id><link rel=\"self\" href=\"" + path + "\" type=\"application/x-zim\"/>");
+    return book.getHumanReadableIdFromPath();
+}
+
+} // unnamed namespace
+
+TEST(BookTest, getHumanReadableIdFromPathOpds)
+{
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("abc.zim"));
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("ABC.zim"));
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("âbç.zim"));
+  EXPECT_EQ("ancient", opdsPath2HumanReadableId("ancient.zimbabwe"));
+  EXPECT_EQ("ab_cd",   opdsPath2HumanReadableId("ab cd.zim"));
+#ifdef _WIN32
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("C:\\Data\\ZIM\\abc.zim"));
+#else
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("/Data/ZIM/abc.zim"));
+#endif
+  EXPECT_EQ("3plus2",  opdsPath2HumanReadableId("3+2.zim"));
+}
+
 TEST(BookTest, getLanguages)
 {
   typedef std::vector<std::string> Langs;
@@ -217,6 +332,26 @@ TEST(BookTest, getLanguages)
 
   {
     const kiwix::Book book = makeBook(R"(id="abcd" language="eng,ong,ing")");
+
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng,ong,ing");
+    EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));
+  }
+}
+
+// OPDS analogue of getLanguages above.
+TEST(BookTest, getLanguagesOpds)
+{
+  typedef std::vector<std::string> Langs;
+
+  {
+    const kiwix::Book book = makeBookFromOpds("<id>abcd</id><language>fra</language>");
+
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "fra");
+    EXPECT_EQ(book.getLanguages(), Langs{ "fra" });
+  }
+
+  {
+    const kiwix::Book book = makeBookFromOpds("<id>abcd</id><language>eng,ong,ing</language>");
 
     EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng,ong,ing");
     EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));

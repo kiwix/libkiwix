@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
+  <id>5da764a7-0088-7939-bdd8-c04e9606c36e</id>
+  <title>All zims</title>
+  <updated>2026-07-23T12:09:59Z</updated>
+
+  <link rel="self" href="" type="application/atom+xml" />
+  <link rel="search" type="application/opensearchdescription+xml" href="/catalog/searchdescription.xml" />
+  <entry>
+    <id>urn:uuid:raycharles</id>
+    <title>Ray Charles</title>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <summary>Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)</summary>
+    <language>eng</language>
+    <name>wikipedia_en_ray_charles</name>
+    <flavour></flavour>
+    <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <link rel="http://opds-spec.org/image/thumbnail"
+          href="/favicon.png"
+          type="image/png"/>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <publisher>
+      <name>Kiwix</name>
+    </publisher>
+    <dc:issued>2020-03-31T00:00:00Z</dc:issued>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim" length="569344" />
+    <link rel="self" href="./test/zimfile_raycharles.zim" type="application/x-zim"/>
+  </entry>
+  <entry>
+    <id>urn:uuid:raycharles_uncategorized</id>
+    <title>Ray (uncategorized) Charles</title>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <summary>No category is assigned to this library entry (neither adj nor xor was considered a good option)</summary>
+    <language>rus,eng</language>
+    <name>wikipedia_ru_ray_charles</name>
+    <flavour></flavour>
+    <tags>public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <publisher>
+      <name>Kiwix</name>
+    </publisher>
+    <dc:issued>2020-03-31T00:00:00Z</dc:issued>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim" length="125952" />
+    <link rel="self" href="./test/zimfile_raycharles_uncategorized.zim" type="application/x-zim"/>
+  </entry>
+  <entry>
+    <id>urn:uuid:charlesray</id>
+    <title>Charles, Ray</title>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <summary>Wikipedia articles about Ray Charles or why and when one should go to library</summary>
+    <language>fra</language>
+    <name>wikipedia_fr_ray_charles</name>
+    <flavour></flavour>
+    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <publisher>
+      <name>Kiwix</name>
+    </publisher>
+    <dc:issued>2020-03-31T00:00:00Z</dc:issued>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim" length="569344" />
+    <link rel="self" href="./test/zimfile&amp;other.zim" type="application/x-zim"/>
+  </entry>
+  <entry>
+    <id>urn:uuid:inaccessiblezim</id>
+    <title>Catalog of all catalogs</title>
+    <updated>2025-09-04T00:00:00Z</updated>
+    <summary>Testing that running kiwix-serve without access to ZIM files doesn't lead to a catastrophe</summary>
+    <language>cat</language>
+    <name>catalog_of_all_catalogs</name>
+    <flavour></flavour>
+    <tags>unittest;_category:cats</tags>
+    <articleCount>12107</articleCount>
+    <mediaCount>8</mediaCount>
+    <author>
+      <name>Catherine of Catalonia</name>
+    </author>
+    <publisher>
+      <name>Caterpillar</name>
+    </publisher>
+    <dc:issued>2025-09-04T00:00:00Z</dc:issued>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim" length="20736925696" />
+    <link rel="self" href="./test/nosuchzimfile.zim" type="application/x-zim"/>
+  </entry>
+</feed>
