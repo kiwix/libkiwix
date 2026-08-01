@@ -46,52 +46,6 @@ const std::string XML_HEADER(R"(<?xml version="1.0" encoding="UTF-8"?>)");
 
 typedef kainjow::mustache::data MustacheData;
 typedef kainjow::mustache::list BooksData;
-typedef kainjow::mustache::list IllustrationInfo;
-
-IllustrationInfo getBookIllustrationInfo(const Book& book)
-{
-    kainjow::mustache::list illustrations;
-    for ( const auto& illustration : book.getIllustrations() ) {
-      // For now, we are handling only sizexsize@1 illustration.
-      // So we can simply pass one size to mustache.
-      illustrations.push_back(kainjow::mustache::object{
-        {"icon_size", to_string(illustration->width)},
-        {"icon_mimetype", illustration->mimeType}
-      });
-    }
-    return illustrations;
-}
-
-std::string fullEntryOpds(const Book& book,
-                         const std::string& rootLocation,
-                         const std::string& contentAccessUrl,
-                         const std::string& contentId)
-{
-    const auto bookDate = book.getDate() + "T00:00:00Z";
-    const kainjow::mustache::object data{
-      {"root",  rootLocation},
-      {"contentAccessUrl",  onlyAsNonEmptyMustacheValue(contentAccessUrl)},
-      {"id", book.getId()},
-      {"name", book.getName()},
-      {"title", book.getTitle()},
-      {"description", book.getDescription()},
-      {"language", book.getCommaSeparatedLanguages()},
-      {"content_id",  urlEncode(contentId)},
-      {"updated", bookDate}, // XXX: this should be the entry update datetime
-      {"book_date", bookDate},
-      {"category", book.getCategory()},
-      {"flavour", book.getFlavour()},
-      {"tags", book.getTags()},
-      {"article_count", to_string(book.getArticleCount())},
-      {"media_count", to_string(book.getMediaCount())},
-      {"author_name", book.getCreator()},
-      {"publisher_name", book.getPublisher()},
-      {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
-      {"size", to_string(book.getSize())},
-      {"icons", getBookIllustrationInfo(book)},
-    };
-    return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
-}
 
 std::string partialEntryOpds(const Book& book, const std::string& rootLocation)
 {
