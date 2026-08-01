@@ -72,7 +72,7 @@ class LibXMLDumper
   void setLibrary(const Library* library) { this->library = library; }
 
  protected:
-  const kiwix::Library* library;
+  const kiwix::Library* library = nullptr;
   std::string baseDir;
  private:
   void handleBook(Book book, pugi::xml_node root_node);
