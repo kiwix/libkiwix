@@ -12,6 +12,7 @@ tests = [
     'manager',
     'name_mapper',
     'opds_catalog',
+    'opds_dumper',
     'libxml_dumper',
     'server_helper',
     'lrucache',
