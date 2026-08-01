@@ -77,6 +77,14 @@ kiwix::Book makeBook(const std::string& attr, const std::string& baseDir="")
     return book;
 }
 
+kiwix::Book makeBookFromOpds(const std::string& entryContent, const std::string& urlHost="")
+{
+    const XMLDoc opds("<entry>" + entryContent + "</entry>");
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), urlHost);
+    return book;
+}
+
 } // unnamed namespace
 
 TEST(BookTest, updateFromXMLCategoryHandlingTest)
@@ -114,6 +122,44 @@ TEST(BookTest, updateFromXMLCategoryHandlingTest)
     )");
 
     EXPECT_EQ(book.getCategory(), "category_attribute_overrides_tags");
+  }
+}
+
+TEST(BookTest, updateFromOPDSCategoryHandlingTest)
+{
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <tags>_category:category_defined_via_tags_only</tags>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_defined_via_tags_only");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <category>category_defined_via_element_only</category>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_defined_via_element_only");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <category>category_element_overrides_tags</category>
+        <tags>_category:tags_override_category_element</tags>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_element_overrides_tags");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <tags>_category:tags_override_category_element</tags>
+        <category>category_element_overrides_tags</category>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_element_overrides_tags");
   }
 }
 
@@ -222,3 +268,24 @@ TEST(BookTest, getLanguages)
     EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));
   }
 }
+
+// OPDS analogue of getLanguages above.
+TEST(BookTest, getLanguagesOpds)
+{
+  typedef std::vector<std::string> Langs;
+
+  {
+    const kiwix::Book book = makeBookFromOpds("<id>abcd</id><language>fra</language>");
+
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "fra");
+    EXPECT_EQ(book.getLanguages(), Langs{ "fra" });
+  }
+
+  {
+    const kiwix::Book book = makeBookFromOpds("<id>abcd</id><language>eng,ong,ing</language>");
+
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng,ong,ing");
+    EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));
+  }
+}
+
