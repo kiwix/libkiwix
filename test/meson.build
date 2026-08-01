@@ -13,6 +13,7 @@ tests = [
     'name_mapper',
     'opds_catalog',
     'opds_entry_rendering',
+    'libxml_dumper',
     'server_helper',
     'lrucache',
     'i18n',
