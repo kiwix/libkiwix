@@ -63,20 +63,34 @@ class Manager
  public: // types
   typedef std::vector<std::string> Paths;
 
+  /**
+   * The format of a library file, as detected by detectFormat().
+   */
+  enum class FileFormat { XML, OPDS };
+
  public: // functions
   explicit Manager(LibraryManipulator manipulator);
   explicit Manager(LibraryPtr library);
 
   /**
-   * Read a `library.xml` and add book in the file to the library.
+   * Read a `library.xml` (or an OPDS document) and add the books in the
+   * file to the library. The format is auto-detected; see detectFormat().
    *
-   * @param path The (utf8) path to the `library.xml`.
+   * @param path The (utf8) path to the file.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
-   * @param trustLibrary use book metadata coming from XML.
+   * @param trustLibrary use book metadata coming from the file.
    * @return True if file has been properly parsed.
    */
   bool readFile(const std::string& path, bool readOnly = true, bool trustLibrary = true);
+
+  /**
+   * Detect whether a library file is library.xml or an OPDS document.
+   *
+   * @param libraryPath The (utf8) path to the file.
+   * @return The detected format.
+   */
+  FileFormat detectFormat(const std::string& libraryPath);
 
   /**
    * Sync the contents of the library with one or more `library.xml` files.
@@ -180,7 +194,9 @@ class Manager
                    const std::string& libraryPath,
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
-                    const std::string& urlHost);
+                    const std::string& urlHost,
+                    bool readOnly,
+                    bool trustLibrary);
 
 };
 }
