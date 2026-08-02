@@ -313,10 +313,58 @@ const char sampleLibraryXML[] = R"(
 </library>
 )";
 
+const char sampleLibraryOpds[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
+  <id>c0602b41-aef2-4c5a-9f31-3f6ee912c159</id>
+  <entry>
+    <id>urn:uuid:raycharles</id>
+    <title>Ray Charles</title>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <summary>Wikipedia articles about Ray Charles</summary>
+    <language>eng,spa</language>
+    <name>wikipedia_en_ray_charles</name>
+    <tags>wikipedia;_category:wikipedia;_pictures:no</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <publisher>
+      <name>Kiwix</name>
+    </publisher>
+    <dc:issued>2020-03-31T00:00:00Z</dc:issued>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569344" />
+    <link rel="self" href="__ZIMFILE_SELF_PATH__" type="application/x-zim"/>
+  </entry>
+  <entry>
+    <id>urn:uuid:example</id>
+    <title>An example ZIM archive</title>
+    <updated>2021-04-11T00:00:00Z</updated>
+    <summary>An eXaMpLe book added to the catalog via XML</summary>
+    <language>deu</language>
+    <name>wikibooks.de</name>
+    <tags>unittest;wikibooks;_category:wikibooks</tags>
+    <articleCount>12</articleCount>
+    <mediaCount>0</mediaCount>
+    <author>
+      <name>Wikibooks</name>
+    </author>
+    <publisher>
+      <name>Kiwix &amp; Some Enthusiasts</name>
+    </publisher>
+    <dc:issued>2021-04-11T00:00:00Z</dc:issued>
+    <link rel="self" href="__EXAMPLE_SELF_PATH__" type="application/x-zim"/>
+  </entry>
+</feed>
+)";
+
 #include "../include/library.h"
 #include "../include/manager.h"
 #include "../include/book.h"
 #include "../include/bookmark.h"
+#include "../include/tools.h"
 
 namespace
 {
@@ -383,17 +431,38 @@ TEST(LibraryOpdsImportTest, allInOne)
   }
 }
 
-class LibraryTest : public ::testing::Test {
+class LibraryTest : public ::testing::TestWithParam<std::string> {
  protected:
   typedef kiwix::Library::BookIdCollection BookIdCollection;
   typedef std::vector<std::string> TitleCollection;
 
   LibraryTest(): lib(kiwix::Library::create()) {}
 
+  void loadRayCharlesAndExample(kiwix::Manager& manager) {
+    if (GetParam() == "xml") {
+      manager.readXml(sampleLibraryXML, false, LIBRARY_PATH, true);
+    } else {
+      // Book::updateFromOpds() (unlike updateFromXml()) stores a rel="self"
+      // path verbatim, with no relative-path resolution against the library
+      // file's location. To have the OPDS-loaded books point at the exact
+      // same on-disk files as the XML-loaded ones, resolve the paths here
+      // the same way updateFromXml()/Manager::parseXmlDom() would.
+      const std::string baseDir = kiwix::removeLastPathElement(LIBRARY_PATH);
+      std::string opds = sampleLibraryOpds;
+      const auto replace = [&opds](const std::string& placeholder, const std::string& value) {
+        const auto pos = opds.find(placeholder);
+        opds.replace(pos, placeholder.size(), value);
+      };
+      replace("__ZIMFILE_SELF_PATH__", kiwix::computeAbsolutePath(baseDir, ZIMFILE_PATH));
+      replace("__EXAMPLE_SELF_PATH__", kiwix::computeAbsolutePath(baseDir, EXAMPLE_PATH));
+      manager.readOpds(opds, "");
+    }
+  }
+
   void SetUp() override {
      kiwix::Manager manager(lib);
      manager.readOpds(sampleOpdsStream, "foo.urlHost");
-     manager.readXml(sampleLibraryXML, false, LIBRARY_PATH, true);
+     loadRayCharlesAndExample(manager);
   }
 
   kiwix::Bookmark createBookmark(const std::string &id, const std::string& url="", const std::string& title="") {
@@ -421,7 +490,10 @@ class LibraryTest : public ::testing::Test {
   std::shared_ptr<kiwix::Library> lib;
 };
 
-TEST_F(LibraryTest, createBookMark)
+INSTANTIATE_TEST_CASE_P(XmlAndOpds, LibraryTest,
+    ::testing::Values("xml", "opds"));
+
+TEST_P(LibraryTest, createBookMark)
 {
   auto bookId = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
   auto book = lib->getBookById(bookId);
@@ -439,7 +511,7 @@ TEST_F(LibraryTest, createBookMark)
   EXPECT_EQ(bookmark.getLanguage(), book.getCommaSeparatedLanguages());
 }
 
-TEST_F(LibraryTest, getBookMarksTest)
+TEST_P(LibraryTest, getBookMarksTest)
 {
     auto bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
     auto bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
@@ -461,7 +533,7 @@ TEST_F(LibraryTest, getBookMarksTest)
     EXPECT_EQ(allBookmarks[2].getBookId(), bookId2);
 }
 
-TEST_F(LibraryTest, bookmarksSerializationTest)
+TEST_P(LibraryTest, bookmarksSerializationTest)
 {
     auto bookId1 = lib->getBooksIds()[0];
     auto bookId2 = lib->getBooksIds()[1];
@@ -481,7 +553,7 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     {
       kiwix::Manager manager(new_lib);
       manager.readOpds(sampleOpdsStream, "foo.urlHost");
-      manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
+      loadRayCharlesAndExample(manager);
       manager.readBookmarkFile("__test__bookmarks.xml");
     }
     std::remove("__test__bookmarks.xml");
@@ -525,7 +597,7 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     EXPECT_EQ(bookmark3.getDate(), book2.getDate());
 }
 
-TEST_F(LibraryTest, MigrateBookmark)
+TEST_P(LibraryTest, MigrateBookmark)
 {
     std::string bookId1 = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
     std::string bookId2 = "0189d9be-2fd0-b4b6-7300-20fab0b5cdc8";
@@ -644,7 +716,7 @@ TEST_F(LibraryTest, MigrateBookmark)
     EXPECT_EQ(allBookmarks[5].getBookId(), bookId1+"_updated1yearlater_flavour");
 }
 
-TEST_F(LibraryTest, GetBestTargetBookIdOlder)
+TEST_P(LibraryTest, GetBestTargetBookIdOlder)
 {
     auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
 
@@ -657,7 +729,7 @@ TEST_F(LibraryTest, GetBestTargetBookIdOlder)
     ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
 }
 
-TEST_F(LibraryTest, GetBestTargetBookIdNewer)
+TEST_P(LibraryTest, GetBestTargetBookIdNewer)
 {
     auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
 
@@ -678,7 +750,7 @@ TEST_F(LibraryTest, GetBestTargetBookIdNewer)
     ASSERT_EQ(lib->getBestTargetBookId(validBookmark, kiwix::ALLOW_DOWNGRADE), bookId);
 }
 
-TEST_F(LibraryTest, GetBestTargetBookIdInvalidOlder)
+TEST_P(LibraryTest, GetBestTargetBookIdInvalidOlder)
 {
     auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
 
@@ -692,7 +764,7 @@ TEST_F(LibraryTest, GetBestTargetBookIdInvalidOlder)
     ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
 }
 
-TEST_F(LibraryTest, GetBestTargetBookIdInvalidNewer)
+TEST_P(LibraryTest, GetBestTargetBookIdInvalidNewer)
 {
     auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd");
 
@@ -708,7 +780,7 @@ TEST_F(LibraryTest, GetBestTargetBookIdInvalidNewer)
     ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), bookId+"_updated1yearlater");
 }
 
-TEST_F(LibraryTest, GetBestTargetBookIdFlavour)
+TEST_P(LibraryTest, GetBestTargetBookIdFlavour)
 {
     auto bookId = std::string("0c45160e-f917-760a-9159-dfe3c53cdcdd_flavour");
 
@@ -724,7 +796,7 @@ TEST_F(LibraryTest, GetBestTargetBookIdFlavour)
     ASSERT_EQ(lib->getBestTargetBookId(invalidBookmark, kiwix::ALLOW_DOWNGRADE), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour");
 }
 
-TEST_F(LibraryTest, GetBestTargetBookIdName)
+TEST_P(LibraryTest, GetBestTargetBookIdName)
 {
     ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
     ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "novid"), "0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater");
@@ -732,7 +804,7 @@ TEST_F(LibraryTest, GetBestTargetBookIdName)
     ASSERT_EQ(lib->getBestTargetBookId("wikipedia_fr_tunisie", "other_flavour", "2020-12-12"), "");
 }
 
-TEST_F(LibraryTest, sanityCheck)
+TEST_P(LibraryTest, sanityCheck)
 {
   EXPECT_EQ(lib->getBookCount(true, true), 16U);
   EXPECT_EQ(lib->getBooksLanguages(),
@@ -757,7 +829,7 @@ TEST_F(LibraryTest, sanityCheck)
   }));
 }
 
-TEST_F(LibraryTest, categoryHandling)
+TEST_P(LibraryTest, categoryHandling)
 {
   EXPECT_EQ("", lib->getBookById("0c45160e-f917-760a-9159-dfe3c53cdcdd").getCategory());
   EXPECT_EQ("category_defined_via_tags_only", lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2").getCategory());
@@ -766,7 +838,7 @@ TEST_F(LibraryTest, categoryHandling)
   EXPECT_EQ("category_element_overrides_tags", lib->getBookById("14829621-c490-c376-0792-9de558b57efa").getCategory());
 }
 
-TEST_F(LibraryTest, emptyFilter)
+TEST_P(LibraryTest, emptyFilter)
 {
   const auto bookIds = lib->filter(kiwix::Filter());
   EXPECT_EQ(bookIds, lib->getBooksIds());
@@ -778,7 +850,7 @@ TEST_F(LibraryTest, emptyFilter)
           TitleCollection({ __VA_ARGS__ })   \
         )
 
-TEST_F(LibraryTest, filterLocal)
+TEST_P(LibraryTest, filterLocal)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().local(true),
     "An example ZIM archive",
@@ -803,7 +875,7 @@ TEST_F(LibraryTest, filterLocal)
   );
 }
 
-TEST_F(LibraryTest, filterRemote)
+TEST_P(LibraryTest, filterRemote)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().remote(true),
     "Business talks about TED",
@@ -828,7 +900,7 @@ TEST_F(LibraryTest, filterRemote)
   );
 }
 
-TEST_F(LibraryTest, filterByLanguage)
+TEST_P(LibraryTest, filterByLanguage)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().lang("eng"),
     "Business talks about TED",
@@ -855,7 +927,7 @@ TEST_F(LibraryTest, filterByLanguage)
   );
 }
 
-TEST_F(LibraryTest, filterByFlavour)
+TEST_P(LibraryTest, filterByFlavour)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().flavour("full"),
     "Géographie par Wikipédia",
@@ -874,7 +946,7 @@ TEST_F(LibraryTest, filterByFlavour)
   );
 }
 
-TEST_F(LibraryTest, filterByTags)
+TEST_P(LibraryTest, filterByTags)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackexchange"}),
     "Islam Stack Exchange",
@@ -922,7 +994,7 @@ TEST_F(LibraryTest, filterByTags)
 }
 
 
-TEST_F(LibraryTest, filterByQuery)
+TEST_P(LibraryTest, filterByQuery)
 {
   // filtering by query checks the title
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Exchange"),
@@ -990,7 +1062,7 @@ TEST_F(LibraryTest, filterByQuery)
 }
 
 
-TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
+TEST_P(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query(""),
     "An example ZIM archive",
@@ -1012,7 +1084,7 @@ TEST_F(LibraryTest, filteringByEmptyQueryReturnsAllEntries)
   );
 }
 
-TEST_F(LibraryTest, filterByCreator)
+TEST_P(LibraryTest, filterByCreator)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().creator("Wikipedia"),
     "Encyclopédie de la Tunisie",
@@ -1070,7 +1142,7 @@ TEST_F(LibraryTest, filterByCreator)
 
 }
 
-TEST_F(LibraryTest, filterByPublisher)
+TEST_P(LibraryTest, filterByPublisher)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().publisher("Kiwix"),
     "An example ZIM archive",
@@ -1106,7 +1178,7 @@ TEST_F(LibraryTest, filterByPublisher)
   );
 }
 
-TEST_F(LibraryTest, filterByName)
+TEST_P(LibraryTest, filterByName)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().name("wikibooks.de"),
     "An example ZIM archive"
@@ -1142,7 +1214,7 @@ TEST_F(LibraryTest, filterByName)
   );
 }
 
-TEST_F(LibraryTest, filterByCategory)
+TEST_P(LibraryTest, filterByCategory)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().category("category_element_overrides_tags"),
     "Géographie par Wikipédia",
@@ -1159,14 +1231,14 @@ TEST_F(LibraryTest, filterByCategory)
   );
 }
 
-TEST_F(LibraryTest, filterByMaxSize)
+TEST_P(LibraryTest, filterByMaxSize)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().maxSize(200000),
     "An example ZIM archive"
   );
 }
 
-TEST_F(LibraryTest, filterByMultipleCriteria)
+TEST_P(LibraryTest, filterByMultipleCriteria)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("Wiki").creator("Wikipedia"),
     "Encyclopédie de la Tunisie",
@@ -1194,7 +1266,7 @@ TEST_F(LibraryTest, filterByMultipleCriteria)
   );
 }
 
-TEST_F(LibraryTest, getBookByPath)
+TEST_P(LibraryTest, getBookByPath)
 {
   kiwix::Book book = lib->getBookById(lib->getBooksIds()[0]);
 #ifdef _WIN32
@@ -1208,7 +1280,7 @@ TEST_F(LibraryTest, getBookByPath)
   EXPECT_THROW(lib->getBookByPath("non/existant/path.zim"), std::out_of_range);
 }
 
-TEST_F(LibraryTest, removeBookByIdRemovesTheBook)
+TEST_P(LibraryTest, removeBookByIdRemovesTheBook)
 {
   const auto initialBookCount = lib->getBookCount(true, true);
   ASSERT_GT(initialBookCount, 0U);
@@ -1218,14 +1290,14 @@ TEST_F(LibraryTest, removeBookByIdRemovesTheBook)
   EXPECT_THROW(lib->getBookById("raycharles"), std::out_of_range);
 };
 
-TEST_F(LibraryTest, removeBookByIdDropsTheReader)
+TEST_P(LibraryTest, removeBookByIdDropsTheReader)
 {
   EXPECT_NE(nullptr, lib->getArchiveById("raycharles"));
   lib->removeBookById("raycharles");
   EXPECT_THROW(lib->getArchiveById("raycharles"), std::out_of_range);
 };
 
-TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
+TEST_P(LibraryTest, removeBookByIdUpdatesTheSearchDB)
 {
   kiwix::Filter f;
   f.local(true).valid(true).query(R"(title:"ray charles")", false);
@@ -1243,7 +1315,7 @@ TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
   EXPECT_THROW(lib->getBookById("raycharles"), std::out_of_range);
 };
 
-TEST_F(LibraryTest, removeBooksNotUpdatedSince)
+TEST_P(LibraryTest, removeBooksNotUpdatedSince)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter(),
     "An example ZIM archive",
