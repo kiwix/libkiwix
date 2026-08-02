@@ -14,6 +14,7 @@ tests = [
     'opds_catalog',
     'opds_dumper',
     'libxml_dumper',
+    'libopds_dumper',
     'opds_entry_rendering',
     'server_helper',
     'lrucache',
