@@ -80,12 +80,14 @@ TEST(ManagerTest, readXml)
     EXPECT_EQ(678U*1024, book.getSize());
 }
 
-TEST(Manager, reload)
+class ManagerReloadTest : public ::testing::TestWithParam<std::string> {};
+
+TEST_P(ManagerReloadTest, reload)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
 
-  manager.reload({ "./test/library.xml" });
+  manager.reload({ GetParam() });
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
         "inaccessiblezim",
@@ -100,7 +102,7 @@ TEST(Manager, reload)
         "raycharles_uncategorized"
   }));
 
-  manager.reload({ "./test/library.xml" });
+  manager.reload({ GetParam() });
   EXPECT_EQ(lib->getBooksIds(), kiwix::Library::BookIdCollection({
         "charlesray",
         "inaccessiblezim",
@@ -108,3 +110,6 @@ TEST(Manager, reload)
         "raycharles_uncategorized"
   }));
 }
+
+INSTANTIATE_TEST_CASE_P(XmlAndOpds, ManagerReloadTest,
+    ::testing::Values("./test/library.xml", "./test/library.opds"));
