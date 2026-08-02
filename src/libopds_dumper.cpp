@@ -27,6 +27,7 @@
 
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
+#include "tools.h"
 
 namespace kiwix
 {
@@ -43,9 +44,14 @@ LibOPDSDumper::~LibOPDSDumper()
 
 std::string LibOPDSDumper::handleBook(const Book& book) const
 {
-  // Local/offline dump: the book's own id is used as the content id, and
-  // there is no content-access URL to link to (no server involved).
-  return fullEntryOpds(book, /*rootLocation=*/"", /*contentAccessUrl=*/"", /*contentId=*/book.getId());
+  // Local/offline dump: the book's own id is used as the content id, there
+  // is no content-access URL to link to (no server involved), and the
+  // book's local path is safe to expose as the rel="self" link, resolved
+  // relative to baseDir the same way LibXMLDumper does.
+  const std::string selfPath = book.getPath().empty()
+      ? ""
+      : computeRelativePath(baseDir, book.getPath());
+  return fullEntryOpds(book, /*rootLocation=*/"", /*contentAccessUrl=*/"", /*contentId=*/book.getId(), selfPath);
 }
 
 void LibOPDSDumper::dumpOPDSContent(const std::vector<std::string>& bookIds, std::ostream& os)

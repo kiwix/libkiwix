@@ -55,8 +55,17 @@ class LibOPDSDumper
    */
   void setLibrary(const Library* library) { this->library = library; }
 
+  /**
+   * Set the base directory book paths are resolved relative to when
+   * rendered as a book's rel="self" link.
+   *
+   * @param baseDir the base directory to use.
+   */
+  void setBaseDir(const std::string& baseDir) { this->baseDir = baseDir; }
+
  protected:
   const kiwix::Library* library = nullptr;
+  std::string baseDir;
  private:
   std::string handleBook(const Book& book) const;
 };

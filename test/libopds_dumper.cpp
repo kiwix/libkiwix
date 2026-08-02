@@ -26,6 +26,7 @@
 #include "../include/book.h"
 #include "../src/libopds_dumper.h"
 #include "../src/tools/otherTools.h"
+#include "../include/tools.h"
 
 namespace
 {
@@ -284,6 +285,61 @@ TEST_F(LibOPDSDumperTest, setLibraryReplacesTheDumpedLibrary)
     "    </publisher>\n"
     "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
     "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"http://download.kiwix.org/zim/other-book-id.zim\" length=\"123456\" />\n"
+    "  </entry>\n"
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibOPDSDumperTest, rendersSelfLinkWithBookLocalPath)
+{
+  // A relative path is resolved by Book::setPath() against the current
+  // directory; the dumper's baseDir is set to that same directory below, so
+  // the rendered self link is portably just "<id>.zim" on every platform (a
+  // hardcoded absolute path like "/local/path/..." is POSIX-only - Windows
+  // treats a leading '/' without a drive letter as relative, which silently
+  // prefixes it with the build's cwd instead). Mirrors LibXMLDumperTest's
+  // createBook()/setBaseDir() pattern in test/libxml_dumper.cpp.
+  auto selfLinkLib = Library::create();
+  Book book = createBook("book1-id", "First Book");
+  book.setPath("book1-id.zim");
+  selfLinkLib->addBook(book);
+  dumper.setLibrary(selfLinkLib.get());
+  dumper.setBaseDir(getCurrentDirectory());
+
+  std::ostringstream oss;
+  dumper.dumpOPDSContent({"book1-id"}, oss);
+  EXPECT_EQ(maskUpdatedTimestamp(oss.str()),
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
+    "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
+    "      xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
+    "  <id>" + gen_uuid("/catalog") + "</id>\n"
+    "  <title>All zims</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
+    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
+    "\n"
+    "  <entry>\n"
+    "    <id>urn:uuid:book1-id</id>\n"
+    "    <title>First Book</title>\n"
+    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "    <summary>Description of First Book</summary>\n"
+    "    <language>eng</language>\n"
+    "    <name>test_book1-id</name>\n"
+    "    <flavour></flavour>\n"
+    "    <category></category>\n"
+    "    <tags>tag1;tag2;_category:test</tags>\n"
+    "    <articleCount>42</articleCount>\n"
+    "    <mediaCount>7</mediaCount>\n"
+    "    \n"
+    "    <author>\n"
+    "      <name>First Book Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>First Book Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"http://download.kiwix.org/zim/book1-id.zim\" length=\"123456\" />\n"
+    "    <link rel=\"self\" href=\"book1-id.zim\" type=\"application/x-zim\"/>\n"
     "  </entry>\n"
     "</feed>\n"
   );

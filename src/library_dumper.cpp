@@ -28,7 +28,8 @@ kainjow::mustache::list getBookIllustrationInfo(const Book& book)
 std::string fullEntryOpds(const Book& book,
                          const std::string& rootLocation,
                          const std::string& contentAccessUrl,
-                         const std::string& contentId)
+                         const std::string& contentId,
+                         const std::string& selfPath)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
@@ -52,6 +53,7 @@ std::string fullEntryOpds(const Book& book,
       {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
       {"icons", getBookIllustrationInfo(book)},
+      {"self_path", onlyAsNonEmptyMustacheValue(selfPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
 }
