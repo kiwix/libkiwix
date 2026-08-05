@@ -66,6 +66,66 @@ TEST(BookTest, updateFromXMLTest)
     EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
 }
 
+// OPDS analogue of updateFromXMLTest above.
+TEST(BookTest, updateFromOPDSTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <title>Catch an infection in 24 hours</title>
+        <summary>Complete guide to contagious diseases</summary>
+        <name>who_contagious_diseases_en</name>
+        <tags>unittest;_category:medicine;_pictures:yes</tags>
+        <category>medicine</category>
+        <articleCount>123456</articleCount>
+        <mediaCount>234567</mediaCount>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://who.org/zara.zim"
+              length="345678" />
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="text/plain"
+              href="/zara.fav" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org");
+
+    // Unlike updateFromXml(), updateFromOpds() has no notion of a local
+    // path - OPDS entries only ever carry acquisition/thumbnail links, so
+    // these are expected to stay at their default (unset) values.
+    EXPECT_EQ(book.getPath(), "");
+    EXPECT_FALSE(book.isPathValid());
+
+    // The "urn:uuid:" prefix (as used by <id> in real OPDS feeds) must be
+    // stripped.
+    EXPECT_EQ(book.getId(), "zara");
+
+    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getTitle(), "Catch an infection in 24 hours");
+    EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");
+    EXPECT_EQ(book.getTags(), "unittest;_category:medicine;_pictures:yes");
+    EXPECT_EQ(book.getName(), "who_contagious_diseases_en");
+    EXPECT_EQ(book.getCategory(), "medicine");
+    EXPECT_EQ(book.getArticleCount(), 123456U);
+    EXPECT_EQ(book.getMediaCount(), 234567U);
+
+    // Unlike updateFromXml()'s "size" attribute (interpreted in KiB and
+    // converted to bytes), the OPDS acquisition link's "length" is taken
+    // as-is, already in bytes.
+    EXPECT_EQ(book.getSize(), 345678U);
+
+    // Unlike updateFromXml()'s "favicon" attribute (which embeds the
+    // actual base64-encoded image data directly), OPDS only ever gives us
+    // a URL to fetch the thumbnail from later, so there's no embedded data
+    // to check here - just that the URL (prefixed with urlHost) and mime
+    // type made it through.
+    auto defaultIllustration = book.getIllustration(48);
+    EXPECT_EQ(defaultIllustration->mimeType, "text/plain");
+    EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
+}
+
 namespace
 {
 
@@ -74,6 +134,14 @@ kiwix::Book makeBook(const std::string& attr, const std::string& baseDir="")
     const XMLDoc xml("<book " + attr + "></book>");
     kiwix::Book book;
     book.updateFromXml(xml.child("book"), baseDir);
+    return book;
+}
+
+kiwix::Book makeBookFromOpds(const std::string& entryContent, const std::string& urlHost="")
+{
+    const XMLDoc opds("<entry>" + entryContent + "</entry>");
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), urlHost);
     return book;
 }
 
@@ -114,6 +182,44 @@ TEST(BookTest, updateFromXMLCategoryHandlingTest)
     )");
 
     EXPECT_EQ(book.getCategory(), "category_attribute_overrides_tags");
+  }
+}
+
+TEST(BookTest, updateFromOPDSCategoryHandlingTest)
+{
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <tags>_category:category_defined_via_tags_only</tags>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_defined_via_tags_only");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <category>category_defined_via_element_only</category>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_defined_via_element_only");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <category>category_element_overrides_tags</category>
+        <tags>_category:tags_override_category_element</tags>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_element_overrides_tags");
+  }
+  {
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+        <tags>_category:tags_override_category_element</tags>
+        <category>category_element_overrides_tags</category>
+    )");
+
+    EXPECT_EQ(book.getCategory(), "category_element_overrides_tags");
   }
 }
 
@@ -222,3 +328,24 @@ TEST(BookTest, getLanguages)
     EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));
   }
 }
+
+// OPDS analogue of getLanguages above.
+TEST(BookTest, getLanguagesOpds)
+{
+  typedef std::vector<std::string> Langs;
+
+  {
+    const kiwix::Book book = makeBookFromOpds("<id>abcd</id><language>fra</language>");
+
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "fra");
+    EXPECT_EQ(book.getLanguages(), Langs{ "fra" });
+  }
+
+  {
+    const kiwix::Book book = makeBookFromOpds("<id>abcd</id><language>eng,ong,ing</language>");
+
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng,ong,ing");
+    EXPECT_EQ(book.getLanguages(), Langs({ "eng", "ong", "ing" }));
+  }
+}
+
