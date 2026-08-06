@@ -20,6 +20,7 @@
 #include "library.h"
 #include "book.h"
 #include "libxml_dumper.h"
+#include "libopds_dumper.h"
 
 #include "tools.h"
 #include "tools/base64.h"
@@ -434,6 +435,11 @@ unsigned int Library::getBookCount(const bool localBooks,
 
 bool Library::writeToFile(const std::string& path) const
 {
+  return writeToXMLFile(path);
+}
+
+bool Library::writeToXMLFile(const std::string& path) const
+{
   const auto allBookIds = getBooksIds();
 
   auto baseDir = removeLastPathElement(path);
@@ -445,6 +451,21 @@ bool Library::writeToFile(const std::string& path) const
     xml = dumper.dumpLibXMLContent(allBookIds);
   };
   return writeTextFile(path, xml);
+}
+
+bool Library::writeToOPDSFile(const std::string& path) const
+{
+  const auto allBookIds = getBooksIds();
+
+  LibOPDSDumper dumper(this);
+  std::string opds;
+  {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    std::ostringstream oss;
+    dumper.dumpOPDSContent(allBookIds, oss);
+    opds = oss.str();
+  };
+  return writeTextFile(path, opds);
 }
 
 bool Library::writeBookmarksToFile(const std::string& path) const
