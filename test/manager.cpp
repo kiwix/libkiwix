@@ -9,17 +9,18 @@
 namespace
 {
 
-// parseXmlDom() are protected - this subclass re-exposes it
-// as public so it can be exercised directly, without going through the
-// readXml() wrapper.
+// parseXmlDom()/parseOpdsDom() are protected - this subclass re-exposes them
+// as public so they can be exercised directly, without going through the
+// readXml()/readOpds() wrappers.
 struct TestManager : public kiwix::Manager
 {
   using kiwix::Manager::Manager;
   using kiwix::Manager::parseXmlDom;
+  using kiwix::Manager::parseOpdsDom;
 };
 
 // XMLDoc helper needs to build a pugi::xml_document from a string before
-// handing it to parseXmlDom
+// handing it to parseXmlDom/parseOpdsDo
 struct XMLDoc : pugi::xml_document
 {
   explicit XMLDoc(const std::string& xml)
@@ -188,6 +189,91 @@ TEST(ManagerTest, parseXmlDomWithTrustLibraryFalseAndValidPathAdoptsZimMetadata)
     EXPECT_NE(book.getTitle(), "Stale title from XML");
 }
 
+const char sampleOpdsFeed[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
+  <totalResults>2</totalResults>
+  <startIndex>0</startIndex>
+  <itemsPerPage>2</itemsPerPage>
+  <entry>
+    <id>urn:uuid:book1</id>
+    <title>Book One</title>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://example.com/book1.zim"
+          length="111" />
+  </entry>
+  <entry>
+    <id>urn:uuid:book2</id>
+    <title>Book Two</title>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://example.com/book2.zim"
+          length="222" />
+  </entry>
+</feed>
+)";
+
+TEST(ManagerTest, parseOpdsDomAddsEntriesAndParsesSearchMetadata)
+{
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(sampleOpdsFeed);
+
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com"));
+
+    EXPECT_TRUE(manager.m_hasSearchResult);
+    EXPECT_EQ(manager.m_totalBooks, 2U);
+    EXPECT_EQ(manager.m_startIndex, 0U);
+    EXPECT_EQ(manager.m_itemsPerPage, 2U);
+
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
+
+    // Unlike parseXmlDom(), OPDS-sourced books are always mutable.
+    kiwix::Book book1 = lib->getBookById("book1");
+    EXPECT_FALSE(book1.readOnly());
+    EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
+}
+
+TEST(ManagerTest, parseOpdsDomWithoutSearchMetadata)
+{
+    // strtoull() on the empty string returned for missing <totalResults> /
+    // <startIndex> / <itemsPerPage> elements yields 0 without throwing, so
+    // the try/catch in parseOpdsDom() never actually observes an error here
+    // - m_hasSearchResult ends up true, with all counters at 0.
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(R"(
+      <feed xmlns="http://www.w3.org/2005/Atom">
+        <entry>
+          <id>urn:uuid:book1</id>
+          <title>Book One</title>
+        </entry>
+      </feed>
+    )");
+
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com"));
+
+    EXPECT_TRUE(manager.m_hasSearchResult);
+    EXPECT_EQ(manager.m_totalBooks, 0U);
+    EXPECT_EQ(manager.m_startIndex, 0U);
+    EXPECT_EQ(manager.m_itemsPerPage, 0U);
+
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1"}));
+}
+
+TEST(ManagerTest, parseOpdsDomWithNoEntriesReturnsTrue)
+{
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(R"(<feed xmlns="http://www.w3.org/2005/Atom"></feed>)");
+
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com"));
+    EXPECT_TRUE(lib->getBooksIds().empty());
+}
 
 TEST(Manager, reload)
 {
