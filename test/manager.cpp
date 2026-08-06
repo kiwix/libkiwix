@@ -65,7 +65,14 @@ TEST(ManagerTest, readXml)
 
     EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, LIB_ABS_PATH, true));
     kiwix::Book book = lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
+
+    // "path" is relative in the XML - readXml() resolves it against the
+    // directory of LIB_ABS_PATH, yielding ZIM_ABS_PATH.
     EXPECT_EQ(ZIM_ABS_PATH, book.getPath());
+    // ... but ZIM_ABS_PATH doesn't exist on disk, so the resolved path is
+    // not considered valid.
+    EXPECT_FALSE(book.isPathValid());
+    EXPECT_TRUE(book.readOnly());
     EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl());
     EXPECT_EQ("Unit Test", book.getTitle());
     EXPECT_EQ("Wikipedia articles about unit testing", book.getDescription());
@@ -78,6 +85,50 @@ TEST(ManagerTest, readXml)
     EXPECT_EQ(123U, book.getArticleCount());
     EXPECT_EQ(45U, book.getMediaCount());
     EXPECT_EQ(678U*1024, book.getSize());
+}
+
+TEST(ManagerTest, readXmlInvalid)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Manager manager = kiwix::Manager(lib);
+
+  const std::string invalidXML = R"(
+<library version="1.0">
+  <book
+        id="0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2"
+        path=")" UNITTEST_ZIM_PATH R"("
+        url="https://example.com/zimfiles/unittest.zim"
+        title="Unit Test"
+        description="Wikipedia articles about unit testing"
+        language="eng"
+        creator="Wikipedia"
+        publisher="Kiwix"
+        date="2020-03-31"
+        name="wikipedia_en_unit_testing"
+        tags="unittest;wikipedia"
+        articleCount="123"
+        mediaCount="45"
+        size="678"
+      ></book>
+  <book
+        id="1a1bcd57-d3f6-cb22-44cc-a723ccb4e1b3"
+        url="https://example.com/zimfiles/unittest2.zim"
+        title="Unit Test 2"
+)";
+
+  EXPECT_FALSE(manager.readXml(invalidXML, true, LIB_ABS_PATH, true));
+  EXPECT_TRUE(lib->getBooksIds().empty());
+}
+
+TEST(ManagerTest, readXmlNotXml)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager = kiwix::Manager(lib);
+
+    const std::string notXML = "this is definitely not xml content";
+
+    EXPECT_FALSE(manager.readXml(notXML, true, LIB_ABS_PATH, true));
+    EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
 TEST(Manager, reload)

@@ -135,10 +135,10 @@ bool Manager::readXml(const std::string& xml,
       = doc.load_buffer((void*)xml.data(), xml.size());
 
   if (result) {
-    this->parseXmlDom(doc, readOnly, libraryPath, trustLibrary);
+    return this->parseXmlDom(doc, readOnly, libraryPath, trustLibrary);
   }
 
-  return true;
+  return false;
 }
 
 
