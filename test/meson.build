@@ -48,6 +48,7 @@ if gtest_dep.found() and not meson.is_cross_build()
       'poor.zim',
       'spelling_correction_test.zim',
       'library.xml',
+      'library.opds',
       'lib_for_server_search_test.xml',
       'customized_resources.txt',
       'helloworld.txt',
