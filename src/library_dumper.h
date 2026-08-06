@@ -49,10 +49,9 @@ kainjow::mustache::list getBookIllustrationInfo(const Book& book);
  * @param contentId The identifier of the book's content, used when building
  *                 content access links.
  * @param selfPath If non-empty, rendered as the entry's rel="self" link (its
- *                 local file path). Only meant for local/offline dumps
- *                 (LibOPDSDumper) - leave empty for the live HTTP catalog
- *                 (OPDSDumper), which must not leak server-side filesystem
- *                 paths to remote clients.
+ *                 local file path). Only meant for local/offline dumps, leave
+ *                 empty for the live HTTP catalog (OPDSDumper), which must not
+ *                 leak server-side filesystem paths to remote clients.
  */
 std::string fullEntryOpds(const Book& book,
                           const std::string& rootLocation,
