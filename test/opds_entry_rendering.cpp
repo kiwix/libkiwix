@@ -217,6 +217,45 @@ TEST(FullEntryOpdsTest, rendersThumbnailLinkForBookIllustration)
   );
 }
 
+TEST(FullEntryOpdsTest, omitsSelfLinkWhenSelfPathIsEmpty)
+{
+  const Book book = createBook();
+  // selfPath left at its default ("") - mirrors how OPDSDumper calls this
+  // function for the live HTTP catalog, which must never leak a local path.
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+    "  <entry>\n"
+    CORE_ENTRY_BODY
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n"
+  );
+}
+
+TEST(FullEntryOpdsTest, rendersSelfLinkWhenSelfPathIsSet)
+{
+  const Book book = createBook();
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id",
+                          /*selfPath=*/"/local/path/book.zim"),
+    "  <entry>\n"
+    CORE_ENTRY_BODY
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    <link rel=\"self\" href=\"/local/path/book.zim\" type=\"application/x-zim\"/>\n"
+    "  </entry>\n"
+  );
+}
+
 TEST(FullEntryOpdsTest, specialCharactersInBookMetadataAreEscaped)
 {
   Book book = createBook();
