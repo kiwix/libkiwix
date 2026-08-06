@@ -329,6 +329,35 @@ TEST(BookTest, getHumanReadableIdFromPath)
   EXPECT_EQ("3plus2",  path2HumanReadableId("3+2.zim"));
 }
 
+namespace
+{
+
+// OPDS analogue of path2HumanReadableId() above.
+std::string opdsPath2HumanReadableId(const std::string& path)
+{
+    const kiwix::Book book = makeBookFromOpds(
+        "<id>xyz</id><link rel=\"self\" href=\"" + path + "\" type=\"application/x-zim\"/>",
+        /*urlHost=*/"", "/data/zim");
+    return book.getHumanReadableIdFromPath();
+}
+
+} // unnamed namespace
+
+TEST(BookTest, getHumanReadableIdFromPathOpds)
+{
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("abc.zim"));
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("ABC.zim"));
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("âbç.zim"));
+  EXPECT_EQ("ancient", opdsPath2HumanReadableId("ancient.zimbabwe"));
+  EXPECT_EQ("ab_cd",   opdsPath2HumanReadableId("ab cd.zim"));
+#ifdef _WIN32
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("C:\\Data\\ZIM\\abc.zim"));
+#else
+  EXPECT_EQ("abc",     opdsPath2HumanReadableId("/Data/ZIM/abc.zim"));
+#endif
+  EXPECT_EQ("3plus2",  opdsPath2HumanReadableId("3+2.zim"));
+}
+
 TEST(BookTest, getLanguages)
 {
   typedef std::vector<std::string> Langs;
