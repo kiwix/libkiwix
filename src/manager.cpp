@@ -31,6 +31,32 @@
 
 namespace fs = std::filesystem;
 
+namespace
+{
+
+/**
+ * The format of the file passed to readFile().
+ */
+enum class FileFormat { XML, OPDS };
+
+/**
+ * Detect the format of a library file based on its content.
+ *
+ * @param content The content of the file to inspect.
+ * @return FileFormat::OPDS if the file content looks like an OPDS feed,
+ *         FileFormat::XML otherwise.
+ */
+FileFormat detectFormat(const std::string& content)
+{
+  auto format
+      = (content.find("<feed") != std::string::npos)
+            ? FileFormat::OPDS
+            : FileFormat::XML;
+  return format;
+}
+
+} // anonymous namespace
+
 namespace kiwix
 {
 
@@ -214,8 +240,11 @@ bool Manager::readFile(
     return false;
   }
 
-  const std::string xml = getFileContent(path);
-  return this->readXml(xml, readOnly, path, trustLibrary);
+  const std::string content = getFileContent(path);
+
+  return detectFormat(content) == FileFormat::OPDS
+    ? this->readOpds(content, "", readOnly)
+    : this->readXml(content, readOnly, path, trustLibrary);
 }
 
 

@@ -192,7 +192,7 @@ TEST(ManagerTest, readOpdsWithMalformedInputAddsNoBooks)
   EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
-TEST(Manager, reload)
+TEST(ManagerTest, reload)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
@@ -311,4 +311,92 @@ TEST(ManagerTest, readOpdsWithoutSearchMetadata)
   EXPECT_EQ(manager.m_itemsPerPage, 0U);
 
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1"}));
+}
+
+TEST(ManagerTest, readFileDetectsXmlFormat)
+{
+    // readFile() sniffs the file content for a "<feed" substring to tell
+    // OPDS files apart from XML library files (see detectFormat() in
+    // manager.cpp).
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readFile("./test/library.xml"));
+
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
+          "charlesray",
+          "inaccessiblezim",
+          "raycharles",
+          "raycharles_uncategorized"
+    }));
+
+    kiwix::Book book = lib->getBookById("raycharles");
+    EXPECT_EQ(book.getPath(), resolveAbsPath("./test/library.xml", "./zimfile_raycharles.zim"));
+    // readOnly defaults to true.
+    EXPECT_TRUE(book.readOnly());
+}
+
+TEST(ManagerTest, readFileDetectsOpdsFormat)
+{
+    // library.opds contains a "<feed" element, so it's routed through
+    // readOpds() instead readXml().
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readFile("./test/library.opds", /*readOnly=*/false));
+
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
+          "charlesray",
+          "inaccessiblezim",
+          "raycharles",
+          "raycharles_uncategorized"
+    }));
+
+    // library.opds is the OPDS analogue of library.xml - same books, with
+    // every XML attribute mapped to its corresponding OPDS element/link
+    // (see the comment at the top of library.opds). Check the "raycharles"
+    // entry field-by-field, the same way ManagerTest.readXml does for its
+    // XML-sourced equivalent.
+    kiwix::Book book = lib->getBookById("raycharles");
+    EXPECT_EQ(book.getPath(), ""); // no path on OPDS
+    EXPECT_EQ(book.getUrl(), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
+    EXPECT_EQ(book.getTitle(), "Ray Charles");
+    EXPECT_EQ(book.getDescription(), "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)");
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng");
+    EXPECT_EQ(book.getCreator(), "Wikipedia");
+    EXPECT_EQ(book.getPublisher(), "Kiwix");
+    EXPECT_EQ(book.getDate(), "2020-03-31");
+    EXPECT_EQ(book.getName(), "wikipedia_en_ray_charles");
+    EXPECT_EQ(book.getTags(), "public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes");
+    EXPECT_EQ(book.getArticleCount(), 284U);
+    EXPECT_EQ(book.getMediaCount(), 2U);
+
+    // Unlike XML's "size" (KiB, converted to bytes by updateFromXml()),
+    // OPDS's acquisition link "length" is taken as-is, already in bytes -
+    // library.opds was written with 556*1024 to match library.xml's
+    // size="556".
+    EXPECT_EQ(book.getSize(), 556U*1024U);
+
+    auto illustration = book.getIllustration(48);
+    // mimeType is the thumbnail link's "type" attribute taken verbatim
+    // (see Book::updateFromOpds() in book.cpp), so it retains the
+    // width/height/scale parameters present in library.opds.
+    EXPECT_EQ(illustration->mimeType, "image/png;width=48;height=48;scale=1");
+    // urlHost is "" for readFile(), so the relative thumbnail href is left
+    // untouched.
+    EXPECT_EQ(illustration->url, "https://example.com/favicon/raycharles.png");
+
+    EXPECT_FALSE(book.readOnly());
+}
+
+TEST(ManagerTest, readFileWithOpdsFormatHonorsReadOnly)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readFile("./test/library.opds", /*readOnly=*/true, /*trustLibrary=*/true));
+
+    for (const auto& id : lib->getBooksIds()) {
+      EXPECT_TRUE(lib->getBookById(id).readOnly());
+    }
 }
