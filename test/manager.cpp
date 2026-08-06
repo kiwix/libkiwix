@@ -4,7 +4,6 @@
 #include "../include/book.h"
 #include "../include/tools.h"
 #include <pugixml.hpp>
-#include <fstream>
 
 namespace
 {
@@ -221,7 +220,7 @@ TEST(ManagerTest, parseOpdsDomAddsEntriesAndParsesSearchMetadata)
 
     const XMLDoc doc(sampleOpdsFeed);
 
-    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com"));
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
 
     EXPECT_TRUE(manager.m_hasSearchResult);
     EXPECT_EQ(manager.m_totalBooks, 2U);
@@ -229,11 +228,7 @@ TEST(ManagerTest, parseOpdsDomAddsEntriesAndParsesSearchMetadata)
     EXPECT_EQ(manager.m_itemsPerPage, 2U);
 
     EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
-
-    // Unlike parseXmlDom(), OPDS-sourced books are always mutable.
-    kiwix::Book book1 = lib->getBookById("book1");
-    EXPECT_FALSE(book1.readOnly());
-    EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
+    EXPECT_EQ(lib->getBookById("book1").getUrl(), "https://example.com/book1.zim");
 }
 
 TEST(ManagerTest, parseOpdsDomWithoutSearchMetadata)
@@ -254,7 +249,7 @@ TEST(ManagerTest, parseOpdsDomWithoutSearchMetadata)
       </feed>
     )");
 
-    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com"));
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
 
     EXPECT_TRUE(manager.m_hasSearchResult);
     EXPECT_EQ(manager.m_totalBooks, 0U);
@@ -271,8 +266,52 @@ TEST(ManagerTest, parseOpdsDomWithNoEntriesReturnsTrue)
 
     const XMLDoc doc(R"(<feed xmlns="http://www.w3.org/2005/Atom"></feed>)");
 
-    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com"));
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
     EXPECT_TRUE(lib->getBooksIds().empty());
+}
+
+TEST(ManagerTest, parseOpdsDomHonorsReadOnly)
+{
+    const XMLDoc doc(sampleOpdsFeed);
+
+    {
+      auto lib = kiwix::Library::create();
+      TestManager manager(lib);
+      EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
+
+      EXPECT_FALSE(lib->getBookById("book1").readOnly());
+      EXPECT_FALSE(lib->getBookById("book2").readOnly());
+    }
+
+    {
+      auto lib = kiwix::Library::create();
+      TestManager manager(lib);
+      EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/true, /*trustLibrary=*/true));
+
+      EXPECT_TRUE(lib->getBookById("book1").readOnly());
+      EXPECT_TRUE(lib->getBookById("book2").readOnly());
+    }
+}
+
+TEST(ManagerTest, parseOpdsDomWithTrustLibraryFalseHasNoEffect)
+{
+    // Unlike XML library entries, OPDS entries never carry a local path -
+    // Book::updateFromOpds() never sets book.getPath() (see
+    // BookTest.updateFromOPDSTest in test/book.cpp). So even with
+    // trustLibrary=false, parseOpdsDom()'s "!book.getPath().empty()" guard
+    // is never true, readBookFromPath() is never invoked, and the book
+    // keeps exactly the metadata coming from the OPDS entry.
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(sampleOpdsFeed);
+
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/false));
+
+    kiwix::Book book1 = lib->getBookById("book1");
+    EXPECT_EQ(book1.getTitle(), "Book One");
+    EXPECT_EQ(book1.getPath(), "");
+    EXPECT_FALSE(book1.isPathValid());
 }
 
 TEST(Manager, reload)
