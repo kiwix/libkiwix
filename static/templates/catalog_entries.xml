@@ -10,5 +10,7 @@
   <itemsPerPage>{{itemsPerPage}}</itemsPerPage>
 {{/filter}}
   <link rel="self" href="" type="application/atom+xml" />
+{{#include_search_link}}
   <link rel="search" type="application/opensearchdescription+xml" href="{{root}}/catalog/searchdescription.xml" />
+{{/include_search_link}}
 {{#books}}{{{entry}}}{{/books}}</feed>
