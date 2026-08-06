@@ -205,12 +205,14 @@ TEST(ManagerTest, readOpdsWithMalformedInputAddsNoBooks)
   EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
-TEST(ManagerTest, reload)
+class ManagerReloadTest : public ::testing::TestWithParam<std::string> {};
+
+TEST_P(ManagerReloadTest, reload)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
 
-  manager.reload({ "./test/library.xml" });
+  manager.reload({GetParam()});
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
         "inaccessiblezim",
@@ -225,7 +227,7 @@ TEST(ManagerTest, reload)
         "raycharles_uncategorized"
   }));
 
-  manager.reload({ "./test/library.xml" });
+  manager.reload({GetParam()});
   EXPECT_EQ(lib->getBooksIds(), kiwix::Library::BookIdCollection({
         "charlesray",
         "inaccessiblezim",
@@ -233,6 +235,9 @@ TEST(ManagerTest, reload)
         "raycharles_uncategorized"
   }));
 }
+
+INSTANTIATE_TEST_CASE_P(XmlAndOpds, ManagerReloadTest,
+    ::testing::Values("./test/library.xml", "./test/library.opds"));
 
 const char sampleOpdsFeed[] = R"(
 <feed xmlns="http://www.w3.org/2005/Atom"
