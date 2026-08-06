@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
+  <id>32f4d6e1-1a5b-4c9a-9d4a-0b8f2f7f9c3a</id>
+  <title>lib_for_server_search_test</title>
+  <entry>
+    <id>urn:uuid:5dc0b3af-5df2-0925-f0ca-d2bf75e78af6</id>
+    <title>Wikibooks</title>
+    <updated>2021-04-17T00:00:00Z</updated>
+    <summary>testZim</summary>
+    <language>eng</language>
+    <name>bookname_of_example_zim</name>
+    <tags>_ftindex:yes;_ftindex:yes;_pictures:yes;_videos:yes;_details:yes</tags>
+    <mediaCount>22</mediaCount>
+    <author>
+      <name>test</name>
+    </author>
+    <publisher>
+      <name>test</name>
+    </publisher>
+    <dc:issued>2021-04-17T00:00:00Z</dc:issued>
+    <link rel="self" href="./example.zim" type="application/x-zim"/>
+  </entry>
+  <entry>
+    <id>urn:uuid:6f1d19d0-633f-087b-fb55-7ac324ff9baf</id>
+    <title>Ray Charles</title>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <summary>Wikipedia articles about Ray Charles</summary>
+    <language>eng</language>
+    <name>wikipedia_en_ray_charles</name>
+    <flavour>_mini</flavour>
+    <tags>wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
+    <articleCount>129</articleCount>
+    <mediaCount>45</mediaCount>
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <publisher>
+      <name>Kiwix</name>
+    </publisher>
+    <dc:issued>2020-03-31T00:00:00Z</dc:issued>
+    <link rel="self" href="./zimfile.zim" type="application/x-zim"/>
+  </entry>
+</feed>
