@@ -3,8 +3,32 @@
 #include "../include/library.h"
 #include "../include/book.h"
 #include "../include/tools.h"
-#include <iostream>
+#include <pugixml.hpp>
 #include <fstream>
+
+namespace
+{
+
+// parseXmlDom() are protected - this subclass re-exposes it
+// as public so it can be exercised directly, without going through the
+// readXml() wrapper.
+struct TestManager : public kiwix::Manager
+{
+  using kiwix::Manager::Manager;
+  using kiwix::Manager::parseXmlDom;
+};
+
+// XMLDoc helper needs to build a pugi::xml_document from a string before
+// handing it to parseXmlDom
+struct XMLDoc : pugi::xml_document
+{
+  explicit XMLDoc(const std::string& xml)
+  {
+    load_buffer(xml.c_str(), xml.size());
+  }
+};
+
+} // unnamed namespace
 
 TEST(ManagerTest, addBookFromPathAndGetIdTest)
 {
@@ -79,6 +103,91 @@ TEST(ManagerTest, readXml)
     EXPECT_EQ(45U, book.getMediaCount());
     EXPECT_EQ(678U*1024, book.getSize());
 }
+
+TEST(ManagerTest, parseXmlDomAddsAllBooksAndHonorsReadOnly)
+{
+    const XMLDoc doc(R"(
+      <library version="1.0">
+        <book id="book1" path="book1.zim" title="Book One"></book>
+        <book id="book2" path="book2.zim" title="Book Two"></book>
+      </library>
+    )");
+
+    {
+      auto lib = kiwix::Library::create();
+      TestManager manager(lib);
+      EXPECT_TRUE(manager.parseXmlDom(doc, /*readOnly=*/false, LIB_ABS_PATH, /*trustLibrary=*/true));
+
+      EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
+      EXPECT_FALSE(lib->getBookById("book1").readOnly());
+      EXPECT_FALSE(lib->getBookById("book2").readOnly());
+    }
+
+    {
+      auto lib = kiwix::Library::create();
+      TestManager manager(lib);
+      EXPECT_TRUE(manager.parseXmlDom(doc, /*readOnly=*/true, LIB_ABS_PATH, /*trustLibrary=*/true));
+
+      EXPECT_TRUE(lib->getBookById("book1").readOnly());
+      EXPECT_TRUE(lib->getBookById("book2").readOnly());
+    }
+}
+
+TEST(ManagerTest, parseXmlDomWithNoBooksReturnsTrue)
+{
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(R"(<library version="1.0"></library>)");
+
+    EXPECT_TRUE(manager.parseXmlDom(doc, true, LIB_ABS_PATH, true));
+    EXPECT_TRUE(lib->getBooksIds().empty());
+}
+
+TEST(ManagerTest, parseXmlDomWithTrustLibraryFalseAndInvalidPath)
+{
+    // With trustLibrary=false and a path that can't be opened as a ZIM,
+    // readBookFromPath() fails and the book is added as-is, using the
+    // metadata coming from the XML.
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(R"(
+      <library version="1.0">
+        <book id="book1" path="does-not-exist.zim" title="Book From XML"></book>
+      </library>
+    )");
+
+    EXPECT_TRUE(manager.parseXmlDom(doc, true, "./test/lib.xml", /*trustLibrary=*/false));
+
+    kiwix::Book book = lib->getBookById("book1");
+    EXPECT_FALSE(book.isPathValid());
+    EXPECT_EQ(book.getTitle(), "Book From XML");
+}
+
+TEST(ManagerTest, parseXmlDomWithTrustLibraryFalseAndValidPathAdoptsZimMetadata)
+{
+    // With trustLibrary=false and a path pointing to a real ZIM,
+    // readBookFromPath() re-reads the ZIM's own metadata - including its
+    // UUID, which becomes the book's id - discarding whatever the XML said.
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(R"(
+      <library version="1.0">
+        <book id="book1" path="example.zim" title="Stale title from XML"></book>
+      </library>
+    )");
+
+    EXPECT_TRUE(manager.parseXmlDom(doc, true, "./test/lib.xml", /*trustLibrary=*/false));
+
+    const auto ids = lib->getBooksIds();
+    ASSERT_EQ(ids.size(), 1U);
+    kiwix::Book book = lib->getBookById(ids[0]);
+    EXPECT_TRUE(book.isPathValid());
+    EXPECT_NE(book.getTitle(), "Stale title from XML");
+}
+
 
 TEST(Manager, reload)
 {
