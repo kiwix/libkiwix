@@ -131,6 +131,36 @@ TEST(ManagerTest, readXmlNotXml)
     EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
+TEST(ManagerTest, readOpdsWithNoEntriesReturnsTrue)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Manager manager(lib);
+
+  EXPECT_TRUE(manager.readOpds(R"(<feed xmlns="http://www.w3.org/2005/Atom"></feed>)", "http://example.com"));
+  EXPECT_TRUE(lib->getBooksIds().empty());
+}
+
+TEST(ManagerTest, readOpdsWithMalformedInputAddsNoBooks)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Manager manager(lib);
+
+  const std::string feed = R"(
+      <feed xmlns="http://www.w3.org/2005/Atom">
+        <entry>
+          <id>urn:uuid:book1</id>
+          <title>Book One</title>
+        </entry>
+        <entry>
+          <id>urn:uuid:book2</id>
+          <title>Book Two</title>
+      </feed>
+    )";
+
+  EXPECT_FALSE(manager.readOpds(feed, "http://example.com"));
+  EXPECT_TRUE(lib->getBooksIds().empty());
+}
+
 TEST(Manager, reload)
 {
   auto lib = kiwix::Library::create();
