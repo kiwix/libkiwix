@@ -23,8 +23,6 @@
 #include "library_dumper.h"
 
 #include "tools.h"
-#include "tools/base64.h"
-#include "tools/regexTools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
@@ -435,6 +433,11 @@ unsigned int Library::getBookCount(const bool localBooks,
 
 bool Library::writeToFile(const std::string& path) const
 {
+  return writeAsXML(path);
+}
+
+bool Library::writeAsXML(const std::string& path) const
+{
   const auto allBookIds = getBooksIds();
 
   auto baseDir = removeLastPathElement(path);
@@ -446,6 +449,11 @@ bool Library::writeToFile(const std::string& path) const
     xml = dumper.dumpLibXMLContent(allBookIds);
   };
   return writeTextFile(path, xml);
+}
+
+bool Library::writeAsOPDS(const std::string& path) const
+{
+  return writeTextFile(path, dumpOpds(path));
 }
 
 bool Library::writeBookmarksToFile(const std::string& path) const

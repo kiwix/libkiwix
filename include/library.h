@@ -361,12 +361,32 @@ class Library: public std::enable_shared_from_this<Library>
   bool removeBookById(const std::string& id);
 
   /**
-   * Write the library to a file.
+   * Writes the library to a file as library.xml.
+   *
+   * @deprecated Calls writeAsXML directly and is kept for compatibility
+   * with external usages. This method is subject to removal in the future;
+   * please use writeAsXML instead.
    *
    * @param path the path of the file to write to.
    * @return True if the library has been correctly saved.
    */
-  bool writeToFile(const std::string& path) const;
+  DEPRECATED bool writeToFile(const std::string& path) const;
+
+  /**
+   * Write the library to a file as library.xml.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly saved.
+   */
+  bool writeAsXML(const std::string& path) const;
+
+  /**
+   * Write the library to a file as an OPDS document.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly saved.
+   */
+  bool writeAsOPDS(const std::string& path) const;
 
   /**
    * Write the library bookmarks to a file.
@@ -488,7 +508,6 @@ class Library: public std::enable_shared_from_this<Library>
   std::string dumpOpds(const std::string& outputPath) const;
 
   friend class OPDSDumper;
-  friend class libXMLDumper;
 
 private: // types
   typedef const std::string& (Book::*BookStrPropMemFn)() const;
