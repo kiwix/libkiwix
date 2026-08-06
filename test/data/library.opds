@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OPDS analogue of library.xml - same four books, with each XML attribute
+  mapped to its corresponding OPDS element/link (see Book::updateFromOpds()
+  in src/book.cpp):
+    id                       -> <id>urn:uuid:ID</id> ("urn:uuid:" is
+                                 stripped by updateFromOpds())
+    path                     -> no OPDS equivalent (OPDS entries have no
+                                 local path - see Book::updateFromOpds())
+    url                      -> acquisition <link>'s href
+    size (KiB, XML)          -> acquisition <link>'s length (bytes, i.e.
+                                 size * 1024)
+    title/description/       -> <title>/<summary>/<language>/<name>/<tags>
+      language/name/tags
+    creator/publisher        -> <author><name>/<publisher><name>
+    date                     -> <updated> (only the first 10 chars are kept
+                                 by Book::fromOpdsDate())
+    articleCount/mediaCount  -> <articleCount>/<mediaCount>
+    favicon/faviconMimeType  -> thumbnail <link>'s href/type (OPDS only
+                                 carries a URL to the image, never embedded
+                                 data, so favicon's placeholder text becomes
+                                 a placeholder href instead)
+-->
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
+  <id>7f8a2b1e-0000-4000-8000-000000000000</id>
+  <title>Test OPDS library</title>
+  <totalResults>4</totalResults>
+  <startIndex>0</startIndex>
+  <itemsPerPage>4</itemsPerPage>
+  <entry>
+    <id>urn:uuid:raycharles</id>
+    <title>Ray Charles</title>
+    <summary>Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)</summary>
+    <language>eng</language>
+    <author><name>Wikipedia</name></author>
+    <publisher><name>Kiwix</name></publisher>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <name>wikipedia_en_ray_charles</name>
+    <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim"
+          length="569344" />
+    <link rel="http://opds-spec.org/image/thumbnail"
+          type="image/png"
+          href="/favicon/raycharles.png" />
+  </entry>
+  <entry>
+    <id>urn:uuid:raycharles_uncategorized</id>
+    <title>Ray (uncategorized) Charles</title>
+    <summary>No category is assigned to this library entry (neither adj nor xor was considered a good option)</summary>
+    <language>rus,eng</language>
+    <author><name>Wikipedia</name></author>
+    <publisher><name>Kiwix</name></publisher>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <name>wikipedia_ru_ray_charles</name>
+    <tags>public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim"
+          length="125952" />
+  </entry>
+  <entry>
+    <id>urn:uuid:charlesray</id>
+    <title>Charles, Ray</title>
+    <summary>Wikipedia articles about Ray Charles or why and when one should go to library</summary>
+    <language>fra</language>
+    <author><name>Wikipedia</name></author>
+    <publisher><name>Kiwix</name></publisher>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <name>wikipedia_fr_ray_charles</name>
+    <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim"
+          length="569344" />
+    <link rel="http://opds-spec.org/image/thumbnail"
+          href="/favicon/charlesray" />
+  </entry>
+  <entry>
+    <id>urn:uuid:inaccessiblezim</id>
+    <title>Catalog of all catalogs</title>
+    <summary>Testing that running kiwix-serve without access to ZIM files doesn't lead to a catastrophe</summary>
+    <language>cat</language>
+    <author><name>Catherine of Catalonia</name></author>
+    <publisher><name>Caterpillar</name></publisher>
+    <updated>2025-09-04T00:00:00Z</updated>
+    <name>catalog_of_all_catalogs</name>
+    <tags>unittest;_category:cats</tags>
+    <articleCount>12107</articleCount>
+    <mediaCount>8</mediaCount>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim"
+          length="20736925696" />
+    <link rel="http://opds-spec.org/image/thumbnail"
+          href="/favicon/inaccessiblezim" />
+  </entry>
+</feed>
