@@ -182,6 +182,7 @@ class Manager
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost,
+                    const std::string& libraryPath,
                     bool readOnly,
                     bool trustLibrary);
 };

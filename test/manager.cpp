@@ -220,7 +220,7 @@ TEST(ManagerTest, parseOpdsDomAddsEntriesAndParsesSearchMetadata)
 
     const XMLDoc doc(sampleOpdsFeed);
 
-    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"", /*readOnly=*/false, /*trustLibrary=*/true));
 
     EXPECT_TRUE(manager.m_hasSearchResult);
     EXPECT_EQ(manager.m_totalBooks, 2U);
@@ -249,7 +249,7 @@ TEST(ManagerTest, parseOpdsDomWithoutSearchMetadata)
       </feed>
     )");
 
-    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"", /*readOnly=*/false, /*trustLibrary=*/true));
 
     EXPECT_TRUE(manager.m_hasSearchResult);
     EXPECT_EQ(manager.m_totalBooks, 0U);
@@ -266,7 +266,7 @@ TEST(ManagerTest, parseOpdsDomWithNoEntriesReturnsTrue)
 
     const XMLDoc doc(R"(<feed xmlns="http://www.w3.org/2005/Atom"></feed>)");
 
-    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"", /*readOnly=*/false, /*trustLibrary=*/true));
     EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
@@ -277,7 +277,7 @@ TEST(ManagerTest, parseOpdsDomHonorsReadOnly)
     {
       auto lib = kiwix::Library::create();
       TestManager manager(lib);
-      EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/true));
+      EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"", /*readOnly=*/false, /*trustLibrary=*/true));
 
       EXPECT_FALSE(lib->getBookById("book1").readOnly());
       EXPECT_FALSE(lib->getBookById("book2").readOnly());
@@ -286,32 +286,92 @@ TEST(ManagerTest, parseOpdsDomHonorsReadOnly)
     {
       auto lib = kiwix::Library::create();
       TestManager manager(lib);
-      EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/true, /*trustLibrary=*/true));
+      EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"", /*readOnly=*/true, /*trustLibrary=*/true));
 
       EXPECT_TRUE(lib->getBookById("book1").readOnly());
       EXPECT_TRUE(lib->getBookById("book2").readOnly());
     }
 }
 
-TEST(ManagerTest, parseOpdsDomWithTrustLibraryFalseHasNoEffect)
+TEST(ManagerTest, parseOpdsDomWithTrustLibraryFalseHasNoEffectWithoutSelfLink)
 {
-    // Unlike XML library entries, OPDS entries never carry a local path -
+    // sampleOpdsFeed's entries carry no rel="self" link, so
     // Book::updateFromOpds() never sets book.getPath() (see
     // BookTest.updateFromOPDSTest in test/book.cpp). So even with
     // trustLibrary=false, parseOpdsDom()'s "!book.getPath().empty()" guard
     // is never true, readBookFromPath() is never invoked, and the book
     // keeps exactly the metadata coming from the OPDS entry.
+    // Contrast with parseOpdsDomWithTrustLibraryFalseAndInvalidSelfPath /
+    // ...AndValidSelfPathAdoptsZimMetadata below, where a rel="self" link
+    // does make trustLibrary=false take effect.
     auto lib = kiwix::Library::create();
     TestManager manager(lib);
 
     const XMLDoc doc(sampleOpdsFeed);
 
-    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*readOnly=*/false, /*trustLibrary=*/false));
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"./test/lib.xml", /*readOnly=*/false, /*trustLibrary=*/false));
 
     kiwix::Book book1 = lib->getBookById("book1");
     EXPECT_EQ(book1.getTitle(), "Book One");
     EXPECT_EQ(book1.getPath(), "");
     EXPECT_FALSE(book1.isPathValid());
+}
+
+TEST(ManagerTest, parseOpdsDomWithTrustLibraryFalseAndInvalidSelfPath)
+{
+    // With trustLibrary=false and a rel="self" link that can't be opened as
+    // a ZIM, readBookFromPath() fails and the book is added as-is, using
+    // the metadata coming from the OPDS entry (mirrors
+    // ManagerTest.parseXmlDomWithTrustLibraryFalseAndInvalidPath above).
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(R"(
+      <feed xmlns="http://www.w3.org/2005/Atom">
+        <entry>
+          <id>urn:uuid:book1</id>
+          <title>Book From OPDS</title>
+          <link rel="self" href="does-not-exist.zim" />
+        </entry>
+      </feed>
+    )");
+
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"./test/lib.xml", /*readOnly=*/false, /*trustLibrary=*/false));
+
+    kiwix::Book book = lib->getBookById("book1");
+    EXPECT_FALSE(book.isPathValid());
+    EXPECT_EQ(book.getTitle(), "Book From OPDS");
+}
+
+TEST(ManagerTest, parseOpdsDomWithTrustLibraryFalseAndValidSelfPathAdoptsZimMetadata)
+{
+    // With trustLibrary=false and a rel="self" link pointing to a real
+    // ZIM, readBookFromPath() re-reads the ZIM's own metadata - including
+    // its UUID, which becomes the book's id - discarding whatever the OPDS
+    // entry said (mirrors
+    // ManagerTest.parseXmlDomWithTrustLibraryFalseAndValidPathAdoptsZimMetadata
+    // above). The relative href is resolved against libraryPath's directory
+    // ("./test"), exactly like updateFromXml()'s "path" attribute.
+    auto lib = kiwix::Library::create();
+    TestManager manager(lib);
+
+    const XMLDoc doc(R"(
+      <feed xmlns="http://www.w3.org/2005/Atom">
+        <entry>
+          <id>urn:uuid:book1</id>
+          <title>Stale title from OPDS</title>
+          <link rel="self" href="example.zim" />
+        </entry>
+      </feed>
+    )");
+
+    EXPECT_TRUE(manager.parseOpdsDom(doc, "http://example.com", /*libraryPath=*/"./test/lib.xml", /*readOnly=*/false, /*trustLibrary=*/false));
+
+    const auto ids = lib->getBooksIds();
+    ASSERT_EQ(ids.size(), 1U);
+    kiwix::Book book = lib->getBookById(ids[0]);
+    EXPECT_TRUE(book.isPathValid());
+    EXPECT_NE(book.getTitle(), "Stale title from OPDS");
 }
 
 TEST(ManagerTest, readFileDetectsXmlFormat)
@@ -366,7 +426,17 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
     // entry field-by-field, the same way ManagerTest.readXml does for its
     // XML-sourced equivalent.
     kiwix::Book book = lib->getBookById("raycharles");
-    EXPECT_EQ(book.getPath(), ""); // no path on OPDS
+
+    // Like XML's "path" attribute, the OPDS rel="self" link's href is
+    // resolved against the library file's own directory (readFile() passes
+    // its own `path` as parseOpdsDom()'s libraryPath) - library.opds's
+    // "./zimfile_raycharles.zim" self link resolves to the same file as
+    // library.xml's "path" attribute of the same value.
+    EXPECT_EQ(book.getPath(),
+              kiwix::computeAbsolutePath(kiwix::removeLastPathElement("./test/library.opds"),
+                                          "./zimfile_raycharles.zim"));
+    EXPECT_TRUE(book.isPathValid());
+
     EXPECT_EQ(book.getUrl(), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
     EXPECT_EQ(book.getTitle(), "Ray Charles");
     EXPECT_EQ(book.getDescription(), "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)");

@@ -70,7 +70,7 @@ class Book
   bool update(const Book& other);
   void update(const zim::Archive& archive);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
-  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
+  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir);
   std::string getHumanReadableIdFromPath() const;
 
   bool readOnly() const { return m_readOnly; }

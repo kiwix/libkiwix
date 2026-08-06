@@ -90,11 +90,11 @@ TEST(BookTest, updateFromOPDSTest)
     )");
 
     kiwix::Book book;
-    book.updateFromOpds(opds.child("entry"), "http://who.org");
+    book.updateFromOpds(opds.child("entry"), "http://who.org", "");
 
-    // Unlike updateFromXml(), updateFromOpds() has no notion of a local
-    // path - OPDS entries only ever carry acquisition/thumbnail links, so
-    // these are expected to stay at their default (unset) values.
+    // This entry has no rel="self" link, so - unlike updateFromXml(), which
+    // always resolves a "path" attribute - updateFromOpds() leaves path at
+    // its default (unset) value.
     EXPECT_EQ(book.getPath(), "");
     EXPECT_FALSE(book.isPathValid());
 
@@ -126,6 +126,25 @@ TEST(BookTest, updateFromOPDSTest)
     EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
 }
 
+TEST(BookTest, updateFromOPDSSelfLinkTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="self" href="zara.zim" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    // Unlike the acquisition/thumbnail links, a rel="self" link's href IS
+    // resolved against baseDir when relative - mirroring
+    // updateFromXml()'s "path" attribute handling (see
+    // BookTest.updateFromXMLTest above).
+    EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
+}
+
 namespace
 {
 
@@ -137,11 +156,11 @@ kiwix::Book makeBook(const std::string& attr, const std::string& baseDir="")
     return book;
 }
 
-kiwix::Book makeBookFromOpds(const std::string& entryContent, const std::string& urlHost="")
+kiwix::Book makeBookFromOpds(const std::string& entryContent, const std::string& urlHost="", const std::string& baseDir="")
 {
     const XMLDoc opds("<entry>" + entryContent + "</entry>");
     kiwix::Book book;
-    book.updateFromOpds(opds.child("entry"), urlHost);
+    book.updateFromOpds(opds.child("entry"), urlHost, baseDir);
     return book;
 }
 

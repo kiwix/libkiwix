@@ -145,13 +145,12 @@ static std::string fromOpdsDate(const std::string& date)
 
 
 #define VALUE(name) node.child(name).child_value()
-void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost)
+void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir)
 {
   m_id = VALUE("id");
   if (!m_id.compare(0, 9, "urn:uuid:")) {
     m_id.erase(0, 9);
   }
-  // No path on opds.
   m_title = VALUE("title");
   m_description = VALUE("summary");
   m_language = VALUE("language");
@@ -167,9 +166,18 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
-  for(auto linkNode = node.child("link"); linkNode;
+  for (auto linkNode = node.child("link"); linkNode;
            linkNode = linkNode.next_sibling("link")) {
     std::string rel = linkNode.attribute("rel").value();
+
+    if (rel == "self") {
+      std::string path = linkNode.attribute("href").value();
+      if (isRelativePath(path)) {
+        path = computeAbsolutePath(baseDir, path);
+      }
+      m_path = path;
+      m_pathValid = fileReadable(path);
+    }
 
     if (rel == "http://opds-spec.org/acquisition/open-access") {
       m_url = linkNode.attribute("href").value();
