@@ -172,7 +172,7 @@ jobs:
       HOME: /home/runner
     runs-on: ubuntu-24.04
     container:
-      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:2026-04-25"
+      image: "ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:2026-07-22"
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
