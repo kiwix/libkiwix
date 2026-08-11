@@ -242,6 +242,23 @@ TEST(BookTest, updateFromOPDSCategoryHandlingTest)
   }
 }
 
+TEST(BookTest, updateFromOPDSThumbnailWithAbsoluteHrefIgnoresUrlHostTest)
+{
+    // An already-absolute href (as real OPDS catalogs commonly send, see
+    // test/data/library.opds) must be left untouched, not prefixed with
+    // urlHost - concatenating the two would produce a garbled URL. This is
+    // the counterpart to updateFromOPDSTest above, which covers the
+    // relative-href case (where prefixing with urlHost IS expected).
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png"
+              href="https://example.com/favicon/zara.png" />
+    )", "http://who.org");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->url, "https://example.com/favicon/zara.png");
+}
+
 TEST(BookTest, setTagsDoesntAffectCategory)
 {
     kiwix::Book book;
