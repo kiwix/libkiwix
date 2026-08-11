@@ -20,7 +20,6 @@
 #include "manager.h"
 
 #include "tools.h"
-#include "tools/pathTools.h"
 
 #include <pugixml.hpp>
 #include <filesystem>
@@ -201,20 +200,12 @@ bool Manager::readFile(
   bool readOnly,
   bool trustLibrary)
 {
-  bool retVal = true;
-  pugi::xml_document doc;
-
-#ifdef _WIN32
-  pugi::xml_parse_result result = doc.load_file(Utf8ToWide(path).c_str());
-#else
-  pugi::xml_parse_result result = doc.load_file(path.c_str());
-#endif
-
-  if (result) {
-    this->parseXmlDom(doc, readOnly, path, trustLibrary);
-  } else {
-    retVal = false;
+  if (!kiwix::fileExists(path)) {
+    return false;
   }
+
+  const std::string xml = getFileContent(path);
+  const bool retVal = this->readXml(xml, readOnly, path, trustLibrary);
 
   /* This has to be set (although if the file does not exists) to be
    * able to know where to save the library if new content are
