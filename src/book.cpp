@@ -25,12 +25,48 @@
 #include "tools/networkTools.h"
 #include "tools/otherTools.h"
 #include "tools/stringTools.h"
-#include "tools/pathTools.h"
 #include "tools/archiveTools.h"
 
 #include <zim/archive.h>
 #include <zim/item.h>
 #include <pugixml.hpp>
+
+#include <sstream>
+#include <cctype>
+
+namespace
+{
+/**
+ * Tells whether a URL string is already absolute (contains a scheme,
+ * e.g. "https://example.com/x.png") as opposed to being a relative path
+ * (e.g. "/x.png"). Only a relative URL should be prefixed with a base host
+ * or URL—doing so unconditionally would garble an already-absolute one.
+ */
+bool isAbsoluteUrl(const std::string& url)
+{
+  // Find the scheme separator
+  size_t pos = url.find("://");
+  if (pos == 0 || pos == std::string::npos) {
+    return false; // No scheme or empty scheme
+  }
+
+  // RFC 3986: Scheme must begin with a letter, followed by letters, digits, '+', '.', or '-'
+  if (!std::isalpha(static_cast<unsigned char>(url[0]))) {
+    return false;
+  }
+
+  // Validate that all remaining characters in the scheme comply with RFC 3986
+  for (size_t i = 1; i < pos; ++i) {
+    char c = url[i];
+    if (!std::isalnum(static_cast<unsigned char>(c)) && c != '+' && c != '-' && c != '.') {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+} // anonymous namespace
 
 namespace kiwix
 {
@@ -184,7 +220,9 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
     if (rel == "http://opds-spec.org/image/thumbnail") {
       const auto favicon = std::make_shared<Illustration>();
       favicon->data.clear();
-      favicon->url = urlHost + linkNode.attribute("href").value();
+      const std::string thumbnailUrl = linkNode.attribute("href").value();
+      // XXX non-absolute URL is expected to be an absolute-path.
+      favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: urlHost + thumbnailUrl;
       favicon->mimeType = linkNode.attribute("type").value();
       m_illustrations.push_back(favicon);
     }
