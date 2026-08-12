@@ -479,7 +479,7 @@
     function addTagElement(tagValue, resetFilter) {
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.style.display = 'inline-block';
-        tagElement.innerHTML = htmlEncode(tagValue);
+        tagElement.innerHTML = htmlEncode(tagValue) + ' &times;';
         const tagMessage = $t("stop-filtering-by-tag", {TAG: tagValue});
         tagElement.setAttribute('aria-label', tagMessage);
         tagElement.setAttribute('title', tagMessage);
