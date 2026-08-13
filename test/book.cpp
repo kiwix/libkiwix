@@ -259,6 +259,55 @@ TEST(BookTest, updateFromOPDSThumbnailWithAbsoluteHrefIgnoresUrlHostTest)
     EXPECT_EQ(illustration->url, "https://example.com/favicon/zara.png");
 }
 
+TEST(BookTest, updateFromOPDSMultipleBase64ThumbnailsTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <thumbnails>
+          <thumbnail width="96" height="256" mimetype="image/jpeg">Zmlyc3QtdGh1bWJuYWls</thumbnail>
+          <thumbnail>c2Vjb25kLXRodW1ibmFpbA==</thumbnail>
+        </thumbnails>
+    )");
+
+    const auto& illustrations = book.getIllustrations();
+    ASSERT_EQ(illustrations.size(), 2U);
+    EXPECT_EQ(illustrations[0]->getData(), "first-thumbnail");
+    EXPECT_EQ(illustrations[0]->width, 96);
+    EXPECT_EQ(illustrations[0]->height, 256);
+    EXPECT_EQ(illustrations[0]->mimeType, "image/jpeg");
+
+    EXPECT_EQ(illustrations[1]->getData(), "second-thumbnail");
+    EXPECT_EQ(illustrations[1]->width, 48);
+    EXPECT_EQ(illustrations[1]->height, 48);
+    EXPECT_EQ(illustrations[1]->mimeType, "");
+}
+
+TEST(BookTest, updateFromOPDSBase64ThumbnailPartialAttributesTest)
+{
+    // Only "width" is given; "height" and "mimetype" are missing and must
+    // fall back to the Illustration's own defaults independently.
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <thumbnails>
+          <thumbnail width="96">Zmlyc3QtdGh1bWJuYWls</thumbnail>
+        </thumbnails>
+    )");
+
+    const auto& illustrations = book.getIllustrations();
+    ASSERT_EQ(illustrations.size(), 1U);
+    EXPECT_EQ(illustrations[0]->getData(), "first-thumbnail");
+    EXPECT_EQ(illustrations[0]->width, 96);
+    EXPECT_EQ(illustrations[0]->height, 48);
+    EXPECT_EQ(illustrations[0]->mimeType, "");
+}
+
+TEST(BookTest, updateFromOPDSNoThumbnailsTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+    )");
+
+    EXPECT_TRUE(book.getIllustrations().empty());
+}
+
 TEST(BookTest, setTagsDoesntAffectCategory)
 {
     kiwix::Book book;

@@ -225,7 +225,23 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       favicon->mimeType = linkNode.attribute("type").value();
       m_illustrations.push_back(favicon);
     }
- }
+  }
+
+  for (auto thumbnailNode = node.child("thumbnails").child("thumbnail"); thumbnailNode;
+           thumbnailNode = thumbnailNode.next_sibling("thumbnail")) {
+    const auto thumbnail = std::make_shared<Illustration>();
+    thumbnail->data = base64_decode(thumbnailNode.child_value());
+    thumbnail->mimeType = thumbnailNode.attribute("mimetype").value();
+    const std::string widthAttr = thumbnailNode.attribute("width").value();
+    if (!widthAttr.empty()) {
+      thumbnail->width = static_cast<uint16_t>(strtoul(widthAttr.c_str(), 0, 0));
+    }
+    const std::string heightAttr = thumbnailNode.attribute("height").value();
+    if (!heightAttr.empty()) {
+      thumbnail->height = static_cast<uint16_t>(strtoul(heightAttr.c_str(), 0, 0));
+    }
+    m_illustrations.push_back(thumbnail);
+  }
 }
 #undef VALUE
 
