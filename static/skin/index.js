@@ -608,7 +608,15 @@
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
+        tagElement.setAttribute('role', 'button');
+        tagElement.setAttribute('tabindex', '0');
         tagElement.addEventListener('click', () => removeTagElement(true));
+        tagElement.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                removeTagElement(true);
+            }
+        });
         if (filters) {
             const currentLink = window.location.hash;
             const newLink = `#${params.toString()}`;
