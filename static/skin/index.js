@@ -135,6 +135,8 @@
         spanElement.setAttribute('aria-label', tagMessage);
         spanElement.setAttribute('title', tagMessage);
         spanElement.setAttribute('data-tag', tagValue);
+        spanElement.setAttribute('role', 'button');
+        spanElement.setAttribute('tabindex', '0');
         spanElement.innerHTML = htmlEncode(tagValue);
         return spanElement.outerHTML;
     }
@@ -492,6 +494,12 @@
         [...tagLinks].forEach(elem => {
             if (!elem.getAttribute('click-listener')) {
                 elem.addEventListener('click', () => addTagElement(elem.dataset.tag, true));
+                elem.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        addTagElement(elem.dataset.tag, true);
+                    }
+                });
                 elem.setAttribute('click-listener', 'true');
             }
         });
