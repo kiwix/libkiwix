@@ -167,6 +167,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
+  m_illustrations.clear();
   for(auto linkNode = node.child("link"); linkNode;
            linkNode = linkNode.next_sibling("link")) {
     std::string rel = linkNode.attribute("rel").value();
@@ -180,10 +181,9 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       favicon->data.clear();
       favicon->url = urlHost + linkNode.attribute("href").value();
       favicon->mimeType = linkNode.attribute("type").value();
-      m_illustrations.assign(1, favicon);
+      m_illustrations.push_back(favicon);
     }
  }
-
 }
 #undef VALUE
 
