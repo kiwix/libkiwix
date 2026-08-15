@@ -20,6 +20,7 @@
 #include "gtest/gtest.h"
 #include "../src/tools/stringTools.h"
 #include "../include/tools.h"
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -63,6 +64,65 @@ TEST(stringTools, join)
   std::vector<std::string> list = { "a", "b", "c" };
   ASSERT_EQ(join(list, ";"), "a;b;c");
 }
+
+#define EXPECT_ONE_OF(val, expected1, expected2) \
+  do { \
+    auto res = (val); \
+    EXPECT_TRUE(res == expected1 || res == expected2) \
+      << "Expected one of '" << expected1 << "' or '" << expected2 \
+      << "', but got '" << res << "'"; \
+  } while(0)
+
+TEST(stringTools, beautifyFileSize)
+{
+  // Bytes range (< 1 000 B — displayed without decimal places)
+  EXPECT_EQ(beautifyFileSize(0),   "0 B");
+  EXPECT_EQ(beautifyFileSize(1),   "1 B");
+  EXPECT_EQ(beautifyFileSize(999), "999 B");
+
+  // KB range (1 000 – 999 994 bytes, base-1000 / SI)
+  EXPECT_EQ(beautifyFileSize(1000),   "1.00 KB");
+  EXPECT_EQ(beautifyFileSize(1001),   "1.00 KB");
+  EXPECT_EQ(beautifyFileSize(1500),   "1.50 KB");
+  EXPECT_EQ(beautifyFileSize(999994), "999.99 KB");
+
+  // Rounding-promotion boundary: >= 999 995 bytes would display as "1000.00 KB",
+  // so the function promotes to the next unit → 1.00 MB.
+  // Due to floating point precision, this might be "999.99 KB" or "1.00 MB".
+  EXPECT_ONE_OF(beautifyFileSize(999995), "999.99 KB", "1.00 MB");
+  EXPECT_EQ(beautifyFileSize(999999), "1.00 MB");
+
+  // MB range
+  EXPECT_EQ(beautifyFileSize(1000000),   "1.00 MB");
+  // 1 254 786 / 1 000 000 = 1.254786 → rounded to 2 dp → 1.25 MB
+  EXPECT_EQ(beautifyFileSize(1254786),   "1.25 MB");
+  EXPECT_EQ(beautifyFileSize(999000000), "999.00 MB");
+
+  // GB range
+  EXPECT_EQ(beautifyFileSize(1000000000ULL),  "1.00 GB");
+  EXPECT_EQ(beautifyFileSize(1500000000ULL),  "1.50 GB");
+  // MB→GB promotion boundary
+  EXPECT_EQ(beautifyFileSize(999994999ULL), "999.99 MB");
+  EXPECT_ONE_OF(beautifyFileSize(999995000ULL), "999.99 MB", "1.00 GB");
+
+  // TB range
+  EXPECT_EQ(beautifyFileSize(1000000000000ULL), "1.00 TB");
+  // GB→TB promotion boundary
+  EXPECT_EQ(beautifyFileSize(999994999999ULL), "999.99 GB");
+  EXPECT_ONE_OF(beautifyFileSize(999995000000ULL), "999.99 GB", "1.00 TB");
+
+  // PB range — also covers TB→PB promotion boundary
+  EXPECT_EQ(beautifyFileSize(999994999999999ULL), "999.99 TB");
+  EXPECT_ONE_OF(beautifyFileSize(999995000000000ULL), "999.99 TB", "1.00 PB");
+  EXPECT_EQ(beautifyFileSize(1000000000000000ULL), "1.00 PB");
+
+  // EB range
+  EXPECT_EQ(beautifyFileSize(1000000000000000000ULL), "1.00 EB");
+
+  // uint64_t max: 18 446 744 073 709 551 615 / 1e18 ≈ 18.446 → 18.45 EB
+  EXPECT_EQ(beautifyFileSize(std::numeric_limits<uint64_t>::max()), "18.45 EB");
+}
+#undef EXPECT_ONE_OF
 
 TEST(stringTools, split)
 {

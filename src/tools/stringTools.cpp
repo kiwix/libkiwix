@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <regex>
@@ -53,6 +54,11 @@ std::string asciiToLower(std::string s)
         return ('A' <= c && c <= 'Z') ? c - ('Z' - 'z') : c;
         });
     return s;
+}
+
+double roundToTwoDecimalPlaces(double value)
+{
+    return std::round(value * 100.0) / 100.0;
 }
 
 } // unnamed namespace
@@ -126,16 +132,23 @@ std::string kiwix::beautifyInteger(uint64_t number)
 
 std::string kiwix::beautifyFileSize(uint64_t number)
 {
+  constexpr const char* units[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB"};
+  constexpr size_t unitCount = sizeof(units) / sizeof(units[0]);
+  constexpr long double unitSize = 1000.0L;
+
+  long double value = static_cast<long double>(number);
+  size_t unit = 0;
+  while (roundToTwoDecimalPlaces(value) >= unitSize && unit + 1 < unitCount) {
+    value /= unitSize;
+    ++unit;
+  }
+
   std::stringstream ss;
   ss << std::fixed << std::setprecision(2);
-  if (number>>30)
-    ss << (number/(1024.0*1024*1024)) << " GB";
-  else if (number>>20)
-    ss << (number/(1024.0*1024)) << " MB";
-  else if (number>>10)
-    ss << (number/1024.0) << " KB";
-  else
+  if (unit == 0)
     ss << number << " B";
+  else
+    ss << value << " " << units[unit];
   return ss.str();
 }
 
