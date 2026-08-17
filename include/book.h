@@ -78,7 +78,7 @@ class Book
    * @param baseDir base directory used to resolve a relative `rel="self"`
    *                link into an absolute book path.
    */
-  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir = "");
+  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir);
   std::string getHumanReadableIdFromPath() const;
 
   bool readOnly() const { return m_readOnly; }
