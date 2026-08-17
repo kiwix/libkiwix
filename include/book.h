@@ -70,7 +70,15 @@ class Book
   bool update(const Book& other);
   void update(const zim::Archive& archive);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
-  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
+  /**
+   * Update the book's metadata from an OPDS entry XML node.
+   *
+   * @param node the `<entry>` node of an OPDS feed describing the book.
+   * @param urlHost host to prepend to relative illustration/thumbnail URLs.
+   * @param baseDir base directory used to resolve a relative `rel="self"`
+   *                link into an absolute book path.
+   */
+  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir = "");
   std::string getHumanReadableIdFromPath() const;
 
   bool readOnly() const { return m_readOnly; }
