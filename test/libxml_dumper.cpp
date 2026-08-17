@@ -184,9 +184,6 @@ TEST_F(LibXMLDumperTest, aliasBookWithOrigIdOnlyEmitsIdAndOrigId)
 
 TEST_F(LibXMLDumperTest, dumpLibXMLContentThrowsForUnknownBookId)
 {
-  // Unlike LibOPDSDumper::dumpOPDSContent (which silently skips book ids no
-  // longer present in the library), LibXMLDumper::dumpLibXMLContent uses
-  // Library::getBookById() directly and lets std::out_of_range propagate.
   EXPECT_THROW(dumper.dumpLibXMLContent({"no-such-book"}), std::out_of_range);
 }
 
