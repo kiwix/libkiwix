@@ -107,9 +107,8 @@ class Manager
    * Load a library content stored in a OPDS stream.
    *
    * @param content The content of the OPDS stream.
-   * @param readOnly Set if the library path could be overwritten later with
-   *                 updated content.
-   * @param libraryPath The library path (used to resolve relative path)
+   * @param urlHost The host used to resolve relative acquisition/thumbnail
+   *                links.
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content, const std::string& urlHost);
