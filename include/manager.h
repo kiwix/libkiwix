@@ -112,11 +112,16 @@ class Manager
    *                links. It is assumed that those links come in the form of an
    *                absolute path component, so the full URL is obtained by
    *                prepending the urlHost string to the href value of the link.
+   * @param readOnly Set if the library path could be overwritten later with
+   *                 updated content.
+   * @param libraryPath The library path (used to resolve a relative
+   *                     rel="self" link)
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content,
                 const std::string& urlHost,
-                bool readOnly = false);
+                bool readOnly = false,
+                const std::string& libraryPath = "");
 
 
   /**
@@ -185,6 +190,7 @@ class Manager
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost,
+                    const std::string& libraryPath,
                     bool readOnly);
 };
 }  // namespace kiwix

@@ -5,8 +5,10 @@
   in src/book.cpp):
     id                       -> <id>urn:uuid:ID</id> ("urn:uuid:" is
                                  stripped by updateFromOpds())
-    path                     -> no OPDS equivalent (OPDS entries have no
-                                 local path - see Book::updateFromOpds())
+    path                     -> rel="self" <link>'s href, resolved against
+                                 the library file's own directory just like
+                                 XML's "path" attribute (see
+                                 Book::updateFromOpds())
     url                      -> acquisition <link>'s href
     size (KiB, XML)          -> acquisition <link>'s length (bytes, i.e.
                                  size * 1024)
@@ -37,6 +39,7 @@
     <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
     <articleCount>284</articleCount>
     <mediaCount>2</mediaCount>
+    <link rel="self" href="./zimfile_raycharles.zim" />
     <link rel="http://opds-spec.org/acquisition/open-access"
           type="application/x-zim"
           href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim"
@@ -57,6 +60,7 @@
     <tags>public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no</tags>
     <articleCount>284</articleCount>
     <mediaCount>2</mediaCount>
+    <link rel="self" href="./zimfile_raycharles_uncategorized.zim" />
     <link rel="http://opds-spec.org/acquisition/open-access"
           type="application/x-zim"
           href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles_uncategorized.zim"
@@ -74,6 +78,7 @@
     <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
     <articleCount>284</articleCount>
     <mediaCount>2</mediaCount>
+    <link rel="self" href="./zimfile&amp;other.zim" />
     <link rel="http://opds-spec.org/acquisition/open-access"
           type="application/x-zim"
           href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim"
@@ -93,6 +98,7 @@
     <tags>unittest;_category:cats</tags>
     <articleCount>12107</articleCount>
     <mediaCount>8</mediaCount>
+    <link rel="self" href="./nosuchzimfile.zim" />
     <link rel="http://opds-spec.org/acquisition/open-access"
           type="application/x-zim"
           href="https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim"

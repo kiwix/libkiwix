@@ -170,6 +170,7 @@ bool Manager::readXml(const std::string& xml,
 
 bool Manager::parseOpdsDom(const pugi::xml_document& doc,
                            const std::string& urlHost,
+                           const std::string& libraryPath,
                            bool readOnly)
 {
   pugi::xml_node libraryNode = doc.child("feed");
@@ -193,12 +194,14 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
     m_itemsPerPage = 0;
   }
 
+
+  const auto baseDir = removeLastPathElement(libraryPath);
   for (pugi::xml_node entryNode = libraryNode.child("entry"); entryNode;
        entryNode = entryNode.next_sibling("entry")) {
     kiwix::Book book;
 
     book.setReadOnly(readOnly);
-    book.updateFromOpds(entryNode, urlHost);
+    book.updateFromOpds(entryNode, urlHost, baseDir);
 
     /* Update the book properties with the new importer */
     manipulator.addBookToLibrary(book);
@@ -211,14 +214,15 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
 
 bool Manager::readOpds(const std::string& content,
                        const std::string& urlHost,
-                       bool readOnly)
+                       bool readOnly,
+                       const std::string& libraryPath)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
       = doc.load_buffer((void*)content.data(), content.size());
 
   if (result) {
-    return this->parseOpdsDom(doc, urlHost, readOnly);
+    return this->parseOpdsDom(doc, urlHost, libraryPath, readOnly);
   }
 
   return false;
@@ -243,7 +247,7 @@ bool Manager::readFile(
   const std::string content = getFileContent(path);
 
   return detectFormat(content) == FileFormat::OPDS
-    ? this->readOpds(content, "", readOnly)
+    ? this->readOpds(content, "", readOnly, path)
     : this->readXml(content, readOnly, path, trustLibrary);
 }
 
