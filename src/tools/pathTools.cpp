@@ -386,7 +386,11 @@ std::string kiwix::getExecutablePath(bool realPathOnly)
   return std::string(binRootPath);
 #else
   char binRootPath[PATH_MAX];
-  ssize_t size = readlink("/proc/self/exe", binRootPath, PATH_MAX);
+  // /proc/self/exe is a kernel-maintained symlink private to this process
+  // (not an attacker-controllable filename to race), and the resulting
+  // string below is bounded by the `size` readlink() returns, not by
+  // (missing) NUL-termination.
+  ssize_t size = readlink("/proc/self/exe", binRootPath, PATH_MAX); // Flawfinder: ignoreCollapse comment
   if (size != -1) {
     return std::string(binRootPath, size);
   }
