@@ -65,6 +65,34 @@ bool isAbsoluteUrl(const std::string& url)
   return true;
 }
 
+/**
+ * Joins a host and a reference into a single URL without producing a double slash,
+ * respecting the host's format.
+ */
+std::string joinUrl(const std::string& host, const std::string& ref)
+{
+  if (host.empty()) {
+    return ref;
+  }
+  if (ref.empty()) {
+    return host;
+  }
+
+  const bool hostEndsWithSlash = (host.back() == '/');
+  const bool refStartsWithSlash = (ref.front() == '/');
+
+  if (hostEndsWithSlash && refStartsWithSlash) {
+    // Both have a slash; omit one to avoid a double slash
+    return host + ref.substr(1);
+  } else if (!hostEndsWithSlash && !refStartsWithSlash) {
+    // Neither has a slash; insert one
+    return host + "/" + ref;
+  } else {
+    // Exactly one has a slash; simple concatenation is correct
+    return host + ref;
+  }
+}
+
 } // anonymous namespace
 
 namespace kiwix
@@ -221,7 +249,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       favicon->data.clear();
       const std::string thumbnailUrl = linkNode.attribute("href").value();
       // XXX non-absolute URL is expected to be an absolute-path.
-      favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: urlHost + thumbnailUrl;
+      favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
       favicon->mimeType = linkNode.attribute("type").value();
       m_illustrations.push_back(favicon);
     }
