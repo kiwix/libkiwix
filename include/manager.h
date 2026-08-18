@@ -68,9 +68,10 @@ class Manager
   explicit Manager(LibraryPtr library);
 
   /**
-   * Read a `library.xml` and add book in the file to the library.
+   * Read a library XML or an OPDS file and add the books in the file to the
+   * library.
    *
-   * @param path The (utf8) path to the `library.xml`.
+   * @param path The (utf8) path to the library file.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
    * @param trustLibrary use book metadata coming from XML.
@@ -104,7 +105,7 @@ class Manager
                bool trustLibrary = true);
 
   /**
-   * Load a library content stored in a OPDS stream.
+   * Load a library content stored in a OPDS stream or a local library file.
    *
    * @param content The content of the OPDS stream.
    * @param urlHost The host used to resolve relative acquisition/thumbnail
@@ -113,7 +114,9 @@ class Manager
    *                prepending the urlHost string to the href value of the link.
    * @return True if the content has been properly parsed.
    */
-  bool readOpds(const std::string& content, const std::string& urlHost);
+  bool readOpds(const std::string& content,
+                const std::string& urlHost,
+                bool readOnly = false);
 
 
   /**
@@ -158,7 +161,7 @@ class Manager
 
   /**
    * Add all books from the directory tree into the library.
-   * 
+   *
    * @param path          The path of the directory to scan.
    * @param verboseFlag   Verbose logs flag.
    */
@@ -181,9 +184,9 @@ class Manager
                    const std::string& libraryPath,
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
-                    const std::string& urlHost);
-
+                    const std::string& urlHost,
+                    bool readOnly);
 };
-}
+}  // namespace kiwix
 
 #endif
