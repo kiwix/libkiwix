@@ -246,6 +246,20 @@ const char sampleOpdsFeed[] = R"(
 </feed>
 )";
 
+TEST(ManagerTest, readOpdsHonorsReadOnlyTrue)
+{
+    // readOpds() defaults to readOnly=false (see
+    // ManagerTest.readOpdsAddsEntriesAndParsesSearchMetadata below, which
+    // covers that case) - this checks that readOnly=true is honored too.
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com", /*readOnly=*/true));
+
+    EXPECT_TRUE(lib->getBookById("book1").readOnly());
+    EXPECT_TRUE(lib->getBookById("book2").readOnly());
+}
+
 TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
 {
     auto lib = kiwix::Library::create();
