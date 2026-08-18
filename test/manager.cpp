@@ -221,54 +221,56 @@ TEST(Manager, reload)
   }));
 }
 
+const char sampleOpdsFeed[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
+  <totalResults>9</totalResults>
+  <startIndex>7</startIndex>
+  <itemsPerPage>10</itemsPerPage>
+  <entry>
+    <id>urn:uuid:book1</id>
+    <title>Book One</title>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://example.com/book1.zim"
+          length="111" />
+  </entry>
+  <entry>
+    <id>urn:uuid:book2</id>
+    <title>Book Two</title>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://example.com/book2.zim"
+          length="222" />
+  </entry>
+</feed>
+)";
+
 TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
 {
-  auto lib = kiwix::Library::create();
-  kiwix::Manager manager(lib);
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
 
-  EXPECT_TRUE(manager.readOpds(R"(
-    <feed xmlns="http://www.w3.org/2005/Atom"
-          xmlns:opds="https://specs.opds.io/opds-1.2">
-      <totalResults>9</totalResults>
-      <startIndex>7</startIndex>
-      <itemsPerPage>10</itemsPerPage>
-      <entry>
-        <id>urn:uuid:book1</id>
-        <title>Book One</title>
-        <link rel="http://opds-spec.org/acquisition/open-access"
-              type="application/x-zim"
-              href="https://example.com/book1.zim"
-              length="111" />
-      </entry>
-      <entry>
-        <id>urn:uuid:book2</id>
-        <title>Book Two</title>
-        <link rel="http://opds-spec.org/acquisition/open-access"
-              type="application/x-zim"
-              href="https://example.com/book2.zim"
-              length="222" />
-      </entry>
-    </feed>
-    )", "http://example.com"));
+    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com"));
 
-  EXPECT_TRUE(manager.m_hasSearchResult);
-  EXPECT_EQ(manager.m_totalBooks, 9U);
-  EXPECT_EQ(manager.m_startIndex, 7U);
-  EXPECT_EQ(manager.m_itemsPerPage, 10U);
+    EXPECT_TRUE(manager.m_hasSearchResult);
+    EXPECT_EQ(manager.m_totalBooks, 9U);
+    EXPECT_EQ(manager.m_startIndex, 7U);
+    EXPECT_EQ(manager.m_itemsPerPage, 10U);
 
-  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
 
-  kiwix::Book book1 = lib->getBookById("book1");
-  EXPECT_EQ(book1.getTitle(), "Book One");
-  EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
-  // OPDS entries carry no local path at this point (unlike XML's "path"
-  // attribute - see ManagerTest.readXml above): this feed has no
-  // rel="self" link, so the resolved path stays empty and invalid.
-  EXPECT_EQ(book1.getPath(), "");
-  EXPECT_FALSE(book1.isPathValid());
-  // Unlike readXml() (readOnly defaults to true), OPDS-sourced books are
-  // always mutable.
-  EXPECT_FALSE(book1.readOnly());
+    kiwix::Book book1 = lib->getBookById("book1");
+    EXPECT_EQ(book1.getTitle(), "Book One");
+    EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
+    // OPDS entries carry no local path at this point (unlike XML's "path"
+    // attribute - see ManagerTest.readXml above): this feed has no
+    // rel="self" link, so the resolved path stays empty and invalid.
+    EXPECT_EQ(book1.getPath(), "");
+    EXPECT_FALSE(book1.isPathValid());
+    // Unlike readXml() (readOnly defaults to true), OPDS-sourced books are
+    // always mutable.
+    EXPECT_FALSE(book1.readOnly());
 }
 
 TEST(ManagerTest, readOpdsWithoutSearchMetadata)
