@@ -108,18 +108,18 @@ class Manager
    * Load a library content stored in a OPDS stream or a local library file.
    *
    * @param content The content of the OPDS stream.
-   * @param urlHost The host used to resolve relative acquisition/thumbnail
-   *                links.
+   * @param contentOriginUri Where content was read from: either the URL it
+   *        was fetched from (used to resolve relative acquisition/thumbnail
+   *        links) or the local filesystem path it was read from (used to
+   *        resolve a relative rel="self" link). See
+   *        kiwix::resolveContentOrigin() for the exact splitting rules.
    * @param readOnly Set if the library path could be overwritten later with
    *                 updated content.
-   * @param libraryPath The library path (used to resolve a relative
-   *                     rel="self" link)
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content,
-                const std::string& urlHost,
-                bool readOnly = false,
-                const std::string& libraryPath = "");
+                const std::string& contentOriginUri,
+                bool readOnly = false);
 
 
   /**

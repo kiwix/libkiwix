@@ -312,7 +312,7 @@ TEST(ManagerTest, readOpdsWithInvalidSelfPath)
       </feed>
     )";
 
-  EXPECT_TRUE(manager.readOpds(feed, "http://example.com", /*readOnly=*/false, /*libraryPath=*/"./test/library.opds"));
+  EXPECT_TRUE(manager.readOpds(feed, "http://example.com", /*readOnly=*/false));
 
   kiwix::Book book = lib->getBookById("book1");
   EXPECT_FALSE(book.isPathValid());
