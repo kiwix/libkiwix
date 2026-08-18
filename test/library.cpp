@@ -327,7 +327,7 @@ TEST(LibraryOpdsImportTest, allInOne)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
-  manager.readOpds(sampleOpdsStream, "library-opds-import.unittests.dev");
+  manager.readOpds(sampleOpdsStream, "http://library-opds-import.unittests.dev");
 
   EXPECT_EQ(14U, lib->getBookCount(true, true));
 
@@ -354,7 +354,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(illustration->width, 48U);
   EXPECT_EQ(illustration->height, 48U);
   EXPECT_EQ(illustration->mimeType, "image/png");
-  EXPECT_EQ(illustration->url, "library-opds-import.unittests.dev/meta?name=favicon&content=wikipedia_fr_tunisie_novid_2018-10");
+  EXPECT_EQ(illustration->url, "http://library-opds-import.unittests.dev/meta?name=favicon&content=wikipedia_fr_tunisie_novid_2018-10");
   }
 
   {
@@ -379,7 +379,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(illustration->width, 48U);
   EXPECT_EQ(illustration->height, 48U);
   EXPECT_EQ(illustration->mimeType, "image/png");
-  EXPECT_EQ(illustration->url, "library-opds-import.unittests.dev/meta?name=favicon&content=ted_en_business_2018-07");
+  EXPECT_EQ(illustration->url, "http://library-opds-import.unittests.dev/meta?name=favicon&content=ted_en_business_2018-07");
   }
 }
 
@@ -392,7 +392,7 @@ class LibraryTest : public ::testing::Test {
 
   void SetUp() override {
      kiwix::Manager manager(lib);
-     manager.readOpds(sampleOpdsStream, "foo.urlHost");
+     manager.readOpds(sampleOpdsStream, "http://foo.urlHost");
      manager.readXml(sampleLibraryXML, false, LIBRARY_PATH, true);
   }
 
@@ -480,7 +480,7 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     auto new_lib = kiwix::Library::create();
     {
       kiwix::Manager manager(new_lib);
-      manager.readOpds(sampleOpdsStream, "foo.urlHost");
+      manager.readOpds(sampleOpdsStream, "http://foo.urlHost");
       manager.readXml(sampleLibraryXML, false, "./test/library.xml", true);
       manager.readBookmarkFile("__test__bookmarks.xml");
     }

@@ -212,17 +212,16 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
 
 
 bool Manager::readOpds(const std::string& content,
-                       const std::string& urlHost,
-                       bool readOnly,
-                       const std::string& libraryPath)
+                       const std::string& contentOriginUri,
+                       bool readOnly)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
       = doc.load_buffer((void*)content.data(), content.size());
 
   if (result) {
-    const auto origin = resolveContentOrigin(libraryPath);
-    return this->parseOpdsDom(doc, urlHost, origin.baseDir, readOnly);
+    const auto origin = resolveContentOrigin(contentOriginUri);
+    return this->parseOpdsDom(doc, origin.urlHost, origin.baseDir, readOnly);
   }
 
   return false;
@@ -247,7 +246,7 @@ bool Manager::readFile(
   const std::string content = getFileContent(path);
 
   return detectFormat(content) == FileFormat::OPDS
-    ? this->readOpds(content, "", readOnly, path)
+    ? this->readOpds(content, path, readOnly)
     : this->readXml(content, readOnly, path, trustLibrary);
 }
 
