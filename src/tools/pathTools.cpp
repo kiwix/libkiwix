@@ -228,6 +228,19 @@ std::string kiwix::removeLastPathElement(const std::string& path)
   return ret;
 }
 
+kiwix::ContentOrigin kiwix::resolveContentOrigin(const std::string& contentOriginUri)
+{
+  const auto schemeEnd = contentOriginUri.find("://");
+  if (schemeEnd == std::string::npos) {
+    return { /*urlHost=*/"", removeLastPathElement(contentOriginUri) };
+  }
+  const auto pathStart = contentOriginUri.find('/', schemeEnd + 3);
+  const auto urlHost = pathStart == std::string::npos
+                      ? contentOriginUri
+                      : contentOriginUri.substr(0, pathStart);
+  return { urlHost, /*baseDir=*/"" };
+}
+
 std::string kiwix::appendToDirectory(const std::string& directoryPath, const std::string& filename)
 {
   std::string newPath = directoryPath;

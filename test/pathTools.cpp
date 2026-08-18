@@ -178,6 +178,50 @@ TEST(pathTools, removeLastPathElement)
             A2("a","b"));
 }
 
+TEST(pathTools, resolveContentOrigin)
+{
+  {
+    const auto origin = kiwix::resolveContentOrigin("https://library.kiwix.org/catalog/v2/entries");
+    ASSERT_EQ(origin.urlHost, "https://library.kiwix.org");
+    ASSERT_EQ(origin.baseDir, "");
+  }
+  {
+    const auto origin = kiwix::resolveContentOrigin("http://example.com");
+    ASSERT_EQ(origin.urlHost, "http://example.com");
+    ASSERT_EQ(origin.baseDir, "");
+  }
+  {
+    const auto origin = kiwix::resolveContentOrigin("https://library.kiwix.org/");
+    ASSERT_EQ(origin.urlHost, "https://library.kiwix.org");
+    ASSERT_EQ(origin.baseDir, "");
+  }
+  {
+    // removeLastPathElement() (which this delegates to for local paths)
+    // normalizes away the leading "." component - see
+    // pathTools.normalizePartsRelative above.
+    const auto origin = kiwix::resolveContentOrigin(P3(".","test","lib.xml"));
+    ASSERT_EQ(origin.urlHost, "");
+    ASSERT_EQ(origin.baseDir, "test");
+  }
+  {
+    const auto origin = kiwix::resolveContentOrigin(A2("data","library.opds"));
+    ASSERT_EQ(origin.urlHost, "");
+    ASSERT_EQ(origin.baseDir, A1("data"));
+  }
+#ifdef _WIN32
+  {
+    const auto origin = kiwix::resolveContentOrigin("C:\\data\\library.opds");
+    ASSERT_EQ(origin.urlHost, "");
+    ASSERT_EQ(origin.baseDir, "C:\\data");
+  }
+#endif
+  {
+    const auto origin = kiwix::resolveContentOrigin("");
+    ASSERT_EQ(origin.urlHost, "");
+    ASSERT_EQ(origin.baseDir, "");
+  }
+}
+
 TEST(pathTools, appendToDirectory)
 {
   ASSERT_EQ(kiwix::appendToDirectory(P3("a","b","c"), "foo.xml"),

@@ -170,7 +170,7 @@ bool Manager::readXml(const std::string& xml,
 
 bool Manager::parseOpdsDom(const pugi::xml_document& doc,
                            const std::string& urlHost,
-                           const std::string& libraryPath,
+                           const std::string& baseDir,
                            bool readOnly)
 {
   pugi::xml_node libraryNode = doc.child("feed");
@@ -194,8 +194,6 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
     m_itemsPerPage = 0;
   }
 
-
-  const auto baseDir = removeLastPathElement(libraryPath);
   for (pugi::xml_node entryNode = libraryNode.child("entry"); entryNode;
        entryNode = entryNode.next_sibling("entry")) {
     kiwix::Book book;
@@ -222,7 +220,8 @@ bool Manager::readOpds(const std::string& content,
       = doc.load_buffer((void*)content.data(), content.size());
 
   if (result) {
-    return this->parseOpdsDom(doc, urlHost, libraryPath, readOnly);
+    const auto origin = resolveContentOrigin(libraryPath);
+    return this->parseOpdsDom(doc, urlHost, origin.baseDir, readOnly);
   }
 
   return false;

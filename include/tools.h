@@ -38,6 +38,16 @@ struct IpAddress
     std::string addr6; /**< IPv6 address */
 };
 
+/**
+ * The pieces needed to resolve references found in OPDS content, split out
+ * of the location that content was read from. See resolveContentOrigin().
+ */
+struct ContentOrigin
+{
+    std::string urlHost; /**< scheme+host[:port], no trailing slash; "" if the origin is a local path */
+    std::string baseDir; /**< parent directory of a local path; "" if the origin is a URL */
+};
+
 typedef std::pair<std::string, std::string> LangNameCodePair;
 typedef std::vector<LangNameCodePair> FeedLanguages;
 typedef std::vector<std::string> FeedCategories;
@@ -125,6 +135,23 @@ std::string computeAbsolutePath(const std::string& path, const std::string& rela
  * @return a relative path (pointing to absolutePath, relative to path).
  */
 std::string computeRelativePath(const std::string& path, const std::string& absolutePath);
+
+/** Split a "content origin" locator into a urlHost/baseDir pair.
+ *
+ * contentOriginUri is either a URL that some content was fetched from (e.g.
+ * "https://library.kiwix.org/catalog/v2/entries") or a local filesystem path
+ * that content was read from (e.g. "/data/library.opds"). Classification is
+ * purely syntactic: a "://" substring marks the input as a URL; everything
+ * else (including a Windows drive-letter path) is treated as a local path.
+ * Exactly one of the two returned fields is non-empty.
+ *
+ * Known limitation: a "file://" URI is classified as a URL, not a local
+ * path (no current caller produces one).
+ *
+ * @param contentOriginUri the URL or local path some content was read from.
+ * @return the corresponding urlHost/baseDir pair.
+ */
+ContentOrigin resolveContentOrigin(const std::string& contentOriginUri);
 
 /** Sleep the current thread.
  *
