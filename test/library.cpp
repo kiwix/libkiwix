@@ -268,15 +268,15 @@ const char * sampleOpdsStream = R"(
 )";
 
 #ifdef _WIN32
-# define ZIMFILE_PATH ".\\zimfile.zim"
-# define EXAMPLE_PATH ".\\example.zim"
-# define XML_LIBRARY_PATH ".\\test\\library.xml"
-# define OPDS_LIBRARY_PATH ".\\test\\library.opds"
+# define ZIMFILE_PATH "zimfile.zim"
+# define EXAMPLE_PATH "example.zim"
+# define XML_LIBRARY_PATH "test\\library.xml"
+# define OPDS_LIBRARY_PATH "test\\library.opds"
 #else
-# define ZIMFILE_PATH "./zimfile.zim"
-# define EXAMPLE_PATH "./example.zim"
-# define XML_LIBRARY_PATH "./test/library.xml"
-# define OPDS_LIBRARY_PATH "./test/library.opds"
+# define ZIMFILE_PATH "zimfile.zim"
+# define EXAMPLE_PATH "example.zim"
+# define XML_LIBRARY_PATH "test/library.xml"
+# define OPDS_LIBRARY_PATH "test/library.opds"
 #endif
 
 const char sampleLibraryXML[] = R"(
@@ -315,11 +315,35 @@ const char sampleLibraryXML[] = R"(
 </library>
 )";
 
-const char sampleLibraryOpds[] = R"(
-<feed xmlns="http://www.w3.org/2005/Atom"
+// The formatting of this OPDS XML (element order, indentation, and
+// whitespace) is intentionally chosen to exactly match Library::dumpOpds()'s
+// output, so that it stays invariant when read via Manager::readOpds() and
+// dumped back via Library::dumpOpds() (see LibraryOpdsExportTest.allInOne
+// below). Reformatting this string may break that round-trip test.
+const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
       xmlns:opds="http://opds-spec.org/2010/catalog">
-  <id>c0602b41-aef2-4c5a-9f31-3f6ee912c159</id>
+  <entry>
+    <id>urn:uuid:example</id>
+    <title>An example ZIM archive</title>
+    <updated>2021-04-11T00:00:00Z</updated>
+    <summary>An eXaMpLe book added to the catalog via XML</summary>
+    <language>deu</language>
+    <name>wikibooks.de</name>
+    <flavour>maxi</flavour>
+    <category>wikibooks</category>
+    <tags>unittest;wikibooks;_category:wikibooks</tags>
+    <articleCount>12</articleCount>
+    <mediaCount>0</mediaCount>
+    <author>
+      <name>Wikibooks</name>
+    </author>
+    <publisher>
+      <name>Kiwix &amp; Some Enthusiasts</name>
+    </publisher>
+    <dc:issued>2021-04-11T00:00:00Z</dc:issued>
+    <link rel="self" href=")" EXAMPLE_PATH R"(" type="application/x-zim"/>
+  </entry>
   <entry>
     <id>urn:uuid:raycharles</id>
     <title>Ray Charles</title>
@@ -327,6 +351,8 @@ const char sampleLibraryOpds[] = R"(
     <summary>Wikipedia articles about Ray Charles</summary>
     <language>eng,spa</language>
     <name>wikipedia_en_ray_charles</name>
+    <flavour>mini</flavour>
+    <category>wikipedia</category>
     <tags>wikipedia;_category:wikipedia;_pictures:no</tags>
     <articleCount>284</articleCount>
     <mediaCount>2</mediaCount>
@@ -339,25 +365,6 @@ const char sampleLibraryOpds[] = R"(
     <dc:issued>2020-03-31T00:00:00Z</dc:issued>
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569344" />
     <link rel="self" href=")" ZIMFILE_PATH R"(" type="application/x-zim"/>
-  </entry>
-  <entry>
-    <id>urn:uuid:example</id>
-    <title>An example ZIM archive</title>
-    <updated>2021-04-11T00:00:00Z</updated>
-    <summary>An eXaMpLe book added to the catalog via XML</summary>
-    <language>deu</language>
-    <name>wikibooks.de</name>
-    <tags>unittest;wikibooks;_category:wikibooks</tags>
-    <articleCount>12</articleCount>
-    <mediaCount>0</mediaCount>
-    <author>
-      <name>Wikibooks</name>
-    </author>
-    <publisher>
-      <name>Kiwix &amp; Some Enthusiasts</name>
-    </publisher>
-    <dc:issued>2021-04-11T00:00:00Z</dc:issued>
-    <link rel="self" href=")" EXAMPLE_PATH R"(" type="application/x-zim"/>
   </entry>
 </feed>
 )";
@@ -1344,5 +1351,17 @@ TEST_P(LibraryTest, removeBooksNotUpdatedSince)
     "Mythology & Folklore Stack Exchange",
   );
 };
+
+TEST(LibraryOpdsExportTest, allInOne)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Manager manager(lib);
+  manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH);
+
+  // sampleLibraryOpds is formatted to be round-trip invariant (see comment
+  // above its definition), so dumping what was just read back out should
+  // reproduce it exactly.
+  EXPECT_EQ(lib->dumpOpds(OPDS_LIBRARY_PATH), sampleLibraryOpds);
+}
 
 };

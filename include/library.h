@@ -312,7 +312,7 @@ class Library: public std::enable_shared_from_this<Library>
    * @return The number of bookmarks updated.
    */
   int migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId);
- 
+
   /**
    * Get the best available bookId for a bookmark.
    *
@@ -469,6 +469,8 @@ class Library: public std::enable_shared_from_this<Library>
    * @return Count of books that were removed by this operation.
    */
   uint32_t removeBooksNotUpdatedSince(Revision rev);
+
+  std::string dumpOpds(const std::string& outputPath) const;
 
   friend class OPDSDumper;
   friend class libXMLDumper;
