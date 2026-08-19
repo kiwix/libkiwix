@@ -251,7 +251,9 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // XXX non-absolute URL is expected to be an absolute-path.
       favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
       favicon->mimeType = linkNode.attribute("type").value();
-      m_illustrations.push_back(favicon);
+      if ( !favicon->mimeType.empty() ) {
+        m_illustrations.push_back(favicon);
+      }
     }
   }
 
