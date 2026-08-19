@@ -312,7 +312,7 @@ class Library: public std::enable_shared_from_this<Library>
    * @return The number of bookmarks updated.
    */
   int migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId);
- 
+
   /**
    * Get the best available bookId for a bookmark.
    *
@@ -469,6 +469,23 @@ class Library: public std::enable_shared_from_this<Library>
    * @return Count of books that were removed by this operation.
    */
   uint32_t removeBooksNotUpdatedSince(Revision rev);
+
+  /**
+   * Dump the library as an OPDS feed suitable for an offline/local library
+   * file (no HTTP root; book paths are exposed via rel="self" links).
+   *
+   * This does not write to outputPath itself - it only returns the OPDS
+   * XML. outputPath is used solely to resolve each book's rel="self" link:
+   * each book's path is made relative to outputPath's parent directory,
+   * the same way writeToFile() resolves book paths relative to the file
+   * it writes.
+   *
+   * @param outputPath the path the returned OPDS content is intended to be
+   *                    written to; only its parent directory is used, to
+   *                    compute book paths relative to it.
+   * @return The library dumped as an OPDS feed.
+   */
+  std::string dumpOpds(const std::string& outputPath) const;
 
   friend class OPDSDumper;
   friend class libXMLDumper;
