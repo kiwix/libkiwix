@@ -299,6 +299,16 @@ TEST(BookTest, updateFromOPDSBase64ThumbnailPartialAttributesTest)
     EXPECT_EQ(illustrations[0]->mimeType, "");
 }
 
+TEST(BookTest, updateFromOPDSThumbnailLinkWithoutTypeIsIgnoredTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              href="https://example.com/favicon.png" />
+    )");
+
+    EXPECT_TRUE(book.getIllustrations().empty());
+}
+
 TEST(BookTest, updateFromOPDSNoThumbnailsTest)
 {
     const kiwix::Book book = makeBookFromOpds(R"(

@@ -203,6 +203,22 @@ TEST_P(LibraryServerTest, catalog_root_xml)
   );
 }
 
+TEST_P(LibraryServerTest, ThumbnailMimeTypeHandling)
+{
+  resetServer(ZimFileServer::CATALOG_ONLY_MODE);
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n"
+    "          type=\"image/png;width=48;height=48;scale=1\"/>"
+  ));
+
+  EXPECT_FALSE(kiwix::contains(r->body, "illustration/charlesray/"));
+  EXPECT_FALSE(kiwix::contains(r->body, "illustration/inaccessiblezim/"));
+}
+
 TEST_P(LibraryServerTest, catalog_searchdescription_xml)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/searchdescription.xml");
