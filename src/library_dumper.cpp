@@ -11,6 +11,28 @@
 namespace kiwix
 {
 
+namespace
+{
+
+std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
+{
+  std::ostringstream result;
+
+  result << illustration.mimeType;
+  if ( !contains(illustration.mimeType, ";width=") ) {
+      result << ";width=" << illustration.width;
+  }
+  if ( !contains(illustration.mimeType, ";height=") ) {
+      result << ";height=" << illustration.height;
+  }
+  if ( !contains(illustration.mimeType, ";scale=") ) {
+      result << ";scale=1";
+  }
+  return result.str();
+}
+
+} // namespace
+
 kainjow::mustache::list getBookIllustrationInfo(const Book& book)
 {
     kainjow::mustache::list illustrations;
@@ -19,7 +41,7 @@ kainjow::mustache::list getBookIllustrationInfo(const Book& book)
       // So we can simply pass one size to mustache.
       illustrations.push_back(kainjow::mustache::object{
         {"icon_size", to_string(illustration->width)},
-        {"icon_mimetype", illustration->mimeType}
+        {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)}
       });
     }
     return illustrations;

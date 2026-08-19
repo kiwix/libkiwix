@@ -69,8 +69,8 @@ std::string lcAll(const std::string& word);
 std::string ucFirst(const std::string& word);
 std::string lcFirst(const std::string& word);
 
-/* This function is broken, related Github issue 
- * https://github.com/kiwix/libkiwix/issues/1188 */ 
+/* This function is broken, related Github issue
+ * https://github.com/kiwix/libkiwix/issues/1188 */
 std::string toTitle(const std::string& word);
 
 std::string normalize(const std::string& word);
@@ -97,6 +97,12 @@ template<>
 std::string extractFromString(const std::string& str);
 
 bool startsWith(const std::string& base, const std::string& start);
+
+inline bool contains(const std::string& str, const std::string& substr)
+{
+  return str.find(substr) != std::string::npos;
+}
+
 
 std::string stripSuffix(const std::string& str, const std::string& suffix);
 
