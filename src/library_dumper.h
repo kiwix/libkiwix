@@ -34,9 +34,14 @@ namespace kiwix
 class Book;
 
 /**
- * Get the illustration data (size/mimetype) of a book, for use in OPDS entry rendering.
+ * Get the illustration data (size/mimetype) of a book, for use in OPDS entry
+ * rendering.
+ *
+ * @param isLiveCatalog See fullEntryOpds(). When false, illustrations with no
+ *                 external url (i.e. only available as embedded data) are
+ *                 omitted, since there is no server to serve them from.
  */
-kainjow::mustache::list getBookIllustrationInfo(const Book& book);
+kainjow::mustache::list getBookIllustrationInfo(const Book& book, bool isLiveCatalog = true);
 
 /**
  * Render the full OPDS entry XML for a book.
@@ -52,12 +57,21 @@ kainjow::mustache::list getBookIllustrationInfo(const Book& book);
  *                 local file path). Only meant for local/offline dumps - leave
  *                 empty for the live HTTP catalog, which must not leak
  *                 server-side filesystem paths to remote clients.
+ * @param isLiveCatalog Whether this entry is rendered for the live HTTP
+ *                 catalog (OPDSDumper) as opposed to a local/offline file
+ *                 dump (Library::dumpOpds). The live catalog can serve any
+ *                 illustration - embedded or remote - through its own
+ *                 /catalog/v2/illustration endpoint, but an offline dump has
+ *                 no server behind that endpoint, so only illustrations
+ *                 backed by a real external url can produce a working
+ *                 thumbnail link there.
  */
 std::string fullEntryOpds(const Book& book,
                           const std::string& rootLocation,
                           const std::string& contentAccessUrl,
                           const std::string& contentId,
-                          const std::string& selfPath = "");
+                          const std::string& selfPath = "",
+                          bool isLiveCatalog = true);
 
 /**
  * A base class to dump Library in various formats.

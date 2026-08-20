@@ -213,6 +213,54 @@ TEST(FullEntryOpdsTest, rendersThumbnailLinkForBookIllustration)
   );
 }
 
+TEST(FullEntryOpdsTest, omitsThumbnailLinkForEmbeddedOnlyIllustrationInFileDump)
+{
+  auto lib = Library::create();
+  Manager manager(lib);
+  const char sampleXML[] = R"(
+<library version="1.0">
+  <book
+        id="book-with-embedded-icon"
+        path="/local/path/book.zim"
+        title="Book With Embedded Icon"
+        favicon="AAAA"
+        faviconMimeType="image/png"
+      ></book>
+</library>
+)";
+  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  const Book& book = lib->getBookById("book-with-embedded-icon");
+
+  // isLiveCatalog=false (offline file dump): an illustration with no
+  // external url is only available as embedded data, and there is no server
+  // behind /catalog/v2/illustration there to serve it from, so it must be
+  // omitted.
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-embedded-icon",
+                          /*selfPath=*/"", /*isLiveCatalog=*/false),
+    "  <entry>\n"
+    "    <id>urn:uuid:book-with-embedded-icon</id>\n"
+    "    <title>Book With Embedded Icon</title>\n"
+    "    <updated>T00:00:00Z</updated>\n"
+    "    <summary></summary>\n"
+    "    <language></language>\n"
+    "    <name></name>\n"
+    "    <flavour></flavour>\n"
+    "    <category></category>\n"
+    "    <tags></tags>\n"
+    "    <articleCount>0</articleCount>\n"
+    "    <mediaCount>0</mediaCount>\n"
+    "    <author>\n"
+    "      <name></name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name></name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n"
+  );
+}
+
 TEST(FullEntryOpdsTest, omitsSelfLinkWhenSelfPathIsEmpty)
 {
   const Book book = createBook();

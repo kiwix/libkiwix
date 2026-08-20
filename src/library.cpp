@@ -1109,7 +1109,8 @@ std::string Library::dumpOpds(const std::string& outputPath) const
                         /*rootLocation=*/"",
                         /*contentAccessUrl=*/"",
                         /*contentId=*/book.getId(),
-                        selfPath);
+                        selfPath,
+                        /*isLiveCatalog=*/false);
   }
 
   ss << "</feed>\n";

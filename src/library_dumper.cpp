@@ -33,10 +33,16 @@ std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
 
 } // namespace
 
-kainjow::mustache::list getBookIllustrationInfo(const Book& book)
+kainjow::mustache::list getBookIllustrationInfo(const Book& book, bool isLiveCatalog)
 {
     kainjow::mustache::list illustrations;
     for ( const auto& illustration : book.getIllustrations() ) {
+      // An offline file dump has no server behind /catalog/v2/illustration,
+      // so an illustration only available as embedded data (no url) cannot
+      // be linked to there.
+      if ( !isLiveCatalog && illustration->url.empty() ) {
+        continue;
+      }
       // For now, we are handling only sizexsize@1 illustration.
       // So we can simply pass one size to mustache.
       illustrations.push_back(kainjow::mustache::object{
@@ -51,7 +57,8 @@ std::string fullEntryOpds(const Book& book,
                          const std::string& rootLocation,
                          const std::string& contentAccessUrl,
                          const std::string& contentId,
-                         const std::string& selfPath)
+                         const std::string& selfPath,
+                         bool isLiveCatalog)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
@@ -74,7 +81,7 @@ std::string fullEntryOpds(const Book& book,
       {"publisher_name", book.getPublisher()},
       {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
-      {"icons", getBookIllustrationInfo(book)},
+      {"icons", getBookIllustrationInfo(book, isLiveCatalog)},
       {"self_path", onlyAsNonEmptyMustacheValue(selfPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
