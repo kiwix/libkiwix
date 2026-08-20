@@ -99,7 +99,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <tags>" TAGS "</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
-    "    " EXTRA_LINK "<link type=\"text/html\" href=\"/ROOT%23%3F/content/" CONTENT_NAME "\" />\n"               \
+    EXTRA_LINK "    <link type=\"text/html\" href=\"/ROOT%23%3F/content/" CONTENT_NAME "\" />\n"               \
     "    <author>\n"                                                    \
     "      <name>Wikipedia</name>\n"                                    \
     "    </author>\n"                                                   \
@@ -136,9 +136,9 @@ std::string maskVariableOPDSFeedData(std::string s)
   "wikipedia_en_ray_charles",\
   "wikipedia",\
   "public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes",\
-  "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
+  "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
   "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n" \
-  "          type=\"image/png;width=48;height=48;scale=1\"/>\n    ", \
+  "          type=\"image/png;width=48;height=48;scale=1\"/>\n", \
   CONTENT_NAME, \
   "zimfile_raycharles", \
   "569344"\
