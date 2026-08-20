@@ -34,16 +34,6 @@ namespace kiwix
 class Book;
 
 /**
- * Get the illustration data (size/mimetype) of a book, for use in OPDS entry
- * rendering.
- *
- * @param isLiveCatalog See fullEntryOpds(). When false, illustrations with no
- *                 external url (i.e. only available as embedded data) are
- *                 omitted, since there is no server to serve them from.
- */
-kainjow::mustache::list getBookIllustrationInfo(const Book& book, bool isLiveCatalog = true);
-
-/**
  * Render the full OPDS entry XML for a book.
  *
  * @param book The book to render the OPDS entry for.

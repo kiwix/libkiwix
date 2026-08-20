@@ -31,27 +31,41 @@ std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
   return result.str();
 }
 
+/**
+ * Get the illustration data (size/mimetype) of a book, for use in OPDS entry
+ * rendering.
+ */
+kainjow::mustache::list
+getBookIllustrationInfo(const Book& book, const std::string& rootLocation, bool isLiveCatalog = true)
+{
+  kainjow::mustache::list illustrations;
+  for ( const auto& illustration : book.getIllustrations() ) {
+    // Live catalog: keep every icon (its own endpoint can serve embedded or
+    // remote data). File dump: keep only icons with an external url, since
+    // there is no server there to serve embedded data from.
+    if (!(isLiveCatalog || !illustration->url.empty())) {
+      continue;
+    }
+    const std::string iconSizeStr = to_string(illustration->width);
+    // Book IDs do not contain special characters, so they are HTML-safe.
+    // Therefore, no HTML encoding is required.
+    const std::string thumbnailUrl = isLiveCatalog
+    ? rootLocation + "/catalog/v2/illustration/" + book.getId() + "/?size=" + iconSizeStr
+    : illustration->url;
+
+    // For now, we are handling only sizexsize@1 illustration.
+    // So we can simply pass one size to mustache.
+    illustrations.push_back(kainjow::mustache::object{
+      {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
+      {"icon_url", thumbnailUrl}
+    });
+  }
+
+  return illustrations;
+}
+
 } // namespace
 
-kainjow::mustache::list getBookIllustrationInfo(const Book& book, bool isLiveCatalog)
-{
-    kainjow::mustache::list illustrations;
-    for ( const auto& illustration : book.getIllustrations() ) {
-      // An offline file dump has no server behind /catalog/v2/illustration,
-      // so an illustration only available as embedded data (no url) cannot
-      // be linked to there.
-      if ( !isLiveCatalog && illustration->url.empty() ) {
-        continue;
-      }
-      // For now, we are handling only sizexsize@1 illustration.
-      // So we can simply pass one size to mustache.
-      illustrations.push_back(kainjow::mustache::object{
-        {"icon_size", to_string(illustration->width)},
-        {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)}
-      });
-    }
-    return illustrations;
-}
 
 std::string fullEntryOpds(const Book& book,
                          const std::string& rootLocation,
@@ -62,7 +76,6 @@ std::string fullEntryOpds(const Book& book,
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
-      {"root",  rootLocation},
       {"contentAccessUrl",  onlyAsNonEmptyMustacheValue(contentAccessUrl)},
       {"id", book.getId()},
       {"name", book.getName()},
@@ -81,7 +94,7 @@ std::string fullEntryOpds(const Book& book,
       {"publisher_name", book.getPublisher()},
       {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
-      {"icons", getBookIllustrationInfo(book, isLiveCatalog)},
+      {"icons", getBookIllustrationInfo(book, rootLocation, isLiveCatalog)},
       {"self_path", onlyAsNonEmptyMustacheValue(selfPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);

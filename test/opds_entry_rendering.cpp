@@ -261,6 +261,57 @@ TEST(FullEntryOpdsTest, omitsThumbnailLinkForEmbeddedOnlyIllustrationInFileDump)
   );
 }
 
+TEST(FullEntryOpdsTest, rendersIllustrationUrlDirectlyInFileDump)
+{
+  auto lib = Library::create();
+  Manager manager(lib);
+  const char sampleXML[] = R"(
+<library version="1.0">
+  <book
+        id="book-with-icon-url"
+        path="/local/path/book.zim"
+        title="Book With Icon Url"
+        favicon="https://example.com/favicon/zara.png"
+        faviconMimeType="image/png"
+        faviconUrl="/favicon.png"
+      ></book>
+</library>
+)";
+  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  const Book& book = lib->getBookById("book-with-icon-url");
+
+  // isLiveCatalog=false (offline file dump): with an external url available,
+  // the thumbnail link points straight at that url instead of the live
+  // /catalog/v2/illustration endpoint, which has no server behind it there.
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-icon-url",
+                          /*selfPath=*/"", /*isLiveCatalog=*/false),
+    "  <entry>\n"
+    "    <id>urn:uuid:book-with-icon-url</id>\n"
+    "    <title>Book With Icon Url</title>\n"
+    "    <updated>T00:00:00Z</updated>\n"
+    "    <summary></summary>\n"
+    "    <language></language>\n"
+    "    <name></name>\n"
+    "    <flavour></flavour>\n"
+    "    <category></category>\n"
+    "    <tags></tags>\n"
+    "    <articleCount>0</articleCount>\n"
+    "    <mediaCount>0</mediaCount>\n"
+    "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"/favicon.png\"\n"
+    "          type=\"image/png;width=48;height=48;scale=1\"/>\n"
+    "    <author>\n"
+    "      <name></name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name></name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n"
+  );
+}
+
 TEST(FullEntryOpdsTest, omitsSelfLinkWhenSelfPathIsEmpty)
 {
   const Book book = createBook();
