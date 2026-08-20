@@ -85,6 +85,21 @@ class OPDSDumper : public LibraryDumper
    * @return The OPDS feed.
    */
   std::string languagesOPDSFeed() const;
+
+  /**
+   * Set some information about the search results.
+   *
+   * @param totalResult the total number of results of the search.
+   * @param startIndex the start index of the result.
+   * @param count the number of result of the current set (or page).
+   */
+  void setOpenSearchInfo(int totalResult, int startIndex, int count);
+
+private:
+
+  int m_totalResults = 0;
+  int m_startIndex = 0;
+  int m_count = 0;
 };
 }
 

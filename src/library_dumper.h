@@ -73,15 +73,6 @@ class LibraryDumper
   void setContentAccessUrl(const std::string& url) { this->contentAccessUrl = url; }
 
   /**
-   * Set some informations about the search results.
-   *
-   * @param totalResult the total number of results of the search.
-   * @param startIndex the start index of the result.
-   * @param count the number of result of the current set (or page).
-   */
-  void setOpenSearchInfo(int totalResult, int startIndex, int count);
-
-  /**
    * Sets user default language
    *
    * @param userLang the user language to be set
@@ -105,9 +96,6 @@ class LibraryDumper
   std::string rootLocation;
   std::string contentAccessUrl;
   std::string m_userLang;
-  int m_totalResults;
-  int m_startIndex;
-  int m_count;
 };
 }
 

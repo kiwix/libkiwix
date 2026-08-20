@@ -166,4 +166,11 @@ std::string OPDSDumper::languagesOPDSFeed() const
   );
 }
 
+void OPDSDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
+{
+  m_totalResults = totalResults;
+  m_startIndex = startIndex;
+  m_count = count;
+}
+
 }

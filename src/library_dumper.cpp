@@ -67,13 +67,6 @@ LibraryDumper::~LibraryDumper()
 {
 }
 
-void LibraryDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
-{
-  m_totalResults = totalResults;
-  m_startIndex = startIndex,
-  m_count = count;
-}
-
 kainjow::mustache::list LibraryDumper::getCategoryData() const
 {
   const auto now = gen_date_str();
