@@ -33,19 +33,20 @@ std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
 }
 
 /**
- * Get the dataless (link-based) illustrations of a book, for use in OPDS
- * entry rendering.
+ * Get thumbnail <link> info for a book's illustrations that already have
+ * (or, for the live catalog, are always given) an external url to fetch
+ * their data from.
  *
  * Live catalog: keep every icon (its own endpoint can serve embedded or
- * remote data). File dump: keep only icons with an external url, since a
- * dataless icon with no url has no server to serve embedded data from (see
- * getDatafulBookIllustrationInfo() for those instead).
+ * remote data). File dump: keep only icons with an external url, since one
+ * with no url has no server to serve its data from (see
+ * getEmbeddedThumbnailLinks() for those instead).
  */
 kainjow::mustache::list
-getDatalessBookIllustrationInfo(const Book& book, const std::string& rootLocation,
+getExternalThumbnailLinks(const Book& book, const std::string& rootLocation,
   bool isLiveCatalog = true)
 {
-  kainjow::mustache::list linkBasedThumbnails;
+  kainjow::mustache::list thumbnailLinks;
   for ( const auto& illustration : book.getIllustrations() ) {
     if (!(isLiveCatalog || !illustration->url.empty())) {
       continue;
@@ -57,31 +58,31 @@ getDatalessBookIllustrationInfo(const Book& book, const std::string& rootLocatio
     ? rootLocation + "/catalog/v2/illustration/" + kiwix::urlEncode(book.getId()) + "/?size=" + iconSizeWidth
     : illustration->url;
 
-    linkBasedThumbnails.push_back(kainjow::mustache::object{
+    thumbnailLinks.push_back(kainjow::mustache::object{
       {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
       {"icon_url", thumbnailUrl}
     });
   }
 
-  return linkBasedThumbnails;
+  return thumbnailLinks;
 }
 
 /**
- * Get the dataful (base64-embedded) illustrations of a book, for use in OPDS
- * entry rendering. Rendered as a thumbnail <link> whose href is a "data:"
- * URI (OPDS 1.2 5.2.2), same as getDatalessBookIllustrationInfo()'s
- * external-url links.
+ * Get thumbnail <link> info for a book's illustrations that have no
+ * external url, rendering their data as a "data:" URI href
+ * (OPDS 1.2 5.2.2), same as getExternalThumbnailLinks()'s external-url
+ * links.
  *
  * Only applies to file dumps (never the live catalog, which serves embedded
  * data from its own endpoint instead) and only for icons without an external
  * url, i.e. those that would otherwise have no way to reach the reader.
  */
 kainjow::mustache::list
-getDatafulBookIllustrationInfo(const Book& book, bool isLiveCatalog = true)
+getEmbeddedThumbnailLinks(const Book& book, bool isLiveCatalog = true)
 {
-  kainjow::mustache::list base64DataBasedThumbnails;
+  kainjow::mustache::list thumbnailLinks;
   if (isLiveCatalog) {
-    return base64DataBasedThumbnails;
+    return thumbnailLinks;
   }
   for ( const auto& illustration : book.getIllustrations() ) {
     if (!illustration->url.empty()) {
@@ -90,13 +91,13 @@ getDatafulBookIllustrationInfo(const Book& book, bool isLiveCatalog = true)
     const std::string thumbnailData = illustration->getData();
     const std::string dataUri = thumbnailData.empty() ? ""
       : "data:" + illustration->mimeType + ";base64," + base64_encode(thumbnailData);
-    base64DataBasedThumbnails.push_back(kainjow::mustache::object{
+    thumbnailLinks.push_back(kainjow::mustache::object{
       {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
       {"icon_url", dataUri}
     });
   }
 
-  return base64DataBasedThumbnails;
+  return thumbnailLinks;
 }
 
 } // namespace
@@ -111,12 +112,12 @@ std::string fullEntryOpds(const Book& book,
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     auto thumbnailLinks
-      = getDatalessBookIllustrationInfo(book, rootLocation, isLiveCatalog);
-    auto base64DataBasedThumbnails
-      = getDatafulBookIllustrationInfo(book, isLiveCatalog);
+      = getExternalThumbnailLinks(book, rootLocation, isLiveCatalog);
+    auto embeddedThumbnailLinks
+      = getEmbeddedThumbnailLinks(book, isLiveCatalog);
     thumbnailLinks.insert(thumbnailLinks.end(),
-      std::make_move_iterator(base64DataBasedThumbnails.begin()),
-      std::make_move_iterator(base64DataBasedThumbnails.end()));
+      std::make_move_iterator(embeddedThumbnailLinks.begin()),
+      std::make_move_iterator(embeddedThumbnailLinks.end()));
     const kainjow::mustache::object data{
       {"contentAccessUrl",  onlyAsNonEmptyMustacheValue(contentAccessUrl)},
       {"id", book.getId()},
