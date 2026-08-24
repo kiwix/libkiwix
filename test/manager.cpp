@@ -35,6 +35,27 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     EXPECT_EQ(book.getUrl(), url);
 }
 
+TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    const std::string nonExistentPath
+        = kiwix::computeAbsolutePath(
+              kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), "test"),
+              "does_not_exist.xml");
+
+    EXPECT_FALSE(manager.readFile(nonExistentPath, /*readOnly=*/false));
+    EXPECT_EQ(manager.writableLibraryPath, nonExistentPath);
+
+    const std::string pathToSave = "./relative.zim";
+    auto bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave);
+    ASSERT_NE(bookId, "");
+    kiwix::Book book = lib->getBookById(bookId);
+    auto savedPath = resolveAbsPath(nonExistentPath, pathToSave);
+    EXPECT_EQ(book.getPath(), savedPath);
+}
+
 
 
 #if _WIN32
