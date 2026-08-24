@@ -507,14 +507,14 @@ TEST(BookTest, updateFromOPDSMultipleThumbnailLinksTest)
   const kiwix::Book book = makeBookFromOpds(R"(
         <link rel="http://opds-spec.org/image/thumbnail"
               type="image/png"
-              href="/zara-48.png" />
+              href="https://example.com/zara-48.png" />
         <link rel="http://opds-spec.org/image/thumbnail"
               type="image/png"
-              href="/zara-96.png" />
+              href="https://example.com/zara-96.png" />
     )");
 
   const auto& illustrations = book.getIllustrations();
   ASSERT_EQ(illustrations.size(), 2U);
-  EXPECT_EQ(illustrations[0]->url, "/zara-48.png");
-  EXPECT_EQ(illustrations[1]->url, "/zara-96.png");
+  EXPECT_EQ(illustrations[0]->url, "https://example.com/zara-48.png");
+  EXPECT_EQ(illustrations[1]->url, "https://example.com/zara-96.png");
 }
