@@ -10,13 +10,10 @@
     <tags>{{tags}}</tags>
     <articleCount>{{article_count}}</articleCount>
     <mediaCount>{{media_count}}</mediaCount>
-    {{#linkIcons}}<link rel="http://opds-spec.org/image/thumbnail"
+    {{#thumbnailLinks}}<link rel="http://opds-spec.org/image/thumbnail"
           href="{{icon_url}}"
           type="{{icon_mimetype}}"/>
-    {{/linkIcons}}{{#base64Icons}}<link rel="http://opds-spec.org/image/thumbnail"
-          href="{{icon_url}}"
-          type="{{icon_mimetype}}"/>
-    {{/base64Icons}}{{#contentAccessUrl}}
+    {{/thumbnailLinks}}{{#contentAccessUrl}}
     <link type="text/html" href="{{contentAccessUrl}}/{{{content_id}}}" />
     {{/contentAccessUrl}}<author>
       <name>{{author_name}}</name>

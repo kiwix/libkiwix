@@ -110,10 +110,13 @@ std::string fullEntryOpds(const Book& book,
                          bool isLiveCatalog)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
-    const auto linkBasedThumbnails
+    auto thumbnailLinks
       = getDatalessBookIllustrationInfo(book, rootLocation, isLiveCatalog);
-    const auto base64DataBasedThumbnails
+    auto base64DataBasedThumbnails
       = getDatafulBookIllustrationInfo(book, isLiveCatalog);
+    thumbnailLinks.insert(thumbnailLinks.end(),
+      std::make_move_iterator(base64DataBasedThumbnails.begin()),
+      std::make_move_iterator(base64DataBasedThumbnails.end()));
     const kainjow::mustache::object data{
       {"contentAccessUrl",  onlyAsNonEmptyMustacheValue(contentAccessUrl)},
       {"id", book.getId()},
@@ -133,8 +136,7 @@ std::string fullEntryOpds(const Book& book,
       {"publisher_name", book.getPublisher()},
       {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
-      {"linkIcons", linkBasedThumbnails},
-      {"base64Icons", base64DataBasedThumbnails},
+      {"thumbnailLinks", thumbnailLinks},
       {"self_path", onlyAsNonEmptyMustacheValue(selfPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
