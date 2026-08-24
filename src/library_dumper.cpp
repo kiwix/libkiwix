@@ -68,7 +68,9 @@ getDatalessBookIllustrationInfo(const Book& book, const std::string& rootLocatio
 
 /**
  * Get the dataful (base64-embedded) illustrations of a book, for use in OPDS
- * entry rendering.
+ * entry rendering. Rendered as a thumbnail <link> whose href is a "data:"
+ * URI (OPDS 1.2 5.2.2), same as getDatalessBookIllustrationInfo()'s
+ * external-url links.
  *
  * Only applies to file dumps (never the live catalog, which serves embedded
  * data from its own endpoint instead) and only for icons without an external
@@ -86,13 +88,11 @@ getDatafulBookIllustrationInfo(const Book& book, bool isLiveCatalog = true)
       continue;
     }
     const std::string thumbnailData = illustration->getData();
-    // For now, we are handling only sizexsize@1 illustration.
-    // So we can simply pass one size to mustache.
+    const std::string dataUri = thumbnailData.empty() ? ""
+      : "data:" + illustration->mimeType + ";base64," + base64_encode(thumbnailData);
     base64DataBasedThumbnails.push_back(kainjow::mustache::object{
       {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
-      {"icon_width", to_string(illustration->width)},
-      {"icon_height", to_string(illustration->height)},
-      {"icon_base64_data", thumbnailData.empty()? "" : base64_encode(thumbnailData)}
+      {"icon_url", dataUri}
     });
   }
 
@@ -135,7 +135,6 @@ std::string fullEntryOpds(const Book& book,
       {"size", to_string(book.getSize())},
       {"linkIcons", linkBasedThumbnails},
       {"base64Icons", base64DataBasedThumbnails},
-      {"base64IconsNotEmpty", !base64DataBasedThumbnails.empty()},
       {"self_path", onlyAsNonEmptyMustacheValue(selfPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);

@@ -235,7 +235,8 @@ TEST(FullEntryOpdsTest, rendersBase64ThumbnailForEmbeddedOnlyIllustrationInFileD
   // isLiveCatalog=false (offline file dump): an illustration with no
   // external url is only available as embedded data, and there is no server
   // behind /catalog/v2/illustration there to serve it from, so it is
-  // embedded directly as base64 data in a <thumbnails> element instead.
+  // embedded directly as a data: URI in the thumbnail link's href instead
+  // (OPDS 1.2 5.2.2).
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-embedded-icon",
                           /*selfPath=*/"", /*isLiveCatalog=*/false),
     "  <entry>\n"
@@ -250,12 +251,9 @@ TEST(FullEntryOpdsTest, rendersBase64ThumbnailForEmbeddedOnlyIllustrationInFileD
     "    <tags></tags>\n"
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
-    "    <thumbnails>\n"
-    "      <thumbnail\n"
-    "             width=\"48\"\n"
-    "             height=\"48\"\n"
-    "             mimetype=\"image/png;width=48;height=48;scale=1\">AAAA</thumbnail>\n"
-    "    </thumbnails>\n"
+    "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"data:image/png;base64,AAAA\"\n"
+    "          type=\"image/png;width=48;height=48;scale=1\"/>\n"
     "    <author>\n"
     "      <name></name>\n"
     "    </author>\n"
@@ -349,7 +347,7 @@ TEST(FullEntryOpdsTest, doesNotDownloadIllustrationDataForLinkBasedThumbnail)
   EXPECT_TRUE(book.getIllustrations().at(0)->getData().empty());
 }
 
-TEST(FullEntryOpdsTest, DISABLED_roundTripsBase64ThumbnailDataThroughOPDSReadback)
+TEST(FullEntryOpdsTest, roundTripsBase64ThumbnailDataThroughOPDSReadback)
 {
   auto lib = Library::create();
   Manager manager(lib);
@@ -422,16 +420,12 @@ TEST(FullEntryOpdsTest, rendersMultipleBase64Thumbnails)
     "    <tags></tags>\n"
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
-    "    <thumbnails>\n"
-    "      <thumbnail\n"
-    "             width=\"48\"\n"
-    "             height=\"48\"\n"
-    "             mimetype=\"image/png;width=48;height=48;scale=1\">Zmlyc3QtdGh1bWJuYWls</thumbnail>\n"
-    "      <thumbnail\n"
-    "             width=\"96\"\n"
-    "             height=\"96\"\n"
-    "             mimetype=\"image/jpeg;width=96;height=96;scale=1\">c2Vjb25kLXRodW1ibmFpbA==</thumbnail>\n"
-    "    </thumbnails>\n"
+    "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"data:image/png;base64,Zmlyc3QtdGh1bWJuYWls\"\n"
+    "          type=\"image/png;width=48;height=48;scale=1\"/>\n"
+    "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"data:image/jpeg;base64,c2Vjb25kLXRodW1ibmFpbA==\"\n"
+    "          type=\"image/jpeg;width=96;height=96;scale=1\"/>\n"
     "    <author>\n"
     "      <name></name>\n"
     "    </author>\n"
@@ -482,12 +476,9 @@ TEST(FullEntryOpdsTest, rendersMixedLinkAndBase64ThumbnailsInFileDump)
     "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
     "          href=\"https://example.com/favicon.png\"\n"
     "          type=\"image/png;width=48;height=48;scale=1\"/>\n"
-    "    <thumbnails>\n"
-    "      <thumbnail\n"
-    "             width=\"48\"\n"
-    "             height=\"48\"\n"
-    "             mimetype=\"image/jpeg;width=48;height=48;scale=1\">Zmlyc3QtdGh1bWJuYWls</thumbnail>\n"
-    "    </thumbnails>\n"
+    "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"data:image/jpeg;base64,Zmlyc3QtdGh1bWJuYWls\"\n"
+    "          type=\"image/jpeg;width=48;height=48;scale=1\"/>\n"
     "    <author>\n"
     "      <name></name>\n"
     "    </author>\n"
@@ -500,7 +491,7 @@ TEST(FullEntryOpdsTest, rendersMixedLinkAndBase64ThumbnailsInFileDump)
   );
 }
 
-TEST(FullEntryOpdsTest, omitsBase64ThumbnailsForEmbeddedOnlyIllustrationInLiveCatalog)
+TEST(FullEntryOpdsTest, omitsDataUriThumbnailForEmbeddedOnlyIllustrationInLiveCatalog)
 {
   auto lib = Library::create();
   Manager manager(lib);

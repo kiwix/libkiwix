@@ -13,16 +13,10 @@
     {{#linkIcons}}<link rel="http://opds-spec.org/image/thumbnail"
           href="{{icon_url}}"
           type="{{icon_mimetype}}"/>
-    {{/linkIcons}}{{#base64IconsNotEmpty}}
-    <thumbnails>
-      {{#base64Icons}}
-      <thumbnail
-             width="{{icon_width}}"
-             height="{{icon_height}}"
-             mimetype="{{icon_mimetype}}">{{icon_base64_data}}</thumbnail>
-      {{/base64Icons}}
-    </thumbnails>
-    {{/base64IconsNotEmpty}}{{#contentAccessUrl}}
+    {{/linkIcons}}{{#base64Icons}}<link rel="http://opds-spec.org/image/thumbnail"
+          href="{{icon_url}}"
+          type="{{icon_mimetype}}"/>
+    {{/base64Icons}}{{#contentAccessUrl}}
     <link type="text/html" href="{{contentAccessUrl}}/{{{content_id}}}" />
     {{/contentAccessUrl}}<author>
       <name>{{author_name}}</name>
