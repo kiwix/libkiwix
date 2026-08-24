@@ -259,6 +259,34 @@ TEST(BookTest, updateFromOPDSThumbnailWithAbsoluteHrefIgnoresUrlHostTest)
     EXPECT_EQ(illustration->url, "https://example.com/favicon/zara.png");
 }
 
+TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithSizeSuffixTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png;width=96;height=256;scale=1"
+              href="https://example.com/zara.png" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->mimeType, "image/png");
+    EXPECT_EQ(illustration->width, 96);
+    EXPECT_EQ(illustration->height, 256);
+}
+
+TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithPartialSizeSuffixTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png;width=96"
+              href="https://example.com/zara.png" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->mimeType, "image/png");
+    EXPECT_EQ(illustration->width, 96);
+    EXPECT_EQ(illustration->height, 48);
+}
+
 TEST(BookTest, updateFromOPDSMultipleBase64ThumbnailsTest)
 {
     const kiwix::Book book = makeBookFromOpds(R"(
@@ -283,8 +311,6 @@ TEST(BookTest, updateFromOPDSMultipleBase64ThumbnailsTest)
 
 TEST(BookTest, updateFromOPDSBase64ThumbnailPartialAttributesTest)
 {
-    // Only "width" is given; "height" and "mimetype" are missing and must
-    // fall back to the Illustration's own defaults independently.
     const kiwix::Book book = makeBookFromOpds(R"(
         <thumbnails>
           <thumbnail width="96">Zmlyc3QtdGh1bWJuYWls</thumbnail>

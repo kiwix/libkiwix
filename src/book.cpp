@@ -94,6 +94,62 @@ std::string joinUrl(const std::string& host, const std::string& ref)
   }
 }
 
+/**
+ * Splits an OPDS thumbnail link's "type" attribute value into its base MIME
+ * type and its "width"/"height" parameters, mirroring the
+ * "<mimetype>;width=<w>;height=<h>;scale=<s>" convention that
+ * getIllustrationMimeTypeStr() (library_dumper.cpp) writes on the way out.
+ * "scale" is parsed away but otherwise unused, since Illustration has no
+ * such field. A width/height left at 0 (i.e. absent from the type string)
+ * means "unspecified" and must not overwrite the Illustration's own default.
+ */
+struct ParsedIllustrationType
+{
+  std::string mimeType;
+  uint16_t width = 0;
+  uint16_t height = 0;
+};
+
+ParsedIllustrationType parseIllustrationType(const std::string& type)
+{
+  ParsedIllustrationType result;
+  const auto parts = kiwix::split(type, ";");
+  if (parts.empty()) {
+    return result;
+  }
+
+  const std::string potentialMime = kiwix::trim(parts[0]);
+
+  // A basic check: MIME types typically contain a slash (e.g., "image/jpeg")
+  if (potentialMime.find('/') != std::string::npos) {
+    result.mimeType = potentialMime;
+  }
+
+  for (auto it = parts.begin() + 1; it != parts.end(); ++it) {
+    const auto eqPos = it->find('=');
+    if (eqPos == std::string::npos) {
+      continue;
+    }
+
+    // Trim both key and value to handle spaces safely (e.g., " width=100")
+    const std::string key = kiwix::trim(it->substr(0, eqPos));
+    const std::string value = kiwix::trim(it->substr(eqPos + 1));
+
+    if (!value.empty()) {
+      const uint16_t numericValue =
+        static_cast<uint16_t>(strtoul(value.c_str(), nullptr, 10));
+
+      if (key == "width") {
+        result.width = numericValue;
+      } else if (key == "height") {
+        result.height = numericValue;
+      }
+    }
+  }
+
+  return result;
+}
+
 } // anonymous namespace
 
 namespace kiwix
@@ -251,7 +307,14 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       const std::string thumbnailUrl = linkNode.attribute("href").value();
       // XXX non-absolute URL is expected to be an absolute-path.
       favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
-      favicon->mimeType = linkNode.attribute("type").value();
+      const auto parsedType = parseIllustrationType(linkNode.attribute("type").value());
+      favicon->mimeType = parsedType.mimeType;
+      if (parsedType.width) {
+        favicon->width = parsedType.width;
+      }
+      if (parsedType.height) {
+        favicon->height = parsedType.height;
+      }
       if (!favicon->mimeType.empty()) {
         m_illustrations.push_back(favicon);
       }
