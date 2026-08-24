@@ -200,21 +200,19 @@ bool Manager::readFile(
   bool readOnly,
   bool trustLibrary)
 {
+  /* This has to be set (although if the file does not exists) to be
+   * able to know where to save the library if new content are
+   * available */
+  if (!readOnly) { // todo XXX, better to introduce setWritableLibraryPath and remove this code from the readFile
+    this->writableLibraryPath = path;
+  }
+
   if (!kiwix::fileExists(path)) {
     return false;
   }
 
   const std::string xml = getFileContent(path);
-  const bool retVal = this->readXml(xml, readOnly, path, trustLibrary);
-
-  /* This has to be set (although if the file does not exists) to be
-   * able to know where to save the library if new content are
-   * available */
-  if (!readOnly) {
-    this->writableLibraryPath = path;
-  }
-
-  return retVal;
+  return this->readXml(xml, readOnly, path, trustLibrary);
 }
 
 
