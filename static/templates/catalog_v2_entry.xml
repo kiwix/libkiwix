@@ -14,8 +14,7 @@
           href="{{root}}/catalog/v2/illustration/{{{id}}}/?size={{icon_size}}"
           type="{{icon_mimetype}}"/>
     {{/icons}}{{#contentAccessUrl}}<link type="text/html" href="{{contentAccessUrl}}/{{{content_id}}}" />
-    {{/contentAccessUrl}}
-    <author>
+    {{/contentAccessUrl}}<author>
       <name>{{author_name}}</name>
     </author>
     <publisher>
