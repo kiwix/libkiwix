@@ -74,7 +74,6 @@ TEST(FullEntryOpdsTest, rendersCoreBookFields)
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", /*contentAccessUrl=*/"", /*contentId=*/"book-id"),
     "  <entry>\n"
     CORE_ENTRY_BODY
-    "    \n"
     "    <author>\n"
     "      <name>Some Creator</name>\n"
     "    </author>\n"
@@ -94,7 +93,6 @@ TEST(FullEntryOpdsTest, omitsAcquisitionLinkWhenUrlIsEmpty)
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
     "  <entry>\n"
     CORE_ENTRY_BODY
-    "    \n"
     "    <author>\n"
     "      <name>Some Creator</name>\n"
     "    </author>\n"
@@ -116,7 +114,6 @@ TEST(FullEntryOpdsTest, rendersAcquisitionLinkWhenUrlIsSet)
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
     "  <entry>\n"
     CORE_ENTRY_BODY
-    "    \n"
     "    <author>\n"
     "      <name>Some Creator</name>\n"
     "    </author>\n"
@@ -136,7 +133,6 @@ TEST(FullEntryOpdsTest, omitsContentLinkWhenContentAccessUrlIsEmpty)
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", /*contentAccessUrl=*/"", "book-id"),
     "  <entry>\n"
     CORE_ENTRY_BODY
-    "    \n"
     "    <author>\n"
     "      <name>Some Creator</name>\n"
     "    </author>\n"
@@ -275,7 +271,6 @@ TEST(FullEntryOpdsTest, specialCharactersInBookMetadataAreEscaped)
     "    <tags>tag1;tag2;_category:wikipedia</tags>\n"
     "    <articleCount>42</articleCount>\n"
     "    <mediaCount>7</mediaCount>\n"
-    "    \n"
     "    <author>\n"
     "      <name>Some Creator</name>\n"
     "    </author>\n"
