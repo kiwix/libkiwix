@@ -303,10 +303,20 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
       const auto favicon = std::make_shared<Illustration>();
-      favicon->data.clear();
       const std::string thumbnailUrl = linkNode.attribute("href").value();
-      // XXX non-absolute URL is expected to be an absolute-path.
-      favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
+      if (startsWith(thumbnailUrl, "data:")) {
+        // OPDS 1.2's "data" URL scheme (spec 5.2.2): the payload is
+        // whatever follows the first comma, regardless of what media-type
+        // text (if any) precedes it - the link's own "type" attribute is
+        // authoritative for that.
+        const auto commaPos = thumbnailUrl.find(',');
+        if (commaPos != std::string::npos) {
+          favicon->data = base64_decode(thumbnailUrl.substr(commaPos + 1));
+        }
+      } else {
+        // XXX non-absolute URL is expected to be an absolute-path.
+        favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
+      }
       const auto parsedType = parseIllustrationType(linkNode.attribute("type").value());
       favicon->mimeType = parsedType.mimeType;
       if (parsedType.width) {

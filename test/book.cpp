@@ -287,6 +287,74 @@ TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithPartialSizeSuffixTest)
     EXPECT_EQ(illustration->height, 48);
 }
 
+TEST(BookTest, updateFromOPDSDataUriThumbnailTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/jpeg;width=96;height=256;scale=1"
+              href="data:image/jpeg;base64,Zmlyc3QtdGh1bWJuYWls" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->getData(), "first-thumbnail");
+    EXPECT_EQ(illustration->url, "");
+    EXPECT_EQ(illustration->mimeType, "image/jpeg");
+    EXPECT_EQ(illustration->width, 96);
+    EXPECT_EQ(illustration->height, 256);
+}
+
+TEST(BookTest, updateFromOPDSMultipleDataUriThumbnailsTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png;width=48;height=48;scale=1"
+              href="data:image/png;base64,Zmlyc3QtdGh1bWJuYWls" />
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/jpeg;width=96;height=96;scale=1"
+              href="data:image/jpeg;base64,c2Vjb25kLXRodW1ibmFpbA==" />
+    )");
+
+    const auto& illustrations = book.getIllustrations();
+    ASSERT_EQ(illustrations.size(), 2U);
+    EXPECT_EQ(illustrations[0]->getData(), "first-thumbnail");
+    EXPECT_EQ(illustrations[0]->width, 48);
+    EXPECT_EQ(illustrations[0]->height, 48);
+    EXPECT_EQ(illustrations[1]->getData(), "second-thumbnail");
+    EXPECT_EQ(illustrations[1]->width, 96);
+    EXPECT_EQ(illustrations[1]->height, 96);
+}
+
+TEST(BookTest, updateFromOPDSMixedDataUriAndExternalThumbnailLinksTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png"
+              href="https://example.com/favicon.png" />
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/jpeg"
+              href="data:image/jpeg;base64,Zmlyc3QtdGh1bWJuYWls" />
+    )");
+
+    const auto& illustrations = book.getIllustrations();
+    ASSERT_EQ(illustrations.size(), 2U);
+    EXPECT_EQ(illustrations[0]->url, "https://example.com/favicon.png");
+    EXPECT_EQ(illustrations[1]->url, "");
+    EXPECT_EQ(illustrations[1]->getData(), "first-thumbnail");
+}
+
+TEST(BookTest, updateFromOPDSDataUriThumbnailWithoutCommaTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png"
+              href="data:image/png;base64" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->getData(), "");
+    EXPECT_EQ(illustration->url, "");
+}
+
 TEST(BookTest, updateFromOPDSMultipleBase64ThumbnailsTest)
 {
     const kiwix::Book book = makeBookFromOpds(R"(
