@@ -135,6 +135,8 @@
         spanElement.setAttribute('aria-label', tagMessage);
         spanElement.setAttribute('title', tagMessage);
         spanElement.setAttribute('data-tag', tagValue);
+        spanElement.setAttribute('role', 'button');
+        spanElement.setAttribute('tabindex', '0');
         spanElement.innerHTML = htmlEncode(tagValue);
         return spanElement.outerHTML;
     }
@@ -479,7 +481,7 @@
     function addTagElement(tagValue, resetFilter) {
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.style.display = 'inline-block';
-        tagElement.innerHTML = htmlEncode(tagValue);
+        tagElement.innerHTML = htmlEncode(tagValue) + ' &times;';
         const tagMessage = $t("stop-filtering-by-tag", {TAG: tagValue});
         tagElement.setAttribute('aria-label', tagMessage);
         tagElement.setAttribute('title', tagMessage);
@@ -492,6 +494,12 @@
         [...tagLinks].forEach(elem => {
             if (!elem.getAttribute('click-listener')) {
                 elem.addEventListener('click', () => addTagElement(elem.dataset.tag, true));
+                elem.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        addTagElement(elem.dataset.tag, true);
+                    }
+                });
                 elem.setAttribute('click-listener', 'true');
             }
         });
@@ -608,7 +616,15 @@
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
+        tagElement.setAttribute('role', 'button');
+        tagElement.setAttribute('tabindex', '0');
         tagElement.addEventListener('click', () => removeTagElement(true));
+        tagElement.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                removeTagElement(true);
+            }
+        });
         if (filters) {
             const currentLink = window.location.hash;
             const newLink = `#${params.toString()}`;
