@@ -264,6 +264,11 @@ static std::string fromOpdsDate(const std::string& date)
 }
 
 
+void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost)
+{
+  updateFromOpds(node, urlHost, "");
+}
+
 #define VALUE(name) node.child(name).child_value()
 void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir)
 {
