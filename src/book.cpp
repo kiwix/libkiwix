@@ -65,7 +65,19 @@ bool Book::update(const kiwix::Book& other)
 
 void Book::update(const zim::Archive& archive) {
   m_path = archive.getFilename();
-  m_pathValid = true;
+  // getFilename() is empty for archives that have no (re)openable path at
+  // all, e.g. ones opened from a file descriptor with no backing path
+  // (see https://github.com/kiwix/libkiwix/issues/1015). Claiming such a
+  // book has a valid path here would make getArchiveById() below try (and
+  // fail) to reopen it by that empty path instead of using m_handle.
+  m_pathValid = !m_path.empty();
+  // Keep a handle on the already-open archive so callers that only have
+  // this Book (not the original zim::Archive) -- e.g. Library::getArchiveById()
+  // serving this book over HTTP -- can still get at its content, even when
+  // there's no path to reopen it from. zim::Archive is a cheap-to-copy
+  // handle around a shared_ptr<FileImpl>, so this doesn't duplicate the
+  // underlying file/fd.
+  m_handle = std::make_shared<zim::Archive>(archive);
   m_id = std::string(archive.getUuid());
   m_title = getArchiveTitle(archive);
   m_description = getMetaDescription(archive);
