@@ -318,6 +318,13 @@ const char sampleLibraryXML[] = R"(
 #include "../include/book.h"
 #include "../include/bookmark.h"
 
+#include <zim/archive.h>
+
+#ifndef _WIN32
+# include <fcntl.h>
+# include <unistd.h>
+#endif
+
 namespace
 {
 
@@ -1224,6 +1231,47 @@ TEST_F(LibraryTest, removeBookByIdDropsTheReader)
   lib->removeBookById("raycharles");
   EXPECT_THROW(lib->getArchiveById("raycharles"), std::out_of_range);
 };
+
+#ifndef _WIN32
+// Regression test for https://github.com/kiwix/libkiwix/issues/1015: a book
+// created via Book::update(const zim::Archive&) from an archive that has no
+// (re)openable path (e.g. one opened from a file descriptor, as
+// kiwix-android does for custom apps using Android's Asset Play Delivery)
+// must still be servable via Library::getArchiveById() -- not just have its
+// metadata (title, language, ...) available.
+TEST_F(LibraryTest, getArchiveByIdWorksForBookAddedFromFdBackedArchive)
+{
+  // Reuse the already-loaded "raycharles" book's real path to open an
+  // equivalent archive by fd instead of by path, mirroring how an
+  // Android app opens a ZIM it only has a file descriptor for.
+  const auto path = lib->getBookById("raycharles").getPath();
+  const int fd = open(path.c_str(), O_RDONLY);
+  ASSERT_NE(-1, fd);
+  const zim::Archive fdArchive(fd);
+
+  // update() derives the book's id from the archive's UUID, overwriting
+  // anything set before calling it -- so capture the id it actually ends
+  // up with rather than assuming one.
+  kiwix::Book fdBook;
+  fdBook.update(fdArchive);
+
+  // The archive has no real path to reopen from -- update() must not
+  // pretend otherwise.
+  EXPECT_TRUE(fdBook.getPath().empty());
+  EXPECT_FALSE(fdBook.isPathValid());
+
+  ASSERT_TRUE(lib->addBook(fdBook));
+
+  const auto archive = lib->getArchiveById(fdBook.getId());
+  ASSERT_NE(nullptr, archive);
+  // Confirm it's not just non-null, but genuinely usable: same content as
+  // the original, path-backed archive for the same file.
+  const zim::Archive pathArchive(path);
+  EXPECT_EQ(archive->getUuid(), pathArchive.getUuid());
+  EXPECT_EQ(archive->getEntryCount(), pathArchive.getEntryCount());
+  EXPECT_EQ(archive->getMainEntry().getPath(), pathArchive.getMainEntry().getPath());
+}
+#endif // not _WIN32
 
 TEST_F(LibraryTest, removeBookByIdUpdatesTheSearchDB)
 {

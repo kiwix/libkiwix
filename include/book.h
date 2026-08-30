@@ -105,6 +105,19 @@ class Book
 
   const std::string& getDownloadId() const { return m_downloadId; }
 
+  /**
+   * Returns the zim::Archive this book was built from via update(const
+   * zim::Archive&), if any, or nullptr otherwise.
+   *
+   * A book updated from a path-based archive (updateFromXml(), etc.) has no
+   * handle here -- getArchiveById() reopens it from getPath() as before.
+   * A book updated directly from an already-open zim::Archive (e.g. one
+   * opened from a file descriptor, which may have no reopenable path at
+   * all) keeps a reference to that archive here, so callers that only have
+   * the book (not the original archive) can still get at its content.
+   */
+  std::shared_ptr<zim::Archive> getArchiveHandle() const { return m_handle; }
+
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
   void setId(const std::string& id) { m_id = id; }
   void setPath(const std::string& path);
@@ -151,6 +164,7 @@ class Book
   bool m_readOnly = false;
   uint64_t m_size = 0;
   Illustrations m_illustrations;
+  std::shared_ptr<zim::Archive> m_handle;
 
   // Used as the return value of getDefaultIllustration() when no default
   // illustration is found in the book

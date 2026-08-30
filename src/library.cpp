@@ -390,10 +390,20 @@ const Book& Library::getBookByPath(const std::string& path) const
 
 std::shared_ptr<zim::Archive> Library::getArchiveById(const std::string& id)
 {
+  const auto& book = getBookById(id);
+  // A book updated directly from an already-open zim::Archive (see
+  // Book::update(const zim::Archive&)) keeps a handle on it, since it may
+  // have no reopenable path at all (e.g. one opened from a file
+  // descriptor -- see https://github.com/kiwix/libkiwix/issues/1015).
+  // Prefer that handle over reopening by path, which is not just an
+  // optimization here: for such a book it's the only way to get an
+  // archive at all.
+  if (auto handle = book.getArchiveHandle()) {
+    return handle;
+  }
   try {
     return mp_archiveCache->getOrPut(id,
     [&](){
-      auto book = getBookById(id);
       if (!book.isPathValid()) {
         throw std::invalid_argument("");
       }
