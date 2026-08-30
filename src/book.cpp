@@ -225,6 +225,7 @@ class Book::Impl
   bool m_readOnly = false;
   uint64_t m_size = 0;
   Book::Illustrations m_illustrations;
+  std::shared_ptr<zim::Archive> m_handle;
 };
 
 /* Constructor */
@@ -259,7 +260,8 @@ bool Book::update(const kiwix::Book& other)
 
 void Book::update(const zim::Archive& archive) {
   mp_impl->m_path = archive.getFilename();
-  mp_impl->m_pathValid = true;
+  mp_impl->m_pathValid = !mp_impl->m_path.empty();
+  mp_impl->m_handle = std::make_shared<zim::Archive>(archive);
   mp_impl->m_id = std::string(archive.getUuid());
   mp_impl->m_title = getArchiveTitle(archive);
   mp_impl->m_description = getMetaDescription(archive);
@@ -274,7 +276,6 @@ void Book::update(const zim::Archive& archive) {
   mp_impl->m_articleCount = archive.getArticleCount();
   mp_impl->m_mediaCount = archive.getMediaCount();
   mp_impl->m_size = archive.getFilesize();
-
   mp_impl->m_illustrations.clear();
   for ( const auto& illustrationInfo : archive.getIllustrationInfos() ) {
     const auto illustration = std::shared_ptr<Illustration>(new Illustration());
@@ -651,6 +652,11 @@ uint64_t Book::getSize() const
 std::string Book::getDownloadId() const
 {
   return mp_impl->m_downloadId;
+}
+
+std::shared_ptr<zim::Archive> Book::getArchiveHandle() const
+{
+  return mp_impl->m_handle;
 }
 
 void Book::setReadOnly(bool readOnly)

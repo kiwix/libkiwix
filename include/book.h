@@ -149,6 +149,12 @@ class Book
 
   std::string getDownloadId() const;
 
+  /**
+   * Returns the archive this book was built from, when it was updated from
+   * an already-open archive that may not have a reopenable path.
+   */
+  std::shared_ptr<zim::Archive> getArchiveHandle() const;
+
   void setReadOnly(bool readOnly);
   void setId(const std::string& id);
   void setPath(const std::string& path);
