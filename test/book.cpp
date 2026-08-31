@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../include/book.h"
+#include "testing_tools.h"
 #include <pugixml.hpp>
 #include <zim/archive.h>
 
@@ -161,6 +162,33 @@ TEST(BookTest, updateFromOPDSTwoAcquisitionLinksTest)
 
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
     EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getSize(), 222U);
+}
+
+TEST(BookTest, updateFromOPDSDuplicateLengthWarnsTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="zara.zim"
+              length="111" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://who.org/zara.zim"
+              length="222" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    kiwix::testing::CapturedStderr stderror;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    EXPECT_EQ(
+      "Book 'zara': acquisition links 'zara.zim' (length 111) and "
+      "'https://who.org/zara.zim' (length 222) disagree on length.\n",
+      std::string(stderror));
     EXPECT_EQ(book.getSize(), 222U);
 }
 

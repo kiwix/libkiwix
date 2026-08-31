@@ -292,6 +292,8 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   m_illustrations.clear();
+  std::string firstAcquisitionHref;
+  std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;
            linkNode = linkNode.next_sibling("link")) {
     std::string rel = linkNode.attribute("rel").value();
@@ -309,7 +311,15 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       }
       const std::string length = linkNode.attribute("length").value();
       if (!length.empty()) {
+        if (!firstLength.empty() && length != firstLength) {
+          std::cerr << "Book '" << m_id << "': acquisition links '"
+                    << firstAcquisitionHref << "' (length " << firstLength
+                    << ") and '" << href << "' (length " << length
+                    << ") disagree on length." << std::endl;
+        }
         m_size = strtoull(length.c_str(), 0, 0);
+        firstAcquisitionHref = href;
+        firstLength = length;
       }
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
