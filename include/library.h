@@ -492,13 +492,14 @@ class Library: public std::enable_shared_from_this<Library>
 
   /**
    * Dump the library as an OPDS feed suitable for an offline/local library
-   * file (no HTTP root; book paths are exposed via rel="self" links).
+   * file (no HTTP root; book paths are exposed via acquisition links whose
+   * href is a local path rather than a URL).
    *
    * This does not write to outputPath itself - it only returns the OPDS
-   * XML. outputPath is used solely to resolve each book's rel="self" link:
-   * each book's path is made relative to outputPath's parent directory,
-   * the same way writeToFile() resolves book paths relative to the file
-   * it writes.
+   * XML. outputPath is used solely to resolve each book's local-path
+   * acquisition link: each book's path is made relative to outputPath's
+   * parent directory, the same way writeToFile() resolves book paths
+   * relative to the file it writes.
    *
    * @param outputPath the path the returned OPDS content is intended to be
    *                    written to; only its parent directory is used, to

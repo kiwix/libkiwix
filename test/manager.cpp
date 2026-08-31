@@ -302,7 +302,7 @@ TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
     EXPECT_FALSE(book1.readOnly());
 }
 
-TEST(ManagerTest, readOpdsWithInvalidSelfPath)
+TEST(ManagerTest, readOpdsWithInvalidLocalPath)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
@@ -312,7 +312,7 @@ TEST(ManagerTest, readOpdsWithInvalidSelfPath)
         <entry>
           <id>urn:uuid:book1</id>
           <title>Book From OPDS</title>
-          <link rel="self" href="does-not-exist.zim" />
+          <link rel="http://opds-spec.org/acquisition/open-access" href="does-not-exist.zim" />
         </entry>
       </feed>
     )";

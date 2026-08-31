@@ -75,8 +75,10 @@ class Book
    *
    * @param node the `<entry>` node of an OPDS feed describing the book.
    * @param urlHost host to prepend to relative illustration/thumbnail URLs.
-   * @param baseDir base directory used to resolve a relative `rel="self"`
-   *                link into an absolute book path.
+   * @param baseDir base directory used to resolve a relative local-path
+   *                acquisition link (`rel="http://opds-spec.org/acquisition/
+   *                open-access"` with a non-URL href) into an absolute book
+   *                path.
    */
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir);
 

@@ -1100,16 +1100,16 @@ std::string Library::dumpOpds(const std::string& outputPath) const
     const Book& book = pair.second;
     // Local/offline dump: the book's own id is used as the content id, there
     // is no content-access URL to link to (no server involved), and the
-    // book's local path is safe to expose as the rel="self" link, resolved
+    // book's local path is safe to expose as an acquisition link, resolved
     // relative to baseDir the same way LibXMLDumper does.
-    const std::string selfPath = book.getPath().empty()
+    const std::string localPath = book.getPath().empty()
         ? ""
         : computeRelativePath(baseDir, book.getPath());
     ss << fullEntryOpds(book,
                         /*rootLocation=*/"",
                         /*contentAccessUrl=*/"",
                         /*contentId=*/book.getId(),
-                        selfPath,
+                        localPath,
                         /*isLiveCatalog=*/false);
   }
 

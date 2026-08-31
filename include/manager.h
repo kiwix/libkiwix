@@ -111,7 +111,7 @@ class Manager
    * @param contentOriginUri Where content was read from: either the URL it
    *        was fetched from (used to resolve relative acquisition/thumbnail
    *        links) or the local filesystem path it was read from (used to
-   *        resolve a relative rel="self" link). See
+   *        resolve a relative local-path acquisition link). See
    *        kiwix::resolveContentOrigin() for the exact splitting rules. It is
    *        assumed that URL links come in the form of an absolute path
    *        component.

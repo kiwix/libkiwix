@@ -296,19 +296,21 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
            linkNode = linkNode.next_sibling("link")) {
     std::string rel = linkNode.attribute("rel").value();
 
-    if (rel == "self") {
-      const std::string path = linkNode.attribute("href").value();
-      m_path = isRelativePath(path)? computeAbsolutePath(baseDir, path): path;
-      m_pathValid = fileReadable(m_path);
+    if (rel == "http://opds-spec.org/acquisition/open-access") {
+      // The href tells us whether this link points at a remote copy of the
+      // book (an absolute URL) or a local one (a filesystem path, absolute
+      // or relative to baseDir) - a single entry may carry one of each.
+      const std::string href = linkNode.attribute("href").value();
+      if (isAbsoluteUrl(href)) {
+        m_url = href;
+      } else {
+        m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
+        m_pathValid = fileReadable(m_path);
+      }
       const std::string length = linkNode.attribute("length").value();
       if (!length.empty()) {
         m_size = strtoull(length.c_str(), 0, 0);
       }
-    }
-
-    if (rel == "http://opds-spec.org/acquisition/open-access") {
-      m_url = linkNode.attribute("href").value();
-      m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
       const auto favicon = std::make_shared<Illustration>();

@@ -43,10 +43,13 @@ class Book;
  *                 content itself (as opposed to the catalog entry).
  * @param contentId The identifier of the book's content, used when building
  *                 content access links.
- * @param selfPath If non-empty, rendered as the entry's rel="self" link (its
- *                 local file path). Only meant for local/offline dumps - leave
- *                 empty for the live HTTP catalog, which must not leak
- *                 server-side filesystem paths to remote clients.
+ * @param localPath If non-empty, rendered as an additional rel="http://opds-
+ *                 spec.org/acquisition/open-access" link carrying the book's
+ *                 local file path (as opposed to the book's remote url, if
+ *                 any, which is rendered as its own such link). Only meant
+ *                 for local/offline dumps - leave empty for the live HTTP
+ *                 catalog, which must not leak server-side filesystem paths
+ *                 to remote clients.
  * @param isLiveCatalog Whether this entry is rendered for the live HTTP
  *                 catalog (OPDSDumper) as opposed to a local/offline file
  *                 dump (Library::dumpOpds). The live catalog can serve any
@@ -60,7 +63,7 @@ std::string fullEntryOpds(const Book& book,
                           const std::string& rootLocation,
                           const std::string& contentAccessUrl,
                           const std::string& contentId,
-                          const std::string& selfPath = "",
+                          const std::string& localPath = "",
                           bool isLiveCatalog = true);
 
 /**

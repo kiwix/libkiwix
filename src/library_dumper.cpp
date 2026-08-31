@@ -107,7 +107,7 @@ std::string fullEntryOpds(const Book& book,
                          const std::string& rootLocation,
                          const std::string& contentAccessUrl,
                          const std::string& contentId,
-                         const std::string& selfPath,
+                         const std::string& localPath,
                          bool isLiveCatalog)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
@@ -138,7 +138,7 @@ std::string fullEntryOpds(const Book& book,
       {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
       {"thumbnailLinks", thumbnailLinks},
-      {"self_path", onlyAsNonEmptyMustacheValue(selfPath)},
+      {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
 }

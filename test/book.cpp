@@ -93,9 +93,6 @@ TEST(BookTest, updateFromOPDSTest)
     kiwix::Book book;
     book.updateFromOpds(opds.child("entry"), "http://who.org", "");
 
-    // This entry has no rel="self" link, so - unlike updateFromXml(), which
-    // always resolves a "path" attribute - updateFromOpds() leaves path at
-    // its default (unset) value.
     EXPECT_EQ(book.getPath(), "");
     EXPECT_FALSE(book.isPathValid());
 
@@ -127,23 +124,44 @@ TEST(BookTest, updateFromOPDSTest)
     EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
 }
 
-TEST(BookTest, updateFromOPDSSelfLinkTest)
+TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
 {
     const XMLDoc opds(R"(
       <entry>
         <id>urn:uuid:zara</id>
-        <link rel="self" href="zara.zim" />
+        <link rel="http://opds-spec.org/acquisition/open-access" href="zara.zim" />
       </entry>
     )");
 
     kiwix::Book book;
     book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
 
-    // Unlike the acquisition/thumbnail links, a rel="self" link's href IS
-    // resolved against baseDir when relative - mirroring
-    // updateFromXml()'s "path" attribute handling (see
-    // BookTest.updateFromXMLTest above).
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
+    EXPECT_EQ(book.getUrl(), "");
+}
+
+TEST(BookTest, updateFromOPDSTwoAcquisitionLinksTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="zara.zim"
+              length="111" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://who.org/zara.zim"
+              length="222" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
+    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getSize(), 222U);
 }
 
 namespace

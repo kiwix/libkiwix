@@ -20,7 +20,7 @@
       <name>test</name>
     </publisher>
     <dc:issued>2021-04-17T00:00:00Z</dc:issued>
-    <link rel="self" href="./example.zim" type="application/x-zim"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" href="./example.zim" type="application/x-zim"/>
   </entry>
   <entry>
     <id>urn:uuid:6f1d19d0-633f-087b-fb55-7ac324ff9baf</id>
@@ -40,6 +40,6 @@
       <name>Kiwix</name>
     </publisher>
     <dc:issued>2020-03-31T00:00:00Z</dc:issued>
-    <link rel="self" href="./zimfile.zim" type="application/x-zim"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" href="./zimfile.zim" type="application/x-zim"/>
   </entry>
 </feed>

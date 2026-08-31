@@ -238,7 +238,7 @@ TEST(FullEntryOpdsTest, rendersBase64ThumbnailForEmbeddedOnlyIllustrationInFileD
   // embedded directly as a data: URI in the thumbnail link's href instead
   // (OPDS 1.2 5.2.2).
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-embedded-icon",
-                          /*selfPath=*/"", /*isLiveCatalog=*/false),
+                          /*localPath=*/"", /*isLiveCatalog=*/false),
     "  <entry>\n"
     "    <id>urn:uuid:book-with-embedded-icon</id>\n"
     "    <title>Book With Embedded Icon</title>\n"
@@ -289,7 +289,7 @@ TEST(FullEntryOpdsTest, rendersIllustrationUrlDirectlyInFileDump)
   // the thumbnail link points straight at that url instead of the live
   // /catalog/v2/illustration endpoint, which has no server behind it there.
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-icon-url",
-                          /*selfPath=*/"", /*isLiveCatalog=*/false),
+                          /*localPath=*/"", /*isLiveCatalog=*/false),
     "  <entry>\n"
     "    <id>urn:uuid:book-with-icon-url</id>\n"
     "    <title>Book With Icon Url</title>\n"
@@ -367,7 +367,7 @@ TEST(FullEntryOpdsTest, roundTripsBase64ThumbnailDataThroughOPDSReadback)
   ASSERT_EQ(book.getIllustrations().at(0)->getData(), "Hello, World!");
 
   const std::string rendered = fullEntryOpds(book, "http://root.location", "", "book-with-roundtrip-icon",
-                                              /*selfPath=*/"", /*isLiveCatalog=*/false);
+                                              /*localPath=*/"", /*isLiveCatalog=*/false);
 
   // Guards against the class of bug where the template puts whitespace (e.g.
   // a newline+indentation) around the base64 payload: base64_decode() stops
@@ -407,7 +407,7 @@ TEST(FullEntryOpdsTest, rendersMultipleBase64Thumbnails)
   const Book& book = lib->getBookById("multi-icon-book");
 
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "multi-icon-book",
-                           /*selfPath=*/"", /*isLiveCatalog=*/false),
+                           /*localPath=*/"", /*isLiveCatalog=*/false),
     "  <entry>\n"
     "    <id>urn:uuid:multi-icon-book</id>\n"
     "    <title>Book With Multiple Icons</title>\n"
@@ -460,7 +460,7 @@ TEST(FullEntryOpdsTest, rendersMixedLinkAndBase64ThumbnailsInFileDump)
   const Book& book = lib->getBookById("mixed-icon-book");
 
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "mixed-icon-book",
-                           /*selfPath=*/"", /*isLiveCatalog=*/false),
+                           /*localPath=*/"", /*isLiveCatalog=*/false),
     "  <entry>\n"
     "    <id>urn:uuid:mixed-icon-book</id>\n"
     "    <title>Book With Mixed Icons</title>\n"
@@ -537,10 +537,10 @@ TEST(FullEntryOpdsTest, omitsDataUriThumbnailForEmbeddedOnlyIllustrationInLiveCa
   );
 }
 
-TEST(FullEntryOpdsTest, omitsSelfLinkWhenSelfPathIsEmpty)
+TEST(FullEntryOpdsTest, omitsLocalPathAcquisitionLinkWhenEmpty)
 {
   const Book book = createBook();
-  // selfPath left at its default ("") - mirrors how OPDSDumper calls this
+  // localPath left at its default ("") - mirrors how OPDSDumper calls this
   // function for the live HTTP catalog, which must never leak a local path.
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
     "  <entry>\n"
@@ -557,12 +557,12 @@ TEST(FullEntryOpdsTest, omitsSelfLinkWhenSelfPathIsEmpty)
   );
 }
 
-TEST(FullEntryOpdsTest, rendersSelfLinkWhenSelfPathIsSet)
+TEST(FullEntryOpdsTest, rendersLocalPathAcquisitionLinkWhenSet)
 {
   Book book = createBook();
   book.setSize(123456);
   EXPECT_EQ(fullEntryOpds(book, /*rootLocation=*/"", "", "book-id",
-                          /*selfPath=*/"/local/path/book.zim"),
+                          /*localPath=*/"/local/path/book.zim"),
     "  <entry>\n"
     CORE_ENTRY_BODY
     "    <author>\n"
@@ -572,7 +572,30 @@ TEST(FullEntryOpdsTest, rendersSelfLinkWhenSelfPathIsSet)
     "      <name>Some Publisher</name>\n"
     "    </publisher>\n"
     "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
-    "    <link rel=\"self\" href=\"/local/path/book.zim\" type=\"application/x-zim\" length=\"123456\"/>\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" href=\"/local/path/book.zim\" type=\"application/x-zim\" length=\"123456\"/>\n"
+    "  </entry>\n"
+  );
+}
+
+TEST(FullEntryOpdsTest, rendersBothAcquisitionLinksWhenUrlAndLocalPathAreSet)
+{
+  Book book = createBook();
+  book.setUrl("http://download.kiwix.org/zim/book.zim");
+  book.setSize(123456);
+
+  EXPECT_EQ(fullEntryOpds(book, /*rootLocation=*/"", "", "book-id",
+                          /*localPath=*/"/local/path/book.zim"),
+    "  <entry>\n"
+    CORE_ENTRY_BODY
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"http://download.kiwix.org/zim/book.zim\" length=\"123456\" />\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" href=\"/local/path/book.zim\" type=\"application/x-zim\" length=\"123456\"/>\n"
     "  </entry>\n"
   );
 }
