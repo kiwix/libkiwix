@@ -559,7 +559,8 @@ TEST(FullEntryOpdsTest, omitsSelfLinkWhenSelfPathIsEmpty)
 
 TEST(FullEntryOpdsTest, rendersSelfLinkWhenSelfPathIsSet)
 {
-  const Book book = createBook();
+  Book book = createBook();
+  book.setSize(123456);
   EXPECT_EQ(fullEntryOpds(book, /*rootLocation=*/"", "", "book-id",
                           /*selfPath=*/"/local/path/book.zim"),
     "  <entry>\n"
@@ -571,7 +572,7 @@ TEST(FullEntryOpdsTest, rendersSelfLinkWhenSelfPathIsSet)
     "      <name>Some Publisher</name>\n"
     "    </publisher>\n"
     "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
-    "    <link rel=\"self\" href=\"/local/path/book.zim\" type=\"application/x-zim\"/>\n"
+    "    <link rel=\"self\" href=\"/local/path/book.zim\" type=\"application/x-zim\" length=\"123456\"/>\n"
     "  </entry>\n"
   );
 }

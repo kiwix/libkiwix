@@ -300,6 +300,10 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       const std::string path = linkNode.attribute("href").value();
       m_path = isRelativePath(path)? computeAbsolutePath(baseDir, path): path;
       m_pathValid = fileReadable(m_path);
+      const std::string length = linkNode.attribute("length").value();
+      if (!length.empty()) {
+        m_size = strtoull(length.c_str(), 0, 0);
+      }
     }
 
     if (rel == "http://opds-spec.org/acquisition/open-access") {

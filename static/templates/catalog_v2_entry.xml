@@ -24,5 +24,5 @@
     <dc:issued>{{book_date}}</dc:issued>
     {{#url}}
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="{{{url}}}" length="{{{size}}}" />
-    {{/url}}{{#self_path}}<link rel="self" href="{{self_path}}" type="application/x-zim"/>{{/self_path}}
+    {{/url}}{{#self_path}}<link rel="self" href="{{self_path}}" type="application/x-zim" length="{{{size}}}"/>{{/self_path}}
   </entry>
