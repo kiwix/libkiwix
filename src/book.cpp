@@ -199,7 +199,7 @@ void Book::update(const zim::Archive& archive) {
   m_category = getCategoryFromTags();
   m_articleCount = archive.getArticleCount();
   m_mediaCount = archive.getMediaCount();
-  m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
+  m_size = archive.getFilesize();
 
   m_illustrations.clear();
   for ( const auto& illustrationInfo : archive.getIllustrationInfos() ) {

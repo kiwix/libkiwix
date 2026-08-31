@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "../include/book.h"
 #include <pugixml.hpp>
+#include <zim/archive.h>
 
 namespace
 {
@@ -430,6 +431,14 @@ TEST(BookTest, updateTest)
     auto newDefaultIllustration = newBook.getIllustration(48);
     EXPECT_EQ(newDefaultIllustration->getData(), defaultIllustration->getData());
     EXPECT_EQ(newDefaultIllustration->mimeType, defaultIllustration->mimeType);
+}
+
+TEST(BookTest, updateFromArchiveSetsByteExactSize)
+{
+    const zim::Archive archive("./test/zimfile.zim");
+    kiwix::Book book;
+    book.update(archive);
+    EXPECT_EQ(book.getSize(), archive.getFilesize());
 }
 
 namespace

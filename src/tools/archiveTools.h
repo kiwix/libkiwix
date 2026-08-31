@@ -46,7 +46,6 @@ namespace kiwix
 
     unsigned int getArchiveMediaCount(const zim::Archive& archive);
     unsigned int getArchiveArticleCount(const zim::Archive& archive);
-    unsigned int getArchiveFileSize(const zim::Archive& archive);
 
     zim::Item getFinalItem(const zim::Archive& archive, const zim::Entry& entry);
 
