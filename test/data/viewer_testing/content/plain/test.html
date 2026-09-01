@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <title>Testing of link/URL handling by kiwix-serve viewer</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      border: 2px solid rgb(140 140 140);
+      letter-spacing: 1px;
+    }
+
+    thead {
+      background-color: rgb(228 240 245);
+    }
+
+    th,
+    td {
+      border: 1px solid rgb(160 160 160);
+      padding: 8px 10px;
+    }
+
+    td {
+      width: 100px;
+    }
+
+    td {
+      text-align: center;
+    }
+
+    tbody > tr:nth-of-type(odd) {
+      background-color: rgb(237 238 242);
+    }
+
+    :target {
+        background-color: yellow;
+    }
+  </style>
+ </head>
+ <body>
+   <h1><a name='guidelines'>Testing Guidelines</a></h1>
+  <ul>
+    <li>Test in different browsers (Firefox, Chromium, desktop, mobile).</li>
+    <li>Test with external link blocking disabled/enabled.</li>
+    <li>Links activation can be performed by
+      <ul>
+        <li>clicking</li>
+        <li>CTRL clicking</li>
+        <li>SHIFT clicking</li>
+        <li>middle clicking</li>
+        <li>selecting "Open Link in New Tab" from the context menu</li>
+        <li>selecting "Copy Link" from the context menu</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h1>Testing Status</h1>
+  <p>
+  In the tables below the <b>Base case</b> column represents the simplest setup
+  of the test page (no external link blocking, no wrapping iframe, etc).  Each
+  subsequent column contains a list of (additional) problems observed for the
+  respective feature enabled (possibly in combination with one or more of the
+  features from the previous columns).
+  </p>
+
+  <p>
+  Issues referenced in the header of the column apply to the entire column or
+  most of its rows.
+  </p>
+
+  <h2>External links</h2>
+
+  <p>
+    Requirements:
+    <ul>
+      <li>
+        The viewer must NOT stay around after the link is followed (even if
+        intercepted by the link blocking page).
+      </li>
+    </ul>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th colspan=2></th>
+        <th>Base case</th>
+        <th>External link blocking</th>
+        <th>
+          Nested iframe (<a href="issues.html#8-nested-iframe-circumvents-link-blocking">8</a>)
+        </th>
+        <th>Dynamic page</th>
+        <th>Wombatization</th>
+      </tr>
+    </thead>
+    <tr>
+      <th rowspan=2>External page</th>
+      <td><a href="https://example.com">Same tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on -->
+      <td>
+        <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
+      </td>
+      <!--Nested iframe    -->
+      <td>
+        <a href="issues.html#6-link-loads-in-iframe">6</a>
+      </td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+    <tr>
+      <td><a href="https://example.com" target="_blank">New tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on -->
+      <td>
+        <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
+      </td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+
+    <tr>
+      <th rowspan=2>External page (JS link)</th>
+      <td><a href="javascript:window.open('https://example.com', '_self')">Same tab</a></td>
+      <!--Base case        -->
+      <td>
+        <a href="issues.html#2-firefox-csp-error">2</a>
+        <a href="issues.html#3-chromium-csp-error">3</a>
+      </td>
+      <!--Link blocking on --><td></td>
+      <!--Nested iframe    -->
+      <td>
+        <a href="issues.html#6-link-loads-in-iframe">6</a>
+      </td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#9-url-not-found">9</a>
+      </td>
+    </tr>
+    <tr>
+      <td><a href="javascript:window.open('https://example.com', '_blank')">New tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on -->
+      <td>
+        <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
+        <a href="issues.html#4-link-not-blocked">4</a>
+      </td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#9-url-not-found">9</a>
+      </td>
+    </tr>
+
+    <tr>
+      <th rowspan=2>E-mail link</th>
+      <td><a href="mailto:someone@example.com">Same tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on -->
+      <td>
+        <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
+      </td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+    <tr>
+      <td><a href="mailto:someone@example.com" target="_blank">New tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on -->
+      <td>
+        <a href="issues.html#1-circumvention-via-forced-new-tab">1</a>
+      </td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+  </table>
+
+  <h2>Internal links</h2>
+
+  <p>
+    Requirements:
+    <ul>
+      <li>
+        When the link is opened in a new tab/window, the viewer must stay
+        around.
+      </li>
+    </ul>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th colspan=2></th>
+        <th>Base case</th>
+        <th>External link blocking</th>
+        <th>
+          Nested iframe (<a href="issues.html#7-new-tab-escapes-viewer">7</a>)
+        </th>
+        <th>
+          Dynamic page (<a href="issues.html#7-new-tab-escapes-viewer">7</a>)
+        </th>
+        <th>
+          Wombatization (<a href="issues.html#7-new-tab-escapes-viewer">7</a>)
+        </th>
+      </tr>
+    </thead>
+    <tr>
+      <th rowspan=2>Intrapage</th>
+      <td><a href="#guidelines">Same tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+    <tr>
+      <td><a href="#guidelines" target="_blank">New tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+    <tr>
+      <th rowspan=2>HTML</th>
+      <td><a href="anotherpage.html">Same tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+    <tr>
+      <td><a href="anotherpage.html" target="_blank">New tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+
+    <tr>
+      <th rowspan=2>HTML (with a fragment)</th>
+      <td><a href="target_page_for_a_hash_link.html#special-note">Same tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#10-wombatjs-drops-fragments-of-dynamically-created-links">10</a>
+      </td>
+    </tr>
+    <tr>
+      <td><a href="target_page_for_a_hash_link.html#special-note" target="_blank">New tab</a></td>
+      <!--Base case        --><td>&#9989;</td>
+      <!--Link blocking on --><td>&#9989;</td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    -->
+      <td>
+        <a href="issues.html#10-wombatjs-drops-fragments-of-dynamically-created-links">10</a>
+      </td>
+    </tr>
+
+    <tr>
+      <th rowspan=2>PDF</th>
+      <td><a href="./kiwix.pdf">Same tab</a></td>
+      <!--Base case        -->
+      <td>
+        <a href="issues.html#5-firefox-cross-origin-errors-in-console">5</a>
+      </td>
+      <!--Link blocking on --><td></td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+    <tr>
+      <td><a href="./kiwix.pdf" target="_blank">New tab</a></td>
+      <!--Base case        -->
+      <td>
+        <a href="issues.html#5-firefox-cross-origin-errors-in-console">5</a>
+      </td>
+      <!--Link blocking on --><td></td>
+      <!--Nested iframe    --><td></td>
+      <!--Dynamic page     --><td></td>
+      <!--Wombatization    --><td></td>
+    </tr>
+  </table>
+ </body>
+</html>
