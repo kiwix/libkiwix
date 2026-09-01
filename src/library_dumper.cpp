@@ -1,38 +1,124 @@
 #include "library_dumper.h"
-#include "book.h"
 
-#include "libkiwix-resources.h"
 #include <mustache.hpp>
 
-#include "tools/stringTools.h"
-#include "tools/otherTools.h"
+#include "book.h"
+#include "libkiwix-resources.h"
 #include "tools.h"
+#include "tools/base64.h"
+#include "tools/otherTools.h"
+#include "tools/stringTools.h"
 
 namespace kiwix
 {
 
-kainjow::mustache::list getBookIllustrationInfo(const Book& book)
+namespace
 {
-    kainjow::mustache::list illustrations;
-    for ( const auto& illustration : book.getIllustrations() ) {
-      // For now, we are handling only sizexsize@1 illustration.
-      // So we can simply pass one size to mustache.
-      illustrations.push_back(kainjow::mustache::object{
-        {"icon_size", to_string(illustration->width)},
-        {"icon_mimetype", illustration->mimeType}
-      });
-    }
-    return illustrations;
+
+std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
+{
+  std::ostringstream result;
+
+  result << illustration.mimeType;
+  if ( !contains(illustration.mimeType, ";width=") ) {
+      result << ";width=" << illustration.width;
+  }
+  if ( !contains(illustration.mimeType, ";height=") ) {
+      result << ";height=" << illustration.height;
+  }
+  if ( !contains(illustration.mimeType, ";scale=") ) {
+      result << ";scale=1";
+  }
+  return result.str();
 }
+
+/**
+ * Get thumbnail <link> info for a book's illustrations that already have
+ * (or, for the live catalog, are always given) an external url to fetch
+ * their data from.
+ *
+ * Live catalog: keep every icon (its own endpoint can serve embedded or
+ * remote data). File dump: keep only icons with an external url, since one
+ * with no url has no server to serve its data from (see
+ * getEmbeddedThumbnailLinks() for those instead).
+ */
+kainjow::mustache::list
+getExternalThumbnailLinks(const Book& book, const std::string& rootLocation,
+  bool isLiveCatalog = true)
+{
+  kainjow::mustache::list thumbnailLinks;
+  for ( const auto& illustration : book.getIllustrations() ) {
+    if (!(isLiveCatalog || !illustration->url.empty())) {
+      continue;
+    }
+    const std::string iconSizeWidth = to_string(illustration->width);
+    // Book IDs do not contain special characters, so they are HTML-safe.
+    // Therefore, no HTML encoding is required.
+    const std::string thumbnailUrl = isLiveCatalog
+    ? rootLocation + "/catalog/v2/illustration/" + kiwix::urlEncode(book.getId()) + "/?size=" + iconSizeWidth
+    : illustration->url;
+
+    thumbnailLinks.push_back(kainjow::mustache::object{
+      {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
+      {"icon_url", thumbnailUrl}
+    });
+  }
+
+  return thumbnailLinks;
+}
+
+/**
+ * Get thumbnail <link> info for a book's illustrations that have no
+ * external url, rendering their data as a "data:" URI href
+ * (OPDS 1.2 5.2.2), same as getExternalThumbnailLinks()'s external-url
+ * links.
+ *
+ * Only applies to file dumps (never the live catalog, which serves embedded
+ * data from its own endpoint instead) and only for icons without an external
+ * url, i.e. those that would otherwise have no way to reach the reader.
+ */
+kainjow::mustache::list
+getEmbeddedThumbnailLinks(const Book& book, bool isLiveCatalog = true)
+{
+  kainjow::mustache::list thumbnailLinks;
+  if (isLiveCatalog) {
+    return thumbnailLinks;
+  }
+  for ( const auto& illustration : book.getIllustrations() ) {
+    if (!illustration->url.empty()) {
+      continue;
+    }
+    const std::string thumbnailData = illustration->getData();
+    const std::string dataUri = thumbnailData.empty() ? ""
+      : "data:" + illustration->mimeType + ";base64," + base64_encode(thumbnailData);
+    thumbnailLinks.push_back(kainjow::mustache::object{
+      {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
+      {"icon_url", dataUri}
+    });
+  }
+
+  return thumbnailLinks;
+}
+
+} // namespace
+
 
 std::string fullEntryOpds(const Book& book,
                          const std::string& rootLocation,
                          const std::string& contentAccessUrl,
-                         const std::string& contentId)
+                         const std::string& contentId,
+                         const std::string& localPath,
+                         bool isLiveCatalog)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
+    auto thumbnailLinks
+      = getExternalThumbnailLinks(book, rootLocation, isLiveCatalog);
+    auto embeddedThumbnailLinks
+      = getEmbeddedThumbnailLinks(book, isLiveCatalog);
+    thumbnailLinks.insert(thumbnailLinks.end(),
+      std::make_move_iterator(embeddedThumbnailLinks.begin()),
+      std::make_move_iterator(embeddedThumbnailLinks.end()));
     const kainjow::mustache::object data{
-      {"root",  rootLocation},
       {"contentAccessUrl",  onlyAsNonEmptyMustacheValue(contentAccessUrl)},
       {"id", book.getId()},
       {"name", book.getName()},
@@ -51,7 +137,8 @@ std::string fullEntryOpds(const Book& book,
       {"publisher_name", book.getPublisher()},
       {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
-      {"icons", getBookIllustrationInfo(book)},
+      {"thumbnailLinks", thumbnailLinks},
+      {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
 }
@@ -65,13 +152,6 @@ LibraryDumper::LibraryDumper(const Library* library, const NameMapper* nameMappe
 /* Destructor */
 LibraryDumper::~LibraryDumper()
 {
-}
-
-void LibraryDumper::setOpenSearchInfo(int totalResults, int startIndex, int count)
-{
-  m_totalResults = totalResults;
-  m_startIndex = startIndex,
-  m_count = count;
 }
 
 kainjow::mustache::list LibraryDumper::getCategoryData() const

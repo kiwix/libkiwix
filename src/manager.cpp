@@ -20,6 +20,7 @@
 #include "manager.h"
 
 #include "tools.h"
+#include "tools/otherTools.h"
 
 #include <pugixml.hpp>
 #include <filesystem>
@@ -30,6 +31,32 @@
 #include <algorithm>
 
 namespace fs = std::filesystem;
+
+namespace
+{
+
+/**
+ * The format of the file passed to readFile().
+ */
+enum class FileFormat { XML, OPDS };
+
+/**
+ * Detect the format of a library file based on its content.
+ *
+ * @param content The content of the file to inspect.
+ * @return FileFormat::OPDS if the file content looks like an OPDS feed,
+ *         FileFormat::XML otherwise.
+ */
+FileFormat detectFormat(const std::string& content)
+{
+  auto format
+      = (content.find("<feed") != std::string::npos)
+            ? FileFormat::OPDS
+            : FileFormat::XML;
+  return format;
+}
+
+} // anonymous namespace
 
 namespace kiwix
 {
@@ -142,7 +169,10 @@ bool Manager::readXml(const std::string& xml,
 
 
 
-bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& urlHost)
+bool Manager::parseOpdsDom(const pugi::xml_document& doc,
+                           const std::string& urlHost,
+                           const std::string& baseDir,
+                           bool readOnly)
 {
   pugi::xml_node libraryNode = doc.child("feed");
   if (!libraryNode) {
@@ -169,8 +199,8 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
        entryNode = entryNode.next_sibling("entry")) {
     kiwix::Book book;
 
-    book.setReadOnly(false);
-    book.updateFromOpds(entryNode, urlHost);
+    book.setReadOnly(readOnly);
+    book.updateFromOpds(entryNode, urlHost, baseDir);
 
     /* Update the book properties with the new importer */
     manipulator.addBookToLibrary(book);
@@ -179,17 +209,23 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc, const std::string& url
   return true;
 }
 
+bool Manager::readOpds(const std::string& content,
+                       const std::string& urlHost)
+{
+  return readOpds(content, urlHost,false);
+}
 
-
-bool Manager::readOpds(const std::string& content, const std::string& urlHost)
+bool Manager::readOpds(const std::string& content,
+                       const std::string& contentOriginUri,
+                       bool readOnly)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
       = doc.load_buffer((void*)content.data(), content.size());
 
   if (result) {
-    this->parseOpdsDom(doc, urlHost);
-    return true;
+    const auto origin = resolveContentOrigin(contentOriginUri);
+    return this->parseOpdsDom(doc, origin.urlHost, origin.baseDir, readOnly);
   }
 
   return false;
@@ -211,8 +247,11 @@ bool Manager::readFile(
     return false;
   }
 
-  const std::string xml = getFileContent(path);
-  return this->readXml(xml, readOnly, path, trustLibrary);
+  const std::string content = getFileContent(path);
+
+  return detectFormat(content) == FileFormat::OPDS
+    ? this->readOpds(content, path, readOnly)
+    : this->readXml(content, readOnly, path, trustLibrary);
 }
 
 

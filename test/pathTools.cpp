@@ -26,27 +26,8 @@
 #endif
 #include "../include/tools.h"
 #include "../src/tools/pathTools.h"
+#include "./path_testing_tools.h"
 
-#ifdef _WIN32
-# define S "\\"
-# define AS "c:"
-# define A_SAMBA "\\\\sambadir"
-#else
-# define S "/"
-# define AS ""
-#endif
-
-#define P2(a, b) a S b
-#define P3(a, b, c) P2(P2(a, b), c)
-#define P4(a, b, c, d) P2(P3(a, b, c), d)
-#define P5(a, b, c, d, e) P2(P4(a, b, c, d), e)
-#define P6(a, b, c, d, e, f) P2(P5(a, b, c ,d, e), f)
-
-#define A1(a) P2(AS,a)
-#define A2(a, b) A1(P2(a, b))
-#define A3(a, b, c) A1(P3(a, b, c))
-#define A4(a, b, c, d) A1(P4(a, b, c, d))
-#define A5(a, b, c, d, e) A1(P5(a, b, c, d, e))
 
 std::vector<std::string> normalizeParts(std::vector<std::string>& parts, bool absolute);
 std::vector<std::string> nParts(std::vector<std::string> parts, bool absolute) {

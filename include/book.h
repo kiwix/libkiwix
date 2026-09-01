@@ -70,6 +70,28 @@ class Book
   bool update(const Book& other);
   void update(const zim::Archive& archive);
   void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
+  /**
+   * Update the book's metadata from an OPDS entry XML node.
+   *
+   * @param node the `<entry>` node of an OPDS feed describing the book.
+   * @param urlHost host to prepend to relative illustration/thumbnail URLs.
+   * @param baseDir base directory used to resolve a relative local-path
+   *                acquisition link (`rel="http://opds-spec.org/acquisition/
+   *                open-access"` with a non-URL href) into an absolute book
+   *                path.
+   */
+  void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir);
+
+  /**
+   * Update the book's metadata from an OPDS entry XML node.
+   *
+   * A simple wrapper around the three-parameter updateFromOpds() above, kept
+   * for backward compatibility. Equivalent to calling
+   * updateFromOpds(node, urlHost, "").
+   *
+   * @param node the `<entry>` node of an OPDS feed describing the book.
+   * @param urlHost host to prepend to relative illustration/thumbnail URLs.
+   */
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
   std::string getHumanReadableIdFromPath() const;
 

@@ -410,3 +410,18 @@ std::string kiwix::Suggestions::getJSON() const
 
   return render_template(RESOURCE::templates::suggestion_json, data);
 }
+
+kiwix::ContentOrigin kiwix::resolveContentOrigin(const std::string& contentOriginUri)
+{
+  const auto schemeEnd = contentOriginUri.find("://");
+  if (schemeEnd == std::string::npos) {
+    return { /*urlHost=*/"", removeLastPathElement(contentOriginUri) };
+  }
+
+  const auto hostEnd = contentOriginUri.find_first_of("/?#", schemeEnd + 3);
+  const auto urlHost = hostEnd == std::string::npos
+                      ? contentOriginUri
+                      : contentOriginUri.substr(0, hostEnd);
+
+  return { urlHost, /*baseDir=*/"" };
+}

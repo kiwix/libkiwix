@@ -34,17 +34,37 @@ namespace kiwix
 class Book;
 
 /**
- * Get the illustration data (size/mimetype) of a book, for use in OPDS entry rendering.
- */
-kainjow::mustache::list getBookIllustrationInfo(const Book& book);
-
-/**
  * Render the full OPDS entry XML for a book.
+ *
+ * @param book The book to render the OPDS entry for.
+ * @param rootLocation The root URL/path the catalog is served from, used to
+ *                 build absolute links within the entry.
+ * @param contentAccessUrl The URL (or URL prefix) used to access the book's
+ *                 content itself (as opposed to the catalog entry).
+ * @param contentId The identifier of the book's content, used when building
+ *                 content access links.
+ * @param localPath If non-empty, rendered as an additional rel="http://opds-
+ *                 spec.org/acquisition/open-access" link carrying the book's
+ *                 local file path (as opposed to the book's remote url, if
+ *                 any, which is rendered as its own such link). Only meant
+ *                 for local/offline dumps - leave empty for the live HTTP
+ *                 catalog, which must not leak server-side filesystem paths
+ *                 to remote clients.
+ * @param isLiveCatalog Whether this entry is rendered for the live HTTP
+ *                 catalog (OPDSDumper) as opposed to a local/offline file
+ *                 dump (Library::dumpOpds). The live catalog can serve any
+ *                 illustration - embedded or remote - through its own
+ *                 /catalog/v2/illustration endpoint, but an offline dump has
+ *                 no server behind that endpoint, so only illustrations
+ *                 backed by a real external url can produce a working
+ *                 thumbnail link there.
  */
 std::string fullEntryOpds(const Book& book,
                           const std::string& rootLocation,
                           const std::string& contentAccessUrl,
-                          const std::string& contentId);
+                          const std::string& contentId,
+                          const std::string& localPath = "",
+                          bool isLiveCatalog = true);
 
 /**
  * A base class to dump Library in various formats.
@@ -73,15 +93,6 @@ class LibraryDumper
   void setContentAccessUrl(const std::string& url) { this->contentAccessUrl = url; }
 
   /**
-   * Set some informations about the search results.
-   *
-   * @param totalResult the total number of results of the search.
-   * @param startIndex the start index of the result.
-   * @param count the number of result of the current set (or page).
-   */
-  void setOpenSearchInfo(int totalResult, int startIndex, int count);
-
-  /**
    * Sets user default language
    *
    * @param userLang the user language to be set
@@ -105,9 +116,6 @@ class LibraryDumper
   std::string rootLocation;
   std::string contentAccessUrl;
   std::string m_userLang;
-  int m_totalResults;
-  int m_startIndex;
-  int m_count;
 };
 }
 

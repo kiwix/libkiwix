@@ -14,6 +14,19 @@ std::string resolveAbsPath(const std::string& basePath, const std::string& relPa
     return kiwix::computeAbsolutePath(kiwix::removeLastPathElement(basePath), relPath);
 }
 
+// Absolute path of test/library.opds, computed (rather than hardcoded) so
+// it resolves correctly regardless of the checkout location - unlike
+// LIB_ABS_PATH below, this one has to point to a real file, since
+// (unlike the readXml() tests) readFile()/readOpds() actually open it.
+// Built from single, separator-free path segments (rather than a
+// "test/library.opds"-style literal) because computeAbsolutePath() splits
+// on the OS-native separator only, so a literal using the "wrong" slash
+// would silently fail to be split into components on Windows.
+const std::string LIB_OPDS_ABS_PATH
+    = kiwix::computeAbsolutePath(
+        kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), "test"),
+        "library.opds");
+
 } // unnamed namespace
 
 TEST(ManagerTest, addBookFromPathAndGetIdTest)
@@ -192,12 +205,14 @@ TEST(ManagerTest, readOpdsWithMalformedInputAddsNoBooks)
   EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
-TEST(Manager, reload)
+class ManagerReloadTest : public ::testing::TestWithParam<std::string> {};
+
+TEST_P(ManagerReloadTest, reload)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
 
-  manager.reload({ "./test/library.xml" });
+  manager.reload({GetParam()});
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
         "inaccessiblezim",
@@ -212,7 +227,7 @@ TEST(Manager, reload)
         "raycharles_uncategorized"
   }));
 
-  manager.reload({ "./test/library.xml" });
+  manager.reload({GetParam()});
   EXPECT_EQ(lib->getBooksIds(), kiwix::Library::BookIdCollection({
         "charlesray",
         "inaccessiblezim",
@@ -221,54 +236,92 @@ TEST(Manager, reload)
   }));
 }
 
+INSTANTIATE_TEST_CASE_P(XmlAndOpds, ManagerReloadTest,
+    ::testing::Values("./test/library.xml", "./test/library.opds"));
+
+const char sampleOpdsFeed[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
+  <totalResults>9</totalResults>
+  <startIndex>7</startIndex>
+  <itemsPerPage>10</itemsPerPage>
+  <entry>
+    <id>urn:uuid:book1</id>
+    <title>Book One</title>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://example.com/book1.zim"
+          length="111" />
+  </entry>
+  <entry>
+    <id>urn:uuid:book2</id>
+    <title>Book Two</title>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="https://example.com/book2.zim"
+          length="222" />
+  </entry>
+</feed>
+)";
+
+TEST(ManagerTest, readOpdsHonorsReadOnlyTrue)
+{
+    // readOpds() defaults to readOnly=false (see
+    // ManagerTest.readOpdsAddsEntriesAndParsesSearchMetadata below, which
+    // covers that case) - this checks that readOnly=true is honored too.
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com", /*readOnly=*/true));
+
+    EXPECT_TRUE(lib->getBookById("book1").readOnly());
+    EXPECT_TRUE(lib->getBookById("book2").readOnly());
+}
+
 TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com"));
+
+    EXPECT_TRUE(manager.m_hasSearchResult);
+    EXPECT_EQ(manager.m_totalBooks, 9U);
+    EXPECT_EQ(manager.m_startIndex, 7U);
+    EXPECT_EQ(manager.m_itemsPerPage, 10U);
+
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
+
+    kiwix::Book book1 = lib->getBookById("book1");
+    EXPECT_EQ(book1.getTitle(), "Book One");
+    EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
+
+    EXPECT_EQ(book1.getPath(), "");
+    EXPECT_FALSE(book1.isPathValid());
+
+    EXPECT_FALSE(book1.readOnly());
+}
+
+TEST(ManagerTest, readOpdsWithInvalidLocalPath)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
 
-  EXPECT_TRUE(manager.readOpds(R"(
-    <feed xmlns="http://www.w3.org/2005/Atom"
-          xmlns:opds="https://specs.opds.io/opds-1.2">
-      <totalResults>9</totalResults>
-      <startIndex>7</startIndex>
-      <itemsPerPage>10</itemsPerPage>
-      <entry>
-        <id>urn:uuid:book1</id>
-        <title>Book One</title>
-        <link rel="http://opds-spec.org/acquisition/open-access"
-              type="application/x-zim"
-              href="https://example.com/book1.zim"
-              length="111" />
-      </entry>
-      <entry>
-        <id>urn:uuid:book2</id>
-        <title>Book Two</title>
-        <link rel="http://opds-spec.org/acquisition/open-access"
-              type="application/x-zim"
-              href="https://example.com/book2.zim"
-              length="222" />
-      </entry>
-    </feed>
-    )", "http://example.com"));
+  const std::string feed = R"(
+      <feed xmlns="http://www.w3.org/2005/Atom">
+        <entry>
+          <id>urn:uuid:book1</id>
+          <title>Book From OPDS</title>
+          <link rel="http://opds-spec.org/acquisition/open-access" href="does-not-exist.zim" />
+        </entry>
+      </feed>
+    )";
 
-  EXPECT_TRUE(manager.m_hasSearchResult);
-  EXPECT_EQ(manager.m_totalBooks, 9U);
-  EXPECT_EQ(manager.m_startIndex, 7U);
-  EXPECT_EQ(manager.m_itemsPerPage, 10U);
+  EXPECT_TRUE(manager.readOpds(feed, "./test/library.opds", /*readOnly=*/false));
 
-  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
-
-  kiwix::Book book1 = lib->getBookById("book1");
-  EXPECT_EQ(book1.getTitle(), "Book One");
-  EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
-  // OPDS entries carry no local path at this point (unlike XML's "path"
-  // attribute - see ManagerTest.readXml above): this feed has no
-  // rel="self" link, so the resolved path stays empty and invalid.
-  EXPECT_EQ(book1.getPath(), "");
-  EXPECT_FALSE(book1.isPathValid());
-  // Unlike readXml() (readOnly defaults to true), OPDS-sourced books are
-  // always mutable.
-  EXPECT_FALSE(book1.readOnly());
+  kiwix::Book book = lib->getBookById("book1");
+  EXPECT_FALSE(book.isPathValid());
+  EXPECT_EQ(book.getTitle(), "Book From OPDS");
 }
 
 TEST(ManagerTest, readOpdsWithoutSearchMetadata)
@@ -295,4 +348,81 @@ TEST(ManagerTest, readOpdsWithoutSearchMetadata)
   EXPECT_EQ(manager.m_itemsPerPage, 0U);
 
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1"}));
+}
+
+TEST(ManagerTest, readFileDetectsXmlFormat)
+{
+    // readFile() sniffs the file content for a "<feed" substring to tell
+    // OPDS files apart from XML library files (see detectFormat() in
+    // manager.cpp).
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readFile("./test/library.xml"));
+
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
+          "charlesray",
+          "inaccessiblezim",
+          "raycharles",
+          "raycharles_uncategorized"
+    }));
+
+    kiwix::Book book = lib->getBookById("raycharles");
+    EXPECT_EQ(book.getPath(), resolveAbsPath("./test/library.xml", "./zimfile_raycharles.zim"));
+    // readOnly defaults to true.
+    EXPECT_TRUE(book.readOnly());
+}
+
+TEST(ManagerTest, readFileDetectsOpdsFormat)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readFile(LIB_OPDS_ABS_PATH, /*readOnly=*/false));
+
+    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
+          "charlesray",
+          "inaccessiblezim",
+          "raycharles",
+          "raycharles_uncategorized"
+    }));
+
+    kiwix::Book book = lib->getBookById("raycharles");
+
+    EXPECT_EQ(book.getPath(), resolveAbsPath(LIB_OPDS_ABS_PATH, "./zimfile_raycharles.zim"));
+    EXPECT_TRUE(book.isPathValid());
+
+    EXPECT_EQ(book.getUrl(), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
+    EXPECT_EQ(book.getTitle(), "Ray Charles");
+    EXPECT_EQ(book.getDescription(), "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)");
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng");
+    EXPECT_EQ(book.getCreator(), "Wikipedia");
+    EXPECT_EQ(book.getPublisher(), "Kiwix");
+    EXPECT_EQ(book.getDate(), "2020-03-31");
+    EXPECT_EQ(book.getName(), "wikipedia_en_ray_charles");
+    EXPECT_EQ(book.getTags(), "public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes");
+    EXPECT_EQ(book.getArticleCount(), 284U);
+    EXPECT_EQ(book.getMediaCount(), 2U);
+
+    EXPECT_EQ(book.getSize(), 556U*1024U);
+
+    auto illustration = book.getIllustration(48);
+
+    EXPECT_EQ(illustration->mimeType, "image/png");
+    EXPECT_EQ(illustration->width, 48);
+    EXPECT_EQ(illustration->height, 48);
+    EXPECT_EQ(illustration->url, "https://example.com/favicon/raycharles.png");
+    EXPECT_FALSE(book.readOnly());
+}
+
+TEST(ManagerTest, readFileWithOpdsFormatHonorsReadOnly)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager(lib);
+
+    EXPECT_TRUE(manager.readFile("./test/library.opds", /*readOnly=*/true, /*trustLibrary=*/true));
+
+    for (const auto& id : lib->getBooksIds()) {
+      EXPECT_TRUE(lib->getBookById(id).readOnly());
+    }
 }

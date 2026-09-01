@@ -105,10 +105,6 @@ bool getArchiveFavicon(const zim::Archive& archive, unsigned size,
   return false;
 }
 
-unsigned int getArchiveFileSize(const zim::Archive& archive) {
-  return archive.getFilesize() / 1024;
-}
-
 zim::Item getFinalItem(const zim::Archive& archive, const zim::Entry& entry)
 {
   return entry.getItem(true);

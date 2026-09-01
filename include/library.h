@@ -312,7 +312,7 @@ class Library: public std::enable_shared_from_this<Library>
    * @return The number of bookmarks updated.
    */
   int migrateBookmarks(const std::string& sourceBookId, const std::string& targetBookId);
- 
+
   /**
    * Get the best available bookId for a bookmark.
    *
@@ -361,12 +361,32 @@ class Library: public std::enable_shared_from_this<Library>
   bool removeBookById(const std::string& id);
 
   /**
-   * Write the library to a file.
+   * Writes the library to a file as library.xml.
+   *
+   * @deprecated Calls writeAsXML directly and is kept for compatibility
+   * with external usages. This method is subject to removal in the future;
+   * please use writeAsXML instead.
    *
    * @param path the path of the file to write to.
    * @return True if the library has been correctly saved.
    */
-  bool writeToFile(const std::string& path) const;
+  DEPRECATED bool writeToFile(const std::string& path) const;
+
+  /**
+   * Write the library to a file as library.xml.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly saved.
+   */
+  bool writeAsXML(const std::string& path) const;
+
+  /**
+   * Write the library to a file as an OPDS document.
+   *
+   * @param path the path of the file to write to.
+   * @return True if the library has been correctly saved.
+   */
+  bool writeAsOPDS(const std::string& path) const;
 
   /**
    * Write the library bookmarks to a file.
@@ -470,8 +490,25 @@ class Library: public std::enable_shared_from_this<Library>
    */
   uint32_t removeBooksNotUpdatedSince(Revision rev);
 
+  /**
+   * Dump the library as an OPDS feed suitable for an offline/local library
+   * file (no HTTP root; book paths are exposed via acquisition links whose
+   * href is a local path rather than a URL).
+   *
+   * This does not write to outputPath itself - it only returns the OPDS
+   * XML. outputPath is used solely to resolve each book's local-path
+   * acquisition link: each book's path is made relative to outputPath's
+   * parent directory, the same way writeToFile() resolves book paths
+   * relative to the file it writes.
+   *
+   * @param outputPath the path the returned OPDS content is intended to be
+   *                    written to; only its parent directory is used, to
+   *                    compute book paths relative to it.
+   * @return The library dumped as an OPDS feed.
+   */
+  std::string dumpOpds(const std::string& outputPath) const;
+
   friend class OPDSDumper;
-  friend class libXMLDumper;
 
 private: // types
   typedef const std::string& (Book::*BookStrPropMemFn)() const;

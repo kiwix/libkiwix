@@ -25,12 +25,132 @@
 #include "tools/networkTools.h"
 #include "tools/otherTools.h"
 #include "tools/stringTools.h"
-#include "tools/pathTools.h"
 #include "tools/archiveTools.h"
 
 #include <zim/archive.h>
 #include <zim/item.h>
 #include <pugixml.hpp>
+
+#include <sstream>
+#include <cctype>
+
+namespace
+{
+/**
+ * Tells whether a URL string is already absolute (contains a scheme,
+ * e.g. "https://example.com/x.png") as opposed to being a relative path
+ * (e.g. "/x.png"). Only a relative URL should be prefixed with a base host
+ * or URL—doing so unconditionally would garble an already-absolute one.
+ */
+bool isAbsoluteUrl(const std::string& url)
+{
+  // Find the scheme separator
+  size_t pos = url.find("://");
+  if (pos == 0 || pos == std::string::npos) {
+    return false; // No scheme or empty scheme
+  }
+
+  // RFC 3986: Scheme must begin with a letter, followed by letters, digits, '+', '.', or '-'
+  if (!std::isalpha(static_cast<unsigned char>(url[0]))) {
+    return false;
+  }
+
+  // Validate that all remaining characters in the scheme comply with RFC 3986
+  for (size_t i = 1; i < pos; ++i) {
+    char c = url[i];
+    if (!std::isalnum(static_cast<unsigned char>(c)) && c != '+' && c != '-' && c != '.') {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Joins a host and a reference into a single URL without producing a double slash,
+ * respecting the host's format.
+ */
+std::string joinUrl(const std::string& host, const std::string& ref)
+{
+  if (host.empty()) {
+    return ref;
+  }
+  if (ref.empty()) {
+    return host;
+  }
+
+  const bool hostEndsWithSlash = (host.back() == '/');
+  const bool refStartsWithSlash = (ref.front() == '/');
+
+  if (hostEndsWithSlash && refStartsWithSlash) {
+    // Both have a slash; omit one to avoid a double slash
+    return host + ref.substr(1);
+  } else if (!hostEndsWithSlash && !refStartsWithSlash) {
+    // Neither has a slash; insert one
+    return host + "/" + ref;
+  } else {
+    // Exactly one has a slash; simple concatenation is correct
+    return host + ref;
+  }
+}
+
+/**
+ * Splits an OPDS thumbnail link's "type" attribute value into its base MIME
+ * type and its "width"/"height" parameters, mirroring the
+ * "<mimetype>;width=<w>;height=<h>;scale=<s>" convention that
+ * getIllustrationMimeTypeStr() (library_dumper.cpp) writes on the way out.
+ * "scale" is parsed away but otherwise unused, since Illustration has no
+ * such field. A width/height left at 0 (i.e. absent from the type string)
+ * means "unspecified" and must not overwrite the Illustration's own default.
+ */
+struct ParsedIllustrationType
+{
+  std::string mimeType;
+  uint16_t width = 0;
+  uint16_t height = 0;
+};
+
+ParsedIllustrationType parseIllustrationType(const std::string& type)
+{
+  ParsedIllustrationType result;
+  const auto parts = kiwix::split(type, ";");
+  if (parts.empty()) {
+    return result;
+  }
+
+  const std::string potentialMime = kiwix::trim(parts[0]);
+
+  // A basic check: MIME types typically contain a slash (e.g., "image/jpeg")
+  if (potentialMime.find('/') != std::string::npos) {
+    result.mimeType = potentialMime;
+  }
+
+  for (auto it = parts.begin() + 1; it != parts.end(); ++it) {
+    const auto eqPos = it->find('=');
+    if (eqPos == std::string::npos) {
+      continue;
+    }
+
+    // Trim both key and value to handle spaces safely (e.g., " width=100")
+    const std::string key = kiwix::trim(it->substr(0, eqPos));
+    const std::string value = kiwix::trim(it->substr(eqPos + 1));
+
+    if (!value.empty()) {
+      const uint16_t numericValue =
+        static_cast<uint16_t>(strtoul(value.c_str(), nullptr, 10));
+
+      if (key == "width") {
+        result.width = numericValue;
+      } else if (key == "height") {
+        result.height = numericValue;
+      }
+    }
+  }
+
+  return result;
+}
+
+} // anonymous namespace
 
 namespace kiwix
 {
@@ -79,7 +199,7 @@ void Book::update(const zim::Archive& archive) {
   m_category = getCategoryFromTags();
   m_articleCount = archive.getArticleCount();
   m_mediaCount = archive.getMediaCount();
-  m_size = static_cast<uint64_t>(getArchiveFileSize(archive)) << 10;
+  m_size = archive.getFilesize();
 
   m_illustrations.clear();
   for ( const auto& illustrationInfo : archive.getIllustrationInfos() ) {
@@ -144,14 +264,18 @@ static std::string fromOpdsDate(const std::string& date)
 }
 
 
-#define VALUE(name) node.child(name).child_value()
 void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost)
+{
+  updateFromOpds(node, urlHost, "");
+}
+
+#define VALUE(name) node.child(name).child_value()
+void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir)
 {
   m_id = VALUE("id");
   if (!m_id.compare(0, 9, "urn:uuid:")) {
     m_id.erase(0, 9);
   }
-  // No path on opds.
   m_title = VALUE("title");
   m_description = VALUE("summary");
   m_language = VALUE("language");
@@ -168,22 +292,65 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   m_illustrations.clear();
+  std::string firstAcquisitionHref;
+  std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;
            linkNode = linkNode.next_sibling("link")) {
     std::string rel = linkNode.attribute("rel").value();
 
     if (rel == "http://opds-spec.org/acquisition/open-access") {
-      m_url = linkNode.attribute("href").value();
-      m_size = strtoull(linkNode.attribute("length").value(), 0, 0);
+      // The href tells us whether this link points at a remote copy of the
+      // book (an absolute URL) or a local one (a filesystem path, absolute
+      // or relative to baseDir) - a single entry may carry one of each.
+      const std::string href = linkNode.attribute("href").value();
+      if (isAbsoluteUrl(href)) {
+        m_url = href;
+      } else {
+        m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
+        m_pathValid = fileReadable(m_path);
+      }
+      const std::string length = linkNode.attribute("length").value();
+      if (!length.empty()) {
+        if (!firstLength.empty() && length != firstLength) {
+          std::cerr << "Book '" << m_id << "': acquisition links '"
+                    << firstAcquisitionHref << "' (length " << firstLength
+                    << ") and '" << href << "' (length " << length
+                    << ") disagree on length." << std::endl;
+        }
+        m_size = strtoull(length.c_str(), 0, 0);
+        firstAcquisitionHref = href;
+        firstLength = length;
+      }
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
       const auto favicon = std::make_shared<Illustration>();
-      favicon->data.clear();
-      favicon->url = urlHost + linkNode.attribute("href").value();
-      favicon->mimeType = linkNode.attribute("type").value();
-      m_illustrations.push_back(favicon);
+      const std::string thumbnailUrl = linkNode.attribute("href").value();
+      if (startsWith(thumbnailUrl, "data:")) {
+        // OPDS 1.2's "data" URL scheme (spec 5.2.2): the payload is
+        // whatever follows the first comma, regardless of what media-type
+        // text (if any) precedes it - the link's own "type" attribute is
+        // authoritative for that.
+        const auto commaPos = thumbnailUrl.find(',');
+        if (commaPos != std::string::npos) {
+          favicon->data = base64_decode(thumbnailUrl.substr(commaPos + 1));
+        }
+      } else {
+        // XXX non-absolute URL is expected to be an absolute-path.
+        favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
+      }
+      const auto parsedType = parseIllustrationType(linkNode.attribute("type").value());
+      favicon->mimeType = parsedType.mimeType;
+      if (parsedType.width) {
+        favicon->width = parsedType.width;
+      }
+      if (parsedType.height) {
+        favicon->height = parsedType.height;
+      }
+      if (!favicon->mimeType.empty()) {
+        m_illustrations.push_back(favicon);
+      }
     }
- }
+  }
 }
 #undef VALUE
 

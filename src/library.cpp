@@ -20,10 +20,9 @@
 #include "library.h"
 #include "book.h"
 #include "libxml_dumper.h"
+#include "library_dumper.h"
 
 #include "tools.h"
-#include "tools/base64.h"
-#include "tools/regexTools.h"
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
@@ -434,6 +433,11 @@ unsigned int Library::getBookCount(const bool localBooks,
 
 bool Library::writeToFile(const std::string& path) const
 {
+  return writeAsXML(path);
+}
+
+bool Library::writeAsXML(const std::string& path) const
+{
   const auto allBookIds = getBooksIds();
 
   auto baseDir = removeLastPathElement(path);
@@ -445,6 +449,11 @@ bool Library::writeToFile(const std::string& path) const
     xml = dumper.dumpLibXMLContent(allBookIds);
   };
   return writeTextFile(path, xml);
+}
+
+bool Library::writeAsOPDS(const std::string& path) const
+{
+  return writeTextFile(path, dumpOpds(path));
 }
 
 bool Library::writeBookmarksToFile(const std::string& path) const
@@ -729,7 +738,7 @@ Xapian::Query buildXapianQuery(const Filter& filter)
     q = Xapian::Query(Xapian::Query::OP_AND, q, nameQuery(filter.getName()));
   }
   if ( filter.hasFlavour() )  {
-    q = Xapian::Query(Xapian::Query::OP_AND, q, flavourQuery(filter.getFlavour()));     
+    q = Xapian::Query(Xapian::Query::OP_AND, q, flavourQuery(filter.getFlavour()));
   }
   if ( filter.hasCategory() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, categoryQuery(filter.getCategory()));
@@ -998,7 +1007,7 @@ Filter& Filter::name(std::string name)
   activeFilters |= NAME;
   return *this;
 }
-  
+
 Filter& Filter::flavour(std::string flavour)
 {
   _flavour = flavour;
@@ -1073,6 +1082,39 @@ bool Filter::accept(const Book& book) const
   FILTER(MAXSIZE, book.getSize() <= _maxSize)
 
   return true;
+}
+
+std::string Library::dumpOpds(const std::string& outputPath) const
+{
+  std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
+  const auto baseDir = kiwix::removeLastPathElement(outputPath);
+
+  std::ostringstream ss;
+  ss << R"(<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
+)";
+
+  for (auto& pair: m_books) {
+    const Book& book = pair.second;
+    // Local/offline dump: the book's own id is used as the content id, there
+    // is no content-access URL to link to (no server involved), and the
+    // book's local path is safe to expose as an acquisition link, resolved
+    // relative to baseDir the same way LibXMLDumper does.
+    const std::string localPath = book.getPath().empty()
+        ? ""
+        : computeRelativePath(baseDir, book.getPath());
+    ss << fullEntryOpds(book,
+                        /*rootLocation=*/"",
+                        /*contentAccessUrl=*/"",
+                        /*contentId=*/book.getId(),
+                        localPath,
+                        /*isLiveCatalog=*/false);
+  }
+
+  ss << "</feed>\n";
+  return ss.str();
 }
 
 }

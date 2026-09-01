@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "../include/book.h"
+#include "testing_tools.h"
 #include <pugixml.hpp>
+#include <zim/archive.h>
 
 namespace
 {
@@ -90,11 +92,8 @@ TEST(BookTest, updateFromOPDSTest)
     )");
 
     kiwix::Book book;
-    book.updateFromOpds(opds.child("entry"), "http://who.org");
+    book.updateFromOpds(opds.child("entry"), "http://who.org", "");
 
-    // Unlike updateFromXml(), updateFromOpds() has no notion of a local
-    // path - OPDS entries only ever carry acquisition/thumbnail links, so
-    // these are expected to stay at their default (unset) values.
     EXPECT_EQ(book.getPath(), "");
     EXPECT_FALSE(book.isPathValid());
 
@@ -126,6 +125,73 @@ TEST(BookTest, updateFromOPDSTest)
     EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
 }
 
+TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="http://opds-spec.org/acquisition/open-access" href="zara.zim" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
+    EXPECT_EQ(book.getUrl(), "");
+}
+
+TEST(BookTest, updateFromOPDSTwoAcquisitionLinksTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="zara.zim"
+              length="111" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://who.org/zara.zim"
+              length="222" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
+    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getSize(), 222U);
+}
+
+TEST(BookTest, updateFromOPDSDuplicateLengthWarnsTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="zara.zim"
+              length="111" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://who.org/zara.zim"
+              length="222" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    kiwix::testing::CapturedStderr stderror;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    EXPECT_EQ(
+      "Book 'zara': acquisition links 'zara.zim' (length 111) and "
+      "'https://who.org/zara.zim' (length 222) disagree on length.\n",
+      std::string(stderror));
+    EXPECT_EQ(book.getSize(), 222U);
+}
+
 namespace
 {
 
@@ -137,11 +203,11 @@ kiwix::Book makeBook(const std::string& attr, const std::string& baseDir="")
     return book;
 }
 
-kiwix::Book makeBookFromOpds(const std::string& entryContent, const std::string& urlHost="")
+kiwix::Book makeBookFromOpds(const std::string& entryContent, const std::string& urlHost="", const std::string& baseDir="")
 {
     const XMLDoc opds("<entry>" + entryContent + "</entry>");
     kiwix::Book book;
-    book.updateFromOpds(opds.child("entry"), urlHost);
+    book.updateFromOpds(opds.child("entry"), urlHost, baseDir);
     return book;
 }
 
@@ -223,6 +289,138 @@ TEST(BookTest, updateFromOPDSCategoryHandlingTest)
   }
 }
 
+TEST(BookTest, updateFromOPDSThumbnailWithAbsoluteHrefIgnoresUrlHostTest)
+{
+    // An already-absolute href (as real OPDS catalogs commonly send, see
+    // test/data/library.opds) must be left untouched, not prefixed with
+    // urlHost - concatenating the two would produce a garbled URL. This is
+    // the counterpart to updateFromOPDSTest above, which covers the
+    // relative-href case (where prefixing with urlHost IS expected).
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png"
+              href="https://example.com/favicon/zara.png" />
+    )", "http://who.org");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->url, "https://example.com/favicon/zara.png");
+}
+
+TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithSizeSuffixTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png;width=96;height=256;scale=1"
+              href="https://example.com/zara.png" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->mimeType, "image/png");
+    EXPECT_EQ(illustration->width, 96);
+    EXPECT_EQ(illustration->height, 256);
+}
+
+TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithPartialSizeSuffixTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png;width=96"
+              href="https://example.com/zara.png" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->mimeType, "image/png");
+    EXPECT_EQ(illustration->width, 96);
+    EXPECT_EQ(illustration->height, 48);
+}
+
+TEST(BookTest, updateFromOPDSDataUriThumbnailTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/jpeg;width=96;height=256;scale=1"
+              href="data:image/jpeg;base64,Zmlyc3QtdGh1bWJuYWls" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->getData(), "first-thumbnail");
+    EXPECT_EQ(illustration->url, "");
+    EXPECT_EQ(illustration->mimeType, "image/jpeg");
+    EXPECT_EQ(illustration->width, 96);
+    EXPECT_EQ(illustration->height, 256);
+}
+
+TEST(BookTest, updateFromOPDSMultipleDataUriThumbnailsTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png;width=48;height=48;scale=1"
+              href="data:image/png;base64,Zmlyc3QtdGh1bWJuYWls" />
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/jpeg;width=96;height=96;scale=1"
+              href="data:image/jpeg;base64,c2Vjb25kLXRodW1ibmFpbA==" />
+    )");
+
+    const auto& illustrations = book.getIllustrations();
+    ASSERT_EQ(illustrations.size(), 2U);
+    EXPECT_EQ(illustrations[0]->getData(), "first-thumbnail");
+    EXPECT_EQ(illustrations[0]->width, 48);
+    EXPECT_EQ(illustrations[0]->height, 48);
+    EXPECT_EQ(illustrations[1]->getData(), "second-thumbnail");
+    EXPECT_EQ(illustrations[1]->width, 96);
+    EXPECT_EQ(illustrations[1]->height, 96);
+}
+
+TEST(BookTest, updateFromOPDSMixedDataUriAndExternalThumbnailLinksTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png"
+              href="https://example.com/favicon.png" />
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/jpeg"
+              href="data:image/jpeg;base64,Zmlyc3QtdGh1bWJuYWls" />
+    )");
+
+    const auto& illustrations = book.getIllustrations();
+    ASSERT_EQ(illustrations.size(), 2U);
+    EXPECT_EQ(illustrations[0]->url, "https://example.com/favicon.png");
+    EXPECT_EQ(illustrations[1]->url, "");
+    EXPECT_EQ(illustrations[1]->getData(), "first-thumbnail");
+}
+
+TEST(BookTest, updateFromOPDSDataUriThumbnailWithoutCommaTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png"
+              href="data:image/png;base64" />
+    )");
+
+    const auto illustration = book.getIllustrations().at(0);
+    EXPECT_EQ(illustration->getData(), "");
+    EXPECT_EQ(illustration->url, "");
+}
+
+TEST(BookTest, updateFromOPDSThumbnailLinkWithoutTypeIsIgnoredTest)
+{
+  const kiwix::Book book = makeBookFromOpds(R"(
+        <link rel="http://opds-spec.org/image/thumbnail"
+              href="https://example.com/favicon.png" />
+    )");
+
+  EXPECT_TRUE(book.getIllustrations().empty());
+}
+
+TEST(BookTest, updateFromOPDSNoThumbnailsTest)
+{
+    const kiwix::Book book = makeBookFromOpds(R"(
+        <id>abcd</id>
+    )");
+
+    EXPECT_TRUE(book.getIllustrations().empty());
+}
+
 TEST(BookTest, setTagsDoesntAffectCategory)
 {
     kiwix::Book book;
@@ -279,6 +477,14 @@ TEST(BookTest, updateTest)
     auto newDefaultIllustration = newBook.getIllustration(48);
     EXPECT_EQ(newDefaultIllustration->getData(), defaultIllustration->getData());
     EXPECT_EQ(newDefaultIllustration->mimeType, defaultIllustration->mimeType);
+}
+
+TEST(BookTest, updateFromArchiveSetsByteExactSize)
+{
+    const zim::Archive archive("./test/zimfile.zim");
+    kiwix::Book book;
+    book.update(archive);
+    EXPECT_EQ(book.getSize(), archive.getFilesize());
 }
 
 namespace
@@ -356,14 +562,14 @@ TEST(BookTest, updateFromOPDSMultipleThumbnailLinksTest)
   const kiwix::Book book = makeBookFromOpds(R"(
         <link rel="http://opds-spec.org/image/thumbnail"
               type="image/png"
-              href="/zara-48.png" />
+              href="https://example.com/zara-48.png" />
         <link rel="http://opds-spec.org/image/thumbnail"
               type="image/png"
-              href="/zara-96.png" />
+              href="https://example.com/zara-96.png" />
     )");
 
   const auto& illustrations = book.getIllustrations();
   ASSERT_EQ(illustrations.size(), 2U);
-  EXPECT_EQ(illustrations[0]->url, "/zara-48.png");
-  EXPECT_EQ(illustrations[1]->url, "/zara-96.png");
+  EXPECT_EQ(illustrations[0]->url, "https://example.com/zara-48.png");
+  EXPECT_EQ(illustrations[1]->url, "https://example.com/zara-96.png");
 }
