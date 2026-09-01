@@ -181,7 +181,7 @@ std::string maskVariableOPDSFeedData(std::string s)
 "  </entry>\n"
 
 TEST_F(LibraryServerTest, catalog_root_xml)
-{
+{ 
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/root.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
@@ -189,6 +189,8 @@ TEST_F(LibraryServerTest, catalog_root_xml)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>All zims</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "\n"
     CATALOG_LINK_TAGS
     CHARLES_RAY_CATALOG_ENTRY
@@ -225,6 +227,8 @@ TEST_F(LibraryServerTest, catalog_search_by_phrase)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Filtered zims (q=%22ray%20charles%22)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
@@ -244,6 +248,8 @@ TEST_F(LibraryServerTest, catalog_search_by_words)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Filtered zims (q=ray%20charles)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>3</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>3</itemsPerPage>\n"
@@ -265,6 +271,8 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (q=description%3Aray%20description%3Acharles)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
@@ -282,6 +290,8 @@ TEST_F(LibraryServerTest, catalog_prefix_search)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (q=title%3A%22ray%20charles%22)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
@@ -301,6 +311,8 @@ TEST_F(LibraryServerTest, catalog_search_with_word_exclusion)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Filtered zims (q=ray%20-uncategorized)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
@@ -320,6 +332,8 @@ TEST_F(LibraryServerTest, catalog_search_by_tag)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Filtered zims (tag=_category%3Ajazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -340,6 +354,8 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (category=jazz)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
@@ -357,6 +373,8 @@ TEST_F(LibraryServerTest, catalog_search_by_category)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (category=jazz%2Cwikipedia)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
@@ -378,6 +396,8 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (lang=eng)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
@@ -396,6 +416,8 @@ TEST_F(LibraryServerTest, catalog_search_by_language)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (lang=eng%2Cfra)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"  
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>3</itemsPerPage>\n"
@@ -419,6 +441,8 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (count=-1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>3</itemsPerPage>\n"
@@ -438,6 +462,8 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (count=0)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>0</itemsPerPage>\n"
@@ -453,6 +479,8 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (count=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
@@ -469,6 +497,8 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (start=1&amp;count=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
@@ -485,6 +515,8 @@ TEST_F(LibraryServerTest, catalog_search_results_pagination)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
       "  <title>Filtered zims (start=100&amp;count=10)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>100</startIndex>\n"
       "  <itemsPerPage>0</itemsPerPage>\n"
@@ -719,6 +751,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries)
     CATALOG_V2_ENTRIES_PREAMBLE("")
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "\n"
     CHARLES_RAY_CATALOG_ENTRY
     RAY_CHARLES_CATALOG_ENTRY
@@ -742,6 +776,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
     CATALOG_V2_ENTRIES_PREAMBLE("")
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "\n"
     + fixContentLinks(CHARLES_RAY_CATALOG_ENTRY)
     + fixContentLinks(INACCESSIBLEZIMFILE_CATALOG_ENTRY)
@@ -779,6 +815,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE("?start=1")
       "  <title>Filtered Entries (start=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
@@ -796,6 +834,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE("?count=-1")
       "  <title>Filtered Entries (count=-1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>3</itemsPerPage>\n"
@@ -814,6 +854,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE("?count=0")
       "  <title>Filtered Entries (count=0)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>0</itemsPerPage>\n"
@@ -828,6 +870,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE("?count=2")
       "  <title>Filtered Entries (count=2)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
@@ -844,6 +888,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       CATALOG_V2_ENTRIES_PREAMBLE("?start=1&amp;count=1")
       "  <title>Filtered Entries (start=1&amp;count=1)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
@@ -861,6 +907,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
     "  <title>Filtered Entries (q=%22ray%20charles%22)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
@@ -880,6 +928,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=Or")
     "  <title>Filtered Entries (q=Or)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -896,6 +946,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=and")
     "  <title>Filtered Entries (q=and)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -912,6 +964,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=not")
     "  <title>Filtered Entries (q=not)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -928,6 +982,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=xor")
     "  <title>Filtered Entries (q=xor)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -944,6 +1000,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20or%20library")
     "  <title>Filtered Entries (q=wikipedia%20or%20library)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -960,6 +1018,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20and%20articles")
     "  <title>Filtered Entries (q=wikipedia%20and%20articles)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -976,6 +1036,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=near")
     "  <title>Filtered Entries (q=near)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -992,6 +1054,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=adj")
     "  <title>Filtered Entries (q=adj)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
@@ -1008,6 +1072,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=charles%20near%20why")
     "  <title>Filtered Entries (q=charles%20near%20why)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>0</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>0</itemsPerPage>\n"
@@ -1023,6 +1089,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     CATALOG_V2_ENTRIES_PREAMBLE("?q=charles%20adj%20why")
     "  <title>Filtered Entries (q=charles%20adj%20why)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>0</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>0</itemsPerPage>\n"
@@ -1040,6 +1108,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng")
       "  <title>Filtered Entries (lang=eng)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
@@ -1056,6 +1126,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng%2Cfra")
       "  <title>Filtered Entries (lang=eng%2Cfra)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>3</itemsPerPage>\n"
@@ -1076,6 +1148,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
       CATALOG_V2_ENTRIES_PREAMBLE("?category=jazz")
       "  <title>Filtered Entries (category=jazz)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
@@ -1091,6 +1165,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
       CATALOG_V2_ENTRIES_PREAMBLE("?category=jazz%2Cwikipedia")
       "  <title>Filtered Entries (category=jazz%2Cwikipedia)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
@@ -1110,6 +1186,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=fra&amp;category=jazz")
       "  <title>Filtered Entries (lang=fra&amp;category=jazz)</title>\n"
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
@@ -1140,6 +1218,8 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
     CATALOG_V2_PARTIAL_ENTRIES_PREAMBLE("")
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "\n"
     "  <entry>\n"
     "    <id>urn:uuid:charlesray</id>\n"
@@ -1178,6 +1258,8 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
       "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"                   \
       "  <title>Filtered zims (q=" SEARCH_TERM ")</title>\n"                \
       "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                         \
+      "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n" \
+      "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n" \
       "  <totalResults>" #RESULT_COUNT "</totalResults>\n"                  \
       "  <startIndex>0</startIndex>\n"                                      \
       "  <itemsPerPage>" #RESULT_COUNT "</itemsPerPage>\n"                  \
@@ -1247,6 +1329,8 @@ TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
     "  <title>Filtered zims (tag=_category%3Ajazz)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <logo>/ROOT%23%3F/skin/favicon/favicon-32x32.png</logo>\n"
+    "  <icon>/ROOT%23%3F/skin/favicon/favicon-32x32.png</icon>\n"
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
