@@ -199,6 +199,8 @@ TEST(stringTools, urlEncode)
   EXPECT_EQ(urlEncode(whitespace), "%20%0A%09%0D");
 
   EXPECT_EQ(urlEncode(someNonASCIIChars), "%CE%A3%E2%99%82%E2%99%80%E3%83%84");
+
+  EXPECT_EQ(urlEncode("D&D"), "D%26D");
 }
 
 TEST(stringTools, urlDecode)
@@ -222,6 +224,10 @@ TEST(stringTools, urlDecode)
 
   const std::string encodedUriDelimSymbols = urlEncode(uriDelimSymbols);
   EXPECT_EQ(urlDecode(encodedUriDelimSymbols, false), encodedUriDelimSymbols);
+
+  EXPECT_EQ(urlDecode("D%26D", true), "D&D");
+  // Decode once only: a literal "%26" in the value stays "%26".
+  EXPECT_EQ(urlDecode("D%2526D", true), "D%26D");
 }
 
 TEST(stringTools, stripSuffix)

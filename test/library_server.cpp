@@ -237,6 +237,17 @@ TEST_P(LibraryServerTest, catalog_searchdescription_xml)
   );
 }
 
+TEST_P(LibraryServerTest, catalog_search_encodes_ampersand_in_query)
+{
+  // Correctly encoded q=D%26D must search for D&D and advertise that
+  // same single encoding in the OPDS title (not raw '&', not '%2526').
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=D%26D");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_NE(r->body.find("(q=D%26D)</title>"), std::string::npos);
+  EXPECT_EQ(r->body.find("(q=D)</title>"), std::string::npos);
+  EXPECT_EQ(r->body.find("%2526"), std::string::npos);
+}
+
 TEST_P(LibraryServerTest, catalog_search_by_phrase)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/search?q=\"ray%20charles\"");
@@ -872,6 +883,16 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "</feed>\n"
     );
   }
+}
+
+TEST_P(LibraryServerTest, catalog_v2_entries_encodes_ampersand_in_query)
+{
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=D%26D");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_NE(r->body.find("entries?q=D%26D"), std::string::npos);
+  EXPECT_NE(r->body.find("(q=D%26D)</title>"), std::string::npos);
+  EXPECT_EQ(r->body.find("(q=D)</title>"), std::string::npos);
+  EXPECT_EQ(r->body.find("%2526"), std::string::npos);
 }
 
 TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)

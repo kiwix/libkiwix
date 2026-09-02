@@ -24,6 +24,16 @@ std::string getResponseContent(const ContentResponseBlueprint& crb)
 
 
 
+TEST(RequestContext, catalogQueryValueIsUriEncodedOnce)
+{
+  // MHD delivers already-decoded GET arguments (q=D%26D → "D&D").
+  // Reconstruct the query string with a single encode for OPDS titles/links.
+  const RequestContext req = makeHttpGetRequest(
+      "/catalog/search", {}, {{"q", "D&D"}});
+  EXPECT_EQ(req.get_argument("q"), "D&D");
+  EXPECT_EQ(req.get_query(), "q=D%26D");
+}
+
 TEST(HTTPErrorResponse, shouldBeInEnglishByDefault) {
   const RequestContext req = makeHttpGetRequest("/asdf", {}, {});
   HTTPErrorResponse errResp(req, MHD_HTTP_NOT_FOUND,

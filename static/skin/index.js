@@ -53,8 +53,11 @@
     function queryUrlBuilder() {
         let url = `${root}/catalog/v2/entries?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
-        params.forEach((value, key) => {url+= value ? `&${key}=${value}` : ''});
-        return (url);
+        const filterQuery = params.toString();
+        if (filterQuery) {
+            url += `&${filterQuery}`;
+        }
+        return url;
     }
 
     function setCookie(cookieName, cookieValue, ttl) {
@@ -70,7 +73,7 @@
     function getCookie(cookieName) {
         const name = cookieName + "=";
         let result;
-        decodeURIComponent(document.cookie).split('; ').forEach(val => {
+        document.cookie.split('; ').forEach(val => {
             if (val.indexOf(name) === 0) {
                 result = val.substring(name.length);
             }
