@@ -28,14 +28,18 @@
     let languages = {};
     let previousScrollTop = Infinity;
 
-    function updateFeedLink() {
-        const inputParams = new FragmentParams(window.location.hash);
+    function nonEmptyParams(inputParams) {
         const filteredParams = new FragmentParams();
         for (const [key, value] of inputParams) {
-            if ( value != '' ) {
+            if (value != '') {
                 filteredParams.set(key, value);
             }
         }
+        return filteredParams;
+    }
+
+    function updateFeedLink() {
+        const filteredParams = nonEmptyParams(new FragmentParams(window.location.hash));
         const feedLink = `${root}/catalog/v2/entries?count=-1&${filteredParams.toString()}`;
         document.querySelector('#headFeedLink').href = feedLink;
         document.querySelector('#feedLink').href = feedLink;
@@ -53,7 +57,7 @@
     function queryUrlBuilder() {
         let url = `${root}/catalog/v2/entries?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
-        const filterQuery = params.toString();
+        const filterQuery = nonEmptyParams(params).toString();
         if (filterQuery) {
             url += `&${filterQuery}`;
         }
