@@ -71,7 +71,7 @@
           date.setTime(date.getTime() + ttl);
           exp = `expires=${date.toUTCString()};`;
         }
-        document.cookie = `${cookieName}=${cookieValue};${exp}sameSite=Strict`;
+        document.cookie = `${cookieName}=${encodeURIComponent(cookieValue)};${exp}sameSite=Strict`;
     }
 
     function getCookie(cookieName) {
@@ -82,7 +82,7 @@
                 result = val.substring(name.length);
             }
         });
-        return result;
+        return result === undefined ? result : decodeURIComponent(result);
     }
 
     function humanFriendlyNumStr(num, precision) {
