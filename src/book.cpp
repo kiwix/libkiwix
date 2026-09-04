@@ -194,7 +194,12 @@ Book::Illustrations Book::getIllustrations() const
 
 const std::string& Book::getUrl() const
 {
-  return m_urls[AcquisitionLinkKind::DIRECT];
+  return getUrl(AcquisitionLinkKind::DIRECT);
+}
+
+const std::string& Book::getUrl(AcquisitionLinkKind linkKind) const
+{
+  return m_urls[linkKind];
 }
 
 bool Book::update(const kiwix::Book& other)
@@ -524,6 +529,16 @@ std::string Book::fromLinkKindToMimeType(kiwix::Book::AcquisitionLinkKind kind)
   }
 
   throw std::runtime_error("Unknown link kind");
+}
+
+// updateFromXml() always stores a DIRECT AcquisitionLinkKind, even when the xml
+// carries no url attribute, so getAcquisitionLinks() alone (unlike
+// getUrl(), which only returns non-empty urls) can be non-empty for a
+// purely local book. Filter those empty-url entries out here.
+bool Book::hasAcquisitionLink() const
+{
+  const auto linkMap = getAcquisitionLinks();
+  return !linkMap.empty();
 }
 
 }

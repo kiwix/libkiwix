@@ -109,6 +109,7 @@ kainjow::mustache::list getAcquisitionLinkData(const Book& book)
     if (link.empty()) {
       continue;
     }
+
     const auto kind = static_cast<Book::AcquisitionLinkKind>(it->first);
     acquisitionLinks.push_back(kainjow::mustache::object{
       {"mimetype", Book::fromLinkKindToMimeType(kind)},
