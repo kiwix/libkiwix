@@ -47,7 +47,7 @@ Book createBook(const std::string& id, const std::string& title)
   book.setCreator(title + " Creator");
   book.setPublisher(title + " Publisher");
   book.setDate("2021-03-25");
-  book.setUrl("http://download.kiwix.org/zim/" + id + ".zim");
+  book.setUrl(Book::AcquisitionLinkKind::DIRECT, "http://download.kiwix.org/zim/" + id + ".zim");
   book.setName("test_" + id);
   book.setFlavour("nopic");
   book.setTags("tag1;tag2");
@@ -124,7 +124,7 @@ TEST_F(LibXMLDumperTest, dumpsOnlyRequestedBooksInOrder)
 TEST_F(LibXMLDumperTest, omitsEmptyOrZeroOptionalAttributes)
 {
   Book book = createBook("bare-book-id", "Bare Book");
-  book.setUrl("");
+  book.setUrl(Book::AcquisitionLinkKind::DIRECT, "");
   book.setDownloadId("");
   book.setArticleCount(0);
   book.setMediaCount(0);

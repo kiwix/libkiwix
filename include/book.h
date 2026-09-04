@@ -21,6 +21,7 @@
 #define KIWIX_BOOK_H
 
 #include <array>
+#include <map>
 #include <string>
 #include <vector>
 #include <memory>
@@ -64,9 +65,13 @@ class Book
 
   typedef std::vector<std::shared_ptr<const Illustration>> Illustrations;
 
-  static constexpr size_t ACQUISITION_LINK_KIND_COUNT = 1;
+  enum AcquisitionLinkKind { BITTORRENT = 0, MAGNET, META4, DIRECT };
+
+  static constexpr size_t ACQUISITION_LINK_KIND_COUNT = 4;
   // Acquisition URLs indexed by AcquisitionLinkKind (empty = not set).
   typedef std::array<std::string, ACQUISITION_LINK_KIND_COUNT> AcquisitionLinks;
+  // Only the acquisition URLs that are set (non-empty), keyed by kind.
+  typedef std::map<AcquisitionLinkKind, std::string> AcquisitionLinkMap;
 
  public: // functions
   Book();
@@ -112,13 +117,8 @@ class Book
   const std::string& getCreator() const { return m_creator; }
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }
-  // Returns the most recently set/added URL (the vector's last
-  // element), or an empty string if none has been set. This is a
-  // read-only peek: it does not remove or otherwise mutate m_urls.
-  const std::string& getUrl() const {
-    static const std::string emptyUrl;
-    return m_urls.empty() ? emptyUrl : m_urls.back();
-  }
+  const std::string& getUrl() const;
+  AcquisitionLinkMap getAcquisitionLinks() const;
   const std::string& getName() const { return m_name; }
   std::string getCategory() const;
   const std::string& getTags() const { return m_tags; }
@@ -148,7 +148,10 @@ class Book
   void setCreator(const std::string& creator) { m_creator = creator; }
   void setPublisher(const std::string& publisher) { m_publisher = publisher; }
   void setDate(const std::string& date) { m_date = date; }
-  void setUrl(const std::string& url) { m_urls[ACQUISITION_LINK_KIND_COUNT - 1] = url; }
+  DEPRECATED void setUrl(const std::string& url) { setUrl(DIRECT, url); }
+  // Sets the acquisition link of the given kind.
+  // Setting an empty url string clears the link of that kind.
+  void setUrl(AcquisitionLinkKind linkKind, const std::string& url);
   void setName(const std::string& name) { m_name = name; }
   void setFlavour(const std::string& flavour) { m_flavour = flavour; }
   void setTags(const std::string& tags) { m_tags = tags; }
