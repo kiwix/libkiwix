@@ -230,7 +230,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_creator = ATTR("creator");
   m_publisher = ATTR("publisher");
   m_date = ATTR("date");
-  m_url = ATTR("url");
+  setUrl(ATTR("url"));
   m_name = ATTR("name");
   m_flavour = ATTR("flavour");
   m_tags = ATTR("tags");
@@ -292,6 +292,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   m_illustrations.clear();
+  m_urls[0] = "";
   std::string firstAcquisitionHref;
   std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;
@@ -304,7 +305,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
       if (isAbsoluteUrl(href)) {
-        m_url = href;
+        m_urls = { href };
       } else {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
