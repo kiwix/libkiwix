@@ -312,15 +312,16 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
     std::string rel = linkNode.attribute("rel").value();
 
     if (rel == "http://opds-spec.org/acquisition/open-access") {
-      // The href tells us whether this link points at a remote copy of the
-      // book (an absolute URL) or a local one (a filesystem path, absolute
-      // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
-      if (isAbsoluteUrl(href)) {
-        m_urls = { {ACQUISITION_MIMETYPE_ZIM, href} };
-      } else {
+      std::string type = linkNode.attribute("type").value();
+      if (type.empty()) {
+        type = ACQUISITION_MIMETYPE_ZIM;
+      }
+      if (type == ACQUISITION_MIMETYPE_ZIM && !isAbsoluteUrl(href)) {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
+      } else {
+        setUrl(type, href);
       }
       const std::string length = linkNode.attribute("length").value();
       if (!length.empty()) {
