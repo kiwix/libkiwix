@@ -67,10 +67,12 @@ const ResourceCollection resources200Compressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download.js" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/download.js?cacheid=3c61efe7" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=ae79e41a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=e3305ca0" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=c7e866ce" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
@@ -82,7 +84,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=42e90cb9" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=f78c03d9" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=a0aab37e" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -304,12 +306,13 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
     <link rel="mask-icon" href="/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" color="#5bbad5">
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
-    <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=d2d6933b" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=e3305ca0" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/download.js?cacheid=3c61efe7" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=c7e866ce" defer></script>
         <img src="/ROOT%23%3F/skin/feed.svg?cacheid=055b333f"
         <img src="/ROOT%23%3F/skin/langSelector.svg?cacheid=00b59961"
 )EXPECTEDRESULT"
@@ -328,10 +331,17 @@ R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10a
     {
       /* url */ "/ROOT%23%3F/skin/index.js",
 R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cacheid=079ab989">
-                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
-                                <img src="${root}/skin/hash.png?cacheid=f836e872" alt="${$t("hash-download-alt-text")}" />
-                                <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="${$t("magnet-alt-text")}" />
-                                <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="${$t("torrent-download-alt-text")}" />
+)EXPECTEDRESULT"
+    },
+    {
+      // The download-modal building code (and the image references below)
+      // moved from index.js into the shared download.js, so viewer.js can
+      // reuse it for the taskbar download button. See #1083.
+      /* url */ "/ROOT%23%3F/skin/download.js",
+R"EXPECTEDRESULT(                        <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
+                        <img src="${root}/skin/hash.png?cacheid=f836e872" alt="${$t("hash-download-alt-text")}" />
+                        <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="${$t("magnet-alt-text")}" />
+                         <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="${$t("torrent-download-alt-text")}" />
 )EXPECTEDRESULT"
     },
     {
@@ -343,7 +353,8 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=d2d6933b" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=f78c03d9" defer></script>
+    <script type="text/javascript" src="./skin/download.js?cacheid=3c61efe7" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=a0aab37e" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>

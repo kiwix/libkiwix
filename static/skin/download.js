@@ -2,6 +2,27 @@ function downloadButtonText(zimSize) {
     return $t("download") + (zimSize ? ` - ${zimSize}`: '');
 }
 
+// Moved here from index.js so viewer.js (which shows a download button in
+// the taskbar for the book currently being read) can also format sizes
+// coming straight from a catalog entry's acquisition link, without
+// duplicating the formatting logic.
+function humanFriendlyNumStr(num, precision) {
+    const n = Math.abs(num).toFixed().length;
+    return num.toFixed(Math.max(0, precision - n));
+}
+
+function humanFriendlySize(fileSize) {
+    if (fileSize === 0) {
+        return '';
+    }
+    const units = ['bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
+    let quotient = Math.floor(Math.log2(fileSize) / 10);
+    quotient = Math.min(quotient, units.length - 1);
+    fileSize /= (1024 ** quotient);
+    const fileSizeStr = humanFriendlyNumStr(fileSize, 3);
+    return `${fileSizeStr} ${units[quotient]}`;
+}
+
 /* hack for library.kiwix.org magnet links (created by MirrorBrain)
    See https://github.com/kiwix/container-images/issues/242 */
 async function getFixedMirrorbrainMagnet(magnetLink) {
@@ -59,61 +80,73 @@ async function getMagnetLink(downloadLink) {
     return magnetLink;
 }
 
+// Registers a click listener on `button` that always opens the modal for
+// the same fixed downloadLink/downloadSize - used by index.js, where each
+// book card's download button targets one book for its whole lifetime.
 function insertDownloadZimModal(button, downloadLink, downloadSize, root) {
     button.addEventListener('click', async (event) => {
         event.preventDefault();
-        const magnetLink = await getMagnetLink(downloadLink);
-        document.body.insertAdjacentHTML('beforeend', `<div class="modal-wrapper">
-            <div class="modal">
-                <div class="modal-heading">
-                    <div class="modal-title">
-                        <div>
-                            ${downloadButtonText(downloadSize)}
-                        </div>
-                    </div>
-                    <div onclick="closeModal()" class="modal-close-button">
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7071 1.70711C14.0976 1.31658 14.0976
-                                0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711
-                                0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417
-                                -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834
-                                -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7
-                                8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166
-                                14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z" fill="black" />
-                            </svg>
-                        </div>
+        await showDownloadZimModal(downloadLink, downloadSize, root);
+    });
+}
+
+// The actual modal-building logic, split out so callers whose download
+// target changes over time (e.g. viewer.js, where the taskbar's download
+// button follows whichever book is currently being read) can look up the
+// current downloadLink/downloadSize at click time instead of baking stale
+// values into a listener registered once at page load.
+async function showDownloadZimModal(downloadLink, downloadSize, root) {
+    const magnetLink = await getMagnetLink(downloadLink);
+    document.body.insertAdjacentHTML('beforeend', `<div class="modal-wrapper">
+        <div class="modal">
+            <div class="modal-heading">
+                <div class="modal-title">
+                    <div>
+                        ${downloadButtonText(downloadSize)}
                     </div>
                 </div>
-                <div class="modal-content">
-                    <div class="modal-regular-download">
-                        <a href="${downloadLink}" download>
-                            <img src="${root}/skin/download.png?KIWIXCACHEID" alt="${$t("direct-download-alt-text")}" />
-                            <div>${$t("direct-download-link-text")}</div>
-                        </a>
-                    </div>
-                    <div class="modal-regular-download">
-                        <a href="${downloadLink}.sha256" download>
-                            <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
-                            <div>${$t("hash-download-link-text")}</div>
-                        </a>
-                    </div>
-                    ${magnetLink ?
-                    `<div class="modal-regular-download">
-                        <a href="${magnetLink}" target="_blank">
-                            <img src="${root}/skin/magnet.png?KIWIXCACHEID" alt="${$t("magnet-alt-text")}" />
-                            <div>${$t("magnet-link-text")}</div>
-                        </a>
-                    </div>` : ``}
-                    <div class="modal-regular-download">
-                        <a href="${downloadLink}.torrent" download>
-                             <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
-                            <div>${$t("torrent-download-link-text")}</div>
-                        </a>
+                <div onclick="closeModal()" class="modal-close-button">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7071 1.70711C14.0976 1.31658 14.0976
+                            0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711
+                            0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417
+                            -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834
+                            -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7
+                            8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166
+                            14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z" fill="black" />
+                        </svg>
                     </div>
                 </div>
             </div>
-        </div>`);
-    })
+            <div class="modal-content">
+                <div class="modal-regular-download">
+                    <a href="${downloadLink}" download>
+                        <img src="${root}/skin/download.png?KIWIXCACHEID" alt="${$t("direct-download-alt-text")}" />
+                        <div>${$t("direct-download-link-text")}</div>
+                    </a>
+                </div>
+                <div class="modal-regular-download">
+                    <a href="${downloadLink}.sha256" download>
+                        <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
+                        <div>${$t("hash-download-link-text")}</div>
+                    </a>
+                </div>
+                ${magnetLink ?
+                `<div class="modal-regular-download">
+                    <a href="${magnetLink}" target="_blank">
+                        <img src="${root}/skin/magnet.png?KIWIXCACHEID" alt="${$t("magnet-alt-text")}" />
+                        <div>${$t("magnet-link-text")}</div>
+                    </a>
+                </div>` : ``}
+                <div class="modal-regular-download">
+                    <a href="${downloadLink}.torrent" download>
+                         <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
+                        <div>${$t("torrent-download-link-text")}</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>`);
 }
 
