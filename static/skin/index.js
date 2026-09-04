@@ -28,14 +28,18 @@
     let languages = {};
     let previousScrollTop = Infinity;
 
-    function updateFeedLink() {
-        const inputParams = new FragmentParams(window.location.hash);
+    function nonEmptyParams(inputParams) {
         const filteredParams = new FragmentParams();
         for (const [key, value] of inputParams) {
-            if ( value != '' ) {
+            if (value != '') {
                 filteredParams.set(key, value);
             }
         }
+        return filteredParams;
+    }
+
+    function updateFeedLink() {
+        const filteredParams = nonEmptyParams(new FragmentParams(window.location.hash));
         const feedLink = `${root}/catalog/v2/entries?count=-1&${filteredParams.toString()}`;
         document.querySelector('#headFeedLink').href = feedLink;
         document.querySelector('#feedLink').href = feedLink;
@@ -53,8 +57,11 @@
     function queryUrlBuilder() {
         let url = `${root}/catalog/v2/entries?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
-        params.forEach((value, key) => {url+= value ? `&${key}=${value}` : ''});
-        return (url);
+        const filterQuery = nonEmptyParams(params).toString();
+        if (filterQuery) {
+            url += `&${filterQuery}`;
+        }
+        return url;
     }
 
     function setCookie(cookieName, cookieValue, ttl) {
@@ -64,18 +71,18 @@
           date.setTime(date.getTime() + ttl);
           exp = `expires=${date.toUTCString()};`;
         }
-        document.cookie = `${cookieName}=${cookieValue};${exp}sameSite=Strict`;
+        document.cookie = `${cookieName}=${encodeURIComponent(cookieValue)};${exp}sameSite=Strict`;
     }
 
     function getCookie(cookieName) {
         const name = cookieName + "=";
         let result;
-        decodeURIComponent(document.cookie).split('; ').forEach(val => {
+        document.cookie.split('; ').forEach(val => {
             if (val.indexOf(name) === 0) {
                 result = val.substring(name.length);
             }
         });
-        return result;
+        return result === undefined ? result : decodeURIComponent(result);
     }
 
     function humanFriendlyNumStr(num, precision) {
