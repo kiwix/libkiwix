@@ -47,11 +47,28 @@ function getBookFromUserUrl(url) {
 
 let currentBook = null;
 let currentBookTitle = null;
+let currentBookDownloadLink = null;
+let currentBookDownloadSize = null;
 
 const bookUIGroup = document.getElementById('kiwix_serve_taskbar_book_ui_group');
 const homeButton = document.getElementById('kiwix_serve_taskbar_home_button');
+const downloadButton = document.getElementById('kiwix_serve_taskbar_download_button');
 const contentIframe = document.getElementById('content_iframe');
 
+// The download button's target changes with whichever book is currently
+// being read, so - unlike index.js's book-grid cards, each of which gets
+// its own insertDownloadZimModal() call bound to one fixed book - this
+// listener is registered once and reads the current download link/size at
+// click time (see showDownloadZimModal() in download.js).
+if ( downloadButton ) {
+  downloadButton.addEventListener('click', async (event) => {
+    event.preventDefault();
+    if ( !currentBookDownloadLink ) {
+      return;
+    }
+    await showDownloadZimModal(currentBookDownloadLink, currentBookDownloadSize, root);
+  });
+}
 
 function gotoMainPageOfCurrentBook() {
   location.hash = currentBook + '/';
@@ -117,18 +134,28 @@ function setTitle(element, text) {
   }
 }
 
-function setCurrentBook(book, title) {
+function setCurrentBook(book, title, downloadLink, downloadSize) {
   currentBook = book;
   currentBookTitle = title;
+  currentBookDownloadLink = downloadLink;
+  currentBookDownloadSize = downloadSize;
   setTitle(homeButton, $t("home-button-text", {BOOK_TITLE: title}));
   homeButton.innerHTML = `<button>${title}</button>`;
   bookUIGroup.style.display = 'inline';
+  if ( downloadButton ) {
+    // Not every previewed book has a download URL - e.g. a ZIM added
+    // locally with no library.xml/OPDS entry - so hide the button rather
+    // than open a modal with nothing to download.
+    downloadButton.style.display = downloadLink ? 'inline' : 'none';
+  }
   updateSearchBoxForBookChange();
 }
 
 function noCurrentBook() {
   currentBook = null;
   currentBookTitle = null;
+  currentBookDownloadLink = null;
+  currentBookDownloadSize = null;
   bookUIGroup.style.display = 'none';
   updateSearchBoxForBookChange();
 }
@@ -140,13 +167,44 @@ function updateCurrentBookIfNeeded(userUrl) {
   }
 }
 
+// Looks up the current book's download link/size, if any, from its
+// catalog entry - the same acquisition link index.js already reads for
+// the book-grid download buttons (see book.querySelector('link[type=
+// "application/x-zim"]') there). "name" is matched as an exact boolean
+// term server-side (see kiwix::nameQuery() in src/library.cpp), so this
+// can't accidentally match a different book.
+async function fetchBookDownloadInfo(book) {
+  try {
+    const resp = await fetch(
+      `${root}/catalog/v2/entries?name=${encodeURIComponent(book)}&count=1`
+    );
+    if ( !resp.ok ) {
+      return { downloadLink: null, downloadSize: null };
+    }
+    const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
+    const downloadBookLink = data.querySelector('link[type="application/x-zim"]');
+    if ( !downloadBookLink ) {
+      return { downloadLink: null, downloadSize: null };
+    }
+    return {
+      downloadLink: downloadBookLink.getAttribute('href').split('.meta4')[0],
+      downloadSize: humanFriendlySize(parseInt(downloadBookLink.getAttribute('length')))
+    };
+  } catch (err) {
+    console.log("Error fetching book download info: " + err);
+    return { downloadLink: null, downloadSize: null };
+  }
+}
+
 function updateCurrentBook(book) {
   if ( book == null ) {
     noCurrentBook();
   } else {
     fetch(`./raw/${book}/meta/Title`).then(async (resp) => {
       if ( resp.ok ) {
-        setCurrentBook(book, await resp.text());
+        const title = await resp.text();
+        const { downloadLink, downloadSize } = await fetchBookDownloadInfo(book);
+        setCurrentBook(book, title, downloadLink, downloadSize);
       } else {
         noCurrentBook();
       }
