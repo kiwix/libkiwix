@@ -154,6 +154,8 @@ ParsedIllustrationType parseIllustrationType(const std::string& type)
 
 namespace kiwix
 {
+const std::string Book::ACQUISITION_MIMETYPE_ZIM = "application/x-zim";
+
 /* Constructor */
 Book::Book() :
   m_pathValid(false),
@@ -169,6 +171,17 @@ Book::~Book()
 Book::Illustrations Book::getIllustrations() const
 {
   return m_illustrations;
+}
+
+const std::string& Book::getUrl() const
+{
+  static const std::string emptyUrl;
+  for (auto it = m_urls.rbegin(); it != m_urls.rend(); ++it) {
+    if (it->mimeType == ACQUISITION_MIMETYPE_ZIM) {
+      return it->url;
+    }
+  }
+  return emptyUrl;
 }
 
 bool Book::update(const kiwix::Book& other)
@@ -230,7 +243,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_creator = ATTR("creator");
   m_publisher = ATTR("publisher");
   m_date = ATTR("date");
-  m_urls = { ATTR("url") };
+  m_urls = { {ACQUISITION_MIMETYPE_ZIM, ATTR("url")} };
   m_name = ATTR("name");
   m_flavour = ATTR("flavour");
   m_tags = ATTR("tags");
@@ -304,7 +317,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
       if (isAbsoluteUrl(href)) {
-        m_urls = { href };
+        m_urls = { {ACQUISITION_MIMETYPE_ZIM, href} };
       } else {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
