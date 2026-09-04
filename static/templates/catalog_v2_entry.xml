@@ -22,7 +22,7 @@
       <name>{{publisher_name}}</name>
     </publisher>
     <dc:issued>{{book_date}}</dc:issued>
-    {{#url}}
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="{{{url}}}" length="{{{size}}}" />
-    {{/url}}{{#local_path}}<link rel="http://opds-spec.org/acquisition/open-access" href="{{local_path}}" type="application/x-zim" length="{{{size}}}"/>{{/local_path}}
+    {{#acquisitionLinks}}
+    <link rel="http://opds-spec.org/acquisition/open-access" type="{{mimetype}}" href="{{{href}}}" length="{{{size}}}" />
+    {{/acquisitionLinks}}{{#local_path}}<link rel="http://opds-spec.org/acquisition/open-access" href="{{local_path}}" type="application/x-zim" length="{{{size}}}"/>{{/local_path}}
   </entry>

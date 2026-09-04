@@ -100,6 +100,21 @@ getEmbeddedThumbnailLinks(const Book& book, bool isLiveCatalog = true)
   return thumbnailLinks;
 }
 
+kainjow::mustache::list getAcquisitionLinkData(const Book& book)
+{
+  kainjow::mustache::list acquisitionLinks;
+  for (const auto& link : book.getAcquisitionLinks()) {
+    if (link.url.empty()) {
+      continue;
+    }
+    acquisitionLinks.push_back(kainjow::mustache::object{
+      {"mimetype", link.mimeType},
+      {"href", link.url}
+    });
+  }
+  return acquisitionLinks;
+}
+
 } // namespace
 
 
@@ -135,9 +150,9 @@ std::string fullEntryOpds(const Book& book,
       {"media_count", to_string(book.getMediaCount())},
       {"author_name", book.getCreator()},
       {"publisher_name", book.getPublisher()},
-      {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
       {"thumbnailLinks", thumbnailLinks},
+      {"acquisitionLinks", getAcquisitionLinkData(book)},
       {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
