@@ -98,7 +98,7 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
     const auto bookDescription = bookObj.getDescription();
     const auto bookIconUrl = rootLocation + "/catalog/v2/illustration/" + bookId +  "/?size=48";
     const auto tags = bookObj.getTags();
-    const auto downloadAvailable = (bookObj.getUrl() != "");
+    const auto downloadAvailable = (bookObj.getUrl(Book::ACQUISITION_MIMETYPE_ZIM) != "");
     const auto langTagObj = getLangTag(bookObj.getLanguages());
     std::string faviconAttr = "style=background-image:url(" + bookIconUrl + ")";
     booksData.push_back(kainjow::mustache::object{

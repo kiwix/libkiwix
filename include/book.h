@@ -70,6 +70,7 @@ class Book
   };
 
   static const std::string ACQUISITION_MIMETYPE_ZIM;
+  static const std::string ACQUISITION_MIMETYPE_ZIM_METALINK;
 
  public: // functions
   Book();
@@ -121,7 +122,8 @@ class Book
    * @deprecated A book may have several acquisition links (one per mime
    * type). Use getAcquisitionLinks() instead.
    */
-  DEPRECATED const std::string& getUrl() const;
+  const std::string& getUrl() const;
+  const std::string& getUrl(const std::string& mimeType) const;
   const std::vector<AcquisitionLink>& getAcquisitionLinks() const { return m_urls; }
   const std::string& getName() const { return m_name; }
   std::string getCategory() const;

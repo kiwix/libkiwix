@@ -53,7 +53,7 @@ TEST(BookTest, updateFromXMLTest)
     book.updateFromXml(xml.child("book"), DATA_ABS_PATH);
 
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
-    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "https://who.org/zara.zim");
     EXPECT_EQ(book.getTitle(), "Catch an infection in 24 hours");
     EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");
     EXPECT_EQ(book.getTags(), "unittest;_category:medicine;_pictures:yes");
@@ -101,7 +101,7 @@ TEST(BookTest, updateFromOPDSTest)
     // stripped.
     EXPECT_EQ(book.getId(), "zara");
 
-    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "https://who.org/zara.zim");
     EXPECT_EQ(book.getTitle(), "Catch an infection in 24 hours");
     EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");
     EXPECT_EQ(book.getTags(), "unittest;_category:medicine;_pictures:yes");
@@ -138,7 +138,7 @@ TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
     book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
 
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
-    EXPECT_EQ(book.getUrl(), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "");
 }
 
 TEST(BookTest, updateFromOPDSTwoAcquisitionLinksTest)
@@ -161,7 +161,7 @@ TEST(BookTest, updateFromOPDSTwoAcquisitionLinksTest)
     book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
 
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
-    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "https://who.org/zara.zim");
     EXPECT_EQ(book.getSize(), 222U);
 }
 
@@ -215,14 +215,14 @@ TEST(BookTest, updateFromOPDSMultipleMimeTypeAcquisitionLinksTest)
     kiwix::Book book;
     book.updateFromOpds(opds.child("entry"), "http://who.org", "");
 
-    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "https://who.org/zara.zim");
     EXPECT_EQ(book.getSize(), 345678U);
 
     const auto& links = book.getAcquisitionLinks();
     ASSERT_EQ(links.size(), 3U);
-    EXPECT_EQ(links[0].mimeType, "application/x-zim");
+    EXPECT_EQ(links[0].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_ZIM);
     EXPECT_EQ(links[0].url, "https://who.org/zara.zim");
-    EXPECT_EQ(links[1].mimeType, "application/metalink4+xml");
+    EXPECT_EQ(links[1].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK);
     EXPECT_EQ(links[1].url, "https://who.org/zara.zim.meta4");
     EXPECT_EQ(links[2].mimeType, "application/x-bittorrent");
     EXPECT_EQ(links[2].url, "https://who.org/zara.zim.torrent");
@@ -232,14 +232,14 @@ TEST(BookTest, setUrlWithMimeTypeAddsToAcquisitionLinks)
 {
     kiwix::Book book;
     book.setUrl("http://who.org/zara.zim");
-    book.setUrl("application/metalink4+xml", "http://who.org/zara.zim.meta4");
+    book.setUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK, "http://who.org/zara.zim.meta4");
     book.setUrl("application/x-bittorrent", "http://who.org/zara.zim.torrent");
 
     const auto& links = book.getAcquisitionLinks();
     ASSERT_EQ(links.size(), 3U);
     EXPECT_EQ(links[0].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_ZIM);
     EXPECT_EQ(links[0].url, "http://who.org/zara.zim");
-    EXPECT_EQ(links[1].mimeType, "application/metalink4+xml");
+    EXPECT_EQ(links[1].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK);
     EXPECT_EQ(links[1].url, "http://who.org/zara.zim.meta4");
     EXPECT_EQ(links[2].mimeType, "application/x-bittorrent");
     EXPECT_EQ(links[2].url, "http://who.org/zara.zim.torrent");
@@ -248,15 +248,15 @@ TEST(BookTest, setUrlWithMimeTypeAddsToAcquisitionLinks)
 TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)
 {
     kiwix::Book book;
-    book.setUrl("application/metalink4+xml", "http://who.org/zara.zim.meta4");
+    book.setUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK, "http://who.org/zara.zim.meta4");
     book.setUrl("application/x-bittorrent", "http://who.org/zara.zim.torrent");
 
-    EXPECT_EQ(book.getUrl(), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "");
 
     book.setUrl("http://who.org/zara.zim");
     book.setUrl("application/x-bittorrent", "http://who.org/zara.zim.torrent");
 
-    EXPECT_EQ(book.getUrl(), "http://who.org/zara.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "http://who.org/zara.zim");
 }
 
 namespace
@@ -536,7 +536,7 @@ TEST(BookTest, updateTest)
     EXPECT_EQ(newBook.readOnly(), book.readOnly());
     EXPECT_EQ(newBook.getPath(), book.getPath());
     EXPECT_EQ(newBook.isPathValid(), book.isPathValid());
-    EXPECT_EQ(newBook.getUrl(), book.getUrl());
+    EXPECT_EQ(newBook.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM));
     EXPECT_EQ(newBook.getTags(), book.getTags());
     EXPECT_EQ(newBook.getCategory(), book.getCategory());
     EXPECT_EQ(newBook.getName(), book.getName());

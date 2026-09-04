@@ -131,7 +131,7 @@ TEST(FullEntryOpdsTest, rendersOneLinkPerAcquisitionLinkMimeType)
 {
   Book book = createBook();
   book.setUrl("http://download.kiwix.org/zim/book.zim");
-  book.setUrl("application/metalink4+xml", "http://download.kiwix.org/zim/book.zim.meta4");
+  book.setUrl(Book::ACQUISITION_MIMETYPE_ZIM_METALINK, "http://download.kiwix.org/zim/book.zim.meta4");
   book.setUrl("application/x-bittorrent", "http://download.kiwix.org/zim/book.zim.torrent");
   book.setSize(123456);
 

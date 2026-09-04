@@ -45,7 +45,7 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     book = lib->getBookById(bookId);
     auto savedPath = resolveAbsPath(manager.writableLibraryPath, pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
-    EXPECT_EQ(book.getUrl(), url);
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), url);
 }
 
 TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
@@ -117,7 +117,7 @@ TEST(ManagerTest, readXml)
     // not considered valid.
     EXPECT_FALSE(book.isPathValid());
     EXPECT_TRUE(book.readOnly());
-    EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl());
+    EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM));
     EXPECT_EQ("Unit Test", book.getTitle());
     EXPECT_EQ("Wikipedia articles about unit testing", book.getDescription());
     EXPECT_EQ("eng", book.getCommaSeparatedLanguages());
@@ -294,7 +294,7 @@ TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
 
     kiwix::Book book1 = lib->getBookById("book1");
     EXPECT_EQ(book1.getTitle(), "Book One");
-    EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
+    EXPECT_EQ(book1.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "https://example.com/book1.zim");
 
     EXPECT_EQ(book1.getPath(), "");
     EXPECT_FALSE(book1.isPathValid());
@@ -392,7 +392,7 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
     EXPECT_EQ(book.getPath(), resolveAbsPath(LIB_OPDS_ABS_PATH, "./zimfile_raycharles.zim"));
     EXPECT_TRUE(book.isPathValid());
 
-    EXPECT_EQ(book.getUrl(), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
     EXPECT_EQ(book.getTitle(), "Ray Charles");
     EXPECT_EQ(book.getDescription(), "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)");
     EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng");
