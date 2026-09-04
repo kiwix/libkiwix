@@ -115,7 +115,13 @@ class Book
   const std::string& getCreator() const { return m_creator; }
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }
-  const std::string& getUrl() const;
+  /**
+   * Get the book's URL.
+   *
+   * @deprecated A book may have several acquisition links (one per mime
+   * type). Use getAcquisitionLinks() instead.
+   */
+  DEPRECATED const std::string& getUrl() const;
   const std::vector<AcquisitionLink>& getAcquisitionLinks() const { return m_urls; }
   const std::string& getName() const { return m_name; }
   std::string getCategory() const;
