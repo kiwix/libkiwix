@@ -154,7 +154,9 @@ ParsedIllustrationType parseIllustrationType(const std::string& type)
 
 namespace kiwix
 {
+
 const std::string Book::ACQUISITION_MIMETYPE_ZIM = "application/x-zim";
+const std::string Book::ACQUISITION_MIMETYPE_ZIM_METALINK = "application/metalink4+xml";
 
 /* Constructor */
 Book::Book() :
@@ -175,9 +177,14 @@ Book::Illustrations Book::getIllustrations() const
 
 const std::string& Book::getUrl() const
 {
+  return getUrl(ACQUISITION_MIMETYPE_ZIM);
+}
+
+const std::string& Book::getUrl(const std::string& mimeType) const
+{
   static const std::string emptyUrl;
   for (auto it = m_urls.rbegin(); it != m_urls.rend(); ++it) {
-    if (it->mimeType == ACQUISITION_MIMETYPE_ZIM) {
+    if (it->mimeType == mimeType) {
       return it->url;
     }
   }

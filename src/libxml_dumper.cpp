@@ -72,7 +72,7 @@ void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
   }
 
   ADD_ATTR_NOT_EMPTY(entry_node, "date", book.getDate());
-  ADD_ATTR_NOT_EMPTY(entry_node, "url", book.getUrl());
+  ADD_ATTR_NOT_EMPTY(entry_node, "url", book.getUrl(Book::ACQUISITION_MIMETYPE_ZIM));
 
   if (book.getArticleCount())
     ADD_ATTRIBUTE(entry_node, "articleCount", to_string(book.getArticleCount()));
