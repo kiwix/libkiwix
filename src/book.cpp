@@ -196,7 +196,12 @@ Book::Illustrations Book::getIllustrations() const
 
 const std::string& Book::getUrl() const
 {
-  return m_urls[linkIndex(AcquisitionLinkKind::DIRECT)];
+  return getUrl(AcquisitionLinkKind::DIRECT);
+}
+
+const std::string& Book::getUrl(AcquisitionLinkKind linkKind) const
+{
+  return m_urls[linkIndex(linkKind)];
 }
 
 bool Book::update(const kiwix::Book& other)

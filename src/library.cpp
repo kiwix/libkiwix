@@ -89,8 +89,8 @@ Library::getBookCount_not_protected(const bool localBooks, const bool remoteBook
   for (auto& pair: m_books) {
     auto& book = pair.second;
     if ((!book.getPath().empty() && localBooks)
-        || (!book.getUrl().empty() && remoteBooks)) {
-      result++;
+        || (nonEmptyAcquisitionLinksCount(book) > 0 && remoteBooks)) {
+      ++result;
     }
   }
   return result;
@@ -1075,7 +1075,7 @@ bool Filter::accept(const Book& book) const
   FILTER(_VALID, valid)
   FILTER(_NOVALID, !valid)
 
-  auto remote = !book.getUrl().empty();
+  auto remote = nonEmptyAcquisitionLinksCount(book) > 0;
   FILTER(_REMOTE, remote)
   FILTER(_NOREMOTE, !remote)
 

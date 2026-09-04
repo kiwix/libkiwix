@@ -871,24 +871,45 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
 std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const
 {
   const auto book = mp_library->getBookById(bookId);
-  auto bookUrl = kiwix::stripSuffix(book.getUrl(), ".meta4");
   auto getTranslation = i18n::GetTranslatedStringWithMsgId(userLang);
   const auto translations = kainjow::mustache::object{
                             getTranslation("download-links-heading", {{"BOOK_TITLE", book.getTitle()}}),
                             getTranslation("download-links-title"),
                             getTranslation("direct-download-link-text"),
+                            getTranslation("metalink-download-link-text"),
                             getTranslation("hash-download-link-text"),
                             getTranslation("magnet-link-text"),
                             getTranslation("torrent-download-link-text")
   };
 
-  return render_template(
-             RESOURCE::templates::no_js_download_html,
-             kainjow::mustache::object{
-               {"url", bookUrl},
-               {"translations", translations}
-             }
-  );
+  kainjow::mustache::object data{{"translations", translations}};
+  // A link that the book doesn't have is left out of the data altogether,
+  // so that the template's {{#...}} section for it is not rendered
+  // (mustache considers even an empty string as a truthy value).
+  const std::pair<const char*, kiwix::Book::AcquisitionLinkKind> linkKinds[] = {
+    {"direct_url",   kiwix::Book::AcquisitionLinkKind::DIRECT},
+    {"metalink_url", kiwix::Book::AcquisitionLinkKind::META4},
+    {"magnet_url",   kiwix::Book::AcquisitionLinkKind::MAGNET},
+    {"torrent_url",  kiwix::Book::AcquisitionLinkKind::BITTORRENT}
+  };
+  for ( const auto& kv : linkKinds ) {
+    const auto& url = book.getUrl(kv.second);
+    if ( !url.empty() )
+      data[kv.first] = url;
+  }
+
+  // Catalogs providing only a single (direct) URL rely on the magnet and
+  // torrent files being published next to the ZIM file.
+  const auto& directUrl = book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT);
+  if ( !directUrl.empty() ) {
+    const auto baseUrl = kiwix::stripSuffix(directUrl, ".meta4");
+    if ( book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET).empty() )
+      data["magnet_url"] = baseUrl + ".magnet";
+    if ( book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT).empty() )
+      data["torrent_url"] = baseUrl + ".torrent";
+  }
+
+  return render_template(RESOURCE::templates::no_js_download_html, data);
 }
 
 void InternalServer::setContentAccessUrl(LibraryDumper& libDumper) const
