@@ -127,6 +127,31 @@ TEST(FullEntryOpdsTest, rendersAcquisitionLinkWhenUrlIsSet)
   );
 }
 
+TEST(FullEntryOpdsTest, rendersOneLinkPerAcquisitionLinkMimeType)
+{
+  Book book = createBook();
+  book.setUrl("http://download.kiwix.org/zim/book.zim");
+  book.setUrl("application/metalink4+xml", "http://download.kiwix.org/zim/book.zim.meta4");
+  book.setUrl("application/x-bittorrent", "http://download.kiwix.org/zim/book.zim.torrent");
+  book.setSize(123456);
+
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+    "  <entry>\n"
+    CORE_ENTRY_BODY
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"http://download.kiwix.org/zim/book.zim\" length=\"123456\" />\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/metalink4+xml\" href=\"http://download.kiwix.org/zim/book.zim.meta4\" length=\"123456\" />\n"
+    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-bittorrent\" href=\"http://download.kiwix.org/zim/book.zim.torrent\" length=\"123456\" />\n"
+    "  </entry>\n"
+  );
+}
+
 TEST(FullEntryOpdsTest, omitsContentLinkWhenContentAccessUrlIsEmpty)
 {
   const Book book = createBook();
