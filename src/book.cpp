@@ -170,7 +170,6 @@ fromMimeTypeToLinkKind(const std::string& mimeType)
   throw std::runtime_error("Unknown acquisition link type: " + mimeType);
 }
 
-
 } // anonymous namespace
 
 namespace kiwix
@@ -332,8 +331,11 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
       std::string type = linkNode.attribute("type").value();
+      if (type.empty()) {
+        type = fromLinkKindToMimeType(DIRECT);
+      }
 
-      auto linkType = type.empty() ? DIRECT: fromMimeTypeToLinkKind(type);
+      auto linkType = fromMimeTypeToLinkKind(type);
       if (linkType == DIRECT && !isAbsoluteUrl(href)) {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
@@ -505,6 +507,23 @@ std::string Book::getCategoryFromTags() const
 const std::vector<std::string> Book::getLanguages() const
 {
   return kiwix::split(m_language, ",");
+}
+
+
+std::string Book::fromLinkKindToMimeType(kiwix::Book::AcquisitionLinkKind kind)
+{
+  switch (kind) {
+    case kiwix::Book::AcquisitionLinkKind::META4:
+      return "application/metalink4+xml";
+    case kiwix::Book::AcquisitionLinkKind::BITTORRENT:
+      return "application/x-bittorrent";
+    case kiwix::Book::AcquisitionLinkKind::MAGNET:
+      return "application/x-magnet";
+    case kiwix::Book::AcquisitionLinkKind::DIRECT:
+      return "application/x-zim";
+  }
+
+  throw std::runtime_error("Unknown link kind");
 }
 
 }

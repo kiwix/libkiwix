@@ -73,6 +73,8 @@ class Book
   // Only the acquisition URLs that are set (non-empty), keyed by kind.
   typedef std::map<AcquisitionLinkKind, std::string> AcquisitionLinkMap;
 
+  static std::string fromLinkKindToMimeType(AcquisitionLinkKind kind);
+
  public: // functions
   Book();
   ~Book();
