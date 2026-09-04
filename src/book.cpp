@@ -154,6 +154,25 @@ ParsedIllustrationType parseIllustrationType(const std::string& type)
   return result;
 }
 
+kiwix::Book::AcquisitionLinkKind
+fromMimeTypeToLinkKind(const std::string& mimeType)
+{
+  if (mimeType == "application/metalink4+xml") {
+    return kiwix::Book::AcquisitionLinkKind::META4;
+  }
+  if (mimeType == "application/x-bittorrent") {
+    return kiwix::Book::AcquisitionLinkKind::BITTORRENT;
+  }
+  if (mimeType == "application/x-magnet") {
+    return kiwix::Book::AcquisitionLinkKind::MAGNET;
+  }
+  if (mimeType == "application/x-zim") {
+    return kiwix::Book::AcquisitionLinkKind::DIRECT;
+  }
+
+  throw std::runtime_error("Unknown acquisition link type: " + mimeType);
+}
+
 } // anonymous namespace
 
 namespace kiwix
@@ -313,11 +332,14 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // book (an absolute URL) or a local one (a filesystem path, absolute
       // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
-      if (isAbsoluteUrl(href)) {
-        m_urls[linkIndex(AcquisitionLinkKind::DIRECT)] = href;
-      } else {
+      std::string type = linkNode.attribute("type").value();
+
+      auto linkType = type.empty() ? AcquisitionLinkKind::DIRECT: fromMimeTypeToLinkKind(type);
+      if (linkType == AcquisitionLinkKind::DIRECT && !isAbsoluteUrl(href)) {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
+      } else {
+        setUrl(linkType, href);
       }
       const std::string length = linkNode.attribute("length").value();
       if (!length.empty()) {

@@ -198,7 +198,40 @@ TEST(BookTest, updateFromOPDSDuplicateLengthWarnsTest)
     EXPECT_EQ(book.getSize(), 222U);
 }
 
-TEST(BookTest, addUrlWithMimeTypeAddsToAcquisitionLinks)
+TEST(BookTest, updateFromOPDSMultipleMimeTypeAcquisitionLinksTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://who.org/zara.zim"
+              length="345678" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/metalink4+xml"
+              href="https://who.org/zara.zim.meta4"
+              length="345678" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-bittorrent"
+              href="https://who.org/zara.zim.torrent"
+              length="345678" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", "");
+
+    EXPECT_EQ(book.getUrl(), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getSize(), 345678U);
+
+    const auto urls = book.getUrls();
+    EXPECT_EQ(kiwix::nonEmptyAcquisitionLinksCount(book), 3U);
+    EXPECT_EQ(urls[linkIndex(kiwix::Book::AcquisitionLinkKind::DIRECT)], "https://who.org/zara.zim");
+    EXPECT_EQ(urls[linkIndex(kiwix::Book::AcquisitionLinkKind::META4)], "https://who.org/zara.zim.meta4");
+    EXPECT_EQ(urls[linkIndex(kiwix::Book::AcquisitionLinkKind::BITTORRENT)], "https://who.org/zara.zim.torrent");
+}
+
+TEST(BookTest, setUrlStoresUrlPerAcquisitionLinkKind)
 {
     kiwix::Book book;
     book.setUrl(kiwix::Book::AcquisitionLinkKind::DIRECT, "http://who.org/zara.zim");
