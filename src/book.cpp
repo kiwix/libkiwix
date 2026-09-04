@@ -154,6 +154,10 @@ ParsedIllustrationType parseIllustrationType(const std::string& type)
 
 namespace kiwix
 {
+
+const std::string Book::ACQUISITION_MIMETYPE_ZIM = "application/x-zim";
+const std::string Book::ACQUISITION_MIMETYPE_ZIM_METALINK = "application/metalink4+xml";
+
 /* Constructor */
 Book::Book() :
   m_pathValid(false),
@@ -169,6 +173,22 @@ Book::~Book()
 Book::Illustrations Book::getIllustrations() const
 {
   return m_illustrations;
+}
+
+const std::string& Book::getUrl() const
+{
+  return getUrl(ACQUISITION_MIMETYPE_ZIM);
+}
+
+const std::string& Book::getUrl(const std::string& mimeType) const
+{
+  static const std::string emptyUrl;
+  for (auto it = m_urls.rbegin(); it != m_urls.rend(); ++it) {
+    if (it->mimeType == mimeType) {
+      return it->url;
+    }
+  }
+  return emptyUrl;
 }
 
 bool Book::update(const kiwix::Book& other)
@@ -230,7 +250,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_creator = ATTR("creator");
   m_publisher = ATTR("publisher");
   m_date = ATTR("date");
-  m_url = ATTR("url");
+  m_urls = { {ACQUISITION_MIMETYPE_ZIM, ATTR("url")} };
   m_name = ATTR("name");
   m_flavour = ATTR("flavour");
   m_tags = ATTR("tags");
@@ -299,15 +319,16 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
     std::string rel = linkNode.attribute("rel").value();
 
     if (rel == "http://opds-spec.org/acquisition/open-access") {
-      // The href tells us whether this link points at a remote copy of the
-      // book (an absolute URL) or a local one (a filesystem path, absolute
-      // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
-      if (isAbsoluteUrl(href)) {
-        m_url = href;
-      } else {
+      std::string type = linkNode.attribute("type").value();
+      if (type.empty()) {
+        type = ACQUISITION_MIMETYPE_ZIM;
+      }
+      if (type == ACQUISITION_MIMETYPE_ZIM && !isAbsoluteUrl(href)) {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
+      } else {
+        setUrl(type, href);
       }
       const std::string length = linkNode.attribute("length").value();
       if (!length.empty()) {

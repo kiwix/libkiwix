@@ -871,7 +871,13 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
 std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const
 {
   const auto book = mp_library->getBookById(bookId);
-  auto bookUrl = kiwix::stripSuffix(book.getUrl(), ".meta4");
+  // Today's real remote catalogs (e.g. download.kiwix.org) don't emit a
+  // distinct metalink4+xml link; they tag the .meta4 URL as ACQUISITION_MIMETYPE_ZIM
+  // instead, so fall back to that when there's no dedicated metalink link.
+  auto metalinkUrl = book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK);
+  auto bookUrl = kiwix::stripSuffix(
+    metalinkUrl.empty() ? book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM) : metalinkUrl,
+    ".meta4");
   auto getTranslation = i18n::GetTranslatedStringWithMsgId(userLang);
   const auto translations = kainjow::mustache::object{
                             getTranslation("download-links-heading", {{"BOOK_TITLE", book.getTitle()}}),
