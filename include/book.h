@@ -107,7 +107,13 @@ class Book
   const std::string& getCreator() const { return m_creator; }
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }
-  const std::string& getUrl() const { return m_url; }
+  // Returns the most recently set/added URL (the vector's last
+  // element), or an empty string if none has been set. This is a
+  // read-only peek: it does not remove or otherwise mutate m_urls.
+  const std::string& getUrl() const {
+    static const std::string emptyUrl;
+    return m_urls.empty() ? emptyUrl : m_urls.back();
+  }
   const std::string& getName() const { return m_name; }
   std::string getCategory() const;
   const std::string& getTags() const { return m_tags; }
@@ -137,7 +143,7 @@ class Book
   void setCreator(const std::string& creator) { m_creator = creator; }
   void setPublisher(const std::string& publisher) { m_publisher = publisher; }
   void setDate(const std::string& date) { m_date = date; }
-  void setUrl(const std::string& url) { m_url = url; }
+  void setUrl(const std::string& url) { m_urls.push_back(url); }
   void setName(const std::string& name) { m_name = name; }
   void setFlavour(const std::string& flavour) { m_flavour = flavour; }
   void setTags(const std::string& tags) { m_tags = tags; }
@@ -163,7 +169,7 @@ class Book
   std::string m_creator;
   std::string m_publisher;
   std::string m_date;
-  std::string m_url;
+  std::vector<std::string> m_urls;
   std::string m_name;
   std::string m_flavour;
   std::string m_tags;
