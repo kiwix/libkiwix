@@ -63,6 +63,18 @@ class Manager
  public: // types
   typedef std::vector<std::string> Paths;
 
+  /**
+   * A set of acquisition URLs for a book, keyed by acquisition mime type.
+   *
+   * A field left empty means no acquisition link of that type is recorded
+   * for the book.
+   */
+  struct BookAcquisitionUrls {
+    std::string zim;
+    std::string meta4;
+    std::string torrent;
+  };
+
  public: // functions
   explicit Manager(LibraryManipulator manipulator);
   explicit Manager(LibraryPtr library);
@@ -161,6 +173,28 @@ class Manager
   std::string addBookFromPathAndGetId(const std::string& pathToOpen,
                                  const std::string& pathToSave = "",
                                  const std::string& url = "",
+                                 const bool checkMetaData = false);
+
+  /**
+   * Add a book to the library, recording an acquisition link for each of
+   * the given non-empty URLs (zim, meta4, torrent).
+   *
+   * Unlike the single-URL overload above, this one takes the URLs grouped
+   * in a `BookAcquisitionUrls` struct instead of positional strings, so
+   * there is no ambiguity about which URL is which.
+   *
+   * @param pathToOpen The path to the zim file to add.
+   * @param pathToSave The path to store in the library in place of pathToOpen.
+   * @param urls       The acquisition URLs of the book to store in the
+   *                   library. Empty fields are not recorded.
+   * @param checkMetaData Tell if we check metadata before adding book to the
+   *                      library.
+   * @return The id of the book if the book has been added to the library.
+   *         Else, an empty string.
+   */
+  std::string addBookFromPathAndGetId(const std::string& pathToOpen,
+                                 const std::string& pathToSave,
+                                 const BookAcquisitionUrls& urls,
                                  const bool checkMetaData = false);
 
   /**
