@@ -224,7 +224,7 @@ TEST(BookTest, updateFromOPDSMultipleMimeTypeAcquisitionLinksTest)
     EXPECT_EQ(links[0].url, "https://who.org/zara.zim");
     EXPECT_EQ(links[1].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK);
     EXPECT_EQ(links[1].url, "https://who.org/zara.zim.meta4");
-    EXPECT_EQ(links[2].mimeType, "application/x-bittorrent");
+    EXPECT_EQ(links[2].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_BITTORRENT);
     EXPECT_EQ(links[2].url, "https://who.org/zara.zim.torrent");
 }
 
@@ -233,7 +233,7 @@ TEST(BookTest, setUrlWithMimeTypeAddsToAcquisitionLinks)
     kiwix::Book book;
     book.setUrl("http://who.org/zara.zim");
     book.setUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK, "http://who.org/zara.zim.meta4");
-    book.setUrl("application/x-bittorrent", "http://who.org/zara.zim.torrent");
+    book.setUrl(kiwix::Book::ACQUISITION_MIMETYPE_BITTORRENT, "http://who.org/zara.zim.torrent");
 
     const auto& links = book.getAcquisitionLinks();
     ASSERT_EQ(links.size(), 3U);
@@ -241,7 +241,7 @@ TEST(BookTest, setUrlWithMimeTypeAddsToAcquisitionLinks)
     EXPECT_EQ(links[0].url, "http://who.org/zara.zim");
     EXPECT_EQ(links[1].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK);
     EXPECT_EQ(links[1].url, "http://who.org/zara.zim.meta4");
-    EXPECT_EQ(links[2].mimeType, "application/x-bittorrent");
+    EXPECT_EQ(links[2].mimeType, kiwix::Book::ACQUISITION_MIMETYPE_BITTORRENT);
     EXPECT_EQ(links[2].url, "http://who.org/zara.zim.torrent");
 }
 
@@ -249,12 +249,12 @@ TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)
 {
     kiwix::Book book;
     book.setUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM_METALINK, "http://who.org/zara.zim.meta4");
-    book.setUrl("application/x-bittorrent", "http://who.org/zara.zim.torrent");
+    book.setUrl(kiwix::Book::ACQUISITION_MIMETYPE_BITTORRENT, "http://who.org/zara.zim.torrent");
 
     EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "");
 
     book.setUrl("http://who.org/zara.zim");
-    book.setUrl("application/x-bittorrent", "http://who.org/zara.zim.torrent");
+    book.setUrl(kiwix::Book::ACQUISITION_MIMETYPE_BITTORRENT, "http://who.org/zara.zim.torrent");
 
     EXPECT_EQ(book.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "http://who.org/zara.zim");
 }

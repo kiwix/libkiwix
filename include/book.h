@@ -71,6 +71,7 @@ class Book
 
   static const std::string ACQUISITION_MIMETYPE_ZIM;
   static const std::string ACQUISITION_MIMETYPE_ZIM_METALINK;
+  static const std::string ACQUISITION_MIMETYPE_BITTORRENT;
 
  public: // functions
   Book();

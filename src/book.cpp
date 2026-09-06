@@ -157,6 +157,7 @@ namespace kiwix
 
 const std::string Book::ACQUISITION_MIMETYPE_ZIM = "application/x-zim";
 const std::string Book::ACQUISITION_MIMETYPE_ZIM_METALINK = "application/metalink4+xml";
+const std::string Book::ACQUISITION_MIMETYPE_BITTORRENT = "application/x-bittorrent";
 
 /* Constructor */
 Book::Book() :
