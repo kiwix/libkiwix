@@ -164,6 +164,31 @@ class Manager
                                  const bool checkMetaData = false);
 
   /**
+   * Add a book to the library, recording an acquisition link for each
+   * non-empty URL in `urls`.
+   *
+   * Unlike the single-URL overload above, this one takes the URLs grouped
+   * in a `Book::AcquisitionLinks` array (indexed by `Book::AcquisitionLinkKind`)
+   * instead of a single positional string, so more than one acquisition
+   * link (e.g. the ZIM itself, a Metalink, a torrent) can be recorded at
+   * once.
+   *
+   * @param pathToOpen The path to the zim file to add.
+   * @param pathToSave The path to store in the library in place of pathToOpen.
+   * @param urls       The acquisition URLs of the book to store in the
+   *                   library, indexed by kind. Empty entries are not
+   *                   recorded.
+   * @param checkMetaData Tell if we check metadata before adding book to the
+   *                      library.
+   * @return The id of the book if the book has been added to the library.
+   *         Else, an empty string.
+   */
+  std::string addBookFromPathAndGetId(const std::string& pathToOpen,
+                                 const std::string& pathToSave,
+                                 const Book::AcquisitionLinks& urls,
+                                 const bool checkMetaData = false);
+
+  /**
    * Add a book to the library.
    *
    * @param pathToOpen The path to the zim file to add.

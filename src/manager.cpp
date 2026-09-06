@@ -262,6 +262,19 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
                                              const std::string& url,
                                              const bool checkMetaData)
 {
+  Book::AcquisitionLinks urls;
+  urls[static_cast<size_t>(Book::AcquisitionLinkKind::DIRECT)] = url;
+  return addBookFromPathAndGetId(pathToOpen, pathToSave, urls, checkMetaData);
+}
+
+/* Add a book to the library, recording an acquisition link for each
+ * non-empty URL in `urls`. Return empty string if failed, book id otherwise.
+ */
+std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
+                                             const std::string& pathToSave,
+                                             const Book::AcquisitionLinks& urls,
+                                             const bool checkMetaData)
+{
   kiwix::Book book;
 
   if (this->readBookFromPath(pathToOpen, &book)) {
@@ -276,7 +289,9 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
     if (!checkMetaData
         || (!book.getTitle().empty() && !book.getLanguages().empty()
             && !book.getDate().empty())) {
-      book.setUrl(Book::AcquisitionLinkKind::DIRECT, url);
+      for (size_t i = 0; i < urls.size(); ++i) {
+        book.setUrl(static_cast<Book::AcquisitionLinkKind>(i), urls[i]);
+      }
       manipulator.addBookToLibrary(book);
       return book.getId();
     }
