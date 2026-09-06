@@ -48,6 +48,31 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), url);
 }
 
+TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager = kiwix::Manager(lib);
+
+    const kiwix::Manager::BookAcquisitionUrls urls{
+        "http://example.org/book.zim",
+        "http://example.org/book.zim.meta4",
+        "http://example.org/book.zim.torrent"
+    };
+    auto bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", urls);
+    ASSERT_NE(bookId, "");
+    kiwix::Book book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), urls.zim);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), urls.meta4);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), urls.torrent);
+
+    // Empty fields are not recorded as acquisition links.
+    const kiwix::Manager::BookAcquisitionUrls zimOnlyUrl{"http://example.org/other.zim", "", ""};
+    bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", zimOnlyUrl);
+    ASSERT_NE(bookId, "");
+    book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getAcquisitionLinks().size(), 1u);
+}
+
 TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
 {
     auto lib = kiwix::Library::create();
