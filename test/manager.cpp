@@ -3,7 +3,6 @@
 #include "../include/library.h"
 #include "../include/book.h"
 #include "../include/tools.h"
-#include <iostream>
 #include <fstream>
 
 namespace
@@ -46,6 +45,38 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     auto savedPath = resolveAbsPath(manager.writableLibraryPath, pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), url);
+}
+
+TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager = kiwix::Manager(lib);
+
+    const std::string zimUrl = "http://example.org/book.zim";
+    const std::string meta4Url = "http://example.org/book.zim.meta4";
+    const std::string torrentUrl = "http://example.org/book.zim.torrent";
+    kiwix::Book::AcquisitionLinks urls;
+    urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = zimUrl;
+    urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::META4)] = meta4Url;
+    urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::BITTORRENT)] = torrentUrl;
+    auto bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", urls);
+    ASSERT_NE(bookId, "");
+    kiwix::Book book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), zimUrl);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), meta4Url);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), torrentUrl);
+
+    // Link kinds that were not provided are reported as empty URLs.
+    const std::string otherZimUrl = "http://example.org/other.zim";
+    kiwix::Book::AcquisitionLinks zimOnlyUrl;
+    zimOnlyUrl[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = otherZimUrl;
+    bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", zimOnlyUrl);
+    ASSERT_NE(bookId, "");
+    book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), otherZimUrl);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), "");
 }
 
 TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
