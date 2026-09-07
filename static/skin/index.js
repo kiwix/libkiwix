@@ -328,26 +328,26 @@
                     <div class="modal-content">
                         <div class="modal-regular-download">
                             <a href="${downloadLink}" download>
-                                <img src="${root}/skin/download.png?KIWIXCACHEID" alt="${$t("direct-download-alt-text")}" />
+                                <img src="${root}/skin/download.svg?KIWIXCACHEID" alt="${$t("direct-download-alt-text")}" />
                                 <div>${$t("direct-download-link-text")}</div>
                             </a>
                         </div>
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.sha256" download>
-                                <img src="${root}/skin/hash.png?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
+                                <img src="${root}/skin/hash.svg?KIWIXCACHEID" alt="${$t("hash-download-alt-text")}" />
                                 <div>${$t("hash-download-link-text")}</div>
                             </a>
                         </div>
                         ${magnetLink ?
                         `<div class="modal-regular-download">
                             <a href="${magnetLink}" target="_blank">
-                                <img src="${root}/skin/magnet.png?KIWIXCACHEID" alt="${$t("magnet-alt-text")}" />
+                                <img src="${root}/skin/magnet.svg?KIWIXCACHEID" alt="${$t("magnet-alt-text")}" />
                                 <div>${$t("magnet-link-text")}</div>
                             </a>
                         </div>` : ``}
                         <div class="modal-regular-download">
                             <a href="${downloadLink}.torrent" download>
-                                <img src="${root}/skin/bittorrent.png?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
+                                <img src="${root}/skin/bittorrent.svg?KIWIXCACHEID" alt="${$t("torrent-download-alt-text")}" />
                                 <div>${$t("torrent-download-link-text")}</div>
                             </a>
                         </div>
