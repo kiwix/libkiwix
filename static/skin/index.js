@@ -135,6 +135,8 @@
         spanElement.setAttribute('aria-label', tagMessage);
         spanElement.setAttribute('title', tagMessage);
         spanElement.setAttribute('data-tag', tagValue);
+        spanElement.setAttribute('role', 'button');
+        spanElement.setAttribute('tabindex', '0');
         spanElement.innerHTML = htmlEncode(tagValue);
         return spanElement.outerHTML;
     }
@@ -479,7 +481,7 @@
     function addTagElement(tagValue, resetFilter) {
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.style.display = 'inline-block';
-        tagElement.innerHTML = htmlEncode(tagValue);
+        tagElement.innerHTML = htmlEncode(tagValue) + ' <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-left: 4px; margin-bottom: 2px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
         const tagMessage = $t("stop-filtering-by-tag", {TAG: tagValue});
         tagElement.setAttribute('aria-label', tagMessage);
         tagElement.setAttribute('title', tagMessage);
@@ -492,6 +494,12 @@
         [...tagLinks].forEach(elem => {
             if (!elem.getAttribute('click-listener')) {
                 elem.addEventListener('click', () => addTagElement(elem.dataset.tag, true));
+                elem.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        addTagElement(elem.dataset.tag, true);
+                    }
+                });
                 elem.setAttribute('click-listener', 'true');
             }
         });
@@ -608,7 +616,15 @@
             filter.addEventListener('change', () => {resetAndFilter(filter.name, filter.value)});
         });
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
+        tagElement.setAttribute('role', 'button');
+        tagElement.setAttribute('tabindex', '0');
         tagElement.addEventListener('click', () => removeTagElement(true));
+        tagElement.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                removeTagElement(true);
+            }
+        });
         if (filters) {
             const currentLink = window.location.hash;
             const newLink = `#${params.toString()}`;
