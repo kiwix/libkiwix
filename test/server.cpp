@@ -121,14 +121,18 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/500.svg?cacheid=32eb0f20" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.png?cacheid=4f5c6882" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.svg?cacheid=2eab2a6b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blank.html" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/blank.html?cacheid=6b1fa032" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blocklink.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/blocklink.svg?cacheid=bd56b116" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/caret.png" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/caret.png?cacheid=22b942b4" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download.png" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/download.png?cacheid=a39aa502" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/caret.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/caret.svg?cacheid=55f025f6" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/download.svg?cacheid=c2b44034" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download-white.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989"},
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/android-chrome-192x192.png" },
@@ -159,10 +163,10 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/safari-pinned-tab.svg?cacheid=8d487e95" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/site.webmanifest" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/favicon/site.webmanifest?cacheid=bc396efb" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/hash.png" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/hash.png?cacheid=f836e872" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/magnet.png" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/magnet.png?cacheid=73b6bddf" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/hash.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/hash.svg?cacheid=0a4f80ee" },
+  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/magnet.svg" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/magnet.svg?cacheid=8c5afb9e" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/polyfills.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/polyfills.js?cacheid=a0e0343d" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search-icon.svg" },
@@ -328,10 +332,10 @@ R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10a
     {
       /* url */ "/ROOT%23%3F/skin/index.js",
 R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cacheid=079ab989">
-                                <img src="${root}/skin/download.png?cacheid=a39aa502" alt="${$t("direct-download-alt-text")}" />
-                                <img src="${root}/skin/hash.png?cacheid=f836e872" alt="${$t("hash-download-alt-text")}" />
-                                <img src="${root}/skin/magnet.png?cacheid=73b6bddf" alt="${$t("magnet-alt-text")}" />
-                                <img src="${root}/skin/bittorrent.png?cacheid=4f5c6882" alt="${$t("torrent-download-alt-text")}" />
+                                <img src="${root}/skin/download.svg?cacheid=c2b44034" alt="${$t("direct-download-alt-text")}" />
+                                <img src="${root}/skin/hash.svg?cacheid=0a4f80ee" alt="${$t("hash-download-alt-text")}" />
+                                <img src="${root}/skin/magnet.svg?cacheid=8c5afb9e" alt="${$t("magnet-alt-text")}" />
+                                <img src="${root}/skin/bittorrent.svg?cacheid=2eab2a6b" alt="${$t("torrent-download-alt-text")}" />
 )EXPECTEDRESULT"
     },
     {
@@ -346,7 +350,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e
     <script type="text/javascript" src="./skin/viewer.js?cacheid=0ea8654d" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
-          <label for="kiwix_button_show_toggle"><img src="./skin/caret.png?cacheid=22b942b4" alt=""></label>
+          <label for="kiwix_button_show_toggle"><img src="./skin/caret.svg?cacheid=55f025f6" alt=""></label>
                src="./skin/langSelector.svg?cacheid=00b59961">
             src="./skin/blank.html?cacheid=6b1fa032" title="ZIM content" width="100%"
 )EXPECTEDRESULT"
