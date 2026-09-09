@@ -885,6 +885,7 @@ std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, c
   return render_template(
              RESOURCE::templates::no_js_download_html,
              kainjow::mustache::object{
+              {"root", m_root},
                {"url", bookUrl},
                {"translations", translations}
              }

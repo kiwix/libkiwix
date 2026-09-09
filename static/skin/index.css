@@ -320,6 +320,10 @@
     color: #444343;
 }
 
+.modal-content a>div.checksum-spacing {
+    margin-top: 8px;
+}
+
 .modal-content img {
     display: inline-block;
     margin: 0 10px;
