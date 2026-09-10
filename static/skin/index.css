@@ -152,6 +152,8 @@
 
 .book__link {
     text-decoration: none;
+    user-select: text;
+    -webkit-user-select: text;
 }
 
 .book__wrapper {
