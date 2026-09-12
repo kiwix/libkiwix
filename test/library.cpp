@@ -402,7 +402,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book1.getPublisher(), "Wikipedia Publishing House");
   EXPECT_EQ(book1.getTags(), "wikipedia;novid;_ftindex");
   EXPECT_EQ(book1.getCategory(), "");
-  EXPECT_EQ(book1.getUrl(), "http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4");
+  EXPECT_EQ(book1.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4");
   EXPECT_EQ(book1.getSize(), 90030080UL);
   EXPECT_EQ(book1.getMediaCount(), 1100U); // Roman MC (MediaCount) is 1100
   EXPECT_EQ(book1.getArticleCount(), 172U); // Hex AC (ArticleCount) is 172
@@ -427,7 +427,7 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book2.getPublisher(), "");
   EXPECT_EQ(book2.getTags(), "");
   EXPECT_EQ(book2.getCategory(), "");
-  EXPECT_EQ(book2.getUrl(), "http://download.kiwix.org/zim/ted/ted_en_business_2018-07.zim.meta4");
+  EXPECT_EQ(book2.getUrl(kiwix::Book::ACQUISITION_MIMETYPE_ZIM), "http://download.kiwix.org/zim/ted/ted_en_business_2018-07.zim.meta4");
   EXPECT_EQ(book2.getSize(), 8855827456UL);
   EXPECT_EQ(book2.getMediaCount(), 0U);
   EXPECT_EQ(book2.getArticleCount(), 0U);
