@@ -976,7 +976,7 @@ std::string htmlEscape(std::string s)
 
 std::string escapeJsString(std::string s)
 {
-  s = replace(s, "</script>", "</scr\\ipt>");
+  s = replace(s, "<", "\\u003c");
   s = replace(s, "\"", "\\\"");
   return s;
 }

@@ -3,6 +3,8 @@
 
 #include "../src/server/request_context.h"
 
+#include <algorithm>
+
 namespace
 {
 
@@ -98,4 +100,27 @@ R"(<!DOCTYPE html>
   </body>
 </html>
 )");
+}
+
+TEST(HTTPErrorResponse, shouldNotAllowBreakingOutOfTheScriptTag) {
+  const RequestContext req = makeHttpGetRequest("/asdf", {}, {});
+  HTTPErrorResponse errResp(req, MHD_HTTP_NOT_FOUND,
+                            "404-page-title",
+                            "404-page-heading",
+                            "/css/error.css",
+                            /*includeKiwixResponseData=*/true);
+
+  errResp += ParameterizedMessage("suggest-search",
+                              {
+                                { "PATTERN",    "</SCRIPT><script>alert(1)</script>" },
+                                { "SEARCH_URL", "/search?q=asdf" }
+             });
+
+  std::string content = getResponseContent(errResp);
+  std::transform(content.begin(), content.end(), content.begin(), ::tolower);
+
+  // The only "</script>" in the page must be the one closing the inline
+  // script tag. The HTML parser matches that sequence case-insensitively.
+  ASSERT_NE(content.find("</script>"), std::string::npos);
+  EXPECT_EQ(content.find("</script>"), content.rfind("</script>")) << content;
 }
