@@ -1306,7 +1306,7 @@ TEST_P(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "    />\n" \
   "    <link\n" \
   "      type=\"text/css\"\n" \
-  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=ae79e41a\"\n" \
+  "      href=\"/ROOT%23%3F/skin/index.css?cacheid=469a47e3\"\n" \
   "      rel=\"Stylesheet\"\n" \
   "    />\n" \
   "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3\">\n" \

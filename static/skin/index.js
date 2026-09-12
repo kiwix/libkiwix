@@ -163,7 +163,7 @@
         urlComponents.pop(); // drop 'content' component
         const viewerLink = urlComponents.join('/') + `/viewer#${bookName}`;
 
-        return `<a class="book__link" href="${viewerLink}" data-hover="Preview">${html}</a>`;
+        return `<a class="book__link" href="${viewerLink}" data-hover="Preview" draggable="false">${html}</a>`;
     }
 
     function generateBookHtml(book, sort = false) {
@@ -226,6 +226,37 @@
             </div>
             ${downloadButtonHtml(downloadLink, humanFriendlyZimSize)}
             </div></div>`;
+
+        const bookLink = divTag.querySelector('.book__link');
+        if (bookLink) {
+            let pointerStart;
+            let dragged = false;
+            bookLink.addEventListener('pointerdown', (event) => {
+                pointerStart = {x: event.clientX, y: event.clientY};
+                dragged = false;
+            });
+            bookLink.addEventListener('pointermove', (event) => {
+                if (pointerStart && event.buttons !== 0 &&
+                    (Math.abs(event.clientX - pointerStart.x) > 5 ||
+                     Math.abs(event.clientY - pointerStart.y) > 5)) {
+                    dragged = true;
+                }
+            });
+            bookLink.addEventListener('pointerup', () => {
+                pointerStart = undefined;
+                setTimeout(() => { dragged = false; }, 0);
+            });
+            bookLink.addEventListener('pointercancel', () => {
+                pointerStart = undefined;
+                dragged = false;
+            });
+            bookLink.addEventListener('click', (event) => {
+                if (dragged) {
+                    event.preventDefault();
+                    dragged = false;
+                }
+            });
+        }
         return divTag;
     }
 
