@@ -119,20 +119,16 @@ const ResourceCollection resources200Uncompressible{
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/404.svg?cacheid=b6d648af" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/500.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/500.svg?cacheid=32eb0f20" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.png" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.png?cacheid=4f5c6882" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/bittorrent.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/bittorrent.svg?cacheid=2eab2a6b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blank.html" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/blank.html?cacheid=6b1fa032" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/blocklink.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/blocklink.svg?cacheid=bd56b116" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/caret.png" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/caret.png?cacheid=22b942b4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/caret.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/caret.svg?cacheid=55f025f6" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download.svg" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/download.svg?cacheid=c2b44034" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/download.svg?cacheid=6a74ab00" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/download-white.svg" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/download-white.svg?cacheid=079ab989"},
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/favicon/android-chrome-192x192.png" },
@@ -332,7 +328,7 @@ R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10a
     {
       /* url */ "/ROOT%23%3F/skin/index.js",
 R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cacheid=079ab989">
-                                <img src="${root}/skin/download.svg?cacheid=c2b44034" alt="${$t("direct-download-alt-text")}" />
+                                <img src="${root}/skin/download.svg?cacheid=6a74ab00" alt="${$t("direct-download-alt-text")}" />
                                 <img src="${root}/skin/hash.svg?cacheid=0a4f80ee" alt="${$t("hash-download-alt-text")}" />
                                 <img src="${root}/skin/magnet.svg?cacheid=8c5afb9e" alt="${$t("magnet-alt-text")}" />
                                 <img src="${root}/skin/bittorrent.svg?cacheid=2eab2a6b" alt="${$t("torrent-download-alt-text")}" />
@@ -612,7 +608,7 @@ TEST_F(ServerTest, MimeTypes)
     { "/catalog/v2/entries",               "application/atom+xml;profile=opds-catalog;kind=acquisition;charset=utf-8" },
     { "/catalog/v2/entry/6f1d19d0-633f-087b-fb55-7ac324ff9baf", "application/atom+xml;type=entry;profile=opds-catalog;charset=utf-8" },
     { "/skin/search-icon.svg",             "image/svg+xml" },
-    { "/skin/bittorrent.png",              "image/png" },
+    { "/skin/bittorrent.svg",              "image/svg+xml" },
     { "/skin/favicon/favicon.ico",         "image/x-icon" },
     { "/skin/i18n/en.json",                "application/json" },
     { "/skin/fonts/Roboto.ttf",            "application/font-ttf" },
