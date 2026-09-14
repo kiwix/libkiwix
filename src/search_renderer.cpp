@@ -68,37 +68,63 @@ ParameterizedMessage searchResultsPageHeaderMsg(const std::string& searchPattern
 
 } // unnamed namespace
 
+class SearchRenderer::Impl
+{
+ public:
+  zim::SearchResultSet m_srs;
+  std::string searchBookQuery;
+  std::string searchPattern;
+  std::string protocolPrefix = "zim://";
+  std::string searchProtocolPrefix = "search://";
+  unsigned int pageLength;
+  unsigned int estimatedResultCount;
+  unsigned int resultStart;
+  std::string userlang = "en";
+
+  Impl(zim::SearchResultSet srs, unsigned int start, unsigned int estimatedResultCount) :
+    m_srs(srs),
+    estimatedResultCount(estimatedResultCount),
+    resultStart(start)
+  {}
+};
+
 /* Constructor */
 SearchRenderer::SearchRenderer(zim::SearchResultSet srs,
                       unsigned int start, unsigned int estimatedResultCount)
-    : m_srs(srs),
-      protocolPrefix("zim://"),
-      searchProtocolPrefix("search://"),
-      estimatedResultCount(estimatedResultCount),
-      resultStart(start)
+    : mp_impl(new Impl(srs, start, estimatedResultCount))
 {}
 
 /* Destructor */
 SearchRenderer::~SearchRenderer() = default;
 
+void SearchRenderer::setPageLength(unsigned int pageLength)
+{
+  mp_impl->pageLength = pageLength;
+}
+
+void SearchRenderer::setUserLang(const std::string& lang)
+{
+  mp_impl->userlang = lang;
+}
+
 void SearchRenderer::setSearchPattern(const std::string& pattern)
 {
-  searchPattern = pattern;
+  mp_impl->searchPattern = pattern;
 }
 
 void SearchRenderer::setSearchBookQuery(const std::string& bookQuery)
 {
-  searchBookQuery = bookQuery;
+  mp_impl->searchBookQuery = bookQuery;
 }
 
 void SearchRenderer::setProtocolPrefix(const std::string& prefix)
 {
-  this->protocolPrefix = prefix;
+  mp_impl->protocolPrefix = prefix;
 }
 
 void SearchRenderer::setSearchProtocolPrefix(const std::string& prefix)
 {
-  this->searchProtocolPrefix = prefix;
+  mp_impl->searchProtocolPrefix = prefix;
 }
 
 std::string extractValueFromQuery(const std::string& query, const std::string& key) {
@@ -192,10 +218,10 @@ kainjow::mustache::data buildPagination(
 
 std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const NameMapper& nameMapper, const Library* library)
 {
-  const std::string absPathPrefix = protocolPrefix;
+  const std::string absPathPrefix = mp_impl->protocolPrefix;
   // Build the results list
   kainjow::mustache::data items{kainjow::mustache::data::type::list};
-  for (auto it = m_srs.begin(); it != m_srs.end(); it++) {
+  for (auto it = mp_impl->m_srs.begin(); it != mp_impl->m_srs.end(); it++) {
     kainjow::mustache::data result;
     const std::string zim_id(it.getZimId());
     const auto path = nameMapper.getNameForId(zim_id) + "/" + it.getPath();
@@ -207,7 +233,7 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
       const ParameterizedMessage bookInfoMsg("search-result-book-info",
           {{"BOOK_TITLE", bookTitle}}
       );
-      result.set("bookInfo",  bookInfoMsg.getText(userlang)); // for HTML
+      result.set("bookInfo",  bookInfoMsg.getText(mp_impl->userlang)); // for HTML
       result.set("bookTitle", bookTitle); // for XML
     }
     if (it.getWordCount() >= 0) {
@@ -215,7 +241,7 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
       const ParameterizedMessage wordCountMsg("word-count",
           {{"COUNT", wordCountStr}}
       );
-      result.set("wordCountInfo", wordCountMsg.getText(userlang)); // for HTML
+      result.set("wordCountInfo", wordCountMsg.getText(mp_impl->userlang)); // for HTML
       result.set("wordCount", wordCountStr); // for XML
     }
 
@@ -223,29 +249,29 @@ std::string SearchRenderer::renderTemplate(const std::string& tmpl_str, const Na
   }
   kainjow::mustache::data results;
   results.set("items", items);
-  results.set("count", kiwix::beautifyInteger(estimatedResultCount));
-  results.set("start", kiwix::beautifyInteger(resultStart));
-  results.set("startLabel", kiwix::beautifyInteger(resultStart+1));
-  results.set("end", kiwix::beautifyInteger(std::min(resultStart+pageLength, estimatedResultCount)));
+  results.set("count", kiwix::beautifyInteger(mp_impl->estimatedResultCount));
+  results.set("start", kiwix::beautifyInteger(mp_impl->resultStart));
+  results.set("startLabel", kiwix::beautifyInteger(mp_impl->resultStart+1));
+  results.set("end", kiwix::beautifyInteger(std::min(mp_impl->resultStart+mp_impl->pageLength, mp_impl->estimatedResultCount)));
 
   // pagination
   auto pagination = buildPagination(
-    pageLength,
-    estimatedResultCount,
-    resultStart
+    mp_impl->pageLength,
+    mp_impl->estimatedResultCount,
+    mp_impl->resultStart
   );
 
   kainjow::mustache::data query = buildQueryData(
-    searchProtocolPrefix,
-    searchPattern,
-    searchBookQuery
+    mp_impl->searchProtocolPrefix,
+    mp_impl->searchPattern,
+    mp_impl->searchBookQuery
   );
 
-  const auto pageHeaderMsg = searchResultsPageHeaderMsg(searchPattern, results);
+  const auto pageHeaderMsg = searchResultsPageHeaderMsg(mp_impl->searchPattern, results);
   const kainjow::mustache::object allData{
-    {"PAGE_TITLE", searchResultsPageTitleMsg(searchPattern).getText(userlang)},
-    {"PAGE_HEADER", pageHeaderMsg.getText(userlang)},
-    {"searchProtocolPrefix", searchProtocolPrefix},
+    {"PAGE_TITLE", searchResultsPageTitleMsg(mp_impl->searchPattern).getText(mp_impl->userlang)},
+    {"PAGE_HEADER", pageHeaderMsg.getText(mp_impl->userlang)},
+    {"searchProtocolPrefix", mp_impl->searchProtocolPrefix},
     {"results", results},
     {"pagination", pagination},
     {"query", query},
