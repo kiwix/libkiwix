@@ -233,9 +233,7 @@ class Library: public std::enable_shared_from_this<Library>
   Library();
 
  public:
-  LIBKIWIX_NODISCARD static LibraryPtr create() {
-    return LibraryPtr(new Library());
-  }
+  LIBKIWIX_NODISCARD static LibraryPtr create();
   ~Library();
 
   /**
