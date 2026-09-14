@@ -49,14 +49,19 @@ class Book
   {
     friend class Book;
    public:
+    uint16_t getWidth() const;
+    uint16_t getHeight() const;
+    const std::string getMimeType() const;
+    const std::string getUrl() const;
+    const std::string getData() const;
+
+   private:
+    Illustration() = default;
+
     uint16_t width = 48;
     uint16_t height = 48;
     std::string mimeType;
     std::string url;
-
-    const std::string& getData() const;
-
-   private:
     mutable std::string data;
     mutable std::mutex mutex;
   };
@@ -131,7 +136,7 @@ class Book
   const uint64_t& getArticleCount() const { return m_articleCount; }
   const uint64_t& getMediaCount() const { return m_mediaCount; }
   const uint64_t& getSize() const { return m_size; }
-  DEPRECATED const std::string& getFavicon() const;
+  DEPRECATED const std::string getFavicon() const;
   DEPRECATED const std::string& getFaviconUrl() const;
   DEPRECATED const std::string& getFaviconMimeType() const;
 

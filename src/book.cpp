@@ -235,7 +235,7 @@ void Book::update(const zim::Archive& archive) {
 
   m_illustrations.clear();
   for ( const auto& illustrationInfo : archive.getIllustrationInfos() ) {
-    const auto illustration = std::make_shared<Illustration>();
+    const auto illustration = std::shared_ptr<Illustration>(new Illustration());
     const zim::Item illustrationItem = archive.getIllustrationItem(illustrationInfo);
     illustration->width = illustrationInfo.width;
     illustration->height = illustrationInfo.height;
@@ -273,7 +273,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   const std::string faviconMimeType = ATTR("faviconMimeType");
   const std::string faviconBase64EncodedData = ATTR("favicon");
   if ( !faviconMimeType.empty() && !faviconBase64EncodedData.empty() ) {
-    const auto favicon = std::make_shared<Illustration>();
+    const auto favicon = std::shared_ptr<Illustration>(new Illustration());
     favicon->data = base64_decode(faviconBase64EncodedData);
     favicon->mimeType = faviconMimeType;
     favicon->url = ATTR("faviconUrl");
@@ -359,7 +359,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       }
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
-      const auto favicon = std::make_shared<Illustration>();
+      const auto favicon = std::shared_ptr<Illustration>(new Illustration());
       const std::string thumbnailUrl = linkNode.attribute("href").value();
       if (startsWith(thumbnailUrl, "data:")) {
         // OPDS 1.2's "data" URL scheme (spec 5.2.2): the payload is
@@ -442,7 +442,27 @@ const Book::Illustration& Book::getDefaultIllustration() const
   }
 }
 
-const std::string& Book::Illustration::getData() const
+uint16_t Book::Illustration::getWidth() const
+{
+  return width;
+}
+
+uint16_t Book::Illustration::getHeight() const
+{
+  return height;
+}
+
+const std::string Book::Illustration::getMimeType() const
+{
+  return mimeType;
+}
+
+const std::string Book::Illustration::getUrl() const
+{
+  return url;
+}
+
+const std::string Book::Illustration::getData() const
 {
   if (data.empty() && !url.empty()) {
     const std::lock_guard<std::mutex> l(mutex);
@@ -457,7 +477,7 @@ const std::string& Book::Illustration::getData() const
   return data;
 }
 
-const std::string& Book::getFavicon() const {
+const std::string Book::getFavicon() const {
   return getDefaultIllustration().getData();
 }
 
