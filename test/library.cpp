@@ -408,10 +408,10 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book1.getArticleCount(), 172U); // Hex AC (ArticleCount) is 172
 
   const auto illustration = book1.getIllustration(48);
-  EXPECT_EQ(illustration->width, 48U);
-  EXPECT_EQ(illustration->height, 48U);
-  EXPECT_EQ(illustration->mimeType, "image/png");
-  EXPECT_EQ(illustration->url, "http://library-opds-import.unittests.dev/meta?name=favicon&content=wikipedia_fr_tunisie_novid_2018-10");
+  EXPECT_EQ(illustration->getWidth(), 48U);
+  EXPECT_EQ(illustration->getHeight(), 48U);
+  EXPECT_EQ(illustration->getMimeType(), "image/png");
+  EXPECT_EQ(illustration->getUrl(), "http://library-opds-import.unittests.dev/meta?name=favicon&content=wikipedia_fr_tunisie_novid_2018-10");
   }
 
   {
@@ -433,10 +433,10 @@ TEST(LibraryOpdsImportTest, allInOne)
   EXPECT_EQ(book2.getArticleCount(), 0U);
 
   const auto illustration = book2.getIllustration(48);
-  EXPECT_EQ(illustration->width, 48U);
-  EXPECT_EQ(illustration->height, 48U);
-  EXPECT_EQ(illustration->mimeType, "image/png");
-  EXPECT_EQ(illustration->url, "http://library-opds-import.unittests.dev/meta?name=favicon&content=ted_en_business_2018-07");
+  EXPECT_EQ(illustration->getWidth(), 48U);
+  EXPECT_EQ(illustration->getHeight(), 48U);
+  EXPECT_EQ(illustration->getMimeType(), "image/png");
+  EXPECT_EQ(illustration->getUrl(), "http://library-opds-import.unittests.dev/meta?name=favicon&content=ted_en_business_2018-07");
   }
 }
 

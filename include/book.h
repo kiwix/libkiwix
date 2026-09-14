@@ -25,6 +25,7 @@
 #include <memory>
 #include <mutex>
 #include "common.h"
+#include "smartptr.h"
 
 namespace pugi {
 class xml_node;
@@ -49,16 +50,20 @@ class Book
   {
     friend class Book;
    public:
-    uint16_t width = 48;
-    uint16_t height = 48;
-    std::string mimeType;
-    std::string url;
+    uint16_t getWidth() const;
+    uint16_t getHeight() const;
+    const std::string getMimeType() const;
+    const std::string getUrl() const;
+    const std::string getData() const;
 
-    const std::string& getData() const;
+    ~Illustration();
 
    private:
-    mutable std::string data;
-    mutable std::mutex mutex;
+    Illustration();
+    Illustration(const Illustration&) = delete;
+
+    struct Impl;
+    ValuePtr<Impl> mp_impl;
   };
 
   typedef std::vector<std::shared_ptr<const Illustration>> Illustrations;

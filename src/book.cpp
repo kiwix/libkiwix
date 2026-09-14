@@ -31,6 +31,7 @@
 #include <zim/item.h>
 #include <pugixml.hpp>
 #include <sstream>
+#include <mutex>
 
 namespace
 {
@@ -177,6 +178,24 @@ fromMimeTypeToLinkKind(const std::string& mimeType)
 
 namespace kiwix
 {
+
+struct Book::Illustration::Impl
+{
+  uint16_t width = 48;
+  uint16_t height = 48;
+  std::string mimeType;
+  std::string url;
+  std::string data;
+  std::mutex mutex;
+};
+
+Book::Illustration::Illustration()
+  : mp_impl(new Impl())
+{
+}
+
+Book::Illustration::~Illustration() = default;
+
 Book::AcquisitionLinks::AcquisitionLinks() :
   m_urls(linkIndex(AcquisitionLinkKind::COUNT))
 {
@@ -235,12 +254,12 @@ void Book::update(const zim::Archive& archive) {
 
   m_illustrations.clear();
   for ( const auto& illustrationInfo : archive.getIllustrationInfos() ) {
-    const auto illustration = std::make_shared<Illustration>();
+    const auto illustration = std::shared_ptr<Illustration>(new Illustration());
     const zim::Item illustrationItem = archive.getIllustrationItem(illustrationInfo);
-    illustration->width = illustrationInfo.width;
-    illustration->height = illustrationInfo.height;
-    illustration->mimeType = illustrationItem.getMimetype();
-    illustration->data = illustrationItem.getData();
+    illustration->mp_impl->width = illustrationInfo.width;
+    illustration->mp_impl->height = illustrationInfo.height;
+    illustration->mp_impl->mimeType = illustrationItem.getMimetype();
+    illustration->mp_impl->data = illustrationItem.getData();
     // NOTE: illustration->url is left uninitialized
     m_illustrations.push_back(illustration);
   }
@@ -273,10 +292,10 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   const std::string faviconMimeType = ATTR("faviconMimeType");
   const std::string faviconBase64EncodedData = ATTR("favicon");
   if ( !faviconMimeType.empty() && !faviconBase64EncodedData.empty() ) {
-    const auto favicon = std::make_shared<Illustration>();
-    favicon->data = base64_decode(faviconBase64EncodedData);
-    favicon->mimeType = faviconMimeType;
-    favicon->url = ATTR("faviconUrl");
+    const auto favicon = std::shared_ptr<Illustration>(new Illustration());
+    favicon->mp_impl->data = base64_decode(faviconBase64EncodedData);
+    favicon->mp_impl->mimeType = faviconMimeType;
+    favicon->mp_impl->url = ATTR("faviconUrl");
     m_illustrations.assign(1, favicon);
   }
   try {
@@ -359,7 +378,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       }
     }
     if (rel == "http://opds-spec.org/image/thumbnail") {
-      const auto favicon = std::make_shared<Illustration>();
+      const auto favicon = std::shared_ptr<Illustration>(new Illustration());
       const std::string thumbnailUrl = linkNode.attribute("href").value();
       if (startsWith(thumbnailUrl, "data:")) {
         // OPDS 1.2's "data" URL scheme (spec 5.2.2): the payload is
@@ -368,21 +387,21 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
         // authoritative for that.
         const auto commaPos = thumbnailUrl.find(',');
         if (commaPos != std::string::npos) {
-          favicon->data = base64_decode(thumbnailUrl.substr(commaPos + 1));
+          favicon->mp_impl->data = base64_decode(thumbnailUrl.substr(commaPos + 1));
         }
       } else {
         // XXX non-absolute URL is expected to be an absolute-path.
-        favicon->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
+        favicon->mp_impl->url = isAbsoluteUrl(thumbnailUrl)? thumbnailUrl: joinUrl(urlHost, thumbnailUrl);
       }
       const auto parsedType = parseIllustrationType(linkNode.attribute("type").value());
-      favicon->mimeType = parsedType.mimeType;
+      favicon->mp_impl->mimeType = parsedType.mimeType;
       if (parsedType.width) {
-        favicon->width = parsedType.width;
+        favicon->mp_impl->width = parsedType.width;
       }
       if (parsedType.height) {
-        favicon->height = parsedType.height;
+        favicon->mp_impl->height = parsedType.height;
       }
-      if (!favicon->mimeType.empty()) {
+      if (!favicon->mp_impl->mimeType.empty()) {
         m_illustrations.push_back(favicon);
       }
     }
@@ -426,7 +445,7 @@ const Book::Illustration Book::missingDefaultIllustration;
 std::shared_ptr<const Book::Illustration> Book::getIllustration(unsigned int size) const
 {
   for ( const auto& ilPtr : m_illustrations ) {
-    if (ilPtr->width == size && ilPtr->height == size) {
+    if (ilPtr->mp_impl->width == size && ilPtr->mp_impl->height == size) {
       return ilPtr;
     }
   }
@@ -442,19 +461,39 @@ const Book::Illustration& Book::getDefaultIllustration() const
   }
 }
 
-const std::string& Book::Illustration::getData() const
+uint16_t Book::Illustration::getWidth() const
 {
-  if (data.empty() && !url.empty()) {
-    const std::lock_guard<std::mutex> l(mutex);
-    if ( data.empty() ) {
+  return mp_impl->width;
+}
+
+uint16_t Book::Illustration::getHeight() const
+{
+  return mp_impl->height;
+}
+
+const std::string Book::Illustration::getMimeType() const
+{
+  return mp_impl->mimeType;
+}
+
+const std::string Book::Illustration::getUrl() const
+{
+  return mp_impl->url;
+}
+
+const std::string Book::Illustration::getData() const
+{
+  if (mp_impl->data.empty() && !mp_impl->url.empty()) {
+    const std::lock_guard<std::mutex> l(mp_impl->mutex);
+    if ( mp_impl->data.empty() ) {
       try {
-        data = download(url);
+        mp_impl->data = download(mp_impl->url);
       } catch(...) {
-        std::cerr << "Cannot download favicon from " << url << std::endl;
+        std::cerr << "Cannot download favicon from " << mp_impl->url << std::endl;
       }
     }
   }
-  return data;
+  return mp_impl->data;
 }
 
 std::string Book::getTagStr(const std::string& tagName) const {
