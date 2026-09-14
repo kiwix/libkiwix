@@ -201,58 +201,81 @@ Book::AcquisitionLinks::AcquisitionLinks() :
 {
 }
 
+class Book::Impl
+{
+ public:
+  std::string m_id;
+  std::string m_downloadId;
+  std::string m_path;
+  bool m_pathValid = false;
+  std::string m_title;
+  std::string m_description;
+  std::string m_category;
+  std::string m_language;
+  std::string m_creator;
+  std::string m_publisher;
+  std::string m_date;
+  AcquisitionLinks m_urls;
+  std::string m_name;
+  std::string m_flavour;
+  std::string m_tags;
+  std::string m_origId;
+  uint64_t m_articleCount = 0;
+  uint64_t m_mediaCount = 0;
+  bool m_readOnly = false;
+  uint64_t m_size = 0;
+  Book::Illustrations m_illustrations;
+};
+
 /* Constructor */
 Book::Book() :
-  m_pathValid(false),
-  m_readOnly(false)
+  mp_impl(new Impl())
 {
 }
 
+Book::Book(const Book& other) = default;
+
+Book& Book::operator=(const Book& other) = default;
+
 /* Destructor */
-Book::~Book()
-{
-}
+Book::~Book() = default;
 
 Book::Illustrations Book::getIllustrations() const
 {
-  return m_illustrations;
+  return mp_impl->m_illustrations;
 }
 
 bool Book::update(const kiwix::Book& other)
 {
-  if (m_readOnly)
+  if (mp_impl->m_readOnly)
     return false;
 
-  if (m_id != other.m_id)
+  if (mp_impl->m_id != other.mp_impl->m_id)
     return false;
 
   *this = other;
   return true;
 }
 
-const std::string& Book::getUrl(AcquisitionLinkKind linkKind) const {
-  return m_urls[linkIndex(linkKind)];
-}
-
 void Book::update(const zim::Archive& archive) {
-  m_path = archive.getFilename();
-  m_pathValid = true;
-  m_id = std::string(archive.getUuid());
-  m_title = getArchiveTitle(archive);
-  m_description = getMetaDescription(archive);
-  m_language = getMetaLanguage(archive);
-  m_creator = getMetaCreator(archive);
-  m_publisher = getMetaPublisher(archive);
-  m_date = getMetaDate(archive);
-  m_name = getMetaName(archive);
-  m_flavour = getMetaFlavour(archive);
-  m_tags = getMetaTags(archive);
-  m_category = getCategoryFromTags();
-  m_articleCount = archive.getArticleCount();
-  m_mediaCount = archive.getMediaCount();
-  m_size = archive.getFilesize();
+  mp_impl->m_path = archive.getFilename();
+  mp_impl->m_pathValid = true;
+  mp_impl->m_id = std::string(archive.getUuid());
+  mp_impl->m_title = getArchiveTitle(archive);
+  mp_impl->m_description = getMetaDescription(archive);
+  mp_impl->m_language = getMetaLanguage(archive);
+  mp_impl->m_creator = getMetaCreator(archive);
+  mp_impl->m_publisher = getMetaPublisher(archive);
+  mp_impl->m_date = getMetaDate(archive);
+  mp_impl->m_name = getMetaName(archive);
+  mp_impl->m_flavour = getMetaFlavour(archive);
+  mp_impl->m_tags = getMetaTags(archive);
+  mp_impl->m_category = getCategoryFromTags();
+  mp_impl->m_articleCount = archive.getArticleCount();
+  mp_impl->m_mediaCount = archive.getMediaCount();
+  mp_impl->m_size = archive.getFilesize();
 
-  m_illustrations.clear();
+  mp_impl->m_illustrations.clear();
   for ( const auto& illustrationInfo : archive.getIllustrationInfos() ) {
     const auto illustration = std::shared_ptr<Illustration>(new Illustration());
     const zim::Item illustrationItem = archive.getIllustrationItem(illustrationInfo);
@@ -261,34 +284,34 @@ void Book::update(const zim::Archive& archive) {
     illustration->mp_impl->mimeType = illustrationItem.getMimetype();
     illustration->mp_impl->data = illustrationItem.getData();
     // NOTE: illustration->url is left uninitialized
-    m_illustrations.push_back(illustration);
+    mp_impl->m_illustrations.push_back(illustration);
   }
 }
 
 #define ATTR(name) node.attribute(name).value()
 void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
 {
-  m_id = ATTR("id");
+  mp_impl->m_id = ATTR("id");
   std::string path = ATTR("path");
   if (isRelativePath(path)) {
     path = computeAbsolutePath(baseDir, path);
   }
-  m_path = path;
-  m_pathValid = fileReadable(path);
-  m_title = ATTR("title");
-  m_description = ATTR("description");
-  m_language = ATTR("language");
-  m_creator = ATTR("creator");
-  m_publisher = ATTR("publisher");
-  m_date = ATTR("date");
+  mp_impl->m_path = path;
+  mp_impl->m_pathValid = fileReadable(path);
+  mp_impl->m_title = ATTR("title");
+  mp_impl->m_description = ATTR("description");
+  mp_impl->m_language = ATTR("language");
+  mp_impl->m_creator = ATTR("creator");
+  mp_impl->m_publisher = ATTR("publisher");
+  mp_impl->m_date = ATTR("date");
   setUrl(AcquisitionLinkKind::DIRECT, ATTR("url"));
-  m_name = ATTR("name");
-  m_flavour = ATTR("flavour");
-  m_tags = ATTR("tags");
-  m_origId = ATTR("origId");
-  m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
-  m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
-  m_size = strtoull(ATTR("size"), 0, 0) << 10;
+  mp_impl->m_name = ATTR("name");
+  mp_impl->m_flavour = ATTR("flavour");
+  mp_impl->m_tags = ATTR("tags");
+  mp_impl->m_origId = ATTR("origId");
+  mp_impl->m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
+  mp_impl->m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
+  mp_impl->m_size = strtoull(ATTR("size"), 0, 0) << 10;
   const std::string faviconMimeType = ATTR("faviconMimeType");
   const std::string faviconBase64EncodedData = ATTR("favicon");
   if ( !faviconMimeType.empty() && !faviconBase64EncodedData.empty() ) {
@@ -296,13 +319,13 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
     favicon->mp_impl->data = base64_decode(faviconBase64EncodedData);
     favicon->mp_impl->mimeType = faviconMimeType;
     favicon->mp_impl->url = ATTR("faviconUrl");
-    m_illustrations.assign(1, favicon);
+    mp_impl->m_illustrations.assign(1, favicon);
   }
   try {
-    m_downloadId = ATTR("downloadId");
+    mp_impl->m_downloadId = ATTR("downloadId");
   } catch(...) {}
   const auto catattr = node.attribute("category");
-  m_category = catattr.empty() ? getCategoryFromTags() : catattr.value();
+  mp_impl->m_category = catattr.empty() ? getCategoryFromTags() : catattr.value();
 }
 #undef ATTR
 
@@ -323,27 +346,27 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
 #define VALUE(name) node.child(name).child_value()
 void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost, const std::string& baseDir)
 {
-  m_id = VALUE("id");
-  if (!m_id.compare(0, 9, "urn:uuid:")) {
-    m_id.erase(0, 9);
+  mp_impl->m_id = VALUE("id");
+  if (!mp_impl->m_id.compare(0, 9, "urn:uuid:")) {
+    mp_impl->m_id.erase(0, 9);
   }
-  m_title = VALUE("title");
-  m_description = VALUE("summary");
-  m_language = VALUE("language");
-  m_creator = node.child("author").child("name").child_value();
-  m_publisher = node.child("publisher").child("name").child_value();
+  mp_impl->m_title = VALUE("title");
+  mp_impl->m_description = VALUE("summary");
+  mp_impl->m_language = VALUE("language");
+  mp_impl->m_creator = node.child("author").child("name").child_value();
+  mp_impl->m_publisher = node.child("publisher").child("name").child_value();
   const std::string dcIssuedDate = VALUE("dc:issued");
-  m_date = dcIssuedDate.empty() ? VALUE("updated") : dcIssuedDate;
-  m_date = fromOpdsDate(m_date);
-  m_name = VALUE("name");
-  m_flavour = VALUE("flavour");
-  m_tags = VALUE("tags");
+  mp_impl->m_date = dcIssuedDate.empty() ? VALUE("updated") : dcIssuedDate;
+  mp_impl->m_date = fromOpdsDate(mp_impl->m_date);
+  mp_impl->m_name = VALUE("name");
+  mp_impl->m_flavour = VALUE("flavour");
+  mp_impl->m_tags = VALUE("tags");
   const auto catnode = node.child("category");
-  m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
-  m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
-  m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
-  m_illustrations.clear();
-  m_urls = AcquisitionLinks();
+  mp_impl->m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
+  mp_impl->m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
+  mp_impl->m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
+  mp_impl->m_illustrations.clear();
+  mp_impl->m_urls = AcquisitionLinks();
   std::string firstAcquisitionHref;
   std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;
@@ -359,20 +382,20 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
 
       auto linkType = type.empty() ? AcquisitionLinkKind::DIRECT: fromMimeTypeToLinkKind(type);
       if (linkType == AcquisitionLinkKind::DIRECT && !isAbsoluteUrl(href)) {
-        m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
-        m_pathValid = fileReadable(m_path);
+        mp_impl->m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
+        mp_impl->m_pathValid = fileReadable(mp_impl->m_path);
       } else {
         setUrl(linkType, href);
       }
       const std::string length = linkNode.attribute("length").value();
       if (!length.empty()) {
         if (!firstLength.empty() && length != firstLength) {
-          std::cerr << "Book '" << m_id << "': acquisition links '"
+          std::cerr << "Book '" << mp_impl->m_id << "': acquisition links '"
                     << firstAcquisitionHref << "' (length " << firstLength
                     << ") and '" << href << "' (length " << length
                     << ") disagree on length." << std::endl;
         }
-        m_size = strtoull(length.c_str(), 0, 0);
+        mp_impl->m_size = strtoull(length.c_str(), 0, 0);
         firstAcquisitionHref = href;
         firstLength = length;
       }
@@ -402,7 +425,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
         favicon->mp_impl->height = parsedType.height;
       }
       if (!favicon->mp_impl->mimeType.empty()) {
-        m_illustrations.push_back(favicon);
+        mp_impl->m_illustrations.push_back(favicon);
       }
     }
   }
@@ -411,7 +434,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
 
 std::string Book::getHumanReadableIdFromPath() const
 {
-  std::string id = m_path;
+  std::string id = mp_impl->m_path;
   if (!id.empty()) {
     id = kiwix::removeAccents(id);
 
@@ -430,21 +453,21 @@ std::string Book::getHumanReadableIdFromPath() const
 
 void Book::setPath(const std::string& path)
 {
- m_path = isRelativePath(path)
+ mp_impl->m_path = isRelativePath(path)
    ? computeAbsolutePath(getCurrentDirectory(), path)
    : path;
 }
 
 void Book::setUrl(AcquisitionLinkKind linkKind, const std::string& url)
 {
-  m_urls[linkIndex(linkKind)] = url;
+  mp_impl->m_urls[linkIndex(linkKind)] = url;
 }
 
 const Book::Illustration Book::missingDefaultIllustration;
 
 std::shared_ptr<const Book::Illustration> Book::getIllustration(unsigned int size) const
 {
-  for ( const auto& ilPtr : m_illustrations ) {
+  for ( const auto& ilPtr : mp_impl->m_illustrations ) {
     if (ilPtr->mp_impl->width == size && ilPtr->mp_impl->height == size) {
       return ilPtr;
     }
@@ -497,7 +520,7 @@ const std::string Book::Illustration::getData() const
 }
 
 std::string Book::getTagStr(const std::string& tagName) const {
-  return getTagValueFromTagList(convertTags(m_tags), tagName);
+  return getTagValueFromTagList(convertTags(mp_impl->m_tags), tagName);
 }
 
 bool Book::getTagBool(const std::string& tagName) const {
@@ -506,7 +529,7 @@ bool Book::getTagBool(const std::string& tagName) const {
 
 std::string Book::getCategory() const
 {
-  return m_category;
+  return mp_impl->m_category;
 }
 
 std::string Book::getCategoryFromTags() const
@@ -523,7 +546,187 @@ std::string Book::getCategoryFromTags() const
 
 const std::vector<std::string> Book::getLanguages() const
 {
-  return kiwix::split(m_language, ",");
+  return kiwix::split(mp_impl->m_language, ",");
+}
+
+bool Book::readOnly() const
+{
+  return mp_impl->m_readOnly;
+}
+
+const std::string& Book::getId() const
+{
+  return mp_impl->m_id;
+}
+
+const std::string& Book::getPath() const
+{
+  return mp_impl->m_path;
+}
+
+bool Book::isPathValid() const
+{
+  return mp_impl->m_pathValid;
+}
+
+const std::string& Book::getTitle() const
+{
+  return mp_impl->m_title;
+}
+
+const std::string& Book::getDescription() const
+{
+  return mp_impl->m_description;
+}
+
+const std::string& Book::getCommaSeparatedLanguages() const
+{
+  return mp_impl->m_language;
+}
+
+const std::string& Book::getCreator() const
+{
+  return mp_impl->m_creator;
+}
+
+const std::string& Book::getPublisher() const
+{
+  return mp_impl->m_publisher;
+}
+
+const std::string& Book::getDate() const
+{
+  return mp_impl->m_date;
+}
+
+const std::string& Book::getUrl(AcquisitionLinkKind linkKind) const
+{
+  return mp_impl->m_urls[linkIndex(linkKind)];
+}
+
+const std::string& Book::getName() const
+{
+  return mp_impl->m_name;
+}
+
+const std::string& Book::getTags() const
+{
+  return mp_impl->m_tags;
+}
+
+const std::string& Book::getFlavour() const
+{
+  return mp_impl->m_flavour;
+}
+
+const std::string& Book::getOrigId() const
+{
+  return mp_impl->m_origId;
+}
+
+const uint64_t Book::getArticleCount() const
+{
+  return mp_impl->m_articleCount;
+}
+
+const uint64_t Book::getMediaCount() const
+{
+  return mp_impl->m_mediaCount;
+}
+
+const uint64_t Book::getSize() const
+{
+  return mp_impl->m_size;
+}
+
+const std::string& Book::getDownloadId() const
+{
+  return mp_impl->m_downloadId;
+}
+
+void Book::setReadOnly(bool readOnly)
+{
+  mp_impl->m_readOnly = readOnly;
+}
+
+void Book::setId(const std::string& id)
+{
+  mp_impl->m_id = id;
+}
+
+void Book::setPathValid(bool valid)
+{
+  mp_impl->m_pathValid = valid;
+}
+
+void Book::setTitle(const std::string& title)
+{
+  mp_impl->m_title = title;
+}
+
+void Book::setDescription(const std::string& description)
+{
+  mp_impl->m_description = description;
+}
+
+void Book::setLanguage(const std::string& language)
+{
+  mp_impl->m_language = language;
+}
+
+void Book::setCreator(const std::string& creator)
+{
+  mp_impl->m_creator = creator;
+}
+
+void Book::setPublisher(const std::string& publisher)
+{
+  mp_impl->m_publisher = publisher;
+}
+
+void Book::setDate(const std::string& date)
+{
+  mp_impl->m_date = date;
+}
+
+void Book::setName(const std::string& name)
+{
+  mp_impl->m_name = name;
+}
+
+void Book::setFlavour(const std::string& flavour)
+{
+  mp_impl->m_flavour = flavour;
+}
+
+void Book::setTags(const std::string& tags)
+{
+  mp_impl->m_tags = tags;
+}
+
+void Book::setOrigId(const std::string& origId)
+{
+  mp_impl->m_origId = origId;
+}
+
+void Book::setArticleCount(uint64_t articleCount)
+{
+  mp_impl->m_articleCount = articleCount;
+}
+
+void Book::setMediaCount(uint64_t mediaCount)
+{
+  mp_impl->m_mediaCount = mediaCount;
+}
+
+void Book::setSize(uint64_t size)
+{
+  mp_impl->m_size = size;
+}
+
+void Book::setDownloadId(const std::string& downloadId)
+{
+  mp_impl->m_downloadId = downloadId;
 }
 
 }

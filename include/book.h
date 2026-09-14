@@ -87,6 +87,8 @@ class Book
 
  public: // functions
   Book();
+  Book(const Book& other);
+  Book& operator=(const Book& other);
   ~Book();
 
   bool update(const Book& other);
@@ -117,83 +119,64 @@ class Book
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
   std::string getHumanReadableIdFromPath() const;
 
-  bool readOnly() const { return m_readOnly; }
-  const std::string& getId() const { return m_id; }
-  const std::string& getPath() const { return m_path; }
-  bool isPathValid() const { return m_pathValid; }
-  const std::string& getTitle() const { return m_title; }
-  const std::string& getDescription() const { return m_description; }
-  const std::string& getCommaSeparatedLanguages() const { return m_language; }
+  bool readOnly() const;
+  const std::string& getId() const;
+  const std::string& getPath() const;
+  bool isPathValid() const;
+  const std::string& getTitle() const;
+  const std::string& getDescription() const;
+  const std::string& getCommaSeparatedLanguages() const;
   const std::vector<std::string> getLanguages() const;
-  const std::string& getCreator() const { return m_creator; }
-  const std::string& getPublisher() const { return m_publisher; }
-  const std::string& getDate() const { return m_date; }
+  const std::string& getCreator() const;
+  const std::string& getPublisher() const;
+  const std::string& getDate() const;
   // Returns the acquisition link of the given kind (empty if not set).
   const std::string& getUrl(AcquisitionLinkKind linkKind) const;
-  const std::string& getName() const { return m_name; }
+  const std::string& getName() const;
   std::string getCategory() const;
-  const std::string& getTags() const { return m_tags; }
+  const std::string& getTags() const;
   std::string getTagStr(const std::string& tagName) const;
   bool getTagBool(const std::string& tagName) const;
-  const std::string& getFlavour() const { return m_flavour; }
-  const std::string& getOrigId() const { return m_origId; }
-  const uint64_t& getArticleCount() const { return m_articleCount; }
-  const uint64_t& getMediaCount() const { return m_mediaCount; }
-  const uint64_t& getSize() const { return m_size; }
+  const std::string& getFlavour() const;
+  const std::string& getOrigId() const;
+  const uint64_t getArticleCount() const;
+  const uint64_t getMediaCount() const;
+  const uint64_t getSize() const;
 
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
 
-  const std::string& getDownloadId() const { return m_downloadId; }
+  const std::string& getDownloadId() const;
 
-  void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
-  void setId(const std::string& id) { m_id = id; }
+  void setReadOnly(bool readOnly);
+  void setId(const std::string& id);
   void setPath(const std::string& path);
-  void setPathValid(bool valid) { m_pathValid = valid; }
-  void setTitle(const std::string& title) { m_title = title; }
-  void setDescription(const std::string& description) { m_description = description; }
-  void setLanguage(const std::string& language) { m_language = language; }
-  void setCreator(const std::string& creator) { m_creator = creator; }
-  void setPublisher(const std::string& publisher) { m_publisher = publisher; }
-  void setDate(const std::string& date) { m_date = date; }
+  void setPathValid(bool valid);
+  void setTitle(const std::string& title);
+  void setDescription(const std::string& description);
+  void setLanguage(const std::string& language);
+  void setCreator(const std::string& creator);
+  void setPublisher(const std::string& publisher);
+  void setDate(const std::string& date);
   // Sets the acquisition link of the given kind.
   // Setting an empty url string clears the link of that kind.
   void setUrl(AcquisitionLinkKind linkKind, const std::string& url);
-  void setName(const std::string& name) { m_name = name; }
-  void setFlavour(const std::string& flavour) { m_flavour = flavour; }
-  void setTags(const std::string& tags) { m_tags = tags; }
-  void setOrigId(const std::string& origId) { m_origId = origId; }
-  void setArticleCount(uint64_t articleCount) { m_articleCount = articleCount; }
-  void setMediaCount(uint64_t mediaCount) { m_mediaCount = mediaCount; }
-  void setSize(uint64_t size) { m_size = size; }
-  void setDownloadId(const std::string& downloadId) { m_downloadId = downloadId; }
+  void setName(const std::string& name);
+  void setFlavour(const std::string& flavour);
+  void setTags(const std::string& tags);
+  void setOrigId(const std::string& origId);
+  void setArticleCount(uint64_t articleCount);
+  void setMediaCount(uint64_t mediaCount);
+  void setSize(uint64_t size);
+  void setDownloadId(const std::string& downloadId);
 
  private: // functions
   std::string getCategoryFromTags() const;
   const Illustration& getDefaultIllustration() const;
 
- protected: // data
-  std::string m_id;
-  std::string m_downloadId;
-  std::string m_path;
-  bool m_pathValid = false;
-  std::string m_title;
-  std::string m_description;
-  std::string m_category;
-  std::string m_language;
-  std::string m_creator;
-  std::string m_publisher;
-  std::string m_date;
-  AcquisitionLinks m_urls;
-  std::string m_name;
-  std::string m_flavour;
-  std::string m_tags;
-  std::string m_origId;
-  uint64_t m_articleCount = 0;
-  uint64_t m_mediaCount = 0;
-  bool m_readOnly = false;
-  uint64_t m_size = 0;
-  Illustrations m_illustrations;
+ protected:
+  class Impl;
+  ValuePtr<Impl> mp_impl;
 
   // Used as the return value of getDefaultIllustration() when no default
   // illustration is found in the book
