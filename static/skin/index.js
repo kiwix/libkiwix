@@ -53,7 +53,9 @@
     function queryUrlBuilder() {
         let url = `${root}/catalog/v2/entries?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
-        params.forEach((value, key) => {url+= value ? `&${key}=${value}` : ''});
+        if ( params.size ) {
+          url += `&${params}`;
+        }
         return (url);
     }
 
@@ -64,18 +66,18 @@
           date.setTime(date.getTime() + ttl);
           exp = `expires=${date.toUTCString()};`;
         }
-        document.cookie = `${cookieName}=${cookieValue};${exp}sameSite=Strict`;
+        document.cookie = `${cookieName}=${encodeURIComponent(cookieValue)};${exp}sameSite=Strict`;
     }
 
     function getCookie(cookieName) {
         const name = cookieName + "=";
         let result;
-        decodeURIComponent(document.cookie).split('; ').forEach(val => {
-            if (val.indexOf(name) === 0) {
+        document.cookie.split('; ').forEach(val => {
+            if (val.startsWith(name)) {
                 result = val.substring(name.length);
             }
         });
-        return result;
+        return result === undefined ? result : decodeURIComponent(result);
     }
 
     function humanFriendlyNumStr(num, precision) {
