@@ -116,7 +116,9 @@
     }
 
     function htmlEncode(str) {
-        return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => `&#${i.charCodeAt(0)};`);
+        // Also encode the quote characters so this stays safe to use inside
+        // a quoted HTML attribute value, not only inside element text content.
+        return str.replace(/[\u00A0-\u9999<>\&"']/gim, (i) => `&#${i.charCodeAt(0)};`);
     }
 
     function viewPortToCount(){
@@ -127,6 +129,14 @@
     function getInnerHtml(node, query) {
         const queryNode = node.querySelector(query);
         return queryNode != null ? queryNode.innerHTML : "";
+    }
+
+    // Unlike getInnerHtml() this returns the plain text value of the node
+    // rather than its (X)HTML serialization, so that the result can be fed to
+    // htmlEncode() without double-encoding.
+    function getTextContent(node, query) {
+        const queryNode = node.querySelector(query);
+        return queryNode != null ? queryNode.textContent : "";
     }
 
     function generateTagLink(tagValue) {
@@ -175,8 +185,8 @@
                 iconUrl = link.getAttribute('href');
             }
         });
-        const title =  getInnerHtml(book, 'title');
-        const description = getInnerHtml(book, 'summary');
+        const title = htmlEncode(getTextContent(book, 'title'));
+        const description = htmlEncode(getTextContent(book, 'summary'));
         const id = getInnerHtml(book, 'id');
         const langCodesList = getInnerHtml(book, 'language').split(',');
         const langCode = langCodesList.length == 1 ? langCodesList[0] : 'mul';

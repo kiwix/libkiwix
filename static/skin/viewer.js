@@ -121,7 +121,11 @@ function setCurrentBook(book, title) {
   currentBook = book;
   currentBookTitle = title;
   setTitle(homeButton, $t("home-button-text", {BOOK_TITLE: title}));
-  homeButton.innerHTML = `<button>${title}</button>`;
+  // `title` is untrusted book metadata (fetched from `./raw/<book>/meta/Title`);
+  // assign it via `textContent`, like `setTitle()` above does for the same
+  // value, instead of interpolating it into markup passed to `innerHTML`.
+  homeButton.innerHTML = '<button></button>';
+  homeButton.querySelector('button').textContent = title;
   bookUIGroup.style.display = 'inline';
   updateSearchBoxForBookChange();
 }
