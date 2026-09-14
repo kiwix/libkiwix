@@ -349,13 +349,14 @@ std::string ContentResponseBlueprint::Data::asJSON() const
   std::ostringstream oss;
   this->dumpJSON(oss);
 
-  // This JSON is going to be used in HTML inside a <script></script> tag.
-  // If it contains "</script>" (or "</script >") as a substring, then the HTML
-  // parser will be confused. Since for a valid JSON that may happen only inside
-  // a JSON string, we can safely take advantage of the answers to
-  // https://stackoverflow.com/questions/28259389/how-to-put-script-in-a-javascript-string
-  // and work around the issue by inserting an otherwise harmless backslash.
-  return std::regex_replace(oss.str(), std::regex("</script"), "</scr\\ipt");
+  // This JSON is going to be used in HTML inside a <script></script> tag,
+  // via a raw ({{{...}}}) mustache substitution that does not itself apply
+  // any HTML escaping. A JSON string value containing "</script" would end
+  // that tag, and the HTML parser matches it case-insensitively ("</SCRIPT",
+  // "</ScRiPt", ...). "<" is the only way into such a sequence, so escaping
+  // every "<" as \u003c closes the hole for any letter case while leaving the
+  // decoded JSON value unchanged.
+  return std::regex_replace(oss.str(), std::regex("<"), "\\u003c");
 }
 
 ContentResponseBlueprint::ContentResponseBlueprint(const RequestContext* request,
