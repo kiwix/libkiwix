@@ -112,18 +112,27 @@ void LibraryManipulator::booksWereRemovedFromLibrary()
 // Manager
 ////////////////////////////////////////////////////////////////////////////////
 
+class Manager::Impl
+{
+ public:
+  explicit Impl(LibraryManipulator manipulator_) : manipulator(std::move(manipulator_)) {}
+
+  std::string writableLibraryPath;
+  kiwix::LibraryManipulator manipulator;
+};
+
 /* Constructor */
 Manager::Manager(LibraryManipulator manipulator):
-  writableLibraryPath(""),
-  manipulator(manipulator)
+  mp_impl(new Impl(std::move(manipulator)))
 {
 }
 
 Manager::Manager(LibraryPtr library) :
-  writableLibraryPath(""),
-  manipulator(LibraryManipulator(library))
+  mp_impl(new Impl(LibraryManipulator(library)))
 {
 }
+
+Manager::~Manager() = default;
 
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
                           bool readOnly,
@@ -145,7 +154,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     if (!trustLibrary && !book.getPath().empty()) {
       this->readBookFromPath(book.getPath(), &book);
     }
-    manipulator.addBookToLibrary(book);
+    mp_impl->manipulator.addBookToLibrary(book);
   }
 
   return true;
@@ -185,7 +194,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
     book.updateFromOpds(entryNode, urlHost, baseDir);
 
     /* Update the book properties with the new importer */
-    manipulator.addBookToLibrary(book);
+    mp_impl->manipulator.addBookToLibrary(book);
   }
 
   return true;
@@ -221,8 +230,8 @@ bool Manager::readFile(
   /* This has to be set (although if the file does not exists) to be
    * able to know where to save the library if new content are
    * available */
-  if (!readOnly) { // todo XXX, better to introduce setWritableLibraryPath and remove this code from the readFile
-    this->writableLibraryPath = path;
+  if (!readOnly) {
+    mp_impl->writableLibraryPath = path;
   }
 
   if (!kiwix::fileExists(path)) {
@@ -263,7 +272,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
     if (!pathToSave.empty() && pathToSave != pathToOpen) {
       book.setPath(isRelativePath(pathToSave)
                 ? computeAbsolutePath(
-                      removeLastPathElement(writableLibraryPath),
+                      removeLastPathElement(mp_impl->writableLibraryPath),
                       pathToSave)
                 : pathToSave);
     }
@@ -274,7 +283,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
       for (size_t i = 0; i < urls.size(); ++i) {
         book.setUrl(static_cast<Book::AcquisitionLinkKind>(i), urls[i]);
       }
-      manipulator.addBookToLibrary(book);
+      mp_impl->manipulator.addBookToLibrary(book);
       return book.getId();
     }
   }
@@ -381,7 +390,7 @@ bool Manager::readBookmarkFile(const std::string& path)
 
     bookmark.updateFromXml(node);
 
-    manipulator.addBookmarkToLibrary(bookmark);
+    mp_impl->manipulator.addBookmarkToLibrary(bookmark);
   }
 
   return true;
@@ -389,7 +398,7 @@ bool Manager::readBookmarkFile(const std::string& path)
 
 void Manager::reload(const Paths& paths)
 {
-  const auto libRevision = manipulator.getLibrary()->getRevision();
+  const auto libRevision = mp_impl->manipulator.getLibrary()->getRevision();
   for (std::string path : paths) {
     if (!path.empty()) {
       if ( kiwix::isRelativePath(path) )
@@ -401,7 +410,9 @@ void Manager::reload(const Paths& paths)
     }
   }
 
-  manipulator.removeBooksNotUpdatedSince(libRevision);
+  mp_impl->manipulator.removeBooksNotUpdatedSince(libRevision);
 }
+
+std::string Manager::getWritableLibraryPath() const { return mp_impl->writableLibraryPath; }
 
 }

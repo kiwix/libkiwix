@@ -67,6 +67,13 @@ class Manager
   explicit Manager(LibraryManipulator manipulator);
   explicit Manager(LibraryPtr library);
 
+  Manager(const Manager&) = delete;
+  Manager(Manager&&) = delete;
+  Manager& operator=(const Manager&) = delete;
+  Manager& operator=(Manager&&) = delete;
+
+  ~Manager();
+
   /**
    * Read a library XML or an OPDS file and add the books in the file to the
    * library.
@@ -213,11 +220,9 @@ class Manager
   void addBooksFromDirectory(const std::string& path,
                              const bool verboseFlag = false);
 
-  std::string writableLibraryPath;
+  std::string getWritableLibraryPath() const;
 
  protected:
-  kiwix::LibraryManipulator manipulator;
-
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,
                    bool readOnly,
@@ -227,6 +232,9 @@ class Manager
                     const std::string& urlHost,
                     const std::string& baseDir,
                     bool readOnly);
+
+  class Impl;
+  std::unique_ptr<Impl> mp_impl;
 };
 }  // namespace kiwix
 
