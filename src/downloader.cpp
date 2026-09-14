@@ -36,6 +36,16 @@
 namespace kiwix
 {
 
+Download::StatusResult Download::getStatus() const { return m_status; }
+const std::string& Download::getDid() const { return m_did; }
+const std::string& Download::getFollowedBy() const { return m_followedBy; }
+uint64_t Download::getTotalLength() const { return m_totalLength; }
+uint64_t Download::getCompletedLength() const { return m_completedLength; }
+uint64_t Download::getDownloadSpeed() const { return m_downloadSpeed; }
+uint64_t Download::getVerifiedLength() const { return m_verifiedLength; }
+const std::string& Download::getPath() const { return m_path; }
+const std::vector<std::string>& Download::getUris() const { return m_uris; }
+
 void Download::updateStatus(bool follow)
 {
   if (m_status == Download::K_REMOVED)
@@ -223,7 +233,7 @@ std::shared_ptr<Download> Downloader::startDownload(const std::string& uri, cons
   }
   std::vector<std::string> uris = {uri};
   auto gid = mp_aria->addUri(uris, options);
-  m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
+  m_knownDownloads[gid] = std::shared_ptr<Download>(new Download(mp_aria, gid));
   return m_knownDownloads[gid];
 }
 
@@ -235,13 +245,13 @@ std::shared_ptr<Download> Downloader::getDownload(const std::string& did)
   } catch(std::exception& e) {
     for (auto gid : mp_aria->tellWaiting()) {
       if (gid == did) {
-        m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
+        m_knownDownloads[gid] = std::shared_ptr<Download>(new Download(mp_aria, gid));
         return m_knownDownloads[gid];
       }
     }
     for (auto gid : mp_aria->tellActive()) {
       if (gid == did) {
-        m_knownDownloads[gid] = std::make_shared<Download>(mp_aria, gid);
+        m_knownDownloads[gid] = std::shared_ptr<Download>(new Download(mp_aria, gid));
         return m_knownDownloads[gid];
       }
     }
