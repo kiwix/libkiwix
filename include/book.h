@@ -49,14 +49,19 @@ class Book
   {
     friend class Book;
    public:
+    uint16_t getWidth() const;
+    uint16_t getHeight() const;
+    const std::string& getMimeType() const;
+    const std::string& getUrl() const;
+    const std::string& getData() const;
+
+   private:
+    Illustration() = default;
+
     uint16_t width = 48;
     uint16_t height = 48;
     std::string mimeType;
     std::string url;
-
-    const std::string& getData() const;
-
-   private:
     mutable std::string data;
     mutable std::mutex mutex;
   };

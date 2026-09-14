@@ -408,10 +408,10 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
 
     auto illustration = book.getIllustration(48);
 
-    EXPECT_EQ(illustration->mimeType, "image/png");
-    EXPECT_EQ(illustration->width, 48);
-    EXPECT_EQ(illustration->height, 48);
-    EXPECT_EQ(illustration->url, "https://example.com/favicon/raycharles.png");
+    EXPECT_EQ(illustration->getMimeType(), "image/png");
+    EXPECT_EQ(illustration->getWidth(), 48);
+    EXPECT_EQ(illustration->getHeight(), 48);
+    EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/raycharles.png");
     EXPECT_FALSE(book.readOnly());
 }
 
