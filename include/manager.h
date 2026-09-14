@@ -40,7 +40,12 @@ class LibraryManipulator
   explicit LibraryManipulator(LibraryPtr library);
   virtual ~LibraryManipulator();
 
-  LibraryPtr getLibrary() const { return library; }
+  LibraryManipulator(const LibraryManipulator& other);
+  LibraryManipulator(LibraryManipulator&& other) noexcept;
+  LibraryManipulator& operator=(const LibraryManipulator& other);
+  LibraryManipulator& operator=(LibraryManipulator&& other) noexcept;
+
+  LibraryPtr getLibrary() const;
 
   bool addBookToLibrary(const Book& book);
   void addBookmarkToLibrary(const Bookmark& bookmark);
@@ -52,7 +57,8 @@ class LibraryManipulator
   virtual void booksWereRemovedFromLibrary();
 
  private: // data
-  LibraryPtr library;
+  class Impl;
+  std::unique_ptr<Impl> mp_impl;
 };
 
 /**
@@ -66,6 +72,13 @@ class Manager
  public: // functions
   explicit Manager(LibraryManipulator manipulator);
   explicit Manager(LibraryPtr library);
+
+  Manager(const Manager&) = delete;
+  Manager(Manager&&) = delete;
+  Manager& operator=(const Manager&) = delete;
+  Manager& operator=(Manager&&) = delete;
+
+  ~Manager();
 
   /**
    * Read a library XML or an OPDS file and add the books in the file to the
@@ -188,16 +201,15 @@ class Manager
   void addBooksFromDirectory(const std::string& path,
                              const bool verboseFlag = false);
 
-  std::string writableLibraryPath;
+  const std::string& getWritableLibraryPath() const;
+  void setWritableLibraryPath(const std::string& path);
 
-  bool m_hasSearchResult = false;
-  uint64_t m_totalBooks = 0;
-  uint64_t m_startIndex = 0;
-  uint64_t m_itemsPerPage = 0;
+  bool hasSearchResult() const;
+  uint64_t getTotalBooks() const;
+  uint64_t getStartIndex() const;
+  uint64_t getItemsPerPage() const;
 
- protected:
-  kiwix::LibraryManipulator manipulator;
-
+ private:
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,
                    bool readOnly,
@@ -207,6 +219,9 @@ class Manager
                     const std::string& urlHost,
                     const std::string& baseDir,
                     bool readOnly);
+
+  class Impl;
+  std::unique_ptr<Impl> mp_impl;
 };
 }  // namespace kiwix
 
