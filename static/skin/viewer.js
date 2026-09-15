@@ -503,6 +503,9 @@ function setupSuggestions() {
           } else {
             const pattern = encodeURIComponent(htmlDecode(data.value.value));
             url = `/search?content=${uriEncodedBookName}&pattern=${pattern}`;
+
+            const loader = document.getElementById("kiwix__loader");
+            loader.style.display = "flex";
           }
           // url can't contain any double quote and/or backslash symbols
           // since they should have been URI-encoded. Therefore putting it
