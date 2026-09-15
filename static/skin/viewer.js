@@ -85,6 +85,10 @@ function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
   if (!searchbox.value.trim()) { return;}
   const q = encodeURIComponent(searchbox.value);
+
+  const loader = document.getElementById("kiwix__loader");
+  loader.style.display = "flex";
+
   gotoUrl(`/search?books.name=${currentBook}&pattern=${q}&userlang=${viewerState.uiLanguage}`);
 }
 
