@@ -45,36 +45,58 @@ std::string makeServerUrl(std::string host, int port, std::string root)
 
 }  // unnamed namespace
 
-Server::Server(LibraryPtr library, std::shared_ptr<NameMapper> nameMapper) :
-  mp_library(library),
-  mp_nameMapper(nameMapper),
-  mp_server(nullptr)
+class Server::Impl
 {
+ public:
+  std::shared_ptr<Library> mp_library;
+  std::shared_ptr<NameMapper> mp_nameMapper;
+  std::string m_root = "";
+  IpAddress m_addr;
+  std::string m_indexTemplateString = "";
+  int m_port = 80;
+  int m_nbThreads = 1;
+  unsigned int m_multizimSearchLimit = 0;
+  bool m_verbose = false;
+  bool m_withTaskbar = true;
+  bool m_withLibraryButton = true;
+  bool m_blockExternalLinks = false;
+  IpMode m_ipMode = IpMode::AUTO;
+  int m_ipConnectionLimit = 0;
+  bool m_catalogOnlyMode = false;
+  std::string m_contentServerUrl;
+  std::unique_ptr<InternalServer> mp_server;
+};
+
+Server::Server(LibraryPtr library, std::shared_ptr<NameMapper> nameMapper) :
+  mp_impl(new Impl())
+{
+  mp_impl->mp_library = library;
+  mp_impl->mp_nameMapper = nameMapper;
 }
 
 Server::~Server() = default;
 
 bool Server::start() {
-  mp_server.reset(new InternalServer(
-    mp_library,
-    mp_nameMapper,
-    m_addr,
-    m_port,
-    m_root,
-    m_nbThreads,
-    m_multizimSearchLimit,
-    m_verbose,
-    m_withTaskbar,
-    m_withLibraryButton,
-    m_blockExternalLinks,
-    m_ipMode,
-    m_indexTemplateString,
-    m_ipConnectionLimit,
-    m_catalogOnlyMode,
-    m_contentServerUrl));
-  if (mp_server->start()) {
+  mp_impl->mp_server.reset(new InternalServer(
+    mp_impl->mp_library,
+    mp_impl->mp_nameMapper,
+    mp_impl->m_addr,
+    mp_impl->m_port,
+    mp_impl->m_root,
+    mp_impl->m_nbThreads,
+    mp_impl->m_multizimSearchLimit,
+    mp_impl->m_verbose,
+    mp_impl->m_withTaskbar,
+    mp_impl->m_withLibraryButton,
+    mp_impl->m_blockExternalLinks,
+    mp_impl->m_ipMode,
+    mp_impl->m_indexTemplateString,
+    mp_impl->m_ipConnectionLimit,
+    mp_impl->m_catalogOnlyMode,
+    mp_impl->m_contentServerUrl));
+  if (mp_impl->mp_server->start()) {
     // this syncs m_addr of InternalServer and Server as they may diverge
-    m_addr = mp_server->getAddress();
+    mp_impl->m_addr = mp_impl->mp_server->getAddress();
     return true;
   } else {
     return false;
@@ -82,60 +104,76 @@ bool Server::start() {
 }
 
 void Server::stop() {
-  if (mp_server) {
-    mp_server->stop();
-    mp_server.reset(nullptr);
+  if (mp_impl->mp_server) {
+    mp_impl->mp_server->stop();
+    mp_impl->mp_server.reset(nullptr);
   }
 }
 
 void Server::setRoot(const std::string& root)
 {
-  m_root = root;
-  while (!m_root.empty() && m_root.back() == '/')
-    m_root.pop_back();
+  mp_impl->m_root = root;
+  while (!mp_impl->m_root.empty() && mp_impl->m_root.back() == '/')
+    mp_impl->m_root.pop_back();
 
-  while (!m_root.empty() && m_root.front() == '/')
-    m_root = m_root.substr(1);
-  m_root = m_root.empty() ? m_root : "/" + m_root;
+  while (!mp_impl->m_root.empty() && mp_impl->m_root.front() == '/')
+    mp_impl->m_root = mp_impl->m_root.substr(1);
+  mp_impl->m_root = mp_impl->m_root.empty() ? mp_impl->m_root : "/" + mp_impl->m_root;
 }
 
 void Server::setAddress(const std::string& addr)
 {
-  m_addr.addr.clear();
-  m_addr.addr6.clear();
+  mp_impl->m_addr.addr.clear();
+  mp_impl->m_addr.addr6.clear();
 
   if (addr.empty()) return;
 
   if (addr.find(':') != std::string::npos) { // IPv6
-    m_addr.addr6 = (addr[0] == '[') ? addr.substr(1, addr.length() - 2) : addr; // Remove brackets if any
+    mp_impl->m_addr.addr6 = (addr[0] == '[') ? addr.substr(1, addr.length() - 2) : addr; // Remove brackets if any
   } else {
-    m_addr.addr = addr;
+    mp_impl->m_addr.addr = addr;
   }
 }
 
+void Server::setPort(int port) { mp_impl->m_port = port; }
+void Server::setNbThreads(int threads) { mp_impl->m_nbThreads = threads; }
+void Server::setMultiZimSearchLimit(unsigned int limit) { mp_impl->m_multizimSearchLimit = limit; }
+void Server::setIpConnectionLimit(int limit) { mp_impl->m_ipConnectionLimit = limit; }
+void Server::setVerbose(bool verbose) { mp_impl->m_verbose = verbose; }
+void Server::setIndexTemplateString(const std::string& indexTemplateString) { mp_impl->m_indexTemplateString = indexTemplateString; }
+void Server::setTaskbar(bool withTaskbar, bool withLibraryButton)
+{
+  mp_impl->m_withTaskbar = withTaskbar;
+  mp_impl->m_withLibraryButton = withLibraryButton;
+}
+void Server::setBlockExternalLinks(bool blockExternalLinks) { mp_impl->m_blockExternalLinks = blockExternalLinks; }
+void Server::setCatalogOnlyMode(bool enable) { mp_impl->m_catalogOnlyMode = enable; }
+void Server::setContentServerUrl(std::string url) { mp_impl->m_contentServerUrl = url; }
+void Server::setIpMode(IpMode mode) { mp_impl->m_ipMode = mode; }
+
 int Server::getPort() const
 {
-  return m_port;
+  return mp_impl->m_port;
 }
 
 IpAddress Server::getAddress() const
 {
-  return m_addr;
+  return mp_impl->m_addr;
 }
 
 IpMode Server::getIpMode() const
 {
-  return mp_server->getIpMode();
+  return mp_impl->mp_server->getIpMode();
 }
 
 std::vector<std::string> Server::getServerAccessUrls() const
 {
   std::vector<std::string> result;
-  if (!m_addr.addr.empty()) {
-    result.push_back(makeServerUrl(m_addr.addr, m_port, m_root));
+  if (!mp_impl->m_addr.addr.empty()) {
+    result.push_back(makeServerUrl(mp_impl->m_addr.addr, mp_impl->m_port, mp_impl->m_root));
   }
-  if (!m_addr.addr6.empty()) {
-    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", m_port, m_root));
+  if (!mp_impl->m_addr.addr6.empty()) {
+    result.push_back(makeServerUrl("[" + mp_impl->m_addr.addr6 + "]", mp_impl->m_port, mp_impl->m_root));
   }
   return result;
 }

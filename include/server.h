@@ -28,7 +28,6 @@ namespace kiwix
 {
   class Library;
   class NameMapper;
-  class InternalServer;
 
   class Server {
      public:
@@ -38,6 +37,11 @@ namespace kiwix
         * @param library The library to serve.
         */
        Server(std::shared_ptr<Library> library, std::shared_ptr<NameMapper> nameMapper=nullptr);
+
+       Server(const Server&) = delete;
+       Server(Server&&) = delete;
+       Server& operator=(const Server&) = delete;
+       Server& operator=(Server&&) = delete;
 
        virtual ~Server();
 
@@ -70,25 +74,23 @@ namespace kiwix
         *
         * Default port is 80, but using it requires special privileges.
         */
-       void setPort(int port) { m_port = port; }
+       void setPort(int port);
 
-       void setNbThreads(int threads) { m_nbThreads = threads; }
-       void setMultiZimSearchLimit(unsigned int limit) { m_multizimSearchLimit = limit; }
-       void setIpConnectionLimit(int limit) { m_ipConnectionLimit = limit; }
-       void setVerbose(bool verbose) { m_verbose = verbose; }
-       void setIndexTemplateString(const std::string& indexTemplateString) { m_indexTemplateString = indexTemplateString; }
-       void setTaskbar(bool withTaskbar, bool withLibraryButton)
-        { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
-       void setBlockExternalLinks(bool blockExternalLinks)
-        { m_blockExternalLinks = blockExternalLinks; }
-       void setCatalogOnlyMode(bool enable) { m_catalogOnlyMode = enable; }
-       void setContentServerUrl(std::string url) { m_contentServerUrl = url; }
+       void setNbThreads(int threads);
+       void setMultiZimSearchLimit(unsigned int limit);
+       void setIpConnectionLimit(int limit);
+       void setVerbose(bool verbose);
+       void setIndexTemplateString(const std::string& indexTemplateString);
+       void setTaskbar(bool withTaskbar, bool withLibraryButton);
+       void setBlockExternalLinks(bool blockExternalLinks);
+       void setCatalogOnlyMode(bool enable);
+       void setContentServerUrl(std::string url);
 
        /**
         * Listen for incoming connections on all IP addresses of the specified
         * IP protocol family.
         */
-       void setIpMode(IpMode mode) { m_ipMode = mode; }
+       void setIpMode(IpMode mode);
 
        /**
         * Get the port on which the server listens for incoming connections
@@ -129,24 +131,9 @@ namespace kiwix
         */
        std::vector<std::string> getServerAccessUrls() const;
 
-     protected:
-       std::shared_ptr<Library> mp_library;
-       std::shared_ptr<NameMapper> mp_nameMapper;
-       std::string m_root = "";
-       IpAddress m_addr;
-       std::string m_indexTemplateString = "";
-       int m_port = 80;
-       int m_nbThreads = 1;
-       unsigned int m_multizimSearchLimit = 0;
-       bool m_verbose = false;
-       bool m_withTaskbar = true;
-       bool m_withLibraryButton = true;
-       bool m_blockExternalLinks = false;
-       IpMode m_ipMode = IpMode::AUTO;
-       int m_ipConnectionLimit = 0;
-       bool m_catalogOnlyMode = false;
-       std::string m_contentServerUrl;
-       std::unique_ptr<InternalServer> mp_server;
+     private:
+       class Impl;
+       std::unique_ptr<Impl> mp_impl;
   };
 }
 

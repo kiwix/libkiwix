@@ -64,8 +64,8 @@ TEST(BookTest, updateFromXMLTest)
     EXPECT_EQ(book.getSize(), 345678U*1024U);
     auto defaultIllustration = book.getIllustration(48);
     EXPECT_EQ(defaultIllustration->getData(), "fake-book-favicon-data");
-    EXPECT_EQ(defaultIllustration->mimeType, "text/plain");
-    EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
+    EXPECT_EQ(defaultIllustration->getMimeType(), "text/plain");
+    EXPECT_EQ(defaultIllustration->getUrl(), "http://who.org/zara.fav");
 }
 
 // OPDS analogue of updateFromXMLTest above.
@@ -121,8 +121,8 @@ TEST(BookTest, updateFromOPDSTest)
     // to check here - just that the URL (prefixed with urlHost) and mime
     // type made it through.
     auto defaultIllustration = book.getIllustration(48);
-    EXPECT_EQ(defaultIllustration->mimeType, "text/plain");
-    EXPECT_EQ(defaultIllustration->url, "http://who.org/zara.fav");
+    EXPECT_EQ(defaultIllustration->getMimeType(), "text/plain");
+    EXPECT_EQ(defaultIllustration->getUrl(), "http://who.org/zara.fav");
 }
 
 TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
@@ -303,7 +303,7 @@ TEST(BookTest, updateFromOPDSThumbnailWithAbsoluteHrefIgnoresUrlHostTest)
     )", "http://who.org");
 
     const auto illustration = book.getIllustrations().at(0);
-    EXPECT_EQ(illustration->url, "https://example.com/favicon/zara.png");
+    EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/zara.png");
 }
 
 TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithSizeSuffixTest)
@@ -315,9 +315,9 @@ TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithSizeSuffixTest)
     )");
 
     const auto illustration = book.getIllustrations().at(0);
-    EXPECT_EQ(illustration->mimeType, "image/png");
-    EXPECT_EQ(illustration->width, 96);
-    EXPECT_EQ(illustration->height, 256);
+    EXPECT_EQ(illustration->getMimeType(), "image/png");
+    EXPECT_EQ(illustration->getWidth(), 96);
+    EXPECT_EQ(illustration->getHeight(), 256);
 }
 
 TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithPartialSizeSuffixTest)
@@ -329,9 +329,9 @@ TEST(BookTest, updateFromOPDSThumbnailLinkTypeWithPartialSizeSuffixTest)
     )");
 
     const auto illustration = book.getIllustrations().at(0);
-    EXPECT_EQ(illustration->mimeType, "image/png");
-    EXPECT_EQ(illustration->width, 96);
-    EXPECT_EQ(illustration->height, 48);
+    EXPECT_EQ(illustration->getMimeType(), "image/png");
+    EXPECT_EQ(illustration->getWidth(), 96);
+    EXPECT_EQ(illustration->getHeight(), 48);
 }
 
 TEST(BookTest, updateFromOPDSDataUriThumbnailTest)
@@ -344,10 +344,10 @@ TEST(BookTest, updateFromOPDSDataUriThumbnailTest)
 
     const auto illustration = book.getIllustrations().at(0);
     EXPECT_EQ(illustration->getData(), "first-thumbnail");
-    EXPECT_EQ(illustration->url, "");
-    EXPECT_EQ(illustration->mimeType, "image/jpeg");
-    EXPECT_EQ(illustration->width, 96);
-    EXPECT_EQ(illustration->height, 256);
+    EXPECT_EQ(illustration->getUrl(), "");
+    EXPECT_EQ(illustration->getMimeType(), "image/jpeg");
+    EXPECT_EQ(illustration->getWidth(), 96);
+    EXPECT_EQ(illustration->getHeight(), 256);
 }
 
 TEST(BookTest, updateFromOPDSMultipleDataUriThumbnailsTest)
@@ -364,11 +364,11 @@ TEST(BookTest, updateFromOPDSMultipleDataUriThumbnailsTest)
     const auto& illustrations = book.getIllustrations();
     ASSERT_EQ(illustrations.size(), 2U);
     EXPECT_EQ(illustrations[0]->getData(), "first-thumbnail");
-    EXPECT_EQ(illustrations[0]->width, 48);
-    EXPECT_EQ(illustrations[0]->height, 48);
+    EXPECT_EQ(illustrations[0]->getWidth(), 48);
+    EXPECT_EQ(illustrations[0]->getHeight(), 48);
     EXPECT_EQ(illustrations[1]->getData(), "second-thumbnail");
-    EXPECT_EQ(illustrations[1]->width, 96);
-    EXPECT_EQ(illustrations[1]->height, 96);
+    EXPECT_EQ(illustrations[1]->getWidth(), 96);
+    EXPECT_EQ(illustrations[1]->getHeight(), 96);
 }
 
 TEST(BookTest, updateFromOPDSMixedDataUriAndExternalThumbnailLinksTest)
@@ -384,8 +384,8 @@ TEST(BookTest, updateFromOPDSMixedDataUriAndExternalThumbnailLinksTest)
 
     const auto& illustrations = book.getIllustrations();
     ASSERT_EQ(illustrations.size(), 2U);
-    EXPECT_EQ(illustrations[0]->url, "https://example.com/favicon.png");
-    EXPECT_EQ(illustrations[1]->url, "");
+    EXPECT_EQ(illustrations[0]->getUrl(), "https://example.com/favicon.png");
+    EXPECT_EQ(illustrations[1]->getUrl(), "");
     EXPECT_EQ(illustrations[1]->getData(), "first-thumbnail");
 }
 
@@ -399,7 +399,7 @@ TEST(BookTest, updateFromOPDSDataUriThumbnailWithoutCommaTest)
 
     const auto illustration = book.getIllustrations().at(0);
     EXPECT_EQ(illustration->getData(), "");
-    EXPECT_EQ(illustration->url, "");
+    EXPECT_EQ(illustration->getUrl(), "");
 }
 
 TEST(BookTest, updateFromOPDSThumbnailLinkWithoutTypeIsIgnoredTest)
@@ -476,7 +476,7 @@ TEST(BookTest, updateTest)
     auto defaultIllustration = book.getIllustration(48);
     auto newDefaultIllustration = newBook.getIllustration(48);
     EXPECT_EQ(newDefaultIllustration->getData(), defaultIllustration->getData());
-    EXPECT_EQ(newDefaultIllustration->mimeType, defaultIllustration->mimeType);
+    EXPECT_EQ(newDefaultIllustration->getMimeType(), defaultIllustration->getMimeType());
 }
 
 TEST(BookTest, updateFromArchiveSetsByteExactSize)
@@ -570,6 +570,6 @@ TEST(BookTest, updateFromOPDSMultipleThumbnailLinksTest)
 
   const auto& illustrations = book.getIllustrations();
   ASSERT_EQ(illustrations.size(), 2U);
-  EXPECT_EQ(illustrations[0]->url, "https://example.com/zara-48.png");
-  EXPECT_EQ(illustrations[1]->url, "https://example.com/zara-96.png");
+  EXPECT_EQ(illustrations[0]->getUrl(), "https://example.com/zara-48.png");
+  EXPECT_EQ(illustrations[1]->getUrl(), "https://example.com/zara-96.png");
 }
