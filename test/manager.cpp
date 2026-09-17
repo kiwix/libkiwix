@@ -3,6 +3,7 @@
 #include "../include/library.h"
 #include "../include/book.h"
 #include "../include/tools.h"
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 
@@ -70,7 +71,9 @@ TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", zimOnlyUrl);
     ASSERT_NE(bookId, "");
     book = lib->getBookById(bookId);
-    EXPECT_EQ(book.getAcquisitionLinks().size(), 1u);
+    const auto linkMap = book.getAcquisitionLinks();
+    EXPECT_EQ(linkMap.size(), 1);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), zimOnlyUrl.zim);
 }
 
 TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
