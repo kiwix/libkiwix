@@ -3,6 +3,7 @@
 #include "../include/library.h"
 #include "../include/book.h"
 #include "../include/tools.h"
+#include "../src/tools/otherTools.h"
 #include <fstream>
 
 namespace
@@ -73,6 +74,7 @@ TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", zimOnlyUrl);
     ASSERT_NE(bookId, "");
     book = lib->getBookById(bookId);
+    EXPECT_EQ(kiwix::nonEmptyAcquisitionLinksCount(book), 1u);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), otherZimUrl);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET), "");
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), "");
