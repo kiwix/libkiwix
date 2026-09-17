@@ -21,6 +21,7 @@
 #define KIWIX_SEARCH_RENDERER_H
 
 #include <string>
+#include <memory>
 #include <zim/search.h>
 #include "library.h"
 
@@ -68,16 +69,12 @@ class SearchRenderer
   /**
    * set result count per page
    */
-  void setPageLength(unsigned int pageLength){
-    this->pageLength  = pageLength;
-  }
+  void setPageLength(unsigned int pageLength);
 
   /**
    * set user language
    */
-  void setUserLang(const std::string& lang){
-    this->userlang  = lang;
-  }
+  void setUserLang(const std::string& lang);
 
   /**
    * Generate the html page with the resutls of the search.
@@ -99,20 +96,12 @@ class SearchRenderer
    */
   std::string getXml(const NameMapper& mapper, const Library* library);
 
- protected: // function
+ private:
   std::string renderTemplate(const std::string& tmpl_str, const NameMapper& mapper, const Library *library);
-
- protected:
   std::string beautifyInteger(const unsigned int number);
-  zim::SearchResultSet m_srs;
-  std::string searchBookQuery;
-  std::string searchPattern;
-  std::string protocolPrefix;
-  std::string searchProtocolPrefix;
-  unsigned int pageLength;
-  unsigned int estimatedResultCount;
-  unsigned int resultStart;
-  std::string userlang = "en";
+
+  class Impl;
+  std::unique_ptr<Impl> mp_impl;
 };
 
 
