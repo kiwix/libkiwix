@@ -31,6 +31,7 @@
 #include <zim/item.h>
 #include <pugixml.hpp>
 
+#include <algorithm>
 #include <sstream>
 #include <cctype>
 
@@ -150,10 +151,30 @@ ParsedIllustrationType parseIllustrationType(const std::string& type)
   return result;
 }
 
+kiwix::Book::AcquisitionLinkKind
+fromMimeTypeToLinkKind(const std::string& mimeType)
+{
+  if (mimeType == "application/metalink4+xml") {
+    return kiwix::Book::AcquisitionLinkKind::META4;
+  }
+  if (mimeType == "application/x-bittorrent") {
+    return kiwix::Book::AcquisitionLinkKind::BITTORRENT;
+  }
+  if (mimeType == "application/x-magnet") {
+    return kiwix::Book::AcquisitionLinkKind::MAGNET;
+  }
+  if (mimeType == "application/x-zim") {
+    return kiwix::Book::AcquisitionLinkKind::DIRECT;
+  }
+
+  throw std::runtime_error("Unknown acquisition link type: " + mimeType);
+}
+
 } // anonymous namespace
 
 namespace kiwix
 {
+
 /* Constructor */
 Book::Book() :
   m_pathValid(false),
@@ -169,6 +190,16 @@ Book::~Book()
 Book::Illustrations Book::getIllustrations() const
 {
   return m_illustrations;
+}
+
+const std::string& Book::getUrl() const
+{
+  return getUrl(AcquisitionLinkKind::DIRECT);
+}
+
+const std::string& Book::getUrl(AcquisitionLinkKind linkKind) const
+{
+  return m_urls[linkKind];
 }
 
 bool Book::update(const kiwix::Book& other)
@@ -230,7 +261,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_creator = ATTR("creator");
   m_publisher = ATTR("publisher");
   m_date = ATTR("date");
-  m_url = ATTR("url");
+  m_urls[AcquisitionLinkKind::DIRECT] = ATTR("url");
   m_name = ATTR("name");
   m_flavour = ATTR("flavour");
   m_tags = ATTR("tags");
@@ -292,6 +323,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   m_illustrations.clear();
+  m_urls.fill("");
   std::string firstAcquisitionHref;
   std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;
@@ -303,11 +335,17 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // book (an absolute URL) or a local one (a filesystem path, absolute
       // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
-      if (isAbsoluteUrl(href)) {
-        m_url = href;
-      } else {
+      std::string type = linkNode.attribute("type").value();
+      if (type.empty()) {
+        type = fromLinkKindToMimeType(DIRECT);
+      }
+
+      auto linkType = fromMimeTypeToLinkKind(type);
+      if (linkType == DIRECT && !isAbsoluteUrl(href)) {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
+      } else {
+        setUrl(linkType, href);
       }
       const std::string length = linkNode.attribute("length").value();
       if (!length.empty()) {
@@ -378,6 +416,22 @@ void Book::setPath(const std::string& path)
  m_path = isRelativePath(path)
    ? computeAbsolutePath(getCurrentDirectory(), path)
    : path;
+}
+
+void Book::setUrl(AcquisitionLinkKind linkKind, const std::string& url)
+{
+  m_urls[linkKind] = url;
+}
+
+Book::AcquisitionLinkMap Book::getAcquisitionLinks() const
+{
+  AcquisitionLinkMap links;
+  for (size_t i = 0; i < m_urls.size(); ++i) {
+    if (!m_urls[i].empty()) {
+      links[static_cast<AcquisitionLinkKind>(i)] = m_urls[i];
+    }
+  }
+  return links;
 }
 
 const Book::Illustration Book::missingDefaultIllustration;
@@ -458,6 +512,33 @@ std::string Book::getCategoryFromTags() const
 const std::vector<std::string> Book::getLanguages() const
 {
   return kiwix::split(m_language, ",");
+}
+
+
+std::string Book::fromLinkKindToMimeType(kiwix::Book::AcquisitionLinkKind kind)
+{
+  switch (kind) {
+    case kiwix::Book::AcquisitionLinkKind::META4:
+      return "application/metalink4+xml";
+    case kiwix::Book::AcquisitionLinkKind::BITTORRENT:
+      return "application/x-bittorrent";
+    case kiwix::Book::AcquisitionLinkKind::MAGNET:
+      return "application/x-magnet";
+    case kiwix::Book::AcquisitionLinkKind::DIRECT:
+      return "application/x-zim";
+  }
+
+  throw std::runtime_error("Unknown link kind");
+}
+
+// updateFromXml() always stores a DIRECT AcquisitionLinkKind, even when the xml
+// carries no url attribute, so getAcquisitionLinks() alone (unlike
+// getUrl(), which only returns non-empty urls) can be non-empty for a
+// purely local book. Filter those empty-url entries out here.
+bool Book::hasAcquisitionLink() const
+{
+  const auto linkMap = getAcquisitionLinks();
+  return !linkMap.empty();
 }
 
 }
