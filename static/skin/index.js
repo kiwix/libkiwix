@@ -188,6 +188,7 @@
         const title = htmlEncode(getTextContent(book, 'title'));
         const description = htmlEncode(getTextContent(book, 'summary'));
         const id = getInnerHtml(book, 'id');
+        const updated = getInnerHtml(book, 'updated').split('T')[0];
         const langCodesList = getInnerHtml(book, 'language').split(',');
         const langCode = langCodesList.length == 1 ? langCodesList[0] : 'mul';
         let language = languages[langCode];
@@ -225,7 +226,7 @@
             <div class="book__header">
                 <div id="book__title">${title}</div>
             </div>
-            <div class="book__description" title="${description}">${description}</div>
+            <div class="book__description" title="${description}">${description}<br><br>Updated: ${updated}</div>
             </div>
         `;
 
