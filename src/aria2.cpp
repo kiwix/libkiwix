@@ -120,7 +120,7 @@ Aria2::Aria2(std::string sessionFileDir):
   curl_easy_setopt(p_curl, CURLOPT_PORT, m_port);
   curl_easy_setopt(p_curl, CURLOPT_POST, 1L);
   curl_easy_setopt(p_curl, CURLOPT_ERRORBUFFER, curlErrorBuffer);
-  curl_easy_setopt(p_curl, CURLOPT_TIMEOUT_MS, 100);
+  curl_easy_setopt(p_curl, CURLOPT_TIMEOUT_MS, 1000);
 
   typedef std::chrono::duration<double> Seconds;
 
