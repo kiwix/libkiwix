@@ -34,7 +34,8 @@ HumanReadableNameMapper::HumanReadableNameMapper(const kiwix::Library& library, 
     if (!withAlias)
       continue;
 
-    auto aliasName = replaceRegex(bookName, "", "_[[:digit:]]{4}-[[:digit:]]{2}$");
+    // Date suffix is _YYYY-MM, or _YYYY-MMll for extra releases in the same month.
+    auto aliasName = replaceRegex(bookName, "", "_[[:digit:]]{4}-[[:digit:]]{2}[[:alpha:]]{0,2}$");
     if (aliasName != bookName) {
       mapName(library, aliasName, bookId);
     }
