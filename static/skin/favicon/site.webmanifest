@@ -1,6 +1,6 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Kiwix Server",
+    "short_name": "Kiwix",
     "icons": [
         {
             "src": "android-chrome-192x192.png",
