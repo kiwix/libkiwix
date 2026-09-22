@@ -24,6 +24,9 @@ const char libraryXML[] = R"(
   <book id="06plus"     path="C:\data\zero_plus_six.zim"></book>
   <book id="07-super"   path="C:\data\zero_seven.zim"></book>
   <book id="07-sub"     path="C:\data\subdir\zero_seven.zim"></book>
+  <book id="08-2026-07a"    path="C:\data\zero_eight_2026-07a.zim"></book>
+  <book id="09-2026-07aa"   path="C:\data\zero_nine_2026-07aa.zim"></book>
+  <book id="10-2026-07abc"  path="C:\data\ten_2026-07abc.zim"></book>
 </library>
 )";
 #else
@@ -40,6 +43,9 @@ const char libraryXML[] = R"(
   <book id="06plus"     path="/data/zero_plus_six.zim"></book>
   <book id="07-super"   path="/data/zero_seven.zim"></book>
   <book id="07-sub"     path="/data/subdir/zero_seven.zim"></book>
+  <book id="08-2026-07a"    path="/data/zero_eight_2026-07a.zim"></book>
+  <book id="09-2026-07aa"   path="/data/zero_nine_2026-07aa.zim"></book>
+  <book id="10-2026-07abc"  path="/data/ten_2026-07abc.zim"></book>
 </library>
 )";
 #endif
@@ -106,13 +112,16 @@ const std::string ALL_NAME_CONFLICTS = ZERO_FOUR_NAME_CONFLICT_MSG
 
 void checkUnaliasedEntriesInNameMapper(const kiwix::NameMapper& nm)
 {
-  EXPECT_EQ("zero_one",           nm.getNameForId("01"));
-  EXPECT_EQ("zero_two",           nm.getNameForId("02"));
-  EXPECT_EQ("zero_three",         nm.getNameForId("03"));
-  EXPECT_EQ("zero_four_2021-10",  nm.getNameForId("04-2021-10"));
-  EXPECT_EQ("zero_four_2021-11",  nm.getNameForId("04-2021-11"));
-  EXPECT_EQ("zero_five-a",        nm.getNameForId("05-a"));
-  EXPECT_EQ("zero_five-b",        nm.getNameForId("05-b"));
+  EXPECT_EQ("zero_one",            nm.getNameForId("01"));
+  EXPECT_EQ("zero_two",            nm.getNameForId("02"));
+  EXPECT_EQ("zero_three",          nm.getNameForId("03"));
+  EXPECT_EQ("zero_four_2021-10",   nm.getNameForId("04-2021-10"));
+  EXPECT_EQ("zero_four_2021-11",   nm.getNameForId("04-2021-11"));
+  EXPECT_EQ("zero_five-a",         nm.getNameForId("05-a"));
+  EXPECT_EQ("zero_five-b",         nm.getNameForId("05-b"));
+  EXPECT_EQ("zero_eight_2026-07a",  nm.getNameForId("08-2026-07a"));
+  EXPECT_EQ("zero_nine_2026-07aa",  nm.getNameForId("09-2026-07aa"));
+  EXPECT_EQ("ten_2026-07abc",       nm.getNameForId("10-2026-07abc"));
 
   // unreported conflict
   EXPECT_EQ("zero_plus_six",      nm.getNameForId("06+"));
@@ -122,11 +131,14 @@ void checkUnaliasedEntriesInNameMapper(const kiwix::NameMapper& nm)
   EXPECT_EQ("zero_seven",         nm.getNameForId("07-super"));
   EXPECT_EQ("zero_seven",         nm.getNameForId("07-sub"));
 
-  EXPECT_EQ("01",         nm.getIdForName("zero_one"));
-  EXPECT_EQ("02",         nm.getIdForName("zero_two"));
-  EXPECT_EQ("03",         nm.getIdForName("zero_three"));
-  EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four_2021-10"));
-  EXPECT_EQ("04-2021-11", nm.getIdForName("zero_four_2021-11"));
+  EXPECT_EQ("01",           nm.getIdForName("zero_one"));
+  EXPECT_EQ("02",           nm.getIdForName("zero_two"));
+  EXPECT_EQ("03",           nm.getIdForName("zero_three"));
+  EXPECT_EQ("04-2021-10",   nm.getIdForName("zero_four_2021-10"));
+  EXPECT_EQ("04-2021-11",   nm.getIdForName("zero_four_2021-11"));
+  EXPECT_EQ("08-2026-07a",   nm.getIdForName("zero_eight_2026-07a"));
+  EXPECT_EQ("09-2026-07aa",  nm.getIdForName("zero_nine_2026-07aa"));
+  EXPECT_EQ("10-2026-07abc", nm.getIdForName("ten_2026-07abc"));
 
   // book name doesn't participate in name mapping
   EXPECT_THROW(nm.getIdForName("zero_five"), std::out_of_range);
@@ -145,6 +157,9 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithoutAliases)
 
   checkUnaliasedEntriesInNameMapper(nm);
   EXPECT_THROW(nm.getIdForName("zero_four"), std::out_of_range);
+  EXPECT_THROW(nm.getIdForName("zero_eight"), std::out_of_range);
+  EXPECT_THROW(nm.getIdForName("zero_nine"), std::out_of_range);
+  EXPECT_THROW(nm.getIdForName("ten"), std::out_of_range);
 
   lib->removeBookById("04-2021-10");
   EXPECT_EQ("zero_four_2021-10",  nm.getNameForId("04-2021-10"));
@@ -159,7 +174,10 @@ TEST_F(NameMapperTest, HumanReadableNameMapperWithAliases)
   EXPECT_EQ(ALL_NAME_CONFLICTS, std::string(stderror));
 
   checkUnaliasedEntriesInNameMapper(nm);
-  EXPECT_EQ("04-2021-10", nm.getIdForName("zero_four"));
+  EXPECT_EQ("04-2021-10",  nm.getIdForName("zero_four"));
+  EXPECT_EQ("08-2026-07a",  nm.getIdForName("zero_eight"));
+  EXPECT_EQ("09-2026-07aa", nm.getIdForName("zero_nine"));
+  EXPECT_THROW(nm.getIdForName("ten"), std::out_of_range);
 
   lib->removeBookById("04-2021-10");
   EXPECT_EQ("zero_four_2021-10",  nm.getNameForId("04-2021-10"));
