@@ -14,6 +14,7 @@
     };
     const bookOrderMap = new Map();
     const filterCookieName = 'filters';
+    const filterLanguageStorageKey = 'filterlang';
     const oneDayDelta = 86400000;
     let loader;
     let footer;
@@ -21,8 +22,12 @@
     let iso;
     let isFetching = false;
     let noResultInjected = false;
-    let filters = getCookie(filterCookieName);
+    const filters = getCookie(filterCookieName);
+    const filterLanguage = localStorage.getItem(filterLanguageStorageKey);
     let params = new FragmentParams(window.location.hash || filters || '');
+    if (!params.has('lang') && filterLanguage !== null) {
+        params.set('lang', filterLanguage);
+    }
     params.delete('userlang');
     let timer;
     let languages = {};
@@ -78,6 +83,13 @@
             }
         });
         return result === undefined ? result : decodeURIComponent(result);
+    }
+
+    function saveFilteringSettings(params) {
+        setCookie(filterCookieName, params.toString(), oneDayDelta);
+        if (params.has('lang')) {
+            localStorage.setItem(filterLanguageStorageKey, params.get('lang'));
+        }
     }
 
     function humanFriendlyNumStr(num, precision) {
@@ -489,7 +501,7 @@
         if (filterType) {
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `#${params.toString()}`);
-            setCookie(filterCookieName, params.toString(), oneDayDelta);
+            saveFilteringSettings(params);
         }
         updateFilterColors();
         updateFeedLink();
@@ -655,7 +667,7 @@
         });
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.addEventListener('click', () => removeTagElement(true));
-        if (filters) {
+        if (filters || filterLanguage !== null) {
             const currentLink = window.location.hash;
             const newLink = `#${params.toString()}`;
             if (currentLink != newLink) {
@@ -674,10 +686,9 @@
             }
         }
         updateFeedLink();
-        setCookie(filterCookieName, params.toString(), oneDayDelta);
+        saveFilteringSettings(params);
         setInterval(updateNavVisibilityState, 250);
     };
 
     window.onload = () => { setUserLanguage(getUserLanguage(), onload); }
 })();
-
