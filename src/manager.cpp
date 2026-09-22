@@ -65,16 +65,40 @@ namespace kiwix
 // LibraryManipulator
 ////////////////////////////////////////////////////////////////////////////////
 
+class LibraryManipulator::Impl
+{
+ public:
+  LibraryPtr library;
+};
+
 LibraryManipulator::LibraryManipulator(LibraryPtr library)
-  : library(library)
+  : mp_impl(new Impl{library})
 {}
 
-LibraryManipulator::~LibraryManipulator()
+LibraryManipulator::~LibraryManipulator() = default;
+
+LibraryManipulator::LibraryManipulator(const LibraryManipulator& other) :
+  mp_impl(new Impl(*other.mp_impl))
 {}
+
+LibraryManipulator::LibraryManipulator(LibraryManipulator&& other) noexcept = default;
+
+LibraryManipulator& LibraryManipulator::operator=(const LibraryManipulator& other)
+{
+  *mp_impl = *other.mp_impl;
+  return *this;
+}
+
+LibraryManipulator& LibraryManipulator::operator=(LibraryManipulator&& other) noexcept = default;
+
+LibraryPtr LibraryManipulator::getLibrary() const
+{
+  return mp_impl->library;
+}
 
 bool LibraryManipulator::addBookToLibrary(const Book& book)
 {
-  const auto ret = library->addBook(book);
+  const auto ret = mp_impl->library->addBook(book);
   if ( ret ) {
     bookWasAddedToLibrary(book);
   }
@@ -83,13 +107,13 @@ bool LibraryManipulator::addBookToLibrary(const Book& book)
 
 void LibraryManipulator::addBookmarkToLibrary(const Bookmark& bookmark)
 {
-  library->addBookmark(bookmark);
+  mp_impl->library->addBookmark(bookmark);
   bookmarkWasAddedToLibrary(bookmark);
 }
 
 uint32_t LibraryManipulator::removeBooksNotUpdatedSince(Library::Revision rev)
 {
-  const auto n = library->removeBooksNotUpdatedSince(rev);
+  const auto n = mp_impl->library->removeBooksNotUpdatedSince(rev);
   if ( n != 0 ) {
     booksWereRemovedFromLibrary();
   }
@@ -112,18 +136,31 @@ void LibraryManipulator::booksWereRemovedFromLibrary()
 // Manager
 ////////////////////////////////////////////////////////////////////////////////
 
+class Manager::Impl
+{
+ public:
+  explicit Impl(LibraryManipulator manipulator_) : manipulator(std::move(manipulator_)) {}
+
+  std::string writableLibraryPath;
+  bool m_hasSearchResult = false;
+  uint64_t m_totalBooks = 0;
+  uint64_t m_startIndex = 0;
+  uint64_t m_itemsPerPage = 0;
+  kiwix::LibraryManipulator manipulator;
+};
+
 /* Constructor */
 Manager::Manager(LibraryManipulator manipulator):
-  writableLibraryPath(""),
-  manipulator(manipulator)
+  mp_impl(new Impl(std::move(manipulator)))
 {
 }
 
 Manager::Manager(LibraryPtr library) :
-  writableLibraryPath(""),
-  manipulator(LibraryManipulator(library))
+  mp_impl(new Impl(LibraryManipulator(library)))
 {
 }
+
+Manager::~Manager() = default;
 
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
                           bool readOnly,
@@ -145,7 +182,7 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
     if (!trustLibrary && !book.getPath().empty()) {
       this->readBookFromPath(book.getPath(), &book);
     }
-    manipulator.addBookToLibrary(book);
+    mp_impl->manipulator.addBookToLibrary(book);
   }
 
   return true;
@@ -176,7 +213,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
 {
   pugi::xml_node libraryNode = doc.child("feed");
   if (!libraryNode) {
-    m_hasSearchResult = false;
+    mp_impl->m_hasSearchResult = false;
     return false;
   }
 
@@ -184,15 +221,15 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
   const pugi::xml_node startIndexNode = libraryNode.child("startIndex");
   const pugi::xml_node itemsPerPageNode = libraryNode.child("itemsPerPage");
 
-  m_hasSearchResult = totalResultsNode && startIndexNode && itemsPerPageNode;
-  if (m_hasSearchResult) {
-    m_totalBooks = strtoull(totalResultsNode.child_value(), 0, 0);
-    m_startIndex = strtoull(startIndexNode.child_value(), 0, 0);
-    m_itemsPerPage = strtoull(itemsPerPageNode.child_value(), 0, 0);
+  mp_impl->m_hasSearchResult = totalResultsNode && startIndexNode && itemsPerPageNode;
+  if (mp_impl->m_hasSearchResult) {
+    mp_impl->m_totalBooks = strtoull(totalResultsNode.child_value(), 0, 0);
+    mp_impl->m_startIndex = strtoull(startIndexNode.child_value(), 0, 0);
+    mp_impl->m_itemsPerPage = strtoull(itemsPerPageNode.child_value(), 0, 0);
   } else {
-    m_totalBooks = 0;
-    m_startIndex = 0;
-    m_itemsPerPage = 0;
+    mp_impl->m_totalBooks = 0;
+    mp_impl->m_startIndex = 0;
+    mp_impl->m_itemsPerPage = 0;
   }
 
   for (pugi::xml_node entryNode = libraryNode.child("entry"); entryNode;
@@ -203,7 +240,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
     book.updateFromOpds(entryNode, urlHost, baseDir);
 
     /* Update the book properties with the new importer */
-    manipulator.addBookToLibrary(book);
+    mp_impl->manipulator.addBookToLibrary(book);
   }
 
   return true;
@@ -239,8 +276,8 @@ bool Manager::readFile(
   /* This has to be set (although if the file does not exists) to be
    * able to know where to save the library if new content are
    * available */
-  if (!readOnly) { // todo XXX, better to introduce setWritableLibraryPath and remove this code from the readFile
-    this->writableLibraryPath = path;
+  if (!readOnly) {
+    this->setWritableLibraryPath(path);
   }
 
   if (!kiwix::fileExists(path)) {
@@ -268,7 +305,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
     if (!pathToSave.empty() && pathToSave != pathToOpen) {
       book.setPath(isRelativePath(pathToSave)
                 ? computeAbsolutePath(
-                      removeLastPathElement(writableLibraryPath),
+                      removeLastPathElement(mp_impl->writableLibraryPath),
                       pathToSave)
                 : pathToSave);
     }
@@ -277,7 +314,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
         || (!book.getTitle().empty() && !book.getLanguages().empty()
             && !book.getDate().empty())) {
       book.setUrl(url);
-      manipulator.addBookToLibrary(book);
+      mp_impl->manipulator.addBookToLibrary(book);
       return book.getId();
     }
   }
@@ -384,7 +421,7 @@ bool Manager::readBookmarkFile(const std::string& path)
 
     bookmark.updateFromXml(node);
 
-    manipulator.addBookmarkToLibrary(bookmark);
+    mp_impl->manipulator.addBookmarkToLibrary(bookmark);
   }
 
   return true;
@@ -392,7 +429,7 @@ bool Manager::readBookmarkFile(const std::string& path)
 
 void Manager::reload(const Paths& paths)
 {
-  const auto libRevision = manipulator.getLibrary()->getRevision();
+  const auto libRevision = mp_impl->manipulator.getLibrary()->getRevision();
   for (std::string path : paths) {
     if (!path.empty()) {
       if ( kiwix::isRelativePath(path) )
@@ -404,7 +441,15 @@ void Manager::reload(const Paths& paths)
     }
   }
 
-  manipulator.removeBooksNotUpdatedSince(libRevision);
+  mp_impl->manipulator.removeBooksNotUpdatedSince(libRevision);
 }
+
+const std::string& Manager::getWritableLibraryPath() const { return mp_impl->writableLibraryPath; }
+void Manager::setWritableLibraryPath(const std::string& path) { mp_impl->writableLibraryPath = path; }
+
+bool Manager::hasSearchResult() const { return mp_impl->m_hasSearchResult; }
+uint64_t Manager::getTotalBooks() const { return mp_impl->m_totalBooks; }
+uint64_t Manager::getStartIndex() const { return mp_impl->m_startIndex; }
+uint64_t Manager::getItemsPerPage() const { return mp_impl->m_itemsPerPage; }
 
 }

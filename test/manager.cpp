@@ -43,7 +43,7 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     const std::string url = "url";
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave, url, true);
     book = lib->getBookById(bookId);
-    auto savedPath = resolveAbsPath(manager.writableLibraryPath, pathToSave);
+    auto savedPath = resolveAbsPath(manager.getWritableLibraryPath(), pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
     EXPECT_EQ(book.getUrl(), url);
 }
@@ -59,7 +59,7 @@ TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
               "does_not_exist.xml");
 
     EXPECT_FALSE(manager.readFile(nonExistentPath, /*readOnly=*/false));
-    EXPECT_EQ(manager.writableLibraryPath, nonExistentPath);
+    EXPECT_EQ(manager.getWritableLibraryPath(), nonExistentPath);
 
     const std::string pathToSave = "./relative.zim";
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave);
@@ -285,10 +285,10 @@ TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
 
     EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com"));
 
-    EXPECT_TRUE(manager.m_hasSearchResult);
-    EXPECT_EQ(manager.m_totalBooks, 9U);
-    EXPECT_EQ(manager.m_startIndex, 7U);
-    EXPECT_EQ(manager.m_itemsPerPage, 10U);
+    EXPECT_TRUE(manager.hasSearchResult());
+    EXPECT_EQ(manager.getTotalBooks(), 9U);
+    EXPECT_EQ(manager.getStartIndex(), 7U);
+    EXPECT_EQ(manager.getItemsPerPage(), 10U);
 
     EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
 
@@ -342,10 +342,10 @@ TEST(ManagerTest, readOpdsWithoutSearchMetadata)
 
   // None of <totalResults>/<startIndex>/<itemsPerPage> are present, so
   // there's no search result to report.
-  EXPECT_FALSE(manager.m_hasSearchResult);
-  EXPECT_EQ(manager.m_totalBooks, 0U);
-  EXPECT_EQ(manager.m_startIndex, 0U);
-  EXPECT_EQ(manager.m_itemsPerPage, 0U);
+  EXPECT_FALSE(manager.hasSearchResult());
+  EXPECT_EQ(manager.getTotalBooks(), 0U);
+  EXPECT_EQ(manager.getStartIndex(), 0U);
+  EXPECT_EQ(manager.getItemsPerPage(), 0U);
 
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1"}));
 }
@@ -408,10 +408,10 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
 
     auto illustration = book.getIllustration(48);
 
-    EXPECT_EQ(illustration->mimeType, "image/png");
-    EXPECT_EQ(illustration->width, 48);
-    EXPECT_EQ(illustration->height, 48);
-    EXPECT_EQ(illustration->url, "https://example.com/favicon/raycharles.png");
+    EXPECT_EQ(illustration->getMimeType(), "image/png");
+    EXPECT_EQ(illustration->getWidth(), 48);
+    EXPECT_EQ(illustration->getHeight(), 48);
+    EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/raycharles.png");
     EXPECT_FALSE(book.readOnly());
 }
 

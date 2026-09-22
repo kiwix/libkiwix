@@ -53,15 +53,10 @@ class AriaError : public std::runtime_error {
  */
 
 class Download {
+  friend class Downloader;
+
  public:
   typedef enum { K_ACTIVE, K_WAITING, K_PAUSED, K_ERROR, K_COMPLETE, K_REMOVED, K_UNKNOWN } StatusResult;
-
-  Download() :
-    m_status(K_UNKNOWN) {}
-  Download(std::shared_ptr<Aria2> p_aria, std::string did)
-    : mp_aria(p_aria),
-      m_status(K_UNKNOWN),
-      m_did(did) {};
 
   /**
    * Update the status of the download.
@@ -102,49 +97,49 @@ class Download {
   /*
    * Get the status of the download.
    */
-  StatusResult getStatus() const             { return m_status; }
+  StatusResult getStatus() const;
 
   /*
    * Get the id of the download.
    */
-  const std::string&  getDid() const         { return m_did; }
+  const std::string& getDid() const;
 
   /*
    * Get the id of the "second" download.
    *
    * Set only if the "first" download is a metalink and is complete.
    */
-  const std::string&  getFollowedBy() const  { return m_followedBy; }
+  const std::string& getFollowedBy() const;
 
   /*
    * Get the total length of the download.
    */
-  uint64_t     getTotalLength() const        { return m_totalLength; }
+  uint64_t getTotalLength() const;
 
   /*
    * Get the completed length of the download.
    */
-  uint64_t     getCompletedLength() const    { return m_completedLength; }
+  uint64_t getCompletedLength() const;
 
   /*
    * Get the download speed of the download.
    */
-  uint64_t     getDownloadSpeed() const      { return m_downloadSpeed; }
+  uint64_t getDownloadSpeed() const;
 
   /*
    * Get the verified length of the download.
    */
-  uint64_t     getVerifiedLength() const     { return m_verifiedLength; }
+  uint64_t getVerifiedLength() const;
 
   /*
    * Get the path (local file) of the download.
    */
-  const std::string&  getPath() const        { return m_path; }
+  const std::string& getPath() const;
 
   /*
    * Get the download uris of the download.
    */
-  const std::vector<std::string>&  getUris() const { return m_uris; }
+  const std::vector<std::string>& getUris() const;
 
  protected:
   std::shared_ptr<Aria2> mp_aria;
@@ -157,6 +152,14 @@ class Download {
   uint64_t m_verifiedLength;
   std::vector<std::string> m_uris;
   std::string m_path;
+
+ private:
+  Download() :
+    m_status(K_UNKNOWN) {}
+  Download(std::shared_ptr<Aria2> p_aria, std::string did)
+    : mp_aria(p_aria),
+      m_status(K_UNKNOWN),
+      m_did(did) {};
 };
 
 /**

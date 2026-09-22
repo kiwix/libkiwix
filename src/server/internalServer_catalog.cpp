@@ -217,7 +217,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const R
     auto illustration = book.getIllustration(size);
     return ContentResponse::build(
                illustration->getData(),
-               illustration->mimeType
+               illustration->getMimeType()
     );
   } catch(...) {
     return UrlNotFoundResponse(request);

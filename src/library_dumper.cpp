@@ -19,14 +19,14 @@ std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
 {
   std::ostringstream result;
 
-  result << illustration.mimeType;
-  if ( !contains(illustration.mimeType, ";width=") ) {
-      result << ";width=" << illustration.width;
+  result << illustration.getMimeType();
+  if ( !contains(illustration.getMimeType(), ";width=") ) {
+      result << ";width=" << illustration.getWidth();
   }
-  if ( !contains(illustration.mimeType, ";height=") ) {
-      result << ";height=" << illustration.height;
+  if ( !contains(illustration.getMimeType(), ";height=") ) {
+      result << ";height=" << illustration.getHeight();
   }
-  if ( !contains(illustration.mimeType, ";scale=") ) {
+  if ( !contains(illustration.getMimeType(), ";scale=") ) {
       result << ";scale=1";
   }
   return result.str();
@@ -48,15 +48,15 @@ getExternalThumbnailLinks(const Book& book, const std::string& rootLocation,
 {
   kainjow::mustache::list thumbnailLinks;
   for ( const auto& illustration : book.getIllustrations() ) {
-    if (!(isLiveCatalog || !illustration->url.empty())) {
+    if (!(isLiveCatalog || !illustration->getUrl().empty())) {
       continue;
     }
-    const std::string iconSizeWidth = to_string(illustration->width);
+    const std::string iconSizeWidth = to_string(illustration->getWidth());
     // Book IDs do not contain special characters, so they are HTML-safe.
     // Therefore, no HTML encoding is required.
     const std::string thumbnailUrl = isLiveCatalog
     ? rootLocation + "/catalog/v2/illustration/" + kiwix::urlEncode(book.getId()) + "/?size=" + iconSizeWidth
-    : illustration->url;
+    : illustration->getUrl();
 
     thumbnailLinks.push_back(kainjow::mustache::object{
       {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
@@ -85,12 +85,12 @@ getEmbeddedThumbnailLinks(const Book& book, bool isLiveCatalog = true)
     return thumbnailLinks;
   }
   for ( const auto& illustration : book.getIllustrations() ) {
-    if (!illustration->url.empty()) {
+    if (!illustration->getUrl().empty()) {
       continue;
     }
     const std::string thumbnailData = illustration->getData();
     const std::string dataUri = thumbnailData.empty() ? ""
-      : "data:" + illustration->mimeType + ";base64," + base64_encode(thumbnailData);
+      : "data:" + illustration->getMimeType() + ";base64," + base64_encode(thumbnailData);
     thumbnailLinks.push_back(kainjow::mustache::object{
       {"icon_mimetype", getIllustrationMimeTypeStr(*illustration)},
       {"icon_url", dataUri}
