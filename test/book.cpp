@@ -192,6 +192,20 @@ TEST(BookTest, updateFromOPDSDuplicateLengthWarnsTest)
     EXPECT_EQ(book.getSize(), 222U);
 }
 
+TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)
+{
+    kiwix::Book book;
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::META4, "http://who.org/zara.zim.meta4");
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT, "http://who.org/zara.zim.torrent");
+
+    EXPECT_EQ(book.getUrl(), "");
+
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::DIRECT, "http://who.org/zara.zim");
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT, "http://who.org/zara.zim.torrent");
+
+    EXPECT_EQ(book.getUrl(), "http://who.org/zara.zim");
+}
+
 namespace
 {
 

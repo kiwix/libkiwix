@@ -30,12 +30,16 @@
 #include <zim/archive.h>
 #include <zim/item.h>
 #include <pugixml.hpp>
-
 #include <sstream>
-#include <cctype>
 
 namespace
 {
+// Position of an acquisition link kind in Book's acquisition links array.
+constexpr size_t linkIndex(kiwix::Book::AcquisitionLinkKind kind)
+{
+  return static_cast<size_t>(kind);
+}
+
 /**
  * Tells whether a URL string is already absolute (contains a scheme,
  * e.g. "https://example.com/x.png") as opposed to being a relative path
@@ -171,6 +175,11 @@ Book::Illustrations Book::getIllustrations() const
   return m_illustrations;
 }
 
+const std::string& Book::getUrl() const
+{
+  return m_urls[linkIndex(AcquisitionLinkKind::DIRECT)];
+}
+
 bool Book::update(const kiwix::Book& other)
 {
   if (m_readOnly)
@@ -230,7 +239,7 @@ void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
   m_creator = ATTR("creator");
   m_publisher = ATTR("publisher");
   m_date = ATTR("date");
-  setUrl(ATTR("url"));
+  setUrl(AcquisitionLinkKind::DIRECT, ATTR("url"));
   m_name = ATTR("name");
   m_flavour = ATTR("flavour");
   m_tags = ATTR("tags");
@@ -292,7 +301,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   m_illustrations.clear();
-  m_urls[0] = "";
+  m_urls.fill("");
   std::string firstAcquisitionHref;
   std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;
@@ -305,7 +314,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
       if (isAbsoluteUrl(href)) {
-        m_urls = { href };
+        m_urls[linkIndex(AcquisitionLinkKind::DIRECT)] = href;
       } else {
         m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         m_pathValid = fileReadable(m_path);
@@ -379,6 +388,11 @@ void Book::setPath(const std::string& path)
  m_path = isRelativePath(path)
    ? computeAbsolutePath(getCurrentDirectory(), path)
    : path;
+}
+
+void Book::setUrl(AcquisitionLinkKind linkKind, const std::string& url)
+{
+  m_urls[linkIndex(linkKind)] = url;
 }
 
 const Book::Illustration Book::missingDefaultIllustration;
