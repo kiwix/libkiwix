@@ -276,6 +276,30 @@ function translateErrorPageIfNeeded() {
 
 
 let iframeLocationHref = null;
+let iframeTitleObserver = null;
+
+function observeIframeTitle() {
+  if (iframeTitleObserver) {
+    iframeTitleObserver.disconnect();
+  }
+
+  const iframeDocument = contentIframe.contentDocument;
+  if (!iframeDocument) {
+    return;
+  }
+
+  const updateViewerTitle = () => {
+    document.title = iframeDocument.title;
+  };
+  updateViewerTitle();
+
+  iframeTitleObserver = new MutationObserver(updateViewerTitle);
+  iframeTitleObserver.observe(iframeDocument.head || iframeDocument.documentElement, {
+    childList: true,
+    characterData: true,
+    subtree: true,
+  });
+}
 
 function handle_content_url_change() {
   const iframeLocation = contentIframe.contentWindow.location;
@@ -447,6 +471,7 @@ function on_content_load() {
   loader.style.display = "none";
   contentIframe.contentWindow.onhashchange = handle_content_url_change;
   setInterval(handle_content_url_change, 100);
+  observeIframeTitle();
   setup_chaperon_mode();
 }
 
