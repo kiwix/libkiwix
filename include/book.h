@@ -115,6 +115,7 @@ class Book
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }
   const std::string& getUrl() const;
+  const AcquisitionLinks& getUrls() const;
   const std::string& getName() const { return m_name; }
   std::string getCategory() const;
   const std::string& getTags() const { return m_tags; }

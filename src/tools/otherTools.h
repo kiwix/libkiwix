@@ -40,10 +40,11 @@ namespace zim {
 
 namespace kiwix
 {
-  /**
-   * The pieces needed to resolve references found in OPDS content, split out
-   * of the location that content was read from. See resolveContentOrigin().
-   */
+class Book;
+/**
+ * The pieces needed to resolve references found in OPDS content, split out
+ * of the location that content was read from. See resolveContentOrigin().
+ */
   struct ContentOrigin
   {
     std::string urlHost; /**< scheme+host[:port], no trailing slash; "" if the origin is a local path */
@@ -68,6 +69,11 @@ namespace kiwix
   ContentOrigin resolveContentOrigin(const std::string& contentOriginUri);
 
   std::string nodeToString(const pugi::xml_node& node);
+
+  /**
+   * Return the number of acquisition links (book URLs) that are not empty.
+   */
+  size_t nonEmptyAcquisitionLinksCount(const Book& book);
 
   /*
    * Convert all format tag string to new format

@@ -20,9 +20,9 @@
 // Implement function declared in tools.h and tools/otherTools.h
 #include "tools.h"
 #include "tools/otherTools.h"
+#include "book.h"
 
 
-#include <algorithm>
 #include <iomanip>
 
 #ifdef _WIN32
@@ -424,4 +424,17 @@ kiwix::ContentOrigin kiwix::resolveContentOrigin(const std::string& contentOrigi
                       : contentOriginUri.substr(0, hostEnd);
 
   return { urlHost, /*baseDir=*/"" };
+}
+
+size_t kiwix::nonEmptyAcquisitionLinksCount(const Book& book)
+{
+  size_t count = 0;
+  const auto urls = book.getUrls();
+  for (const auto& url : urls)
+  {
+    if (!url.empty()) {
+      ++count;
+    }
+  }
+  return count;
 }

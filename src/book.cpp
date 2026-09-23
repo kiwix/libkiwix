@@ -395,6 +395,11 @@ void Book::setUrl(AcquisitionLinkKind linkKind, const std::string& url)
   m_urls[linkIndex(linkKind)] = url;
 }
 
+const Book::AcquisitionLinks& Book::getUrls() const
+{
+  return m_urls;
+}
+
 const Book::Illustration Book::missingDefaultIllustration;
 
 std::shared_ptr<const Book::Illustration> Book::getIllustration(unsigned int size) const
