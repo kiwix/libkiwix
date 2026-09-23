@@ -276,7 +276,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
     if (!checkMetaData
         || (!book.getTitle().empty() && !book.getLanguages().empty()
             && !book.getDate().empty())) {
-      book.setUrl(url);
+      book.setUrl(Book::AcquisitionLinkKind::DIRECT, url);
       manipulator.addBookToLibrary(book);
       return book.getId();
     }

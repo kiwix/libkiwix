@@ -109,7 +109,7 @@ TEST(FullEntryOpdsTest, omitsAcquisitionLinkWhenUrlIsEmpty)
 TEST(FullEntryOpdsTest, rendersAcquisitionLinkWhenUrlIsSet)
 {
   Book book = createBook();
-  book.setUrl("http://download.kiwix.org/zim/book.zim");
+  book.setUrl(Book::AcquisitionLinkKind::DIRECT, "http://download.kiwix.org/zim/book.zim");
   book.setSize(123456);
 
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
@@ -580,7 +580,7 @@ TEST(FullEntryOpdsTest, rendersLocalPathAcquisitionLinkWhenSet)
 TEST(FullEntryOpdsTest, rendersBothAcquisitionLinksWhenUrlAndLocalPathAreSet)
 {
   Book book = createBook();
-  book.setUrl("http://download.kiwix.org/zim/book.zim");
+  book.setUrl(Book::AcquisitionLinkKind::DIRECT, "http://download.kiwix.org/zim/book.zim");
   book.setSize(123456);
 
   EXPECT_EQ(fullEntryOpds(book, /*rootLocation=*/"", "", "book-id",

@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "../include/book.h"
 #include "testing_tools.h"
+#include "../src/tools/otherTools.h"
 #include <pugixml.hpp>
 #include <zim/archive.h>
 
@@ -190,6 +191,34 @@ TEST(BookTest, updateFromOPDSDuplicateLengthWarnsTest)
       "'https://who.org/zara.zim' (length 222) disagree on length.\n",
       std::string(stderror));
     EXPECT_EQ(book.getSize(), 222U);
+}
+
+TEST(BookTest, setUrlStoresUrlPerAcquisitionLinkKind)
+{
+    kiwix::Book book;
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::DIRECT, "http://who.org/zara.zim");
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::META4, "http://who.org/zara.zim.meta4");
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT, "http://who.org/zara.zim.torrent");
+
+    EXPECT_EQ(kiwix::nonEmptyAcquisitionLinksCount(book), 3U);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "http://who.org/zara.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), "http://who.org/zara.zim.meta4");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), "http://who.org/zara.zim.torrent");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET), "");
+}
+
+TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)
+{
+    kiwix::Book book;
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::META4, "http://who.org/zara.zim.meta4");
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT, "http://who.org/zara.zim.torrent");
+
+    EXPECT_EQ(book.getUrl(), "");
+
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::DIRECT, "http://who.org/zara.zim");
+    book.setUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT, "http://who.org/zara.zim.torrent");
+
+    EXPECT_EQ(book.getUrl(), "http://who.org/zara.zim");
 }
 
 namespace

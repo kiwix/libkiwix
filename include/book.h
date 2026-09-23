@@ -64,8 +64,10 @@ class Book
 
   typedef std::vector<std::shared_ptr<const Illustration>> Illustrations;
 
-  static constexpr size_t COUNT_OF_ACQUISITION_LINK_KIND = 1;
-  typedef std::array<std::string, COUNT_OF_ACQUISITION_LINK_KIND> AcquisitionLinks;
+  enum class AcquisitionLinkKind { DIRECT = 0, MAGNET, META4, BITTORRENT, COUNT };
+
+  // Acquisition URLs indexed by AcquisitionLinkKind (empty = not set).
+  typedef std::array<std::string, static_cast<size_t>(AcquisitionLinkKind::COUNT)> AcquisitionLinks;
 
  public: // functions
   Book();
@@ -112,6 +114,8 @@ class Book
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }
   const std::string& getUrl() const;
+  // Returns the acquisition link of the given kind (empty if not set).
+  const std::string& getUrl(AcquisitionLinkKind linkKind) const;
   const std::string& getName() const { return m_name; }
   std::string getCategory() const;
   const std::string& getTags() const { return m_tags; }
@@ -141,7 +145,10 @@ class Book
   void setCreator(const std::string& creator) { m_creator = creator; }
   void setPublisher(const std::string& publisher) { m_publisher = publisher; }
   void setDate(const std::string& date) { m_date = date; }
-  void setUrl(const std::string& url) { m_urls[COUNT_OF_ACQUISITION_LINK_KIND - 1] = url; }
+  DEPRECATED void setUrl(const std::string& url) { setUrl(AcquisitionLinkKind::DIRECT, url); }
+  // Sets the acquisition link of the given kind.
+  // Setting an empty url string clears the link of that kind.
+  void setUrl(AcquisitionLinkKind linkKind, const std::string& url);
   void setName(const std::string& name) { m_name = name; }
   void setFlavour(const std::string& flavour) { m_flavour = flavour; }
   void setTags(const std::string& tags) { m_tags = tags; }
