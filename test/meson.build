@@ -51,6 +51,7 @@ if gtest_dep.found() and not meson.is_cross_build()
       'library.opds',
       'lib_for_server_search_test.xml',
       'lib_for_server_search_test.opds',
+      'nojs_download_links.opds',
       'customized_resources.txt',
       'helloworld.txt',
       'welcome.html',

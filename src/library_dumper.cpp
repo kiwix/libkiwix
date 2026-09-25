@@ -100,6 +100,40 @@ getEmbeddedThumbnailLinks(const Book& book, bool isLiveCatalog = true)
   return thumbnailLinks;
 }
 
+std::string fromLinkKindToMimeType(Book::AcquisitionLinkKind kind)
+{
+  switch (kind) {
+    case Book::AcquisitionLinkKind::META4:
+      return "application/metalink4+xml";
+    case Book::AcquisitionLinkKind::BITTORRENT:
+      return "application/x-bittorrent";
+    case Book::AcquisitionLinkKind::MAGNET:
+      return "application/x-magnet";
+    case Book::AcquisitionLinkKind::DIRECT:
+      return "application/x-zim";
+    default:
+      break;
+  }
+
+  throw std::runtime_error("Unknown link kind");
+}
+
+kainjow::mustache::list getAcquisitionLinkData(const Book& book)
+{
+   kainjow::mustache::list acquisitionLinks;
+    const auto& urls = book.getUrls();
+    for (size_t i = urls.size(); i-- > 0;) {
+      if (urls[i].empty())
+        continue;
+      const auto kind = static_cast<Book::AcquisitionLinkKind>(i);
+      acquisitionLinks.push_back(kainjow::mustache::object{
+        {"mimetype", fromLinkKindToMimeType(kind)},
+        {"href", urls[i]}
+      });
+    }
+    return acquisitionLinks;
+}
+
 } // namespace
 
 
@@ -135,9 +169,9 @@ std::string fullEntryOpds(const Book& book,
       {"media_count", to_string(book.getMediaCount())},
       {"author_name", book.getCreator()},
       {"publisher_name", book.getPublisher()},
-      {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
       {"thumbnailLinks", thumbnailLinks},
+      {"acquisitionLinks", getAcquisitionLinkData(book)},
       {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);

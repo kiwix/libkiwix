@@ -3,7 +3,7 @@
 #include "../include/library.h"
 #include "../include/book.h"
 #include "../include/tools.h"
-#include <iostream>
+#include "../src/tools/otherTools.h"
 #include <fstream>
 
 namespace
@@ -45,7 +45,40 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     book = lib->getBookById(bookId);
     auto savedPath = resolveAbsPath(manager.writableLibraryPath, pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
-    EXPECT_EQ(book.getUrl(), url);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), url);
+}
+
+TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
+{
+    auto lib = kiwix::Library::create();
+    kiwix::Manager manager = kiwix::Manager(lib);
+
+    const std::string zimUrl = "http://example.org/book.zim";
+    const std::string meta4Url = "http://example.org/book.zim.meta4";
+    const std::string torrentUrl = "http://example.org/book.zim.torrent";
+    kiwix::Book::AcquisitionLinks urls;
+    urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = zimUrl;
+    urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::META4)] = meta4Url;
+    urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::BITTORRENT)] = torrentUrl;
+    auto bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", urls);
+    ASSERT_NE(bookId, "");
+    kiwix::Book book = lib->getBookById(bookId);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), zimUrl);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), meta4Url);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), torrentUrl);
+
+    // Link kinds that were not provided are reported as empty URLs.
+    const std::string otherZimUrl = "http://example.org/other.zim";
+    kiwix::Book::AcquisitionLinks zimOnlyUrl;
+    zimOnlyUrl[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = otherZimUrl;
+    bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", zimOnlyUrl);
+    ASSERT_NE(bookId, "");
+    book = lib->getBookById(bookId);
+    EXPECT_EQ(kiwix::nonEmptyAcquisitionLinksCount(book), 1u);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), otherZimUrl);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), "");
 }
 
 TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
@@ -117,7 +150,7 @@ TEST(ManagerTest, readXml)
     // not considered valid.
     EXPECT_FALSE(book.isPathValid());
     EXPECT_TRUE(book.readOnly());
-    EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl());
+    EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT));
     EXPECT_EQ("Unit Test", book.getTitle());
     EXPECT_EQ("Wikipedia articles about unit testing", book.getDescription());
     EXPECT_EQ("eng", book.getCommaSeparatedLanguages());
@@ -294,7 +327,7 @@ TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
 
     kiwix::Book book1 = lib->getBookById("book1");
     EXPECT_EQ(book1.getTitle(), "Book One");
-    EXPECT_EQ(book1.getUrl(), "https://example.com/book1.zim");
+    EXPECT_EQ(book1.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "https://example.com/book1.zim");
 
     EXPECT_EQ(book1.getPath(), "");
     EXPECT_FALSE(book1.isPathValid());
@@ -392,7 +425,7 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
     EXPECT_EQ(book.getPath(), resolveAbsPath(LIB_OPDS_ABS_PATH, "./zimfile_raycharles.zim"));
     EXPECT_TRUE(book.isPathValid());
 
-    EXPECT_EQ(book.getUrl(), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
     EXPECT_EQ(book.getTitle(), "Ray Charles");
     EXPECT_EQ(book.getDescription(), "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)");
     EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng");

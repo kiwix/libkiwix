@@ -60,6 +60,7 @@
 	, "download": "Download"
 	, "direct-download-link-text": "Direct"
 	, "direct-download-alt-text": "Download directly via HTTP(S)"
+	, "metalink-download-link-text": "Metalink"
 	, "hash-download-link-text": "SHA-256 checksum"
 	, "hash-download-alt-text": "Display SHA-256 file checksum"
 	, "magnet-link-text": "Magnet link"
