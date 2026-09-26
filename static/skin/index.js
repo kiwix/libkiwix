@@ -14,7 +14,9 @@
     };
     const bookOrderMap = new Map();
     const filterCookieName = 'filters';
+    const languageCookieName = 'language';
     const oneDayDelta = 86400000;
+    const languageCookieDelta = 90 * oneDayDelta;
     let loader;
     let footer;
     let fadeOutDiv;
@@ -22,7 +24,11 @@
     let isFetching = false;
     let noResultInjected = false;
     let filters = getCookie(filterCookieName);
+    let language = getCookie(languageCookieName);
     let params = new FragmentParams(window.location.hash || filters || '');
+    if (!params.has('lang') && language !== undefined) {
+        params.set('lang', language);
+    }
     params.delete('userlang');
     let timer;
     let languages = {};
@@ -487,6 +493,9 @@
             params.set(filterType, filterValue);
             window.history.pushState({}, null, `#${params.toString()}`);
             setCookie(filterCookieName, params.toString(), oneDayDelta);
+            if (filterType === 'lang') {
+                setCookie(languageCookieName, filterValue, languageCookieDelta);
+            }
         }
         updateFilterColors();
         updateFeedLink();
@@ -652,7 +661,7 @@
         });
         const tagElement = document.getElementsByClassName('tagFilterLabel')[0];
         tagElement.addEventListener('click', () => removeTagElement(true));
-        if (filters) {
+        if (filters || language !== undefined) {
             const currentLink = window.location.hash;
             const newLink = `#${params.toString()}`;
             if (currentLink != newLink) {
@@ -672,9 +681,11 @@
         }
         updateFeedLink();
         setCookie(filterCookieName, params.toString(), oneDayDelta);
+        if (params.has('lang')) {
+            setCookie(languageCookieName, params.get('lang'), languageCookieDelta);
+        }
         setInterval(updateNavVisibilityState, 250);
     };
 
     window.onload = () => { setUserLanguage(getUserLanguage(), onload); }
 })();
-
