@@ -202,7 +202,10 @@
         let downloadLink;
         let zimSize = 0;
         try {
+            // Prefer the direct link; a book may only have a metalink one, whose
+            // URL becomes the base download URL once '.meta4' is stripped below.
             const downloadBookLink = book.querySelector('link[type="application/x-zim"]')
+                                  || book.querySelector('link[type="application/metalink4+xml"]');
             zimSize = parseInt(downloadBookLink.getAttribute('length'));
             downloadLink = downloadBookLink.getAttribute('href').split('.meta4')[0];
         } catch {
