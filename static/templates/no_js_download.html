@@ -16,18 +16,21 @@
 <body>
     <div class="downloadLinksTitle">
         {{{translations.download-links-heading}}}
-    </div>
-    <a href="{{url}}" download>
+    </div>{{#direct_url}}
+    <a href="{{direct_url}}" download>
         <div>{{translations.direct-download-link-text}}</div>
-    </a>
-    <a href="{{url}}.sha256" download>
+    </a>{{/direct_url}}{{#metalink_url}}
+    <a href="{{metalink_url}}" download>
+        <div>{{translations.metalink-download-link-text}}</div>
+    </a>{{/metalink_url}}{{#direct_url}}
+    <a href="{{direct_url}}.sha256" download>
         <div>{{translations.hash-download-link-text}}</div>
-    </a>
-    <a href="{{url}}.magnet" target="_blank">
+    </a>{{/direct_url}}{{#magnet_url}}
+    <a href="{{magnet_url}}" target="_blank">
         <div>{{translations.magnet-link-text}}</div>
-    </a>
-    <a href="{{url}}.torrent" download>
+    </a>{{/magnet_url}}{{#torrent_url}}
+    <a href="{{torrent_url}}" download>
         <div>{{translations.torrent-download-link-text}}</div>
-    </a>
+    </a>{{/torrent_url}}
 </body>
 </html>
