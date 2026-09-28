@@ -871,7 +871,7 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
 std::string InternalServer::getNoJSDownloadPageHTML(const std::string& bookId, const std::string& userLang) const
 {
   const auto book = mp_library->getBookById(bookId);
-  auto bookUrl = kiwix::stripSuffix(book.getUrl(), ".meta4");
+  auto bookUrl = kiwix::stripSuffix(book.getUrl(Book::AcquisitionLinkKind::DIRECT), ".meta4");
   auto getTranslation = i18n::GetTranslatedStringWithMsgId(userLang);
   const auto translations = kainjow::mustache::object{
                             getTranslation("download-links-heading", {{"BOOK_TITLE", book.getTitle()}}),
