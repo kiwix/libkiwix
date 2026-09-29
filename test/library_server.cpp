@@ -1593,6 +1593,82 @@ TEST_P(LibraryServerTest, noJS) {
   EXPECT_EQ(r->body, RAY_CHARLES_UNCTZ_DOWNLOAD);
 }
 
+TEST(NoJSDownloadLinks, eachAcquisitionLinkIsUsedAsIs) {
+  ZimFileServer server(8003, ZimFileServer::DEFAULT_OPTIONS, "./test/nojs_download_links.opds");
+
+  auto r = server.GET("/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized");
+  EXPECT_EQ(r->status, 200);
+  const char expected_output[] = R"(<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download book</title>
+</head>
+<style>
+    .downloadLinksTitle {
+        text-align: center;
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+</style>
+<body>
+    <div class="downloadLinksTitle">
+        Download links for <b><i>All links</i></b>
+    </div>
+    <a href="https://example.com/all.zim" download>
+        <div>Direct</div>
+    </a>
+    <a href="https://example.com/all.zim.meta4" download>
+        <div>Metalink</div>
+    </a>
+    <a href="https://example.com/all.zim.sha256" download>
+        <div>SHA-256 checksum</div>
+    </a>
+    <a href="magnet:?xt=urn:btih:allzim" target="_blank">
+        <div>Magnet link</div>
+    </a>
+    <a href="https://example.com/all.zim.tor" download>
+        <div>BitTorrent</div>
+    </a>
+</body>
+</html>)";
+  EXPECT_EQ(r->body, expected_output);
+}
+
+TEST(NoJSDownloadLinks, missingLinkKindsAreOmitted) {
+  ZimFileServer server(8003, ZimFileServer::DEFAULT_OPTIONS, "./test/nojs_download_links.opds");
+
+  auto r = server.GET("/ROOT%23%3F/nojs/download/zimfile_raycharles");
+  EXPECT_EQ(r->status, 200);
+  const char expected_output[] = R"(<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download book</title>
+</head>
+<style>
+    .downloadLinksTitle {
+        text-align: center;
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+</style>
+<body>
+    <div class="downloadLinksTitle">
+        Download links for <b><i>Metalink only</i></b>
+    </div>
+    <a href="https://example.com/only.zim.meta4" download>
+        <div>Metalink</div>
+    </a>
+</body>
+</html>)";
+  EXPECT_EQ(r->body, expected_output);
+}
+
 TEST_P(LibraryServerTest, noJS_catalogOnlyMode) {
   const std::string contentServerUrl = "https://demo.kiwix.org";
   const auto fixContentLinks = [=](std::string s) -> std::string {

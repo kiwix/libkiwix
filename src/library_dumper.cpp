@@ -100,6 +100,45 @@ getEmbeddedThumbnailLinks(const Book& book, bool isLiveCatalog = true)
   return thumbnailLinks;
 }
 
+std::string fromLinkKindToMimeType(Book::AcquisitionLinkKind kind)
+{
+  switch (kind) {
+    case Book::AcquisitionLinkKind::META4:
+      return "application/metalink4+xml";
+    case Book::AcquisitionLinkKind::BITTORRENT:
+      return "application/x-bittorrent";
+    case Book::AcquisitionLinkKind::MAGNET:
+      return "application/x-magnet";
+    case Book::AcquisitionLinkKind::DIRECT:
+      return "application/x-zim";
+    default:
+      break;
+  }
+
+  throw std::runtime_error("Unknown link kind");
+}
+
+kainjow::mustache::list getAcquisitionLinkData(const Book& book)
+{
+   kainjow::mustache::list acquisitionLinks;
+    // Iterate in reverse so that the DIRECT (application/x-zim) link, which
+    // has index 0, is emitted last. Older libkiwix versions ignore the link
+    // type and keep the last open-access link with an absolute href as the
+    // book's URL. With this order they still end up with the .zim URL rather
+    // than a magnet/meta4/torrent one.
+    for (size_t i = static_cast<size_t>(Book::AcquisitionLinkKind::COUNT); i-- > 0;) {
+      const auto kind = static_cast<Book::AcquisitionLinkKind>(i);
+      const auto& url = book.getUrl(kind);
+      if (!url.empty()) {
+        acquisitionLinks.push_back(kainjow::mustache::object{
+          {"mimetype", fromLinkKindToMimeType(kind)},
+          {"href", url}
+        });
+      }
+    }
+    return acquisitionLinks;
+}
+
 } // namespace
 
 
@@ -135,9 +174,9 @@ std::string fullEntryOpds(const Book& book,
       {"media_count", to_string(book.getMediaCount())},
       {"author_name", book.getCreator()},
       {"publisher_name", book.getPublisher()},
-      {"url", onlyAsNonEmptyMustacheValue(book.getUrl())},
       {"size", to_string(book.getSize())},
       {"thumbnailLinks", thumbnailLinks},
+      {"acquisitionLinks", getAcquisitionLinkData(book)},
       {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
     return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);

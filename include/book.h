@@ -20,6 +20,7 @@
 #ifndef KIWIX_BOOK_H
 #define KIWIX_BOOK_H
 
+#include <array>
 #include <string>
 #include <vector>
 #include <memory>
@@ -62,6 +63,11 @@ class Book
   };
 
   typedef std::vector<std::shared_ptr<const Illustration>> Illustrations;
+
+  enum class AcquisitionLinkKind { DIRECT = 0, MAGNET, META4, BITTORRENT, COUNT };
+
+  // Acquisition URLs indexed by AcquisitionLinkKind (empty = not set).
+  typedef std::array<std::string, static_cast<size_t>(AcquisitionLinkKind::COUNT)> AcquisitionLinks;
 
  public: // functions
   Book();
@@ -107,7 +113,15 @@ class Book
   const std::string& getCreator() const { return m_creator; }
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }
-  const std::string& getUrl() const { return m_url; }
+  /**
+   * Get the book's URL.
+   *
+   * @deprecated A book may have several acquisition links (one per mime
+   * type). Use getUrl(kind) instead.
+   */
+  DEPRECATED const std::string& getUrl() const;
+  // Returns the acquisition link of the given kind (empty if not set).
+  const std::string& getUrl(AcquisitionLinkKind linkKind) const;
   const std::string& getName() const { return m_name; }
   std::string getCategory() const;
   const std::string& getTags() const { return m_tags; }
@@ -137,7 +151,10 @@ class Book
   void setCreator(const std::string& creator) { m_creator = creator; }
   void setPublisher(const std::string& publisher) { m_publisher = publisher; }
   void setDate(const std::string& date) { m_date = date; }
-  void setUrl(const std::string& url) { m_url = url; }
+  DEPRECATED void setUrl(const std::string& url) { setUrl(AcquisitionLinkKind::DIRECT, url); }
+  // Sets the acquisition link of the given kind.
+  // Setting an empty url string clears the link of that kind.
+  void setUrl(AcquisitionLinkKind linkKind, const std::string& url);
   void setName(const std::string& name) { m_name = name; }
   void setFlavour(const std::string& flavour) { m_flavour = flavour; }
   void setTags(const std::string& tags) { m_tags = tags; }
@@ -163,7 +180,7 @@ class Book
   std::string m_creator;
   std::string m_publisher;
   std::string m_date;
-  std::string m_url;
+  AcquisitionLinks m_urls;
   std::string m_name;
   std::string m_flavour;
   std::string m_tags;
