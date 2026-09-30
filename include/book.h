@@ -115,7 +115,6 @@ class Book
   bool isPathValid() const;
   const std::string& getTitle() const;
   const std::string& getDescription() const;
-  DEPRECATED const std::string& getLanguage() const;
   const std::string& getCommaSeparatedLanguages() const;
   const std::vector<std::string> getLanguages() const;
   const std::string& getCreator() const;
@@ -140,9 +139,6 @@ class Book
   const uint64_t getArticleCount() const;
   const uint64_t getMediaCount() const;
   const uint64_t getSize() const;
-  DEPRECATED const std::string getFavicon() const;
-  DEPRECATED const std::string& getFaviconUrl() const;
-  DEPRECATED const std::string& getFaviconMimeType() const;
 
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;

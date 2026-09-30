@@ -512,20 +512,6 @@ const std::string Book::Illustration::getData() const
   return data;
 }
 
-const std::string Book::getFavicon() const {
-  return getDefaultIllustration().getData();
-}
-
-const std::string& Book::getFaviconUrl() const
-{
-  return getDefaultIllustration().url;
-}
-
-const std::string& Book::getFaviconMimeType() const
-{
-  return getDefaultIllustration().mimeType;
-}
-
 std::string Book::getTagStr(const std::string& tagName) const {
   return getTagValueFromTagList(convertTags(mp_impl->m_tags), tagName);
 }
@@ -584,11 +570,6 @@ const std::string& Book::getTitle() const
 const std::string& Book::getDescription() const
 {
   return mp_impl->m_description;
-}
-
-const std::string& Book::getLanguage() const
-{
-  return mp_impl->m_language;
 }
 
 const std::string& Book::getCommaSeparatedLanguages() const
