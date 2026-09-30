@@ -664,7 +664,7 @@
         }
         updateVisibleParams();
         document.getElementById('kiwixSearchForm').onsubmit = (event) => {event.preventDefault()};
-        if (!window.location.hash) {
+        if (!params.has('lang')) {
             const browserLang = navigator.language.split('-')[0];
             const langFilter = document.getElementById('languageFilter');
             const lang = browserLang.length === 3 ? browserLang : iso6391To3[browserLang];
