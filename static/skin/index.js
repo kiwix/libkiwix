@@ -58,8 +58,11 @@
     function queryUrlBuilder() {
         let url = `${root}/catalog/v2/entries?`;
         url += Object.keys(incrementalLoadingParams).map(key => `${key}=${incrementalLoadingParams[key]}`).join("&");
-        if ( params.size ) {
-          url += `&${params}`;
+        const nonEmptyParams = new URLSearchParams(
+            [...params].filter(([, value]) => value !== '')
+        );
+        if ( nonEmptyParams.size ) {
+          url += `&${nonEmptyParams}`;
         }
         return (url);
     }
