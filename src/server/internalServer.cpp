@@ -752,6 +752,9 @@ std::unique_ptr<Response> InternalServer::handle_request(const RequestContext& r
     if (isEndpointUrl(url, "catch"))
       return handle_catch(request);
 
+    if (isEndpointUrl(url, "bookinfo"))
+      return handle_bookinfo(request);
+
     const std::string contentUrl = m_root + "/content" + urlEncode(url);
     const std::string query = getSearchComponent(request);
     return Response::build_redirect(contentUrl + query);
@@ -852,6 +855,34 @@ std::unique_ptr<Response> InternalServer::handle_suggest(const RequestContext& r
   }
 
   return ContentResponse::build(results.getJSON(), "application/json; charset=utf-8");
+}
+
+std::unique_ptr<Response> InternalServer::handle_bookinfo(const RequestContext& request)
+{
+  if (m_verbose.load()) {
+    printf("** running handle_bookinfo\n");
+  }
+
+  std::string bookName, bookId;
+  std::shared_ptr<zim::Archive> archive;
+  try {
+    bookName = request.get_argument("content");
+    bookId = mp_nameMapper->getIdForName(bookName);
+    archive = mp_library->getArchiveById(bookId);
+  } catch (const std::out_of_range&) {
+    // error handled by the archive == nullptr check below
+  }
+
+  if (archive == nullptr) {
+    return HTTP404Response(request)
+           + noSuchBookErrorMsg(bookName);
+  }
+
+  // Expose book capabilities needed by the viewer.
+  const std::string json =
+    std::string("{\"hasFulltextIndex\":") + (archive->hasFulltextIndex() ? "true" : "false") + "}";
+
+  return ContentResponse::build(json, "application/json; charset=utf-8");
 }
 
 std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestContext& request)
@@ -1049,6 +1080,30 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
 {
   auto searchInfo = getSearchInfo(request);
   auto bookIds = searchInfo.getBookIds();
+
+  // Check whether at least one requested book supports full-text search.
+  bool anyHasFulltextIndex = false;
+  for (const auto& bookId : bookIds) {
+    try {
+      auto archive = mp_library->getArchiveById(bookId);
+      if (archive && archive->hasFulltextIndex()) {
+        anyHasFulltextIndex = true;
+        break;
+      }
+    } catch (const std::out_of_range&) {
+      // Book unavailable; continue checking remaining books.
+    }
+  }
+  if (!anyHasFulltextIndex) {
+    const auto cssUrl = renderUrl(m_root, RESOURCE::templates::url_of_search_results_css_tmpl);
+    HTTPErrorResponse response(request, MHD_HTTP_NOT_FOUND,
+                               "fulltext-search-unavailable",
+                               "404-page-heading",
+                               cssUrl,
+                               /*includeKiwixResponseData=*/true);
+    response += nonParameterizedMessage("no-search-results");
+    return response;
+  }
 
   /* Make the search */
   // Try to get a search from the searchInfo, else build it
