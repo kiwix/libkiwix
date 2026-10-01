@@ -462,9 +462,4 @@ void Manager::reload(const Paths& paths)
 const std::string& Manager::getWritableLibraryPath() const { return mp_impl->writableLibraryPath; }
 void Manager::setWritableLibraryPath(const std::string& path) { mp_impl->writableLibraryPath = path; }
 
-bool Manager::hasSearchResult() const { return mp_impl->m_hasSearchResult; }
-uint64_t Manager::getTotalBooks() const { return mp_impl->m_totalBooks; }
-uint64_t Manager::getStartIndex() const { return mp_impl->m_startIndex; }
-uint64_t Manager::getItemsPerPage() const { return mp_impl->m_itemsPerPage; }
-
 }

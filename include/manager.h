@@ -229,11 +229,6 @@ class Manager
   const std::string& getWritableLibraryPath() const;
   void setWritableLibraryPath(const std::string& path);
 
-  bool hasSearchResult() const;
-  uint64_t getTotalBooks() const;
-  uint64_t getStartIndex() const;
-  uint64_t getItemsPerPage() const;
-
  private:
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,

@@ -321,30 +321,6 @@ TEST(ManagerTest, readOpdsHonorsReadOnlyTrue)
     EXPECT_TRUE(lib->getBookById("book2").readOnly());
 }
 
-TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager(lib);
-
-    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com"));
-
-    EXPECT_TRUE(manager.hasSearchResult());
-    EXPECT_EQ(manager.getTotalBooks(), 9U);
-    EXPECT_EQ(manager.getStartIndex(), 7U);
-    EXPECT_EQ(manager.getItemsPerPage(), 10U);
-
-    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
-
-    kiwix::Book book1 = lib->getBookById("book1");
-    EXPECT_EQ(book1.getTitle(), "Book One");
-    EXPECT_EQ(book1.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "https://example.com/book1.zim");
-
-    EXPECT_EQ(book1.getPath(), "");
-    EXPECT_FALSE(book1.isPathValid());
-
-    EXPECT_FALSE(book1.readOnly());
-}
-
 TEST(ManagerTest, readOpdsWithInvalidLocalPath)
 {
   auto lib = kiwix::Library::create();
@@ -365,32 +341,6 @@ TEST(ManagerTest, readOpdsWithInvalidLocalPath)
   kiwix::Book book = lib->getBookById("book1");
   EXPECT_FALSE(book.isPathValid());
   EXPECT_EQ(book.getTitle(), "Book From OPDS");
-}
-
-TEST(ManagerTest, readOpdsWithoutSearchMetadata)
-{
-  auto lib = kiwix::Library::create();
-  kiwix::Manager manager(lib);
-
-  const std::string feed = R"(
-      <feed xmlns="http://www.w3.org/2005/Atom">
-        <entry>
-          <id>urn:uuid:book1</id>
-          <title>Book One</title>
-        </entry>
-      </feed>
-    )";
-
-  EXPECT_TRUE(manager.readOpds(feed, "http://example.com"));
-
-  // None of <totalResults>/<startIndex>/<itemsPerPage> are present, so
-  // there's no search result to report.
-  EXPECT_FALSE(manager.hasSearchResult());
-  EXPECT_EQ(manager.getTotalBooks(), 0U);
-  EXPECT_EQ(manager.getStartIndex(), 0U);
-  EXPECT_EQ(manager.getItemsPerPage(), 0U);
-
-  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1"}));
 }
 
 TEST(ManagerTest, readFileDetectsXmlFormat)
