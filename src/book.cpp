@@ -177,6 +177,11 @@ fromMimeTypeToLinkKind(const std::string& mimeType)
 
 namespace kiwix
 {
+Book::AcquisitionLinks::AcquisitionLinks() :
+  m_urls(linkIndex(AcquisitionLinkKind::COUNT))
+{
+}
+
 /* Constructor */
 Book::Book() :
   m_pathValid(false),
@@ -319,7 +324,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   m_illustrations.clear();
-  m_urls.fill("");
+  m_urls = AcquisitionLinks();
   std::string firstAcquisitionHref;
   std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;
