@@ -32,7 +32,7 @@ class Archive;
 
 namespace Xapian
 {
-class Database;
+class WritableDatabase;
 }
 
 namespace kiwix
@@ -50,7 +50,7 @@ public: // functions
   std::vector<std::string> getSpellingCorrections(const std::string& word, uint32_t maxCount) const;
 
 private: // data
-  std::unique_ptr<Xapian::Database> impl_;
+  std::unique_ptr<Xapian::WritableDatabase> impl_;
 };
 
 } // namespace kiwix
