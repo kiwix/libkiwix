@@ -262,7 +262,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
                                              const std::string& url,
                                              const bool checkMetaData)
 {
-  Book::AcquisitionLinks urls;
+  Book::AcquisitionLinks urls(static_cast<size_t>(Book::AcquisitionLinkKind::COUNT));
   urls[static_cast<size_t>(Book::AcquisitionLinkKind::DIRECT)] = url;
   return addBookFromPathAndGetId(pathToOpen, pathToSave, urls, checkMetaData);
 }

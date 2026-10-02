@@ -182,6 +182,7 @@ Book::Book() :
   m_pathValid(false),
   m_readOnly(false)
 {
+  m_urls.resize(static_cast<size_t>(AcquisitionLinkKind::COUNT));
 }
 
 /* Destructor */
@@ -323,7 +324,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
   m_illustrations.clear();
-  m_urls.fill("");
+  m_urls.assign(linkIndex(AcquisitionLinkKind::COUNT), "");
   std::string firstAcquisitionHref;
   std::string firstLength;
   for(auto linkNode = node.child("link"); linkNode;

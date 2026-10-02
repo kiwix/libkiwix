@@ -14,6 +14,12 @@ std::string resolveAbsPath(const std::string& basePath, const std::string& relPa
     return kiwix::computeAbsolutePath(kiwix::removeLastPathElement(basePath), relPath);
 }
 
+// Position of an acquisition link kind in Book's acquisition links array.
+constexpr size_t linkIndex(kiwix::Book::AcquisitionLinkKind kind)
+{
+  return static_cast<size_t>(kind);
+}
+
 // Absolute path of test/library.opds, computed (rather than hardcoded) so
 // it resolves correctly regardless of the checkout location - unlike
 // LIB_ABS_PATH below, this one has to point to a real file, since
@@ -57,6 +63,8 @@ TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
     const std::string meta4Url = "http://example.org/book.zim.meta4";
     const std::string torrentUrl = "http://example.org/book.zim.torrent";
     kiwix::Book::AcquisitionLinks urls;
+    urls.assign(linkIndex(kiwix::Book::AcquisitionLinkKind::COUNT), "");
+
     urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = zimUrl;
     urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::META4)] = meta4Url;
     urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::BITTORRENT)] = torrentUrl;
@@ -70,6 +78,8 @@ TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
     // Link kinds that were not provided are reported as empty URLs.
     const std::string otherZimUrl = "http://example.org/other.zim";
     kiwix::Book::AcquisitionLinks zimOnlyUrl;
+    zimOnlyUrl.assign(linkIndex(kiwix::Book::AcquisitionLinkKind::COUNT), "");
+
     zimOnlyUrl[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = otherZimUrl;
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", zimOnlyUrl);
     ASSERT_NE(bookId, "");

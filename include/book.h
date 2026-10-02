@@ -20,7 +20,6 @@
 #ifndef KIWIX_BOOK_H
 #define KIWIX_BOOK_H
 
-#include <array>
 #include <string>
 #include <vector>
 #include <memory>
@@ -67,7 +66,7 @@ class Book
   enum class AcquisitionLinkKind { DIRECT = 0, MAGNET, META4, BITTORRENT, COUNT };
 
   // Acquisition URLs indexed by AcquisitionLinkKind (empty = not set).
-  typedef std::array<std::string, static_cast<size_t>(AcquisitionLinkKind::COUNT)> AcquisitionLinks;
+  typedef std::vector<std::string> AcquisitionLinks;
 
  public: // functions
   Book();
