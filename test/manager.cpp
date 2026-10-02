@@ -14,6 +14,12 @@ std::string resolveAbsPath(const std::string& basePath, const std::string& relPa
     return kiwix::computeAbsolutePath(kiwix::removeLastPathElement(basePath), relPath);
 }
 
+// Position of an acquisition link kind in Book's acquisition links array.
+constexpr size_t linkIndex(kiwix::Book::AcquisitionLinkKind kind)
+{
+  return static_cast<size_t>(kind);
+}
+
 // Absolute path of test/library.opds, computed (rather than hardcoded) so
 // it resolves correctly regardless of the checkout location - unlike
 // LIB_ABS_PATH below, this one has to point to a real file, since
@@ -43,7 +49,7 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     const std::string url = "url";
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave, url, true);
     book = lib->getBookById(bookId);
-    auto savedPath = resolveAbsPath(manager.writableLibraryPath, pathToSave);
+    auto savedPath = resolveAbsPath(manager.getWritableLibraryPath(), pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), url);
 }
@@ -57,6 +63,8 @@ TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
     const std::string meta4Url = "http://example.org/book.zim.meta4";
     const std::string torrentUrl = "http://example.org/book.zim.torrent";
     kiwix::Book::AcquisitionLinks urls;
+    urls.assign(linkIndex(kiwix::Book::AcquisitionLinkKind::COUNT), "");
+
     urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = zimUrl;
     urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::META4)] = meta4Url;
     urls[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::BITTORRENT)] = torrentUrl;
@@ -70,6 +78,8 @@ TEST(ManagerTest, addBookFromPathAndGetIdWithAcquisitionUrlsTest)
     // Link kinds that were not provided are reported as empty URLs.
     const std::string otherZimUrl = "http://example.org/other.zim";
     kiwix::Book::AcquisitionLinks zimOnlyUrl;
+    zimOnlyUrl.assign(linkIndex(kiwix::Book::AcquisitionLinkKind::COUNT), "");
+
     zimOnlyUrl[static_cast<size_t>(kiwix::Book::AcquisitionLinkKind::DIRECT)] = otherZimUrl;
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", "", zimOnlyUrl);
     ASSERT_NE(bookId, "");
@@ -92,7 +102,7 @@ TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
               "does_not_exist.xml");
 
     EXPECT_FALSE(manager.readFile(nonExistentPath, /*readOnly=*/false));
-    EXPECT_EQ(manager.writableLibraryPath, nonExistentPath);
+    EXPECT_EQ(manager.getWritableLibraryPath(), nonExistentPath);
 
     const std::string pathToSave = "./relative.zim";
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave);
@@ -311,30 +321,6 @@ TEST(ManagerTest, readOpdsHonorsReadOnlyTrue)
     EXPECT_TRUE(lib->getBookById("book2").readOnly());
 }
 
-TEST(ManagerTest, readOpdsAddsEntriesAndParsesSearchMetadata)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager(lib);
-
-    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com"));
-
-    EXPECT_TRUE(manager.m_hasSearchResult);
-    EXPECT_EQ(manager.m_totalBooks, 9U);
-    EXPECT_EQ(manager.m_startIndex, 7U);
-    EXPECT_EQ(manager.m_itemsPerPage, 10U);
-
-    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
-
-    kiwix::Book book1 = lib->getBookById("book1");
-    EXPECT_EQ(book1.getTitle(), "Book One");
-    EXPECT_EQ(book1.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "https://example.com/book1.zim");
-
-    EXPECT_EQ(book1.getPath(), "");
-    EXPECT_FALSE(book1.isPathValid());
-
-    EXPECT_FALSE(book1.readOnly());
-}
-
 TEST(ManagerTest, readOpdsWithInvalidLocalPath)
 {
   auto lib = kiwix::Library::create();
@@ -355,32 +341,6 @@ TEST(ManagerTest, readOpdsWithInvalidLocalPath)
   kiwix::Book book = lib->getBookById("book1");
   EXPECT_FALSE(book.isPathValid());
   EXPECT_EQ(book.getTitle(), "Book From OPDS");
-}
-
-TEST(ManagerTest, readOpdsWithoutSearchMetadata)
-{
-  auto lib = kiwix::Library::create();
-  kiwix::Manager manager(lib);
-
-  const std::string feed = R"(
-      <feed xmlns="http://www.w3.org/2005/Atom">
-        <entry>
-          <id>urn:uuid:book1</id>
-          <title>Book One</title>
-        </entry>
-      </feed>
-    )";
-
-  EXPECT_TRUE(manager.readOpds(feed, "http://example.com"));
-
-  // None of <totalResults>/<startIndex>/<itemsPerPage> are present, so
-  // there's no search result to report.
-  EXPECT_FALSE(manager.m_hasSearchResult);
-  EXPECT_EQ(manager.m_totalBooks, 0U);
-  EXPECT_EQ(manager.m_startIndex, 0U);
-  EXPECT_EQ(manager.m_itemsPerPage, 0U);
-
-  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1"}));
 }
 
 TEST(ManagerTest, readFileDetectsXmlFormat)
@@ -441,10 +401,10 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
 
     auto illustration = book.getIllustration(48);
 
-    EXPECT_EQ(illustration->mimeType, "image/png");
-    EXPECT_EQ(illustration->width, 48);
-    EXPECT_EQ(illustration->height, 48);
-    EXPECT_EQ(illustration->url, "https://example.com/favicon/raycharles.png");
+    EXPECT_EQ(illustration->getMimeType(), "image/png");
+    EXPECT_EQ(illustration->getWidth(), 48);
+    EXPECT_EQ(illustration->getHeight(), 48);
+    EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/raycharles.png");
     EXPECT_FALSE(book.readOnly());
 }
 

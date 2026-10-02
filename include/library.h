@@ -233,9 +233,7 @@ class Library: public std::enable_shared_from_this<Library>
   Library();
 
  public:
-  LIBKIWIX_NODISCARD static LibraryPtr create() {
-    return LibraryPtr(new Library());
-  }
+  LIBKIWIX_NODISCARD static LibraryPtr create();
   ~Library();
 
   /**
@@ -359,18 +357,6 @@ class Library: public std::enable_shared_from_this<Library>
    * @return True if the book were in the lirbrary and has been removed.
    */
   bool removeBookById(const std::string& id);
-
-  /**
-   * Writes the library to a file as library.xml.
-   *
-   * @deprecated Calls writeAsXML directly and is kept for compatibility
-   * with external usages. This method is subject to removal in the future;
-   * please use writeAsXML instead.
-   *
-   * @param path the path of the file to write to.
-   * @return True if the library has been correctly saved.
-   */
-  DEPRECATED bool writeToFile(const std::string& path) const;
 
   /**
    * Write the library to a file as library.xml.
@@ -498,7 +484,7 @@ class Library: public std::enable_shared_from_this<Library>
    * This does not write to outputPath itself - it only returns the OPDS
    * XML. outputPath is used solely to resolve each book's local-path
    * acquisition link: each book's path is made relative to outputPath's
-   * parent directory, the same way writeToFile() resolves book paths
+   * parent directory, the same way writeAsOpds() resolves book paths
    * relative to the file it writes.
    *
    * @param outputPath the path the returned OPDS content is intended to be

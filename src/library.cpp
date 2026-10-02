@@ -96,6 +96,11 @@ Library::getBookCount_not_protected(const bool localBooks, const bool remoteBook
   return result;
 }
 
+LibraryPtr Library::create()
+{
+  return LibraryPtr(new Library());
+}
+
 /* Constructor */
 Library::Library()
   : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 1), 1))),
@@ -429,11 +434,6 @@ unsigned int Library::getBookCount(const bool localBooks,
 {
   std::lock_guard<std::recursive_mutex> lock(m_mutex);
   return getBookCount_not_protected(localBooks, remoteBooks);
-}
-
-bool Library::writeToFile(const std::string& path) const
-{
-  return writeAsXML(path);
 }
 
 bool Library::writeAsXML(const std::string& path) const

@@ -21,6 +21,7 @@
 #define KIWIX_BOOKMARK_H
 
 #include <string>
+#include <memory>
 
 namespace pugi {
 class xml_node;
@@ -48,37 +49,36 @@ class Bookmark
    */
   Bookmark(const Book& book, const std::string& path, const std::string& title);
 
+  Bookmark(const Bookmark& other);
+  Bookmark(Bookmark&& other) noexcept;
+  Bookmark& operator=(const Bookmark& other);
+  Bookmark& operator=(Bookmark&& other) noexcept;
+
   ~Bookmark();
 
   void updateFromXml(const pugi::xml_node& node);
 
-  const std::string& getBookId() const { return m_bookId; }
-  const std::string& getBookTitle()  const { return m_bookTitle; }
-  const std::string& getBookName()  const { return m_bookName; }
-  const std::string& getBookFlavour()  const { return m_bookFlavour; }
-  const std::string& getUrl() const { return m_url; }
-  const std::string& getTitle() const { return m_title; }
-  const std::string& getLanguage() const { return m_language; }
-  const std::string& getDate() const { return m_date; }
+  const std::string& getBookId() const;
+  const std::string& getBookTitle() const;
+  const std::string& getBookName() const;
+  const std::string& getBookFlavour() const;
+  const std::string& getUrl() const;
+  const std::string& getTitle() const;
+  const std::string& getLanguage() const;
+  const std::string& getDate() const;
 
-  void setBookId(const std::string& bookId) { m_bookId = bookId; }
-  void setBookTitle(const std::string& bookTitle) { m_bookTitle = bookTitle; }
-  void setBookName(const std::string& bookName) { m_bookName = bookName; }
-  void setBookFlavour(const std::string& bookFlavour) { m_bookFlavour = bookFlavour; }
-  void setUrl(const std::string& url) { m_url = url; }
-  void setTitle(const std::string& title) { m_title = title; }
-  void setLanguage(const std::string& language) { m_language = language; }
-  void setDate(const std::string& date) { m_date = date; }
+  void setBookId(const std::string& bookId);
+  void setBookTitle(const std::string& bookTitle);
+  void setBookName(const std::string& bookName);
+  void setBookFlavour(const std::string& bookFlavour);
+  void setUrl(const std::string& url);
+  void setTitle(const std::string& title);
+  void setLanguage(const std::string& language);
+  void setDate(const std::string& date);
 
- protected:
-  std::string m_bookId;
-  std::string m_bookTitle;
-  std::string m_bookName;
-  std::string m_bookFlavour;
-  std::string m_url;
-  std::string m_title;
-  std::string m_language;
-  std::string m_date;
+ private:
+  class Impl;
+  std::unique_ptr<Impl> mp_impl;
 };
 
 }
