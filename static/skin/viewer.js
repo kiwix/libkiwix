@@ -47,6 +47,8 @@ function getBookFromUserUrl(url) {
 
 let currentBook = null;
 let currentBookTitle = null;
+// Whether the current book has a fulltext index (null = not yet fetched).
+let currentBookHasFulltextIndex = null;
 
 const bookUIGroup = document.getElementById('kiwix_serve_taskbar_book_ui_group');
 const homeButton = document.getElementById('kiwix_serve_taskbar_home_button');
@@ -88,7 +90,8 @@ function showSpinner() {
 
 function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
-  if (!searchbox.value.trim()) { return;}
+  if (!searchbox.value.trim()) { return; }
+  if (currentBookHasFulltextIndex !== true) { return; }
   const q = encodeURIComponent(searchbox.value);
 
   showSpinner();
@@ -128,6 +131,7 @@ function setTitle(element, text) {
 function setCurrentBook(book, title) {
   currentBook = book;
   currentBookTitle = title;
+  currentBookHasFulltextIndex = null;
   setTitle(homeButton, $t("home-button-text", {BOOK_TITLE: title}));
   // `title` is untrusted book metadata (fetched from `./raw/<book>/meta/Title`);
   // assign it via `textContent`, like `setTitle()` above does for the same
@@ -136,11 +140,20 @@ function setCurrentBook(book, title) {
   homeButton.querySelector('button').textContent = title;
   bookUIGroup.style.display = 'inline';
   updateSearchBoxForBookChange();
+  fetch(`${root}/bookinfo?content=${encodeURIComponent(book)}`)
+    .then(resp => resp.ok ? resp.json() : null)
+    .then(info => {
+      if (info && currentBook === book) {
+        currentBookHasFulltextIndex = info.hasFulltextIndex === true;
+      }
+    })
+    .catch(() => {});
 }
 
 function noCurrentBook() {
   currentBook = null;
   currentBookTitle = null;
+  currentBookHasFulltextIndex = null;
   bookUIGroup.style.display = 'none';
   updateSearchBoxForBookChange();
 }
