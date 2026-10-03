@@ -24,6 +24,10 @@
 
 namespace kiwix
 {
+// User-Agent that libkiwix sends with its own requests, so servers such as
+// library.kiwix.org can tell them apart: "libkiwix/<version>".
+std::string getUserAgent();
+
 std::string download(const std::string& url);
 }
 

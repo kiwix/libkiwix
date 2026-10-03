@@ -260,6 +260,47 @@ TEST(networkTools, getBestPublicIps)
   std::cout << "getBestPublicIp(): " << kiwix::getBestPublicIp() << std::endl;
 }
 
+#include "./httplib.h"
+#include "../include/version.h"
+#include "../src/tools/networkTools.h"
+#include <thread>
+
+namespace
+{
+
+std::string libkiwixVersion()
+{
+  for ( const auto& lib : kiwix::getVersions() ) {
+    if ( lib.first == "libkiwix" ) {
+      return lib.second;
+    }
+  }
+  return "";
+}
+
+} // unnamed namespace
+
+TEST(networkTools, downloadSendsLibkiwixUserAgent)
+{
+  httplib::Server server;
+  std::string userAgent;
+  server.Get("/", [&](const httplib::Request& req, httplib::Response& res) {
+    userAgent = req.get_header_value("User-Agent");
+    res.set_content("ok", "text/plain");
+  });
+  const int port = server.bind_to_any_port("127.0.0.1");
+  ASSERT_GT(port, 0);
+  std::thread serverThread([&]() { server.listen_after_bind(); });
+
+  const std::string url = "http://127.0.0.1:" + std::to_string(port) + "/";
+  const std::string body = kiwix::download(url);
+
+  server.stop();
+  serverThread.join();
+  EXPECT_EQ(body, "ok");
+  EXPECT_EQ(userAgent, "libkiwix/" + libkiwixVersion());
+}
+
 TEST(pathTools, resolveContentOrigin)
 {
   {
