@@ -436,11 +436,6 @@ unsigned int Library::getBookCount(const bool localBooks,
   return getBookCount_not_protected(localBooks, remoteBooks);
 }
 
-bool Library::writeToFile(const std::string& path) const
-{
-  return writeAsXML(path);
-}
-
 bool Library::writeAsXML(const std::string& path) const
 {
   const auto allBookIds = getBooksIds();

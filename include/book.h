@@ -107,19 +107,11 @@ class Book
   bool isPathValid() const { return m_pathValid; }
   const std::string& getTitle() const { return m_title; }
   const std::string& getDescription() const { return m_description; }
-  DEPRECATED const std::string& getLanguage() const { return m_language; }
   const std::string& getCommaSeparatedLanguages() const { return m_language; }
   const std::vector<std::string> getLanguages() const;
   const std::string& getCreator() const { return m_creator; }
   const std::string& getPublisher() const { return m_publisher; }
   const std::string& getDate() const { return m_date; }
-  /**
-   * Get the book's URL.
-   *
-   * @deprecated A book may have several acquisition links (one per mime
-   * type). Use getUrl(kind) instead.
-   */
-  DEPRECATED const std::string& getUrl() const;
   // Returns the acquisition link of the given kind (empty if not set).
   const std::string& getUrl(AcquisitionLinkKind linkKind) const;
   const std::string& getName() const { return m_name; }
@@ -132,9 +124,6 @@ class Book
   const uint64_t& getArticleCount() const { return m_articleCount; }
   const uint64_t& getMediaCount() const { return m_mediaCount; }
   const uint64_t& getSize() const { return m_size; }
-  DEPRECATED const std::string& getFavicon() const;
-  DEPRECATED const std::string& getFaviconUrl() const;
-  DEPRECATED const std::string& getFaviconMimeType() const;
 
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
@@ -151,7 +140,6 @@ class Book
   void setCreator(const std::string& creator) { m_creator = creator; }
   void setPublisher(const std::string& publisher) { m_publisher = publisher; }
   void setDate(const std::string& date) { m_date = date; }
-  DEPRECATED void setUrl(const std::string& url) { setUrl(AcquisitionLinkKind::DIRECT, url); }
   // Sets the acquisition link of the given kind.
   // Setting an empty url string clears the link of that kind.
   void setUrl(AcquisitionLinkKind linkKind, const std::string& url);
