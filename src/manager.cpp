@@ -167,8 +167,6 @@ bool Manager::readXml(const std::string& xml,
   return false;
 }
 
-
-
 bool Manager::parseOpdsDom(const pugi::xml_document& doc,
                            const std::string& urlHost,
                            const std::string& baseDir,
@@ -176,23 +174,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
 {
   pugi::xml_node libraryNode = doc.child("feed");
   if (!libraryNode) {
-    m_hasSearchResult = false;
     return false;
-  }
-
-  const pugi::xml_node totalResultsNode = libraryNode.child("totalResults");
-  const pugi::xml_node startIndexNode = libraryNode.child("startIndex");
-  const pugi::xml_node itemsPerPageNode = libraryNode.child("itemsPerPage");
-
-  m_hasSearchResult = totalResultsNode && startIndexNode && itemsPerPageNode;
-  if (m_hasSearchResult) {
-    m_totalBooks = strtoull(totalResultsNode.child_value(), 0, 0);
-    m_startIndex = strtoull(startIndexNode.child_value(), 0, 0);
-    m_itemsPerPage = strtoull(itemsPerPageNode.child_value(), 0, 0);
-  } else {
-    m_totalBooks = 0;
-    m_startIndex = 0;
-    m_itemsPerPage = 0;
   }
 
   for (pugi::xml_node entryNode = libraryNode.child("entry"); entryNode;
