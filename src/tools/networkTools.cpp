@@ -73,8 +73,8 @@ void updatePublicIpAddress(IpAddress& publicIpAddr, const IpAddress& interfaceIp
 
 } // unnamed namespace
 
-std::string getUserAgent() {
-  return std::string("libkiwix/") + LIBKIWIX_VERSION;
+std::string getUserAgent(const std::string& component) {
+  return std::string("kiwix/") + LIBKIWIX_VERSION + " (" + component + ")";
 }
 
 std::string download(const std::string& url) {

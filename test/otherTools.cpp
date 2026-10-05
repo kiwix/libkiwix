@@ -263,6 +263,7 @@ TEST(networkTools, getBestPublicIps)
 #include "./httplib.h"
 #include "../include/version.h"
 #include "../src/tools/networkTools.h"
+#include <chrono>
 #include <thread>
 
 namespace
@@ -280,7 +281,7 @@ std::string libkiwixVersion()
 
 } // unnamed namespace
 
-TEST(networkTools, downloadSendsLibkiwixUserAgent)
+TEST(networkTools, downloadSendsKiwixUserAgent)
 {
   httplib::Server server;
   std::string userAgent;
@@ -291,14 +292,19 @@ TEST(networkTools, downloadSendsLibkiwixUserAgent)
   const int port = server.bind_to_any_port("127.0.0.1");
   ASSERT_GT(port, 0);
   std::thread serverThread([&]() { server.listen_after_bind(); });
+  // stop() is a no-op until the server is running.
+  while ( !server.is_running() ) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
 
   const std::string url = "http://127.0.0.1:" + std::to_string(port) + "/";
-  const std::string body = kiwix::download(url);
+  std::string body;
+  EXPECT_NO_THROW(body = kiwix::download(url));
 
   server.stop();
   serverThread.join();
   EXPECT_EQ(body, "ok");
-  EXPECT_EQ(userAgent, "libkiwix/" + libkiwixVersion());
+  EXPECT_EQ(userAgent, "kiwix/" + libkiwixVersion() + " (libkiwix)");
 }
 
 TEST(pathTools, resolveContentOrigin)

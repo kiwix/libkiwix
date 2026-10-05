@@ -8,6 +8,11 @@
     }
 
     const root = document.querySelector(`link[type='root']`).getAttribute('href');
+    // Identify kiwix-serve's requests as agreed in kiwix/operations#797. A custom
+    // index template may not set it, and browsers that don't allow overriding the
+    // User-Agent ignore the header.
+    const userAgentMeta = document.querySelector(`meta[name='kiwix-user-agent']`);
+    const fetchHeaders = userAgentMeta ? { 'User-Agent': userAgentMeta.getAttribute('content') } : {};
     const incrementalLoadingParams = {
         start: 0,
         count: viewPortToCount()
@@ -377,7 +382,7 @@
 
     async function getBookCount(query) {
         const url = `${root}/catalog/v2/entries?${query}&count=0`;
-        return await fetch(url).then(async (resp) => {
+        return await fetch(url, { headers: fetchHeaders }).then(async (resp) => {
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
             return parseInt(data.querySelector('totalResults').innerHTML);
         });
@@ -385,7 +390,7 @@
 
     async function loadBooks() {
         loader.style.display = 'block';
-        return await fetch(queryUrlBuilder()).then(async (resp) => {
+        return await fetch(queryUrlBuilder(), { headers: fetchHeaders }).then(async (resp) => {
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
             const books = data.querySelectorAll('entry');
             books.forEach((book, idx) => {
@@ -409,7 +414,7 @@
     }
 
     async function loadAndDisplayOptions(nodeQuery, query, valueEntryNode) {
-        await fetch(query).then(async (resp) => {
+        await fetch(query, { headers: fetchHeaders }).then(async (resp) => {
             const data = new window.DOMParser().parseFromString(await resp.text(), 'application/xml');
             let optionStr = '';
             data.querySelectorAll('entry').forEach(entry => {

@@ -152,11 +152,15 @@ function updateCurrentBookIfNeeded(userUrl) {
   }
 }
 
+// Identify kiwix-serve's requests as agreed in kiwix/operations#797. Browsers that
+// don't allow overriding the User-Agent ignore the header.
+const fetchHeaders = viewerSettings.userAgent ? { 'User-Agent': viewerSettings.userAgent } : {};
+
 function updateCurrentBook(book) {
   if ( book == null ) {
     noCurrentBook();
   } else {
-    fetch(`./raw/${book}/meta/Title`).then(async (resp) => {
+    fetch(`./raw/${book}/meta/Title`, { headers: fetchHeaders }).then(async (resp) => {
       if ( resp.ok ) {
         setCurrentBook(book, await resp.text());
       } else {
@@ -498,7 +502,7 @@ function setupSuggestions() {
         src: async (query) => {
           try {
             // Fetch Data from external Source
-            const source = await fetch(`${suggestionsApiURL()}&term=${encodeURIComponent(query)}`);
+            const source = await fetch(`${suggestionsApiURL()}&term=${encodeURIComponent(query)}`, { headers: fetchHeaders });
             const data = await source.json();
             return data;
           } catch (error) {
