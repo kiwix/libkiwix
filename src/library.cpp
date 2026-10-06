@@ -96,6 +96,11 @@ Library::getBookCount_not_protected(const bool localBooks, const bool remoteBook
   return result;
 }
 
+LibraryPtr Library::create()
+{
+  return LibraryPtr(new Library());
+}
+
 /* Constructor */
 Library::Library()
   : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 1), 1))),
