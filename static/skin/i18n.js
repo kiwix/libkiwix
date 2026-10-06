@@ -1,18 +1,5 @@
 import mustache from '../skin/mustache.min.js?KIWIXCACHEID'
 
-// kiwix-serve's User-Agent (kiwix/operations#797): from viewer_settings.js in the
-// viewer and from the index template's meta tag on the library page.
-function userAgentHeaders() {
-  let userAgent = null;
-  if ( typeof viewerSettings !== 'undefined' && viewerSettings.userAgent ) {
-    userAgent = viewerSettings.userAgent;
-  } else {
-    const meta = document.querySelector(`meta[name='kiwix-user-agent']`);
-    userAgent = meta ? meta.getAttribute('content') : null;
-  }
-  return userAgent ? { 'User-Agent': userAgent } : {};
-}
-
 const Translations = {
   defaultLanguage: null,
   currentLanguage: null,
@@ -37,7 +24,7 @@ const Translations = {
 
     const errorMsg = `Error loading translations for language '${lang}': `;
     const translationJsonUrl = import.meta.resolve(`./i18n/${lang}.json`);
-    this.promises[lang] = fetch(translationJsonUrl, { headers: userAgentHeaders() }).then(async (resp) => {
+    this.promises[lang] = fetch(translationJsonUrl).then(async (resp) => {
       if ( resp.ok ) {
         this.data[lang] = JSON.parse(await resp.text());
       } else {

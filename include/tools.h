@@ -270,5 +270,27 @@ std::string getLanguageSelfName(const std::string& lang);
  * @return slugified string.
  */
 std::string getSlugifiedFileName(const std::string& filename);
+
+/**
+ * Set the User-Agent sent with libkiwix's own HTTP requests: book illustrations
+ * downloaded with curl, and downloads made through a `Downloader` (aria2c).
+ *
+ * Kiwix software identifies itself as `kiwix/<version> (<software>)`, for
+ * example `kiwix/2.4.0 (desktop-linux)` (see kiwix/operations#797). The default
+ * is `kiwix/<libkiwix version> (libkiwix)`.
+ *
+ * Call it once at startup, before creating a `Downloader`: aria2c receives the
+ * User-Agent when it is launched.
+ *
+ * @param userAgent The User-Agent to send. An empty string restores the default.
+ */
+void setUserAgent(const std::string& userAgent);
+
+/**
+ * Return the User-Agent sent with libkiwix's own HTTP requests.
+ *
+ * @return the value set with `setUserAgent()`, or the default.
+ */
+std::string getUserAgent();
 }
 #endif // KIWIX_TOOLS_H

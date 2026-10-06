@@ -281,7 +281,11 @@ std::string libkiwixVersion()
 
 } // unnamed namespace
 
-TEST(networkTools, downloadSendsKiwixUserAgent)
+namespace
+{
+
+// Run kiwix::download() against a local server and return the User-Agent it sent.
+std::string userAgentSentByDownload()
 {
   httplib::Server server;
   std::string userAgent;
@@ -290,7 +294,7 @@ TEST(networkTools, downloadSendsKiwixUserAgent)
     res.set_content("ok", "text/plain");
   });
   const int port = server.bind_to_any_port("127.0.0.1");
-  ASSERT_GT(port, 0);
+  EXPECT_GT(port, 0);
   std::thread serverThread([&]() { server.listen_after_bind(); });
   // stop() is a no-op until the server is running.
   while ( !server.is_running() ) {
@@ -304,7 +308,36 @@ TEST(networkTools, downloadSendsKiwixUserAgent)
   server.stop();
   serverThread.join();
   EXPECT_EQ(body, "ok");
-  EXPECT_EQ(userAgent, "kiwix/" + libkiwixVersion() + " (libkiwix)");
+  return userAgent;
+}
+
+// Restore the default User-Agent when a test that changes it ends.
+struct UserAgentReset
+{
+  ~UserAgentReset() { kiwix::setUserAgent(""); }
+};
+
+} // unnamed namespace
+
+TEST(networkTools, downloadSendsKiwixUserAgent)
+{
+  const std::string defaultUserAgent = "kiwix/" + libkiwixVersion() + " (libkiwix)";
+  EXPECT_EQ(kiwix::getUserAgent(), defaultUserAgent);
+  EXPECT_EQ(userAgentSentByDownload(), defaultUserAgent);
+}
+
+TEST(networkTools, setUserAgent)
+{
+  const UserAgentReset reset;
+  kiwix::setUserAgent("kiwix/2.4.0 (desktop-linux)");
+  EXPECT_EQ(kiwix::getUserAgent(), "kiwix/2.4.0 (desktop-linux)");
+  EXPECT_EQ(userAgentSentByDownload(), "kiwix/2.4.0 (desktop-linux)");
+
+  // An empty User-Agent restores the default
+  kiwix::setUserAgent("");
+  const std::string defaultUserAgent = "kiwix/" + libkiwixVersion() + " (libkiwix)";
+  EXPECT_EQ(kiwix::getUserAgent(), defaultUserAgent);
+  EXPECT_EQ(userAgentSentByDownload(), defaultUserAgent);
 }
 
 TEST(pathTools, resolveContentOrigin)

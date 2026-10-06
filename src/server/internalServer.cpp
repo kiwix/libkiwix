@@ -768,7 +768,6 @@ MustacheData InternalServer::get_default_data() const
 {
   MustacheData data;
   data.set("root", m_root);
-  data.set("user_agent", getUserAgent("serve"));
   return data;
 }
 
@@ -864,8 +863,7 @@ std::unique_ptr<Response> InternalServer::handle_viewer_settings(const RequestCo
   const kainjow::mustache::object data{
     {"enable_toolbar", m_withTaskbar ? "true" : "false" },
     {"enable_link_blocking", m_blockExternalLinks ? "true" : "false" },
-    {"enable_library_button", m_withLibraryButton ? "true" : "false" },
-    {"user_agent", getUserAgent("serve") }
+    {"enable_library_button", m_withLibraryButton ? "true" : "false" }
   };
   return ContentResponse::build(RESOURCE::templates::viewer_settings_js, data, "application/javascript; charset=utf-8");
 }

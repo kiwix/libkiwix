@@ -31,6 +31,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <mutex>
 #include <stdexcept>
 
 #ifdef _WIN32
@@ -73,8 +74,26 @@ void updatePublicIpAddress(IpAddress& publicIpAddr, const IpAddress& interfaceIp
 
 } // unnamed namespace
 
-std::string getUserAgent(const std::string& component) {
-  return std::string("kiwix/") + LIBKIWIX_VERSION + " (" + component + ")";
+namespace
+{
+
+std::mutex userAgentMutex;
+std::string userAgent;
+
+} // unnamed namespace
+
+void setUserAgent(const std::string& newUserAgent) {
+  std::lock_guard<std::mutex> lock(userAgentMutex);
+  userAgent = newUserAgent;
+}
+
+std::string getUserAgent() {
+  std::lock_guard<std::mutex> lock(userAgentMutex);
+  if (!userAgent.empty()) {
+    return userAgent;
+  }
+  // Format agreed for Kiwix software in kiwix/operations#797
+  return std::string("kiwix/") + LIBKIWIX_VERSION + " (libkiwix)";
 }
 
 std::string download(const std::string& url) {
