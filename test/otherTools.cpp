@@ -17,6 +17,9 @@
  *
  */
 
+// httplib.h includes the Windows headers, so it must come before
+// path_testing_tools.h, whose S macro breaks a template in winnt.h.
+#include "./httplib.h"
 #include "gtest/gtest.h"
 #include "../include/tools.h"
 #include "../src/tools/otherTools.h"
@@ -24,7 +27,12 @@
 #include "../src/server/i18n_utils.h"
 #include "./path_testing_tools.h"
 
+#include "../include/version.h"
+#include "../src/tools/networkTools.h"
+
+#include <chrono>
 #include <regex>
+#include <thread>
 
 namespace
 {
@@ -259,12 +267,6 @@ TEST(networkTools, getBestPublicIps)
   std::cout << "getBestPublicIps(): " << "[" << kiwix::getBestPublicIps().addr << ", " << kiwix::getBestPublicIps().addr6 << "]" << std::endl;
   std::cout << "getBestPublicIp(): " << kiwix::getBestPublicIp() << std::endl;
 }
-
-#include "./httplib.h"
-#include "../include/version.h"
-#include "../src/tools/networkTools.h"
-#include <chrono>
-#include <thread>
 
 namespace
 {
