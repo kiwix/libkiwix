@@ -554,12 +554,12 @@ bool Book::readOnly() const
   return mp_impl->m_readOnly;
 }
 
-const std::string& Book::getId() const
+std::string Book::getId() const
 {
   return mp_impl->m_id;
 }
 
-const std::string& Book::getPath() const
+std::string Book::getPath() const
 {
   return mp_impl->m_path;
 }
@@ -569,57 +569,57 @@ bool Book::isPathValid() const
   return mp_impl->m_pathValid;
 }
 
-const std::string& Book::getTitle() const
+std::string Book::getTitle() const
 {
   return mp_impl->m_title;
 }
 
-const std::string& Book::getDescription() const
+std::string Book::getDescription() const
 {
   return mp_impl->m_description;
 }
 
-const std::string& Book::getCommaSeparatedLanguages() const
+std::string Book::getCommaSeparatedLanguages() const
 {
   return mp_impl->m_language;
 }
 
-const std::string& Book::getCreator() const
+std::string Book::getCreator() const
 {
   return mp_impl->m_creator;
 }
 
-const std::string& Book::getPublisher() const
+std::string Book::getPublisher() const
 {
   return mp_impl->m_publisher;
 }
 
-const std::string& Book::getDate() const
+std::string Book::getDate() const
 {
   return mp_impl->m_date;
 }
 
-const std::string& Book::getUrl(AcquisitionLinkKind linkKind) const
+std::string Book::getUrl(AcquisitionLinkKind linkKind) const
 {
   return mp_impl->m_urls[linkIndex(linkKind)];
 }
 
-const std::string& Book::getName() const
+std::string Book::getName() const
 {
   return mp_impl->m_name;
 }
 
-const std::string& Book::getTags() const
+std::string Book::getTags() const
 {
   return mp_impl->m_tags;
 }
 
-const std::string& Book::getFlavour() const
+std::string Book::getFlavour() const
 {
   return mp_impl->m_flavour;
 }
 
-const std::string& Book::getOrigId() const
+std::string Book::getOrigId() const
 {
   return mp_impl->m_origId;
 }
@@ -639,7 +639,7 @@ const uint64_t Book::getSize() const
   return mp_impl->m_size;
 }
 
-const std::string& Book::getDownloadId() const
+std::string Book::getDownloadId() const
 {
   return mp_impl->m_downloadId;
 }

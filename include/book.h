@@ -120,25 +120,26 @@ class Book
   std::string getHumanReadableIdFromPath() const;
 
   bool readOnly() const;
-  const std::string& getId() const;
-  const std::string& getPath() const;
+  std::string getId() const;
+  std::string getPath() const;
   bool isPathValid() const;
-  const std::string& getTitle() const;
-  const std::string& getDescription() const;
-  const std::string& getCommaSeparatedLanguages() const;
+  std::string getTitle() const;
+  std::string getDescription() const;
+  std::string getCommaSeparatedLanguages() const;
   const std::vector<std::string> getLanguages() const;
-  const std::string& getCreator() const;
-  const std::string& getPublisher() const;
-  const std::string& getDate() const;
+  std::string getCreator() const;
+  std::string getPublisher() const;
+  std::string getDate() const;
+
   // Returns the acquisition link of the given kind (empty if not set).
-  const std::string& getUrl(AcquisitionLinkKind linkKind) const;
-  const std::string& getName() const;
+  std::string getUrl(AcquisitionLinkKind linkKind) const;
+  std::string getName() const;
   std::string getCategory() const;
-  const std::string& getTags() const;
+  std::string getTags() const;
   std::string getTagStr(const std::string& tagName) const;
   bool getTagBool(const std::string& tagName) const;
-  const std::string& getFlavour() const;
-  const std::string& getOrigId() const;
+  std::string getFlavour() const;
+  std::string getOrigId() const;
   const uint64_t getArticleCount() const;
   const uint64_t getMediaCount() const;
   const uint64_t getSize() const;
@@ -146,7 +147,7 @@ class Book
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
 
-  const std::string& getDownloadId() const;
+  std::string getDownloadId() const;
 
   void setReadOnly(bool readOnly);
   void setId(const std::string& id);
