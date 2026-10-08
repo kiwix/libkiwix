@@ -72,6 +72,7 @@
 	"download": "Télécharger",
 	"direct-download-link-text": "Direct",
 	"direct-download-alt-text": "Télécharger directement via HTTP(S)",
+	"metalink-download-link-text": "Lien méta",
 	"hash-download-link-text": "Hachage SHA-256",
 	"hash-download-alt-text": "Affiche le hachage SHA-256 du fichier",
 	"magnet-link-text": "Lien Magnet",

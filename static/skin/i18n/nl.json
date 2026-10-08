@@ -65,6 +65,7 @@
 	"download": "Downloaden",
 	"direct-download-link-text": "Direct",
 	"direct-download-alt-text": "Direct downloaden via HTTP(S)",
+	"metalink-download-link-text": "Metakoppeling",
 	"hash-download-link-text": "SHA-256-controlesom",
 	"hash-download-alt-text": "De SHA-256-controlesom van het bestand weergeven",
 	"magnet-link-text": "Magnet-koppeling",

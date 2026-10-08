@@ -63,6 +63,7 @@
 	"download": "다운로드",
 	"direct-download-link-text": "직접",
 	"direct-download-alt-text": "HTTP(S)를 통해 직접 다운로드",
+	"metalink-download-link-text": "메타링크",
 	"hash-download-link-text": "SHA-256 체크섬",
 	"hash-download-alt-text": "SHA-256 파일 체크섬 표시",
 	"magnet-link-text": "마그넷 링크",
