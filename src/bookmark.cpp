@@ -57,20 +57,9 @@ Bookmark::Bookmark(const Book& book, const std::string& path, const std::string&
   mp_impl->m_date = book.getDate();
 }
 
-Bookmark::Bookmark(const Bookmark& other) :
-  mp_impl(new Impl(*other.mp_impl))
-{
-}
+Bookmark::Bookmark(const Bookmark& other) = default;
 
-Bookmark::Bookmark(Bookmark&& other) noexcept = default;
-
-Bookmark& Bookmark::operator=(const Bookmark& other)
-{
-  *mp_impl = *other.mp_impl;
-  return *this;
-}
-
-Bookmark& Bookmark::operator=(Bookmark&& other) noexcept = default;
+Bookmark& Bookmark::operator=(const Bookmark& other) = default;
 
 /* Destructor */
 Bookmark::~Bookmark() = default;
