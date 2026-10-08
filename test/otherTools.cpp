@@ -17,6 +17,9 @@
  *
  */
 
+// httplib.h includes the Windows headers, so it must come before
+// path_testing_tools.h, whose S macro breaks a template in winnt.h.
+#include "./httplib.h"
 #include "gtest/gtest.h"
 #include "../include/tools.h"
 #include "../src/tools/otherTools.h"
@@ -24,7 +27,12 @@
 #include "../src/server/i18n_utils.h"
 #include "./path_testing_tools.h"
 
+#include "../include/version.h"
+#include "../src/tools/networkTools.h"
+
+#include <chrono>
 #include <regex>
+#include <thread>
 
 namespace
 {
@@ -258,6 +266,80 @@ TEST(networkTools, getBestPublicIps)
 {
   std::cout << "getBestPublicIps(): " << "[" << kiwix::getBestPublicIps().addr << ", " << kiwix::getBestPublicIps().addr6 << "]" << std::endl;
   std::cout << "getBestPublicIp(): " << kiwix::getBestPublicIp() << std::endl;
+}
+
+namespace
+{
+
+std::string libkiwixVersion()
+{
+  for ( const auto& lib : kiwix::getVersions() ) {
+    if ( lib.first == "libkiwix" ) {
+      return lib.second;
+    }
+  }
+  return "";
+}
+
+} // unnamed namespace
+
+namespace
+{
+
+// Run kiwix::download() against a local server and return the User-Agent it sent.
+std::string userAgentSentByDownload()
+{
+  httplib::Server server;
+  std::string userAgent;
+  server.Get("/", [&](const httplib::Request& req, httplib::Response& res) {
+    userAgent = req.get_header_value("User-Agent");
+    res.set_content("ok", "text/plain");
+  });
+  const int port = server.bind_to_any_port("127.0.0.1");
+  EXPECT_GT(port, 0);
+  std::thread serverThread([&]() { server.listen_after_bind(); });
+  // stop() is a no-op until the server is running.
+  while ( !server.is_running() ) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+
+  const std::string url = "http://127.0.0.1:" + std::to_string(port) + "/";
+  std::string body;
+  EXPECT_NO_THROW(body = kiwix::download(url));
+
+  server.stop();
+  serverThread.join();
+  EXPECT_EQ(body, "ok");
+  return userAgent;
+}
+
+// Restore the default User-Agent when a test that changes it ends.
+struct UserAgentReset
+{
+  ~UserAgentReset() { kiwix::setUserAgent(""); }
+};
+
+} // unnamed namespace
+
+TEST(networkTools, downloadSendsKiwixUserAgent)
+{
+  const std::string defaultUserAgent = "kiwix/" + libkiwixVersion() + " (libkiwix)";
+  EXPECT_EQ(kiwix::getUserAgent(), defaultUserAgent);
+  EXPECT_EQ(userAgentSentByDownload(), defaultUserAgent);
+}
+
+TEST(networkTools, setUserAgent)
+{
+  const UserAgentReset reset;
+  kiwix::setUserAgent("kiwix/2.4.0 (desktop-linux)");
+  EXPECT_EQ(kiwix::getUserAgent(), "kiwix/2.4.0 (desktop-linux)");
+  EXPECT_EQ(userAgentSentByDownload(), "kiwix/2.4.0 (desktop-linux)");
+
+  // An empty User-Agent restores the default
+  kiwix::setUserAgent("");
+  const std::string defaultUserAgent = "kiwix/" + libkiwixVersion() + " (libkiwix)";
+  EXPECT_EQ(kiwix::getUserAgent(), defaultUserAgent);
+  EXPECT_EQ(userAgentSentByDownload(), defaultUserAgent);
 }
 
 TEST(pathTools, resolveContentOrigin)

@@ -27,9 +27,11 @@
 #include <string.h>
 
 #include <curl/curl.h>
+#include <kiwix_config.h>
 
 #include <sstream>
 #include <iostream>
+#include <mutex>
 #include <stdexcept>
 
 #ifdef _WIN32
@@ -72,10 +74,34 @@ void updatePublicIpAddress(IpAddress& publicIpAddr, const IpAddress& interfaceIp
 
 } // unnamed namespace
 
+namespace
+{
+
+std::mutex userAgentMutex;
+std::string userAgent;
+
+} // unnamed namespace
+
+void setUserAgent(const std::string& newUserAgent) {
+  std::lock_guard<std::mutex> lock(userAgentMutex);
+  userAgent = newUserAgent;
+}
+
+std::string getUserAgent() {
+  std::lock_guard<std::mutex> lock(userAgentMutex);
+  if (!userAgent.empty()) {
+    return userAgent;
+  }
+  // Format agreed for Kiwix software in kiwix/operations#797
+  return std::string("kiwix/") + LIBKIWIX_VERSION + " (libkiwix)";
+}
+
 std::string download(const std::string& url) {
   auto curl = curl_easy_init();
   std::stringstream ss;
+  const std::string userAgent = getUserAgent();
   curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent.c_str());
   curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback_to_iss);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ss);

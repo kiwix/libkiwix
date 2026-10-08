@@ -12,6 +12,7 @@
 #include "tools/pathTools.h"
 #include "tools/stringTools.h"
 #include "tools/otherTools.h"
+#include "tools/networkTools.h"
 #include "downloader.h" // For AriaError
 
 #ifdef _WIN32
@@ -75,6 +76,7 @@ Aria2::Aria2(std::string sessionFileDir):
 #endif
   std::string stop_with_pid = "--stop-with-process=" + to_string(pid);
   std::string rpc_secret = "--rpc-secret=" + m_secret;
+  std::string userAgentOption = "--user-agent=" + getUserAgent();
   m_secret = "token:"+m_secret;
 
   std::string aria2cmd = appendToDirectory(
@@ -88,6 +90,7 @@ Aria2::Aria2(std::string sessionFileDir):
     callCmd.push_back(ARIA2_CMD);
   }
   callCmd.push_back("--follow-metalink=mem");
+  callCmd.push_back(userAgentOption.c_str());
   callCmd.push_back("--enable-rpc");
   callCmd.push_back(rpc_secret.c_str());
   callCmd.push_back(rpc_port.c_str());
