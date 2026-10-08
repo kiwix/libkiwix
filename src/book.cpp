@@ -206,10 +206,6 @@ bool Book::update(const kiwix::Book& other)
   return true;
 }
 
-const std::string& Book::getUrl() const {
-  return getUrl(AcquisitionLinkKind::DIRECT);
-}
-
 const std::string& Book::getUrl(AcquisitionLinkKind linkKind) const {
   return m_urls[linkIndex(linkKind)];
 }
@@ -454,20 +450,6 @@ const std::string& Book::Illustration::getData() const
     }
   }
   return data;
-}
-
-const std::string& Book::getFavicon() const {
-  return getDefaultIllustration().getData();
-}
-
-const std::string& Book::getFaviconUrl() const
-{
-  return getDefaultIllustration().url;
-}
-
-const std::string& Book::getFaviconMimeType() const
-{
-  return getDefaultIllustration().mimeType;
 }
 
 std::string Book::getTagStr(const std::string& tagName) const {
