@@ -21,7 +21,7 @@
 #define KIWIX_BOOKMARK_H
 
 #include <string>
-#include <memory>
+#include "smartptr.h"
 
 namespace pugi {
 class xml_node;
@@ -50,9 +50,7 @@ class Bookmark
   Bookmark(const Book& book, const std::string& path, const std::string& title);
 
   Bookmark(const Bookmark& other);
-  Bookmark(Bookmark&& other) noexcept;
   Bookmark& operator=(const Bookmark& other);
-  Bookmark& operator=(Bookmark&& other) noexcept;
 
   ~Bookmark();
 
@@ -78,7 +76,7 @@ class Bookmark
 
  private:
   class Impl;
-  std::unique_ptr<Impl> mp_impl;
+  ValuePtr<Impl> mp_impl;
 };
 
 }

@@ -496,7 +496,7 @@ class Library: public std::enable_shared_from_this<Library>
   friend class OPDSDumper;
 
 private: // types
-  typedef const std::string& (Book::*BookStrPropMemFn)() const;
+  typedef std::string (Book::*BookStrPropMemFn)() const;
   struct Entry : Book
   {
     Library::Revision lastUpdatedRevision = 0;
