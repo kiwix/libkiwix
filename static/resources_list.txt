@@ -60,6 +60,7 @@ skin/favicon/apple-touch-icon.png
 skin/favicon/browserconfig.xml
 skin/favicon/favicon-16x16.png
 skin/favicon/favicon-32x32.png
+skin/favicon/favicon-96x96.png
 skin/favicon/favicon.ico
 skin/favicon/mstile-70x70.png
 skin/favicon/mstile-144x144.png
@@ -67,4 +68,5 @@ skin/favicon/mstile-150x150.png
 skin/favicon/mstile-310x150.png
 skin/favicon/mstile-310x310.png
 skin/favicon/safari-pinned-tab.svg
+skin/favicon/favicon.svg
 skin/favicon/site.webmanifest
