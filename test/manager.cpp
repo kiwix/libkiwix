@@ -43,7 +43,7 @@ TEST(ManagerTest, addBookFromPathAndGetIdTest)
     const std::string url = "url";
     bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave, url, true);
     book = lib->getBookById(bookId);
-    auto savedPath = resolveAbsPath(manager.writableLibraryPath, pathToSave);
+    auto savedPath = resolveAbsPath(manager.getWritableLibraryPath(), pathToSave);
     EXPECT_EQ(book.getPath(), savedPath);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), url);
 }
@@ -92,7 +92,7 @@ TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
               "does_not_exist.xml");
 
     EXPECT_FALSE(manager.readFile(nonExistentPath, /*readOnly=*/false));
-    EXPECT_EQ(manager.writableLibraryPath, nonExistentPath);
+    EXPECT_EQ(manager.getWritableLibraryPath(), nonExistentPath);
 
     const std::string pathToSave = "./relative.zim";
     auto bookId = manager.addBookFromPathAndGetId("./test/example.zim", pathToSave);
