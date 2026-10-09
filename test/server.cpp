@@ -82,7 +82,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=42e90cb9" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=9c302db9" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=8bd765e1" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/fonts/Poppins.ttf?cacheid=af705837" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Roboto.ttf" },
@@ -343,7 +343,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
     <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=d2d6933b" defer></script>
-    <script type="text/javascript" src="./skin/viewer.js?cacheid=9c302db9" defer></script>
+    <script type="text/javascript" src="./skin/viewer.js?cacheid=8bd765e1" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
       const blankPageUrl = root + "/skin/blank.html?cacheid=6b1fa032";
           <label for="kiwix_button_show_toggle"><img src="./skin/caret.svg?cacheid=55f025f6" alt=""></label>
@@ -2129,6 +2129,25 @@ TEST_F(ServerTest, RangeHeaderIsCaseInsensitive)
     EXPECT_EQ(206, r->status);
     EXPECT_EQ("bytes 100-200/20077", r->get_header_value("Content-Range"));
     EXPECT_EQ(r0->body, r->body);
+  }
+}
+
+
+TEST_F(ServerTest, bookinfo)
+{
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/bookinfo?content=zimfile");
+    EXPECT_EQ(200, r->status);
+    EXPECT_EQ("{\"hasFulltextIndex\":true}", r->body);
+  }
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/bookinfo?content=poor");
+    EXPECT_EQ(200, r->status);
+    EXPECT_EQ("{\"hasFulltextIndex\":false}", r->body);
+  }
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/bookinfo?content=no-such-book");
+    EXPECT_EQ(404, r->status);
   }
 }
 
