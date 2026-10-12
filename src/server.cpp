@@ -61,8 +61,7 @@ bool Server::start() {
   mp_server.reset(new InternalServer(
     mp_library,
     mp_nameMapper,
-    m_root,
-    m_ipMode));
+    m_root));
 
   mp_server->setAddress(m_addr);
   mp_server->setPort(m_port);
@@ -75,6 +74,7 @@ bool Server::start() {
   mp_server->setIpConnectionLimit(m_ipConnectionLimit);
   mp_server->setCatalogOnlyMode(m_catalogOnlyMode);
   mp_server->setContentServerUrl(m_contentServerUrl);
+  mp_server->setIpMode(m_ipMode);
 
   if (mp_server->start()) {
     // this syncs m_addr of InternalServer and Server as they may diverge

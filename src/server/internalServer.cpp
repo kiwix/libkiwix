@@ -481,11 +481,9 @@ public:
 
 InternalServer::InternalServer(LibraryPtr library,
                                std::shared_ptr<NameMapper> nameMapper,
-                               std::string root,
-                               IpMode ipMode) :
+                               std::string root) :
   m_root(root),
   m_rootPrefixOfDecodedURL(m_root),
-  m_ipMode(ipMode),
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
@@ -554,6 +552,12 @@ void InternalServer::setContentServerUrl(std::string url)
   m_contentServerUrl = url;
 }
 
+void InternalServer::setIpMode(IpMode mode)
+{
+  m_ipModeAsSetByTheUser = mode;
+  m_ipMode = mode;
+}
+
 struct MHD_Daemon* InternalServer::startMHD(int flags,
                                             struct sockaddr* sockaddr)
 {
@@ -570,6 +574,8 @@ struct MHD_Daemon* InternalServer::startMHD(int flags,
 }
 
 void InternalServer::startMHD() {
+  m_ipMode = m_ipModeAsSetByTheUser;
+
   InSockAddr inSockAddr(m_port);
   if (m_addr.addr.empty() && m_addr.addr6.empty()) { // No ip address provided
     if (m_ipMode == IpMode::AUTO) m_ipMode = IpMode::ALL;

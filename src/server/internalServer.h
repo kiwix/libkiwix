@@ -96,8 +96,7 @@ class InternalServer {
   public:
     InternalServer(LibraryPtr library,
                    std::shared_ptr<NameMapper> nameMapper,
-                   std::string root,
-                   IpMode ipMode);
+                   std::string root);
     virtual ~InternalServer();
 
     void setAddress(const IpAddress& addr);
@@ -111,6 +110,7 @@ class InternalServer {
     void setBlockExternalLinks(bool blockExternalLinks);
     void setCatalogOnlyMode(bool enable);
     void setContentServerUrl(std::string url);
+    void setIpMode(IpMode mode);
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
                                const char* url,
@@ -185,7 +185,8 @@ class InternalServer {
     bool m_withTaskbar = true;
     bool m_withLibraryButton = true;
     bool m_blockExternalLinks = false;
-    IpMode m_ipMode;
+    IpMode m_ipModeAsSetByTheUser = IpMode::AUTO;
+    IpMode m_ipMode = IpMode::AUTO;
     std::string m_indexTemplateString;
     int m_ipConnectionLimit = 0;
     struct MHD_Daemon* mp_daemon;
