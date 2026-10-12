@@ -70,25 +70,23 @@ namespace kiwix
         *
         * Default port is 80, but using it requires special privileges.
         */
-       void setPort(int port) { m_port = port; }
+       void setPort(int port);
 
-       void setNbThreads(int threads) { m_nbThreads = threads; }
-       void setMultiZimSearchLimit(unsigned int limit) { m_multizimSearchLimit = limit; }
-       void setIpConnectionLimit(int limit) { m_ipConnectionLimit = limit; }
-       void setVerbose(bool verbose) { m_verbose = verbose; }
-       void setIndexTemplateString(const std::string& indexTemplateString) { m_indexTemplateString = indexTemplateString; }
-       void setTaskbar(bool withTaskbar, bool withLibraryButton)
-        { m_withTaskbar = withTaskbar; m_withLibraryButton = withLibraryButton; }
-       void setBlockExternalLinks(bool blockExternalLinks)
-        { m_blockExternalLinks = blockExternalLinks; }
-       void setCatalogOnlyMode(bool enable) { m_catalogOnlyMode = enable; }
-       void setContentServerUrl(std::string url) { m_contentServerUrl = url; }
+       void setNbThreads(int threads);
+       void setMultiZimSearchLimit(unsigned int limit);
+       void setIpConnectionLimit(int limit);
+       void setVerbose(bool verbose);
+       void setIndexTemplateString(const std::string& indexTemplateString);
+       void setTaskbar(bool withTaskbar, bool withLibraryButton);
+       void setBlockExternalLinks(bool blockExternalLinks);
+       void setCatalogOnlyMode(bool enable);
+       void setContentServerUrl(std::string url);
 
        /**
         * Listen for incoming connections on all IP addresses of the specified
         * IP protocol family.
         */
-       void setIpMode(IpMode mode) { m_ipMode = mode; }
+       void setIpMode(IpMode mode);
 
        /**
         * Get the port on which the server listens for incoming connections

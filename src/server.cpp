@@ -113,6 +113,11 @@ void Server::setAddress(const std::string& addr)
   }
 }
 
+void Server::setPort(int port)
+{
+  m_port = port;
+}
+
 int Server::getPort() const
 {
   return m_port;
@@ -121,6 +126,57 @@ int Server::getPort() const
 IpAddress Server::getAddress() const
 {
   return m_addr;
+}
+
+void Server::setNbThreads(int threads)
+{
+  m_nbThreads = threads;
+}
+
+void Server::setMultiZimSearchLimit(unsigned int limit)
+{
+  m_multizimSearchLimit = limit;
+}
+
+void Server::setIpConnectionLimit(int limit)
+{
+  m_ipConnectionLimit = limit;
+}
+
+void Server::setVerbose(bool verbose)
+{
+  m_verbose = verbose;
+}
+
+void Server::setIndexTemplateString(const std::string& indexTemplateString)
+{
+  m_indexTemplateString = indexTemplateString;
+}
+
+void Server::setTaskbar(bool withTaskbar, bool withLibraryButton)
+{
+  m_withTaskbar = withTaskbar;
+  m_withLibraryButton = withLibraryButton;
+}
+
+void Server::setBlockExternalLinks(bool blockExternalLinks)
+{
+  m_blockExternalLinks = blockExternalLinks;
+}
+
+void Server::setCatalogOnlyMode(bool enable)
+{
+  m_catalogOnlyMode = enable;
+}
+
+void Server::setContentServerUrl(std::string url)
+{
+  m_contentServerUrl = url;
+}
+
+void Server::setIpMode(IpMode mode)
+{
+  m_ipMode = mode;
 }
 
 IpMode Server::getIpMode() const
