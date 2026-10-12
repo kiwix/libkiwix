@@ -127,6 +127,8 @@ namespace kiwix
         */
        std::vector<std::string> getServerAccessUrls() const;
 
+       bool isRunning() const;
+
      protected:
        std::shared_ptr<Library> mp_library;
        std::shared_ptr<NameMapper> mp_nameMapper;

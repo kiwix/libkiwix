@@ -266,6 +266,7 @@ TEST(ServerTest0, settersAreNotAllowedToBeCalledOnARunningServer)
   }
 
   ASSERT_TRUE(server.start());
+  ASSERT_TRUE(server.isRunning());
 
   EXPECT_THROW( server.setRoot("sqrt")             , std::runtime_error );
   EXPECT_THROW( server.setAddress("127.0.0.1")     , std::runtime_error );
@@ -281,6 +282,7 @@ TEST(ServerTest0, settersAreNotAllowedToBeCalledOnARunningServer)
   EXPECT_THROW( server.setContentServerUrl("")     , std::runtime_error );
 
   EXPECT_NO_THROW(server.stop());
+  ASSERT_FALSE(server.isRunning());
 
   EXPECT_NO_THROW( server.setRoot("sqrt")               );
   EXPECT_NO_THROW( server.setAddress("127.0.0.1")       );
@@ -296,6 +298,7 @@ TEST(ServerTest0, settersAreNotAllowedToBeCalledOnARunningServer)
   EXPECT_NO_THROW( server.setContentServerUrl("")       );
 
   ASSERT_TRUE(server.start());
+  ASSERT_TRUE(server.isRunning());
 }
 
 TEST_F(ServerTest, 200)

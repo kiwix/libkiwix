@@ -582,9 +582,15 @@ bool InternalServer::start() {
   return true;
 }
 
+bool InternalServer::isRunning() const
+{
+  return mp_daemon != nullptr;
+}
+
 void InternalServer::stop()
 {
   MHD_stop_daemon(mp_daemon);
+  mp_daemon = nullptr;
 }
 
 static MHD_Result staticHandlerCallback(void* cls,

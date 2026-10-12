@@ -120,6 +120,7 @@ class InternalServer {
                                size_t* upload_data_size,
                                void** cont_cls);
     bool start();
+    bool isRunning() const;
     void stop();
     IpAddress getAddress() const { return m_addr; }
     int getPort() const { return m_port; }

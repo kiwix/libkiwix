@@ -199,4 +199,9 @@ std::vector<std::string> Server::getServerAccessUrls() const
   return result;
 }
 
+bool Server::isRunning() const
+{
+  return mp_server && mp_server->isRunning();
+}
+
 }
