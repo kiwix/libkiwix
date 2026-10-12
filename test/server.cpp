@@ -279,6 +279,23 @@ TEST(ServerTest0, settersAreNotAllowedToBeCalledOnARunningServer)
   EXPECT_THROW( server.setBlockExternalLinks(true) , std::runtime_error );
   EXPECT_THROW( server.setCatalogOnlyMode(false)   , std::runtime_error );
   EXPECT_THROW( server.setContentServerUrl("")     , std::runtime_error );
+
+  EXPECT_NO_THROW(server.stop());
+
+  EXPECT_NO_THROW( server.setRoot("sqrt")               );
+  EXPECT_NO_THROW( server.setAddress("127.0.0.1")       );
+  EXPECT_NO_THROW( server.setPort(SERVER_PORT)          );
+  EXPECT_NO_THROW( server.setNbThreads(2)               );
+  EXPECT_NO_THROW( server.setMultiZimSearchLimit(5)     );
+  EXPECT_NO_THROW( server.setIpConnectionLimit(8)       );
+  EXPECT_NO_THROW( server.setVerbose(true)              );
+  EXPECT_NO_THROW( server.setIndexTemplateString("")    );
+  EXPECT_NO_THROW( server.setTaskbar(true, true)        );
+  EXPECT_NO_THROW( server.setBlockExternalLinks(true)   );
+  EXPECT_NO_THROW( server.setCatalogOnlyMode(false)     );
+  EXPECT_NO_THROW( server.setContentServerUrl("")       );
+
+  ASSERT_TRUE(server.start());
 }
 
 TEST_F(ServerTest, 200)
