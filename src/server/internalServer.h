@@ -95,8 +95,7 @@ class LibraryDumper;
 class InternalServer {
   public:
     InternalServer(LibraryPtr library,
-                   std::shared_ptr<NameMapper> nameMapper,
-                   std::string root);
+                   std::shared_ptr<NameMapper> nameMapper);
     virtual ~InternalServer();
 
     void setAddress(const IpAddress& addr);
@@ -111,6 +110,7 @@ class InternalServer {
     void setCatalogOnlyMode(bool enable);
     void setContentServerUrl(std::string url);
     void setIpMode(IpMode mode);
+    void setRoot(const std::string& root);
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
                                const char* url,

@@ -480,10 +480,7 @@ public:
 
 
 InternalServer::InternalServer(LibraryPtr library,
-                               std::shared_ptr<NameMapper> nameMapper,
-                               std::string root) :
-  m_root(root),
-  m_rootPrefixOfDecodedURL(m_root),
+                               std::shared_ptr<NameMapper> nameMapper) :
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
@@ -491,7 +488,6 @@ InternalServer::InternalServer(LibraryPtr library,
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
   m_customizedResources(new CustomizedResources)
 {
-  m_root = urlEncode(m_root);
 }
 
 InternalServer::~InternalServer() = default;
@@ -556,6 +552,12 @@ void InternalServer::setIpMode(IpMode mode)
 {
   m_ipModeAsSetByTheUser = mode;
   m_ipMode = mode;
+}
+
+void InternalServer::setRoot(const std::string& root)
+{
+  m_rootPrefixOfDecodedURL = root;
+  m_root = urlEncode(m_rootPrefixOfDecodedURL);
 }
 
 struct MHD_Daemon* InternalServer::startMHD(int flags,

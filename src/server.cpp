@@ -58,11 +58,9 @@ Server::~Server()
 }
 
 bool Server::start() {
-  mp_server.reset(new InternalServer(
-    mp_library,
-    mp_nameMapper,
-    m_root));
+  mp_server.reset(new InternalServer(mp_library, mp_nameMapper));
 
+  mp_server->setRoot(m_root);
   mp_server->setAddress(m_addr);
   mp_server->setPort(m_port);
   mp_server->setNbThreads(m_nbThreads);
