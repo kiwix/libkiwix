@@ -61,20 +61,21 @@ bool Server::start() {
   mp_server.reset(new InternalServer(
     mp_library,
     mp_nameMapper,
-    m_addr,
-    m_port,
     m_root,
-    m_nbThreads,
-    m_multizimSearchLimit,
-    m_verbose,
-    m_withTaskbar,
-    m_withLibraryButton,
-    m_blockExternalLinks,
-    m_ipMode,
-    m_indexTemplateString,
-    m_ipConnectionLimit,
-    m_catalogOnlyMode,
-    m_contentServerUrl));
+    m_ipMode));
+
+  mp_server->setAddress(m_addr);
+  mp_server->setPort(m_port);
+  mp_server->setNbThreads(m_nbThreads);
+  mp_server->setMultiZimSearchLimit(m_multizimSearchLimit);
+  mp_server->setVerbose(m_verbose);
+  mp_server->setTaskbar(m_withTaskbar, m_withLibraryButton);
+  mp_server->setBlockExternalLinks(m_blockExternalLinks);
+  mp_server->setIndexTemplateString(m_indexTemplateString);
+  mp_server->setIpConnectionLimit(m_ipConnectionLimit);
+  mp_server->setCatalogOnlyMode(m_catalogOnlyMode);
+  mp_server->setContentServerUrl(m_contentServerUrl);
+
   if (mp_server->start()) {
     // this syncs m_addr of InternalServer and Server as they may diverge
     m_addr = mp_server->getAddress();

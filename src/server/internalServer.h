@@ -96,21 +96,21 @@ class InternalServer {
   public:
     InternalServer(LibraryPtr library,
                    std::shared_ptr<NameMapper> nameMapper,
-                   IpAddress addr,
-                   int port,
                    std::string root,
-                   int nbThreads,
-                   unsigned int multizimSearchLimit,
-                   bool verbose,
-                   bool withTaskbar,
-                   bool withLibraryButton,
-                   bool blockExternalLinks,
-                   IpMode ipMode,
-                   std::string indexTemplateString,
-                   int ipConnectionLimit,
-                   bool catalogOnlyMode,
-                   std::string zimViewerURL);
+                   IpMode ipMode);
     virtual ~InternalServer();
+
+    void setAddress(const IpAddress& addr);
+    void setPort(int port);
+    void setNbThreads(int threads);
+    void setMultiZimSearchLimit(unsigned int limit);
+    void setIpConnectionLimit(int limit);
+    void setVerbose(bool verbose);
+    void setIndexTemplateString(const std::string& indexTemplateString);
+    void setTaskbar(bool withTaskbar, bool withLibraryButton);
+    void setBlockExternalLinks(bool blockExternalLinks);
+    void setCatalogOnlyMode(bool enable);
+    void setContentServerUrl(std::string url);
 
     MHD_Result handlerCallback(struct MHD_Connection* connection,
                                const char* url,
@@ -176,18 +176,18 @@ class InternalServer {
 
   private: // data
     IpAddress m_addr;
-    int m_port;
+    int m_port = 80;
     std::string m_root;                   // URI-encoded
     std::string m_rootPrefixOfDecodedURL; // URI-decoded
-    int m_nbThreads;
-    unsigned int m_multizimSearchLimit;
-    std::atomic_bool m_verbose;
-    bool m_withTaskbar;
-    bool m_withLibraryButton;
-    bool m_blockExternalLinks;
+    int m_nbThreads = 1;
+    unsigned int m_multizimSearchLimit = 0;
+    std::atomic_bool m_verbose = false;
+    bool m_withTaskbar = true;
+    bool m_withLibraryButton = true;
+    bool m_blockExternalLinks = false;
     IpMode m_ipMode;
     std::string m_indexTemplateString;
-    int m_ipConnectionLimit;
+    int m_ipConnectionLimit = 0;
     struct MHD_Daemon* mp_daemon;
 
     LibraryPtr mp_library;
@@ -201,8 +201,8 @@ class InternalServer {
     class CustomizedResources;
     std::unique_ptr<CustomizedResources> m_customizedResources;
 
-    const bool m_catalogOnlyMode;
-    const std::string m_contentServerUrl;
+    bool m_catalogOnlyMode = false;
+    std::string m_contentServerUrl;
 };
 
 }

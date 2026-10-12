@@ -481,46 +481,78 @@ public:
 
 InternalServer::InternalServer(LibraryPtr library,
                                std::shared_ptr<NameMapper> nameMapper,
-                               IpAddress addr,
-                               int port,
                                std::string root,
-                               int nbThreads,
-                               unsigned int multizimSearchLimit,
-                               bool verbose,
-                               bool withTaskbar,
-                               bool withLibraryButton,
-                               bool blockExternalLinks,
-                               IpMode ipMode,
-                               std::string indexTemplateString,
-                               int ipConnectionLimit,
-                               bool catalogOnlyMode,
-                               std::string contentServerUrl) :
-  m_addr(addr),
-  m_port(port),
+                               IpMode ipMode) :
   m_root(root),
   m_rootPrefixOfDecodedURL(m_root),
-  m_nbThreads(nbThreads),
-  m_multizimSearchLimit(multizimSearchLimit),
-  m_verbose(verbose),
-  m_withTaskbar(withTaskbar),
-  m_withLibraryButton(withLibraryButton),
-  m_blockExternalLinks(blockExternalLinks),
   m_ipMode(ipMode),
-  m_indexTemplateString(indexTemplateString),
-  m_ipConnectionLimit(ipConnectionLimit),
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
-  m_customizedResources(new CustomizedResources),
-  m_catalogOnlyMode(catalogOnlyMode),
-  m_contentServerUrl(contentServerUrl)
+  m_customizedResources(new CustomizedResources)
 {
   m_root = urlEncode(m_root);
 }
 
 InternalServer::~InternalServer() = default;
+
+void InternalServer::setAddress(const IpAddress& addr)
+{
+  m_addr = addr;
+}
+
+void InternalServer::setPort(int port)
+{
+  m_port = port;
+}
+
+void InternalServer::setNbThreads(int threads)
+{
+  m_nbThreads = threads;
+}
+
+void InternalServer::setMultiZimSearchLimit(unsigned int limit)
+{
+  m_multizimSearchLimit = limit;
+}
+
+void InternalServer::setIpConnectionLimit(int limit)
+{
+  m_ipConnectionLimit = limit;
+}
+
+void InternalServer::setVerbose(bool verbose)
+{
+  m_verbose = verbose;
+}
+
+void InternalServer::setIndexTemplateString(const std::string& indexTemplateString)
+{
+  m_indexTemplateString = indexTemplateString;
+}
+
+void InternalServer::setTaskbar(bool withTaskbar, bool withLibraryButton)
+{
+  m_withTaskbar = withTaskbar;
+  m_withLibraryButton = withLibraryButton;
+}
+
+void InternalServer::setBlockExternalLinks(bool blockExternalLinks)
+{
+  m_blockExternalLinks = blockExternalLinks;
+}
+
+void InternalServer::setCatalogOnlyMode(bool enable)
+{
+  m_catalogOnlyMode = enable;
+}
+
+void InternalServer::setContentServerUrl(std::string url)
+{
+  m_contentServerUrl = url;
+}
 
 struct MHD_Daemon* InternalServer::startMHD(int flags,
                                             struct sockaddr* sockaddr)
