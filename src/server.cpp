@@ -91,8 +91,14 @@ void Server::stop() {
   }
 }
 
+#define ENSURE_SERVER_IS_NOT_RUNNING()   \
+  if ( this->isRunning() ) {             \
+    throw std::runtime_error("A kiwix::Server::set*() method was called on a running server instance"); \
+  } else {}
+
 void Server::setRoot(const std::string& root)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_root = root;
   while (!m_root.empty() && m_root.back() == '/')
     m_root.pop_back();
@@ -104,6 +110,7 @@ void Server::setRoot(const std::string& root)
 
 void Server::setAddress(const std::string& addr)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_addr.addr.clear();
   m_addr.addr6.clear();
 
@@ -118,6 +125,7 @@ void Server::setAddress(const std::string& addr)
 
 void Server::setPort(int port)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_port = port;
 }
 
@@ -133,52 +141,62 @@ IpAddress Server::getAddress() const
 
 void Server::setNbThreads(int threads)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_nbThreads = threads;
 }
 
 void Server::setMultiZimSearchLimit(unsigned int limit)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_multizimSearchLimit = limit;
 }
 
 void Server::setIpConnectionLimit(int limit)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_ipConnectionLimit = limit;
 }
 
 void Server::setVerbose(bool verbose)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_verbose = verbose;
 }
 
 void Server::setIndexTemplateString(const std::string& indexTemplateString)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_indexTemplateString = indexTemplateString;
 }
 
 void Server::setTaskbar(bool withTaskbar, bool withLibraryButton)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_withTaskbar = withTaskbar;
   m_withLibraryButton = withLibraryButton;
 }
 
 void Server::setBlockExternalLinks(bool blockExternalLinks)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_blockExternalLinks = blockExternalLinks;
 }
 
 void Server::setCatalogOnlyMode(bool enable)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_catalogOnlyMode = enable;
 }
 
 void Server::setContentServerUrl(std::string url)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_contentServerUrl = url;
 }
 
 void Server::setIpMode(IpMode mode)
 {
+  ENSURE_SERVER_IS_NOT_RUNNING();
   m_ipMode = mode;
 }
 
