@@ -58,17 +58,6 @@ Server::~Server()
 bool Server::start() {
   mp_server->setRoot(m_root);
   mp_server->setAddress(m_addr);
-  mp_server->setPort(m_port);
-  mp_server->setNbThreads(m_nbThreads);
-  mp_server->setMultiZimSearchLimit(m_multizimSearchLimit);
-  mp_server->setVerbose(m_verbose);
-  mp_server->setTaskbar(m_withTaskbar, m_withLibraryButton);
-  mp_server->setBlockExternalLinks(m_blockExternalLinks);
-  mp_server->setIndexTemplateString(m_indexTemplateString);
-  mp_server->setIpConnectionLimit(m_ipConnectionLimit);
-  mp_server->setCatalogOnlyMode(m_catalogOnlyMode);
-  mp_server->setContentServerUrl(m_contentServerUrl);
-  mp_server->setIpMode(m_ipMode);
 
   if (mp_server->start()) {
     // this syncs m_addr of InternalServer and Server as they may diverge
@@ -118,12 +107,12 @@ void Server::setAddress(const std::string& addr)
 void Server::setPort(int port)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_port = port;
+  mp_server->setPort(port);
 }
 
 int Server::getPort() const
 {
-  return m_port;
+  return mp_server->getPort();
 }
 
 IpAddress Server::getAddress() const
@@ -134,62 +123,61 @@ IpAddress Server::getAddress() const
 void Server::setNbThreads(int threads)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_nbThreads = threads;
+  mp_server->setNbThreads(threads);
 }
 
 void Server::setMultiZimSearchLimit(unsigned int limit)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_multizimSearchLimit = limit;
+  mp_server->setMultiZimSearchLimit(limit);
 }
 
 void Server::setIpConnectionLimit(int limit)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_ipConnectionLimit = limit;
+  mp_server->setIpConnectionLimit(limit);
 }
 
 void Server::setVerbose(bool verbose)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_verbose = verbose;
+  mp_server->setVerbose(verbose);
 }
 
 void Server::setIndexTemplateString(const std::string& indexTemplateString)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_indexTemplateString = indexTemplateString;
+  mp_server->setIndexTemplateString(indexTemplateString);
 }
 
 void Server::setTaskbar(bool withTaskbar, bool withLibraryButton)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_withTaskbar = withTaskbar;
-  m_withLibraryButton = withLibraryButton;
+  mp_server->setTaskbar(withTaskbar, withLibraryButton);
 }
 
 void Server::setBlockExternalLinks(bool blockExternalLinks)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_blockExternalLinks = blockExternalLinks;
+  mp_server->setBlockExternalLinks(blockExternalLinks);
 }
 
 void Server::setCatalogOnlyMode(bool enable)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_catalogOnlyMode = enable;
+  mp_server->setCatalogOnlyMode(enable);
 }
 
 void Server::setContentServerUrl(std::string url)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_contentServerUrl = url;
+  mp_server->setContentServerUrl(url);
 }
 
 void Server::setIpMode(IpMode mode)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_ipMode = mode;
+  mp_server->setIpMode(mode);
 }
 
 IpMode Server::getIpMode() const
@@ -200,11 +188,12 @@ IpMode Server::getIpMode() const
 std::vector<std::string> Server::getServerAccessUrls() const
 {
   std::vector<std::string> result;
+  const auto port = getPort();
   if (!m_addr.addr.empty()) {
-    result.push_back(makeServerUrl(m_addr.addr, m_port, m_root));
+    result.push_back(makeServerUrl(m_addr.addr, port, m_root));
   }
   if (!m_addr.addr6.empty()) {
-    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", m_port, m_root));
+    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", port, m_root));
   }
   return result;
 }

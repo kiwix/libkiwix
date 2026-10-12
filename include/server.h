@@ -132,18 +132,6 @@ namespace kiwix
      protected:
        std::string m_root = "";
        IpAddress m_addr;
-       std::string m_indexTemplateString = "";
-       int m_port = 80;
-       int m_nbThreads = 1;
-       unsigned int m_multizimSearchLimit = 0;
-       bool m_verbose = false;
-       bool m_withTaskbar = true;
-       bool m_withLibraryButton = true;
-       bool m_blockExternalLinks = false;
-       IpMode m_ipMode = IpMode::AUTO;
-       int m_ipConnectionLimit = 0;
-       bool m_catalogOnlyMode = false;
-       std::string m_contentServerUrl;
        std::unique_ptr<InternalServer> mp_server;
   };
 }
