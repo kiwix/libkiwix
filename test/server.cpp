@@ -239,6 +239,48 @@ TEST(indexTemplateStringTest, indexTemplateCheck) {
   "</html>", zfs.GET("/ROOT%23%3F/")->body);
 }
 
+TEST(ServerTest0, settersAreNotAllowedToBeCalledOnARunningServer)
+{
+  std::shared_ptr<kiwix::Library> library(kiwix::Library::create());
+  std::shared_ptr<kiwix::NameMapper> nameMapper(new kiwix::IdNameMapper());
+
+  kiwix::Server server(library, nameMapper);
+
+
+  // Call each setter method twice on a non-running server object
+  // to make sure that that the safeguarding mechanism isn't implemented
+  // via a call-only-once hack.
+  for ( size_t i = 0; i < 2; ++i ) {
+    EXPECT_NO_THROW( server.setRoot("sqrt")               );
+    EXPECT_NO_THROW( server.setAddress("127.0.0.1")       );
+    EXPECT_NO_THROW( server.setPort(SERVER_PORT)          );
+    EXPECT_NO_THROW( server.setNbThreads(2)               );
+    EXPECT_NO_THROW( server.setMultiZimSearchLimit(5)     );
+    EXPECT_NO_THROW( server.setIpConnectionLimit(8)       );
+    EXPECT_NO_THROW( server.setVerbose(true)              );
+    EXPECT_NO_THROW( server.setIndexTemplateString("")    );
+    EXPECT_NO_THROW( server.setTaskbar(true, true)        );
+    EXPECT_NO_THROW( server.setBlockExternalLinks(true)   );
+    EXPECT_NO_THROW( server.setCatalogOnlyMode(false)     );
+    EXPECT_NO_THROW( server.setContentServerUrl("")       );
+  }
+
+  ASSERT_TRUE(server.start());
+
+  EXPECT_THROW( server.setRoot("sqrt")             , std::runtime_error );
+  EXPECT_THROW( server.setAddress("127.0.0.1")     , std::runtime_error );
+  EXPECT_THROW( server.setPort(SERVER_PORT)        , std::runtime_error );
+  EXPECT_THROW( server.setNbThreads(2)             , std::runtime_error );
+  EXPECT_THROW( server.setMultiZimSearchLimit(5)   , std::runtime_error );
+  EXPECT_THROW( server.setIpConnectionLimit(8)     , std::runtime_error );
+  EXPECT_THROW( server.setVerbose(true)            , std::runtime_error );
+  EXPECT_THROW( server.setIndexTemplateString("")  , std::runtime_error );
+  EXPECT_THROW( server.setTaskbar(true, true)      , std::runtime_error );
+  EXPECT_THROW( server.setBlockExternalLinks(true) , std::runtime_error );
+  EXPECT_THROW( server.setCatalogOnlyMode(false)   , std::runtime_error );
+  EXPECT_THROW( server.setContentServerUrl("")     , std::runtime_error );
+}
+
 TEST_F(ServerTest, 200)
 {
   for ( const Resource& res : all200Resources() )
