@@ -46,9 +46,7 @@ std::string makeServerUrl(std::string host, int port, std::string root)
 }  // unnamed namespace
 
 Server::Server(LibraryPtr library, std::shared_ptr<NameMapper> nameMapper) :
-  mp_library(library),
-  mp_nameMapper(nameMapper),
-  mp_server(nullptr)
+  mp_server(new InternalServer(library, nameMapper))
 {
 }
 
@@ -58,8 +56,6 @@ Server::~Server()
 }
 
 bool Server::start() {
-  mp_server.reset(new InternalServer(mp_library, mp_nameMapper));
-
   mp_server->setRoot(m_root);
   mp_server->setAddress(m_addr);
   mp_server->setPort(m_port);
@@ -84,10 +80,7 @@ bool Server::start() {
 }
 
 void Server::stop() {
-  if (mp_server) {
-    mp_server->stop();
-    mp_server.reset(nullptr);
-  }
+  mp_server->stop();
 }
 
 #define ENSURE_SERVER_IS_NOT_RUNNING()   \
@@ -218,7 +211,7 @@ std::vector<std::string> Server::getServerAccessUrls() const
 
 bool Server::isRunning() const
 {
-  return mp_server && mp_server->isRunning();
+  return mp_server->isRunning();
 }
 
 }

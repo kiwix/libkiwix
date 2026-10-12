@@ -130,8 +130,6 @@ namespace kiwix
        bool isRunning() const;
 
      protected:
-       std::shared_ptr<Library> mp_library;
-       std::shared_ptr<NameMapper> mp_nameMapper;
        std::string m_root = "";
        IpAddress m_addr;
        std::string m_indexTemplateString = "";
