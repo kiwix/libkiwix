@@ -56,7 +56,6 @@ Server::~Server()
 }
 
 bool Server::start() {
-  mp_server->setRoot(m_root);
   mp_server->setAddress(m_addr);
 
   if (mp_server->start()) {
@@ -80,13 +79,7 @@ void Server::stop() {
 void Server::setRoot(const std::string& root)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_root = root;
-  while (!m_root.empty() && m_root.back() == '/')
-    m_root.pop_back();
-
-  while (!m_root.empty() && m_root.front() == '/')
-    m_root = m_root.substr(1);
-  m_root = m_root.empty() ? m_root : "/" + m_root;
+  mp_server->setRoot(root);
 }
 
 void Server::setAddress(const std::string& addr)
@@ -189,11 +182,12 @@ std::vector<std::string> Server::getServerAccessUrls() const
 {
   std::vector<std::string> result;
   const auto port = getPort();
+  const auto root = mp_server->getRoot();
   if (!m_addr.addr.empty()) {
-    result.push_back(makeServerUrl(m_addr.addr, port, m_root));
+    result.push_back(makeServerUrl(m_addr.addr, port, root));
   }
   if (!m_addr.addr6.empty()) {
-    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", port, m_root));
+    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", port, root));
   }
   return result;
 }

@@ -122,6 +122,7 @@ class InternalServer {
     bool start();
     bool isRunning() const;
     void stop();
+    std::string getRoot() const { return m_rootPrefixOfDecodedURL; }
     IpAddress getAddress() const { return m_addr; }
     int getPort() const { return m_port; }
     IpMode getIpMode() const { return m_ipMode; }

@@ -89,6 +89,17 @@ void error(const std::string& msg) {
   throw std::runtime_error(msg);
 }
 
+std::string normalizeRootLocation(std::string root)
+{
+  while (!root.empty() && root.back() == '/')
+    root.pop_back();
+
+  while (!root.empty() && root.front() == '/')
+    root = root.substr(1);
+
+  return root.empty() ? root : "/" + root;
+}
+
 bool ipAvailable(const std::string addr)
 {
   auto interfaces = kiwix::getNetworkInterfacesIPv4Or6();
@@ -556,7 +567,7 @@ void InternalServer::setIpMode(IpMode mode)
 
 void InternalServer::setRoot(const std::string& root)
 {
-  m_rootPrefixOfDecodedURL = root;
+  m_rootPrefixOfDecodedURL = normalizeRootLocation(root);
   m_root = urlEncode(m_rootPrefixOfDecodedURL);
 }
 

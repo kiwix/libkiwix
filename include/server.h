@@ -130,7 +130,6 @@ namespace kiwix
        bool isRunning() const;
 
      protected:
-       std::string m_root = "";
        IpAddress m_addr;
        std::unique_ptr<InternalServer> mp_server;
   };
