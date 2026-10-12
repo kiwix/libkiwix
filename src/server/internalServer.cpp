@@ -89,6 +89,17 @@ void error(const std::string& msg) {
   throw std::runtime_error(msg);
 }
 
+std::string normalizeRootLocation(std::string root)
+{
+  while (!root.empty() && root.back() == '/')
+    root.pop_back();
+
+  while (!root.empty() && root.front() == '/')
+    root = root.substr(1);
+
+  return root.empty() ? root : "/" + root;
+}
+
 bool ipAvailable(const std::string addr)
 {
   auto interfaces = kiwix::getNetworkInterfacesIPv4Or6();
@@ -480,47 +491,94 @@ public:
 
 
 InternalServer::InternalServer(LibraryPtr library,
-                               std::shared_ptr<NameMapper> nameMapper,
-                               IpAddress addr,
-                               int port,
-                               std::string root,
-                               int nbThreads,
-                               unsigned int multizimSearchLimit,
-                               bool verbose,
-                               bool withTaskbar,
-                               bool withLibraryButton,
-                               bool blockExternalLinks,
-                               IpMode ipMode,
-                               std::string indexTemplateString,
-                               int ipConnectionLimit,
-                               bool catalogOnlyMode,
-                               std::string contentServerUrl) :
-  m_addr(addr),
-  m_port(port),
-  m_root(root),
-  m_rootPrefixOfDecodedURL(m_root),
-  m_nbThreads(nbThreads),
-  m_multizimSearchLimit(multizimSearchLimit),
-  m_verbose(verbose),
-  m_withTaskbar(withTaskbar),
-  m_withLibraryButton(withLibraryButton),
-  m_blockExternalLinks(blockExternalLinks),
-  m_ipMode(ipMode),
-  m_indexTemplateString(indexTemplateString.empty() ? RESOURCE::templates::index_html : indexTemplateString),
-  m_ipConnectionLimit(ipConnectionLimit),
+                               std::shared_ptr<NameMapper> nameMapper) :
   mp_daemon(nullptr),
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
   suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
-  m_customizedResources(new CustomizedResources),
-  m_catalogOnlyMode(catalogOnlyMode),
-  m_contentServerUrl(contentServerUrl)
+  m_customizedResources(new CustomizedResources)
 {
-  m_root = urlEncode(m_root);
 }
 
 InternalServer::~InternalServer() = default;
+
+void InternalServer::setAddress(const std::string& addr)
+{
+  m_addr.addr.clear();
+  m_addr.addr6.clear();
+
+  if (addr.empty()) return;
+
+  if (addr.find(':') != std::string::npos) { // IPv6
+    m_addr.addr6 = (addr[0] == '[') ? addr.substr(1, addr.length() - 2) : addr; // Remove brackets if any
+  } else {
+    m_addr.addr = addr;
+  }
+}
+
+void InternalServer::setPort(int port)
+{
+  m_port = port;
+}
+
+void InternalServer::setNbThreads(int threads)
+{
+  m_nbThreads = threads;
+}
+
+void InternalServer::setMultiZimSearchLimit(unsigned int limit)
+{
+  m_multizimSearchLimit = limit;
+}
+
+void InternalServer::setIpConnectionLimit(int limit)
+{
+  m_ipConnectionLimit = limit;
+}
+
+void InternalServer::setVerbose(bool verbose)
+{
+  m_verbose = verbose;
+}
+
+void InternalServer::setIndexTemplateString(const std::string& indexTemplateString)
+{
+  m_indexTemplateString = indexTemplateString;
+}
+
+void InternalServer::setTaskbar(bool withTaskbar, bool withLibraryButton)
+{
+  m_withTaskbar = withTaskbar;
+  m_withLibraryButton = withLibraryButton;
+}
+
+void InternalServer::setBlockExternalLinks(bool blockExternalLinks)
+{
+  m_blockExternalLinks = blockExternalLinks;
+}
+
+void InternalServer::setCatalogOnlyMode(bool enable)
+{
+  m_catalogOnlyMode = enable;
+}
+
+void InternalServer::setContentServerUrl(std::string url)
+{
+  m_contentServerUrl = url;
+}
+
+void InternalServer::setIpMode(IpMode mode)
+{
+  m_ipModeAsSetByTheUser = mode;
+  m_ipMode = mode;
+}
+
+void InternalServer::setRoot(const std::string& root)
+{
+  m_rootPrefixOfDecodedURL = normalizeRootLocation(root);
+  m_root = urlEncode(m_rootPrefixOfDecodedURL);
+}
 
 struct MHD_Daemon* InternalServer::startMHD(int flags,
                                             struct sockaddr* sockaddr)
@@ -538,6 +596,8 @@ struct MHD_Daemon* InternalServer::startMHD(int flags,
 }
 
 void InternalServer::startMHD() {
+  m_ipMode = m_ipModeAsSetByTheUser;
+
   InSockAddr inSockAddr(m_port);
   if (m_addr.addr.empty() && m_addr.addr6.empty()) { // No ip address provided
     if (m_ipMode == IpMode::AUTO) m_ipMode = IpMode::ALL;
@@ -582,9 +642,15 @@ bool InternalServer::start() {
   return true;
 }
 
+bool InternalServer::isRunning() const
+{
+  return mp_daemon != nullptr;
+}
+
 void InternalServer::stop()
 {
   MHD_stop_daemon(mp_daemon);
+  mp_daemon = nullptr;
 }
 
 static MHD_Result staticHandlerCallback(void* cls,
@@ -773,7 +839,10 @@ MustacheData InternalServer::get_default_data() const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(m_indexTemplateString, get_default_data(), "text/html; charset=utf-8");
+  const std::string templateStr = m_indexTemplateString.empty()
+                                ? RESOURCE::templates::index_html
+                                : m_indexTemplateString;
+  return ContentResponse::build(templateStr, get_default_data(), "text/html; charset=utf-8");
 }
 
 /**
