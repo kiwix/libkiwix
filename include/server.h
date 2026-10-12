@@ -41,6 +41,12 @@ namespace kiwix
 
        virtual ~Server();
 
+       // Server is non-copyable and non-movable
+       Server(const Server& ) = delete;
+       Server(Server&& ) = delete;
+       void operator=(const Server& ) = delete;
+       void operator=(Server&& ) = delete;
+
        /**
         * Start serving the content.
         */
