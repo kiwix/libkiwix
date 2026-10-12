@@ -506,7 +506,7 @@ InternalServer::InternalServer(LibraryPtr library,
   m_withLibraryButton(withLibraryButton),
   m_blockExternalLinks(blockExternalLinks),
   m_ipMode(ipMode),
-  m_indexTemplateString(indexTemplateString.empty() ? RESOURCE::templates::index_html : indexTemplateString),
+  m_indexTemplateString(indexTemplateString),
   m_ipConnectionLimit(ipConnectionLimit),
   mp_daemon(nullptr),
   mp_library(library),
@@ -779,7 +779,10 @@ MustacheData InternalServer::get_default_data() const
 
 std::unique_ptr<Response> InternalServer::build_homepage(const RequestContext& request)
 {
-  return ContentResponse::build(m_indexTemplateString, get_default_data(), "text/html; charset=utf-8");
+  const std::string templateStr = m_indexTemplateString.empty()
+                                ? RESOURCE::templates::index_html
+                                : m_indexTemplateString;
+  return ContentResponse::build(templateStr, get_default_data(), "text/html; charset=utf-8");
 }
 
 /**
