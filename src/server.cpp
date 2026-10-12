@@ -52,7 +52,10 @@ Server::Server(LibraryPtr library, std::shared_ptr<NameMapper> nameMapper) :
 {
 }
 
-Server::~Server() = default;
+Server::~Server()
+{
+  stop();
+}
 
 bool Server::start() {
   mp_server.reset(new InternalServer(
