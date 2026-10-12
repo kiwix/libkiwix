@@ -130,7 +130,6 @@ namespace kiwix
        bool isRunning() const;
 
      protected:
-       IpAddress m_addr;
        std::unique_ptr<InternalServer> mp_server;
   };
 }

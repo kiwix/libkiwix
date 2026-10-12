@@ -503,9 +503,18 @@ InternalServer::InternalServer(LibraryPtr library,
 
 InternalServer::~InternalServer() = default;
 
-void InternalServer::setAddress(const IpAddress& addr)
+void InternalServer::setAddress(const std::string& addr)
 {
-  m_addr = addr;
+  m_addr.addr.clear();
+  m_addr.addr6.clear();
+
+  if (addr.empty()) return;
+
+  if (addr.find(':') != std::string::npos) { // IPv6
+    m_addr.addr6 = (addr[0] == '[') ? addr.substr(1, addr.length() - 2) : addr; // Remove brackets if any
+  } else {
+    m_addr.addr = addr;
+  }
 }
 
 void InternalServer::setPort(int port)

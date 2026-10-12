@@ -56,15 +56,7 @@ Server::~Server()
 }
 
 bool Server::start() {
-  mp_server->setAddress(m_addr);
-
-  if (mp_server->start()) {
-    // this syncs m_addr of InternalServer and Server as they may diverge
-    m_addr = mp_server->getAddress();
-    return true;
-  } else {
-    return false;
-  }
+  return mp_server->start();
 }
 
 void Server::stop() {
@@ -85,16 +77,7 @@ void Server::setRoot(const std::string& root)
 void Server::setAddress(const std::string& addr)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
-  m_addr.addr.clear();
-  m_addr.addr6.clear();
-
-  if (addr.empty()) return;
-
-  if (addr.find(':') != std::string::npos) { // IPv6
-    m_addr.addr6 = (addr[0] == '[') ? addr.substr(1, addr.length() - 2) : addr; // Remove brackets if any
-  } else {
-    m_addr.addr = addr;
-  }
+  mp_server->setAddress(addr);
 }
 
 void Server::setPort(int port)
@@ -110,7 +93,7 @@ int Server::getPort() const
 
 IpAddress Server::getAddress() const
 {
-  return m_addr;
+  return mp_server->getAddress();
 }
 
 void Server::setNbThreads(int threads)
@@ -183,11 +166,12 @@ std::vector<std::string> Server::getServerAccessUrls() const
   std::vector<std::string> result;
   const auto port = getPort();
   const auto root = mp_server->getRoot();
-  if (!m_addr.addr.empty()) {
-    result.push_back(makeServerUrl(m_addr.addr, port, root));
+  const IpAddress addr = mp_server->getAddress();
+  if (!addr.addr.empty()) {
+    result.push_back(makeServerUrl(addr.addr, port, root));
   }
-  if (!m_addr.addr6.empty()) {
-    result.push_back(makeServerUrl("[" + m_addr.addr6 + "]", port, root));
+  if (!addr.addr6.empty()) {
+    result.push_back(makeServerUrl("[" + addr.addr6 + "]", port, root));
   }
   return result;
 }

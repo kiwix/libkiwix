@@ -98,7 +98,7 @@ class InternalServer {
                    std::shared_ptr<NameMapper> nameMapper);
     virtual ~InternalServer();
 
-    void setAddress(const IpAddress& addr);
+    void setAddress(const std::string& addr);
     void setPort(int port);
     void setNbThreads(int threads);
     void setMultiZimSearchLimit(unsigned int limit);
