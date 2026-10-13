@@ -5,7 +5,8 @@
     <summary>{{description}}</summary>
     <language>{{language}}</language>
     <name>{{name}}</name>
-    <flavour>{{flavour}}</flavour>
+    <flavour>{{flavour}}</flavour>{{#popularity}}
+    <kiwix:popularity>{{popularity}}</kiwix:popularity>{{/popularity}}
     <category>{{category}}</category>
     <tags>{{tags}}</tags>
     <articleCount>{{article_count}}</articleCount>

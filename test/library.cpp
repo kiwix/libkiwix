@@ -309,6 +309,7 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
     <language>eng,spa</language>
     <name>wikipedia_en_ray_charles</name>
     <flavour>mini</flavour>
+    <kiwix:popularity>46</kiwix:popularity>
     <category>wikipedia</category>
     <tags>wikipedia;_category:wikipedia;_pictures:no</tags>
     <articleCount>284</articleCount>
