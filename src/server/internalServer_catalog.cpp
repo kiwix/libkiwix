@@ -66,10 +66,8 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     printf("** running handle_catalog");
   }
 
-  std::string host;
   std::string url;
   try {
-    host = request.get_header("Host");
     url  = request.get_url_part(1);
   } catch (const std::out_of_range&) {
     return UrlNotFoundResponse(request);
@@ -79,30 +77,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     return handle_catalog_v2(request);
   }
 
-  if (url != "searchdescription.xml" && url != "root.xml" && url != "search") {
-    return UrlNotFoundResponse(request);
-  }
-
-  if (url == "searchdescription.xml") {
-    auto response = ContentResponse::build(RESOURCE::opensearchdescription_xml, get_default_data(), "application/opensearchdescription+xml");
-    return std::move(response);
-  }
-
-  zim::Uuid uuid;
-  kiwix::OPDSDumper opdsDumper = getOPDSDumper();
-  std::vector<std::string> bookIdsToDump;
-  if (url == "root.xml") {
-    uuid = zim::Uuid::generate(host);
-    bookIdsToDump = mp_library->filter(kiwix::Filter().valid(true).local(true).remote(true));
-  } else if (url == "search") {
-    bookIdsToDump = search_catalog(request, opdsDumper);
-    uuid = zim::Uuid::generate();
-  }
-
-  auto response = ContentResponse::build(
-      opdsDumper.dumpOPDSFeed(bookIdsToDump, request.get_query()),
-      opdsMimeType[OPDS_ACQUISITION_FEED]);
-  return std::move(response);
+  return UrlNotFoundResponse(request);
 }
 
 std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
