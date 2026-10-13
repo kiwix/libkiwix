@@ -161,6 +161,7 @@ class Book
   std::string getTagStr(const std::string& tagName) const;
   bool getTagBool(const std::string& tagName) const;
   std::string getFlavour() const;
+  std::string getTitleId() const;
 
   /**
    * Whether the popularity of the book is known.
@@ -203,6 +204,7 @@ class Book
   void setUrl(AcquisitionLinkKind linkKind, const std::string& url);
   void setName(const std::string& name);
   void setFlavour(const std::string& flavour);
+  void setTitleId(const std::string& titleId);
 
   /**
    * Set the popularity of the book.
