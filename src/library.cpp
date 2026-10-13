@@ -1093,6 +1093,7 @@ std::string Library::dumpOpds(const std::string& outputPath) const
   std::ostringstream ss;
   ss << R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:kiwix="https://kiwix.org/namespace/opds"
       xmlns:opds="http://opds-spec.org/2010/catalog">
 )";
 
