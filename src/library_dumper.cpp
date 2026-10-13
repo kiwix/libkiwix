@@ -209,6 +209,7 @@ std::string fullEntryOpds(const Book& book,
       {"book_date", bookDate},
       {"category", book.getCategory()},
       {"flavour", book.getFlavour()},
+      {"title_id", onlyAsNonEmptyMustacheValue(book.getTitleId())},
       {"popularity", book.hasPopularity()
                        ? kainjow::mustache::data(to_string(book.getPopularity()))
                        : kainjow::mustache::data(false)},
