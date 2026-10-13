@@ -218,6 +218,7 @@ class Book::Impl
   AcquisitionLinks m_urls;
   std::string m_name;
   std::string m_flavour;
+  std::string m_titleId;
   std::string m_tags;
   std::string m_origId;
   uint64_t m_articleCount = 0;
@@ -360,6 +361,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   mp_impl->m_date = fromOpdsDate(mp_impl->m_date);
   mp_impl->m_name = VALUE("name");
   mp_impl->m_flavour = VALUE("flavour");
+  mp_impl->m_titleId = VALUE("kiwix:titleid");
   mp_impl->m_tags = VALUE("tags");
   const auto catnode = node.child("category");
   mp_impl->m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
@@ -619,6 +621,11 @@ std::string Book::getFlavour() const
   return mp_impl->m_flavour;
 }
 
+std::string Book::getTitleId() const
+{
+  return mp_impl->m_titleId;
+}
+
 std::string Book::getOrigId() const
 {
   return mp_impl->m_origId;
@@ -697,6 +704,11 @@ void Book::setName(const std::string& name)
 void Book::setFlavour(const std::string& flavour)
 {
   mp_impl->m_flavour = flavour;
+}
+
+void Book::setTitleId(const std::string& titleId)
+{
+  mp_impl->m_titleId = titleId;
 }
 
 void Book::setTags(const std::string& tags)

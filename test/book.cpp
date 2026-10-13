@@ -78,6 +78,7 @@ TEST(BookTest, updateFromOPDSTest)
         <title>Catch an infection in 24 hours</title>
         <summary>Complete guide to contagious diseases</summary>
         <name>who_contagious_diseases_en</name>
+        <kiwix:titleid>6f1d19d0-633f-087b-fb55-7ac324ff9baf</kiwix:titleid>
         <tags>unittest;_category:medicine;_pictures:yes</tags>
         <category>medicine</category>
         <articleCount>123456</articleCount>
@@ -107,6 +108,7 @@ TEST(BookTest, updateFromOPDSTest)
     EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");
     EXPECT_EQ(book.getTags(), "unittest;_category:medicine;_pictures:yes");
     EXPECT_EQ(book.getName(), "who_contagious_diseases_en");
+    EXPECT_EQ(book.getTitleId(), "6f1d19d0-633f-087b-fb55-7ac324ff9baf");
     EXPECT_EQ(book.getCategory(), "medicine");
     EXPECT_EQ(book.getArticleCount(), 123456U);
     EXPECT_EQ(book.getMediaCount(), 234567U);
@@ -140,6 +142,7 @@ TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
 
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "");
+    EXPECT_EQ(book.getTitleId(), "");
 }
 
 TEST(BookTest, updateFromOPDSTwoAcquisitionLinksTest)
