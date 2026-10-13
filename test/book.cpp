@@ -34,6 +34,7 @@ TEST(BookTest, updateFromOPDSTest)
         <title>Catch an infection in 24 hours</title>
         <summary>Complete guide to contagious diseases</summary>
         <name>who_contagious_diseases_en</name>
+        <kiwix:titleid>6f1d19d0-633f-087b-fb55-7ac324ff9baf</kiwix:titleid>
         <kiwix:popularity>46</kiwix:popularity>
         <tags>unittest;_category:medicine;_pictures:yes</tags>
         <category>medicine</category>
@@ -68,6 +69,7 @@ TEST(BookTest, updateFromOPDSTest)
     EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");
     EXPECT_EQ(book.getTags(), "unittest;_category:medicine;_pictures:yes");
     EXPECT_EQ(book.getName(), "who_contagious_diseases_en");
+    EXPECT_EQ(book.getTitleId(), "6f1d19d0-633f-087b-fb55-7ac324ff9baf");
     EXPECT_TRUE(book.hasPopularity());
     EXPECT_EQ(book.getPopularity(), 46U);
     EXPECT_EQ(book.getCategory(), "medicine");
@@ -130,6 +132,7 @@ TEST(BookTest, updateFromOPDSMissingPropertiesTest)
     EXPECT_EQ(book.getDate(), "");
     EXPECT_EQ(book.getName(), "");
     EXPECT_EQ(book.getFlavour(), "");
+    EXPECT_EQ(book.getTitleId(), "");
     EXPECT_EQ(book.getTags(), "");
     EXPECT_EQ(book.getCategory(), "");
     EXPECT_EQ(book.getArticleCount(), 0U);
