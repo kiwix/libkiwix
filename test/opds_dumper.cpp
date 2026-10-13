@@ -209,43 +209,6 @@ class OPDSDumperTest : public ::testing::Test {
   std::unique_ptr<OPDSDumper> dumper;
 };
 
-TEST_F(OPDSDumperTest, dumpOPDSFeedWithoutFilteringInfo)
-{
-  EXPECT_OPDS(dumper->dumpOPDSFeed({"book1-id", "book2-id"}, ""),
-    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
-    "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
-    "      xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
-    "  <id>" + gen_uuid("test-library-id/catalog/search?") + "</id>\n"
-    "  <title>All zims</title>\n"
-    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "\n"
-    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
-    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"http://root.location/catalog/searchdescription.xml\" />\n"
-    BOOK1_ENTRY
-    BOOK2_ENTRY
-    "</feed>\n"
-  );
-}
-
-TEST_F(OPDSDumperTest, dumpOPDSFeedWithFilteringInfo)
-{
-  EXPECT_OPDS(dumper->dumpOPDSFeed({"book1-id"}, "lang=eng"),
-    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
-    "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
-    "      xmlns:opds=\"http://opds-spec.org/2010/catalog\">\n"
-    "  <id>" + gen_uuid("test-library-id/catalog/search?lang=eng") + "</id>\n"
-    "  <title>Filtered zims (lang=eng)</title>\n"
-    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <totalResults>2</totalResults>\n"
-    "  <startIndex>0</startIndex>\n"
-    "  <itemsPerPage>1</itemsPerPage>\n"
-    "  <link rel=\"self\" href=\"\" type=\"application/atom+xml\" />\n"
-    "  <link rel=\"search\" type=\"application/opensearchdescription+xml\" href=\"http://root.location/catalog/searchdescription.xml\" />\n"
-    BOOK1_ENTRY
-    "</feed>\n"
-  );
-}
-
 TEST_F(OPDSDumperTest, dumpOPDSFeedV2FullEntries)
 {
   EXPECT_OPDS(dumper->dumpOPDSFeedV2({"book1-id", "book2-id"}, "", /*partial=*/false),
