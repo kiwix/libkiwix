@@ -1354,6 +1354,47 @@ TEST_P(LibraryTest, removeBooksNotUpdatedSince)
   );
 };
 
+TEST(LibrarySortTest, sortByPopularity)
+{
+  typedef kiwix::Library::BookIdCollection BookIdCollection;
+
+  auto lib = kiwix::Library::create();
+  const auto addBook = [&lib](const std::string& id) {
+    kiwix::Book book;
+    book.setId(id);
+    lib->addBook(book);
+  };
+  const auto addBookWithPopularity = [&lib](const std::string& id, unsigned popularity) {
+    kiwix::Book book;
+    book.setId(id);
+    book.setPopularity(popularity);
+    lib->addBook(book);
+  };
+
+  addBookWithPopularity("popularity-51", 51);
+  addBookWithPopularity("popularity-0", 0);
+  addBook("unknown-popularity");
+  addBookWithPopularity("popularity-100", 100);
+  addBookWithPopularity("popularity-49", 49);
+
+  // A book with unknown popularity is sorted as if it had an average
+  // popularity (50), rather than as the least popular one.
+  const BookIdCollection leastPopularFirst{
+    "popularity-0",
+    "popularity-49",
+    "unknown-popularity",
+    "popularity-51",
+    "popularity-100"
+  };
+
+  BookIdCollection bookIds = lib->getBooksIds();
+  lib->sort(bookIds, kiwix::POPULARITY, true);
+  EXPECT_EQ(bookIds, leastPopularFirst);
+
+  lib->sort(bookIds, kiwix::POPULARITY, false);
+  EXPECT_EQ(bookIds, BookIdCollection(leastPopularFirst.rbegin(), leastPopularFirst.rend()));
+}
+
 TEST(LibraryOpdsExportTest, allInOne)
 {
   auto lib = kiwix::Library::create();
