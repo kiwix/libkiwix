@@ -353,6 +353,7 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
     <language>eng,spa</language>
     <name>wikipedia_en_ray_charles</name>
     <flavour>mini</flavour>
+    <kiwix:popularity>46</kiwix:popularity>
     <category>wikipedia</category>
     <tags>wikipedia;_category:wikipedia;_pictures:no</tags>
     <articleCount>284</articleCount>
@@ -1363,6 +1364,11 @@ TEST(LibraryOpdsExportTest, allInOne)
   // above its definition), so dumping what was just read back out should
   // reproduce it exactly.
   EXPECT_EQ(lib->dumpOpds(OPDS_LIBRARY_PATH), sampleLibraryOpds);
+
+  // The popularity is only present for the books that have one
+  EXPECT_FALSE(lib->getBookById("example").hasPopularity());
+  EXPECT_TRUE(lib->getBookById("raycharles").hasPopularity());
+  EXPECT_EQ(lib->getBookById("raycharles").getPopularity(), 46U);
 }
 
 };
