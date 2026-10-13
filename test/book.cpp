@@ -78,6 +78,7 @@ TEST(BookTest, updateFromOPDSTest)
         <title>Catch an infection in 24 hours</title>
         <summary>Complete guide to contagious diseases</summary>
         <name>who_contagious_diseases_en</name>
+        <kiwix:popularity>46</kiwix:popularity>
         <tags>unittest;_category:medicine;_pictures:yes</tags>
         <category>medicine</category>
         <articleCount>123456</articleCount>
@@ -107,6 +108,8 @@ TEST(BookTest, updateFromOPDSTest)
     EXPECT_EQ(book.getDescription(), "Complete guide to contagious diseases");
     EXPECT_EQ(book.getTags(), "unittest;_category:medicine;_pictures:yes");
     EXPECT_EQ(book.getName(), "who_contagious_diseases_en");
+    EXPECT_TRUE(book.hasPopularity());
+    EXPECT_EQ(book.getPopularity(), 46U);
     EXPECT_EQ(book.getCategory(), "medicine");
     EXPECT_EQ(book.getArticleCount(), 123456U);
     EXPECT_EQ(book.getMediaCount(), 234567U);
@@ -140,6 +143,62 @@ TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
 
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "");
+    EXPECT_FALSE(book.hasPopularity());
+    EXPECT_EQ(book.getPopularity(), 0U);
+}
+
+TEST(BookTest, updateFromOPDSPopularityTest)
+{
+    const auto parse = [](kiwix::Book& book, const std::string& popularity) {
+      const XMLDoc opds(
+        "<entry>"
+          "<id>urn:uuid:zara</id>"
+          "<kiwix:popularity>" + popularity + "</kiwix:popularity>"
+        "</entry>"
+      );
+      book.updateFromOpds(opds.child("entry"), "http://who.org", "");
+    };
+
+    // The boundaries of the valid range. In particular, a popularity of 0
+    // must not be confused with an unknown popularity.
+    for ( const unsigned validValue : {0U, 1U, 100U} ) {
+      kiwix::Book book;
+      parse(book, std::to_string(validValue));
+      EXPECT_TRUE(book.hasPopularity()) << validValue;
+      EXPECT_EQ(book.getPopularity(), validValue);
+    }
+
+    for ( const char* invalidValue : {"", "abc", "-1", "101", "4.6", "46%"} ) {
+      kiwix::Book book;
+      parse(book, invalidValue);
+      EXPECT_FALSE(book.hasPopularity()) << invalidValue;
+      EXPECT_EQ(book.getPopularity(), 0U) << invalidValue;
+    }
+
+    // An entry without (valid) popularity resets a previously known one
+    kiwix::Book book;
+    parse(book, "46");
+    EXPECT_TRUE(book.hasPopularity());
+    parse(book, "abc");
+    EXPECT_FALSE(book.hasPopularity());
+    EXPECT_EQ(book.getPopularity(), 0U);
+}
+
+TEST(BookTest, setPopularityTest)
+{
+    kiwix::Book book;
+    EXPECT_FALSE(book.hasPopularity());
+    EXPECT_EQ(book.getPopularity(), 0U);
+
+    book.setPopularity(0);
+    EXPECT_TRUE(book.hasPopularity());
+    EXPECT_EQ(book.getPopularity(), 0U);
+
+    book.setPopularity(73);
+    EXPECT_EQ(book.getPopularity(), 73U);
+
+    book.setPopularity(1000);
+    EXPECT_EQ(book.getPopularity(), 100U);
 }
 
 TEST(BookTest, updateFromOPDSTwoAcquisitionLinksTest)
