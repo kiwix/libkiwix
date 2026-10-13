@@ -284,6 +284,7 @@ const char * sampleOpdsStream = R"(
 // below). Reformatting this string may break that round-trip test.
 const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:kiwix="https://kiwix.org/namespace/opds"
       xmlns:opds="http://opds-spec.org/2010/catalog">
   <entry>
     <id>urn:uuid:example</id>
