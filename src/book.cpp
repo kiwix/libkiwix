@@ -494,17 +494,17 @@ uint16_t Book::Illustration::getHeight() const
   return mp_impl->height;
 }
 
-const std::string Book::Illustration::getMimeType() const
+std::string Book::Illustration::getMimeType() const
 {
   return mp_impl->mimeType;
 }
 
-const std::string Book::Illustration::getUrl() const
+std::string Book::Illustration::getUrl() const
 {
   return mp_impl->url;
 }
 
-const std::string Book::Illustration::getData() const
+std::string Book::Illustration::getData() const
 {
   if (mp_impl->data.empty() && !mp_impl->url.empty()) {
     const std::lock_guard<std::mutex> l(mp_impl->mutex);
@@ -544,7 +544,7 @@ std::string Book::getCategoryFromTags() const
   }
 }
 
-const std::vector<std::string> Book::getLanguages() const
+std::vector<std::string> Book::getLanguages() const
 {
   return kiwix::split(mp_impl->m_language, ",");
 }
@@ -624,17 +624,17 @@ std::string Book::getOrigId() const
   return mp_impl->m_origId;
 }
 
-const uint64_t Book::getArticleCount() const
+uint64_t Book::getArticleCount() const
 {
   return mp_impl->m_articleCount;
 }
 
-const uint64_t Book::getMediaCount() const
+uint64_t Book::getMediaCount() const
 {
   return mp_impl->m_mediaCount;
 }
 
-const uint64_t Book::getSize() const
+uint64_t Book::getSize() const
 {
   return mp_impl->m_size;
 }

@@ -52,9 +52,9 @@ class Book
    public:
     uint16_t getWidth() const;
     uint16_t getHeight() const;
-    const std::string getMimeType() const;
-    const std::string getUrl() const;
-    const std::string getData() const;
+    std::string getMimeType() const;
+    std::string getUrl() const;
+    std::string getData() const;
 
     ~Illustration();
 
@@ -126,7 +126,7 @@ class Book
   std::string getTitle() const;
   std::string getDescription() const;
   std::string getCommaSeparatedLanguages() const;
-  const std::vector<std::string> getLanguages() const;
+  std::vector<std::string> getLanguages() const;
   std::string getCreator() const;
   std::string getPublisher() const;
   std::string getDate() const;
@@ -140,9 +140,9 @@ class Book
   bool getTagBool(const std::string& tagName) const;
   std::string getFlavour() const;
   std::string getOrigId() const;
-  const uint64_t getArticleCount() const;
-  const uint64_t getMediaCount() const;
-  const uint64_t getSize() const;
+  uint64_t getArticleCount() const;
+  uint64_t getMediaCount() const;
+  uint64_t getSize() const;
 
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
