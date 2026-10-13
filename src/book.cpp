@@ -30,6 +30,7 @@
 #include <zim/archive.h>
 #include <zim/item.h>
 #include <pugixml.hpp>
+#include <algorithm>
 #include <sstream>
 #include <mutex>
 
@@ -174,6 +175,24 @@ fromMimeTypeToLinkKind(const std::string& mimeType)
   throw std::runtime_error("Unknown acquisition link type: " + mimeType);
 }
 
+constexpr uint32_t MAX_POPULARITY = 100;
+
+// Returns false (and sets popularity to 0) if str is not an integer number
+// in the range [0, MAX_POPULARITY].
+bool parsePopularity(const std::string& str, uint32_t& popularity)
+{
+  popularity = 0;
+  try {
+    const auto value = kiwix::extractFromString<int>(str);
+    if (value < 0 || value > static_cast<int>(MAX_POPULARITY))
+      return false;
+    popularity = value;
+    return true;
+  } catch (const std::invalid_argument&) {
+    return false;
+  }
+}
+
 } // anonymous namespace
 
 namespace kiwix
@@ -218,6 +237,8 @@ class Book::Impl
   AcquisitionLinks m_urls;
   std::string m_name;
   std::string m_flavour;
+  bool m_hasPopularity = false;
+  uint32_t m_popularity = 0;
   std::string m_tags;
   std::string m_origId;
   uint64_t m_articleCount = 0;
@@ -337,7 +358,6 @@ static std::string fromOpdsDate(const std::string& date)
   return date.substr(0, 10);
 }
 
-
 void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost)
 {
   updateFromOpds(node, urlHost, "");
@@ -360,6 +380,8 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   mp_impl->m_date = fromOpdsDate(mp_impl->m_date);
   mp_impl->m_name = VALUE("name");
   mp_impl->m_flavour = VALUE("flavour");
+  mp_impl->m_hasPopularity = parsePopularity(VALUE("kiwix:popularity"),
+                                             mp_impl->m_popularity);
   mp_impl->m_tags = VALUE("tags");
   const auto catnode = node.child("category");
   mp_impl->m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
@@ -619,6 +641,16 @@ std::string Book::getFlavour() const
   return mp_impl->m_flavour;
 }
 
+bool Book::hasPopularity() const
+{
+  return mp_impl->m_hasPopularity;
+}
+
+uint32_t Book::getPopularity() const
+{
+  return mp_impl->m_popularity;
+}
+
 std::string Book::getOrigId() const
 {
   return mp_impl->m_origId;
@@ -697,6 +729,12 @@ void Book::setName(const std::string& name)
 void Book::setFlavour(const std::string& flavour)
 {
   mp_impl->m_flavour = flavour;
+}
+
+void Book::setPopularity(uint32_t popularity)
+{
+  mp_impl->m_hasPopularity = true;
+  mp_impl->m_popularity = std::min(popularity, MAX_POPULARITY);
 }
 
 void Book::setTags(const std::string& tags)
