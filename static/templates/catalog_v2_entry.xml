@@ -5,7 +5,8 @@
     <summary>{{description}}</summary>
     <language>{{language}}</language>
     <name>{{name}}</name>
-    <flavour>{{flavour}}</flavour>
+    <flavour>{{flavour}}</flavour>{{#title_id}}
+    <kiwix:titleid>{{title_id}}</kiwix:titleid>{{/title_id}}
     <category>{{category}}</category>
     <tags>{{tags}}</tags>
     <articleCount>{{article_count}}</articleCount>
