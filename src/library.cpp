@@ -1077,6 +1077,7 @@ std::string Library::dumpOpds(const std::string& outputPath) const
   ss << R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:kiwix="https://kiwix.org/namespace/opds"
       xmlns:opds="https://specs.opds.io/opds-1.2">
 )";
 
