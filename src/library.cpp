@@ -787,6 +787,14 @@ struct KEY_TYPE<SIZE> {
   typedef size_t TYPE;
 };
 
+template<>
+struct KEY_TYPE<POPULARITY> {
+  typedef uint32_t TYPE;
+};
+
+// The popularity assumed (when sorting) for the books with unknown popularity
+constexpr uint32_t DEFAULT_POPULARITY = 50;
+
 template<supportedListSortBy sort>
 class Comparator {
   private:
@@ -836,6 +844,13 @@ std::string Comparator<PUBLISHER>::get_key(const std::string& id)
   return lib->getBookById(id).getPublisher();
 }
 
+template<>
+unsigned Comparator<POPULARITY>::get_key(const std::string& id)
+{
+  const auto& book = lib->getBookById(id);
+  return book.hasPopularity() ? book.getPopularity() : DEFAULT_POPULARITY;
+}
+
 void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool ascending) const
 {
   // NOTE: Can reimplement this method in a way that doesn't require locking
@@ -858,6 +873,9 @@ void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool asc
       break;
     case PUBLISHER:
       std::sort(bookIds.begin(), bookIds.end(), Comparator<PUBLISHER>(this, ascending));
+      break;
+    case POPULARITY:
+      std::sort(bookIds.begin(), bookIds.end(), Comparator<POPULARITY>(this, ascending));
       break;
     default:
       break;
