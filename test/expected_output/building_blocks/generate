@@ -17,7 +17,7 @@ R"(  <entry>
     <summary>{SUMMARY}</summary>
     <language>{LANG}</language>
     <name>{NAME}</name>
-    <flavour>{FLAVOUR}</flavour>{POPULARITY}
+    <flavour>{FLAVOUR}</flavour>{TITLEID}{POPULARITY}
     <category>{CATEGORY}</category>
     <tags>{TAGS}</tags>
     <articleCount>{ARTICLECOUNT}</articleCount>
@@ -98,6 +98,15 @@ def zimfile_link_opds(data):
     return f'''
     <link rel="http://opds-spec.org/acquisition/open-access" href="{filename}.zim" type="application/x-zim" length="{size}"/>'''
 
+def titleid_opds(data):
+    titleid = data.get('TITLEID')
+    # catalog/v2 entries are frozen and never expose the title ID
+    if titleid is None or data['OPDS_VARIANT'] == 'catalog/v2':
+        return ""
+
+    return f'''
+    <kiwix:titleid>{titleid}</kiwix:titleid>'''
+
 def popularity_opds(data):
     popularity = data.get('POPULARITY')
     # catalog/v2 entries are frozen and never expose the popularity
@@ -123,6 +132,7 @@ def digests_opds(data):
     return result + '\n    </kiwix:zimdigests>'
 
 def generate_opds_entry_building_block(identifier, data):
+    data['TITLEID'] = titleid_opds(data)
     data['POPULARITY'] = popularity_opds(data)
     data['DIGESTS'] = digests_opds(data)
     data['PREVIEWLINK'] = preview_link_opds(data)
@@ -167,6 +177,7 @@ RAY_CHARLES_DATA = dict(
     SIZE="569304",
     OPENACCESSLINKKINDS=('BITTORRENT', 'MAGNET', 'META4', 'DIRECT'),
     ILLUSTRATIONS=[{"SIZE": 48, "URL": "https://example.com/favicon/raycharles.png"}],
+    TITLEID="e0c5b2f4-1d8a-4b6e-9f3c-7a2d5e8b1c90",
     POPULARITY=46,
     DIGESTS={
         "sha256": "d4368987aa73e7e35af96c660aead3748ac92648b3248b45df5a4c6c34e7f1b9",
@@ -193,6 +204,7 @@ UNCATEGORIZED_RAY_CHARLES_DATA = edict(RAY_CHARLES_DATA,
     OPENACCESSLINKKINDS=('DIRECT',),
     SIZE="125952",
     ILLUSTRATIONS=[],
+    TITLEID=None,
     POPULARITY=None,
     DIGESTS=None
 )
@@ -210,6 +222,7 @@ CHARLES_RAY_DATA = edict(RAY_CHARLES_DATA,
     FILENAME="zimfile&other",
     OPENACCESSLINKKINDS=('BITTORRENT',),
     ILLUSTRATIONS=[],
+    TITLEID=None,
     POPULARITY=None,
     DIGESTS=None
 )
