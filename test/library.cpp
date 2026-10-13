@@ -322,6 +322,7 @@ const char sampleLibraryXML[] = R"(
 // below). Reformatting this string may break that round-trip test.
 const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:kiwix="https://kiwix.org/namespace/opds"
       xmlns:opds="http://opds-spec.org/2010/catalog">
   <entry>
     <id>urn:uuid:example</id>
@@ -352,6 +353,7 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
     <language>eng,spa</language>
     <name>wikipedia_en_ray_charles</name>
     <flavour>mini</flavour>
+    <kiwix:titleid>5dc0b3af-5df2-0925-f0ca-d2bf75e78af6</kiwix:titleid>
     <category>wikipedia</category>
     <tags>wikipedia;_category:wikipedia;_pictures:no</tags>
     <articleCount>284</articleCount>
