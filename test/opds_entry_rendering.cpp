@@ -87,6 +87,38 @@ TEST(FullEntryOpdsTest, rendersCoreBookFields)
   );
 }
 
+TEST(FullEntryOpdsTest, rendersTitleIdWhenSet)
+{
+  Book book = createBook();
+  book.setTitleId("6f1d19d0-633f-087b-fb55-7ac324ff9baf");
+  // The title ID element is only present for books that have one (see
+  // CORE_ENTRY_BODY, used by the other tests, for its absence otherwise).
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+    "  <entry>\n"
+    "    <id>urn:uuid:book-id</id>\n"
+    "    <title>Some Title</title>\n"
+    "    <updated>2021-03-25T00:00:00Z</updated>\n"
+    "    <summary>Some Description</summary>\n"
+    "    <language>eng</language>\n"
+    "    <name>some_name</name>\n"
+    "    <flavour>nopic</flavour>\n"
+    "    <kiwix:titleid>6f1d19d0-633f-087b-fb55-7ac324ff9baf</kiwix:titleid>\n"
+    "    <category></category>\n"
+    "    <tags>tag1;tag2;_category:wikipedia</tags>\n"
+    "    <articleCount>42</articleCount>\n"
+    "    <mediaCount>7</mediaCount>\n"
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n"
+  );
+}
+
 TEST(FullEntryOpdsTest, omitsAcquisitionLinkWhenUrlIsEmpty)
 {
   const Book book = createBook();
