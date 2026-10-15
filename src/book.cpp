@@ -219,7 +219,6 @@ class Book::Impl
   std::string m_name;
   std::string m_flavour;
   std::string m_tags;
-  std::string m_origId;
   uint64_t m_articleCount = 0;
   uint64_t m_mediaCount = 0;
   uint64_t m_size = 0;
@@ -570,11 +569,6 @@ std::string Book::getFlavour() const
   return mp_impl->m_flavour;
 }
 
-std::string Book::getOrigId() const
-{
-  return mp_impl->m_origId;
-}
-
 uint64_t Book::getArticleCount() const
 {
   return mp_impl->m_articleCount;
@@ -648,11 +642,6 @@ void Book::setFlavour(const std::string& flavour)
 void Book::setTags(const std::string& tags)
 {
   mp_impl->m_tags = tags;
-}
-
-void Book::setOrigId(const std::string& origId)
-{
-  mp_impl->m_origId = origId;
 }
 
 void Book::setArticleCount(uint64_t articleCount)
