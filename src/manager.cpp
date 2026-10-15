@@ -138,9 +138,8 @@ bool Manager::readOpds(const std::string& content,
 
 bool Manager::readFile(const std::string& path)
 {
-  /* This has to be set (although if the file does not exists) to be
-   * able to know where to save the library if new content are
-   * available */
+  /* Set even if the file doesn't exist, so that relative ZIM paths passed
+   * to addBookFromPathAndGetId() are resolved against its directory. */
   this->writableLibraryPath = path;
 
   if (!kiwix::fileExists(path)) {
