@@ -240,7 +240,6 @@ class Book::Impl
   bool m_hasPopularity = false;
   uint32_t m_popularity = 0;
   std::string m_tags;
-  std::string m_origId;
   uint64_t m_articleCount = 0;
   uint64_t m_mediaCount = 0;
   uint64_t m_size = 0;
@@ -611,11 +610,6 @@ uint32_t Book::getPopularity() const
   return mp_impl->m_popularity;
 }
 
-std::string Book::getOrigId() const
-{
-  return mp_impl->m_origId;
-}
-
 uint64_t Book::getArticleCount() const
 {
   return mp_impl->m_articleCount;
@@ -699,11 +693,6 @@ void Book::setPopularity(int popularity)
 void Book::setTags(const std::string& tags)
 {
   mp_impl->m_tags = tags;
-}
-
-void Book::setOrigId(const std::string& origId)
-{
-  mp_impl->m_origId = origId;
 }
 
 void Book::setArticleCount(uint64_t articleCount)
