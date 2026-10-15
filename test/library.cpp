@@ -29,6 +29,7 @@ const char * sampleOpdsStream = R"(
     <title>Encyclopédie de la Tunisie</title>
     <name>wikipedia_fr_tunisie</name>
     <flavour>novid</flavour>
+    <kiwix:titleid>7b1ab04c-3b9a-4f3e-8a57-2f1d6c0e9a11</kiwix:titleid>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd</id>
     <icon>/meta?name=favicon&amp;content=wikipedia_fr_tunisie_novid_2018-10</icon>
     <updated>2018-10-08T00:00::00:Z</updated>
@@ -52,6 +53,7 @@ const char * sampleOpdsStream = R"(
     <title>Encyclopédie de la Tunisie</title>
     <name>wikipedia_fr_tunisie</name>
     <flavour>novid</flavour>
+    <kiwix:titleid>7b1ab04c-3b9a-4f3e-8a57-2f1d6c0e9a11</kiwix:titleid>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater</id>
     <updated>2019-10-08T00:00::00:Z</updated>
     <dc:issued>2019-10-08T00:00::00:Z</dc:issued>
@@ -66,6 +68,7 @@ const char * sampleOpdsStream = R"(
     <title>Encyclopédie de la Tunisie</title>
     <name>wikipedia_fr_tunisie</name>
     <flavour>other_flavour</flavour>
+    <kiwix:titleid>7b1ab04c-3b9a-4f3e-8a57-2f1d6c0e9a11</kiwix:titleid>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_flavour</id>
     <updated>2018-10-08T00:00::00:Z</updated>
     <dc:issued>2018-10-08T00:00::00:Z</dc:issued>
@@ -80,6 +83,7 @@ const char * sampleOpdsStream = R"(
     <title>Encyclopédie de la Tunisie</title>
     <name>wikipedia_fr_tunisie</name>
     <flavour>other_flavour</flavour>
+    <kiwix:titleid>7b1ab04c-3b9a-4f3e-8a57-2f1d6c0e9a11</kiwix:titleid>
     <id>urn:uuid:0c45160e-f917-760a-9159-dfe3c53cdcdd_updated1yearlater_flavour</id>
     <updated>2019-10-08T00:00::00:Z</updated>
     <dc:issued>2019-10-08T00:00::00:Z</dc:issued>
@@ -921,6 +925,43 @@ TEST_P(LibraryTest, filterByLanguage)
   );
 
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("eng"),
+    /* no results */
+  );
+}
+
+TEST_P(LibraryTest, filterByTitleId)
+{
+  // The four releases of "Encyclopédie de la Tunisie" share a title (and
+  // a title ID), so the results are compared by book id.
+  const std::string titleId = "7b1ab04c-3b9a-4f3e-8a57-2f1d6c0e9a11";
+  const std::string bookId = "0c45160e-f917-760a-9159-dfe3c53cdcdd";
+  const auto sorted = [](BookIdCollection ids) {
+    std::sort(ids.begin(), ids.end());
+    return ids;
+  };
+
+  EXPECT_EQ(sorted(lib->filter(kiwix::Filter().titleId(titleId))),
+            BookIdCollection({
+              bookId,
+              bookId + "_flavour",
+              bookId + "_updated1yearlater",
+              bookId + "_updated1yearlater_flavour"
+            }));
+
+  // Title ID and flavour together identify a lineage
+  EXPECT_EQ(sorted(lib->filter(kiwix::Filter().titleId(titleId).flavour("other_flavour"))),
+            BookIdCollection({
+              bookId + "_flavour",
+              bookId + "_updated1yearlater_flavour"
+            }));
+
+  // The title ID must match entirely
+  EXPECT_FILTER_RESULTS(kiwix::Filter().titleId("7b1ab04c"),
+    /* no results */
+  );
+
+  // The title ID is not searchable as free text
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query(titleId),
     /* no results */
   );
 }
