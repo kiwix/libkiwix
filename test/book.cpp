@@ -492,7 +492,7 @@ TEST(BookTest, setTagsDoesntAffectCategory)
 
 TEST(BookTest, updateCopiesCategory)
 {
-    const kiwix::Book book = makeBook(R"(id="abcd" category="ted")");
+    const kiwix::Book book = makeBookFromOpds("<id>abcd</id><category>ted</category>");
 
     kiwix::Book newBook;
     newBook.setId("abcd");
@@ -503,15 +503,19 @@ TEST(BookTest, updateCopiesCategory)
 
 TEST(BookTest, updateTest)
 {
-    kiwix::Book book = makeBook(R"(
-        id="xyz"
-        path="/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim"
-        url="book-url"
-        name="skin-of-color-society_en_all"
-        tags="youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes"
-        favicon="Ym9vay1mYXZpY29u"
-        faviconMimeType="book-favicon-mimetype"
-    )", "/data/zim");
+    kiwix::Book book = makeBookFromOpds(R"(
+        <id>xyz</id>
+        <name>skin-of-color-society_en_all</name>
+        <tags>youtube;_videos:yes;_ftindex:yes;_ftindex:yes;_pictures:yes;_details:yes</tags>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              href="/home/user/Downloads/skin-of-color-society_en_all_2019-11.zim" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://example.com/book-url.zim" />
+        <link rel="http://opds-spec.org/image/thumbnail"
+              type="image/png;width=48;height=48;scale=1"
+              href="data:image/png;base64,Ym9vay1mYXZpY29u" />
+    )", "", "/data/zim");
 
     book.setReadOnly(false);
     book.setPathValid(true);
@@ -553,10 +557,8 @@ namespace
 
 std::string path2HumanReadableId(const std::string& path)
 {
-    const XMLDoc xml("<book id=\"xyz\" path=\"" + path + "\"></book>");
-
     kiwix::Book book;
-    book.updateFromXml(xml.child("book"), "/data/zim");
+    book.setPath(path);
     return book.getHumanReadableIdFromPath();
 }
 
