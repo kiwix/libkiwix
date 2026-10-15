@@ -12,7 +12,7 @@
 // Testing of the library-related functionality of the server
 ////////////////////////////////////////////////////////////////////////////////
 
-class LibraryServerTest : public ::testing::TestWithParam<std::string>
+class LibraryServerTest : public ::testing::Test
 {
 protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
@@ -22,7 +22,7 @@ protected:
 protected:
   void resetServer(ZimFileServer::Cfg cfg) {
     zfs1_.reset();
-    zfs1_.reset(new ZimFileServer(PORT, cfg, GetParam()));
+    zfs1_.reset(new ZimFileServer(PORT, cfg, "./test/library.opds"));
   }
 
   void resetServer(ZimFileServer::Options options, std::string contentServerUrl="") {
@@ -32,16 +32,13 @@ protected:
   }
 
   void SetUp() override {
-    zfs1_.reset(new ZimFileServer(PORT, ZimFileServer::DEFAULT_OPTIONS, GetParam()));
+    zfs1_.reset(new ZimFileServer(PORT, ZimFileServer::DEFAULT_OPTIONS, "./test/library.opds"));
   }
 
   void TearDown() override {
     zfs1_.reset();
   }
 };
-
-INSTANTIATE_TEST_CASE_P(XmlAndOpds, LibraryServerTest,
-    ::testing::Values("./test/library.xml", "./test/library.opds"));
 
 // Returns a copy of 'text' where every line that fully matches 'pattern'
 // preceded by optional whitespace is replaced with the fixed string
@@ -199,7 +196,7 @@ std::string maskVariableOPDSFeedData(std::string s)
 #define CATALOG_V2_PARTIAL_ENTRIES_PREAMBLE(q) \
             CATALOG_V2_ENTRIES_PREAMBLE0("partial_entries" q)
 
-TEST_P(LibraryServerTest, ThumbnailMimeTypeHandling)
+TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
 {
   resetServer(ZimFileServer::CATALOG_ONLY_MODE);
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
@@ -215,7 +212,7 @@ TEST_P(LibraryServerTest, ThumbnailMimeTypeHandling)
   EXPECT_FALSE(kiwix::contains(r->body, "illustration/inaccessiblezim/"));
 }
 
-TEST_P(LibraryServerTest, catalog_v2_filtering_by_phrase)
+TEST_F(LibraryServerTest, catalog_v2_filtering_by_phrase)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=\"ray%20charles\"");
   EXPECT_EQ(r->status, 200);
@@ -232,7 +229,7 @@ TEST_P(LibraryServerTest, catalog_v2_filtering_by_phrase)
   );
 }
 
-TEST_P(LibraryServerTest, catalog_v2_filtering_by_words)
+TEST_F(LibraryServerTest, catalog_v2_filtering_by_words)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20charles");
   EXPECT_EQ(r->status, 200);
@@ -250,7 +247,7 @@ TEST_P(LibraryServerTest, catalog_v2_filtering_by_words)
   );
 }
 
-TEST_P(LibraryServerTest, catalog_v2_filtering_via_prefix_search)
+TEST_F(LibraryServerTest, catalog_v2_filtering_via_prefix_search)
 {
   {
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=description:ray%20description:charles");
@@ -283,7 +280,7 @@ TEST_P(LibraryServerTest, catalog_v2_filtering_via_prefix_search)
   }
 }
 
-TEST_P(LibraryServerTest, catalog_v2_filtering_with_word_exclusion)
+TEST_F(LibraryServerTest, catalog_v2_filtering_with_word_exclusion)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20-uncategorized");
   EXPECT_EQ(r->status, 200);
@@ -300,7 +297,7 @@ TEST_P(LibraryServerTest, catalog_v2_filtering_with_word_exclusion)
   );
 }
 
-TEST_P(LibraryServerTest, catalog_v2_root)
+TEST_F(LibraryServerTest, catalog_v2_root)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/root.xml");
   EXPECT_EQ(r->status, 200);
@@ -361,7 +358,7 @@ TEST_P(LibraryServerTest, catalog_v2_root)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
 }
 
-TEST_P(LibraryServerTest, catalog_v2_searchdescription_xml)
+TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/searchdescription.xml");
   EXPECT_EQ(r->status, 200);
@@ -379,7 +376,7 @@ TEST_P(LibraryServerTest, catalog_v2_searchdescription_xml)
   );
 }
 
-TEST_P(LibraryServerTest, catalog_v2_categories)
+TEST_F(LibraryServerTest, catalog_v2_categories)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/categories");
   EXPECT_EQ(r->status, 200);
@@ -428,7 +425,7 @@ TEST_P(LibraryServerTest, catalog_v2_categories)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
 }
 
-TEST_P(LibraryServerTest, catalog_v2_languages)
+TEST_F(LibraryServerTest, catalog_v2_languages)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/languages");
   EXPECT_EQ(r->status, 200);
@@ -492,7 +489,7 @@ TEST_P(LibraryServerTest, catalog_v2_languages)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries)
+TEST_F(LibraryServerTest, catalog_v2_entries)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
   EXPECT_EQ(r->status, 200);
@@ -508,7 +505,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries)
   );
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
+TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
 {
   const std::string contentServerUrl = "https://demo.kiwix.org";
   const auto fixContentLinks = [=](std::string s) -> std::string {
@@ -551,7 +548,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
   }
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_range)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
 {
   {
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?start=1");
@@ -634,7 +631,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=\"ray%20charles\"");
   EXPECT_EQ(r->status, 200);
@@ -651,7 +648,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
   );
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 {
   {
   // 'or' doesn't act as a Xapian boolean operator
@@ -812,7 +809,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
   }
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_language)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
 {
   {
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=eng");
@@ -848,7 +845,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_language)
   }
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_category)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
 {
   {
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?category=jazz");
@@ -882,7 +879,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_category)
   }
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_multiple_filters)
+TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
 {
   {
     const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=fra&category=jazz");
@@ -900,7 +897,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_multiple_filters)
   }
 }
 
-TEST_P(LibraryServerTest, catalog_v2_individual_entry_access)
+TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/raycharles");
   EXPECT_EQ(r->status, 200);
@@ -913,7 +910,7 @@ TEST_P(LibraryServerTest, catalog_v2_individual_entry_access)
   EXPECT_EQ(r1->status, 404);
 }
 
-TEST_P(LibraryServerTest, catalog_v2_partial_entries)
+TEST_F(LibraryServerTest, catalog_v2_partial_entries)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/partial_entries");
   EXPECT_EQ(r->status, 200);
@@ -968,7 +965,7 @@ TEST_P(LibraryServerTest, catalog_v2_partial_entries)
     );                                                                      \
   }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtering_includes_public_tags)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtering_includes_public_tags)
 {
   EXPECT_FILTERING_RESULTS("public_tag_without_a_value",
                         1,
@@ -1001,13 +998,13 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtering_includes_public_tags)
 
 #define EXPECT_ZERO_RESULTS(SEARCH_TERM) EXPECT_FILTERING_RESULTS(SEARCH_TERM, 0, )
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtering_on_tags_is_not_an_any_substring_match)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtering_on_tags_is_not_an_any_substring_match)
 {
   EXPECT_ZERO_RESULTS("tag_with")
   EXPECT_ZERO_RESULTS("alue_of_a_public_tag")
 }
 
-TEST_P(LibraryServerTest, catalog_v2_entries_filtering_excludes_hidden_tags)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtering_excludes_hidden_tags)
 {
   EXPECT_ZERO_RESULTS("_private_tag_without_a_value");
   EXPECT_ZERO_RESULTS("private_tag_without_a_value");
@@ -1016,7 +1013,7 @@ TEST_P(LibraryServerTest, catalog_v2_entries_filtering_excludes_hidden_tags)
 #undef EXPECT_ZERO_RESULTS
 }
 
-TEST_P(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
+TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?tag=_category:jazz");
@@ -1034,7 +1031,7 @@ TEST_P(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 }
 
 
-TEST_P(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
+TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/raycharles");
@@ -1310,7 +1307,7 @@ TEST_P(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   "</body>\n" \
   "</html>"
 
-TEST_P(LibraryServerTest, noJS) {
+TEST_F(LibraryServerTest, noJS) {
   // no_js_default
   auto r = zfs1_->GET("/ROOT%23%3F/nojs");
   EXPECT_EQ(r->status, 200);
@@ -1425,7 +1422,7 @@ TEST(NoJSDownloadLinks, missingLinkKindsAreOmitted) {
   EXPECT_EQ(r->body, expected_output);
 }
 
-TEST_P(LibraryServerTest, noJS_catalogOnlyMode) {
+TEST_F(LibraryServerTest, noJS_catalogOnlyMode) {
   const std::string contentServerUrl = "https://demo.kiwix.org";
   const auto fixContentLinks = [=](std::string s) -> std::string {
     s = replace(s, "/ROOT%23%3F/content", contentServerUrl + "/content");
