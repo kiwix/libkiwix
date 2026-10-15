@@ -124,3 +124,25 @@ TEST(HTTPErrorResponse, shouldNotAllowBreakingOutOfTheScriptTag) {
   ASSERT_NE(content.find("</script>"), std::string::npos);
   EXPECT_EQ(content.find("</script>"), content.rfind("</script>")) << content;
 }
+
+TEST(ETag, matchWeakETag) {
+  const auto etag = ETag::match("W/\"body123/Z\"", "body123");
+  EXPECT_TRUE(bool(etag));
+  EXPECT_EQ(etag.get_etag(), "\"body123/Z\"");
+}
+
+TEST(ETag, matchWeakETagInList) {
+  const auto etag = ETag::match("\"other/Z\", W/\"body123/Zz\", \"another/\"", "body123");
+  EXPECT_TRUE(bool(etag));
+  EXPECT_EQ(etag.get_etag(), "\"body123/Zz\"");
+}
+
+TEST(ETag, matchMalformedOrEmpty) {
+  EXPECT_FALSE(bool(ETag::match("", "body123")));
+  EXPECT_FALSE(bool(ETag::match("W", "body123")));
+  EXPECT_FALSE(bool(ETag::match("W/", "body123")));
+  EXPECT_FALSE(bool(ETag::match(",", "body123")));
+  EXPECT_FALSE(bool(ETag::match("\"\"", "body123")));
+  EXPECT_FALSE(bool(ETag::match("\"", "body123")));
+}
+
