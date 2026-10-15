@@ -11,44 +11,48 @@ namespace
 {
 
 #if _WIN32
-const char libraryXML[] = R"(
-<library version="1.0">
-  <book id="01"         path="C:\data\zero_one.zim">         </book>
-  <book id="02"         path="C:\data\zero two.zim">         </book>
-  <book id="03"         path="C:\data\ZERO thrêë.zim">       </book>
-  <book id="04-2021-10" path="C:\data\zero_four_2021-10.zim"></book>
-  <book id="04-2021-11" path="C:\data\zero_four_2021-11.zim"></book>
-  <book id="05-a"       path="C:\data\zero_five-a.zim" name="zero_five"></book>
-  <book id="05-b"       path="C:\data\zero_five-b.zim" name="zero_five"></book>
-  <book id="06+"        path="C:\data\zërô + SIX.zim"></book>
-  <book id="06plus"     path="C:\data\zero_plus_six.zim"></book>
-  <book id="07-super"   path="C:\data\zero_seven.zim"></book>
-  <book id="07-sub"     path="C:\data\subdir\zero_seven.zim"></book>
-  <book id="08-2026-07a"    path="C:\data\zero_eight_2026-07a.zim"></book>
-  <book id="09-2026-07aa"   path="C:\data\zero_nine_2026-07aa.zim"></book>
-  <book id="10-2026-07abc"  path="C:\data\ten_2026-07abc.zim"></book>
-</library>
-)";
+# define DATA_DIR "C:\\data\\"
+# define SUBDIR   "subdir\\"
 #else
-const char libraryXML[] = R"(
-<library version="1.0">
-  <book id="01"         path="/data/zero_one.zim">         </book>
-  <book id="02"         path="/data/zero two.zim">         </book>
-  <book id="03"         path="/data/ZERO thrêë.zim">       </book>
-  <book id="04-2021-10" path="/data/zero_four_2021-10.zim"></book>
-  <book id="04-2021-11" path="/data/zero_four_2021-11.zim"></book>
-  <book id="05-a"       path="/data/zero_five-a.zim" name="zero_five"></book>
-  <book id="05-b"       path="/data/zero_five-b.zim" name="zero_five"></book>
-  <book id="06+"        path="/data/zërô + SIX.zim"></book>
-  <book id="06plus"     path="/data/zero_plus_six.zim"></book>
-  <book id="07-super"   path="/data/zero_seven.zim"></book>
-  <book id="07-sub"     path="/data/subdir/zero_seven.zim"></book>
-  <book id="08-2026-07a"    path="/data/zero_eight_2026-07a.zim"></book>
-  <book id="09-2026-07aa"   path="/data/zero_nine_2026-07aa.zim"></book>
-  <book id="10-2026-07abc"  path="/data/ten_2026-07abc.zim"></book>
-</library>
-)";
+# define DATA_DIR "/data/"
+# define SUBDIR   "subdir/"
 #endif
+
+struct LibraryBook
+{
+  const char* id;
+  const char* fileName;
+  const char* name;
+};
+
+const LibraryBook libraryBooks[] = {
+  { "01",            "zero_one.zim",            "" },
+  { "02",            "zero two.zim",            "" },
+  { "03",            "ZERO thrêë.zim",          "" },
+  { "04-2021-10",    "zero_four_2021-10.zim",   "" },
+  { "04-2021-11",    "zero_four_2021-11.zim",   "" },
+  { "05-a",          "zero_five-a.zim",         "zero_five" },
+  { "05-b",          "zero_five-b.zim",         "zero_five" },
+  { "06+",           "zërô + SIX.zim",          "" },
+  { "06plus",        "zero_plus_six.zim",       "" },
+  { "07-super",      "zero_seven.zim",          "" },
+  { "07-sub",        SUBDIR "zero_seven.zim",   "" },
+  { "08-2026-07a",   "zero_eight_2026-07a.zim", "" },
+  { "09-2026-07aa",  "zero_nine_2026-07aa.zim", "" },
+  { "10-2026-07abc", "ten_2026-07abc.zim",      "" },
+};
+
+std::string libraryOpds()
+{
+  std::string opds = R"(<feed xmlns="http://www.w3.org/2005/Atom">)";
+  for ( const auto& b : libraryBooks ) {
+    opds += std::string("<entry><id>") + b.id + "</id>"
+          + "<name>" + b.name + "</name>"
+          + R"(<link rel="http://opds-spec.org/acquisition/open-access" href=")"
+          + DATA_DIR + b.fileName + R"("/></entry>)";
+  }
+  return opds + "</feed>";
+}
 
 class NameMapperTest : public ::testing::Test {
  public:
@@ -56,7 +60,7 @@ class NameMapperTest : public ::testing::Test {
  protected:
   void SetUp() override {
      kiwix::Manager manager(lib);
-     manager.readXml(libraryXML, false, "./library.xml", true);
+     manager.readOpds(libraryOpds(), "./library.opds", /*readOnly=*/false);
      for ( const std::string& id : lib->getBooksIds() ) {
        kiwix::Book bookCopy = lib->getBookById(id);
        bookCopy.setPathValid(true);
