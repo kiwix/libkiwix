@@ -205,7 +205,6 @@ class Book::Impl
 {
  public:
   std::string m_id;
-  std::string m_downloadId;
   std::string m_path;
   bool m_pathValid = false;
   std::string m_title;
@@ -593,11 +592,6 @@ uint64_t Book::getSize() const
   return mp_impl->m_size;
 }
 
-std::string Book::getDownloadId() const
-{
-  return mp_impl->m_downloadId;
-}
-
 void Book::setId(const std::string& id)
 {
   mp_impl->m_id = id;
@@ -666,11 +660,6 @@ void Book::setMediaCount(uint64_t mediaCount)
 void Book::setSize(uint64_t size)
 {
   mp_impl->m_size = size;
-}
-
-void Book::setDownloadId(const std::string& downloadId)
-{
-  mp_impl->m_downloadId = downloadId;
 }
 
 }
