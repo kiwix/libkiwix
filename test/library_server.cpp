@@ -375,7 +375,7 @@ TEST_P(LibraryServerTest, catalog_v2_searchdescription_xml)
     "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
     "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
     "       indexOffset=\"0\"\n"
-    "       template=\"/ROOT%23%3F/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
+    "       template=\"/ROOT%23%3F/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&flavour={k:flavour?}&titleid={k:titleid?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
     "</OpenSearchDescription>\n"
   );
 }
@@ -896,6 +896,40 @@ TEST_P(LibraryServerTest, catalog_v2_entries_multiple_filters)
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
       CHARLES_RAY_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+}
+
+TEST_P(LibraryServerTest, catalog_v2_entries_filtered_by_title_id_or_flavour)
+{
+  // No book of the test library has a title ID or a flavour, hence
+  // filtering by either of them must yield no results (rather than
+  // being ignored and returning all the entries).
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?titleid=5dc0b3af-5df2-0925-f0ca-d2bf75e78af6");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?titleid=5dc0b3af-5df2-0925-f0ca-d2bf75e78af6")
+      "  <title>Filtered Entries (titleid=5dc0b3af-5df2-0925-f0ca-d2bf75e78af6)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>0</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>0</itemsPerPage>\n"
+      "</feed>\n"
+    );
+  }
+
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?flavour=maxi");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?flavour=maxi")
+      "  <title>Filtered Entries (flavour=maxi)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>0</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>0</itemsPerPage>\n"
       "</feed>\n"
     );
   }
