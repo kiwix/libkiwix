@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  OPDS analogue of library.xml - same four books, with each XML attribute
-  mapped to its corresponding OPDS element/link (see Book::updateFromOpds()
-  in src/book.cpp):
-    id                       -> <id>urn:uuid:ID</id> ("urn:uuid:" is
-                                 stripped by updateFromOpds())
-    path                     -> an acquisition <link>'s href, when that href
-                                 is not an absolute URL - resolved against
-                                 the library file's own directory just like
-                                 XML's "path" attribute (see
-                                 Book::updateFromOpds())
-    url                      -> an acquisition <link>'s href, when that href
-                                 IS an absolute URL
-    size (KiB, XML)          -> an acquisition <link>'s length (bytes, i.e.
-                                 size * 1024)
-    title/description/       -> <title>/<summary>/<language>/<name>/<tags>
-      language/name/tags
-    creator/publisher        -> <author><name>/<publisher><name>
-    date                     -> <updated> (only the first 10 chars are kept
-                                 by Book::fromOpdsDate())
-    articleCount/mediaCount  -> <articleCount>/<mediaCount>
-    favicon/faviconMimeType  -> thumbnail <link>'s href/type (OPDS only
-                                 carries a URL to the image, never embedded
-                                 data, so favicon's placeholder text becomes
-                                 a placeholder href instead)
+  Test library of four books, read by Manager::readFile() (see
+  Book::updateFromOpds() in src/book.cpp for how each element is read):
+    <id>urn:uuid:ID</id>     -> the book id ("urn:uuid:" is stripped)
+    acquisition <link>       -> a relative or absolute filesystem href is
+                                the local ZIM path (a relative one is
+                                resolved against the directory of this
+                                file); an absolute URL href is a download
+                                URL
+    length (on that link)    -> the book size, in bytes
+    <dc:issued>              -> the book date, or <updated> if there is no
+                                <dc:issued> (only the first 10 chars, i.e.
+                                YYYY-MM-DD, are kept)
+    <author>/<publisher>     -> creator/publisher, via their <name>
+    thumbnail <link>         -> the illustration: its href is a URL to the
+                                image (or a "data:" URI embedding it), and
+                                its type gives the mime type and size
 -->
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:opds="https://specs.opds.io/opds-1.2">
