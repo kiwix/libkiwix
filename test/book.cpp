@@ -225,6 +225,41 @@ TEST(BookTest, updateFromOPDSMultipleMimeTypeAcquisitionLinksTest)
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), "https://who.org/zara.zim.torrent");
 }
 
+TEST(BookTest, updateFromOPDSSkipsAcquisitionLinkOfUnknownTypeTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/octet-stream"
+              href="https://who.org/zara.bin"
+              length="999" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              type="application/x-zim"
+              href="https://who.org/zara.zim"
+              length="345678" />
+        <link rel="http://opds-spec.org/acquisition/open-access"
+              href="zara.zim" />
+      </entry>
+    )");
+
+    kiwix::Book book;
+    kiwix::testing::CapturedStderr stderror;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    EXPECT_EQ(
+      "Book 'zara': ignoring acquisition link 'https://who.org/zara.bin':"
+      " Unknown acquisition link type: application/octet-stream\n",
+      std::string(stderror));
+
+    // The links after the skipped one are still read...
+    EXPECT_EQ(kiwix::nonEmptyAcquisitionLinksCount(book), 1U);
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "https://who.org/zara.zim");
+    EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
+    // ... and the length of the skipped link is ignored.
+    EXPECT_EQ(book.getSize(), 345678U);
+}
+
 TEST(BookTest, setUrlStoresUrlPerAcquisitionLinkKind)
 {
     kiwix::Book book;
