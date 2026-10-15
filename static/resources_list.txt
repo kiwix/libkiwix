@@ -37,7 +37,6 @@ templates/error.xml
 templates/index.html
 templates/suggestion.json
 templates/captured_external.html
-templates/catalog_entries.xml
 templates/catalog_v2_root.xml
 templates/catalog_v2_entries.xml
 templates/catalog_v2_entry.xml
@@ -50,7 +49,6 @@ templates/no_js_library_page.html
 templates/no_js_download.html
 templates/sexy404.html
 templates/sexy500.html
-opensearchdescription.xml
 ft_opensearchdescription.xml
 catalog_v2_searchdescription.xml
 skin/autoComplete/css/autoComplete.css

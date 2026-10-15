@@ -50,15 +50,6 @@ class OPDSDumper : public LibraryDumper
    *
    * @param bookIds the ids of the books to include in the feed
    * @param query the query used to obtain the list of book ids
-   * @return The OPDS feed.
-   */
-  std::string dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const;
-
-  /**
-   * Dump the OPDS feed.
-   *
-   * @param bookIds the ids of the books to include in the feed
-   * @param query the query used to obtain the list of book ids
    * @param partial whether the feed should include partial or complete entries
    * @return The OPDS feed.
    */

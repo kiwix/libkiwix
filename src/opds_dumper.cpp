@@ -88,23 +88,6 @@ BooksData getBooksData(const Library* library,
 
 } // unnamed namespace
 
-string OPDSDumper::dumpOPDSFeed(const std::vector<std::string>& bookIds, const std::string& query) const
-{
-  const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, false);
-  const kainjow::mustache::object template_data{
-     {"date", gen_date_str()},
-     {"root", rootLocation},
-     {"feed_id", gen_uuid(libraryId + "/catalog/search?"+query)},
-     {"filter", onlyAsNonEmptyMustacheValue(query)},
-     {"totalResults", to_string(m_totalResults)},
-     {"startIndex", to_string(m_startIndex)},
-     {"itemsPerPage", to_string(m_count)},
-     {"books", booksData }
-  };
-
-  return render_template(RESOURCE::templates::catalog_entries_xml, template_data);
-}
-
 string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
 {
   const auto endpointRoot = rootLocation + "/catalog/v2";
