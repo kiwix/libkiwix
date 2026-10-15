@@ -137,7 +137,6 @@ class Book
   std::string getTagStr(const std::string& tagName) const;
   bool getTagBool(const std::string& tagName) const;
   std::string getFlavour() const;
-  std::string getOrigId() const;
   uint64_t getArticleCount() const;
   uint64_t getMediaCount() const;
   uint64_t getSize() const;
@@ -162,7 +161,6 @@ class Book
   void setName(const std::string& name);
   void setFlavour(const std::string& flavour);
   void setTags(const std::string& tags);
-  void setOrigId(const std::string& origId);
   void setArticleCount(uint64_t articleCount);
   void setMediaCount(uint64_t mediaCount);
   void setSize(uint64_t size);
