@@ -624,17 +624,17 @@ std::string Book::getOrigId() const
   return mp_impl->m_origId;
 }
 
-const uint64_t Book::getArticleCount() const
+uint64_t Book::getArticleCount() const
 {
   return mp_impl->m_articleCount;
 }
 
-const uint64_t Book::getMediaCount() const
+uint64_t Book::getMediaCount() const
 {
   return mp_impl->m_mediaCount;
 }
 
-const uint64_t Book::getSize() const
+uint64_t Book::getSize() const
 {
   return mp_impl->m_size;
 }

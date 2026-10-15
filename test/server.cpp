@@ -93,8 +93,6 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/languages.js" },
   { STATIC_CONTENT, "/ROOT%23%3F/skin/languages.js?cacheid=d2d6933b" },
 
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/search" },
-
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/root.xml" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/entries" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/partial_entries" },
@@ -181,9 +179,6 @@ const ResourceCollection resources200Uncompressible{
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Creator" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Publisher" },
 
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/root.xml" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/searchdescription.xml" },
-
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/categories" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/languages" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/v2/searchdescription.xml" },
@@ -196,9 +191,6 @@ const ResourceCollection resources200Uncompressible{
   { ZIM_CONTENT,     "/ROOT%23%3F/content/corner_cases%23%26/empty.js" },
 
 
-  // The following url's responses are too small to be compressed
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/root.xml" },
-  { DYNAMIC_CONTENT, "/ROOT%23%3F/catalog/searchdescription.xml" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/suggest?content=zimfile" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Creator" },
   { ZIM_CONTENT,     "/ROOT%23%3F/raw/zimfile/meta/Title" },
@@ -539,6 +531,11 @@ const char* urls404[] = {
   "/ROOT%23%3F/skin/autoComplete/autoComplete.min.js?cacheid=wrongcacheid",
   "/ROOT%23%3F/catalog",
   "/ROOT%23%3F/catalog/",
+  "/ROOT%23%3F/catalog/root.xml",
+  "/ROOT%23%3F/catalog/search",
+  "/ROOT%23%3F/catalog/searchdescription.xml",
+
+
   "/ROOT%23%3F/catalog/non-existent-item",
   "/ROOT%23%3F/catalog/v2/illustration/zimfile?size=48",
   "/ROOT%23%3F/catalog/v2/illustration/6f1d19d0-633f-087b-fb55-7ac324ff9baf?size=96",
@@ -662,7 +659,6 @@ TEST_F(ServerTest, MimeTypes)
     { "/skin/blank.html",                  "text/html" },
     { "/skin/index.css",                   "text/css" },
     { "/skin/index.js",                    "application/javascript" },
-    { "/catalog/root.xml",                 "application/atom+xml;profile=opds-catalog;kind=acquisition;charset=utf-8" },
     { "/catalog/v2/searchdescription.xml", "application/opensearchdescription+xml" },
     { "/catalog/v2/root.xml",              "application/atom+xml;profile=opds-catalog;kind=navigation;charset=utf-8" },
     { "/catalog/v2/languages",             "application/atom+xml;profile=opds-catalog;kind=navigation;charset=utf-8" },

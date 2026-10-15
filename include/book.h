@@ -140,9 +140,9 @@ class Book
   bool getTagBool(const std::string& tagName) const;
   std::string getFlavour() const;
   std::string getOrigId() const;
-  const uint64_t getArticleCount() const;
-  const uint64_t getMediaCount() const;
-  const uint64_t getSize() const;
+  uint64_t getArticleCount() const;
+  uint64_t getMediaCount() const;
+  uint64_t getSize() const;
 
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
