@@ -600,6 +600,9 @@ void Library::updateBookDB(const Book& book)
   indexer.index_text(normalizeText(book.getPublisher()), 1, "XP");
   doc.add_term("XN"+normalizeText(book.getName()));
   indexer.index_text(normalizeText(book.getFlavour()),  1, "XF");
+  if ( !book.getTitleId().empty() ) {
+    doc.add_boolean_term("XI" + normalizeText(book.getTitleId()));
+  }
   indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
@@ -668,6 +671,11 @@ Xapian::Query nameQuery(const std::string& name)
 Xapian::Query flavourQuery(const std::string& name)
 {
   return Xapian::Query("XF" + normalizeText(name));
+}
+
+Xapian::Query titleIdQuery(const std::string& titleId)
+{
+  return Xapian::Query("XI" + normalizeText(titleId));
 }
 
 Xapian::Query multipleParamQuery(const std::string& commaSeparatedList, const std::string& prefix)
@@ -739,6 +747,9 @@ Xapian::Query buildXapianQuery(const Filter& filter)
   }
   if ( filter.hasFlavour() )  {
     q = Xapian::Query(Xapian::Query::OP_AND, q, flavourQuery(filter.getFlavour()));
+  }
+  if ( filter.hasTitleId() )  {
+    q = Xapian::Query(Xapian::Query::OP_AND, q, titleIdQuery(filter.getTitleId()));
   }
   if ( filter.hasCategory() ) {
     q = Xapian::Query(Xapian::Query::OP_AND, q, categoryQuery(filter.getCategory()));
@@ -906,6 +917,7 @@ enum filterTypes {
   NAME = FLAG(13),
   CATEGORY = FLAG(14),
   FLAVOUR = FLAG(15),
+  TITLEID = FLAG(16),
 };
 
 Filter& Filter::local(bool accept)
@@ -1015,6 +1027,13 @@ Filter& Filter::flavour(std::string flavour)
   return *this;
 }
 
+Filter& Filter::titleId(std::string titleId)
+{
+  _titleId = titleId;
+  activeFilters |= TITLEID;
+  return *this;
+}
+
 Filter& Filter::clearLang()
 {
   activeFilters &= ~LANG;
@@ -1064,6 +1083,11 @@ bool Filter::hasFlavour() const
   return ACTIVE(FLAVOUR);
 }
 
+bool Filter::hasTitleId() const
+{
+  return ACTIVE(TITLEID);
+}
+
 
 bool Filter::accept(const Book& book) const
 {
@@ -1093,6 +1117,7 @@ std::string Library::dumpOpds(const std::string& outputPath) const
   std::ostringstream ss;
   ss << R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:kiwix="https://kiwix.org/namespace/opds"
       xmlns:opds="http://opds-spec.org/2010/catalog">
 )";
 

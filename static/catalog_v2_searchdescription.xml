@@ -6,5 +6,5 @@
        xmlns:atom="http://www.w3.org/2005/Atom"
        xmlns:k="http://kiwix.org/opensearchextension/1.0"
        indexOffset="0"
-       template="{{endpoint_root}}/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}"/>
+       template="{{endpoint_root}}/entries?q={searchTerms?}&lang={language?}&name={k:name?}&flavour={k:flavour?}&titleid={k:titleid?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}"/>
 </OpenSearchDescription>
