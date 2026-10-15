@@ -86,6 +86,7 @@ class Filter {
     bool _queryIsPartial;
     std::string _name;
     std::string _flavour;
+    std::string _titleId;
 
   public: // functions
     Filter();
@@ -146,6 +147,14 @@ class Filter {
     Filter& query(std::string query, bool partial=true);
     Filter& name(std::string name);
     Filter& flavour(std::string flavour);
+
+    /**
+     *  Set the filter to only accept books with the specified title ID.
+     *
+     *  All the releases of a book share the same title ID. Combined with
+     *  the flavour filter, this selects a full lineage of a book.
+     */
+    Filter& titleId(std::string titleId);
     Filter& clearLang();
     Filter& clearCategory();
 
@@ -170,6 +179,9 @@ class Filter {
 
     bool hasFlavour() const;
     const std::string& getFlavour() const { return _flavour; }
+
+    bool hasTitleId() const;
+    const std::string& getTitleId() const { return _titleId; }
 
     const Tags& getAcceptTags() const { return _acceptTags; }
     const Tags& getRejectTags() const { return _rejectTags; }
