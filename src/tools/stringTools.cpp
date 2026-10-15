@@ -456,8 +456,8 @@ bool kiwix::startsWith(const std::string& base, const std::string& start)
 
 std::string kiwix::stripSuffix(const std::string& str, const std::string& suffix)
 {
-  if (str.size() > suffix.size()) {
-    const auto subStr = str.substr(str.size() - suffix.size(), str.size());
+  if (str.size() >= suffix.size()) {
+    const auto subStr = str.substr(str.size() - suffix.size(), suffix.size());
     if (subStr == suffix) {
       return str.substr(0, str.size() - suffix.size());
     }
