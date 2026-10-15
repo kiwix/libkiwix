@@ -47,7 +47,6 @@ Book createBook(const std::string& id, const std::string& title)
   book.setArticleCount(42);
   book.setMediaCount(7);
   book.setSize(122880);
-  book.setDownloadId("download-" + id);
   return book;
 }
 

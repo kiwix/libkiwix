@@ -144,8 +144,6 @@ class Book
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
 
-  std::string getDownloadId() const;
-
   void setId(const std::string& id);
   void setPath(const std::string& path);
   void setPathValid(bool valid);
@@ -164,7 +162,6 @@ class Book
   void setArticleCount(uint64_t articleCount);
   void setMediaCount(uint64_t mediaCount);
   void setSize(uint64_t size);
-  void setDownloadId(const std::string& downloadId);
 
  private: // functions
   std::string getCategoryFromTags() const;
