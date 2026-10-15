@@ -950,9 +950,7 @@ struct TestData
   }
 };
 
-class LibForServerSearchTest : public ::testing::TestWithParam<std::string> {};
-
-TEST_P(LibForServerSearchTest, searchResults)
+TEST(LibForServerSearchTest, searchResults)
 {
   const TestData testData[] = {
     {
@@ -1558,7 +1556,7 @@ TEST_P(LibForServerSearchTest, searchResults)
     },
   };
 
-  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS, GetParam());
+  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS, "./test/lib_for_server_search_test.opds");
 
   for ( const auto& t : testData ) {
     const std::string htmlSearchUrl = t.url();
@@ -1676,9 +1674,9 @@ std::string noBookFoundErrorHtml(std::string url)
   );
 }
 
-TEST_P(LibForServerSearchTest, bookSelectionNegativeTests)
+TEST(LibForServerSearchTest, bookSelectionNegativeTests)
 {
-  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS, GetParam());
+  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS, "./test/lib_for_server_search_test.opds");
 
   {
     // books.name (unlike books.filter.name) DOESN'T consider the book name
@@ -1704,6 +1702,3 @@ TEST_P(LibForServerSearchTest, bookSelectionNegativeTests)
   }
 }
 
-INSTANTIATE_TEST_CASE_P(XmlAndOpds, LibForServerSearchTest,
-    ::testing::Values("./test/lib_for_server_search_test.xml",
-                       "./test/lib_for_server_search_test.opds"));

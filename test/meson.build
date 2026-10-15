@@ -54,6 +54,7 @@ if gtest_dep.found() and not meson.is_cross_build()
       'nojs_download_links.opds',
       'customized_resources.txt',
       'helloworld.txt',
+      'not_a_library.txt',
       'welcome.html',
     ]
     foreach file : data_files
