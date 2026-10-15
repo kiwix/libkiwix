@@ -219,19 +219,18 @@ TEST(FullEntryOpdsTest, rendersThumbnailLinkForBookIllustration)
 {
   auto lib = Library::create();
   Manager manager(lib);
-  const char sampleXML[] = R"(
-<library version="1.0">
-  <book
-        id="book-with-icon"
-        path="/local/path/book.zim"
-        title="Book With Icon"
-        favicon="AAAA"
-        faviconMimeType="image/png"
-        faviconUrl="/favicon.png"
-      ></book>
-</library>
+  const char sampleOpds[] = R"(
+<feed>
+  <entry>
+    <id>book-with-icon</id>
+    <title>Book With Icon</title>
+    <link rel="http://opds-spec.org/image/thumbnail"
+          type="image/png;width=48;height=48;scale=1"
+          href="/favicon.png" />
+  </entry>
+</feed>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "http://root.location"));
   const Book& book = lib->getBookById("book-with-icon");
 
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-icon"),
@@ -318,19 +317,18 @@ TEST(FullEntryOpdsTest, rendersIllustrationUrlDirectlyInFileDump)
 {
   auto lib = Library::create();
   Manager manager(lib);
-  const char sampleXML[] = R"(
-<library version="1.0">
-  <book
-        id="book-with-icon-url"
-        path="/local/path/book.zim"
-        title="Book With Icon Url"
-        favicon="https://example.com/favicon/zara.png"
-        faviconMimeType="image/png"
-        faviconUrl="/favicon.png"
-      ></book>
-</library>
+  const char sampleOpds[] = R"(
+<feed>
+  <entry>
+    <id>book-with-icon-url</id>
+    <title>Book With Icon Url</title>
+    <link rel="http://opds-spec.org/image/thumbnail"
+          type="image/png;width=48;height=48;scale=1"
+          href="/favicon.png" />
+  </entry>
+</feed>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "http://root.location"));
   const Book& book = lib->getBookById("book-with-icon-url");
 
   // isLiveCatalog=false (offline file dump): with an external url available,
@@ -351,7 +349,7 @@ TEST(FullEntryOpdsTest, rendersIllustrationUrlDirectlyInFileDump)
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
     "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
-    "          href=\"/favicon.png\"\n"
+    "          href=\"http://root.location/favicon.png\"\n"
     "          type=\"image/png;width=48;height=48;scale=1\"/>\n"
     "    <author>\n"
     "      <name></name>\n"
@@ -399,18 +397,18 @@ TEST(FullEntryOpdsTest, roundTripsBase64ThumbnailDataThroughOPDSReadback)
 {
   auto lib = Library::create();
   Manager manager(lib);
-  const char sampleXML[] = R"(
-<library version="1.0">
-  <book
-        id="book-with-roundtrip-icon"
-        path="/local/path/book.zim"
-        title="Book With Roundtrip Icon"
-        favicon="SGVsbG8sIFdvcmxkIQ=="
-        faviconMimeType="image/png"
-      ></book>
-</library>
+  const char sampleOpds[] = R"(
+<feed>
+  <entry>
+    <id>book-with-roundtrip-icon</id>
+    <title>Book With Roundtrip Icon</title>
+    <link rel="http://opds-spec.org/image/thumbnail"
+          type="image/png;width=48;height=48;scale=1"
+          href="data:image/png;base64,SGVsbG8sIFdvcmxkIQ==" />
+  </entry>
+</feed>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "http://root.location"));
   const Book& book = lib->getBookById("book-with-roundtrip-icon");
   ASSERT_EQ(book.getIllustrations().at(0)->getData(), "Hello, World!");
 
@@ -543,18 +541,18 @@ TEST(FullEntryOpdsTest, omitsDataUriThumbnailForEmbeddedOnlyIllustrationInLiveCa
 {
   auto lib = Library::create();
   Manager manager(lib);
-  const char sampleXML[] = R"(
-<library version="1.0">
-  <book
-        id="book-with-embedded-icon"
-        path="/local/path/book.zim"
-        title="Book With Embedded Icon"
-        favicon="AAAA"
-        faviconMimeType="image/png"
-      ></book>
-</library>
+  const char sampleOpds[] = R"(
+<feed>
+  <entry>
+    <id>book-with-embedded-icon</id>
+    <title>Book With Embedded Icon</title>
+    <link rel="http://opds-spec.org/image/thumbnail"
+          type="image/png;width=48;height=48;scale=1"
+          href="data:image/png;base64,AAAA" />
+  </entry>
+</feed>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "http://root.location"));
   const Book& book = lib->getBookById("book-with-embedded-icon");
 
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-embedded-icon"),
