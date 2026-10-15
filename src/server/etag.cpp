@@ -100,10 +100,10 @@ ETag::ETag(const std::string& body, const std::string& options)
 
 ETag ETag::parse(std::string s)
 {
-  if ( kiwix::startsWith("W/", s) )
+  if ( kiwix::startsWith(s, "W/") )
     s = s.substr(2);
 
-  if ( s.front() != '"' || s.back() != '"' )
+  if ( s.size() < 2 || s.front() != '"' || s.back() != '"' )
     return ETag();
 
   s = s.substr(1, s.size()-2);
@@ -121,7 +121,7 @@ ETag ETag::match(const std::string& etags, const std::string& body)
   std::string etag_str;
   while ( ss >> etag_str )
   {
-    if ( etag_str.back() == ',' )
+    if ( !etag_str.empty() && etag_str.back() == ',' )
       etag_str.pop_back();
 
     const ETag etag = parse(etag_str);
