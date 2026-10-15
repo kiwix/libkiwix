@@ -15,9 +15,8 @@ std::string resolveAbsPath(const std::string& basePath, const std::string& relPa
 }
 
 // Absolute path of test/library.opds, computed (rather than hardcoded) so
-// it resolves correctly regardless of the checkout location - unlike
-// LIB_ABS_PATH below, this one has to point to a real file, since
-// (unlike the readXml() tests) readFile()/readOpds() actually open it.
+// it resolves correctly regardless of the checkout location, since
+// readFile() actually opens it.
 // Built from single, separator-free path segments (rather than a
 // "test/library.opds"-style literal) because computeAbsolutePath() splits
 // on the OS-native separator only, so a literal using the "wrong" slash
@@ -89,9 +88,9 @@ TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
     const std::string nonExistentPath
         = kiwix::computeAbsolutePath(
               kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), "test"),
-              "does_not_exist.xml");
+              "does_not_exist.opds");
 
-    EXPECT_FALSE(manager.readFile(nonExistentPath, /*readOnly=*/false));
+    EXPECT_FALSE(manager.readFile(nonExistentPath));
     EXPECT_EQ(manager.writableLibraryPath, nonExistentPath);
 
     const std::string pathToSave = "./relative.zim";
@@ -103,110 +102,6 @@ TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
 }
 
 
-
-#if _WIN32
-# define UNITTEST_ZIM_PATH "zimfiles\\unittest.zim"
-# define LIB_ABS_PATH  "C:\\data\\lib.xml"
-# define ZIM_ABS_PATH  "C:\\data\\zimfiles\\unittest.zim"
-#else
-# define UNITTEST_ZIM_PATH "zimfiles/unittest.zim"
-# define LIB_ABS_PATH "/data/lib.xml"
-# define ZIM_ABS_PATH "/data/zimfiles/unittest.zim"
-#endif
-
-const char sampleLibraryXML[] = R"(
-<library version="1.0">
-  <book
-        id="0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2"
-        path=")" UNITTEST_ZIM_PATH R"("
-        url="https://example.com/zimfiles/unittest.zim"
-        title="Unit Test"
-        description="Wikipedia articles about unit testing"
-        language="eng"
-        creator="Wikipedia"
-        publisher="Kiwix"
-        date="2020-03-31"
-        name="wikipedia_en_unit_testing"
-        tags="unittest;wikipedia"
-        articleCount="123"
-        mediaCount="45"
-        size="678"
-      ></book>
-</library>
-)";
-
-TEST(ManagerTest, readXml)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager = kiwix::Manager(lib);
-
-    EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, LIB_ABS_PATH, true));
-    kiwix::Book book = lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
-
-    // "path" is relative in the XML - readXml() resolves it against the
-    // directory of LIB_ABS_PATH, yielding ZIM_ABS_PATH.
-    EXPECT_EQ(ZIM_ABS_PATH, book.getPath());
-    // ... but ZIM_ABS_PATH doesn't exist on disk, so the resolved path is
-    // not considered valid.
-    EXPECT_FALSE(book.isPathValid());
-    EXPECT_TRUE(book.readOnly());
-    EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT));
-    EXPECT_EQ("Unit Test", book.getTitle());
-    EXPECT_EQ("Wikipedia articles about unit testing", book.getDescription());
-    EXPECT_EQ("eng", book.getCommaSeparatedLanguages());
-    EXPECT_EQ("Wikipedia", book.getCreator());
-    EXPECT_EQ("Kiwix", book.getPublisher());
-    EXPECT_EQ("2020-03-31", book.getDate());
-    EXPECT_EQ("wikipedia_en_unit_testing", book.getName());
-    EXPECT_EQ("unittest;wikipedia", book.getTags());
-    EXPECT_EQ(123U, book.getArticleCount());
-    EXPECT_EQ(45U, book.getMediaCount());
-    EXPECT_EQ(678U*1024, book.getSize());
-}
-
-TEST(ManagerTest, readXmlInvalid)
-{
-  auto lib = kiwix::Library::create();
-  kiwix::Manager manager = kiwix::Manager(lib);
-
-  const std::string invalidXML = R"(
-<library version="1.0">
-  <book
-        id="0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2"
-        path=")" UNITTEST_ZIM_PATH R"("
-        url="https://example.com/zimfiles/unittest.zim"
-        title="Unit Test"
-        description="Wikipedia articles about unit testing"
-        language="eng"
-        creator="Wikipedia"
-        publisher="Kiwix"
-        date="2020-03-31"
-        name="wikipedia_en_unit_testing"
-        tags="unittest;wikipedia"
-        articleCount="123"
-        mediaCount="45"
-        size="678"
-      ></book>
-  <book
-        id="1a1bcd57-d3f6-cb22-44cc-a723ccb4e1b3"
-        url="https://example.com/zimfiles/unittest2.zim"
-        title="Unit Test 2"
-)";
-
-  EXPECT_FALSE(manager.readXml(invalidXML, true, LIB_ABS_PATH, true));
-  EXPECT_TRUE(lib->getBooksIds().empty());
-}
-
-TEST(ManagerTest, readXmlNotXml)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager = kiwix::Manager(lib);
-
-    const std::string notXML = "this is definitely not xml content";
-
-    EXPECT_FALSE(manager.readXml(notXML, true, LIB_ABS_PATH, true));
-    EXPECT_TRUE(lib->getBooksIds().empty());
-}
 
 TEST(ManagerTest, readOpdsWithNoEntriesReturnsTrue)
 {
@@ -238,14 +133,12 @@ TEST(ManagerTest, readOpdsWithMalformedInputAddsNoBooks)
   EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
-class ManagerReloadTest : public ::testing::TestWithParam<std::string> {};
-
-TEST_P(ManagerReloadTest, reload)
+TEST(ManagerTest, reload)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
 
-  manager.reload({GetParam()});
+  manager.reload({"./test/library.opds"});
   EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
         "charlesray",
         "inaccessiblezim",
@@ -260,7 +153,7 @@ TEST_P(ManagerReloadTest, reload)
         "raycharles_uncategorized"
   }));
 
-  manager.reload({GetParam()});
+  manager.reload({"./test/library.opds"});
   EXPECT_EQ(lib->getBooksIds(), kiwix::Library::BookIdCollection({
         "charlesray",
         "inaccessiblezim",
@@ -268,9 +161,6 @@ TEST_P(ManagerReloadTest, reload)
         "raycharles_uncategorized"
   }));
 }
-
-INSTANTIATE_TEST_CASE_P(XmlAndOpds, ManagerReloadTest,
-    ::testing::Values("./test/library.xml", "./test/library.opds"));
 
 const char sampleOpdsFeed[] = R"(
 <feed xmlns="http://www.w3.org/2005/Atom"
@@ -332,35 +222,63 @@ TEST(ManagerTest, readOpdsWithInvalidLocalPath)
   EXPECT_EQ(book.getTitle(), "Book From OPDS");
 }
 
-TEST(ManagerTest, readFileDetectsXmlFormat)
+namespace
 {
-    // readFile() sniffs the file content for a "<feed" substring to tell
-    // OPDS files apart from XML library files (see detectFormat() in
-    // manager.cpp).
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager(lib);
 
-    EXPECT_TRUE(manager.readFile("./test/library.xml"));
+// Writes 'content' to a file in the test directory and deletes the file
+// when going out of scope.
+struct TempLibraryFile
+{
+    TempLibraryFile(const std::string& name, const std::string& content)
+      : path(kiwix::computeAbsolutePath(
+                kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), "test"),
+                name))
+    {
+        std::ofstream(path) << content;
+    }
 
-    EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
-          "charlesray",
-          "inaccessiblezim",
-          "raycharles",
-          "raycharles_uncategorized"
-    }));
+    ~TempLibraryFile() { std::remove(path.c_str()); }
 
-    kiwix::Book book = lib->getBookById("raycharles");
-    EXPECT_EQ(book.getPath(), resolveAbsPath("./test/library.xml", "./zimfile_raycharles.zim"));
-    // readOnly defaults to true.
-    EXPECT_TRUE(book.readOnly());
+    const std::string path;
+};
+
+} // unnamed namespace
+
+TEST(ManagerTest, readFileRejectsNonOpdsContent)
+{
+    // The library.xml format of libkiwix 14 and earlier is no longer
+    // supported (kiwix/libkiwix#1377).
+    const TempLibraryFile legacyLibraryXml("legacy_library.xml", R"(
+<library version="20110515">
+  <book id="raycharles"
+        path="./zimfile_raycharles.zim"
+        title="Ray Charles"
+        language="eng"
+        date="2020-03-31"
+        size="556"/>
+</library>
+)");
+    const TempLibraryFile notXml("not_a_library.txt",
+                                 "this is definitely not xml content");
+
+    for ( const auto& path : {legacyLibraryXml.path, notXml.path} ) {
+        auto lib = kiwix::Library::create();
+        kiwix::Manager manager(lib);
+
+        EXPECT_FALSE(manager.readFile(path)) << path;
+        EXPECT_TRUE(lib->getBooksIds().empty()) << path;
+        EXPECT_THROW(manager.reload({path}), std::runtime_error) << path;
+        EXPECT_TRUE(lib->getBooksIds().empty()) << path;
+    }
 }
 
-TEST(ManagerTest, readFileDetectsOpdsFormat)
+TEST(ManagerTest, readFile)
 {
     auto lib = kiwix::Library::create();
     kiwix::Manager manager(lib);
 
-    EXPECT_TRUE(manager.readFile(LIB_OPDS_ABS_PATH, /*readOnly=*/false));
+    EXPECT_TRUE(manager.readFile(LIB_OPDS_ABS_PATH));
+    EXPECT_EQ(manager.writableLibraryPath, LIB_OPDS_ABS_PATH);
 
     EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
           "charlesray",
@@ -395,16 +313,4 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
     EXPECT_EQ(illustration->getHeight(), 48);
     EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/raycharles.png");
     EXPECT_FALSE(book.readOnly());
-}
-
-TEST(ManagerTest, readFileWithOpdsFormatHonorsReadOnly)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager(lib);
-
-    EXPECT_TRUE(manager.readFile("./test/library.opds", /*readOnly=*/true, /*trustLibrary=*/true));
-
-    for (const auto& id : lib->getBooksIds()) {
-      EXPECT_TRUE(lib->getBookById(id).readOnly());
-    }
 }

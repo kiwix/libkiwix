@@ -288,46 +288,6 @@ void Book::update(const zim::Archive& archive) {
   }
 }
 
-#define ATTR(name) node.attribute(name).value()
-void Book::updateFromXml(const pugi::xml_node& node, const std::string& baseDir)
-{
-  mp_impl->m_id = ATTR("id");
-  std::string path = ATTR("path");
-  if (isRelativePath(path)) {
-    path = computeAbsolutePath(baseDir, path);
-  }
-  mp_impl->m_path = path;
-  mp_impl->m_pathValid = fileReadable(path);
-  mp_impl->m_title = ATTR("title");
-  mp_impl->m_description = ATTR("description");
-  mp_impl->m_language = ATTR("language");
-  mp_impl->m_creator = ATTR("creator");
-  mp_impl->m_publisher = ATTR("publisher");
-  mp_impl->m_date = ATTR("date");
-  setUrl(AcquisitionLinkKind::DIRECT, ATTR("url"));
-  mp_impl->m_name = ATTR("name");
-  mp_impl->m_flavour = ATTR("flavour");
-  mp_impl->m_tags = ATTR("tags");
-  mp_impl->m_origId = ATTR("origId");
-  mp_impl->m_articleCount = strtoull(ATTR("articleCount"), 0, 0);
-  mp_impl->m_mediaCount = strtoull(ATTR("mediaCount"), 0, 0);
-  mp_impl->m_size = strtoull(ATTR("size"), 0, 0) << 10;
-  const std::string faviconMimeType = ATTR("faviconMimeType");
-  const std::string faviconBase64EncodedData = ATTR("favicon");
-  if ( !faviconMimeType.empty() && !faviconBase64EncodedData.empty() ) {
-    const auto favicon = std::shared_ptr<Illustration>(new Illustration());
-    favicon->mp_impl->data = base64_decode(faviconBase64EncodedData);
-    favicon->mp_impl->mimeType = faviconMimeType;
-    favicon->mp_impl->url = ATTR("faviconUrl");
-    mp_impl->m_illustrations.assign(1, favicon);
-  }
-  try {
-    mp_impl->m_downloadId = ATTR("downloadId");
-  } catch(...) {}
-  const auto catattr = node.attribute("category");
-  mp_impl->m_category = catattr.empty() ? getCategoryFromTags() : catattr.value();
-}
-#undef ATTR
 
 
 static std::string fromOpdsDate(const std::string& date)
