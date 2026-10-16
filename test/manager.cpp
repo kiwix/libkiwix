@@ -4,7 +4,6 @@
 #include "../include/book.h"
 #include "../include/tools.h"
 #include "../src/tools/otherTools.h"
-#include "testing_tools.h"
 #include <fstream>
 
 namespace
@@ -163,83 +162,6 @@ TEST(ManagerTest, reload)
   }));
 }
 
-const char sampleOpdsFeed[] = R"(
-<feed xmlns="http://www.w3.org/2005/Atom"
-      xmlns:opds="https://specs.opds.io/opds-1.2">
-  <totalResults>9</totalResults>
-  <startIndex>7</startIndex>
-  <itemsPerPage>10</itemsPerPage>
-  <entry>
-    <id>urn:uuid:book1</id>
-    <title>Book One</title>
-    <link rel="http://opds-spec.org/acquisition/open-access"
-          type="application/x-zim"
-          href="https://example.com/book1.zim"
-          length="111" />
-  </entry>
-  <entry>
-    <id>urn:uuid:book2</id>
-    <title>Book Two</title>
-    <link rel="http://opds-spec.org/acquisition/open-access"
-          type="application/x-zim"
-          href="https://example.com/book2.zim"
-          length="222" />
-  </entry>
-</feed>
-)";
-
-TEST(ManagerTest, readOpdsHonorsReadOnlyTrue)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager(lib);
-
-    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com", /*readOnly=*/true));
-
-    EXPECT_TRUE(lib->getBookById("book1").readOnly());
-    EXPECT_TRUE(lib->getBookById("book2").readOnly());
-}
-
-
-
-TEST(ManagerTest, readOpdsKeepsBookWithAcquisitionLinkOfUnknownType)
-{
-  auto lib = kiwix::Library::create();
-  kiwix::Manager manager(lib);
-
-  const std::string feed = R"(
-      <feed xmlns="http://www.w3.org/2005/Atom">
-        <entry>
-          <id>urn:uuid:book1</id>
-          <title>Book One</title>
-          <link rel="http://opds-spec.org/acquisition/open-access"
-                type="application/x-some-future-format"
-                href="https://example.com/book1.future" />
-          <link rel="http://opds-spec.org/acquisition/open-access"
-                type="application/x-zim"
-                href="https://example.com/book1.zim" />
-        </entry>
-        <entry>
-          <id>urn:uuid:book2</id>
-          <title>Book Two</title>
-        </entry>
-      </feed>
-    )";
-
-  // A single link of an unknown type must neither make the feed unreadable
-  // nor drop its book.
-  kiwix::testing::CapturedStderr stderror;
-  EXPECT_TRUE(manager.readOpds(feed, "http://example.com"));
-
-  EXPECT_EQ(
-    "Book 'book1': ignoring acquisition link 'https://example.com/book1.future':"
-    " Unknown acquisition link type: application/x-some-future-format\n",
-    std::string(stderror));
-
-  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
-  EXPECT_EQ(lib->getBookById("book1").getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT),
-            "https://example.com/book1.zim");
-}
-
 TEST(ManagerTest, readOpdsWithInvalidLocalPath)
 {
   auto lib = kiwix::Library::create();
@@ -255,7 +177,7 @@ TEST(ManagerTest, readOpdsWithInvalidLocalPath)
       </feed>
     )";
 
-  EXPECT_TRUE(manager.readOpds(feed, "./test/library.opds", /*readOnly=*/false));
+  EXPECT_TRUE(manager.readOpds(feed, "./test/library.opds"));
 
   kiwix::Book book = lib->getBookById("book1");
   EXPECT_FALSE(book.isPathValid());
@@ -352,5 +274,4 @@ TEST(ManagerTest, readFile)
     EXPECT_EQ(illustration->getWidth(), 48);
     EXPECT_EQ(illustration->getHeight(), 48);
     EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/raycharles.png");
-    EXPECT_FALSE(book.readOnly());
 }

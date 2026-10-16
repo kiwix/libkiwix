@@ -412,7 +412,7 @@ class LibraryTest : public ::testing::Test {
   void SetUp() override {
      kiwix::Manager manager(lib);
      manager.readOpds(sampleOpdsStream, "http://foo.urlHost");
-     manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH, false);
+     manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH);
   }
 
   kiwix::Bookmark createBookmark(const std::string &id, const std::string& url="", const std::string& title="") {
@@ -500,7 +500,7 @@ TEST_F(LibraryTest, bookmarksSerializationTest)
     {
       kiwix::Manager manager(new_lib);
       manager.readOpds(sampleOpdsStream, "http://foo.urlHost");
-      manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH, false);
+      manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH);
       manager.readBookmarkFile("__test__bookmarks.xml");
     }
     std::remove("__test__bookmarks.xml");

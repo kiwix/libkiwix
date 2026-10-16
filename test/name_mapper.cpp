@@ -60,7 +60,7 @@ class NameMapperTest : public ::testing::Test {
  protected:
   void SetUp() override {
      kiwix::Manager manager(lib);
-     manager.readOpds(libraryOpds(), "./library.opds", /*readOnly=*/false);
+     manager.readOpds(libraryOpds(), "./library.opds");
      for ( const std::string& id : lib->getBooksIds() ) {
        kiwix::Book bookCopy = lib->getBookById(id);
        bookCopy.setPathValid(true);
