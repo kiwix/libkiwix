@@ -118,7 +118,6 @@ class Book
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
   std::string getHumanReadableIdFromPath() const;
 
-  bool readOnly() const;
   std::string getId() const;
   std::string getPath() const;
   bool isPathValid() const;
@@ -148,7 +147,6 @@ class Book
 
   std::string getDownloadId() const;
 
-  void setReadOnly(bool readOnly);
   void setId(const std::string& id);
   void setPath(const std::string& path);
   void setPathValid(bool valid);

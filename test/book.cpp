@@ -424,21 +424,15 @@ TEST(BookTest, updateTest)
               href="data:image/png;base64,Ym9vay1mYXZpY29u" />
     )", "", "/data/zim");
 
-    book.setReadOnly(false);
     book.setPathValid(true);
 
     kiwix::Book newBook;
 
-    newBook.setReadOnly(true);
-    EXPECT_FALSE(newBook.update(book));
-
-    newBook.setReadOnly(false);
     EXPECT_FALSE(newBook.update(book));
 
     newBook.setId("xyz");
     EXPECT_TRUE(newBook.update(book));
 
-    EXPECT_EQ(newBook.readOnly(), book.readOnly());
     EXPECT_EQ(newBook.getPath(), book.getPath());
     EXPECT_EQ(newBook.isPathValid(), book.isPathValid());
     EXPECT_EQ(newBook.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT));

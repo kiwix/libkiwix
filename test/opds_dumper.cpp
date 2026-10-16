@@ -200,7 +200,7 @@ class OPDSDumperTest : public ::testing::Test {
   void SetUp() override {
     lib = Library::create();
     Manager manager(lib);
-    manager.readOpds(sampleLibraryOpds, "", /*readOnly=*/false);
+    manager.readOpds(sampleLibraryOpds, "");
 
     dumper.reset(new OPDSDumper(lib.get(), &nameMapper));
     dumper->setRootLocation("http://root.location");

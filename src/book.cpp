@@ -222,7 +222,6 @@ class Book::Impl
   std::string m_origId;
   uint64_t m_articleCount = 0;
   uint64_t m_mediaCount = 0;
-  bool m_readOnly = false;
   uint64_t m_size = 0;
   Book::Illustrations m_illustrations;
 };
@@ -247,9 +246,6 @@ Book::Illustrations Book::getIllustrations() const
 
 bool Book::update(const kiwix::Book& other)
 {
-  if (mp_impl->m_readOnly)
-    return false;
-
   if (mp_impl->m_id != other.mp_impl->m_id)
     return false;
 
@@ -509,11 +505,6 @@ const std::vector<std::string> Book::getLanguages() const
   return kiwix::split(mp_impl->m_language, ",");
 }
 
-bool Book::readOnly() const
-{
-  return mp_impl->m_readOnly;
-}
-
 std::string Book::getId() const
 {
   return mp_impl->m_id;
@@ -602,11 +593,6 @@ uint64_t Book::getSize() const
 std::string Book::getDownloadId() const
 {
   return mp_impl->m_downloadId;
-}
-
-void Book::setReadOnly(bool readOnly)
-{
-  mp_impl->m_readOnly = readOnly;
 }
 
 void Book::setId(const std::string& id)
