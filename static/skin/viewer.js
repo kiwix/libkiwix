@@ -47,6 +47,8 @@ function getBookFromUserUrl(url) {
 
 let currentBook = null;
 let currentBookTitle = null;
+// Whether the current book has a fulltext index (null = not yet fetched).
+let currentBookHasFulltextIndex = null;
 
 const bookUIGroup = document.getElementById('kiwix_serve_taskbar_book_ui_group');
 const homeButton = document.getElementById('kiwix_serve_taskbar_home_button');
@@ -88,7 +90,8 @@ function showSpinner() {
 
 function performSearch() {
   const searchbox = document.getElementById('kiwixsearchbox');
-  if (!searchbox.value.trim()) { return;}
+  if (!searchbox.value.trim()) { return; }
+  if (currentBookHasFulltextIndex !== true) { return; }
   const q = encodeURIComponent(searchbox.value);
 
   showSpinner();
@@ -125,23 +128,27 @@ function setTitle(element, text) {
   }
 }
 
-function setCurrentBook(book, title) {
+let bookBeingFetched = null;
+
+function setCurrentBook(book, title, hasFulltextIndex) {
   currentBook = book;
   currentBookTitle = title;
+  currentBookHasFulltextIndex = hasFulltextIndex === true;
   setTitle(homeButton, $t("home-button-text", {BOOK_TITLE: title}));
-  // `title` is untrusted book metadata (fetched from `./raw/<book>/meta/Title`);
+  // `title` is untrusted book metadata (fetched from `/bookinfo`);
   // assign it via `textContent`, like `setTitle()` above does for the same
   // value, instead of interpolating it into markup passed to `innerHTML`.
-  homeButton.innerHTML = '<button></button>';
-  homeButton.querySelector('button').textContent = title;
-  bookUIGroup.style.display = 'inline';
+  homeButton.innerHTML = "<button></button>";
+  homeButton.querySelector("button").textContent = title;
+  bookUIGroup.style.display = "inline";
   updateSearchBoxForBookChange();
 }
 
 function noCurrentBook() {
   currentBook = null;
   currentBookTitle = null;
-  bookUIGroup.style.display = 'none';
+  currentBookHasFulltextIndex = null;
+  bookUIGroup.style.display = "none";
   updateSearchBoxForBookChange();
 }
 
@@ -154,17 +161,26 @@ function updateCurrentBookIfNeeded(userUrl) {
 
 function updateCurrentBook(book) {
   if ( book == null ) {
+    bookBeingFetched = null;
     noCurrentBook();
   } else {
-    fetch(`./raw/${book}/meta/Title`).then(async (resp) => {
+    bookBeingFetched = book;
+    fetch(`${root}/bookinfo?content=${encodeURIComponent(book)}`).then(async (resp) => {
       if ( resp.ok ) {
-        setCurrentBook(book, await resp.text());
+        const info = await resp.json();
+        if ( bookBeingFetched === book ) {
+          setCurrentBook(book, info.title, info.hasFulltextIndex === true);
+        }
       } else {
-        noCurrentBook();
+        if ( bookBeingFetched === book ) {
+          noCurrentBook();
+        }
       }
     }).catch((err) => {
-      console.log("Error fetching book title: " + err);
-      noCurrentBook();
+      console.log("Error fetching book info: " + err);
+      if ( bookBeingFetched === book ) {
+        noCurrentBook();
+      }
     });
   }
 }
