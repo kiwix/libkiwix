@@ -205,7 +205,6 @@ class Book::Impl
 {
  public:
   std::string m_id;
-  std::string m_downloadId;
   std::string m_path;
   bool m_pathValid = false;
   std::string m_title;
@@ -219,7 +218,6 @@ class Book::Impl
   std::string m_name;
   std::string m_flavour;
   std::string m_tags;
-  std::string m_origId;
   uint64_t m_articleCount = 0;
   uint64_t m_mediaCount = 0;
   uint64_t m_size = 0;
@@ -570,11 +568,6 @@ std::string Book::getFlavour() const
   return mp_impl->m_flavour;
 }
 
-std::string Book::getOrigId() const
-{
-  return mp_impl->m_origId;
-}
-
 uint64_t Book::getArticleCount() const
 {
   return mp_impl->m_articleCount;
@@ -588,11 +581,6 @@ uint64_t Book::getMediaCount() const
 uint64_t Book::getSize() const
 {
   return mp_impl->m_size;
-}
-
-std::string Book::getDownloadId() const
-{
-  return mp_impl->m_downloadId;
 }
 
 void Book::setId(const std::string& id)
@@ -650,11 +638,6 @@ void Book::setTags(const std::string& tags)
   mp_impl->m_tags = tags;
 }
 
-void Book::setOrigId(const std::string& origId)
-{
-  mp_impl->m_origId = origId;
-}
-
 void Book::setArticleCount(uint64_t articleCount)
 {
   mp_impl->m_articleCount = articleCount;
@@ -668,11 +651,6 @@ void Book::setMediaCount(uint64_t mediaCount)
 void Book::setSize(uint64_t size)
 {
   mp_impl->m_size = size;
-}
-
-void Book::setDownloadId(const std::string& downloadId)
-{
-  mp_impl->m_downloadId = downloadId;
 }
 
 }
