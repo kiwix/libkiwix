@@ -123,9 +123,7 @@ bool Library::addBook(const Book& book)
     if ( ! booksReferToTheSameArchive(oldbook, book) ) {
       dropCache(book.getId());
     }
-    oldbook.update(book); // XXX: This may have no effect if oldbook is readonly
-                          // XXX: Then m_bookDB will become out-of-sync with
-                          // XXX: the real contents of the library.
+    oldbook.update(book);
     oldbook.lastUpdatedRevision = m_revision;
     return false;
   } catch (std::out_of_range&) {
@@ -434,21 +432,6 @@ unsigned int Library::getBookCount(const bool localBooks,
 {
   std::lock_guard<std::recursive_mutex> lock(m_mutex);
   return getBookCount_not_protected(localBooks, remoteBooks);
-}
-
-bool Library::writeAsXML(const std::string& path) const
-{
-  const auto allBookIds = getBooksIds();
-
-  auto baseDir = removeLastPathElement(path);
-  LibXMLDumper dumper(this);
-  dumper.setBaseDir(baseDir);
-  std::string xml;
-  {
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
-    xml = dumper.dumpLibXMLContent(allBookIds);
-  };
-  return writeTextFile(path, xml);
 }
 
 bool Library::writeAsOPDS(const std::string& path) const
@@ -1100,8 +1083,8 @@ std::string Library::dumpOpds(const std::string& outputPath) const
     const Book& book = pair.second;
     // Local/offline dump: the book's own id is used as the content id, there
     // is no content-access URL to link to (no server involved), and the
-    // book's local path is safe to expose as an acquisition link, resolved
-    // relative to baseDir the same way LibXMLDumper does.
+    // book's local path is safe to expose as an acquisition link, written
+    // relative to baseDir (the directory of the output file).
     const std::string localPath = book.getPath().empty()
         ? ""
         : computeRelativePath(baseDir, book.getPath());

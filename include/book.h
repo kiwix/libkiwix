@@ -93,7 +93,6 @@ class Book
 
   bool update(const Book& other);
   void update(const zim::Archive& archive);
-  void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
   /**
    * Update the book's metadata from an OPDS entry XML node.
    *
@@ -119,7 +118,6 @@ class Book
   void updateFromOpds(const pugi::xml_node& node, const std::string& urlHost);
   std::string getHumanReadableIdFromPath() const;
 
-  bool readOnly() const;
   std::string getId() const;
   std::string getPath() const;
   bool isPathValid() const;
@@ -149,7 +147,6 @@ class Book
 
   std::string getDownloadId() const;
 
-  void setReadOnly(bool readOnly);
   void setId(const std::string& id);
   void setPath(const std::string& path);
   void setPathValid(bool valid);

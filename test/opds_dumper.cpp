@@ -36,44 +36,49 @@ namespace
 using namespace kiwix;
 
 // Two books, deliberately exercising the two different ways a category can
-// be attributed to a book (an explicit "category" attribute vs. a
+// be attributed to a book (an explicit <category> element vs. a
 // "_category:" tag), and two different languages.
-const char sampleLibraryXML[] = R"(
-<library version="1.0">
-  <book
-        id="book1-id"
-        path="/local/path/book1-id.zim"
-        title="First Book"
-        description="Description of First Book"
-        language="eng"
-        creator="First Book Creator"
-        publisher="First Book Publisher"
-        date="2021-03-25"
-        url="http://download.kiwix.org/zim/book1-id.zim"
-        name="test_book1-id"
-        tags="tag1;tag2;_category:wikipedia"
-        articleCount="42"
-        mediaCount="7"
-        size="120"
-      ></book>
-  <book
-        id="book2-id"
-        path="/local/path/book2-id.zim"
-        title="Second Book"
-        description="Description of Second Book"
-        language="fra"
-        creator="Second Book Creator"
-        publisher="Second Book Publisher"
-        date="2021-03-26"
-        url="http://download.kiwix.org/zim/book2-id.zim"
-        name="test_book2-id"
-        category="wiktionary"
-        tags="tag3"
-        articleCount="10"
-        mediaCount="1"
-        size="45"
-      ></book>
-</library>
+const char sampleLibraryOpds[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:dc="http://purl.org/dc/terms/">
+  <entry>
+    <id>urn:uuid:book1-id</id>
+    <title>First Book</title>
+    <summary>Description of First Book</summary>
+    <language>eng</language>
+    <author><name>First Book Creator</name></author>
+    <publisher><name>First Book Publisher</name></publisher>
+    <dc:issued>2021-03-25T00:00:00Z</dc:issued>
+    <name>test_book1-id</name>
+    <tags>tag1;tag2;_category:wikipedia</tags>
+    <articleCount>42</articleCount>
+    <mediaCount>7</mediaCount>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          href="/local/path/book1-id.zim" length="122880" />
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="http://download.kiwix.org/zim/book1-id.zim" length="122880" />
+  </entry>
+  <entry>
+    <id>urn:uuid:book2-id</id>
+    <title>Second Book</title>
+    <summary>Description of Second Book</summary>
+    <language>fra</language>
+    <author><name>Second Book Creator</name></author>
+    <publisher><name>Second Book Publisher</name></publisher>
+    <dc:issued>2021-03-26T00:00:00Z</dc:issued>
+    <name>test_book2-id</name>
+    <category>wiktionary</category>
+    <tags>tag3</tags>
+    <articleCount>10</articleCount>
+    <mediaCount>1</mediaCount>
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          href="/local/path/book2-id.zim" length="46080" />
+    <link rel="http://opds-spec.org/acquisition/open-access"
+          type="application/x-zim"
+          href="http://download.kiwix.org/zim/book2-id.zim" length="46080" />
+  </entry>
+</feed>
 )";
 
 // Returns a copy of 'text' where every line that fully matches 'pattern'
@@ -195,7 +200,7 @@ class OPDSDumperTest : public ::testing::Test {
   void SetUp() override {
     lib = Library::create();
     Manager manager(lib);
-    manager.readXml(sampleLibraryXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+    manager.readOpds(sampleLibraryOpds, "");
 
     dumper.reset(new OPDSDumper(lib.get(), &nameMapper));
     dumper->setRootLocation("http://root.location");
