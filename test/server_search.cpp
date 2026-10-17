@@ -1704,6 +1704,6 @@ TEST_P(LibForServerSearchTest, bookSelectionNegativeTests)
   }
 }
 
-INSTANTIATE_TEST_CASE_P(XmlAndOpds, LibForServerSearchTest,
+INSTANTIATE_TEST_SUITE_P(XmlAndOpds, LibForServerSearchTest,
     ::testing::Values("./test/lib_for_server_search_test.xml",
                        "./test/lib_for_server_search_test.opds"));

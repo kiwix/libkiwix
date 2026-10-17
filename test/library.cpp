@@ -486,7 +486,7 @@ class LibraryTest : public ::testing::TestWithParam<std::string> {
   std::shared_ptr<kiwix::Library> lib;
 };
 
-INSTANTIATE_TEST_CASE_P(XmlAndOpds, LibraryTest,
+INSTANTIATE_TEST_SUITE_P(XmlAndOpds, LibraryTest,
     ::testing::Values("xml", "opds"));
 
 TEST_P(LibraryTest, createBookMark)

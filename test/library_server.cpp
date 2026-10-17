@@ -40,7 +40,7 @@ protected:
   }
 };
 
-INSTANTIATE_TEST_CASE_P(XmlAndOpds, LibraryServerTest,
+INSTANTIATE_TEST_SUITE_P(XmlAndOpds, LibraryServerTest,
     ::testing::Values("./test/library.xml", "./test/library.opds"));
 
 // Returns a copy of 'text' where every line that fully matches 'pattern'
