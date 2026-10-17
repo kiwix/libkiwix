@@ -270,7 +270,7 @@ TEST_P(ManagerReloadTest, reload)
   }));
 }
 
-INSTANTIATE_TEST_CASE_P(XmlAndOpds, ManagerReloadTest,
+INSTANTIATE_TEST_SUITE_P(XmlAndOpds, ManagerReloadTest,
     ::testing::Values("./test/library.xml", "./test/library.opds"));
 
 const char sampleOpdsFeed[] = R"(
