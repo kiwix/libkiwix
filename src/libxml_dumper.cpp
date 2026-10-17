@@ -48,7 +48,8 @@ void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
   ADD_ATTRIBUTE(entry_node, "id", book.getId());
 
   if (!book.getPath().empty()) {
-    ADD_ATTRIBUTE(entry_node, "path", computeRelativePath(baseDir, book.getPath()));
+    auto baseDirWithSep = baseDir.empty() ? "" : kiwix::appendToDirectory(baseDir, "");
+    ADD_ATTRIBUTE(entry_node, "path", computeRelativePath(baseDirWithSep, book.getPath()));
   }
 
   if (book.getOrigId().empty()) {
