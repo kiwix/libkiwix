@@ -378,9 +378,18 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
       // book (an absolute URL) or a local one (a filesystem path, absolute
       // or relative to baseDir) - a single entry may carry one of each.
       const std::string href = linkNode.attribute("href").value();
-      std::string type = linkNode.attribute("type").value();
+      const std::string type = linkNode.attribute("type").value();
 
-      auto linkType = type.empty() ? AcquisitionLinkKind::DIRECT: fromMimeTypeToLinkKind(type);
+      auto linkType = AcquisitionLinkKind::DIRECT;
+      if (!type.empty()) {
+        try {
+          linkType = fromMimeTypeToLinkKind(type);
+        } catch (const std::runtime_error& e) {
+          std::cerr << "Book '" << mp_impl->m_id << "': ignoring acquisition link '"
+                    << href << "': " << e.what() << std::endl;
+          continue;
+        }
+      }
       if (linkType == AcquisitionLinkKind::DIRECT && !isAbsoluteUrl(href)) {
         mp_impl->m_path = isRelativePath(href)? computeAbsolutePath(baseDir, href): href;
         mp_impl->m_pathValid = fileReadable(mp_impl->m_path);
