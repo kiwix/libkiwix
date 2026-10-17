@@ -179,6 +179,9 @@ std::string kiwix::computeRelativePath(const std::string& path, const std::strin
 {
   auto parts = kiwix::split(path, SEPARATOR, false);
   auto pathParts = normalizeParts(parts, false);
+  if (!pathParts.empty() && !parts.back().empty()) {
+    pathParts.pop_back();
+  }
   parts = kiwix::split(absolutePath, SEPARATOR, false);
   auto absolutePathParts = normalizeParts(parts, true);
 
