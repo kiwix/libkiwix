@@ -139,6 +139,20 @@ class Book
   std::string getTagStr(const std::string& tagName) const;
   bool getTagBool(const std::string& tagName) const;
   std::string getFlavour() const;
+
+  /**
+   * Whether the popularity of the book is known.
+   */
+  bool hasPopularity() const;
+
+  /**
+   * Get the popularity of the book.
+   *
+   * @return a number between 0 (least popular) and 100 (most popular),
+   *         or 0 if the popularity of the book is not known
+   *         (see hasPopularity()).
+   */
+  uint32_t getPopularity() const;
   std::string getOrigId() const;
   uint64_t getArticleCount() const;
   uint64_t getMediaCount() const;
@@ -164,6 +178,14 @@ class Book
   void setUrl(AcquisitionLinkKind linkKind, const std::string& url);
   void setName(const std::string& name);
   void setFlavour(const std::string& flavour);
+
+  /**
+   * Set the popularity of the book.
+   *
+   * @param popularity a number between 0 and 100 (greater values are
+   *                   treated as 100).
+   */
+  void setPopularity(uint32_t popularity);
   void setTags(const std::string& tags);
   void setOrigId(const std::string& origId);
   void setArticleCount(uint64_t articleCount);

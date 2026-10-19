@@ -322,6 +322,7 @@ const char sampleLibraryXML[] = R"(
 // below). Reformatting this string may break that round-trip test.
 const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:kiwix="https://kiwix.org/namespace/opds"
       xmlns:opds="http://opds-spec.org/2010/catalog">
   <entry>
     <id>urn:uuid:example</id>
@@ -352,6 +353,7 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
     <language>eng,spa</language>
     <name>wikipedia_en_ray_charles</name>
     <flavour>mini</flavour>
+    <kiwix:popularity>46</kiwix:popularity>
     <category>wikipedia</category>
     <tags>wikipedia;_category:wikipedia;_pictures:no</tags>
     <articleCount>284</articleCount>
@@ -1352,6 +1354,47 @@ TEST_P(LibraryTest, removeBooksNotUpdatedSince)
   );
 };
 
+TEST(LibrarySortTest, sortByPopularity)
+{
+  typedef kiwix::Library::BookIdCollection BookIdCollection;
+
+  auto lib = kiwix::Library::create();
+  const auto addBook = [&lib](const std::string& id) {
+    kiwix::Book book;
+    book.setId(id);
+    lib->addBook(book);
+  };
+  const auto addBookWithPopularity = [&lib](const std::string& id, unsigned popularity) {
+    kiwix::Book book;
+    book.setId(id);
+    book.setPopularity(popularity);
+    lib->addBook(book);
+  };
+
+  addBookWithPopularity("popularity-51", 51);
+  addBookWithPopularity("popularity-0", 0);
+  addBook("unknown-popularity");
+  addBookWithPopularity("popularity-100", 100);
+  addBookWithPopularity("popularity-49", 49);
+
+  // A book with unknown popularity is sorted as if it had an average
+  // popularity (50), rather than as the least popular one.
+  const BookIdCollection leastPopularFirst{
+    "popularity-0",
+    "popularity-49",
+    "unknown-popularity",
+    "popularity-51",
+    "popularity-100"
+  };
+
+  BookIdCollection bookIds = lib->getBooksIds();
+  lib->sort(bookIds, kiwix::POPULARITY, true);
+  EXPECT_EQ(bookIds, leastPopularFirst);
+
+  lib->sort(bookIds, kiwix::POPULARITY, false);
+  EXPECT_EQ(bookIds, BookIdCollection(leastPopularFirst.rbegin(), leastPopularFirst.rend()));
+}
+
 TEST(LibraryOpdsExportTest, allInOne)
 {
   auto lib = kiwix::Library::create();
@@ -1362,6 +1405,11 @@ TEST(LibraryOpdsExportTest, allInOne)
   // above its definition), so dumping what was just read back out should
   // reproduce it exactly.
   EXPECT_EQ(lib->dumpOpds(OPDS_LIBRARY_PATH), sampleLibraryOpds);
+
+  // The popularity is only present for the books that have one
+  EXPECT_FALSE(lib->getBookById("example").hasPopularity());
+  EXPECT_TRUE(lib->getBookById("raycharles").hasPopularity());
+  EXPECT_EQ(lib->getBookById("raycharles").getPopularity(), 46U);
 }
 
 };
