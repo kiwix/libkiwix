@@ -62,6 +62,7 @@
 	"download": "Stiahnuť",
 	"direct-download-link-text": "Priamo",
 	"direct-download-alt-text": "Stiahnuť priamo cez HTTP(S)",
+	"metalink-download-link-text": "Metalink",
 	"hash-download-link-text": "Kontrolný súčet SHA-256",
 	"hash-download-alt-text": "Zobraziť kontrolný súčet SHA-256 súboru",
 	"magnet-link-text": "Magnet odkaz",
