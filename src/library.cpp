@@ -1089,7 +1089,6 @@ std::string Library::dumpOpds(const std::string& outputPath) const
   std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
   const auto baseDir = kiwix::removeLastPathElement(outputPath);
-  const auto baseDirWithSep = baseDir.empty() ? "" : kiwix::appendToDirectory(baseDir, "");
 
   std::ostringstream ss;
   ss << R"(<feed xmlns="http://www.w3.org/2005/Atom"
@@ -1105,7 +1104,7 @@ std::string Library::dumpOpds(const std::string& outputPath) const
     // relative to baseDir the same way LibXMLDumper does.
     const std::string localPath = book.getPath().empty()
         ? ""
-        : computeRelativePath(baseDirWithSep, book.getPath());
+        : computeRelativePath(baseDir, book.getPath());
     ss << fullEntryOpds(book,
                         /*rootLocation=*/"",
                         /*contentAccessUrl=*/"",

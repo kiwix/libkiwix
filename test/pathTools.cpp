@@ -127,22 +127,26 @@ TEST(pathTools, computeAbsolutePath)
 TEST(pathTools, computeRelativePath)
 {
   ASSERT_EQ(kiwix::computeRelativePath(A2("a","b"), A3("a","b","foo")),
-            P2("b","foo"));
+            "foo");
   ASSERT_EQ(kiwix::computeRelativePath(A3("a","b",""), A3("a","b","foo")),
             "foo");
+  ASSERT_EQ(kiwix::computeRelativePath(A2("a", "b"), A2("a", "b")),
+            "");
+  ASSERT_EQ(kiwix::computeRelativePath(A3("a", "b", ""), A2("a", "b")),
+            "");
   ASSERT_EQ(kiwix::computeRelativePath(A2("a","b"), A2("a","foo")),
-            "foo");
+            P2("..","foo"));
   ASSERT_EQ(kiwix::computeRelativePath(A3("a","b",""), A2("a","foo")),
             P2("..","foo"));
   ASSERT_EQ(kiwix::computeRelativePath(A5("a","b","c","d","e"), A5("a","b","c","d","foo")),
-            "foo");
+            P2("..","foo"));
   ASSERT_EQ(kiwix::computeRelativePath(A5("a","b","c","d","e"), A4("a","b","g","foo")),
-            P4("..","..","g","foo"));
+            P5("..","..","..","g","foo"));
 #ifdef _WIN32
   ASSERT_EQ(kiwix::computeRelativePath(P3(A_SAMBA,"a","b"), P3(A_SAMBA,"a","foo")),
-            "foo");
+            P2("..","foo"));
   ASSERT_EQ(kiwix::computeRelativePath(P6(A_SAMBA,"a","b","c","d","e"), P5(A_SAMBA,"a","b","g","foo")),
-            P4("..","..","g","foo"));
+            P5("..","..","..","g","foo"));
 
 #endif
 }
