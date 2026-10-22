@@ -71,6 +71,7 @@
 	"download": "下载",
 	"direct-download-link-text": "直接",
 	"direct-download-alt-text": "通过 HTTP(S) 直接下載",
+	"metalink-download-link-text": "Metalink",
 	"hash-download-link-text": "SHA-256 校验和",
 	"hash-download-alt-text": "显示 SHA-256 文件校验和",
 	"magnet-link-text": "磁力链接",

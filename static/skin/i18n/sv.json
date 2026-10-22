@@ -66,6 +66,7 @@
 	"download": "Ladda ned",
 	"direct-download-link-text": "Direkt",
 	"direct-download-alt-text": "Ladda ner direkt via HTTP(S)",
+	"metalink-download-link-text": "Metalänk",
 	"hash-download-link-text": "SHA-256-kontrollsiffra",
 	"hash-download-alt-text": "Visa SHA-256-filens kontrollsiffra",
 	"magnet-link-text": "Magnetlänk",
