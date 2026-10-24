@@ -132,8 +132,16 @@ function getUserLanguage() {
       || getDefaultUserLanguage();
 }
 
+function updateDocumentLanguage(doc, lang) {
+  doc.documentElement.lang = lang;
+
+  const rtlLanguages = ['ar', 'he', 'nqo', 'skr-arab'];
+  doc.documentElement.dir = rtlLanguages.includes(lang) ? 'rtl' : 'ltr';
+}
+
 function setUserLanguage(lang, callback) {
   window.localStorage.setItem('userlang', lang);
+  updateDocumentLanguage(document, lang);
   Translations.load(lang);
   Translations.whenReady(callback);
 }
@@ -210,6 +218,7 @@ function translatePageInWindow(w) {
 
     const newHtml = I18n.render(template, params);
     w.document.documentElement.innerHTML = parseDom(newHtml).innerHTML;
+    updateDocumentLanguage(w.document, Translations.currentLanguage);
   }
 }
 
