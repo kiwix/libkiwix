@@ -120,11 +120,11 @@ std::string computeAbsolutePath(const std::string& path, const std::string& rela
  * This function is provided as a small helper. It is probably better to use native tools
  * to manipulate paths.
  *
- * @param path the base path.
+ * @param baseDirPath the base directory path (trailing slashes are discarded).
  * @param absolutePath the absolute path to find the relative path for.
- * @return a relative path (pointing to absolutePath, relative to path).
+ * @return a relative path (pointing to absolutePath, relative to baseDirPath).
  */
-std::string computeRelativePath(const std::string& path, const std::string& absolutePath);
+std::string computeRelativePath(const std::string& baseDirPath, const std::string& absolutePath);
 
 /** Sleep the current thread.
  *
