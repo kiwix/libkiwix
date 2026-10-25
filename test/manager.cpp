@@ -4,6 +4,7 @@
 #include "../include/book.h"
 #include "../include/tools.h"
 #include "../src/tools/otherTools.h"
+#include "testing_tools.h"
 #include <fstream>
 
 namespace
@@ -309,6 +310,45 @@ TEST(ManagerTest, readOpdsHonorsReadOnlyTrue)
 }
 
 
+
+TEST(ManagerTest, readOpdsKeepsBookWithAcquisitionLinkOfUnknownType)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Manager manager(lib);
+
+  const std::string feed = R"(
+      <feed xmlns="http://www.w3.org/2005/Atom">
+        <entry>
+          <id>urn:uuid:book1</id>
+          <title>Book One</title>
+          <link rel="http://opds-spec.org/acquisition/open-access"
+                type="application/x-some-future-format"
+                href="https://example.com/book1.future" />
+          <link rel="http://opds-spec.org/acquisition/open-access"
+                type="application/x-zim"
+                href="https://example.com/book1.zim" />
+        </entry>
+        <entry>
+          <id>urn:uuid:book2</id>
+          <title>Book Two</title>
+        </entry>
+      </feed>
+    )";
+
+  // A single link of an unknown type must neither make the feed unreadable
+  // nor drop its book.
+  kiwix::testing::CapturedStderr stderror;
+  EXPECT_TRUE(manager.readOpds(feed, "http://example.com"));
+
+  EXPECT_EQ(
+    "Book 'book1': ignoring acquisition link 'https://example.com/book1.future':"
+    " Unknown acquisition link type: application/x-some-future-format\n",
+    std::string(stderror));
+
+  EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{"book1", "book2"}));
+  EXPECT_EQ(lib->getBookById("book1").getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT),
+            "https://example.com/book1.zim");
+}
 
 TEST(ManagerTest, readOpdsWithInvalidLocalPath)
 {
