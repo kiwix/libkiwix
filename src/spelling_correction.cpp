@@ -20,10 +20,12 @@
 #include "spelling_correction.h"
 #include "zim/archive.h"
 
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 
 #include <xapian.h>
+#include <nuspell/dictionary.hxx>
 
 namespace kiwix
 {
@@ -80,10 +82,39 @@ std::unique_ptr<Xapian::Database> openOrCreateXapianDB(std::filesystem::path cac
   }
 }
 
+const char nuspellAffFileData[] = R"(
+SET UTF-8
+TRY qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM
+)";
+
+std::unique_ptr<std::istream> getAffDataStream()
+{
+  const char* const userAffFilePath = ::getenv("KIWIX_NUSPELL_AFF_FILE_PATH");
+  if ( userAffFilePath ) {
+    return std::make_unique<std::ifstream>(userAffFilePath);
+  }
+
+  return std::make_unique<std::istringstream>(nuspellAffFileData);
+}
+
+std::unique_ptr<nuspell::Dictionary> createNuspellDictionary(const zim::Archive& archive)
+{
+  auto d = std::make_unique<nuspell::Dictionary>();
+  const auto& allTitles = getAllTitles(archive);
+  std::stringstream dicSS;
+  dicSS << allTitles.size() << "\n";
+  for ( const auto& t : allTitles ) {
+    dicSS << t << "\n";
+  }
+  d->load_aff_dic(*getAffDataStream(), dicSS);
+  return d;
+}
+
 } // unnamed namespace
 
 SpellingsDB::SpellingsDB(const zim::Archive& archive, std::filesystem::path cacheDirPath)
   : impl_(openOrCreateXapianDB(cacheDirPath, archive))
+  , nuspell_(createNuspellDictionary(archive))
 {
 }
 
@@ -93,14 +124,13 @@ SpellingsDB::~SpellingsDB()
 
 std::vector<std::string> SpellingsDB::getSpellingCorrections(const std::string& word, uint32_t maxCount) const
 {
-  if ( maxCount > 1 ) {
-    throw std::runtime_error("More than one spelling correction was requested");
-  }
-
   std::vector<std::string> result;
-  const auto term = impl_->get_spelling_suggestion(word, 3);
-  if ( !term.empty() ) {
-    result.push_back(term);
+  nuspell_->suggest(word, result);
+  if ( result.size() > maxCount ) {
+    result.resize(maxCount);
+  }
+  if ( result.size() == 1 && result[0] == word ) {
+    result.clear();
   }
   return result;
 }

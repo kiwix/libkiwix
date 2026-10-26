@@ -61,6 +61,7 @@ libcurl_dep = dependency('libcurl', static:static_deps)
 microhttpd_dep = dependency('libmicrohttpd', static:static_deps)
 zlib_dep = dependency('zlib', static:static_deps)
 xapian_dep = dependency('xapian-core', static:static_deps)
+libnuspell_dep = dependency('libnuspell', static:static_deps)
 
 if compiler.has_header('mustache.hpp')
   extra_include = []
@@ -94,7 +95,7 @@ endif
 
 
 # Dependencies as string
-all_deps = [thread_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep]
+all_deps = [thread_dep, libzim_dep, pugixml_dep, libcurl_dep, microhttpd_dep, zlib_dep, xapian_dep, libnuspell_dep]
 
 # Dependencies as array
 all_deps += libicu_deps
