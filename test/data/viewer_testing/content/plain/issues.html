@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <title>Issues of link/URL handling by kiwix-serve viewer</title>
+  <style>
+    :target {
+        background-color: yellow;
+    }
+  </style>
+ </head>
+ <body>
+  <h1>List of issues</h1>
+  <h2><a name="1-circumvention-via-forced-new-tab">Issue#1</a></h2>
+  <p>
+    Link blocking can be circumvented by forcing the link to be opened in a new
+    tab via middle-click or context menu.
+  </p>
+
+  <h2><a name="2-firefox-csp-error">Issue#2</a></h2>
+  <p>
+    Firefox: Link click has no effect, Content-Security-Policy error reported
+    in console.
+  </p>
+
+  <h2><a name="3-chromium-csp-error">Issue#3</a></h2>
+  <p>
+    Chromium: Blocked content error is displayed in the viewer.
+  </p>
+
+  <h2><a name="4-link-not-blocked">Issue#4</a></h2>
+  <p>
+    Link is not blocked.
+  </p>
+
+  <h2><a name="5-firefox-cross-origin-errors-in-console">Issue#5</a></h2>
+  <p>
+    Firefox: Errors in console: "DOMException: Permission denied to get property
+    "href" on cross-origin object".
+  </p>
+
+  <h2><a name="6-link-loads-in-iframe">Issue#6</a></h2>
+  <p>
+    If the link is inside an iframe, it loads inside the nested frame.
+  </p>
+
+  <h2><a name="7-new-tab-escapes-viewer">Issue#7</a></h2>
+  <p>
+    If the link is opened in a new tab, it breaks free from viewer.
+  </p>
+
+  <h2><a name="8-nested-iframe-circumvents-link-blocking">Issue#8</a></h2>
+  <p>
+    Links residing in a nested iframe avoid external link blocking
+  </p>
+
+  <h2><a name="9-url-not-found">Issue#9</a></h2>
+  <p>
+    A URL not found error is reported for /content/viewer_testing/example.com/.
+  </p>
+
+  <h2><a name="10-wombatjs-drops-fragments-of-dynamically-created-links">Issue#10</a></h2>
+  <p>
+    <code>wombat.js</code> drops the fragment component of dynamically created
+    links (at least those introduced by assigning to the <code>innerHTML</code>
+    attribute of an existing DOM element).
+  </p>
+ </body>
+</html>
