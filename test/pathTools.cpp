@@ -130,6 +130,10 @@ TEST(pathTools, computeRelativePath)
             "foo");
   ASSERT_EQ(kiwix::computeRelativePath(A3("a","b",""), A3("a","b","foo")),
             "foo");
+  ASSERT_EQ(kiwix::computeRelativePath(A2("a", "b"), A2("a", "b")),
+            ".");
+  ASSERT_EQ(kiwix::computeRelativePath(A3("a", "b", ""), A2("a", "b")),
+            ".");
   ASSERT_EQ(kiwix::computeRelativePath(A2("a","b"), A2("a","foo")),
             P2("..","foo"));
   ASSERT_EQ(kiwix::computeRelativePath(A3("a","b",""), A2("a","foo")),

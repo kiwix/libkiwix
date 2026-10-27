@@ -175,9 +175,9 @@ std::vector<std::string> normalizeParts(std::vector<std::string>& parts, bool ab
   return ret;
 }
 
-std::string kiwix::computeRelativePath(const std::string& path, const std::string& absolutePath)
+std::string kiwix::computeRelativePath(const std::string& baseDirPath, const std::string& absolutePath)
 {
-  auto parts = kiwix::split(path, SEPARATOR, false);
+  auto parts = kiwix::split(baseDirPath, SEPARATOR, false);
   auto pathParts = normalizeParts(parts, false);
   parts = kiwix::split(absolutePath, SEPARATOR, false);
   auto absolutePathParts = normalizeParts(parts, true);
@@ -197,7 +197,7 @@ std::string kiwix::computeRelativePath(const std::string& path, const std::strin
     relativeParts.push_back(absolutePathParts[i]);
   }
   auto ret = kiwix::join(normalizeParts(relativeParts, false), SEPARATOR);
-  return ret;
+  return ret.empty() ? "." : ret;
 }
 
 std::string kiwix::computeAbsolutePath(const std::string& path, const std::string& relativePath)
