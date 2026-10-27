@@ -1737,21 +1737,17 @@ TEST_F(ServerTest, RandomPageRedirectionsAreUriEncoded)
   // may over time evolve into something more general whereupon it must be
   // renamed.
 
-  auto g = zfs1_->GET("/ROOT%23%3F/random?content=corner_cases%23%26");
-
   typedef std::set<std::string> StringSet;
   const StringSet frontArticles{
       {"/ROOT%23%3F/content/corner_cases%23%26/c%23.html"},
 
-      // empty.html is missing because of a subtle bug
-      // in libzim::randomNumber(max) which returns a value equal to
-      // it argument with much lower probability than other numbers
-      // {"/ROOT%23%3F/content/corner_cases%23%26/empty.html"}
+      {"/ROOT%23%3F/content/corner_cases%23%26/empty.html"}
   };
 
   StringSet randomPageUrls;
   auto n = 10 * frontArticles.size();
   while ( --n && randomPageUrls.size() != frontArticles.size() ) {
+    auto g = zfs1_->GET("/ROOT%23%3F/random?content=corner_cases%23%26");
     ASSERT_EQ(302, g->status);
     ASSERT_TRUE(g->has_header("Location"));
     randomPageUrls.insert(g->get_header_value("Location"));
