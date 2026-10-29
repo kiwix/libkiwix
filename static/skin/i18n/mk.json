@@ -62,6 +62,7 @@
 	"download": "Преземи",
 	"direct-download-link-text": "Непосредно",
 	"direct-download-alt-text": "Непосредно преземање преку HTTP(S)",
+	"metalink-download-link-text": "Метаврска",
 	"hash-download-link-text": "Контролен збир Sha256",
 	"hash-download-alt-text": "Прикажи контролен збир SHA-256 на податотеката",
 	"magnet-link-text": "Магнетна врска",
