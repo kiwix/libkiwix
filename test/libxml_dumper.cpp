@@ -142,27 +142,6 @@ TEST_F(LibXMLDumperTest, omitsEmptyOrZeroOptionalAttributes)
   );
 }
 
-TEST_F(LibXMLDumperTest, skipsReadOnlyBooks)
-{
-  Book readOnlyBook = createBook("readonly-book-id", "Read Only Book");
-  readOnlyBook.setReadOnly(true);
-  lib->addBook(readOnlyBook);
-
-  // The read-only book is entirely omitted from the dump, not just stripped
-  // of its attributes.
-  EXPECT_EQ(dumper.dumpLibXMLContent({"book1-id", "readonly-book-id"}),
-    "<library version=\"20110515\">\n"
-    "  <book id=\"book1-id\" path=\"book1-id.zim\" title=\"First Book\""
-    " description=\"Description of First Book\" language=\"eng,spa\""
-    " creator=\"First Book Creator\" publisher=\"First Book Publisher\""
-    " name=\"test_book1-id\" flavour=\"nopic\" tags=\"tag1;tag2\""
-    " date=\"2021-03-25\" url=\"http://download.kiwix.org/zim/book1-id.zim\""
-    " articleCount=\"42\" mediaCount=\"7\" size=\"120\""
-    " downloadId=\"download-book1-id\" />\n"
-    "</library>\n"
-  );
-}
-
 TEST_F(LibXMLDumperTest, aliasBookWithOrigIdOnlyEmitsIdAndOrigId)
 {
   Book aliasBook = createBook("alias-book-id", "Alias Book");

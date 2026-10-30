@@ -41,9 +41,6 @@ LibXMLDumper::~LibXMLDumper()
 #define ADD_ATTR_NOT_EMPTY(node, name, value) { if (!(value).empty()) ADD_ATTRIBUTE(node, name, value); }
 
 void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
-  if (book.readOnly())
-    return;
-
   auto entry_node = root_node.append_child("book");
   ADD_ATTRIBUTE(entry_node, "id", book.getId());
 

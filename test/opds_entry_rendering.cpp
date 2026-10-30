@@ -231,7 +231,7 @@ TEST(FullEntryOpdsTest, rendersThumbnailLinkForBookIllustration)
       ></book>
 </library>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  manager.readXml(sampleXML, "", /*trustLibrary=*/true);
   const Book& book = lib->getBookById("book-with-icon");
 
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-icon"),
@@ -277,7 +277,7 @@ TEST(FullEntryOpdsTest, rendersBase64ThumbnailForEmbeddedOnlyIllustrationInFileD
       ></book>
 </library>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  manager.readXml(sampleXML, "", /*trustLibrary=*/true);
   const Book& book = lib->getBookById("book-with-embedded-icon");
 
   // isLiveCatalog=false (offline file dump): an illustration with no
@@ -330,7 +330,7 @@ TEST(FullEntryOpdsTest, rendersIllustrationUrlDirectlyInFileDump)
       ></book>
 </library>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  manager.readXml(sampleXML, "", /*trustLibrary=*/true);
   const Book& book = lib->getBookById("book-with-icon-url");
 
   // isLiveCatalog=false (offline file dump): with an external url available,
@@ -410,7 +410,7 @@ TEST(FullEntryOpdsTest, roundTripsBase64ThumbnailDataThroughOPDSReadback)
       ></book>
 </library>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  manager.readXml(sampleXML, "", /*trustLibrary=*/true);
   const Book& book = lib->getBookById("book-with-roundtrip-icon");
   ASSERT_EQ(book.getIllustrations().at(0)->getData(), "Hello, World!");
 
@@ -554,7 +554,7 @@ TEST(FullEntryOpdsTest, omitsDataUriThumbnailForEmbeddedOnlyIllustrationInLiveCa
       ></book>
 </library>
 )";
-  manager.readXml(sampleXML, /*readOnly=*/false, "", /*trustLibrary=*/true);
+  manager.readXml(sampleXML, "", /*trustLibrary=*/true);
   const Book& book = lib->getBookById("book-with-embedded-icon");
 
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-embedded-icon"),

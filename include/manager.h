@@ -71,13 +71,13 @@ class Manager
    * Read a library XML or an OPDS file and add the books in the file to the
    * library.
    *
+   * `path` is recorded as the writable library path even if the file doesn't
+   * exist, so that the library can later be written there.
+   *
    * @param path The (utf8) path to the library file.
-   * @param readOnly Set if the libray path could be overwritten latter with
-   *                 updated content.
-   * @param trustLibrary use book metadata coming from XML.
    * @return True if file has been properly parsed.
    */
-  bool readFile(const std::string& path, bool readOnly = true, bool trustLibrary = true);
+  bool readFile(const std::string& path);
 
   /**
    * Sync the contents of the library with one or more `library.xml` files.
@@ -94,13 +94,10 @@ class Manager
    * Load a library content store in the string.
    *
    * @param xml The content corresponding of the library xml
-   * @param readOnly Set if the libray path could be overwritten latter with
-   *                 updated content.
    * @param libraryPath The library path (used to resolve relative path)
    * @return True if the content has been properly parsed.
    */
   bool readXml(const std::string& xml,
-               const bool readOnly = true,
                const std::string& libraryPath = "",
                bool trustLibrary = true);
 
@@ -115,29 +112,10 @@ class Manager
    *        kiwix::resolveContentOrigin() for the exact splitting rules. It is
    *        assumed that URL links come in the form of an absolute path
    *        component.
-   * @param readOnly Set if the library path could be overwritten later with
-   *                 updated content.
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content,
-                const std::string& contentOriginUri,
-                bool readOnly);
-
-  /**
-   * Load a library content stored in a OPDS stream or a local library file.
-   *
-   * A simple wrapper around the three-parameter readOpds() above, kept for
-   * backward compatibility. Equivalent to calling
-   * readOpds(content, urlHost, false).
-   *
-   * @param content The content of the OPDS stream.
-   * @param urlHost The host used to resolve relative acquisition/thumbnail
-   *                links. It is assumed that those links come in the form of an
-   *                absolute path component, so the full URL is obtained by
-   *                prepending the urlHost string to the href value of the link.
-   * @return True if the content has been properly parsed.
-   */
-  bool readOpds(const std::string& content, const std::string& urlHost);
+                const std::string& contentOriginUri);
 
   /**
    * Load a bookmark file.
@@ -220,13 +198,11 @@ class Manager
 
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,
-                   bool readOnly,
                    const std::string& libraryPath,
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost,
-                    const std::string& baseDir,
-                    bool readOnly);
+                    const std::string& baseDir);
 };
 }  // namespace kiwix
 

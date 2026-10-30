@@ -56,7 +56,7 @@ class NameMapperTest : public ::testing::Test {
  protected:
   void SetUp() override {
      kiwix::Manager manager(lib);
-     manager.readXml(libraryXML, false, "./library.xml", true);
+     manager.readXml(libraryXML, "./library.xml", true);
      for ( const std::string& id : lib->getBooksIds() ) {
        kiwix::Book bookCopy = lib->getBookById(id);
        bookCopy.setPathValid(true);

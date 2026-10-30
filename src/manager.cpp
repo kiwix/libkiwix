@@ -126,7 +126,6 @@ Manager::Manager(LibraryPtr library) :
 }
 
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
-                          bool readOnly,
                           const std::string& libraryPath,
                           bool trustLibrary)
 {
@@ -138,7 +137,6 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
        bookNode = bookNode.next_sibling("book")) {
     kiwix::Book book;
 
-    book.setReadOnly(readOnly);
     book.updateFromXml(bookNode,
                        removeLastPathElement(libraryPath));
 
@@ -152,7 +150,6 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
 }
 
 bool Manager::readXml(const std::string& xml,
-                      bool readOnly,
                       const std::string& libraryPath,
                       bool trustLibrary)
 {
@@ -161,7 +158,7 @@ bool Manager::readXml(const std::string& xml,
       = doc.load_buffer((void*)xml.data(), xml.size());
 
   if (result) {
-    return this->parseXmlDom(doc, readOnly, libraryPath, trustLibrary);
+    return this->parseXmlDom(doc, libraryPath, trustLibrary);
   }
 
   return false;
@@ -169,8 +166,7 @@ bool Manager::readXml(const std::string& xml,
 
 bool Manager::parseOpdsDom(const pugi::xml_document& doc,
                            const std::string& urlHost,
-                           const std::string& baseDir,
-                           bool readOnly)
+                           const std::string& baseDir)
 {
   pugi::xml_node libraryNode = doc.child("feed");
   if (!libraryNode) {
@@ -181,7 +177,6 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
        entryNode = entryNode.next_sibling("entry")) {
     kiwix::Book book;
 
-    book.setReadOnly(readOnly);
     book.updateFromOpds(entryNode, urlHost, baseDir);
 
     /* Update the book properties with the new importer */
@@ -192,14 +187,7 @@ bool Manager::parseOpdsDom(const pugi::xml_document& doc,
 }
 
 bool Manager::readOpds(const std::string& content,
-                       const std::string& urlHost)
-{
-  return readOpds(content, urlHost,false);
-}
-
-bool Manager::readOpds(const std::string& content,
-                       const std::string& contentOriginUri,
-                       bool readOnly)
+                       const std::string& contentOriginUri)
 {
   pugi::xml_document doc;
   pugi::xml_parse_result result
@@ -207,23 +195,18 @@ bool Manager::readOpds(const std::string& content,
 
   if (result) {
     const auto origin = resolveContentOrigin(contentOriginUri);
-    return this->parseOpdsDom(doc, origin.urlHost, origin.baseDir, readOnly);
+    return this->parseOpdsDom(doc, origin.urlHost, origin.baseDir);
   }
 
   return false;
 }
 
-bool Manager::readFile(
-  const std::string& path,
-  bool readOnly,
-  bool trustLibrary)
+bool Manager::readFile(const std::string& path)
 {
   /* This has to be set (although if the file does not exists) to be
    * able to know where to save the library if new content are
    * available */
-  if (!readOnly) { // todo XXX, better to introduce setWritableLibraryPath and remove this code from the readFile
-    this->writableLibraryPath = path;
-  }
+  this->writableLibraryPath = path;
 
   if (!kiwix::fileExists(path)) {
     return false;
@@ -232,8 +215,8 @@ bool Manager::readFile(
   const std::string content = getFileContent(path);
 
   return detectFormat(content) == FileFormat::OPDS
-    ? this->readOpds(content, path, readOnly)
-    : this->readXml(content, readOnly, path, trustLibrary);
+    ? this->readOpds(content, path)
+    : this->readXml(content, path, true);
 }
 
 
@@ -395,7 +378,7 @@ void Manager::reload(const Paths& paths)
       if ( kiwix::isRelativePath(path) )
         path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
 
-      if (!readFile(path, false, true)) {
+      if (!readFile(path)) {
         throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
       }
     }
