@@ -30,6 +30,7 @@ skin/i18n/nl.json
 skin/i18n/nqo.json
 skin/i18n/or.json
 skin/i18n/pl.json
+skin/i18n/ps.json
 skin/i18n/pt-br.json
 skin/i18n/pt.json
 skin/i18n/ro.json
