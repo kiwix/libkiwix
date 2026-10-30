@@ -66,7 +66,7 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/error.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=5042d6e4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=469a47e3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
@@ -359,7 +359,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
     <link rel="shortcut icon" href="/ROOT%23%3F/skin/favicon/favicon.ico?cacheid=92663314">
     <meta name="msapplication-config" content="/ROOT%23%3F/skin/favicon/browserconfig.xml?cacheid=f29a7c4a">
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" defer></script>
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=5042d6e4" defer></script>
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=d2d6933b" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
@@ -395,7 +395,7 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
     <link type="text/css" href="./skin/print.css?cacheid=65b1c1d2" media="print" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
-    <script type="module" src="./skin/i18n.js?cacheid=e9a10ac1" defer></script>
+    <script type="module" src="./skin/i18n.js?cacheid=5042d6e4" defer></script>
     <script type="text/javascript" src="./skin/languages.js?cacheid=d2d6933b" defer></script>
     <script type="text/javascript" src="./skin/viewer.js?cacheid=9c302db9" defer></script>
     <script type="text/javascript" src="./skin/autoComplete/autoComplete.min.js?cacheid=1191aaaf"></script>
@@ -419,8 +419,8 @@ R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cach
     {
       /* url */ "/ROOT%23%3F/catch/external?source=https%3A%2F%2Fkiwix.org",
 R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
-    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1"></script>
-      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{external_link_detected}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script type=&quot;module&quot; src=&quot;{{root}}/skin/i18n.js?cacheid=e9a10ac1&quot;&gt;&lt;/script&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/blocklink.svg?cacheid=bd56b116&quot;\n             alt=&quot;{{caution_warning}}&quot;\n             aria-label=&quot;{{caution_warning}}&quot;\n             title=&quot;{{caution_warning}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{external_link_detected}}&lt;/h1&gt;\n      &lt;p&gt;{{external_link_intro}}&lt;/p&gt;\n      &lt;p&gt;&lt;a href=&quot;{{url}}&quot;&gt;{{ url }}&lt;/a&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p3}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+    <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=5042d6e4"></script>
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{external_link_detected}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script type=&quot;module&quot; src=&quot;{{root}}/skin/i18n.js?cacheid=5042d6e4&quot;&gt;&lt;/script&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/blocklink.svg?cacheid=bd56b116&quot;\n             alt=&quot;{{caution_warning}}&quot;\n             aria-label=&quot;{{caution_warning}}&quot;\n             title=&quot;{{caution_warning}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{external_link_detected}}&lt;/h1&gt;\n      &lt;p&gt;{{external_link_intro}}&lt;/p&gt;\n      &lt;p&gt;&lt;a href=&quot;{{url}}&quot;&gt;{{ url }}&lt;/a&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p3}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
         <img src="/ROOT%23%3F/skin/blocklink.svg?cacheid=bd56b116"
 )EXPECTEDRESULT"
     },
