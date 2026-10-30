@@ -102,7 +102,6 @@ const I18n = {
 }
 
 const DEFAULT_UI_LANGUAGE = 'en';
-const RTL_UI_LANGUAGES = ['ar', 'he', 'nqo', 'skr-arab'];
 
 Translations.load(DEFAULT_UI_LANGUAGE, /*asDefault=*/true);
 
@@ -135,11 +134,14 @@ function getUserLanguage() {
 
 function setUserLanguage(lang, callback) {
   window.localStorage.setItem('userlang', lang);
-  // Set the page language and text direction (RTL or LTR)
-  document.documentElement.lang = lang;
-  document.documentElement.dir = RTL_UI_LANGUAGES.includes(lang) ? 'rtl' : 'ltr';
   Translations.load(lang);
-  Translations.whenReady(callback);
+  Translations.whenReady(() => {
+    // Set the page language and text direction (RTL or LTR)
+    const metadata = Translations.data[lang] && Translations.data[lang]['@metadata'];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = metadata && metadata.isRTL ? 'rtl' : 'ltr';
+    callback();
+  });
 }
 
 function createModalUILanguageSelector() {
