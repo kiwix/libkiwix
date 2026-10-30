@@ -102,6 +102,7 @@ const I18n = {
 }
 
 const DEFAULT_UI_LANGUAGE = 'en';
+const RTL_UI_LANGUAGES = ['ar', 'he', 'nqo', 'skr-arab'];
 
 Translations.load(DEFAULT_UI_LANGUAGE, /*asDefault=*/true);
 
@@ -132,16 +133,11 @@ function getUserLanguage() {
       || getDefaultUserLanguage();
 }
 
-function updateDocumentLanguage(doc, lang) {
-  doc.documentElement.lang = lang;
-
-  const rtlLanguages = ['ar', 'he', 'nqo', 'skr-arab'];
-  doc.documentElement.dir = rtlLanguages.includes(lang) ? 'rtl' : 'ltr';
-}
-
 function setUserLanguage(lang, callback) {
   window.localStorage.setItem('userlang', lang);
-  updateDocumentLanguage(document, lang);
+  // Set the page language and text direction (RTL or LTR)
+  document.documentElement.lang = lang;
+  document.documentElement.dir = RTL_UI_LANGUAGES.includes(lang) ? 'rtl' : 'ltr';
   Translations.load(lang);
   Translations.whenReady(callback);
 }
@@ -218,7 +214,9 @@ function translatePageInWindow(w) {
 
     const newHtml = I18n.render(template, params);
     w.document.documentElement.innerHTML = parseDom(newHtml).innerHTML;
-    updateDocumentLanguage(w.document, Translations.currentLanguage);
+    // Use the same language and text direction as the main page
+    w.document.documentElement.lang = document.documentElement.lang;
+    w.document.documentElement.dir = document.documentElement.dir;
   }
 }
 
