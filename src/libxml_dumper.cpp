@@ -20,9 +20,6 @@
 #include "libxml_dumper.h"
 #include "book.h"
 
-#include "tools.h"
-#include "tools/base64.h"
-#include "tools/stringTools.h"
 #include "tools/otherTools.h"
 
 namespace kiwix
@@ -35,55 +32,6 @@ LibXMLDumper::LibXMLDumper(const Library* library)
 /* Destructor */
 LibXMLDumper::~LibXMLDumper()
 {
-}
-
-#define ADD_ATTRIBUTE(node, name, value) { (node).append_attribute((name)) = (value).c_str(); }
-#define ADD_ATTR_NOT_EMPTY(node, name, value) { if (!(value).empty()) ADD_ATTRIBUTE(node, name, value); }
-
-void LibXMLDumper::handleBook(Book book, pugi::xml_node root_node) {
-  if (book.readOnly())
-    return;
-
-  auto entry_node = root_node.append_child("book");
-  ADD_ATTRIBUTE(entry_node, "id", book.getId());
-
-  if (!book.getPath().empty()) {
-    ADD_ATTRIBUTE(entry_node, "path", computeRelativePath(baseDir, book.getPath()));
-  }
-
-  if (book.getOrigId().empty()) {
-    ADD_ATTR_NOT_EMPTY(entry_node, "title", book.getTitle());
-    ADD_ATTR_NOT_EMPTY(entry_node, "description", book.getDescription());
-    ADD_ATTR_NOT_EMPTY(entry_node, "language", book.getCommaSeparatedLanguages());
-    ADD_ATTR_NOT_EMPTY(entry_node, "creator", book.getCreator());
-    ADD_ATTR_NOT_EMPTY(entry_node, "publisher", book.getPublisher());
-    ADD_ATTR_NOT_EMPTY(entry_node, "name", book.getName());
-    ADD_ATTR_NOT_EMPTY(entry_node, "flavour", book.getFlavour());
-    ADD_ATTR_NOT_EMPTY(entry_node, "tags", book.getTags());
-    try {
-      auto defaultIllustration = book.getIllustration(48);
-      ADD_ATTR_NOT_EMPTY(entry_node, "faviconMimeType", defaultIllustration->getMimeType());
-      ADD_ATTR_NOT_EMPTY(entry_node, "faviconUrl", defaultIllustration->getUrl());
-      if (!defaultIllustration->getData().empty())
-        ADD_ATTRIBUTE(entry_node, "favicon", base64_encode(defaultIllustration->getData()));
-    } catch(...) {}
-  } else {
-    ADD_ATTRIBUTE(entry_node, "origId", book.getOrigId());
-  }
-
-  ADD_ATTR_NOT_EMPTY(entry_node, "date", book.getDate());
-  ADD_ATTR_NOT_EMPTY(entry_node, "url", book.getUrl(Book::AcquisitionLinkKind::DIRECT));
-
-  if (book.getArticleCount())
-    ADD_ATTRIBUTE(entry_node, "articleCount", to_string(book.getArticleCount()));
-
-  if (book.getMediaCount())
-    ADD_ATTRIBUTE(entry_node, "mediaCount", to_string(book.getMediaCount()));
-
-  if (book.getSize())
-    ADD_ATTRIBUTE(entry_node, "size", to_string(book.getSize()>>10));
-
-  ADD_ATTR_NOT_EMPTY(entry_node, "downloadId", book.getDownloadId());
 }
 
 #define ADD_TEXT_ENTRY(node, child, value) (node).append_child((child)).append_child(pugi::node_pcdata).set_value((value).c_str())
@@ -113,23 +61,6 @@ void LibXMLDumper::handleBookmark(Bookmark bookmark, pugi::xml_node root_node) {
   ADD_TEXT_ENTRY(entry_node, "url", bookmark.getUrl());
 }
 
-
-std::string LibXMLDumper::dumpLibXMLContent(const std::vector<std::string>& bookIds)
-{
-  pugi::xml_document doc;
-
-  /* Add the library node */
-  pugi::xml_node libraryNode = doc.append_child("library");
-
-  libraryNode.append_attribute("version") = KIWIX_LIBRARY_VERSION;
-
-  if (library) {
-    for (auto& bookId: bookIds) {
-      handleBook(library->getBookById(bookId), libraryNode);
-    }
-  }
-  return nodeToString(libraryNode);
-}
 
 std::string LibXMLDumper::dumpLibXMLBookmark()
 {
