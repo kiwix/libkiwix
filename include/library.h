@@ -44,7 +44,7 @@ namespace kiwix
 class OPDSDumper;
 class Library;
 
-enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER };
+enum supportedListSortBy { UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER, POPULARITY };
 enum supportedListMode {
   ALL = 0,
   LOCAL = 1,
@@ -453,7 +453,10 @@ class Library: public std::enable_shared_from_this<Library>
    * Sort (in place) bookIds using the given arguments.
    *
    * @param bookIds the list of book Ids to sort
-   * @param sortBy how to sort the books (UNSORTED, TITLE, SIZE, DATE, CREATOR, PUBLISHER)
+   * @param sortBy how to sort the books (UNSORTED, TITLE, SIZE, DATE, CREATOR,
+   *               PUBLISHER, POPULARITY). When sorting by POPULARITY, the
+   *               books with unknown popularity are treated as having an
+   *               average popularity (50).
    * @param ascending ascending or descending
    */
   void sort(BookIdCollection& bookIds, supportedListSortBy sortBy, bool ascending) const;

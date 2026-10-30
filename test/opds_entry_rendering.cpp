@@ -87,6 +87,53 @@ TEST(FullEntryOpdsTest, rendersCoreBookFields)
   );
 }
 
+namespace
+{
+
+std::string entryWithPopularity(const std::string& popularity)
+{
+  return
+    "  <entry>\n"
+    "    <id>urn:uuid:book-id</id>\n"
+    "    <title>Some Title</title>\n"
+    "    <updated>2021-03-25T00:00:00Z</updated>\n"
+    "    <summary>Some Description</summary>\n"
+    "    <language>eng</language>\n"
+    "    <name>some_name</name>\n"
+    "    <flavour>nopic</flavour>\n"
+    "    <kiwix:popularity>" + popularity + "</kiwix:popularity>\n"
+    "    <category></category>\n"
+    "    <tags>tag1;tag2;_category:wikipedia</tags>\n"
+    "    <articleCount>42</articleCount>\n"
+    "    <mediaCount>7</mediaCount>\n"
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n";
+}
+
+} // unnamed namespace
+
+TEST(FullEntryOpdsTest, rendersPopularityWhenSet)
+{
+  // The popularity element is only present for books that have one (see
+  // CORE_ENTRY_BODY, used by the other tests, for its absence otherwise).
+  Book book = createBook();
+  book.setPopularity(46);
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+            entryWithPopularity("46"));
+
+  // A popularity of 0 is a known popularity and must be rendered too
+  book.setPopularity(0);
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+            entryWithPopularity("0"));
+}
+
 TEST(FullEntryOpdsTest, omitsAcquisitionLinkWhenUrlIsEmpty)
 {
   const Book book = createBook();

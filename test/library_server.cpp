@@ -178,6 +178,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"           \
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"          \
+    "      xmlns:kiwix=\"https://kiwix.org/namespace/opds\"\n" \
     "      xmlns:opds=\"https://specs.opds.io/opds-1.2\"\n"   \
     "      xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\">\n"  \
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"       \
