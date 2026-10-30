@@ -25,6 +25,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <shared_mutex>
 #include <zim/archive.h>
 #include <zim/search.h>
 
@@ -511,8 +512,15 @@ private: // functions
   void updateBookDB(const Book& book);
   void dropCache(const std::string& bookId);
 
+  // Private Unlocked helpers (assume m_mutex lock is held by caller):
+  const Book& getBookByIdUnlocked(const std::string& id) const;
+  const Book& getBookByPathUnlocked(const std::string& path) const;
+  BookIdCollection getBooksIdsUnlocked() const;
+  template<typename KeyExtractor>
+  void sortDecorated(BookIdCollection& bookIds, KeyExtractor&& extractor, bool ascending) const;
+
 private: //data
-  mutable std::recursive_mutex m_mutex;
+  mutable std::shared_mutex m_mutex;
   Library::Revision m_revision;
   std::map<std::string, Entry> m_books;
   using ArchiveCache = ConcurrentCache<std::string, std::shared_ptr<zim::Archive>>;
