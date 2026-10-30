@@ -92,7 +92,7 @@ TEST(ManagerTest, readFileSetsWritableLibraryPathEvenIfFileDoesNotExist)
               kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), "test"),
               "does_not_exist.xml");
 
-    EXPECT_FALSE(manager.readFile(nonExistentPath, /*readOnly=*/false));
+    EXPECT_FALSE(manager.readFile(nonExistentPath));
     EXPECT_EQ(manager.writableLibraryPath, nonExistentPath);
 
     const std::string pathToSave = "./relative.zim";
@@ -391,8 +391,7 @@ TEST(ManagerTest, readFileDetectsXmlFormat)
 
     kiwix::Book book = lib->getBookById("raycharles");
     EXPECT_EQ(book.getPath(), resolveAbsPath("./test/library.xml", "./zimfile_raycharles.zim"));
-    // readOnly defaults to true.
-    EXPECT_TRUE(book.readOnly());
+    EXPECT_FALSE(book.readOnly());
 }
 
 TEST(ManagerTest, readFileDetectsOpdsFormat)
@@ -400,7 +399,7 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
     auto lib = kiwix::Library::create();
     kiwix::Manager manager(lib);
 
-    EXPECT_TRUE(manager.readFile(LIB_OPDS_ABS_PATH, /*readOnly=*/false));
+    EXPECT_TRUE(manager.readFile(LIB_OPDS_ABS_PATH));
 
     EXPECT_EQ(lib->getBooksIds(), (kiwix::Library::BookIdCollection{
           "charlesray",
@@ -435,16 +434,4 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
     EXPECT_EQ(illustration->getHeight(), 48);
     EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/raycharles.png");
     EXPECT_FALSE(book.readOnly());
-}
-
-TEST(ManagerTest, readFileWithOpdsFormatHonorsReadOnly)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager(lib);
-
-    EXPECT_TRUE(manager.readFile("./test/library.opds", /*readOnly=*/true));
-
-    for (const auto& id : lib->getBooksIds()) {
-      EXPECT_TRUE(lib->getBookById(id).readOnly());
-    }
 }

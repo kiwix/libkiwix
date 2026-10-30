@@ -213,16 +213,12 @@ bool Manager::readOpds(const std::string& content,
   return false;
 }
 
-bool Manager::readFile(
-  const std::string& path,
-  bool readOnly)
+bool Manager::readFile(const std::string& path)
 {
   /* This has to be set (although if the file does not exists) to be
    * able to know where to save the library if new content are
    * available */
-  if (!readOnly) { // todo XXX, better to introduce setWritableLibraryPath and remove this code from the readFile
-    this->writableLibraryPath = path;
-  }
+  this->writableLibraryPath = path;
 
   if (!kiwix::fileExists(path)) {
     return false;
@@ -231,8 +227,8 @@ bool Manager::readFile(
   const std::string content = getFileContent(path);
 
   return detectFormat(content) == FileFormat::OPDS
-    ? this->readOpds(content, path, readOnly)
-    : this->readXml(content, readOnly, path, true);
+    ? this->readOpds(content, path, false)
+    : this->readXml(content, false, path, true);
 }
 
 
@@ -394,7 +390,7 @@ void Manager::reload(const Paths& paths)
       if ( kiwix::isRelativePath(path) )
         path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
 
-      if (!readFile(path, false)) {
+      if (!readFile(path)) {
         throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
       }
     }

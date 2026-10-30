@@ -71,12 +71,13 @@ class Manager
    * Read a library XML or an OPDS file and add the books in the file to the
    * library.
    *
+   * `path` is recorded as the writable library path even if the file doesn't
+   * exist, so that the library can later be written there.
+   *
    * @param path The (utf8) path to the library file.
-   * @param readOnly Set if the libray path could be overwritten latter with
-   *                 updated content.
    * @return True if file has been properly parsed.
    */
-  bool readFile(const std::string& path, bool readOnly = true);
+  bool readFile(const std::string& path);
 
   /**
    * Sync the contents of the library with one or more `library.xml` files.
