@@ -1364,4 +1364,42 @@ TEST(LibraryOpdsExportTest, allInOne)
   EXPECT_EQ(lib->dumpOpds(OPDS_LIBRARY_PATH), sampleLibraryOpds);
 }
 
+TEST(LibrarySortTest, DuplicateTitlesStability)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Book b1; b1.setId("id_b1"); b1.setTitle("SameTitle"); lib->addBook(b1);
+  kiwix::Book b2; b2.setId("id_b2"); b2.setTitle("SameTitle"); lib->addBook(b2);
+  kiwix::Book b3; b3.setId("id_b3"); b3.setTitle("Alpha");     lib->addBook(b3);
+  kiwix::Book b4; b4.setId("id_b4"); b4.setTitle("Zulu");      lib->addBook(b4);
+
+  kiwix::Library::BookIdCollection ids = {"id_b1", "id_b2", "id_b3", "id_b4"};
+
+  auto asc = ids;
+  lib->sort(asc, kiwix::TITLE, true);
+  ASSERT_EQ(asc.size(), 4u);
+  EXPECT_EQ(asc[0], "id_b3"); // "Alpha"
+  EXPECT_EQ(asc[1], "id_b1"); // "SameTitle" (index 0 preserved before index 1)
+  EXPECT_EQ(asc[2], "id_b2"); // "SameTitle"
+  EXPECT_EQ(asc[3], "id_b4"); // "Zulu"
+
+  auto desc = ids;
+  lib->sort(desc, kiwix::TITLE, false);
+  ASSERT_EQ(desc.size(), 4u);
+  EXPECT_EQ(desc[0], "id_b4"); // "Zulu"
+  EXPECT_EQ(desc[1], "id_b1"); // "SameTitle" (STILL index 0 preserved before index 1)
+  EXPECT_EQ(desc[2], "id_b2"); // "SameTitle"
+  EXPECT_EQ(desc[3], "id_b3"); // "Alpha"
+}
+
+TEST(LibrarySortTest, StrongExceptionGuarantee)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Book b1; b1.setId("valid_id"); b1.setTitle("Valid"); lib->addBook(b1);
+
+  kiwix::Library::BookIdCollection ids = {"valid_id", "invalid_id"};
+  auto copy = ids;
+  EXPECT_THROW(lib->sort(ids, kiwix::TITLE, true), std::out_of_range);
+  EXPECT_EQ(ids, copy);
+}
+
 };
