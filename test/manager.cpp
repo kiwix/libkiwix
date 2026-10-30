@@ -141,7 +141,7 @@ TEST(ManagerTest, readXml)
     auto lib = kiwix::Library::create();
     kiwix::Manager manager = kiwix::Manager(lib);
 
-    EXPECT_EQ(true, manager.readXml(sampleLibraryXML, true, LIB_ABS_PATH, true));
+    EXPECT_EQ(true, manager.readXml(sampleLibraryXML, LIB_ABS_PATH, true));
     kiwix::Book book = lib->getBookById("0d0bcd57-d3f6-cb22-44cc-a723ccb4e1b2");
 
     // "path" is relative in the XML - readXml() resolves it against the
@@ -150,7 +150,6 @@ TEST(ManagerTest, readXml)
     // ... but ZIM_ABS_PATH doesn't exist on disk, so the resolved path is
     // not considered valid.
     EXPECT_FALSE(book.isPathValid());
-    EXPECT_TRUE(book.readOnly());
     EXPECT_EQ("https://example.com/zimfiles/unittest.zim", book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT));
     EXPECT_EQ("Unit Test", book.getTitle());
     EXPECT_EQ("Wikipedia articles about unit testing", book.getDescription());
@@ -194,7 +193,7 @@ TEST(ManagerTest, readXmlInvalid)
         title="Unit Test 2"
 )";
 
-  EXPECT_FALSE(manager.readXml(invalidXML, true, LIB_ABS_PATH, true));
+  EXPECT_FALSE(manager.readXml(invalidXML, LIB_ABS_PATH, true));
   EXPECT_TRUE(lib->getBooksIds().empty());
 }
 
@@ -205,7 +204,7 @@ TEST(ManagerTest, readXmlNotXml)
 
     const std::string notXML = "this is definitely not xml content";
 
-    EXPECT_FALSE(manager.readXml(notXML, true, LIB_ABS_PATH, true));
+    EXPECT_FALSE(manager.readXml(notXML, LIB_ABS_PATH, true));
     EXPECT_TRUE(lib->getBooksIds().empty());
 }
 

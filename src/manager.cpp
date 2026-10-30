@@ -126,7 +126,6 @@ Manager::Manager(LibraryPtr library) :
 }
 
 bool Manager::parseXmlDom(const pugi::xml_document& doc,
-                          bool readOnly,
                           const std::string& libraryPath,
                           bool trustLibrary)
 {
@@ -138,7 +137,6 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
        bookNode = bookNode.next_sibling("book")) {
     kiwix::Book book;
 
-    book.setReadOnly(readOnly);
     book.updateFromXml(bookNode,
                        removeLastPathElement(libraryPath));
 
@@ -152,7 +150,6 @@ bool Manager::parseXmlDom(const pugi::xml_document& doc,
 }
 
 bool Manager::readXml(const std::string& xml,
-                      bool readOnly,
                       const std::string& libraryPath,
                       bool trustLibrary)
 {
@@ -161,7 +158,7 @@ bool Manager::readXml(const std::string& xml,
       = doc.load_buffer((void*)xml.data(), xml.size());
 
   if (result) {
-    return this->parseXmlDom(doc, readOnly, libraryPath, trustLibrary);
+    return this->parseXmlDom(doc, libraryPath, trustLibrary);
   }
 
   return false;
@@ -219,7 +216,7 @@ bool Manager::readFile(const std::string& path)
 
   return detectFormat(content) == FileFormat::OPDS
     ? this->readOpds(content, path)
-    : this->readXml(content, false, path, true);
+    : this->readXml(content, path, true);
 }
 
 

@@ -94,13 +94,10 @@ class Manager
    * Load a library content store in the string.
    *
    * @param xml The content corresponding of the library xml
-   * @param readOnly Set if the libray path could be overwritten latter with
-   *                 updated content.
    * @param libraryPath The library path (used to resolve relative path)
    * @return True if the content has been properly parsed.
    */
   bool readXml(const std::string& xml,
-               const bool readOnly = true,
                const std::string& libraryPath = "",
                bool trustLibrary = true);
 
@@ -201,7 +198,6 @@ class Manager
 
   bool readBookFromPath(const std::string& path, Book* book);
   bool parseXmlDom(const pugi::xml_document& doc,
-                   bool readOnly,
                    const std::string& libraryPath,
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
