@@ -442,7 +442,7 @@ TEST(ManagerTest, readFileWithOpdsFormatHonorsReadOnly)
     auto lib = kiwix::Library::create();
     kiwix::Manager manager(lib);
 
-    EXPECT_TRUE(manager.readFile("./test/library.opds", /*readOnly=*/true, /*trustLibrary=*/true));
+    EXPECT_TRUE(manager.readFile("./test/library.opds", /*readOnly=*/true));
 
     for (const auto& id : lib->getBooksIds()) {
       EXPECT_TRUE(lib->getBookById(id).readOnly());

@@ -74,10 +74,9 @@ class Manager
    * @param path The (utf8) path to the library file.
    * @param readOnly Set if the libray path could be overwritten latter with
    *                 updated content.
-   * @param trustLibrary use book metadata coming from XML.
    * @return True if file has been properly parsed.
    */
-  bool readFile(const std::string& path, bool readOnly = true, bool trustLibrary = true);
+  bool readFile(const std::string& path, bool readOnly = true);
 
   /**
    * Sync the contents of the library with one or more `library.xml` files.

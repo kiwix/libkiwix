@@ -215,8 +215,7 @@ bool Manager::readOpds(const std::string& content,
 
 bool Manager::readFile(
   const std::string& path,
-  bool readOnly,
-  bool trustLibrary)
+  bool readOnly)
 {
   /* This has to be set (although if the file does not exists) to be
    * able to know where to save the library if new content are
@@ -233,7 +232,7 @@ bool Manager::readFile(
 
   return detectFormat(content) == FileFormat::OPDS
     ? this->readOpds(content, path, readOnly)
-    : this->readXml(content, readOnly, path, trustLibrary);
+    : this->readXml(content, readOnly, path, true);
 }
 
 
@@ -395,7 +394,7 @@ void Manager::reload(const Paths& paths)
       if ( kiwix::isRelativePath(path) )
         path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
 
-      if (!readFile(path, false, true)) {
+      if (!readFile(path, false)) {
         throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
       }
     }
