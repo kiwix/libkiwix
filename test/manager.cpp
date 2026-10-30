@@ -273,44 +273,6 @@ TEST_P(ManagerReloadTest, reload)
 INSTANTIATE_TEST_CASE_P(XmlAndOpds, ManagerReloadTest,
     ::testing::Values("./test/library.xml", "./test/library.opds"));
 
-const char sampleOpdsFeed[] = R"(
-<feed xmlns="http://www.w3.org/2005/Atom"
-      xmlns:opds="https://specs.opds.io/opds-1.2">
-  <totalResults>9</totalResults>
-  <startIndex>7</startIndex>
-  <itemsPerPage>10</itemsPerPage>
-  <entry>
-    <id>urn:uuid:book1</id>
-    <title>Book One</title>
-    <link rel="http://opds-spec.org/acquisition/open-access"
-          type="application/x-zim"
-          href="https://example.com/book1.zim"
-          length="111" />
-  </entry>
-  <entry>
-    <id>urn:uuid:book2</id>
-    <title>Book Two</title>
-    <link rel="http://opds-spec.org/acquisition/open-access"
-          type="application/x-zim"
-          href="https://example.com/book2.zim"
-          length="222" />
-  </entry>
-</feed>
-)";
-
-TEST(ManagerTest, readOpdsHonorsReadOnlyTrue)
-{
-    auto lib = kiwix::Library::create();
-    kiwix::Manager manager(lib);
-
-    EXPECT_TRUE(manager.readOpds(sampleOpdsFeed, "http://example.com", /*readOnly=*/true));
-
-    EXPECT_TRUE(lib->getBookById("book1").readOnly());
-    EXPECT_TRUE(lib->getBookById("book2").readOnly());
-}
-
-
-
 TEST(ManagerTest, readOpdsKeepsBookWithAcquisitionLinkOfUnknownType)
 {
   auto lib = kiwix::Library::create();
@@ -365,7 +327,7 @@ TEST(ManagerTest, readOpdsWithInvalidLocalPath)
       </feed>
     )";
 
-  EXPECT_TRUE(manager.readOpds(feed, "./test/library.opds", /*readOnly=*/false));
+  EXPECT_TRUE(manager.readOpds(feed, "./test/library.opds"));
 
   kiwix::Book book = lib->getBookById("book1");
   EXPECT_FALSE(book.isPathValid());

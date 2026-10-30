@@ -115,29 +115,10 @@ class Manager
    *        kiwix::resolveContentOrigin() for the exact splitting rules. It is
    *        assumed that URL links come in the form of an absolute path
    *        component.
-   * @param readOnly Set if the library path could be overwritten later with
-   *                 updated content.
    * @return True if the content has been properly parsed.
    */
   bool readOpds(const std::string& content,
-                const std::string& contentOriginUri,
-                bool readOnly);
-
-  /**
-   * Load a library content stored in a OPDS stream or a local library file.
-   *
-   * A simple wrapper around the three-parameter readOpds() above, kept for
-   * backward compatibility. Equivalent to calling
-   * readOpds(content, urlHost, false).
-   *
-   * @param content The content of the OPDS stream.
-   * @param urlHost The host used to resolve relative acquisition/thumbnail
-   *                links. It is assumed that those links come in the form of an
-   *                absolute path component, so the full URL is obtained by
-   *                prepending the urlHost string to the href value of the link.
-   * @return True if the content has been properly parsed.
-   */
-  bool readOpds(const std::string& content, const std::string& urlHost);
+                const std::string& contentOriginUri);
 
   /**
    * Load a bookmark file.
@@ -225,8 +206,7 @@ class Manager
                    bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost,
-                    const std::string& baseDir,
-                    bool readOnly);
+                    const std::string& baseDir);
 };
 }  // namespace kiwix
 

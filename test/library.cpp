@@ -451,7 +451,7 @@ class LibraryTest : public ::testing::TestWithParam<std::string> {
     if (GetParam() == "xml") {
       manager.readXml(sampleLibraryXML, false, XML_LIBRARY_PATH, true);
     } else {
-      manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH, false);
+      manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH);
     }
   }
 
