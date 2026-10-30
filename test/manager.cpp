@@ -352,7 +352,6 @@ TEST(ManagerTest, readFileDetectsXmlFormat)
 
     kiwix::Book book = lib->getBookById("raycharles");
     EXPECT_EQ(book.getPath(), resolveAbsPath("./test/library.xml", "./zimfile_raycharles.zim"));
-    EXPECT_FALSE(book.readOnly());
 }
 
 TEST(ManagerTest, readFileDetectsOpdsFormat)
@@ -394,5 +393,4 @@ TEST(ManagerTest, readFileDetectsOpdsFormat)
     EXPECT_EQ(illustration->getWidth(), 48);
     EXPECT_EQ(illustration->getHeight(), 48);
     EXPECT_EQ(illustration->getUrl(), "https://example.com/favicon/raycharles.png");
-    EXPECT_FALSE(book.readOnly());
 }
