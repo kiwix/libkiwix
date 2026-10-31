@@ -1758,7 +1758,17 @@ TEST_F(ServerTest, RandomPageRedirectionsAreUriEncoded)
     randomPageUrls.insert(g->get_header_value("Location"));
   }
 
-  ASSERT_EQ(frontArticles, randomPageUrls);
+  // Prior to openzim/libzim#1137, libzim's randomNumber(max) had an off-by-one bug
+  // causing the last front entry (empty.html) to virtually never be selected.
+  // Systems with older libzim versions (e.g. Debian unstable's packaged libzim)
+  // will therefore only receive c#.html, whereas newer libzim versions will receive
+  // both. In either case, the URI-encoded URL (c#.html -> c%23.html) must be returned,
+  // and every returned URL must be a valid front article.
+  ASSERT_FALSE(randomPageUrls.empty());
+  ASSERT_TRUE(randomPageUrls.find("/ROOT%23%3F/content/corner_cases%23%26/c%23.html") != randomPageUrls.end());
+  for (const auto& url : randomPageUrls) {
+    ASSERT_TRUE(frontArticles.find(url) != frontArticles.end());
+  }
 }
 
 TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
