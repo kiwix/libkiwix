@@ -548,10 +548,10 @@ static MHD_Result print_key_value (void *cls, enum MHD_ValueKind kind,
 
 struct RunningResponse {
    zim::Item item;
-   int range_start;
+   zim::size_type range_start;
 
    RunningResponse(zim::Item item,
-                   int range_start) :
+                   zim::size_type range_start) :
      item(item),
      range_start(range_start)
    {}
@@ -564,9 +564,12 @@ static ssize_t callback_reader_from_item(void* cls,
 {
   RunningResponse* response = static_cast<RunningResponse*>(cls);
 
-  size_t max_size_to_set = std::min<size_t>(
-    max,
-    response->item.getSize() - pos - response->range_start);
+  if (response->range_start + pos >= response->item.getSize()) {
+    return MHD_CONTENT_READER_END_WITH_ERROR;
+  }
+
+  zim::size_type remaining = response->item.getSize() - pos - response->range_start;
+  size_t max_size_to_set = std::min<size_t>(max, remaining);
 
   if (max_size_to_set <= 0) {
     return MHD_CONTENT_READER_END_WITH_ERROR;
