@@ -106,7 +106,7 @@
   </head>
   <body bgcolor="white">
     <div class="header">
-      {{{PAGE_HEADER}}}
+      {{#TITLE_SEARCH}}Title matches — {{/TITLE_SEARCH}}{{{PAGE_HEADER}}}
     </div>
 
     <div class="results">
@@ -143,6 +143,7 @@
           {{/pagination.pages}}
         </ul>
       {{/pagination.hasPages}}
+      {{#TITLE_SEARCH}}<a href="{{query.fulltextQuery}}">Continue to full-text results</a>{{/TITLE_SEARCH}}
     </div>
   </body>
 </html>

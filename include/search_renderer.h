@@ -22,6 +22,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 #include <zim/search.h>
 #include "library.h"
 #include "smartptr.h"
@@ -36,6 +37,14 @@ class NameMapper;
 class SearchRenderer
 {
  public:
+  struct Result {
+    std::string zimId;
+    std::string title;
+    std::string path;
+    std::string snippet;
+    int wordCount = -1;
+  };
+
   /**
    * Construct a SearchRenderer from a SearchResultSet.
    *
@@ -44,6 +53,8 @@ class SearchRenderer
    * @param estimatedResultCount The estimatedResultCount of the whole search
    */
   SearchRenderer(zim::SearchResultSet srs, unsigned int start, unsigned int estimatedResultCount);
+  SearchRenderer(std::vector<Result> results, unsigned int start, unsigned int estimatedResultCount);
+  void setTitleSearch(bool enabled);
 
   SearchRenderer(const SearchRenderer& other);
   SearchRenderer& operator=(const SearchRenderer& other);

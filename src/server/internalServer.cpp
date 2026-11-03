@@ -64,6 +64,8 @@ extern "C" {
 
 #include <mustache.hpp>
 
+#include <algorithm>
+#include <unicode/uchar.h>
 #include <atomic>
 #include <string>
 #include <vector>
@@ -1112,14 +1114,113 @@ unsigned getSearchPageSize(const RequestContext& r)
        : min(MAX_PAGE_LEN, pageLength);
 }
 
+int titleMatchRank(const icu::UnicodeString& pattern, const std::string& rawTitle)
+{
+  const auto title = icu::UnicodeString::fromUTF8(removeAccents(rawTitle));
+  if (title == pattern) return 0;
+  auto wordChar = [](UChar32 c) { return u_isalnum(c) || c == '_'; };
+  for (int32_t pos = 0; (pos = title.indexOf(pattern, pos)) >= 0; ++pos) {
+    const auto end = pos + pattern.length();
+    if ((pos == 0 || !wordChar(title.char32At(title.moveIndex32(pos, -1))))
+        && (end == title.length() || !wordChar(title.char32At(end)))) return 1;
+  }
+  return title.indexOf(pattern) >= 0 ? 2 : -1;
+}
+
 } // unnamed namespace
+
+std::vector<InternalServer::TitleHit> InternalServer::getTitleResults(const SearchInfo& info)
+{
+  std::vector<TitleHit> hits;
+  if (info.geoQuery || trim(info.pattern).empty()) return hits;
+  const auto pattern = icu::UnicodeString::fromUTF8(removeAccents(trim(info.pattern)));
+  // ponytail: top 500 suggestions per book, not exhaustive substring retrieval; index ngrams if needed.
+  for (const auto& id : info.bookIds) {
+    auto archive = mp_library->getArchiveById(id);
+    if (!archive) continue;
+    auto searcher = suggestionSearcherCache.getOrPut(id,
+      [=]() { return make_shared<LockableSuggestionSearcher>(*archive); });
+    auto lock = searcher->getLock();
+    auto suggestions = searcher->suggest(trim(info.pattern)).getResults(0, 500);
+    for (auto it = suggestions.begin(); it != suggestions.end(); ++it) {
+      const auto title = it->getTitle();
+      const int rank = titleMatchRank(pattern, title);
+      if (rank < 0) continue;
+      const auto path = archive->getEntryByPath(it->getPath()).getItem(true).getPath();
+      hits.push_back({rank, id, title, path});
+    }
+  }
+  std::stable_sort(hits.begin(), hits.end(), [](const auto& a, const auto& b) { return a.rank < b.rank; });
+  std::set<std::pair<std::string, std::string>> seen;
+  hits.erase(std::remove_if(hits.begin(), hits.end(), [&](const auto& hit) {
+    return !seen.emplace(hit.zimId, hit.path).second;
+  }), hits.end());
+  return hits;
+}
 
 std::unique_ptr<Response> InternalServer::handle_search_request(const RequestContext& request)
 {
   auto searchInfo = getSearchInfo(request);
   auto bookIds = searchInfo.getBookIds();
+  const auto start = max(0u, request.get_optional_param("start", 0u));
+  const auto pageLength = getSearchPageSize(request);
+  const bool fulltext = request.get_optional_param("fulltext", 0u) != 0;
+  auto render = [&](SearchRenderer& renderer, bool titleSearch) {
+    renderer.setTitleSearch(titleSearch);
+    renderer.setSearchPattern(searchInfo.pattern);
+    renderer.setSearchBookQuery(searchInfo.bookFilterQuery + (titleSearch ? "" : "&fulltext=1"));
+    renderer.setProtocolPrefix(m_root + "/content/");
+    renderer.setSearchProtocolPrefix(m_root + "/search");
+    renderer.setPageLength(pageLength);
+    renderer.setUserLang(request.get_user_language());
+    if (request.get_requested_format() == "xml") {
+      return ContentResponse::build(renderer.getXml(*mp_nameMapper, mp_library.get()),
+                                    "application/rss+xml; charset=utf-8");
+    }
+    return ContentResponse::build(renderer.getHtml(*mp_nameMapper, mp_library.get()),
+                                  "text/html; charset=utf-8");
+  };
 
-  /* Make the search */
+  std::vector<TitleHit> titles;
+  try {
+    titles = titleResultsCache.getOrPut(searchInfo, [&]() { return getTitleResults(searchInfo); });
+  } catch (const std::exception& e) {
+    if (m_verbose.load()) std::cerr << "Title search failed: " << e.what() << std::endl;
+  }
+  if (!fulltext && start < titles.size()) {
+    std::vector<SearchRenderer::Result> results;
+    const auto end = std::min<size_t>(start + pageLength, titles.size());
+    for (const auto& id : bookIds) {
+      if (std::none_of(titles.begin() + start, titles.begin() + end,
+                      [&](const auto& hit) { return hit.zimId == id; })) continue;
+      auto archive = mp_library->getArchiveById(id);
+      if (!archive) continue;
+      auto searcher = suggestionSearcherCache.getOrPut(id,
+        [=]() { return make_shared<LockableSuggestionSearcher>(*archive); });
+      auto lock = searcher->getLock();
+      auto snippets = searcher->suggest(trim(searchInfo.pattern)).getResults(0, 0);
+      for (size_t i = start; i < end; ++i) {
+        const auto& hit = titles[i];
+        if (hit.zimId == id) {
+          results.push_back({id, hit.title, hit.path,
+                            snippets.getSnippet(archive->getEntryByPath(hit.path)), -1});
+        }
+      }
+    }
+    // Restore global title ordering when the selected page spans multiple books.
+    std::stable_sort(results.begin(), results.end(), [&](const auto& a, const auto& b) {
+      auto position = [&](const auto& r) {
+        return std::find_if(titles.begin() + start, titles.begin() + end, [&](const auto& t) {
+          return t.zimId == r.zimId && t.path == r.path;
+        });
+      };
+      return position(a) < position(b);
+    });
+    SearchRenderer renderer(std::move(results), start, titles.size());
+    return render(renderer, true);
+  }
+
+  /* Make the search only after title pages have been exhausted. */
   // Try to get a search from the searchInfo, else build it
   auto searcher = mp_library->getSearcherByIds(bookIds);
   auto lock(searcher->getLock());
@@ -1153,28 +1254,28 @@ std::unique_ptr<Response> InternalServer::handle_search_request(const RequestCon
     return response;
   }
 
-  const auto start = max(0u, request.get_optional_param("start", 0u));
-  const auto pageLength = getSearchPageSize(request);
-
-  /* Get the results */
-  SearchRenderer renderer(search->getResults(start, pageLength), start,
-                          search->getEstimatedMatches());
-  renderer.setSearchPattern(searchInfo.pattern);
-  renderer.setSearchBookQuery(searchInfo.bookFilterQuery);
-  renderer.setProtocolPrefix(m_root + "/content/");
-  renderer.setSearchProtocolPrefix(m_root + "/search");
-  renderer.setPageLength(pageLength);
-  renderer.setUserLang(request.get_user_language());
-  if (request.get_requested_format() == "xml") {
-    return ContentResponse::build(
-      renderer.getXml(*mp_nameMapper, mp_library.get()),
-      "application/rss+xml; charset=utf-8"
-    );
+  const unsigned int bodyStart = fulltext || titles.empty() ? start : start - titles.size();
+  std::set<std::pair<std::string, std::string>> titleKeys;
+  for (const auto& hit : titles) titleKeys.emplace(hit.zimId, hit.path);
+  std::vector<SearchRenderer::Result> results;
+  unsigned int skip = bodyStart;
+  int offset = titleKeys.empty() ? bodyStart : 0;
+  if (titleKeys.empty()) skip = 0;
+  // ponytail: deep full-text pages scan preceding hits for dedup; index exclusions if deep paging matters.
+  while (results.size() < pageLength) {
+    auto batch = search->getResults(offset, pageLength);
+    if (batch.size() == 0) break;
+    for (auto it = batch.begin(); it != batch.end() && results.size() < pageLength; ++it) {
+      const std::string id(it.getZimId());
+      const auto path = it.getPath();
+      if (titleKeys.count({id, path})) continue;
+      if (skip) { --skip; continue; }
+      results.push_back({id, it.getTitle(), path, it.getSnippet(), it.getWordCount()});
+    }
+    offset += batch.size();
   }
-  auto response = ContentResponse::build(
-    renderer.getHtml(*mp_nameMapper, mp_library.get()),
-    "text/html; charset=utf-8"
-  );
+  SearchRenderer renderer(std::move(results), bodyStart, search->getEstimatedMatches());
+  auto response = render(renderer, false);
   // XXX: Now this has to be handled by the iframe-based viewer which
   // XXX: has to resolve if the book selection resulted in a single book.
   /*
