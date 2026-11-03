@@ -171,6 +171,12 @@ class InternalServer {
     void setContentAccessUrl(LibraryDumper& libDumper) const;
 
   private: // types
+    struct TitleHit {
+      int rank;
+      std::string zimId, title, path;
+    };
+    std::vector<TitleHit> getTitleResults(const SearchInfo& info);
+    ConcurrentCache<SearchInfo, std::vector<TitleHit>> titleResultsCache{2};
     class LockableSuggestionSearcher;
     typedef ConcurrentCache<SearchInfo, std::shared_ptr<zim::Search>> SearchCache;
     typedef ConcurrentCache<std::string, std::shared_ptr<LockableSuggestionSearcher>> SuggestionSearcherCache;

@@ -6,6 +6,7 @@
     <title>Search: {{query.pattern}}</title>
     <link>{{query.unpaginatedQuery}}&amp;format=xml&amp;start={{results.start}}&amp;pageLength={{pagination.itemsPerPage}}</link>
     <description>Search result for {{query.pattern}}</description>
+    {{#TITLE_SEARCH}}<atom:link rel="related" href="{{query.fulltextQuery}}"/>{{/TITLE_SEARCH}}
     <opensearch:totalResults>{{results.count}}</opensearch:totalResults>
     <opensearch:startIndex>{{results.start}}</opensearch:startIndex>
     <opensearch:itemsPerPage>{{pagination.itemsPerPage}}</opensearch:itemsPerPage>
