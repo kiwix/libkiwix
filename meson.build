@@ -76,6 +76,17 @@ if not compiler.has_header_symbol('zim/zim.h', 'LIBZIM_WITH_XAPIAN', dependencie
   error('Libzim seems to be compiled without Xapian. Xapian support is mandatory.')
 endif
 
+if compiler.links('''
+#include <zim/suggestion.h>
+
+int main(int, char** argv) {
+  const zim::Archive archive(argv[0]);
+  zim::SuggestionSearcher searcher(archive);
+  return searcher.suggest("test").getResults(0, 0).getSnippet(archive.getMainEntry()).empty();
+}
+''', name: 'zim::SuggestionResultSet::getSnippet', dependencies: libzim_dep)
+  add_project_arguments('-DKIWIX_HAS_LIBZIM_TITLE_SNIPPETS', language: 'cpp')
+endif
 
 extra_cflags = ''
 if host_machine.system() == 'windows' and static_deps

@@ -2,6 +2,10 @@
 #define CPPHTTPLIB_ZLIB_SUPPORT 1
 #include "./httplib.h"
 #include "gtest/gtest.h"
+#include <algorithm>
+#include <map>
+#include <set>
+#include <pugixml.hpp>
 #include "../src/tools/stringTools.h"
 
 #define SERVER_PORT 8101
@@ -10,8 +14,7 @@
 
 std::string makeSearchResultsHtml(const std::string& pattern,
                                   const std::string& header,
-                                  const std::string& results,
-                                  const std::string& footer)
+                                  const std::string& results)
 {
   const char SEARCHRESULTS_HTML_TEMPLATE[] = R"HTML(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -125,7 +128,9 @@ std::string makeSearchResultsHtml(const std::string& pattern,
       </ul>
     </div>
 
-    <div class="footer">%FOOTER%
+    <div class="footer">
+      //EOLWHITESPACEMARKER
+      //EOLWHITESPACEMARKER
     </div>
   </body>
 </html>
@@ -135,7 +140,6 @@ std::string makeSearchResultsHtml(const std::string& pattern,
   html = replace(html, "%PATTERN%", pattern);
   html = replace(html, "%HEADER%", header);
   html = replace(html, "%RESULTS%", results);
-  html = replace(html, "%FOOTER%", footer);
   return html;
 }
 
@@ -619,6 +623,26 @@ Snippets extractSearchResultSnippetsFromHtml(const std::string& html)
   return snippets;
 }
 
+std::vector<std::string> extractHtmlResultLinks(const std::string& html)
+{
+  const std::regex result(R"rx(<a href="(/ROOT%23%3F/content/[^"]+)")rx");
+  std::vector<std::string> links;
+  for (std::sregex_iterator it(html.begin(), html.end(), result), end; it != end; ++it) {
+    links.push_back((*it)[1].str());
+  }
+  return links;
+}
+
+std::map<std::string, std::string> extractHtmlSearchLinks(const std::string& html)
+{
+  const std::regex link(R"rx(href="(/ROOT%23%3F/search\?[^"]+)">\s*([^<]*?)\s*</a>)rx");
+  std::map<std::string, std::string> links;
+  for (std::sregex_iterator it(html.begin(), html.end(), link), end; it != end; ++it) {
+    links.emplace((*it)[2].str(), replace((*it)[1].str(), "&amp;", "&"));
+  }
+  return links;
+}
+
 const char SNIPPET_REGEX_FOR_XML[] = "<description>(?!Search result for)(.+)</description>";
 
 std::string maskSnippetsInXmlSearchResults(std::string s)
@@ -709,20 +733,13 @@ const std::vector<SearchResult> YELLOW_SEARCH_RESULTS = {
 
 struct TestData
 {
-  struct PaginationEntry
-  {
-    std::string label;
-    size_t start;
-    bool selected;
-  };
-
   std::string query;
   int start;
   size_t resultsPerPage;
   size_t totalResultCount;
   size_t firstResultIndex;
   std::vector<SearchResult> results;
-  std::vector<PaginationEntry> pagination;
+  bool titleFirst = false;
 
   static std::string makeUrl(const std::string& query, int start, size_t resultsPerPage)
   {
@@ -799,37 +816,12 @@ struct TestData
     return s;
   }
 
-  std::string expectedHtmlFooter() const
-  {
-    if ( pagination.empty() ) {
-      return "\n      ";
-    }
-
-    std::ostringstream oss;
-    oss << "\n        <ul>\n";
-    for ( const auto& p : pagination ) {
-      const auto url = makeUrl(query, p.start, resultsPerPage);
-      oss << "            <li>\n";
-      oss << "              <a ";
-      if ( p.selected ) {
-        oss << "class=\"selected\"";
-      }
-      oss << "\n                 href=\"" << url << "\">\n";
-      oss << "                " << p.label << "\n";
-      oss << "              </a>\n";
-      oss << "            </li>\n";
-    }
-    oss << "        </ul>";
-    return oss.str();
-  }
-
   std::string expectedHtml() const
   {
     const std::string html = makeSearchResultsHtml(
                                  getPattern(),
                                  expectedHtmlHeader(),
-                                 expectedHtmlResultsString(),
-                                 expectedHtmlFooter()
+                                 expectedHtmlResultsString()
     );
 
     const std::string userlangMarker = extractQueryValue("userlang") == "test"
@@ -906,10 +898,34 @@ struct TestData
 
   void checkHtml(const std::string& html) const
   {
-    EXPECT_EQ(maskSnippetsInHtmlSearchResults(html), expectedHtml())
-      << testContext();
+    if (!titleFirst) {
+      EXPECT_EQ(maskSnippetsInHtmlSearchResults(html), expectedHtml())
+        << testContext();
+      checkSnippets(extractSearchResultSnippetsFromHtml(html));
+      return;
+    }
 
-    checkSnippets(extractSearchResultSnippetsFromHtml(html));
+    // The jazz queries have four title hits; the old full-text offsets are
+    // past the end of the title pages. The full-text result checks remain in XML.
+    const std::string header = "Title matches — "
+      + std::string(extractQueryValue("userlang") == "test" ? "[I18N TESTING] " : "")
+      + (firstResultIndex == 0 ? "Results <b>1-4</b> of <b>4</b> for " : "No results were found for ")
+      + "<b>\"" + getPattern() + "\"</b>";
+    EXPECT_NE(html.find(header), std::string::npos) << testContext();
+    const auto links = extractHtmlResultLinks(html);
+    if (firstResultIndex == 0) {
+      const std::vector<std::string> expected{
+        LARGE_SEARCH_RESULTS[0].link, LARGE_SEARCH_RESULTS[1].link,
+        LARGE_SEARCH_RESULTS[2].link, LARGE_SEARCH_RESULTS[3].link
+      };
+      EXPECT_TRUE(std::is_permutation(links.begin(), links.end(), expected.begin(), expected.end()))
+        << testContext();
+    } else {
+      EXPECT_TRUE(links.empty()) << testContext();
+    }
+    const auto navigation = extractHtmlSearchLinks(html);
+    ASSERT_EQ(navigation.size(), 1u) << testContext();
+    EXPECT_EQ(navigation.begin()->first, "Continue to full-text results") << testContext();
   }
 
   void checkXml(const std::string& xml) const
@@ -961,8 +977,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
       /* firstResultIndex */ 0,
-      /* results */          {},
-      /* pagination */       {}
+      /* results */          {}
     },
 
     {
@@ -971,8 +986,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
       /* firstResultIndex */ 0,
-      /* results */          {},
-      /* pagination */       {}
+      /* results */          {}
     },
 
     {
@@ -981,8 +995,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
       /* firstResultIndex */ 0,
-      /* results */          {},
-      /* pagination */       {}
+      /* results */          {}
     },
 
     {
@@ -992,8 +1005,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 0,
       /* firstResultIndex */ 0,
-      /* results */          {},
-      /* pagination */       {}
+      /* results */          {}
     },
 
     {
@@ -1010,8 +1022,7 @@ TEST_P(LibForServerSearchTest, searchResults)
           /*bookTitle*/  "Ray Charles",
           /*wordCount*/  "93"
         )
-      },
-      /* pagination */ {}
+      }
     },
 
     {
@@ -1020,8 +1031,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */          YELLOW_SEARCH_RESULTS,
-      /* pagination */       {}
+      /* results */          YELLOW_SEARCH_RESULTS
     },
 
     {
@@ -1030,8 +1040,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */          YELLOW_SEARCH_RESULTS,
-      /* pagination */       {}
+      /* results */          YELLOW_SEARCH_RESULTS
     },
 
     {
@@ -1040,8 +1049,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 2,
       /* firstResultIndex */ 0,
-      /* results */          YELLOW_SEARCH_RESULTS,
-      /* pagination */       {}
+      /* results */          YELLOW_SEARCH_RESULTS
     },
 
     {
@@ -1050,8 +1058,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* resultsPerPage */   0,
       /* totalResultCount */ 1,
       /* firstResultIndex */ 0,
-      /* results */          { YELLOW_SEARCH_RESULTS[0] },
-      /* pagination */       {}
+      /* results */          { YELLOW_SEARCH_RESULTS[0] }
     },
 
     {
@@ -1061,7 +1068,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* totalResultCount */ 44,
       /* firstResultIndex */ 0,
       /* results */ LARGE_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* titleFirst */       true
     },
 
     {
@@ -1072,7 +1079,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* totalResultCount */ 44,
       /* firstResultIndex */ 0,
       /* results */ LARGE_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* titleFirst */       true
     },
 
     {
@@ -1088,15 +1095,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
       },
-
-      /* pagination */ {
-        { "1", 0,  true  },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1112,16 +1111,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[8],
         LARGE_SEARCH_RESULTS[9],
       },
-
-      /* pagination */ {
-        { "1", 0,  false },
-        { "2", 5,  true  },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "6", 25, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1137,17 +1127,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[13],
         LARGE_SEARCH_RESULTS[14],
       },
-
-      /* pagination */ {
-        { "1", 0,  false },
-        { "2", 5,  false },
-        { "3", 10, true  },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "6", 25, false },
-        { "7", 30, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1163,18 +1143,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[18],
         LARGE_SEARCH_RESULTS[19],
       },
-
-      /* pagination */ {
-        { "1", 0,  false },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, true  },
-        { "5", 20, false },
-        { "6", 25, false },
-        { "7", 30, false },
-        { "8", 35, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1190,18 +1159,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[23],
         LARGE_SEARCH_RESULTS[24],
       },
-
-      /* pagination */ {
-        { "1", 0,  false },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, true  },
-        { "6", 25, false },
-        { "7", 30, false },
-        { "8", 35, false },
-        { "9", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1217,18 +1175,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[28],
         LARGE_SEARCH_RESULTS[29],
       },
-
-      /* pagination */ {
-        { "◀", 0,  false },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "6", 25, true  },
-        { "7", 30, false },
-        { "8", 35, false },
-        { "9", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1244,17 +1191,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[33],
         LARGE_SEARCH_RESULTS[34],
       },
-
-      /* pagination */ {
-        { "◀", 0,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "6", 25, false },
-        { "7", 30, true  },
-        { "8", 35, false },
-        { "9", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1270,16 +1207,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[38],
         LARGE_SEARCH_RESULTS[39],
       },
-
-      /* pagination */ {
-        { "◀", 0,  false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "6", 25, false },
-        { "7", 30, false },
-        { "8", 35, true  },
-        { "9", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1294,15 +1222,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[42],
         LARGE_SEARCH_RESULTS[43],
       },
-
-      /* pagination */ {
-        { "◀", 0,  false },
-        { "5", 20, false },
-        { "6", 25, false },
-        { "7", 30, false },
-        { "8", 35, false },
-        { "9", 40, true  },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1316,24 +1236,10 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[22],
         LARGE_SEARCH_RESULTS[23],
       },
-
-      /* pagination */ {
-        {  "◀", 0,  false },
-        {  "4", 9,  false },
-        {  "5", 12, false },
-        {  "6", 15, false },
-        {  "7", 18, false },
-        {  "8", 21, true  },
-        {  "9", 24, false },
-        { "10", 27, false },
-        { "11", 30, false },
-        { "12", 33, false },
-        {  "▶", 42, false },
-      }
+      /* titleFirst */       true
     },
 
-    // This test-point only documents how the current implementation
-    // works, not how it should work!
+    // A request past the last full-text XML result retains its requested offset.
     {
       /* query */          "pattern=jazz&books.id=" RAYCHARLESZIMID,
       /* start */            45,
@@ -1341,14 +1247,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* totalResultCount */ 44,
       /* firstResultIndex */ 45,
       /* results */ {},
-
-      /* pagination */ {
-        { "◀", 0,  false },
-        { "6", 25, false },
-        { "7", 30, false },
-        { "8", 35, false },
-        { "9", 40, false  },
-      }
+      /* titleFirst */       true
     },
 
     // We must return results from the two books
@@ -1363,8 +1262,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
-      },
-      /* pagination */       {}
+      }
     },
 
     {
@@ -1377,8 +1275,7 @@ TEST_P(LibForServerSearchTest, searchResults)
        /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM,
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
-      },
-      /* pagination */       {}
+      }
     },
 
     // books.name filters by the name of the ZIM file
@@ -1391,9 +1288,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* firstResultIndex */ 0,
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM
-      },
-
-      /* pagination */       {}
+      }
     },
 
     // books.name filters by the name of the ZIM file
@@ -1406,9 +1301,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* firstResultIndex */ 0,
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
-      },
-
-      /* pagination */       {}
+      }
     },
 
     // books.filter.name filters by the book name
@@ -1421,9 +1314,7 @@ TEST_P(LibForServerSearchTest, searchResults)
        /* firstResultIndex */ 0,
        /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_RAYCHARLESZIM
-      },
-
-      /* pagination */       {}
+      }
     },
 
     // books.filter.name filters by the book name
@@ -1436,9 +1327,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* firstResultIndex */ 0,
       /* results */          {
         SEARCH_RESULT_FOR_TRAVEL_IN_EXAMPLEZIM
-      },
-
-      /* pagination */       {}
+      }
     },
 
     // Adding a book (without match) doesn't change the results
@@ -1451,7 +1340,7 @@ TEST_P(LibForServerSearchTest, searchResults)
       /* totalResultCount */ 44,
       /* firstResultIndex */ 0,
       /* results */ LARGE_SEARCH_RESULTS,
-      /* pagination */ {}
+      /* titleFirst */       true
     },
 
     {
@@ -1468,15 +1357,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
       },
-
-      /* pagination */ {
-        { "1", 0,  true  },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1493,15 +1374,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
       },
-
-      /* pagination */ {
-        { "1", 0,  true  },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     {
@@ -1519,15 +1392,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
       },
-
-      /* pagination */ {
-        { "1", 0,  true  },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
 
     // Be sure that searching with accented query return the same things than non accented query.
@@ -1546,15 +1411,7 @@ TEST_P(LibForServerSearchTest, searchResults)
         LARGE_SEARCH_RESULTS[3],
         LARGE_SEARCH_RESULTS[4],
       },
-
-      /* pagination */ {
-        { "1", 0,  true  },
-        { "2", 5,  false },
-        { "3", 10, false },
-        { "4", 15, false },
-        { "5", 20, false },
-        { "▶", 40, false },
-      }
+      /* titleFirst */       true
     },
   };
 
@@ -1563,12 +1420,14 @@ TEST_P(LibForServerSearchTest, searchResults)
   for ( const auto& t : testData ) {
     const std::string htmlSearchUrl = t.url();
     const auto htmlRes = zfs.GET(htmlSearchUrl.c_str());
-    EXPECT_EQ(htmlRes->status, 200);
+    ASSERT_TRUE(htmlRes) << t.testContext();
+    ASSERT_EQ(htmlRes->status, 200) << t.testContext();
     t.checkHtml(htmlRes->body);
 
     const std::string xmlSearchUrl = t.xmlSearchUrl();
     const auto xmlRes = zfs.GET(xmlSearchUrl.c_str());
-    EXPECT_EQ(xmlRes->status, 200);
+    ASSERT_TRUE(xmlRes) << t.xmlTestContext();
+    ASSERT_EQ(xmlRes->status, 200) << t.xmlTestContext();
     t.checkXml(xmlRes->body);
   }
 }
@@ -1707,3 +1566,98 @@ TEST_P(LibForServerSearchTest, bookSelectionNegativeTests)
 INSTANTIATE_TEST_CASE_P(XmlAndOpds, LibForServerSearchTest,
     ::testing::Values("./test/lib_for_server_search_test.xml",
                        "./test/lib_for_server_search_test.opds"));
+
+TEST(ServerSearchTest, titleFirstWithBodySnippetAndContinuation)
+{
+  ZimFileServer zfs(SERVER_PORT, ZimFileServer::DEFAULT_OPTIONS,
+                    ZimFileServer::FilePathCollection{"./test/example.zim"});
+  const std::string query = "/ROOT%23%3F/search?pattern=wikibooks&books.id=" EXAMPLEZIMID "&pageLength=1";
+  const std::string wikibooks = "/ROOT%23%3F/content/example/Wikibooks.html";
+  const std::string continuation = "Continue to full-text results";
+  const auto titleFirst = zfs.GET((query + "&userlang=test").c_str());
+  ASSERT_TRUE(titleFirst);
+  ASSERT_EQ(titleFirst->status, 200);
+  EXPECT_NE(titleFirst->body.find("Title matches — [I18N TESTING] Results <b>1-1</b> of <b>2</b>"), std::string::npos);
+  EXPECT_EQ(extractHtmlResultLinks(titleFirst->body), std::vector<std::string>{wikibooks});
+#ifdef KIWIX_HAS_LIBZIM_TITLE_SNIPPETS
+  const auto titleSnippets = extractSearchResultSnippetsFromHtml(titleFirst->body);
+  ASSERT_EQ(titleSnippets.size(), 1u);
+  EXPECT_NE(titleSnippets.front().find("<b>Wikibooks</b>"), std::string::npos);
+#else
+  EXPECT_EQ(titleFirst->body.find("<cite>"), std::string::npos);
+#endif
+
+  const auto titleFirstLinks = extractHtmlSearchLinks(titleFirst->body);
+  ASSERT_EQ(titleFirstLinks.count("2"), 1u);
+  const auto titleLast = zfs.GET(titleFirstLinks.at("2").c_str());
+  ASSERT_TRUE(titleLast);
+  ASSERT_EQ(titleLast->status, 200);
+  EXPECT_NE(titleLast->body.find("Title matches — [I18N TESTING] Results <b>2-2</b> of <b>2</b>"), std::string::npos);
+  const auto titleLastResults = extractHtmlResultLinks(titleLast->body);
+  ASSERT_EQ(titleLastResults.size(), 1u);
+  EXPECT_NE(titleLastResults.front(), wikibooks);
+  const auto titleLastLinks = extractHtmlSearchLinks(titleLast->body);
+  ASSERT_EQ(titleLastLinks.size(), 3u);
+  ASSERT_EQ(titleLastLinks.count("1"), 1u);
+  ASSERT_EQ(titleLastLinks.count("2"), 1u);
+  ASSERT_EQ(titleLastLinks.count(continuation), 1u);
+  EXPECT_EQ(titleLastLinks, titleFirstLinks);
+
+  const auto& continuationUrl = titleLastLinks.at(continuation);
+  EXPECT_NE(continuationUrl.find("&books.id=" EXAMPLEZIMID), std::string::npos);
+  const auto bodyFirst = zfs.GET(continuationUrl.c_str());
+  ASSERT_TRUE(bodyFirst);
+  ASSERT_EQ(bodyFirst->status, 200);
+  const auto bodyFirstResults = extractHtmlResultLinks(bodyFirst->body);
+  ASSERT_EQ(bodyFirstResults.size(), 1u);
+  const auto bodyFirstLinks = extractHtmlSearchLinks(bodyFirst->body);
+  ASSERT_EQ(bodyFirstLinks.size(), 1u);
+  ASSERT_EQ(bodyFirstLinks.count("Next"), 1u);
+
+  const auto bodyLast = zfs.GET(bodyFirstLinks.at("Next").c_str());
+  ASSERT_TRUE(bodyLast);
+  ASSERT_EQ(bodyLast->status, 200);
+  const auto bodyLastResults = extractHtmlResultLinks(bodyLast->body);
+  ASSERT_EQ(bodyLastResults.size(), 1u);
+  for (const auto& page : {bodyFirst.get(), bodyLast.get()}) {
+    EXPECT_NE(page->body.find("Full-text matches — [I18N TESTING] Search: wikibooks"), std::string::npos);
+    EXPECT_EQ(page->body.find("Results <b>"), std::string::npos);
+    EXPECT_EQ(extractSearchResultSnippetsFromHtml(page->body).size(), 1u);
+  }
+  const std::set<std::string> allHits{
+    wikibooks, titleLastResults.front(), bodyFirstResults.front(), bodyLastResults.front()
+  };
+  EXPECT_EQ(allHits.size(), 4u);
+  const auto bodyLastLinks = extractHtmlSearchLinks(bodyLast->body);
+  ASSERT_EQ(bodyLastLinks.size(), 1u);
+  ASSERT_EQ(bodyLastLinks.count("Previous"), 1u);
+  const auto previous = zfs.GET(bodyLastLinks.at("Previous").c_str());
+  ASSERT_TRUE(previous);
+  ASSERT_EQ(previous->status, 200);
+  EXPECT_EQ(previous->body, bodyFirst->body);
+
+  // RSS remains a paged full-text feed even after both HTML tiers are cached.
+  const auto xmlUrl = query + "&format=xml";
+  const auto xml = zfs.GET(xmlUrl.c_str());
+  ASSERT_TRUE(xml);
+  ASSERT_EQ(xml->status, 200);
+  EXPECT_EQ(xml->get_header_value("Content-Type"), "application/rss+xml; charset=utf-8");
+  const auto xmlWithFulltextFlag = zfs.GET((xmlUrl + "&fulltext=1").c_str());
+  ASSERT_TRUE(xmlWithFulltextFlag);
+  ASSERT_EQ(xmlWithFulltextFlag->status, 200);
+  EXPECT_EQ(xmlWithFulltextFlag->body, xml->body);
+
+  pugi::xml_document rss;
+  ASSERT_TRUE(rss.load_string(xml->body.c_str()));
+  const auto channel = rss.child("rss").child("channel");
+  ASSERT_TRUE(channel);
+  EXPECT_STREQ(channel.child_value("opensearch:totalResults"), "4");
+  EXPECT_STREQ(channel.child_value("opensearch:startIndex"), "0");
+  EXPECT_STREQ(channel.child_value("opensearch:itemsPerPage"), "1");
+  const auto item = channel.child("item");
+  ASSERT_TRUE(item);
+  EXPECT_FALSE(item.next_sibling("item"));
+  EXPECT_EQ(item.child_value("link"), wikibooks);
+  EXPECT_EQ(xml->body.find("fulltext=1"), std::string::npos);
+  EXPECT_EQ(xml->body.find("rel=\"related\""), std::string::npos);
+}
