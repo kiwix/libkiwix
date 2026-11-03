@@ -1732,43 +1732,19 @@ TEST_F(ServerTest, RandomPageRedirectsToAnExistingArticle)
 
 TEST_F(ServerTest, RandomPageRedirectionsAreUriEncoded)
 {
-  // The purpose of this unit test is to validate that the URL to which the
-  // /random endpoint redirects is in URI-encoded form. Due to the difficulty
-  // of checking non-deterministic functionality, it is implemented by running
-  // /random sufficiently many times so that all articles are returned with
-  // close to 100% probability (this is done on an artificial small ZIM file
-  // with at least one article with a special symbol in its name). Such an
-  // approach effectively tests more than the original goal was, so this test
-  // may over time evolve into something more general whereupon it must be
-  // renamed.
-
-  typedef std::set<std::string> StringSet;
-  const StringSet frontArticles{
-      {"/ROOT%23%3F/content/corner_cases%23%26/c%23.html"},
-
-      {"/ROOT%23%3F/content/corner_cases%23%26/empty.html"}
-  };
-
-  StringSet randomPageUrls;
-  auto n = 10 * frontArticles.size();
-  while ( --n && randomPageUrls.size() != frontArticles.size() ) {
+  const auto encodedUrl = "/ROOT%23%3F/content/corner_cases%23%26/c%23.html";
+  const auto unencodedUrl = "/ROOT%23%3F/content/corner_cases%23%26/c#.html";
+  bool encodedUrlFound = false;
+  auto n = 20;
+  while (n-- && !encodedUrlFound) {
     auto g = zfs1_->GET("/ROOT%23%3F/random?content=corner_cases%23%26");
     ASSERT_EQ(302, g->status);
     ASSERT_TRUE(g->has_header("Location"));
-    randomPageUrls.insert(g->get_header_value("Location"));
+    const auto url = g->get_header_value("Location");
+    ASSERT_NE(unencodedUrl, url);
+    encodedUrlFound = encodedUrl == url;
   }
-
-  // Prior to openzim/libzim#1137, libzim's randomNumber(max) had an off-by-one bug
-  // causing the last front entry (empty.html) to virtually never be selected.
-  // Systems with older libzim versions (e.g. Debian unstable's packaged libzim)
-  // will therefore only receive c#.html, whereas newer libzim versions will receive
-  // both. In either case, the URI-encoded URL (c#.html -> c%23.html) must be returned,
-  // and every returned URL must be a valid front article.
-  ASSERT_FALSE(randomPageUrls.empty());
-  ASSERT_TRUE(randomPageUrls.find("/ROOT%23%3F/content/corner_cases%23%26/c%23.html") != randomPageUrls.end());
-  for (const auto& url : randomPageUrls) {
-    ASSERT_TRUE(frontArticles.find(url) != frontArticles.end());
-  }
+  ASSERT_TRUE(encodedUrlFound);
 }
 
 TEST_F(ServerTest, NonEndpointUrlsAreRedirectedToContentUrls)
