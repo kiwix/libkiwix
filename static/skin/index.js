@@ -530,9 +530,9 @@
     function updateFilterColors() {
         document.querySelectorAll('.filter').forEach(filter => {
             if (filter.value) {
-                filter.style = 'background-color: #858585; color: #fff';
+                filter.style = 'background-color: var(--kiwix-active-filter-background, #858585); color: var(--kiwix-active-filter-color, #fff)';
             } else {
-                filter.style = 'background-color: #ffffff; color: black';
+                filter.style = 'background-color: var(--kiwix-filter-background, #ffffff); color: var(--kiwix-filter-color, black)';
             }
         });
     }

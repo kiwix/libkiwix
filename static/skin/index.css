@@ -443,3 +443,76 @@
         grid-template-columns: 1fr;
     }
 }
+
+@media screen and (prefers-color-scheme: dark) {
+    html {
+        color-scheme: dark;
+        --kiwix-filter-background: #161b22;
+        --kiwix-filter-color: #e6edf3;
+        --kiwix-active-filter-background: #37465b;
+        --kiwix-active-filter-color: #e6edf3;
+    }
+
+    .kiwixNav { background-color: #222a35; }
+
+    .kiwixHomeBody__results,
+    .book__header { color: #e6edf3; }
+
+    .kiwixNav__kiwixFilter,
+    .kiwixNav__kiwixFilter option,
+    .kiwixSearch {
+        background-color: #161b22;
+        color: #e6edf3;
+    }
+
+    .kiwixSearch::placeholder { color: #b1bac4; }
+
+    .kiwixNav__select,
+    .kiwixNav__select::after {
+        background-color: #37465b;
+        border-color: #68788d;
+    }
+
+    .kiwixSearch,
+    .kiwixButton { border-color: #68788d; }
+
+    .kiwixButton { background-color: #37465b; }
+    .kiwixButtonHover:hover { background-color: #45566f; }
+
+    .tagFilterLabel,
+    .tag__link,
+    .book__description { color: #b1bac4; }
+
+    .book__wrapper {
+        background-color: #222a35;
+        border-color: #68788d;
+        color: #e6edf3;
+    }
+
+    .book__languageTag {
+        background-color: #37465b;
+        color: #e6edf3;
+    }
+
+    .book__download { background-color: #006884; }
+    .modal-content a > div,
+    .noResults > a { color: #79c0ff; }
+
+    .modal-content img[src*="/download.svg"] { filter: brightness(0) invert(1); }
+
+    .fadeOut {
+        background: linear-gradient(180deg, rgba(22, 27, 34, 0) 0%, #161b22 100%);
+    }
+
+    .loader-spinner {
+        border-color: #68788d;
+        border-top-color: #79c0ff;
+    }
+
+    .kiwixNav__kiwixFilter:focus-visible,
+    .kiwixSearch:focus-visible,
+    .kiwixButton:focus-visible {
+        outline: 2px solid #79c0ff;
+        outline-offset: 2px;
+    }
+}

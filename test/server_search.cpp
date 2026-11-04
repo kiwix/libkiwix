@@ -112,6 +112,17 @@ std::string makeSearchResultsHtml(const std::string& pattern,
       background: #ededed;
       }
 
+      @media screen and (prefers-color-scheme: dark) {
+        html { color-scheme: dark; }
+        body { background-color: #161b22; color: #e6edf3; }
+        a { color: #79c0ff; }
+        a:visited { color: #d2a8ff; }
+        .informations { color: #7ee787; }
+        .book-title { color: #ffa657; }
+        .footer a:hover,
+        .selected { background: #37465b; }
+      }
+
     </style>
     <title>%USERLANGMARKER%Search: %PATTERN%</title>
   </head>
@@ -1582,6 +1593,11 @@ std::string invalidRequestErrorHtml(std::string url,
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <style>
+      @media screen and (prefers-color-scheme: dark) {
+        html { color-scheme: dark; }
+      }
+    </style>
     <title>Invalid request</title>
     <script>
       window.KIWIX_RESPONSE_TEMPLATE = )" + ERROR_HTML_TEMPLATE_JS_STRING + R"(;
