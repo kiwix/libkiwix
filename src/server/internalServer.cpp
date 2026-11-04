@@ -102,16 +102,8 @@ std::string normalizeRootLocation(std::string root)
 
 bool ipAvailable(const std::string addr)
 {
-  auto interfaces = kiwix::getNetworkInterfacesIPv4Or6();
-
-  for (const auto& kv : interfaces) {
-    const auto& interfaceIps = kv.second;
-    if ((interfaceIps.addr == addr) || (interfaceIps.addr6 == addr)) {
-      return true;
-    }
-  }
-
-  return false;
+  const auto interfaces = kiwix::getAllNetworkInterfaceAddresses();
+  return kiwix::hasNetworkInterfaceAddress(interfaces, addr);
 }
 
 class InSockAddr
