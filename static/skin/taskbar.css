@@ -193,3 +193,51 @@ a.suggest, a.suggest:visited, a.suggest:hover, a.suggest:active {
         padding-top: 5px;
     }
 }
+
+@media screen and (prefers-color-scheme: dark) {
+    /* Keep the native scheme local to the toolbar, not the ZIM iframe. */
+    #kiwixtoolbar {
+        color-scheme: dark;
+        background: #222a35;
+        border-bottom-color: #68788d;
+    }
+
+    .kiwix #kiwixtoolbar button,
+    .kiwix #kiwixtoolbar input[type="submit"] {
+        background-color: #37465b !important;
+        border-color: #68788d !important;
+        color: #e6edf3 !important;
+    }
+
+    .kiwix #kiwixtoolbar #kiwixsearchform input[type="text"] {
+        background-color: #161b22 !important;
+        border-color: #68788d !important;
+        color: #e6edf3 !important;
+    }
+
+    #kiwixtoolbar .autoComplete_wrapper > input::placeholder {
+        color: #b1bac4;
+    }
+
+    #kiwixtoolbar .autoComplete_wrapper > ul,
+    #kiwixtoolbar .autoComplete_wrapper > ul > li {
+        background-color: #222a35;
+        border-color: #68788d;
+        color: #e6edf3;
+    }
+
+    #kiwixtoolbar .autoComplete_wrapper > ul > li:hover,
+    #kiwixtoolbar .autoComplete_wrapper > ul > li[aria-selected="true"] {
+        background-color: #37465b;
+    }
+
+    #kiwixtoolbar .autoComplete_wrapper > ul > li mark { color: #ffb4b4; }
+
+    label[for="kiwix_button_show_toggle"] img { filter: brightness(0) invert(1); }
+
+    #kiwixtoolbar input:focus-visible,
+    #kiwixtoolbar button:focus-visible {
+        outline: 2px solid #79c0ff;
+        outline-offset: 2px;
+    }
+}
