@@ -1,3 +1,7 @@
+<!--
+  A library file in the library.xml format of libkiwix 14 and earlier,
+  which is no longer supported (#1377). Used to check that it is rejected.
+-->
 <library version="1.0">
   <book
         id="raycharles"

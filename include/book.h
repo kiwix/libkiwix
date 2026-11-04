@@ -93,7 +93,6 @@ class Book
 
   bool update(const Book& other);
   void update(const zim::Archive& archive);
-  void updateFromXml(const pugi::xml_node& node, const std::string& baseDir);
   /**
    * Update the book's metadata from an OPDS entry XML node.
    *

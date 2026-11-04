@@ -32,8 +32,6 @@
 #include "bookmark.h"
 #include "common.h"
 
-#define KIWIX_LIBRARY_VERSION "20110515"
-
 namespace Xapian {
 class WritableDatabase;
 };
@@ -357,14 +355,6 @@ class Library: public std::enable_shared_from_this<Library>
    * @return True if the book were in the lirbrary and has been removed.
    */
   bool removeBookById(const std::string& id);
-
-  /**
-   * Write the library to a file as library.xml.
-   *
-   * @param path the path of the file to write to.
-   * @return True if the library has been correctly saved.
-   */
-  bool writeAsXML(const std::string& path) const;
 
   /**
    * Write the library to a file as an OPDS document.

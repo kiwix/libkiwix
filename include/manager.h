@@ -68,38 +68,33 @@ class Manager
   explicit Manager(LibraryPtr library);
 
   /**
-   * Read a library XML or an OPDS file and add the books in the file to the
-   * library.
+   * Read an OPDS library file and add the books in it to the library.
    *
-   * `path` is recorded as the writable library path even if the file doesn't
-   * exist, so that the library can later be written there.
+   * The book metadata stored in the file is used as is; the ZIM files are
+   * not opened. A relative path in a local acquisition link is resolved
+   * against the directory containing the library file.
+   *
+   * `path` is recorded even if the file doesn't exist or can't be read;
+   * its directory is used to resolve relative ZIM paths passed to
+   * addBookFromPathAndGetId().
    *
    * @param path The (utf8) path to the library file.
-   * @return True if file has been properly parsed.
+   * @return True if the file exists and is a valid OPDS feed.
    */
   bool readFile(const std::string& path);
 
   /**
-   * Sync the contents of the library with one or more `library.xml` files.
+   * Sync the contents of the library with one or more OPDS library files.
    *
-   * The metadata of the library files is trusted unconditionally.
-   * Any books not present in the input library.xml files are removed
-   * from the library.
+   * Each file is read with readFile(), so the metadata of the library files
+   * is trusted unconditionally. Any books not present in the input library
+   * files are removed from the library.
    *
-   * @param paths The (utf8) paths to the `library.xml` files.
+   * @param paths The (utf8) paths to the OPDS library files.
+   * @throw std::runtime_error if one of the files can't be loaded (missing,
+   *        unreadable or not an OPDS feed).
    */
   void reload(const Paths& paths);
-
-  /**
-   * Load a library content store in the string.
-   *
-   * @param xml The content corresponding of the library xml
-   * @param libraryPath The library path (used to resolve relative path)
-   * @return True if the content has been properly parsed.
-   */
-  bool readXml(const std::string& xml,
-               const std::string& libraryPath = "",
-               bool trustLibrary = true);
 
   /**
    * Load a library content stored in a OPDS stream or a local library file.
@@ -197,9 +192,6 @@ class Manager
   kiwix::LibraryManipulator manipulator;
 
   bool readBookFromPath(const std::string& path, Book* book);
-  bool parseXmlDom(const pugi::xml_document& doc,
-                   const std::string& libraryPath,
-                   bool trustLibrary);
   bool parseOpdsDom(const pugi::xml_document& doc,
                     const std::string& urlHost,
                     const std::string& baseDir);

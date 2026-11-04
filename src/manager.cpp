@@ -32,32 +32,6 @@
 
 namespace fs = std::filesystem;
 
-namespace
-{
-
-/**
- * The format of the file passed to readFile().
- */
-enum class FileFormat { XML, OPDS };
-
-/**
- * Detect the format of a library file based on its content.
- *
- * @param content The content of the file to inspect.
- * @return FileFormat::OPDS if the file content looks like an OPDS feed,
- *         FileFormat::XML otherwise.
- */
-FileFormat detectFormat(const std::string& content)
-{
-  auto format
-      = (content.find("<feed") != std::string::npos)
-            ? FileFormat::OPDS
-            : FileFormat::XML;
-  return format;
-}
-
-} // anonymous namespace
-
 namespace kiwix
 {
 
@@ -125,45 +99,6 @@ Manager::Manager(LibraryPtr library) :
 {
 }
 
-bool Manager::parseXmlDom(const pugi::xml_document& doc,
-                          const std::string& libraryPath,
-                          bool trustLibrary)
-{
-  pugi::xml_node libraryNode = doc.child("library");
-
-  std::string libraryVersion = libraryNode.attribute("version").value();
-
-  for (pugi::xml_node bookNode = libraryNode.child("book"); bookNode;
-       bookNode = bookNode.next_sibling("book")) {
-    kiwix::Book book;
-
-    book.updateFromXml(bookNode,
-                       removeLastPathElement(libraryPath));
-
-    if (!trustLibrary && !book.getPath().empty()) {
-      this->readBookFromPath(book.getPath(), &book);
-    }
-    manipulator.addBookToLibrary(book);
-  }
-
-  return true;
-}
-
-bool Manager::readXml(const std::string& xml,
-                      const std::string& libraryPath,
-                      bool trustLibrary)
-{
-  pugi::xml_document doc;
-  pugi::xml_parse_result result
-      = doc.load_buffer((void*)xml.data(), xml.size());
-
-  if (result) {
-    return this->parseXmlDom(doc, libraryPath, trustLibrary);
-  }
-
-  return false;
-}
-
 bool Manager::parseOpdsDom(const pugi::xml_document& doc,
                            const std::string& urlHost,
                            const std::string& baseDir)
@@ -203,20 +138,15 @@ bool Manager::readOpds(const std::string& content,
 
 bool Manager::readFile(const std::string& path)
 {
-  /* This has to be set (although if the file does not exists) to be
-   * able to know where to save the library if new content are
-   * available */
+  /* Set even if the file doesn't exist, so that relative ZIM paths passed
+   * to addBookFromPathAndGetId() are resolved against its directory. */
   this->writableLibraryPath = path;
 
   if (!kiwix::fileExists(path)) {
     return false;
   }
 
-  const std::string content = getFileContent(path);
-
-  return detectFormat(content) == FileFormat::OPDS
-    ? this->readOpds(content, path)
-    : this->readXml(content, path, true);
+  return this->readOpds(getFileContent(path), path);
 }
 
 
@@ -379,7 +309,8 @@ void Manager::reload(const Paths& paths)
         path = kiwix::computeAbsolutePath(kiwix::getCurrentDirectory(), path);
 
       if (!readFile(path)) {
-        throw std::runtime_error("Failed to load the XML library file '" + path + "'.");
+        throw std::runtime_error("Failed to load the OPDS library file '" + path
+            + "'. (library.xml files are no longer supported.)");
       }
     }
   }
