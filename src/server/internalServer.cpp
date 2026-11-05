@@ -214,6 +214,12 @@ Filter get_search_filter(const RequestContext& request, const std::string& prefi
       filter.name(request.get_argument(prefix+"name"));
     } catch (const std::out_of_range&) {}
     try {
+      filter.flavour(request.get_argument(prefix+"flavour"));
+    } catch (const std::out_of_range&) {}
+    try {
+      filter.titleId(request.get_argument(prefix+"titleid"));
+    } catch (const std::out_of_range&) {}
+    try {
       filter.category(request.get_argument(prefix+"category"));
     } catch (const std::out_of_range&) {}
     try {
