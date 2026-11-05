@@ -170,6 +170,9 @@ std::string fullEntryOpds(const Book& book,
       {"book_date", bookDate},
       {"category", book.getCategory()},
       {"flavour", book.getFlavour()},
+      {"popularity", book.hasPopularity()
+                       ? kainjow::mustache::data(to_string(book.getPopularity()))
+                       : kainjow::mustache::data(false)},
       {"tags", book.getTags()},
       {"article_count", to_string(book.getArticleCount())},
       {"media_count", to_string(book.getMediaCount())},
