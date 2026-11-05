@@ -31,6 +31,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include <mutex>
 #include <stdexcept>
 
@@ -73,6 +74,14 @@ void updatePublicIpAddress(IpAddress& publicIpAddr, const IpAddress& interfaceIp
 }
 
 } // unnamed namespace
+
+IpAddress lastAddresses(const InterfaceAddresses& addresses)
+{
+  IpAddress result;
+  if (!addresses.ipv4.empty()) result.addr = addresses.ipv4.back();
+  if (!addresses.ipv6.empty()) result.addr6 = addresses.ipv6.back();
+  return result;
+}
 
 namespace
 {
@@ -124,8 +133,8 @@ namespace
 
 #ifdef _WIN32
 
-std::map<std::string, IpAddress> getNetworkInterfacesWin() {
-  std::map<std::string, IpAddress> interfaces;
+NetworkInterfaceAddresses getNetworkInterfacesWin() {
+  NetworkInterfaceAddresses interfaces;
 
   const int working_buffer_size = 15000;
   const int max_tries = 3;
@@ -170,15 +179,15 @@ std::map<std::string, IpAddress> getNetworkInterfacesWin() {
                       sockaddr_in *si = (sockaddr_in *)(pUnicast->Address.lpSockaddr);
                       char host[INET_ADDRSTRLEN]={0};
                       inet_ntop(AF_INET, &(si->sin_addr), host, sizeof(host));
-                      interfaces[temp->AdapterName].addr=host;
+                      addNetworkInterfaceAddress(interfaces, temp->AdapterName, host, false);
                   }
                   else if (pUnicast->Address.lpSockaddr->sa_family == AF_INET6)
                   {
                       sockaddr_in6 *si = (sockaddr_in6 *)(pUnicast->Address.lpSockaddr);
                       char host[INET6_ADDRSTRLEN]={0};
                       inet_ntop(AF_INET6, &(si->sin6_addr), host, sizeof(host));
-                      if (!IN6_IS_ADDR_LINKLOCAL(&(si->sin6_addr)))
-                        interfaces[temp->AdapterName].addr6=host;
+                      addNetworkInterfaceAddress(interfaces, temp->AdapterName, host, true,
+                                                 IN6_IS_ADDR_LINKLOCAL(&(si->sin6_addr)));
                   }
                   pUnicast = pUnicast->Next;
                 }
@@ -195,12 +204,13 @@ std::map<std::string, IpAddress> getNetworkInterfacesWin() {
 
 #else
 
-std::map<std::string, IpAddress> getNetworkInterfacesPosix() {
-  std::map<std::string, IpAddress> interfaces;
+NetworkInterfaceAddresses getNetworkInterfacesPosix() {
+  NetworkInterfaceAddresses interfaces;
 
-  struct ifaddrs *interfacesHead;
+  struct ifaddrs *interfacesHead = nullptr;
   if (getifaddrs(&interfacesHead) == -1) {
       perror("getifaddrs");
+      return interfaces;
   }
 
   for (ifaddrs *temp = interfacesHead; temp != NULL; temp = temp->ifa_next) {
@@ -210,13 +220,13 @@ std::map<std::string, IpAddress> getNetworkInterfacesPosix() {
           sockaddr_in *si = (sockaddr_in *)(temp->ifa_addr);
           char host[INET_ADDRSTRLEN] = {0};
           inet_ntop(AF_INET, &(si->sin_addr), host, sizeof(host));
-          interfaces[temp->ifa_name].addr=host;
+          addNetworkInterfaceAddress(interfaces, temp->ifa_name, host, false);
       } else if (temp->ifa_addr->sa_family == AF_INET6) {
           sockaddr_in6 *si = (sockaddr_in6 *)(temp->ifa_addr);
           char host[INET6_ADDRSTRLEN] = {0};
           inet_ntop(AF_INET6, &(si->sin6_addr), host, sizeof(host));
-          if (!IN6_IS_ADDR_LINKLOCAL(&(si->sin6_addr)))
-            interfaces[temp->ifa_name].addr6=host;
+          addNetworkInterfaceAddress(interfaces, temp->ifa_name, host, true,
+                                     IN6_IS_ADDR_LINKLOCAL(&(si->sin6_addr)));
       }
   }
 
@@ -229,12 +239,45 @@ std::map<std::string, IpAddress> getNetworkInterfacesPosix() {
 
 } // unnamed namespace
 
-std::map<std::string, IpAddress> getNetworkInterfacesIPv4Or6() {
+NetworkInterfaceAddresses getAllNetworkInterfaceAddresses() {
 #ifdef _WIN32
   return getNetworkInterfacesWin();
 #else
   return getNetworkInterfacesPosix();
 #endif
+}
+
+void addNetworkInterfaceAddress(NetworkInterfaceAddresses& interfaces,
+                                const std::string& interfaceName,
+                                const std::string& address,
+                                bool ipv6,
+                                bool linkLocal)
+{
+  if (ipv6) {
+    if (!linkLocal)
+      interfaces[interfaceName].ipv6.push_back(address);
+  } else {
+    interfaces[interfaceName].ipv4.push_back(address);
+  }
+}
+
+bool hasNetworkInterfaceAddress(const NetworkInterfaceAddresses& interfaces,
+                                const std::string& address)
+{
+  for (const auto& entry : interfaces) {
+    const auto& addresses = entry.second;
+    if (std::find(addresses.ipv4.begin(), addresses.ipv4.end(), address) != addresses.ipv4.end() ||
+        std::find(addresses.ipv6.begin(), addresses.ipv6.end(), address) != addresses.ipv6.end())
+      return true;
+  }
+  return false;
+}
+
+std::map<std::string, IpAddress> getNetworkInterfacesIPv4Or6() {
+  std::map<std::string, IpAddress> result;
+  for (const auto& entry : getAllNetworkInterfaceAddresses())
+    result.emplace(entry.first, lastAddresses(entry.second));
+  return result;
 }
 
 std::map<std::string, std::string> getNetworkInterfaces() {
@@ -251,7 +294,7 @@ std::map<std::string, std::string> getNetworkInterfaces() {
 
 IpAddress getBestPublicIps() {
   IpAddress bestPublicIps;
-  std::map<std::string, IpAddress> interfaces = getNetworkInterfacesIPv4Or6();
+  const auto interfaces = getNetworkInterfacesIPv4Or6();
 #ifndef _WIN32
   const char* const prioritizedNames[] = { "eth0", "eth1", "wlan0", "wlan1", "en0", "en1" };
   for (const auto& name : prioritizedNames) {
