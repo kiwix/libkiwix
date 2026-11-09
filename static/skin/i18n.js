@@ -139,7 +139,7 @@ function setUserLanguage(lang, callback) {
     // Set the page language and text direction (RTL or LTR)
     const metadata = Translations.data[lang] && Translations.data[lang]['@metadata'];
     document.documentElement.lang = lang;
-    document.documentElement.dir = metadata && metadata.isRTL ? 'rtl' : 'ltr';
+    document.documentElement.dir = metadata && metadata.direction === 'rtl' ? 'rtl' : 'ltr';
     callback();
   });
 }
