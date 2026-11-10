@@ -531,9 +531,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
 
   { // test with empty rootLocation
     const auto fixRoot = [=](std::string s) -> std::string {
-      s = replace(s, "/ROOT%23%3F/", "/");
-      s = replace(s, "/ROOT%23%3F/", "/");
-      return s;
+      return replace(s, "/ROOT%23%3F/", "/");
     };
 
     ZimFileServer::Cfg serverCfg;
