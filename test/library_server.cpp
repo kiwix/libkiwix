@@ -108,7 +108,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   "", \
   CONTENT_NAME, \
   "zimfile%26other", \
-  "569344" \
+  "569304" \
 )
 
 #define CHARLES_RAY_CATALOG_ENTRY           _CHARLES_RAY_CATALOG_ENTRY("zimfile%26other")
@@ -127,7 +127,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   "          type=\"image/png;width=48;height=48;scale=1\"/>\n", \
   CONTENT_NAME, \
   "zimfile_raycharles", \
-  "569344"\
+  "569304"\
 )
 
 #define RAY_CHARLES_CATALOG_ENTRY           _RAY_CHARLES_CATALOG_ENTRY("zimfile_raycharles")

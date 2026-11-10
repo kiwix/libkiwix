@@ -37,7 +37,7 @@
     <link rel="http://opds-spec.org/acquisition/open-access"
           type="application/x-zim"
           href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim"
-          length="569344" />
+          length="569304" />
     <link rel="http://opds-spec.org/image/thumbnail"
           type="image/png;width=48;height=48;scale=1"
           href="https://example.com/favicon/raycharles.png" />
@@ -76,7 +76,7 @@
     <link rel="http://opds-spec.org/acquisition/open-access"
           type="application/x-zim"
           href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim"
-          length="569344" />
+          length="569304" />
     <link rel="http://opds-spec.org/image/thumbnail"
           href="https://example.com/favicon/charlesray" />
   </entry>

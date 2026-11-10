@@ -325,8 +325,8 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       <name>Kiwix</name>
     </publisher>
     <dc:issued>2020-03-31T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569344" />
-    <link rel="http://opds-spec.org/acquisition/open-access" href=")" ZIMFILE_PATH R"(" type="application/x-zim" length="569344"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569304" />
+    <link rel="http://opds-spec.org/acquisition/open-access" href=")" ZIMFILE_PATH R"(" type="application/x-zim" length="569304"/>
   </entry>
 </feed>
 )";
