@@ -3,30 +3,7 @@
 #include "./building_blocks/opds/catalog/v2/ray_charles.h"
 #include "./building_blocks/opds/catalog/v2/ray_charles_no_namemapper.h"
 #include "./building_blocks/opds/catalog/v2/uncategorized_ray_charles.h"
-
-#define INACCESSIBLEZIMFILE_CATALOG_ENTRY \
-"  <entry>\n" \
-"    <id>urn:uuid:inaccessiblezim</id>\n" \
-"    <title>Catalog of all catalogs</title>\n" \
-"    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n" \
-"    <summary>Testing that running kiwix-serve without access to ZIM files doesn&apos;t lead to a catastrophe</summary>\n" \
-"    <language>cat</language>\n" \
-"    <name>catalog_of_all_catalogs</name>\n" \
-"    <flavour></flavour>\n" \
-"    <category>cats</category>\n" \
-"    <tags>unittest;_category:cats</tags>\n" \
-"    <articleCount>12107</articleCount>\n" \
-"    <mediaCount>8</mediaCount>\n" \
-"    <link type=\"text/html\" href=\"/ROOT%23%3F/content/nosuchzimfile\" />\n" \
-"    <author>\n" \
-"      <name>Catherine of Catalonia</name>\n" \
-"    </author>\n" \
-"    <publisher>\n" \
-"      <name>Caterpillar</name>\n" \
-"    </publisher>\n" \
-"    <dc:issued>2025-09-04T00:00:00Z</dc:issued>\n" \
-"    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim\" length=\"20736925696\" />\n" \
-"  </entry>\n"
+#include "./building_blocks/opds/catalog/v2/inaccessiblezim.h"
 
 #define CATALOG_V2_ENTRIES_PREAMBLE0(x)                       \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
