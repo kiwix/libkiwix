@@ -1,45 +1,5 @@
-#define CATALOG_ENTRY(UUID, TITLE, SUMMARY, LANG, NAME, CATEGORY, TAGS, EXTRA_LINK, CONTENT_NAME, FILE_NAME, LENGTH) \
-    "  <entry>\n"                                                       \
-    "    <id>urn:uuid:" UUID "</id>\n"                                \
-    "    <title>" TITLE "</title>\n"                                 \
-    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"                     \
-    "    <summary>" SUMMARY "</summary>\n"     \
-    "    <language>" LANG "</language>\n"                                    \
-    "    <name>" NAME "</name>\n"                       \
-    "    <flavour></flavour>\n"                                         \
-    "    <category>" CATEGORY "</category>\n"                                   \
-    "    <tags>" TAGS "</tags>\n" \
-    "    <articleCount>284</articleCount>\n"                            \
-    "    <mediaCount>2</mediaCount>\n"                                  \
-    EXTRA_LINK "    <link type=\"text/html\" href=\"/ROOT%23%3F/content/" CONTENT_NAME "\" />\n"               \
-    "    <author>\n"                                                    \
-    "      <name>Wikipedia</name>\n"                                    \
-    "    </author>\n"                                                   \
-    "    <publisher>\n"                                                 \
-    "      <name>Kiwix</name>\n"                                        \
-    "    </publisher>\n"                                                \
-    "    <dc:issued>2020-03-31T00:00:00Z</dc:issued>\n"                 \
-    "    <link rel=\"http://opds-spec.org/acquisition/open-access\" type=\"application/x-zim\" href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/" FILE_NAME ".zim\" length=\"" LENGTH "\" />\n" \
-    "  </entry>\n"
-
-
-#define _CHARLES_RAY_CATALOG_ENTRY(CONTENT_NAME) CATALOG_ENTRY(  \
-  "charlesray",   \
-  "Charles, Ray", \
-  "Wikipedia articles about Ray Charles or why and when one should go to library", \
-  "fra", \
-  "wikipedia_fr_ray_charles",\
-  "jazz",\
-  "unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes",\
-  "", \
-  CONTENT_NAME, \
-  "zimfile%26other", \
-  "569304" \
-)
-
-#define CHARLES_RAY_CATALOG_ENTRY           _CHARLES_RAY_CATALOG_ENTRY("zimfile%26other")
-#define CHARLES_RAY_CATALOG_ENTRY_NO_MAPPER _CHARLES_RAY_CATALOG_ENTRY("charlesray")
-
+#include "./building_blocks/opds/catalog/v2/charles_ray.h"
+#include "./building_blocks/opds/catalog/v2/charles_ray_no_namemapper.h"
 #include "./building_blocks/opds/catalog/v2/ray_charles.h"
 #include "./building_blocks/opds/catalog/v2/ray_charles_no_namemapper.h"
 #include "./building_blocks/opds/catalog/v2/uncategorized_ray_charles.h"
