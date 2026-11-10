@@ -900,7 +900,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    RAY_CHARLES_CATALOG_ENTRY_NO_MAPPER
+    RAY_CHARLES_CATALOG_ENTRY_NO_NAMEMAPPER
   );
 
   const auto r1 = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/non-existent-entry");

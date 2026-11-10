@@ -1,0 +1,28 @@
+const std::string RAY_CHARLES_CATALOG_ENTRY_STR = R"(  <entry>
+    <id>urn:uuid:raycharles</id>
+    <title>Ray Charles</title>
+    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
+    <summary>Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)</summary>
+    <language>eng</language>
+    <name>wikipedia_en_ray_charles</name>
+    <flavour></flavour>
+    <category>wikipedia</category>
+    <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
+    <articleCount>284</articleCount>
+    <mediaCount>2</mediaCount>
+    <link rel="http://opds-spec.org/image/thumbnail"
+          href="/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48"
+          type="image/png;width=48;height=48;scale=1"/>
+    <link type="text/html" href="/ROOT%23%3F/content/zimfile_raycharles" />
+    <author>
+      <name>Wikipedia</name>
+    </author>
+    <publisher>
+      <name>Kiwix</name>
+    </publisher>
+    <dc:issued>2020-03-31T00:00:00Z</dc:issued>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim" length="569304" />
+  </entry>
+)";
+
+#define RAY_CHARLES_CATALOG_ENTRY "" + RAY_CHARLES_CATALOG_ENTRY_STR + ""
