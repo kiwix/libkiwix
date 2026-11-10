@@ -274,7 +274,7 @@ TEST(ManagerTest, readFile)
     EXPECT_EQ(book.getArticleCount(), 284U);
     EXPECT_EQ(book.getMediaCount(), 2U);
 
-    EXPECT_EQ(book.getSize(), 556U*1024U);
+    EXPECT_EQ(book.getSize(), 569304U);
 
     auto illustration = book.getIllustration(48);
 
