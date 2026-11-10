@@ -887,7 +887,7 @@ TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY_NO_MAPPER
+    CHARLES_RAY_CATALOG_ENTRY_NO_NAMEMAPPER
     "</feed>\n"
   );
 }
