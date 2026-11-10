@@ -40,38 +40,9 @@
 #define CHARLES_RAY_CATALOG_ENTRY           _CHARLES_RAY_CATALOG_ENTRY("zimfile%26other")
 #define CHARLES_RAY_CATALOG_ENTRY_NO_MAPPER _CHARLES_RAY_CATALOG_ENTRY("charlesray")
 
-#define _RAY_CHARLES_CATALOG_ENTRY(CONTENT_NAME) CATALOG_ENTRY(\
-  "raycharles",\
-  "Ray Charles",\
-  "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)",\
-  "eng",\
-  "wikipedia_en_ray_charles",\
-  "wikipedia",\
-  "public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes",\
-  "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
-  "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n" \
-  "          type=\"image/png;width=48;height=48;scale=1\"/>\n", \
-  CONTENT_NAME, \
-  "zimfile_raycharles", \
-  "569304"\
-)
-
-#define RAY_CHARLES_CATALOG_ENTRY           _RAY_CHARLES_CATALOG_ENTRY("zimfile_raycharles")
-#define RAY_CHARLES_CATALOG_ENTRY_NO_MAPPER _RAY_CHARLES_CATALOG_ENTRY("raycharles")
-
-#define UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY CATALOG_ENTRY(\
-  "raycharles_uncategorized",\
-  "Ray (uncategorized) Charles",\
-  "No category is assigned to this library entry (neither adj nor xor was considered a good option)",\
-  "rus,eng",\
-  "wikipedia_ru_ray_charles",\
-  "",\
-  "public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no",\
-  "",\
-  "zimfile_raycharles_uncategorized", \
-  "zimfile_raycharles_uncategorized", \
-  "125952"\
-)
+#include "./building_blocks/opds/catalog/v2/ray_charles.h"
+#include "./building_blocks/opds/catalog/v2/ray_charles_no_namemapper.h"
+#include "./building_blocks/opds/catalog/v2/uncategorized_ray_charles.h"
 
 #define INACCESSIBLEZIMFILE_CATALOG_ENTRY \
 "  <entry>\n" \
