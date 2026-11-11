@@ -1,3 +1,8 @@
+#include "./library_server/catalog/v2/root.xml.h"
+#include "./library_server/catalog/v2/searchdescription.xml.h"
+#include "./library_server/catalog/v2/categories.h"
+#include "./library_server/catalog/v2/languages.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 // Building blocks for OPDS output
 ////////////////////////////////////////////////////////////////////////////////

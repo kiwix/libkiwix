@@ -79,192 +79,28 @@ TEST_F(LibraryServerTest, catalog_v2_root)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/root.xml");
   EXPECT_EQ(r->status, 200);
-  const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"
-      xmlns:opds="https://specs.opds.io/opds-1.2">
-  <id>12345678-90ab-cdef-1234-567890abcdef</id>
-  <link rel="self"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-  <link rel="start"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-  <link rel="search"
-        href="/ROOT%23%3F/catalog/v2/searchdescription.xml"
-        type="application/opensearchdescription+xml"/>
-  <title>OPDS Catalog Root</title>
-  <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-
-  <entry>
-    <title>All entries</title>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-    <content type="text">All entries from this catalog.</content>
-  </entry>
-  <entry>
-    <title>All entries (partial)</title>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/partial_entries"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-    <content type="text">All entries from this catalog in partial format.</content>
-  </entry>
-  <entry>
-    <title>List of categories</title>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/categories"
-          type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-    <content type="text">List of all categories in this catalog.</content>
-  </entry>
-  <entry>
-    <title>List of languages</title>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/languages"
-          type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-    <content type="text">List of all languages in this catalog.</content>
-  </entry>
-</feed>
-)";
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_ROOT);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/searchdescription.xml");
   EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(r->body,
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    "<OpenSearchDescription xmlns=\"http://a9.com/-/spec/opensearch/1.1/\">\n"
-    "  <ShortName>Zim catalog search</ShortName>\n"
-    "  <Description>Search zim files in the catalog.</Description>\n"
-    "  <Url type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"\n"
-    "       xmlns:atom=\"http://www.w3.org/2005/Atom\"\n"
-    "       xmlns:k=\"http://kiwix.org/opensearchextension/1.0\"\n"
-    "       indexOffset=\"0\"\n"
-    "       template=\"/ROOT%23%3F/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}\"/>\n"
-    "</OpenSearchDescription>\n"
-  );
+  EXPECT_EQ(r->body, CATALOG_V2_SEARCHDESCRIPTION);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_categories)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/categories");
   EXPECT_EQ(r->status, 200);
-  const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"
-      xmlns:opds="https://specs.opds.io/opds-1.2">
-  <id>12345678-90ab-cdef-1234-567890abcdef</id>
-  <link rel="self"
-        href="/ROOT%23%3F/catalog/v2/categories"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-  <link rel="start"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-  <title>List of categories</title>
-  <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-
-  <entry>
-    <title>cats</title>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?category=cats"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-    <content type="text">All entries with category of 'cats'.</content>
-  </entry>
-  <entry>
-    <title>jazz</title>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?category=jazz"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-    <content type="text">All entries with category of 'jazz'.</content>
-  </entry>
-  <entry>
-    <title>wikipedia</title>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?category=wikipedia"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-    <content type="text">All entries with category of 'wikipedia'.</content>
-  </entry>
-</feed>
-)";
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_CATEGORIES);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_languages)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/languages");
   EXPECT_EQ(r->status, 200);
-  const char expected_output[] = R"(<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"
-      xmlns:dc="http://purl.org/dc/terms/"
-      xmlns:opds="https://specs.opds.io/opds-1.2"
-      xmlns:thr="http://purl.org/syndication/thread/1.0">
-  <id>12345678-90ab-cdef-1234-567890abcdef</id>
-  <link rel="self"
-        href="/ROOT%23%3F/catalog/v2/languages"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-  <link rel="start"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
-        type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
-  <title>List of languages</title>
-  <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-
-  <entry>
-    <title>català</title>
-    <dc:language>cat</dc:language>
-    <thr:count>1</thr:count>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=cat"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-  </entry>
-  <entry>
-    <title>English</title>
-    <dc:language>eng</dc:language>
-    <thr:count>2</thr:count>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=eng"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-  </entry>
-  <entry>
-    <title>français</title>
-    <dc:language>fra</dc:language>
-    <thr:count>1</thr:count>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=fra"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-  </entry>
-  <entry>
-    <title>русский</title>
-    <dc:language>rus</dc:language>
-    <thr:count>1</thr:count>
-    <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=rus"
-          type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
-    <updated>YYYY-MM-DDThh:mm:ssZ</updated>
-    <id>12345678-90ab-cdef-1234-567890abcdef</id>
-  </entry>
-</feed>
-)";
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body), expected_output);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_LANGUAGES);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_entries)
