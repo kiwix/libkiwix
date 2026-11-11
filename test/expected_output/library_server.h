@@ -4,22 +4,13 @@
 // Resolve Expected Output string via its identifier
 #define EO(ID) "" + ID + ""
 
-#include "./library_server/catalog/v2/root.xml.h"
-#include "./library_server/catalog/v2/searchdescription.xml.h"
-#include "./library_server/catalog/v2/categories.h"
-#include "./library_server/catalog/v2/languages.h"
-#include "./library_server/catalog/v2/partial_entries.h"
+#include "./library_server/catalog/v2/all.inc"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Building blocks for OPDS output
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "./building_blocks/opds/catalog/v2/charles_ray_catalog_entry.h"
-#include "./building_blocks/opds/catalog/v2/charles_ray_catalog_entry_no_namemapper.h"
-#include "./building_blocks/opds/catalog/v2/ray_charles_catalog_entry.h"
-#include "./building_blocks/opds/catalog/v2/ray_charles_catalog_entry_no_namemapper.h"
-#include "./building_blocks/opds/catalog/v2/uncategorized_ray_charles_catalog_entry.h"
-#include "./building_blocks/opds/catalog/v2/inaccessiblezimfile_catalog_entry.h"
+#include "./building_blocks/opds/catalog/v2/all.inc"
 
 #define CATALOG_V2_ENTRIES_PREAMBLE(x)                       \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
