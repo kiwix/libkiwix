@@ -212,23 +212,6 @@ TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
   EXPECT_FALSE(kiwix::contains(r->body, "illustration/inaccessiblezim/"));
 }
 
-TEST_F(LibraryServerTest, catalog_v2_filtering_by_phrase)
-{
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=\"ray%20charles\"");
-  EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
-    "  <title>Filtered Entries (q=%22ray%20charles%22)</title>\n"
-    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <totalResults>2</totalResults>\n"
-    "  <startIndex>0</startIndex>\n"
-    "  <itemsPerPage>2</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
-    "</feed>\n"
-  );
-}
-
 TEST_F(LibraryServerTest, catalog_v2_filtering_by_words)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20charles");
@@ -629,7 +612,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_search_terms)
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=\"ray%20charles\"");
   EXPECT_EQ(r->status, 200);
