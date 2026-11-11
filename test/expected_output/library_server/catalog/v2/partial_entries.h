@@ -1,4 +1,4 @@
-const char CATALOG_V2_PARTIAL_ENTRIES[] =
+DEFINE_EXPECTED_OUTPUT(CATALOG_PARTIAL_ENTRIES,
 R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
@@ -44,5 +44,4 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
           type="application/atom+xml;type=entry;profile=opds-catalog"/>
   </entry>
 </feed>
-)";
-
+)");

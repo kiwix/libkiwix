@@ -1,4 +1,4 @@
-const char CATALOG_V2_ROOT[] =
+DEFINE_EXPECTED_OUTPUT(CATALOG_ROOT,
 R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:opds="https://specs.opds.io/opds-1.2">
@@ -52,4 +52,4 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <content type="text">List of all languages in this catalog.</content>
   </entry>
 </feed>
-)";
+)");

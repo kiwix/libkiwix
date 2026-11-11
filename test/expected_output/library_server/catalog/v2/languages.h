@@ -1,4 +1,4 @@
-const char CATALOG_V2_LANGUAGES[] =
+DEFINE_EXPECTED_OUTPUT(CATALOG_LANGUAGES,
 R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
@@ -55,4 +55,4 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
   </entry>
 </feed>
-)";
+)");

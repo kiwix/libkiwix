@@ -1,3 +1,6 @@
+#define DEFINE_EXPECTED_OUTPUT(ID, CONTENT) \
+  const char ID[] = CONTENT;
+
 #include "./library_server/catalog/v2/root.xml.h"
 #include "./library_server/catalog/v2/searchdescription.xml.h"
 #include "./library_server/catalog/v2/categories.h"
