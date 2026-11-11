@@ -594,37 +594,7 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/partial_entries");
   EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    CATALOG_V2_PARTIAL_ENTRIES_PREAMBLE("")
-    "  <title>All Entries</title>\n"
-    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "\n"
-    "  <entry>\n"
-    "    <id>urn:uuid:charlesray</id>\n"
-    "    <title>Charles, Ray</title>\n"
-    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "    <link rel=\"alternate\"\n"
-    "          href=\"/ROOT%23%3F/catalog/v2/entry/charlesray\"\n"
-    "          type=\"application/atom+xml;type=entry;profile=opds-catalog\"/>\n"
-    "  </entry>\n"
-    "  <entry>\n"
-    "    <id>urn:uuid:raycharles</id>\n"
-    "    <title>Ray Charles</title>\n"
-    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "    <link rel=\"alternate\"\n"
-    "          href=\"/ROOT%23%3F/catalog/v2/entry/raycharles\"\n"
-    "          type=\"application/atom+xml;type=entry;profile=opds-catalog\"/>\n"
-    "  </entry>\n"
-    "  <entry>\n"
-    "    <id>urn:uuid:raycharles_uncategorized</id>\n"
-    "    <title>Ray (uncategorized) Charles</title>\n"
-    "    <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "    <link rel=\"alternate\"\n"
-    "          href=\"/ROOT%23%3F/catalog/v2/entry/raycharles_uncategorized\"\n"
-    "          type=\"application/atom+xml;type=entry;profile=opds-catalog\"/>\n"
-    "  </entry>\n"
-    "</feed>\n"
-  );
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_PARTIAL_ENTRIES);
 }
 
 TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
