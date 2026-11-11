@@ -196,90 +196,6 @@ std::string maskVariableOPDSFeedData(std::string s)
 #define CATALOG_V2_PARTIAL_ENTRIES_PREAMBLE(q) \
             CATALOG_V2_ENTRIES_PREAMBLE0("partial_entries" q)
 
-TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
-{
-  resetServer(ZimFileServer::CATALOG_ONLY_MODE);
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
-  EXPECT_EQ(r->status, 200);
-
-  EXPECT_TRUE(kiwix::contains(r->body,
-    "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"
-    "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n"
-    "          type=\"image/png;width=48;height=48;scale=1\"/>"
-  ));
-
-  EXPECT_FALSE(kiwix::contains(r->body, "illustration/charlesray/"));
-  EXPECT_FALSE(kiwix::contains(r->body, "illustration/inaccessiblezim/"));
-}
-
-TEST_F(LibraryServerTest, catalog_v2_filtering_by_words)
-{
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20charles");
-  EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20charles")
-    "  <title>Filtered Entries (q=ray%20charles)</title>\n"
-    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <totalResults>3</totalResults>\n"
-    "  <startIndex>0</startIndex>\n"
-    "  <itemsPerPage>3</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
-    "</feed>\n"
-  );
-}
-
-TEST_F(LibraryServerTest, catalog_v2_filtering_via_prefix_search)
-{
-  {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=description:ray%20description:charles");
-    EXPECT_EQ(r->status, 200);
-    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-      CATALOG_V2_ENTRIES_PREAMBLE("?q=description%3Aray%20description%3Acharles")
-      "  <title>Filtered Entries (q=description%3Aray%20description%3Acharles)</title>\n"
-      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "  <totalResults>2</totalResults>\n"
-      "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>2</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
-      "</feed>\n"
-    );
-  }
-  {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=title:\"ray%20charles\"");
-    EXPECT_EQ(r->status, 200);
-    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-      CATALOG_V2_ENTRIES_PREAMBLE("?q=title%3A%22ray%20charles%22")
-      "  <title>Filtered Entries (q=title%3A%22ray%20charles%22)</title>\n"
-      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-      "  <totalResults>1</totalResults>\n"
-      "  <startIndex>0</startIndex>\n"
-      "  <itemsPerPage>1</itemsPerPage>\n"
-      RAY_CHARLES_CATALOG_ENTRY
-      "</feed>\n"
-    );
-  }
-}
-
-TEST_F(LibraryServerTest, catalog_v2_filtering_with_word_exclusion)
-{
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20-uncategorized");
-  EXPECT_EQ(r->status, 200);
-  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
-    CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20-uncategorized")
-    "  <title>Filtered Entries (q=ray%20-uncategorized)</title>\n"
-    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
-    "  <totalResults>2</totalResults>\n"
-    "  <startIndex>0</startIndex>\n"
-    "  <itemsPerPage>2</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
-    "</feed>\n"
-  );
-}
-
 TEST_F(LibraryServerTest, catalog_v2_root)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/root.xml");
@@ -612,6 +528,24 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 }
 
+TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_words)
+{
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20charles");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20charles")
+    "  <title>Filtered Entries (q=ray%20charles)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>3</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>3</itemsPerPage>\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
 {
   const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=\"ray%20charles\"");
@@ -619,6 +553,56 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
     "  <title>Filtered Entries (q=%22ray%20charles%22)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>2</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>2</itemsPerPage>\n"
+    CHARLES_RAY_CATALOG_ENTRY
+    RAY_CHARLES_CATALOG_ENTRY
+    "</feed>\n"
+  );
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
+{
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=description:ray%20description:charles");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?q=description%3Aray%20description%3Acharles")
+      "  <title>Filtered Entries (q=description%3Aray%20description%3Acharles)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>2</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>2</itemsPerPage>\n"
+      CHARLES_RAY_CATALOG_ENTRY
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=title:\"ray%20charles\"");
+    EXPECT_EQ(r->status, 200);
+    EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+      CATALOG_V2_ENTRIES_PREAMBLE("?q=title%3A%22ray%20charles%22")
+      "  <title>Filtered Entries (q=title%3A%22ray%20charles%22)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>1</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      RAY_CHARLES_CATALOG_ENTRY
+      "</feed>\n"
+    );
+  }
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_filtering_with_word_exclusion)
+{
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20-uncategorized");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20-uncategorized")
+    "  <title>Filtered Entries (q=ray%20-uncategorized)</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
@@ -926,6 +910,24 @@ TEST_F(LibraryServerTest, catalog_v2_partial_entries)
     "  </entry>\n"
     "</feed>\n"
   );
+}
+
+TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
+{
+  // XXX: The checks performed in this unit-test are implicitly present
+  // XXX: in the catalog_v2_entries_catalog_only_mode unit-test.
+  resetServer(ZimFileServer::CATALOG_ONLY_MODE);
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n"
+    "          type=\"image/png;width=48;height=48;scale=1\"/>"
+  ));
+
+  EXPECT_FALSE(kiwix::contains(r->body, "illustration/charlesray/"));
+  EXPECT_FALSE(kiwix::contains(r->body, "illustration/inaccessiblezim/"));
 }
 
 #define EXPECT_FILTERING_RESULTS(SEARCH_TERM, RESULT_COUNT, OPDS_ENTRIES)      \
