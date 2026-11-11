@@ -41,7 +41,7 @@ protected:
 
   ZimFileServer::Response getFromCatalogEndpoint(const std::string& suburl) const
   {
-    const std::string url = "/ROOT%23%3F/catalog/v2/" + suburl;
+    const auto url = kiwix::urlEncode(zfs1_->cfg.root) + "/catalog/v2/" + suburl;
     return zfs1_->GET(url.c_str());
   }
 };
@@ -160,7 +160,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
     serverCfg.contentServerUrl = contentServerUrl;
     resetServer(serverCfg);
 
-    const auto r = zfs1_->GET("/catalog/v2/entries");
+    const auto r = getFromCatalogEndpoint("entries");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body), fixRoot(expectedOPDS));
   }

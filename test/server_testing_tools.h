@@ -71,7 +71,7 @@ public: // types
 
   struct Cfg
   {
-    std::string root = "ROOT#?";
+    std::string root = "/ROOT#?";
     std::string contentServerUrl = "";
     Options options = DEFAULT_OPTIONS;
 
@@ -105,6 +105,7 @@ private: // data
   std::shared_ptr<kiwix::NameMapper> nameMapper;
   std::unique_ptr<kiwix::Server> server;
   std::unique_ptr<httplib::Client> client;
+public:
   const Cfg cfg;
 };
 
