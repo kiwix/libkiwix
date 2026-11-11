@@ -1,4 +1,4 @@
-const char CATALOG_V2_SEARCHDESCRIPTION[] =
+DEFINE_EXPECTED_OUTPUT(CATALOG_SEARCHDESCRIPTION,
 R"(<?xml version="1.0" encoding="UTF-8"?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
   <ShortName>Zim catalog search</ShortName>
@@ -9,4 +9,4 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
        indexOffset="0"
        template="/ROOT%23%3F/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}"/>
 </OpenSearchDescription>
-)";
+)");

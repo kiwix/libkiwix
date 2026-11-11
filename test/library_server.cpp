@@ -89,22 +89,22 @@ std::string maskVariableOPDSFeedData(std::string s)
 
 TEST_F(LibraryServerTest, catalog_v2_root)
 {
-  TEST_CATALOG_ENDPOINT("root.xml", CATALOG_V2_ROOT);
+  TEST_CATALOG_ENDPOINT("root.xml", CATALOG_ROOT);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
 {
-  TEST_CATALOG_ENDPOINT("searchdescription.xml", CATALOG_V2_SEARCHDESCRIPTION);
+  TEST_CATALOG_ENDPOINT("searchdescription.xml", CATALOG_SEARCHDESCRIPTION);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_categories)
 {
-  TEST_CATALOG_ENDPOINT("categories", CATALOG_V2_CATEGORIES);
+  TEST_CATALOG_ENDPOINT("categories", CATALOG_CATEGORIES);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_languages)
 {
-  TEST_CATALOG_ENDPOINT("languages", CATALOG_V2_LANGUAGES);
+  TEST_CATALOG_ENDPOINT("languages", CATALOG_LANGUAGES);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_entries)
@@ -538,7 +538,7 @@ TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
 
 TEST_F(LibraryServerTest, catalog_v2_partial_entries)
 {
-  TEST_CATALOG_ENDPOINT("partial_entries", CATALOG_V2_PARTIAL_ENTRIES);
+  TEST_CATALOG_ENDPOINT("partial_entries", CATALOG_PARTIAL_ENTRIES);
 }
 
 TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)

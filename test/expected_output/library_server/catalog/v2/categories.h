@@ -1,4 +1,4 @@
-const char CATALOG_V2_CATEGORIES[] =
+DEFINE_EXPECTED_OUTPUT(CATALOG_CATEGORIES,
 R"(<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:opds="https://specs.opds.io/opds-1.2">
@@ -40,4 +40,4 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <content type="text">All entries with category of 'wikipedia'.</content>
   </entry>
 </feed>
-)";
+)");
