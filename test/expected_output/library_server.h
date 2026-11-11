@@ -2,6 +2,7 @@
 #include "./library_server/catalog/v2/searchdescription.xml.h"
 #include "./library_server/catalog/v2/categories.h"
 #include "./library_server/catalog/v2/languages.h"
+#include "./library_server/catalog/v2/partial_entries.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Building blocks for OPDS output
@@ -14,7 +15,7 @@
 #include "./building_blocks/opds/catalog/v2/uncategorized_ray_charles.h"
 #include "./building_blocks/opds/catalog/v2/inaccessiblezim.h"
 
-#define CATALOG_V2_ENTRIES_PREAMBLE0(x)                       \
+#define CATALOG_V2_ENTRIES_PREAMBLE(x)                       \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"           \
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"          \
@@ -23,7 +24,7 @@
     "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"       \
     "\n"                                                      \
     "  <link rel=\"self\"\n"                                  \
-    "        href=\"/ROOT%23%3F/catalog/v2/" x "\"\n"                    \
+    "        href=\"/ROOT%23%3F/catalog/v2/entries" x "\"\n"  \
     "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n" \
     "  <link rel=\"start\"\n"                                 \
     "        href=\"/ROOT%23%3F/catalog/v2/root.xml\"\n"              \
@@ -32,13 +33,6 @@
     "        href=\"/ROOT%23%3F/catalog/v2/root.xml\"\n"              \
     "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n" \
     "\n"                                                      \
-
-#define CATALOG_V2_ENTRIES_PREAMBLE(q) \
-            CATALOG_V2_ENTRIES_PREAMBLE0("entries" q)
-
-#define CATALOG_V2_PARTIAL_ENTRIES_PREAMBLE(q) \
-            CATALOG_V2_ENTRIES_PREAMBLE0("partial_entries" q)
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Building blocks for HTML output from nojs endpoint
