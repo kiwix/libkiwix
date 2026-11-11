@@ -16,7 +16,7 @@ const std::string {MACRONAME}_STR = R"(  <entry>
     <category>{CATEGORY}</category>
     <tags>{TAGS}</tags>
     <articleCount>{ARTICLECOUNT}</articleCount>
-    <mediaCount>{MEDIACOUNT}</mediaCount>
+    <mediaCount>{MEDIACOUNT}</mediaCount>{ILLUSTRATIONLINKS}
     <link type="text/html" href="/ROOT%23%3F/content/{CONTENTID}" />
     <author>
       <name>{AUTHOR}</name>
@@ -34,7 +34,20 @@ const std::string {MACRONAME}_STR = R"(  <entry>
 
 mydir = os.path.dirname(__file__)
 
+def illustration_links_opds(data):
+    uuid = data['UUID']
+    def gen_link_block(illustration_info):
+        illustration_info = edict(illustration_info, UUID=uuid)
+        link_template="""
+    <link rel="http://opds-spec.org/image/thumbnail"
+          href="/ROOT%23%3F/catalog/v2/illustration/{UUID}/?size={SIZE}"
+          type="image/png;width={SIZE};height={SIZE};scale=1"/>"""
+        return link_template.format(**illustration_info)
+
+    return "".join([gen_link_block(i) for i in data['ILLUSTRATIONS']])
+
 def generate_opds_entry_building_block(macroname, data):
+    data['ILLUSTRATIONLINKS'] = illustration_links_opds(data)
     return OPDS_ENTRY_TEMPLATE.format(MACRONAME=macroname, **data);
 
 def write_opds_entry_building_block(path, macroname, data):
@@ -48,23 +61,51 @@ def edict(d, **u):
     d.update(u)
     return d
 
-CHARLES_RAY_DATA = dict(
+RAY_CHARLES_DATA = dict(
+    UUID="raycharles",
+    TITLE="Ray Charles",
+    SUMMARY="Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)",
+    LANG="eng",
+    NAME="wikipedia_en_ray_charles",
+    FLAVOUR="",
+    CATEGORY="wikipedia",
+    TAGS="public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes",
+    ARTICLECOUNT="284",
+    MEDIACOUNT="2",
+    CONTENTID="zimfile_raycharles",
+    AUTHOR="Wikipedia",
+    PUBLISHER="Kiwix",
+    ISSUED="2020-03-31T00:00:00Z",
+    FILENAME="zimfile_raycharles",
+    SIZE="569304",
+    ILLUSTRATIONS=[{"SIZE": 48}]
+)
+
+UNCATEGORIZED_RAY_CHARLES_DATA = edict(RAY_CHARLES_DATA,
+    UUID="raycharles_uncategorized",
+    TITLE="Ray (uncategorized) Charles",
+    SUMMARY="No category is assigned to this library entry (neither adj nor xor was considered a good option)",
+    LANG="rus,eng",
+    NAME="wikipedia_ru_ray_charles",
+    CATEGORY="",
+    TAGS="public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no",
+    CONTENTID="zimfile_raycharles_uncategorized",
+    FILENAME="zimfile_raycharles_uncategorized",
+    SIZE="125952",
+    ILLUSTRATIONS=[]
+)
+
+CHARLES_RAY_DATA = edict(RAY_CHARLES_DATA,
     UUID="charlesray",
     TITLE="Charles, Ray",
     SUMMARY="Wikipedia articles about Ray Charles or why and when one should go to library",
     LANG="fra",
     NAME="wikipedia_fr_ray_charles",
-    FLAVOUR="",
     CATEGORY="jazz",
     TAGS="unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes",
-    ARTICLECOUNT="284",
-    MEDIACOUNT="2",
     CONTENTID="zimfile%26other",
-    AUTHOR="Wikipedia",
-    PUBLISHER="Kiwix",
-    ISSUED="2020-03-31T00:00:00Z",
     FILENAME="zimfile%26other",
-    SIZE="569304",
+    ILLUSTRATIONS=[]
 )
 
 INACCESSIBLEZIM_DATA = dict(
@@ -84,6 +125,25 @@ INACCESSIBLEZIM_DATA = dict(
     ISSUED="2025-09-04T00:00:00Z",
     FILENAME="nosuchzimfile",
     SIZE="20736925696",
+    ILLUSTRATIONS=[]
+)
+
+write_opds_entry_building_block(
+    path="opds/catalog/v2/ray_charles.h",
+    macroname="RAY_CHARLES_CATALOG_ENTRY",
+    data=RAY_CHARLES_DATA
+)
+
+write_opds_entry_building_block(
+    path="opds/catalog/v2/ray_charles_no_namemapper.h",
+    macroname="RAY_CHARLES_CATALOG_ENTRY_NO_NAMEMAPPER",
+    data=edict(RAY_CHARLES_DATA, CONTENTID="raycharles")
+)
+
+write_opds_entry_building_block(
+    path="opds/catalog/v2/uncategorized_ray_charles.h",
+    macroname="UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY",
+    data=UNCATEGORIZED_RAY_CHARLES_DATA
 )
 
 write_opds_entry_building_block(
