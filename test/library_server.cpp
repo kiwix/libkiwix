@@ -38,6 +38,12 @@ protected:
   void TearDown() override {
     zfs1_.reset();
   }
+
+  ZimFileServer::Response getFromCatalogEndpoint(const std::string& suburl) const
+  {
+    const std::string url = "/ROOT%23%3F/catalog/v2/" + suburl;
+    return zfs1_->GET(url.c_str());
+  }
 };
 
 // Returns a copy of 'text' where every line that fully matches 'pattern'
@@ -77,35 +83,35 @@ std::string maskVariableOPDSFeedData(std::string s)
 
 TEST_F(LibraryServerTest, catalog_v2_root)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/root.xml");
+  const auto r = getFromCatalogEndpoint("root.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_ROOT);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/searchdescription.xml");
+  const auto r = getFromCatalogEndpoint("searchdescription.xml");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, CATALOG_V2_SEARCHDESCRIPTION);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_categories)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/categories");
+  const auto r = getFromCatalogEndpoint("categories");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_CATEGORIES);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_languages)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/languages");
+  const auto r = getFromCatalogEndpoint("languages");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_LANGUAGES);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_entries)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  const auto r = getFromCatalogEndpoint("entries");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("")
@@ -127,7 +133,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
     return s;
   };
   resetServer(ZimFileServer::CATALOG_ONLY_MODE, contentServerUrl);
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  const auto r = getFromCatalogEndpoint("entries");
   EXPECT_EQ(r->status, 200);
 
   const std::string expectedOPDS =
@@ -163,7 +169,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
 {
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?start=1");
+    const auto r = getFromCatalogEndpoint("entries?start=1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?start=1")
@@ -180,7 +186,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
 
   {
     // count=-1 disables the limit on the number of results
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=-1");
+    const auto r = getFromCatalogEndpoint("entries?count=-1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?count=-1")
@@ -198,7 +204,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
 
   {
     // count=0 returns 0 results
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=0");
+    const auto r = getFromCatalogEndpoint("entries?count=0");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?count=0")
@@ -212,7 +218,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?count=2");
+    const auto r = getFromCatalogEndpoint("entries?count=2");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?count=2")
@@ -228,7 +234,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?start=1&count=1");
+    const auto r = getFromCatalogEndpoint("entries?start=1&count=1");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?start=1&amp;count=1")
@@ -245,7 +251,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
 
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_words)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20charles");
+  const auto r = getFromCatalogEndpoint("entries?q=ray%20charles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20charles")
@@ -263,7 +269,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_words)
 
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=\"ray%20charles\"");
+  const auto r = getFromCatalogEndpoint("entries?q=\"ray%20charles\"");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
@@ -281,7 +287,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
 TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
 {
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=description:ray%20description:charles");
+    const auto r = getFromCatalogEndpoint("entries?q=description:ray%20description:charles");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?q=description%3Aray%20description%3Acharles")
@@ -296,7 +302,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
     );
   }
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=title:\"ray%20charles\"");
+    const auto r = getFromCatalogEndpoint("entries?q=title:\"ray%20charles\"");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?q=title%3A%22ray%20charles%22")
@@ -313,7 +319,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
 
 TEST_F(LibraryServerTest, catalog_v2_entries_filtering_with_word_exclusion)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=ray%20-uncategorized");
+  const auto r = getFromCatalogEndpoint("entries?q=ray%20-uncategorized");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20-uncategorized")
@@ -332,7 +338,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 {
   {
   // 'or' doesn't act as a Xapian boolean operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=Or");
+  const auto r = getFromCatalogEndpoint("entries?q=Or");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=Or")
@@ -348,7 +354,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'and' doesn't act as a Xapian boolean operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=and");
+  const auto r = getFromCatalogEndpoint("entries?q=and");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=and")
@@ -364,7 +370,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'not' doesn't act as a Xapian boolean operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=not");
+  const auto r = getFromCatalogEndpoint("entries?q=not");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=not")
@@ -380,7 +386,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'xor' doesn't act as a Xapian boolean operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=xor");
+  const auto r = getFromCatalogEndpoint("entries?q=xor");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=xor")
@@ -396,7 +402,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'or' acts as a Xapian boolean operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=wikipedia%20or%20library");
+  const auto r = getFromCatalogEndpoint("entries?q=wikipedia%20or%20library");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20or%20library")
@@ -412,7 +418,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'and' acts as a Xapian boolean operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=wikipedia%20and%20articles");
+  const auto r = getFromCatalogEndpoint("entries?q=wikipedia%20and%20articles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=wikipedia%20and%20articles")
@@ -428,7 +434,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'near' doesn't act as a Xapian query operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=near");
+  const auto r = getFromCatalogEndpoint("entries?q=near");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=near")
@@ -444,7 +450,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'adj' doesn't act as a Xapian query operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=adj");
+  const auto r = getFromCatalogEndpoint("entries?q=adj");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=adj")
@@ -460,7 +466,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'near' doesn't act as a Xapian query operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=charles%20near%20why");
+  const auto r = getFromCatalogEndpoint("entries?q=charles%20near%20why");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=charles%20near%20why")
@@ -475,7 +481,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 
   {
   // 'adj' doesn't act as a Xapian query operator
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=charles%20adj%20why");
+  const auto r = getFromCatalogEndpoint("entries?q=charles%20adj%20why");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?q=charles%20adj%20why")
@@ -492,7 +498,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
 {
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=eng");
+    const auto r = getFromCatalogEndpoint("entries?lang=eng");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng")
@@ -508,7 +514,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=eng,fra");
+    const auto r = getFromCatalogEndpoint("entries?lang=eng,fra");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=eng%2Cfra")
@@ -528,7 +534,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
 TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
 {
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?category=jazz");
+    const auto r = getFromCatalogEndpoint("entries?category=jazz");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?category=jazz")
@@ -543,7 +549,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
   }
 
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?category=jazz,wikipedia");
+    const auto r = getFromCatalogEndpoint("entries?category=jazz,wikipedia");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?category=jazz%2Cwikipedia")
@@ -562,7 +568,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
 TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
 {
   {
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?lang=fra&category=jazz");
+    const auto r = getFromCatalogEndpoint("entries?lang=fra&category=jazz");
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),
       CATALOG_V2_ENTRIES_PREAMBLE("?lang=fra&amp;category=jazz")
@@ -579,20 +585,20 @@ TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
 
 TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/raycharles");
+  const auto r = getFromCatalogEndpoint("entry/raycharles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     RAY_CHARLES_CATALOG_ENTRY
   );
 
-  const auto r1 = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/non-existent-entry");
+  const auto r1 = getFromCatalogEndpoint("entry/non-existent-entry");
   EXPECT_EQ(r1->status, 404);
 }
 
 TEST_F(LibraryServerTest, catalog_v2_partial_entries)
 {
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/partial_entries");
+  const auto r = getFromCatalogEndpoint("partial_entries");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), CATALOG_V2_PARTIAL_ENTRIES);
 }
@@ -602,7 +608,7 @@ TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
   // XXX: The checks performed in this unit-test are implicitly present
   // XXX: in the catalog_v2_entries_catalog_only_mode unit-test.
   resetServer(ZimFileServer::CATALOG_ONLY_MODE);
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  const auto r = getFromCatalogEndpoint("entries");
   EXPECT_EQ(r->status, 200);
 
   EXPECT_TRUE(kiwix::contains(r->body,
@@ -617,7 +623,7 @@ TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
 
 #define EXPECT_FILTERING_RESULTS(SEARCH_TERM, RESULT_COUNT, OPDS_ENTRIES)      \
   {                                                                         \
-    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?q=" SEARCH_TERM);       \
+    const auto r = getFromCatalogEndpoint("entries?q=" SEARCH_TERM);       \
     EXPECT_EQ(r->status, 200);                                              \
     EXPECT_EQ(maskVariableOPDSFeedData(r->body),                            \
       CATALOG_V2_ENTRIES_PREAMBLE("?q=" SEARCH_TERM)                        \
@@ -684,7 +690,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_excludes_hidden_tags)
 TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries?tag=_category:jazz");
+  const auto r = getFromCatalogEndpoint("entries?tag=_category:jazz");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     CATALOG_V2_ENTRIES_PREAMBLE("?tag=_category%3Ajazz")
@@ -702,14 +708,14 @@ TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
-  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/raycharles");
+  const auto r = getFromCatalogEndpoint("entry/raycharles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     RAY_CHARLES_CATALOG_ENTRY_NO_NAMEMAPPER
   );
 
-  const auto r1 = zfs1_->GET("/ROOT%23%3F/catalog/v2/entry/non-existent-entry");
+  const auto r1 = getFromCatalogEndpoint("entry/non-existent-entry");
   EXPECT_EQ(r1->status, 404);
 }
 
