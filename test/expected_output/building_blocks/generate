@@ -128,37 +128,38 @@ INACCESSIBLEZIM_DATA = dict(
 )
 
 write_opds_entry_building_block(
-    path="opds/catalog/v2/ray_charles.h",
+    path="opds/catalog/v2/ray_charles_catalog_entry.h",
     macroname="RAY_CHARLES_CATALOG_ENTRY",
     data=RAY_CHARLES_DATA
 )
 
+
 write_opds_entry_building_block(
-    path="opds/catalog/v2/ray_charles_no_namemapper.h",
+    path="opds/catalog/v2/ray_charles_catalog_entry_no_namemapper.h",
     macroname="RAY_CHARLES_CATALOG_ENTRY_NO_NAMEMAPPER",
     data=edict(RAY_CHARLES_DATA, CONTENTID="raycharles")
 )
 
 write_opds_entry_building_block(
-    path="opds/catalog/v2/uncategorized_ray_charles.h",
+    path="opds/catalog/v2/uncategorized_ray_charles_catalog_entry.h",
     macroname="UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY",
     data=UNCATEGORIZED_RAY_CHARLES_DATA
 )
 
 write_opds_entry_building_block(
-    path="opds/catalog/v2/charles_ray.h",
+    path="opds/catalog/v2/charles_ray_catalog_entry.h",
     macroname="CHARLES_RAY_CATALOG_ENTRY",
     data=CHARLES_RAY_DATA
 )
 
 write_opds_entry_building_block(
-    path="opds/catalog/v2/charles_ray_no_namemapper.h",
+    path="opds/catalog/v2/charles_ray_catalog_entry_no_namemapper.h",
     macroname="CHARLES_RAY_CATALOG_ENTRY_NO_NAMEMAPPER",
     data=edict(CHARLES_RAY_DATA, CONTENTID="charlesray")
 )
 
 write_opds_entry_building_block(
-    path="opds/catalog/v2/inaccessiblezim.h",
+    path="opds/catalog/v2/inaccessiblezimfile_catalog_entry.h",
     macroname="INACCESSIBLEZIMFILE_CATALOG_ENTRY",
     data=INACCESSIBLEZIM_DATA
 )
