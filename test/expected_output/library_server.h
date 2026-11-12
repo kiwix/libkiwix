@@ -33,6 +33,15 @@ ExpectedOutputRegistry::ExpectedOutputRegistry()
 #include "./building_blocks/opds/catalog/v2/all.inc"
 
 #undef DEFINE_EXPECTED_OUTPUT
+
+
+#define DEFINE_EXPECTED_OUTPUT(ID, CONTENT) \
+  ExpectedOutputRegistry::set("v3/" #ID, CONTENT);
+
+#include "./library_server/catalog/v3/all.inc"
+#include "./building_blocks/opds/catalog/v3/all.inc"
+
+#undef DEFINE_EXPECTED_OUTPUT
 }
 
 const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;

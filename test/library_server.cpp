@@ -92,7 +92,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   }
 
 INSTANTIATE_TEST_CASE_P(ByCatalogEndpointVersion, LibraryServerTest,
-    ::testing::Values("v2"));
+    ::testing::Values("v2", "v3"));
 
 TEST_P(LibraryServerTest, catalog_root)
 {

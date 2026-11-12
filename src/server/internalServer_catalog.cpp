@@ -73,7 +73,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     return UrlNotFoundResponse(request);
   }
 
-  if (url == "v2") {
+  if (url == "v2" || url == "v3") {
     return handle_catalog_v2(request);
   }
 

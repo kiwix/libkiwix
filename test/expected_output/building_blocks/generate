@@ -156,7 +156,11 @@ allinc_file_content = DONOTEDIT_HEADER
 for identifier, data in input_data:
     fname = identifier.lower() + ".h"
     allinc_file_content += f'#include "{fname}"\n'
-    path = "opds/catalog/v2/" + fname
-    write_opds_entry_building_block(path=path, identifier=identifier, data=data)
+    for v in ("v2", "v3"):
+        path = "opds/catalog/" + v + "/" + fname
+        write_opds_entry_building_block(path=path,
+                                        identifier=identifier,
+                                        data=data)
 
 write_file("opds/catalog/v2/all.inc", allinc_file_content)
+write_file("opds/catalog/v3/all.inc", allinc_file_content)
