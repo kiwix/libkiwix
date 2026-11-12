@@ -1,16 +1,48 @@
-#define DEFINE_EXPECTED_OUTPUT(ID, CONTENT) \
-  const std::string ID = CONTENT;
+class ExpectedOutputRegistry
+{
+public:
+  static void set(const std::string& id, const std::string& data)
+  {
+    registryInstance()[id] = data;
+  }
 
-// Resolve Expected Output string via its identifier
-#define EO(ID) "" + ID + ""
+  static std::string get(const std::string& id)
+  {
+    return registryInstance().at(id);
+  }
+
+private:
+  typedef std::map<std::string, std::string> ImplType;
+
+  static ImplType& registryInstance()
+  {
+    static ImplType m;
+    return m;
+  }
+
+  ExpectedOutputRegistry();
+  static const ExpectedOutputRegistry initializer;
+};
+
+ExpectedOutputRegistry::ExpectedOutputRegistry()
+{
+#define DEFINE_EXPECTED_OUTPUT(ID, CONTENT) \
+  ExpectedOutputRegistry::set(#ID, CONTENT);
 
 #include "./library_server/catalog/v2/all.inc"
+#include "./building_blocks/opds/catalog/v2/all.inc"
+
+#undef DEFINE_EXPECTED_OUTPUT
+}
+
+const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
+
+// Resolve Expected Output string via its identifier
+#define EO(ID) "" + ExpectedOutputRegistry::get(#ID) + ""
 
 ////////////////////////////////////////////////////////////////////////////////
 // Building blocks for OPDS output
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "./building_blocks/opds/catalog/v2/all.inc"
 
 #define CATALOG_V2_ENTRIES_PREAMBLE(x)                       \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
