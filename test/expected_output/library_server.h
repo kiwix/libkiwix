@@ -14,12 +14,12 @@
 // Building blocks for OPDS output
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "./building_blocks/opds/catalog/v2/charles_ray.h"
-#include "./building_blocks/opds/catalog/v2/charles_ray_no_namemapper.h"
-#include "./building_blocks/opds/catalog/v2/ray_charles.h"
-#include "./building_blocks/opds/catalog/v2/ray_charles_no_namemapper.h"
-#include "./building_blocks/opds/catalog/v2/uncategorized_ray_charles.h"
-#include "./building_blocks/opds/catalog/v2/inaccessiblezim.h"
+#include "./building_blocks/opds/catalog/v2/charles_ray_catalog_entry.h"
+#include "./building_blocks/opds/catalog/v2/charles_ray_catalog_entry_no_namemapper.h"
+#include "./building_blocks/opds/catalog/v2/ray_charles_catalog_entry.h"
+#include "./building_blocks/opds/catalog/v2/ray_charles_catalog_entry_no_namemapper.h"
+#include "./building_blocks/opds/catalog/v2/uncategorized_ray_charles_catalog_entry.h"
+#include "./building_blocks/opds/catalog/v2/inaccessiblezimfile_catalog_entry.h"
 
 #define CATALOG_V2_ENTRIES_PREAMBLE(x)                       \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"            \
