@@ -1,6 +1,9 @@
 #define DEFINE_EXPECTED_OUTPUT(ID, CONTENT) \
   const char ID[] = CONTENT;
 
+// Resolve Expected Output string via its identifier
+#define EO(ID) ID
+
 #include "./library_server/catalog/v2/root.xml.h"
 #include "./library_server/catalog/v2/searchdescription.xml.h"
 #include "./library_server/catalog/v2/categories.h"
