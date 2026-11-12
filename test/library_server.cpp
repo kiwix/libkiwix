@@ -12,7 +12,7 @@
 // Testing of the library-related functionality of the server
 ////////////////////////////////////////////////////////////////////////////////
 
-class LibraryServerTest : public ::testing::Test
+class LibraryServerTest : public ::testing::TestWithParam<std::string>
 {
 protected:
   std::unique_ptr<ZimFileServer>   zfs1_;
@@ -20,6 +20,8 @@ protected:
   const int PORT = 8002;
 
 protected:
+  std::string catalogEndpointVersion() const { return GetParam(); }
+
   void resetServer(ZimFileServer::Cfg cfg) {
     zfs1_.reset();
     zfs1_.reset(new ZimFileServer(PORT, cfg, "./test/library.opds"));
@@ -41,7 +43,9 @@ protected:
 
   ZimFileServer::Response getFromCatalogEndpoint(const std::string& suburl) const
   {
-    const auto url = kiwix::urlEncode(zfs1_->cfg.root) + "/catalog/v2/" + suburl;
+    const auto root = kiwix::urlEncode(zfs1_->cfg.root);
+    const auto v = catalogEndpointVersion();
+    const auto url =  root + "/catalog/" + v + "/" + suburl;
     return zfs1_->GET(url.c_str());
   }
 };
@@ -87,27 +91,30 @@ std::string maskVariableOPDSFeedData(std::string s)
   EXPECT_EQ(maskVariableOPDSFeedData(r->body), EXPECTED_OUTPUT); \
   }
 
-TEST_F(LibraryServerTest, catalog_v2_root)
+INSTANTIATE_TEST_CASE_P(ByCatalogEndpointVersion, LibraryServerTest,
+    ::testing::Values("v2"));
+
+TEST_P(LibraryServerTest, catalog_root)
 {
   TEST_CATALOG_ENDPOINT("root.xml", EO(CATALOG_ROOT));
 }
 
-TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
+TEST_P(LibraryServerTest, catalog_searchdescription_xml)
 {
   TEST_CATALOG_ENDPOINT("searchdescription.xml", EO(CATALOG_SEARCHDESCRIPTION));
 }
 
-TEST_F(LibraryServerTest, catalog_v2_categories)
+TEST_P(LibraryServerTest, catalog_categories)
 {
   TEST_CATALOG_ENDPOINT("categories", EO(CATALOG_CATEGORIES));
 }
 
-TEST_F(LibraryServerTest, catalog_v2_languages)
+TEST_P(LibraryServerTest, catalog_languages)
 {
   TEST_CATALOG_ENDPOINT("languages", EO(CATALOG_LANGUAGES));
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries)
+TEST_P(LibraryServerTest, catalog_entries)
 {
   TEST_CATALOG_ENDPOINT("entries",
     CATALOG_V2_ENTRIES_PREAMBLE("")
@@ -121,7 +128,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries)
   );
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
+TEST_P(LibraryServerTest, catalog_entries_catalog_only_mode)
 {
   const std::string contentServerUrl = "https://demo.kiwix.org";
   const auto fixContentLinks = [=](std::string s) -> std::string {
@@ -158,7 +165,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
+TEST_P(LibraryServerTest, catalog_entries_filtered_by_range)
 {
   {
     TEST_CATALOG_ENDPOINT("entries?start=1",
@@ -231,7 +238,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_words)
+TEST_P(LibraryServerTest, catalog_entries_filtered_by_words)
 {
   TEST_CATALOG_ENDPOINT("entries?q=ray%20charles",
     CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20charles")
@@ -247,7 +254,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_words)
   );
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
+TEST_P(LibraryServerTest, catalog_entries_filtered_by_phrase)
 {
   TEST_CATALOG_ENDPOINT("entries?q=\"ray%20charles\"",
     CATALOG_V2_ENTRIES_PREAMBLE("?q=%22ray%20charles%22")
@@ -262,7 +269,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
   );
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
+TEST_P(LibraryServerTest, catalog_entries_filtering_via_prefix_search)
 {
   {
     TEST_CATALOG_ENDPOINT("entries?q=description:ray%20description:charles",
@@ -291,7 +298,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtering_with_word_exclusion)
+TEST_P(LibraryServerTest, catalog_entries_filtering_with_word_exclusion)
 {
   TEST_CATALOG_ENDPOINT("entries?q=ray%20-uncategorized",
     CATALOG_V2_ENTRIES_PREAMBLE("?q=ray%20-uncategorized")
@@ -306,7 +313,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_with_word_exclusion)
   );
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
+TEST_P(LibraryServerTest, catalog_entries_filtering_special_queries)
 {
   {
   // 'or' doesn't act as a Xapian boolean operator
@@ -447,7 +454,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
+TEST_P(LibraryServerTest, catalog_entries_filtered_by_language)
 {
   {
     TEST_CATALOG_ENDPOINT("entries?lang=eng",
@@ -479,7 +486,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
+TEST_P(LibraryServerTest, catalog_entries_filtered_by_category)
 {
   {
     TEST_CATALOG_ENDPOINT("entries?category=jazz",
@@ -509,7 +516,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
+TEST_P(LibraryServerTest, catalog_entries_multiple_filters)
 {
   {
     TEST_CATALOG_ENDPOINT("entries?lang=fra&category=jazz",
@@ -525,7 +532,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
   }
 }
 
-TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
+TEST_P(LibraryServerTest, catalog_individual_entry_access)
 {
   TEST_CATALOG_ENDPOINT("entry/raycharles",
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -536,15 +543,15 @@ TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
   EXPECT_EQ(r1->status, 404);
 }
 
-TEST_F(LibraryServerTest, catalog_v2_partial_entries)
+TEST_P(LibraryServerTest, catalog_partial_entries)
 {
   TEST_CATALOG_ENDPOINT("partial_entries", EO(CATALOG_PARTIAL_ENTRIES));
 }
 
-TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
+TEST_P(LibraryServerTest, ThumbnailMimeTypeHandling)
 {
   // XXX: The checks performed in this unit-test are implicitly present
-  // XXX: in the catalog_v2_entries_catalog_only_mode unit-test.
+  // XXX: in the catalog_entries_catalog_only_mode unit-test.
   resetServer(ZimFileServer::CATALOG_ONLY_MODE);
   const auto r = getFromCatalogEndpoint("entries");
   EXPECT_EQ(r->status, 200);
@@ -575,7 +582,7 @@ TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
     );                                                                      \
   }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtering_includes_public_tags)
+TEST_P(LibraryServerTest, catalog_entries_filtering_includes_public_tags)
 {
   EXPECT_FILTERING_RESULTS("public_tag_without_a_value",
                         1,
@@ -608,13 +615,13 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_includes_public_tags)
 
 #define EXPECT_ZERO_RESULTS(SEARCH_TERM) EXPECT_FILTERING_RESULTS(SEARCH_TERM, 0, )
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtering_on_tags_is_not_an_any_substring_match)
+TEST_P(LibraryServerTest, catalog_entries_filtering_on_tags_is_not_an_any_substring_match)
 {
   EXPECT_ZERO_RESULTS("tag_with")
   EXPECT_ZERO_RESULTS("alue_of_a_public_tag")
 }
 
-TEST_F(LibraryServerTest, catalog_v2_entries_filtering_excludes_hidden_tags)
+TEST_P(LibraryServerTest, catalog_entries_filtering_excludes_hidden_tags)
 {
   EXPECT_ZERO_RESULTS("_private_tag_without_a_value");
   EXPECT_ZERO_RESULTS("private_tag_without_a_value");
@@ -623,7 +630,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_excludes_hidden_tags)
 #undef EXPECT_ZERO_RESULTS
 }
 
-TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
+TEST_P(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
   const auto r = getFromCatalogEndpoint("entries?tag=_category:jazz");
@@ -641,7 +648,7 @@ TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
 }
 
 
-TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
+TEST_P(LibraryServerTest, no_name_mapper_catalog_individual_entry_access)
 {
   resetServer(ZimFileServer::NO_NAME_MAPPER);
   const auto r = getFromCatalogEndpoint("entry/raycharles");

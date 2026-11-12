@@ -27,7 +27,7 @@ private:
 ExpectedOutputRegistry::ExpectedOutputRegistry()
 {
 #define DEFINE_EXPECTED_OUTPUT(ID, CONTENT) \
-  ExpectedOutputRegistry::set(#ID, CONTENT);
+  ExpectedOutputRegistry::set("v2/" #ID, CONTENT);
 
 #include "./library_server/catalog/v2/all.inc"
 #include "./building_blocks/opds/catalog/v2/all.inc"
@@ -38,7 +38,7 @@ ExpectedOutputRegistry::ExpectedOutputRegistry()
 const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
 
 // Resolve Expected Output string via its identifier
-#define EO(ID) "" + ExpectedOutputRegistry::get(#ID) + ""
+#define EO(ID) "" + ExpectedOutputRegistry::get(catalogEndpointVersion() + "/" #ID) + ""
 
 ////////////////////////////////////////////////////////////////////////////////
 // Building blocks for OPDS output
