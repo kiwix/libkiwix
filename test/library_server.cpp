@@ -89,22 +89,22 @@ std::string maskVariableOPDSFeedData(std::string s)
 
 TEST_F(LibraryServerTest, catalog_v2_root)
 {
-  TEST_CATALOG_ENDPOINT("root.xml", CATALOG_ROOT);
+  TEST_CATALOG_ENDPOINT("root.xml", EO(CATALOG_ROOT));
 }
 
 TEST_F(LibraryServerTest, catalog_v2_searchdescription_xml)
 {
-  TEST_CATALOG_ENDPOINT("searchdescription.xml", CATALOG_SEARCHDESCRIPTION);
+  TEST_CATALOG_ENDPOINT("searchdescription.xml", EO(CATALOG_SEARCHDESCRIPTION));
 }
 
 TEST_F(LibraryServerTest, catalog_v2_categories)
 {
-  TEST_CATALOG_ENDPOINT("categories", CATALOG_CATEGORIES);
+  TEST_CATALOG_ENDPOINT("categories", EO(CATALOG_CATEGORIES));
 }
 
 TEST_F(LibraryServerTest, catalog_v2_languages)
 {
-  TEST_CATALOG_ENDPOINT("languages", CATALOG_LANGUAGES);
+  TEST_CATALOG_ENDPOINT("languages", EO(CATALOG_LANGUAGES));
 }
 
 TEST_F(LibraryServerTest, catalog_v2_entries)
@@ -114,9 +114,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries)
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
+    EO(RAY_CHARLES_CATALOG_ENTRY)
+    EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
 }
@@ -135,10 +135,10 @@ TEST_F(LibraryServerTest, catalog_v2_entries_catalog_only_mode)
     "  <title>All Entries</title>\n"
     "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
     "\n"
-    + fixContentLinks(CHARLES_RAY_CATALOG_ENTRY)
-    + fixContentLinks(INACCESSIBLEZIMFILE_CATALOG_ENTRY)
-    + fixContentLinks(RAY_CHARLES_CATALOG_ENTRY)
-    + fixContentLinks(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY) +
+    + fixContentLinks(EO(CHARLES_RAY_CATALOG_ENTRY))
+    + fixContentLinks(EO(INACCESSIBLEZIMFILE_CATALOG_ENTRY))
+    + fixContentLinks(EO(RAY_CHARLES_CATALOG_ENTRY))
+    + fixContentLinks(EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)) +
     "</feed>\n";
 
   TEST_CATALOG_ENDPOINT("entries", expectedOPDS);
@@ -168,8 +168,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
-      RAY_CHARLES_CATALOG_ENTRY
-      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      EO(RAY_CHARLES_CATALOG_ENTRY)
+      EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -183,9 +183,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>3</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
-      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+      EO(CHARLES_RAY_CATALOG_ENTRY)
+      EO(RAY_CHARLES_CATALOG_ENTRY)
+      EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -211,8 +211,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
+      EO(CHARLES_RAY_CATALOG_ENTRY)
+      EO(RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -225,7 +225,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_range)
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>1</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
-      RAY_CHARLES_CATALOG_ENTRY
+      EO(RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -240,9 +240,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_words)
     "  <totalResults>3</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>3</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
+    EO(RAY_CHARLES_CATALOG_ENTRY)
+    EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
 }
@@ -256,8 +256,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_phrase)
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
+    EO(RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
 }
@@ -272,8 +272,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
+      EO(CHARLES_RAY_CATALOG_ENTRY)
+      EO(RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -285,7 +285,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_via_prefix_search)
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
-      RAY_CHARLES_CATALOG_ENTRY
+      EO(RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -300,8 +300,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_with_word_exclusion)
     "  <totalResults>2</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>2</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
-    RAY_CHARLES_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
+    EO(RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
 }
@@ -317,7 +317,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -331,7 +331,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -345,7 +345,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    RAY_CHARLES_CATALOG_ENTRY
+    EO(RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -359,7 +359,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -373,7 +373,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -387,7 +387,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY
+    EO(CHARLES_RAY_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -401,7 +401,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    RAY_CHARLES_CATALOG_ENTRY
+    EO(RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -415,7 +415,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_special_queries)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+    EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
     "</feed>\n"
   );
   }
@@ -457,8 +457,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
-      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
+      EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
+      EO(RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -471,9 +471,9 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_language)
       "  <totalResults>3</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>3</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
-      UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
+      EO(CHARLES_RAY_CATALOG_ENTRY)
+      EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
+      EO(RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -489,7 +489,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
+      EO(CHARLES_RAY_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -502,8 +502,8 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtered_by_category)
       "  <totalResults>2</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>2</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
-      RAY_CHARLES_CATALOG_ENTRY
+      EO(CHARLES_RAY_CATALOG_ENTRY)
+      EO(RAY_CHARLES_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -519,7 +519,7 @@ TEST_F(LibraryServerTest, catalog_v2_entries_multiple_filters)
       "  <totalResults>1</totalResults>\n"
       "  <startIndex>0</startIndex>\n"
       "  <itemsPerPage>1</itemsPerPage>\n"
-      CHARLES_RAY_CATALOG_ENTRY
+      EO(CHARLES_RAY_CATALOG_ENTRY)
       "</feed>\n"
     );
   }
@@ -529,7 +529,7 @@ TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
 {
   TEST_CATALOG_ENDPOINT("entry/raycharles",
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    RAY_CHARLES_CATALOG_ENTRY
+    EO(RAY_CHARLES_CATALOG_ENTRY)
   );
 
   const auto r1 = getFromCatalogEndpoint("entry/non-existent-entry");
@@ -538,7 +538,7 @@ TEST_F(LibraryServerTest, catalog_v2_individual_entry_access)
 
 TEST_F(LibraryServerTest, catalog_v2_partial_entries)
 {
-  TEST_CATALOG_ENDPOINT("partial_entries", CATALOG_PARTIAL_ENTRIES);
+  TEST_CATALOG_ENDPOINT("partial_entries", EO(CATALOG_PARTIAL_ENTRIES));
 }
 
 TEST_F(LibraryServerTest, ThumbnailMimeTypeHandling)
@@ -579,30 +579,30 @@ TEST_F(LibraryServerTest, catalog_v2_entries_filtering_includes_public_tags)
 {
   EXPECT_FILTERING_RESULTS("public_tag_without_a_value",
                         1,
-                        RAY_CHARLES_CATALOG_ENTRY
+                        EO(RAY_CHARLES_CATALOG_ENTRY)
   );
 
   EXPECT_FILTERING_RESULTS("public_tag_with_a_value",
                         1,
-                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+                        EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
   );
 
   // prefix search works on tag names
   EXPECT_FILTERING_RESULTS("public_tag",
                         2,
-                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
-                        RAY_CHARLES_CATALOG_ENTRY
+                        EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
+                        EO(RAY_CHARLES_CATALOG_ENTRY)
   );
 
   EXPECT_FILTERING_RESULTS("value_of_a_public_tag",
                         1,
-                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+                        EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
   );
 
   // prefix search works on tag values
   EXPECT_FILTERING_RESULTS("value_of",
                         1,
-                        UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY
+                        EO(UNCATEGORIZED_RAY_CHARLES_CATALOG_ENTRY)
   );
 }
 
@@ -635,7 +635,7 @@ TEST_F(LibraryServerTest, no_name_mapper_returned_catalog_use_uuid_in_link)
     "  <totalResults>1</totalResults>\n"
     "  <startIndex>0</startIndex>\n"
     "  <itemsPerPage>1</itemsPerPage>\n"
-    CHARLES_RAY_CATALOG_ENTRY_NO_NAMEMAPPER
+    EO(CHARLES_RAY_CATALOG_ENTRY_NO_NAMEMAPPER)
     "</feed>\n"
   );
 }
@@ -648,7 +648,7 @@ TEST_F(LibraryServerTest, no_name_mapper_catalog_v2_individual_entry_access)
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(maskVariableOPDSFeedData(r->body),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    RAY_CHARLES_CATALOG_ENTRY_NO_NAMEMAPPER
+    EO(RAY_CHARLES_CATALOG_ENTRY_NO_NAMEMAPPER)
   );
 
   const auto r1 = getFromCatalogEndpoint("entry/non-existent-entry");
