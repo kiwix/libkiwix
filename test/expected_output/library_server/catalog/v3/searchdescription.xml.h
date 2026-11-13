@@ -7,6 +7,6 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
        xmlns:atom="http://www.w3.org/2005/Atom"
        xmlns:k="http://kiwix.org/opensearchextension/1.0"
        indexOffset="0"
-       template="/ROOT%23%3F/catalog/v2/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}"/>
+       template="/ROOT%23%3F/catalog/v3/entries?q={searchTerms?}&lang={language?}&name={k:name?}&tag={k:tag?}&maxsize={k:maxsize?}&count={count?}&start={startIndex?}"/>
 </OpenSearchDescription>
 )");

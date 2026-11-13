@@ -74,16 +74,16 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
   }
 
   if (url == "v2" || url == "v3") {
-    return handle_catalog_v2(request);
+    return handle_catalog_v(request);
   }
 
   return UrlNotFoundResponse(request);
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext& request)
 {
   if (m_verbose.load()) {
-    printf("** running handle_catalog_v2");
+    printf("** running handle_catalog_v");
   }
 
   std::string url;
@@ -93,10 +93,12 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
     return UrlNotFoundResponse(request);
   }
 
+  const std::string endpointVersion = request.get_url_part(1);
+
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
   } else if (url == "searchdescription.xml") {
-    const std::string endpoint_root = m_root + "/catalog/v2";
+    const std::string endpoint_root = m_root + "/catalog/" + endpointVersion;
     return ContentResponse::build(
         RESOURCE::templates::catalog::searchdescription_xml,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
