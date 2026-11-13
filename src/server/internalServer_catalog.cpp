@@ -116,7 +116,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext&
   } else if (url == "languages") {
     return handle_catalog_v_languages(request);
   } else if (url == "illustration") {
-    return handle_catalog_v2_illustration(request);
+    return handle_catalog_v_illustration(request);
   } else {
     return UrlNotFoundResponse(request);
   }
@@ -192,7 +192,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v_languages(const Reque
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_illustration(const RequestContext& request)
 {
   try {
     const auto bookId  = request.get_url_part(3);

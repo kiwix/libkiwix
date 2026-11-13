@@ -143,7 +143,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_catalog_v_categories(const RequestContext& request);
     std::unique_ptr<Response> handle_no_js(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog_v_languages(const RequestContext& request);
-    std::unique_ptr<Response> handle_catalog_v2_illustration(const RequestContext& request);
+    std::unique_ptr<Response> handle_catalog_v_illustration(const RequestContext& request);
     std::unique_ptr<Response> handle_search(const RequestContext& request);
     std::unique_ptr<Response> handle_search_request(const RequestContext& request);
     std::unique_ptr<Response> handle_suggest(const RequestContext& request);
