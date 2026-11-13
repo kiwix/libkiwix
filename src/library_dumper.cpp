@@ -44,7 +44,7 @@ std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
  * getEmbeddedThumbnailLinks() for those instead).
  */
 kainjow::mustache::list
-getExternalThumbnailLinks(const Book& book, const std::string& rootLocation,
+getExternalThumbnailLinks(const Book& book, const std::string& endpointRoot,
   bool isLiveCatalog = true)
 {
   kainjow::mustache::list thumbnailLinks;
@@ -56,7 +56,7 @@ getExternalThumbnailLinks(const Book& book, const std::string& rootLocation,
     // Book IDs do not contain special characters, so they are HTML-safe.
     // Therefore, no HTML encoding is required.
     const std::string thumbnailUrl = isLiveCatalog
-    ? rootLocation + "/catalog/v2/illustration/" + kiwix::urlEncode(book.getId()) + "/?size=" + iconSizeWidth
+    ? endpointRoot + "/illustration/" + kiwix::urlEncode(book.getId()) + "/?size=" + iconSizeWidth
     : illustration->getUrl();
 
     thumbnailLinks.push_back(kainjow::mustache::object{
@@ -144,7 +144,7 @@ kainjow::mustache::list getAcquisitionLinkData(const Book& book)
 
 
 std::string fullEntryOpds(const Book& book,
-                         const std::string& rootLocation,
+                         const std::string& endpointRoot,
                          const std::string& contentAccessUrl,
                          const std::string& contentId,
                          const std::string& localPath,
@@ -152,7 +152,7 @@ std::string fullEntryOpds(const Book& book,
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     auto thumbnailLinks
-      = getExternalThumbnailLinks(book, rootLocation, isLiveCatalog);
+      = getExternalThumbnailLinks(book, endpointRoot, isLiveCatalog);
     auto embeddedThumbnailLinks
       = getEmbeddedThumbnailLinks(book, isLiveCatalog);
     thumbnailLinks.insert(thumbnailLinks.end(),

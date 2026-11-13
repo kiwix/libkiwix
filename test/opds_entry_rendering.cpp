@@ -250,7 +250,7 @@ TEST(FullEntryOpdsTest, rendersThumbnailLinkForBookIllustration)
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
     "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
-    "          href=\"http://root.location/catalog/v2/illustration/book-with-icon/?size=48\"\n"
+    "          href=\"http://root.location/illustration/book-with-icon/?size=48\"\n"
     "          type=\"image/png;width=48;height=48;scale=1\"/>\n"
     "    <author>\n"
     "      <name></name>\n"
@@ -287,7 +287,7 @@ TEST(FullEntryOpdsTest, rendersIllustrationUrlDirectlyInFileDump)
 
   // isLiveCatalog=false (offline file dump): with an external url available,
   // the thumbnail link points straight at that url instead of the live
-  // /catalog/v2/illustration endpoint, which has no server behind it there.
+  // /illustration endpoint, which has no server behind it there.
   EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-with-icon-url",
                           /*localPath=*/"", /*isLiveCatalog=*/false),
     "  <entry>\n"
@@ -529,7 +529,7 @@ TEST(FullEntryOpdsTest, omitsDataUriThumbnailForEmbeddedOnlyIllustrationInLiveCa
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
     "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"
-    "          href=\"http://root.location/catalog/v2/illustration/book-with-embedded-icon/?size=48\"\n"
+    "          href=\"http://root.location/illustration/book-with-embedded-icon/?size=48\"\n"
     "          type=\"image/png;width=48;height=48;scale=1\"/>\n"
     "    <author>\n"
     "      <name></name>\n"
