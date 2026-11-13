@@ -96,7 +96,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext&
   const std::string endpointVersion = request.get_url_part(1);
 
   if (url == "root.xml") {
-    return handle_catalog_v2_root(request);
+    return handle_catalog_v_root(request);
   } else if (url == "searchdescription.xml") {
     const std::string endpoint_root = m_root + "/catalog/" + endpointVersion;
     return ContentResponse::build(
@@ -122,14 +122,15 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext&
   }
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_root(const RequestContext& request)
 {
   const std::string libraryId = getLibraryId();
+  const std::string endpointVersion = request.get_url_part(1);
   return ContentResponse::build(
              RESOURCE::templates::catalog::root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
-               {"endpoint_root", m_root + "/catalog/v2"},
+               {"endpoint_root", m_root + "/catalog/" + endpointVersion},
                {"feed_id", gen_uuid(libraryId)},
                {"all_entries_feed_id", gen_uuid(libraryId + "/entries")},
                {"partial_entries_feed_id", gen_uuid(libraryId + "/partial_entries")},
