@@ -108,9 +108,9 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext&
     const std::string entryId  = request.get_url_part(3);
     return handle_catalog_v2_complete_entry(request, entryId);
   } else if (url == "entries") {
-    return handle_catalog_v2_entries(request, /*partial=*/false);
+    return handle_catalog_v_entries(request, /*partial=*/false);
   } else if (url == "partial_entries") {
-    return handle_catalog_v2_entries(request, /*partial=*/true);
+    return handle_catalog_v_entries(request, /*partial=*/true);
   } else if (url == "categories") {
     return handle_catalog_v_categories(request);
   } else if (url == "languages") {
@@ -141,11 +141,15 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v_root(const RequestCon
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_entries(const RequestContext& request, bool partial)
 {
+  const std::string endpointVersion = request.get_url_part(1);
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   const auto bookIds = search_catalog(request, opdsDumper);
-  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
+  const auto opdsFeed = opdsDumper.dumpOPDSFeed(endpointVersion,
+                                                bookIds,
+                                                request.get_query(),
+                                                partial);
   return ContentResponse::build(
              opdsFeed,
              opdsMimeType[OPDS_ACQUISITION_FEED]

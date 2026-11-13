@@ -7,13 +7,13 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
 
   <link rel="self"
-        href="/ROOT%23%3F/catalog/v2/partial_entries"
+        href="/ROOT%23%3F/catalog/v3/partial_entries"
         type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
   <link rel="start"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v3/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="up"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v3/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
 
   <title>All Entries</title>

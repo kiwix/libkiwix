@@ -216,7 +216,7 @@ class OPDSDumperTest : public ::testing::Test {
 
 TEST_F(OPDSDumperTest, dumpOPDSFeedV2FullEntries)
 {
-  EXPECT_OPDS(dumper->dumpOPDSFeedV2({"book1-id", "book2-id"}, "", /*partial=*/false),
+  EXPECT_OPDS(dumper->dumpOPDSFeed("v2", {"book1-id", "book2-id"}, "", /*partial=*/false),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
@@ -245,7 +245,7 @@ TEST_F(OPDSDumperTest, dumpOPDSFeedV2FullEntries)
 
 TEST_F(OPDSDumperTest, dumpOPDSFeedV2PartialEntries)
 {
-  EXPECT_OPDS(dumper->dumpOPDSFeedV2({"book1-id", "book2-id"}, "", /*partial=*/true),
+  EXPECT_OPDS(dumper->dumpOPDSFeed("v2", {"book1-id", "book2-id"}, "", /*partial=*/true),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"

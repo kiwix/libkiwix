@@ -88,9 +88,12 @@ BooksData getBooksData(const Library* library,
 
 } // unnamed namespace
 
-string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
+string OPDSDumper::dumpOPDSFeed(const std::string& endpointVersion,
+                                const std::vector<std::string>& bookIds,
+                                const std::string& query,
+                                bool partial) const
 {
-  const auto endpointRoot = rootLocation + "/catalog/v2";
+  const auto endpointRoot = rootLocation + "/catalog/" + endpointVersion;
   const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
