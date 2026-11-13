@@ -106,7 +106,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext&
     );
   } else if (url == "entry") {
     const std::string entryId  = request.get_url_part(3);
-    return handle_catalog_v2_complete_entry(request, entryId);
+    return handle_catalog_v_complete_entry(request, entryId);
   } else if (url == "entries") {
     return handle_catalog_v_entries(request, /*partial=*/false);
   } else if (url == "partial_entries") {
@@ -156,7 +156,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v_entries(const Request
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const RequestContext& request, const std::string& entryId)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_complete_entry(const RequestContext& request, const std::string& entryId)
 {
   try {
     mp_library->getBookById(entryId);
@@ -164,10 +164,10 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
     return UrlNotFoundResponse(request);
   }
 
+  const std::string endpointVersion = request.get_url_part(1);
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
-  const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
-             opdsFeed,
+             opdsDumper.dumpOPDSCompleteEntry(endpointVersion, entryId),
              opdsMimeType[OPDS_ENTRY]
   );
 }

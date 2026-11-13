@@ -274,7 +274,7 @@ TEST_F(OPDSDumperTest, dumpOPDSFeedV2PartialEntries)
 
 TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryProducesStandaloneEntryDocument)
 {
-  EXPECT_OPDS(dumper->dumpOPDSCompleteEntry("book2-id"),
+  EXPECT_OPDS(dumper->dumpOPDSCompleteEntry("v2", "book2-id"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     BOOK2_ENTRY
   );
@@ -282,7 +282,7 @@ TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryProducesStandaloneEntryDocument)
 
 TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryThrowsForUnknownBookId)
 {
-  EXPECT_THROW(dumper->dumpOPDSCompleteEntry("no-such-book"), std::out_of_range);
+  EXPECT_THROW(dumper->dumpOPDSCompleteEntry("v2", "no-such-book"), std::out_of_range);
 }
 
 TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)

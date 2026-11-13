@@ -558,7 +558,7 @@ TEST_P(LibraryServerTest, ThumbnailMimeTypeHandling)
 
   EXPECT_TRUE(kiwix::contains(r->body,
     "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"
-    "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n"
+    "          href=\"/ROOT%23%3F/catalog/" + catalogEndpointVersion() + "/illustration/raycharles/?size=48\"\n"
     "          type=\"image/png;width=48;height=48;scale=1\"/>"
   ));
 

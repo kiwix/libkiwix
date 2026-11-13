@@ -59,10 +59,11 @@ class OPDSDumper : public LibraryDumper
   /**
    * Dump the OPDS complete entry document.
    *
+   * @param endpointVersion version of the /catalog endpoint to use
    * @param bookId the id of the book
    * @return The OPDS complete entry document.
    */
-  std::string dumpOPDSCompleteEntry(const std::string& bookId) const;
+  std::string dumpOPDSCompleteEntry(const std::string& endpointVersion, const std::string& bookId) const;
 
   /**
    * Dump the categories OPDS feed.

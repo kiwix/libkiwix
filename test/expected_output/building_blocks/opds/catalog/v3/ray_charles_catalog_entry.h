@@ -15,7 +15,7 @@ R"(  <entry>
     <articleCount>284</articleCount>
     <mediaCount>2</mediaCount>
     <link rel="http://opds-spec.org/image/thumbnail"
-          href="/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48"
+          href="/ROOT%23%3F/catalog/v3/illustration/raycharles/?size=48"
           type="image/png;width=48;height=48;scale=1"/>
     <link type="text/html" href="/ROOT%23%3F/content/zimfile_raycharles" />
     <author>

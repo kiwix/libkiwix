@@ -37,11 +37,14 @@ mydir = os.path.dirname(__file__)
 
 def illustration_links_opds(data):
     uuid = data['UUID']
+    endpoint_version = data['CATALOG_ENDPOINT_VERSION']
     def gen_link_block(illustration_info):
-        illustration_info = edict(illustration_info, UUID=uuid)
+        illustration_info = edict(illustration_info,
+                                  CATALOG_ENDPOINT_VERSION=endpoint_version,
+                                  UUID=uuid)
         link_template="""
     <link rel="http://opds-spec.org/image/thumbnail"
-          href="/ROOT%23%3F/catalog/v2/illustration/{UUID}/?size={SIZE}"
+          href="/ROOT%23%3F/catalog/{CATALOG_ENDPOINT_VERSION}/illustration/{UUID}/?size={SIZE}"
           type="image/png;width={SIZE};height={SIZE};scale=1"/>"""
         return link_template.format(**illustration_info)
 
@@ -56,7 +59,9 @@ def write_file(path, content):
     with open(path, "w") as outfile:
         outfile.write(content)
 
-def write_opds_entry_building_block(path, identifier, data):
+def write_opds_entry_building_block(v, fname, identifier, data):
+    path = "opds/catalog/" + v + "/" + fname
+    data = edict(data, CATALOG_ENDPOINT_VERSION=v)
     content = generate_opds_entry_building_block(identifier, data);
     write_file(path, content)
 
@@ -157,10 +162,7 @@ for identifier, data in input_data:
     fname = identifier.lower() + ".h"
     allinc_file_content += f'#include "{fname}"\n'
     for v in ("v2", "v3"):
-        path = "opds/catalog/" + v + "/" + fname
-        write_opds_entry_building_block(path=path,
-                                        identifier=identifier,
-                                        data=data)
+        write_opds_entry_building_block(v, fname, identifier, data)
 
 write_file("opds/catalog/v2/all.inc", allinc_file_content)
 write_file("opds/catalog/v3/all.inc", allinc_file_content)

@@ -112,9 +112,10 @@ string OPDSDumper::dumpOPDSFeed(const std::string& endpointVersion,
   return render_template(RESOURCE::templates::catalog::entries_xml, template_data);
 }
 
-std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
+std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& endpointVersion,
+                                              const std::string& bookId) const
 {
-  const std::string endpointRoot = rootLocation + "/catalog/v2";
+  const std::string endpointRoot = rootLocation + "/catalog/" + endpointVersion;
   const auto book = library->getBookById(bookId);
   const std::string contentId = nameMapper->getNameForId(bookId);
   return XML_HEADER
