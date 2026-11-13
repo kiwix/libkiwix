@@ -329,7 +329,7 @@ TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
 TEST_F(OPDSDumperTest, languagesOPDSFeedListsLanguagesWithCounts)
 {
   // Languages are listed in sorted order of their ISO code: "eng" before "fra".
-  EXPECT_OPDS(dumper->languagesOPDSFeed(),
+  EXPECT_OPDS(dumper->languagesOPDSFeed("v2"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"

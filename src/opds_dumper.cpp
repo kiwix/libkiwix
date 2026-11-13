@@ -134,7 +134,7 @@ std::string OPDSDumper::categoriesOPDSFeed(std::string endpointVersion) const
   );
 }
 
-std::string OPDSDumper::languagesOPDSFeed() const
+std::string OPDSDumper::languagesOPDSFeed(std::string endpointVersion) const
 {
   const auto now = gen_date_str();
   kainjow::mustache::list languageData = getLanguageData();
@@ -142,7 +142,7 @@ std::string OPDSDumper::languagesOPDSFeed() const
              RESOURCE::templates::catalog::languages_xml,
              kainjow::mustache::object{
                {"date", now},
-               {"endpoint_root", rootLocation + "/catalog/v2"},
+               {"endpoint_root", rootLocation + "/catalog/" + endpointVersion},
                {"feed_id", gen_uuid(libraryId + "/languages")},
                {"languages", languageData }
              }

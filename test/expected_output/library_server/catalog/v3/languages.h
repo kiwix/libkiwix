@@ -6,10 +6,10 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
       xmlns:thr="http://purl.org/syndication/thread/1.0">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
-        href="/ROOT%23%3F/catalog/v2/languages"
+        href="/ROOT%23%3F/catalog/v3/languages"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="start"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v3/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <title>List of languages</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
@@ -19,7 +19,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <dc:language>cat</dc:language>
     <thr:count>1</thr:count>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=cat"
+          href="/ROOT%23%3F/catalog/v3/entries?lang=cat"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -29,7 +29,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <dc:language>eng</dc:language>
     <thr:count>2</thr:count>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=eng"
+          href="/ROOT%23%3F/catalog/v3/entries?lang=eng"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -39,7 +39,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <dc:language>fra</dc:language>
     <thr:count>1</thr:count>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=fra"
+          href="/ROOT%23%3F/catalog/v3/entries?lang=fra"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -49,7 +49,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <dc:language>rus</dc:language>
     <thr:count>1</thr:count>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?lang=rus"
+          href="/ROOT%23%3F/catalog/v3/entries?lang=rus"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
