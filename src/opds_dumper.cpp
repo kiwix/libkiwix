@@ -119,7 +119,7 @@ std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
          + fullEntryOpds(book, rootLocation, contentAccessUrl, contentId);
 }
 
-std::string OPDSDumper::categoriesOPDSFeed() const
+std::string OPDSDumper::categoriesOPDSFeed(std::string endpointVersion) const
 {
   const auto now = gen_date_str();
   kainjow::mustache::list categoryData = getCategoryData();
@@ -127,7 +127,7 @@ std::string OPDSDumper::categoriesOPDSFeed() const
              RESOURCE::templates::catalog::categories_xml,
              kainjow::mustache::object{
                {"date", now},
-               {"endpoint_root", rootLocation + "/catalog/v2"},
+               {"endpoint_root", rootLocation + "/catalog/" + endpointVersion},
                {"feed_id", gen_uuid(libraryId + "/categories")},
                {"categories", categoryData }
              }

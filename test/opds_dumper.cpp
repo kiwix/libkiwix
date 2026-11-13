@@ -290,7 +290,7 @@ TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
   // Categories are listed in sorted order: "wikipedia" (from the
   // "_category:" tag on book1) before "wiktionary" (from book2's explicit
   // "category" attribute).
-  EXPECT_OPDS(dumper->categoriesOPDSFeed(),
+  EXPECT_OPDS(dumper->categoriesOPDSFeed("v2"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:opds=\"https://specs.opds.io/opds-1.2\">\n"

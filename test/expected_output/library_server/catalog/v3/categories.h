@@ -4,10 +4,10 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
       xmlns:opds="https://specs.opds.io/opds-1.2">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
-        href="/ROOT%23%3F/catalog/v2/categories"
+        href="/ROOT%23%3F/catalog/v3/categories"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="start"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v3/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <title>List of categories</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
@@ -15,7 +15,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <title>cats</title>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?category=cats"
+          href="/ROOT%23%3F/catalog/v3/entries?category=cats"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -24,7 +24,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <title>jazz</title>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?category=jazz"
+          href="/ROOT%23%3F/catalog/v3/entries?category=jazz"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -33,7 +33,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <title>wikipedia</title>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries?category=wikipedia"
+          href="/ROOT%23%3F/catalog/v3/entries?category=wikipedia"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
