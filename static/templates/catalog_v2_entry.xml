@@ -6,8 +6,8 @@
     <language>{{language}}</language>
     <name>{{name}}</name>
     <flavour>{{flavour}}</flavour>
-    <category>{{category}}</category>
-    <tags>{{tags}}</tags>
+    {{#category}}<category>{{category}}</category>
+    {{/category}}<tags>{{tags}}</tags>
     <articleCount>{{article_count}}</articleCount>
     <mediaCount>{{media_count}}</mediaCount>
     {{#thumbnailLinks}}<link rel="http://opds-spec.org/image/thumbnail"

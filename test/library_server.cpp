@@ -72,7 +72,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   return s;
 }
 
-#define CATALOG_ENTRY(UUID, TITLE, SUMMARY, LANG, NAME, CATEGORY, TAGS, EXTRA_LINK, CONTENT_NAME, FILE_NAME, LENGTH) \
+#define CATALOG_ENTRY(UUID, TITLE, SUMMARY, LANG, NAME, CATEGORY_ELEMENT, TAGS, EXTRA_LINK, CONTENT_NAME, FILE_NAME, LENGTH) \
     "  <entry>\n"                                                       \
     "    <id>urn:uuid:" UUID "</id>\n"                                \
     "    <title>" TITLE "</title>\n"                                 \
@@ -81,7 +81,7 @@ std::string maskVariableOPDSFeedData(std::string s)
     "    <language>" LANG "</language>\n"                                    \
     "    <name>" NAME "</name>\n"                       \
     "    <flavour></flavour>\n"                                         \
-    "    <category>" CATEGORY "</category>\n"                                   \
+    CATEGORY_ELEMENT                                                    \
     "    <tags>" TAGS "</tags>\n" \
     "    <articleCount>284</articleCount>\n"                            \
     "    <mediaCount>2</mediaCount>\n"                                  \
@@ -103,7 +103,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   "Wikipedia articles about Ray Charles or why and when one should go to library", \
   "fra", \
   "wikipedia_fr_ray_charles",\
-  "jazz",\
+  "    <category>jazz</category>\n",\
   "unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes",\
   "", \
   CONTENT_NAME, \
@@ -120,7 +120,7 @@ std::string maskVariableOPDSFeedData(std::string s)
   "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)",\
   "eng",\
   "wikipedia_en_ray_charles",\
-  "wikipedia",\
+  "    <category>wikipedia</category>\n",\
   "public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes",\
   "    <link rel=\"http://opds-spec.org/image/thumbnail\"\n"          \
   "          href=\"/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n" \
