@@ -1089,7 +1089,7 @@ std::string Library::dumpOpds(const std::string& outputPath) const
         ? ""
         : computeRelativePath(baseDir, book.getPath());
     ss << fullEntryOpds(book,
-                        /*rootLocation=*/"",
+                        /*endpointRoot=*/"",
                         /*contentAccessUrl=*/"",
                         /*contentId=*/book.getId(),
                         localPath,

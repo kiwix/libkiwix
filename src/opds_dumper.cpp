@@ -47,12 +47,11 @@ const std::string XML_HEADER(R"(<?xml version="1.0" encoding="UTF-8"?>)");
 typedef kainjow::mustache::data MustacheData;
 typedef kainjow::mustache::list BooksData;
 
-std::string partialEntryOpds(const Book& book, const std::string& rootLocation)
+std::string partialEntryOpds(const Book& book, const std::string& endpointRoot)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
-      {"root",  rootLocation},
-      {"endpoint_root", rootLocation + "/catalog/v2"},
+      {"endpoint_root", endpointRoot},
       {"id", book.getId()},
       {"title", book.getTitle()},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
@@ -64,7 +63,7 @@ std::string partialEntryOpds(const Book& book, const std::string& rootLocation)
 BooksData getBooksData(const Library* library,
                        const NameMapper* nameMapper,
                        const std::vector<std::string>& bookIds,
-                       const std::string& rootLocation,
+                       const std::string& endpointRoot,
                        const std::string& contentAccessUrl,
                        bool partial)
 {
@@ -74,8 +73,8 @@ BooksData getBooksData(const Library* library,
       const Book book = library->getBookByIdThreadSafe(bookId);
       const std::string contentId = nameMapper->getNameForId(bookId);
       const auto entryXML = partial
-                          ? partialEntryOpds(book, rootLocation)
-                          : fullEntryOpds(book, rootLocation, contentAccessUrl, contentId);
+                          ? partialEntryOpds(book, endpointRoot)
+                          : fullEntryOpds(book, endpointRoot, contentAccessUrl, contentId);
       booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -94,7 +93,7 @@ string OPDSDumper::dumpOPDSFeed(const std::string& endpointVersion,
                                 bool partial) const
 {
   const auto endpointRoot = rootLocation + "/catalog/" + endpointVersion;
-  const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, partial);
+  const auto booksData = getBooksData(library, nameMapper, bookIds, endpointRoot, contentAccessUrl, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const std::string url = endpoint + (query.empty() ? "" : "?" + query);
@@ -115,11 +114,12 @@ string OPDSDumper::dumpOPDSFeed(const std::string& endpointVersion,
 
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
 {
+  const std::string endpointRoot = rootLocation + "/catalog/v2";
   const auto book = library->getBookById(bookId);
   const std::string contentId = nameMapper->getNameForId(bookId);
   return XML_HEADER
          + "\n"
-         + fullEntryOpds(book, rootLocation, contentAccessUrl, contentId);
+         + fullEntryOpds(book, endpointRoot, contentAccessUrl, contentId);
 }
 
 std::string OPDSDumper::categoriesOPDSFeed(std::string endpointVersion) const
