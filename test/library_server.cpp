@@ -7,6 +7,7 @@
 #include "server_testing_tools.h"
 
 #include "../src/tools/stringTools.h"
+#include <pugixml.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Testing of the library-related functionality of the server
@@ -1463,6 +1464,236 @@ TEST_F(LibraryServerTest, noJS_catalogOnlyMode) {
     EXPECT_EQ(r->status, 200);
     EXPECT_EQ(r->body, fixRoot(expectedHTML));
   }
+}
+
+TEST_F(LibraryServerTest, PublicUrlGeneratesAbsoluteUrlsInOpdsEntries)
+{
+  ZimFileServer::Cfg cfg;
+  cfg.publicUrl = "https://example.org";
+  resetServer(cfg);
+
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  // Validate XML is well-formed
+  pugi::xml_document doc;
+  ASSERT_TRUE(doc.load_string(r->body.c_str()));
+
+  // Self, start, up links in the feed must be absolute URLs
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "<link rel=\"self\"\n"
+    "        href=\"https://example.org/ROOT%23%3F/catalog/v2/entries\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>"
+  ));
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "<link rel=\"start\"\n"
+    "        href=\"https://example.org/ROOT%23%3F/catalog/v2/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>"
+  ));
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "<link rel=\"up\"\n"
+    "        href=\"https://example.org/ROOT%23%3F/catalog/v2/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>"
+  ));
+
+  // Thumbnail links in entries must be absolute URLs
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "<link rel=\"http://opds-spec.org/image/thumbnail\"\n"
+    "          href=\"https://example.org/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\"\n"
+    "          type=\"image/png;width=48;height=48;scale=1\"/>"
+  ));
+
+  // Content links in entries must be absolute URLs
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "<link type=\"text/html\" href=\"https://example.org/ROOT%23%3F/content/zimfile_raycharles\" />"
+  ));
+
+  // Ensure no relative links remain for thumbnail or content
+  EXPECT_FALSE(kiwix::contains(r->body, "href=\"/ROOT%23%3F/catalog/v2/illustration/"));
+  EXPECT_FALSE(kiwix::contains(r->body, "href=\"/ROOT%23%3F/content/"));
+}
+
+TEST_F(LibraryServerTest, PublicUrlPreservesHttpOriginAndNonDefaultPort)
+{
+  ZimFileServer::Cfg cfg;
+  cfg.publicUrl = "http://example.org:8080";
+  resetServer(cfg);
+
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"http://example.org:8080/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\""
+  ));
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"http://example.org:8080/ROOT%23%3F/content/zimfile_raycharles\""
+  ));
+}
+
+TEST_F(LibraryServerTest, PublicUrlRootDeploymentAndTrailingSlash)
+{
+  ZimFileServer::Cfg cfg;
+  cfg.root = "";
+  // Test trailing slash normalization
+  cfg.publicUrl = "https://example.org/";
+  resetServer(cfg);
+
+  const auto r = zfs1_->GET("/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  pugi::xml_document doc;
+  ASSERT_TRUE(doc.load_string(r->body.c_str()));
+
+  // Must not have double slashes like "https://example.org//catalog"
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"https://example.org/catalog/v2/illustration/raycharles/?size=48\""
+  ));
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"https://example.org/content/zimfile_raycharles\""
+  ));
+  EXPECT_FALSE(kiwix::contains(r->body, "example.org//"));
+}
+
+TEST_F(LibraryServerTest, PublicUrlPrefixDeploymentDeduplication)
+{
+  // When publicUrl already includes the root prefix, ensure it is not duplicated
+  ZimFileServer::Cfg cfg;
+  cfg.root = "myprefix";
+  cfg.publicUrl = "https://example.org/myprefix";
+  resetServer(cfg);
+
+  const auto r = zfs1_->GET("/myprefix/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"https://example.org/myprefix/catalog/v2/illustration/raycharles/?size=48\""
+  ));
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"https://example.org/myprefix/content/zimfile_raycharles\""
+  ));
+  EXPECT_FALSE(kiwix::contains(r->body, "/myprefix/myprefix"));
+}
+
+TEST_F(LibraryServerTest, PublicUrlWithSeparateContentServer)
+{
+  ZimFileServer::Cfg cfg;
+  cfg.publicUrl = "https://catalog.example.org";
+  cfg.contentServerUrl = "https://content.example.org";
+  resetServer(cfg);
+
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  // Thumbnail on catalog server
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"https://catalog.example.org/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\""
+  ));
+  // Content on separate content server
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"https://content.example.org/content/zimfile_raycharles\""
+  ));
+}
+
+TEST_F(LibraryServerTest, PublicUrlInCatalogOnlyMode)
+{
+  ZimFileServer::Cfg cfg;
+  cfg.publicUrl = "https://example.org";
+  cfg.options = ZimFileServer::CATALOG_ONLY_MODE;
+  resetServer(cfg);
+
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/entries");
+  EXPECT_EQ(r->status, 200);
+
+  // Thumbnail link is present with absolute URL
+  EXPECT_TRUE(kiwix::contains(r->body,
+    "href=\"https://example.org/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48\""
+  ));
+  // No content link in catalog-only mode
+  EXPECT_FALSE(kiwix::contains(r->body, "type=\"text/html\""));
+}
+
+TEST_F(LibraryServerTest, PublicUrlNavigationFeedsAndSearchDescription)
+{
+  ZimFileServer::Cfg cfg;
+  cfg.publicUrl = "https://example.org";
+  resetServer(cfg);
+
+  // 1. Root navigation feed
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/root.xml");
+    EXPECT_EQ(r->status, 200);
+    pugi::xml_document doc;
+    ASSERT_TRUE(doc.load_string(r->body.c_str()));
+
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/root.xml\""
+    ));
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/searchdescription.xml\""
+    ));
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/entries\""
+    ));
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/partial_entries\""
+    ));
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/categories\""
+    ));
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/languages\""
+    ));
+  }
+
+  // 2. Search description
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/searchdescription.xml");
+    EXPECT_EQ(r->status, 200);
+    pugi::xml_document doc;
+    ASSERT_TRUE(doc.load_string(r->body.c_str()));
+
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "template=\"https://example.org/ROOT%23%3F/catalog/v2/entries?q="
+    ));
+  }
+
+  // 3. Categories navigation feed
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/categories");
+    EXPECT_EQ(r->status, 200);
+    pugi::xml_document doc;
+    ASSERT_TRUE(doc.load_string(r->body.c_str()));
+
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/entries?category="
+    ));
+  }
+
+  // 4. Languages navigation feed
+  {
+    const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v2/languages");
+    EXPECT_EQ(r->status, 200);
+    pugi::xml_document doc;
+    ASSERT_TRUE(doc.load_string(r->body.c_str()));
+
+    EXPECT_TRUE(kiwix::contains(r->body,
+      "href=\"https://example.org/ROOT%23%3F/catalog/v2/entries?lang="
+    ));
+  }
+}
+
+TEST_F(LibraryServerTest, PublicUrlGetterSetter)
+{
+  auto lib = kiwix::Library::create();
+  kiwix::Server server(lib);
+  EXPECT_EQ(server.getPublicUrl(), "");
+
+  server.setPublicUrl("https://example.org/");
+  // Trailing slash normalized
+  EXPECT_EQ(server.getPublicUrl(), "https://example.org");
+
+  server.setPublicUrl("  http://example.org:8080  ");
+  EXPECT_EQ(server.getPublicUrl(), "http://example.org:8080");
 }
 
 #undef EXPECT_FILTERING_RESULTS

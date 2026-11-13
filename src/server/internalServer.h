@@ -109,6 +109,9 @@ class InternalServer {
     void setBlockExternalLinks(bool blockExternalLinks);
     void setCatalogOnlyMode(bool enable);
     void setContentServerUrl(std::string url);
+    void setPublicUrl(const std::string& url);
+    std::string getPublicUrl() const { return m_publicUrl; }
+    std::string getCatalogRootLocation() const;
     void setIpMode(IpMode mode);
     void setRoot(const std::string& root);
 
@@ -205,6 +208,7 @@ class InternalServer {
 
     bool m_catalogOnlyMode = false;
     std::string m_contentServerUrl;
+    std::string m_publicUrl;
 };
 
 }
