@@ -139,7 +139,7 @@ const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
   "        <div class=\"book__wrapper\">\n" \
   "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile%26other\" title=\"Preview\" aria-label=\"Preview\">\n" \
   "            <div class=\"book__link__wrapper\">\n" \
-  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/charlesray/?size=48)></div>\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v3/illustration/charlesray/?size=48)></div>\n" \
   "            <div class=\"book__header\">\n" \
   "                <div id=\"book__title\">Charles, Ray</div>\n" \
   "            </div>\n" \
@@ -166,7 +166,7 @@ const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
   "        <div class=\"book__wrapper\">\n" \
   "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles\" title=\"Preview\" aria-label=\"Preview\">\n" \
   "            <div class=\"book__link__wrapper\">\n" \
-  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles/?size=48)></div>\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v3/illustration/raycharles/?size=48)></div>\n" \
   "            <div class=\"book__header\">\n" \
   "                <div id=\"book__title\">Ray Charles</div>\n" \
   "            </div>\n" \
@@ -193,7 +193,7 @@ const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
   "        <div class=\"book__wrapper\">\n" \
   "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/zimfile_raycharles_uncategorized\" title=\"Preview\" aria-label=\"Preview\">\n" \
   "            <div class=\"book__link__wrapper\">\n" \
-  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/raycharles_uncategorized/?size=48)></div>\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v3/illustration/raycharles_uncategorized/?size=48)></div>\n" \
   "            <div class=\"book__header\">\n" \
   "                <div id=\"book__title\">Ray (uncategorized) Charles</div>\n" \
   "            </div>\n" \
@@ -220,7 +220,7 @@ const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
   "        <div class=\"book__wrapper\">\n" \
   "            <a class=\"book__link\" href=\"/ROOT%23%3F/content/nosuchzimfile\" title=\"Preview\" aria-label=\"Preview\">\n" \
   "            <div class=\"book__link__wrapper\">\n" \
-  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v2/illustration/inaccessiblezim/?size=48)></div>\n" \
+  "            <div class=\"book__icon\" style=background-image:url(/ROOT%23%3F/catalog/v3/illustration/inaccessiblezim/?size=48)></div>\n" \
   "            <div class=\"book__header\">\n" \
   "                <div id=\"book__title\">Catalog of all catalogs</div>\n" \
   "            </div>\n" \

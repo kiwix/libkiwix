@@ -96,7 +96,7 @@ std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
       contentId = urlEncode(nameMapper->getNameForId(bookId));
     } catch (...) {}
     const auto bookDescription = bookObj.getDescription();
-    const auto bookIconUrl = rootLocation + "/catalog/v2/illustration/" + bookId +  "/?size=48";
+    const auto bookIconUrl = rootLocation + "/catalog/v3/illustration/" + bookId +  "/?size=48";
     const auto tags = bookObj.getTags();
     // The no-JS download page this flag's link leads to lists whichever
     // acquisition links the book has, so it is available if there is any.
