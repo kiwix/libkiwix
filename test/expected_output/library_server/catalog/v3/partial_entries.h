@@ -24,7 +24,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <title>Charles, Ray</title>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <link rel="alternate"
-          href="/ROOT%23%3F/catalog/v2/entry/charlesray"
+          href="/ROOT%23%3F/catalog/v3/entry/charlesray"
           type="application/atom+xml;type=entry;profile=opds-catalog"/>
   </entry>
   <entry>
@@ -32,7 +32,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <title>Ray Charles</title>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <link rel="alternate"
-          href="/ROOT%23%3F/catalog/v2/entry/raycharles"
+          href="/ROOT%23%3F/catalog/v3/entry/raycharles"
           type="application/atom+xml;type=entry;profile=opds-catalog"/>
   </entry>
   <entry>
@@ -40,7 +40,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
     <title>Ray (uncategorized) Charles</title>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <link rel="alternate"
-          href="/ROOT%23%3F/catalog/v2/entry/raycharles_uncategorized"
+          href="/ROOT%23%3F/catalog/v3/entry/raycharles_uncategorized"
           type="application/atom+xml;type=entry;profile=opds-catalog"/>
   </entry>
 </feed>

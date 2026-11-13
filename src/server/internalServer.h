@@ -139,7 +139,7 @@ class InternalServer {
     std::unique_ptr<Response> handle_catalog_v(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog_v_root(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog_v_entries(const RequestContext& request, bool partial);
-    std::unique_ptr<Response> handle_catalog_v2_complete_entry(const RequestContext& request, const std::string& entryId);
+    std::unique_ptr<Response> handle_catalog_v_complete_entry(const RequestContext& request, const std::string& entryId);
     std::unique_ptr<Response> handle_catalog_v_categories(const RequestContext& request);
     std::unique_ptr<Response> handle_no_js(const RequestContext& request);
     std::unique_ptr<Response> handle_catalog_v_languages(const RequestContext& request);
