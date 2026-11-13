@@ -180,7 +180,7 @@ std::string fullEntryOpds(const Book& book,
       {"acquisitionLinks", getAcquisitionLinkData(book)},
       {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
-    return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
+    return render_template(RESOURCE::templates::catalog::entry_xml, data);
 }
 
 /* Constructor */

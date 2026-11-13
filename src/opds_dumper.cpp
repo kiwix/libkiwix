@@ -57,7 +57,7 @@ std::string partialEntryOpds(const Book& book, const std::string& rootLocation)
       {"title", book.getTitle()},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
     };
-    const auto xmlTemplate = RESOURCE::templates::catalog_v2_partial_entry_xml;
+    const auto xmlTemplate = RESOURCE::templates::catalog::partial_entry_xml;
     return render_template(xmlTemplate, data);
 }
 
@@ -107,7 +107,7 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"books", booksData }
   };
 
-  return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);
+  return render_template(RESOURCE::templates::catalog::entries_xml, template_data);
 }
 
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
@@ -124,7 +124,7 @@ std::string OPDSDumper::categoriesOPDSFeed() const
   const auto now = gen_date_str();
   kainjow::mustache::list categoryData = getCategoryData();
   return render_template(
-             RESOURCE::templates::catalog_v2_categories_xml,
+             RESOURCE::templates::catalog::categories_xml,
              kainjow::mustache::object{
                {"date", now},
                {"endpoint_root", rootLocation + "/catalog/v2"},
@@ -139,7 +139,7 @@ std::string OPDSDumper::languagesOPDSFeed() const
   const auto now = gen_date_str();
   kainjow::mustache::list languageData = getLanguageData();
   return render_template(
-             RESOURCE::templates::catalog_v2_languages_xml,
+             RESOURCE::templates::catalog::languages_xml,
              kainjow::mustache::object{
                {"date", now},
                {"endpoint_root", rootLocation + "/catalog/v2"},
