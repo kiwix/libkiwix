@@ -4,13 +4,13 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
       xmlns:opds="https://specs.opds.io/opds-1.2">
   <id>12345678-90ab-cdef-1234-567890abcdef</id>
   <link rel="self"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v3/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="start"
-        href="/ROOT%23%3F/catalog/v2/root.xml"
+        href="/ROOT%23%3F/catalog/v3/root.xml"
         type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
   <link rel="search"
-        href="/ROOT%23%3F/catalog/v2/searchdescription.xml"
+        href="/ROOT%23%3F/catalog/v3/searchdescription.xml"
         type="application/opensearchdescription+xml"/>
   <title>OPDS Catalog Root</title>
   <updated>YYYY-MM-DDThh:mm:ssZ</updated>
@@ -18,7 +18,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <title>All entries</title>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/entries"
+          href="/ROOT%23%3F/catalog/v3/entries"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -27,7 +27,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <title>All entries (partial)</title>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/partial_entries"
+          href="/ROOT%23%3F/catalog/v3/partial_entries"
           type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -36,7 +36,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <title>List of categories</title>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/categories"
+          href="/ROOT%23%3F/catalog/v3/categories"
           type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
@@ -45,7 +45,7 @@ R"(<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <title>List of languages</title>
     <link rel="subsection"
-          href="/ROOT%23%3F/catalog/v2/languages"
+          href="/ROOT%23%3F/catalog/v3/languages"
           type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
     <updated>YYYY-MM-DDThh:mm:ssZ</updated>
     <id>12345678-90ab-cdef-1234-567890abcdef</id>
