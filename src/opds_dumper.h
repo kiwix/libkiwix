@@ -68,7 +68,7 @@ class OPDSDumper : public LibraryDumper
    *
    * @return The OPDS feed.
    */
-  std::string categoriesOPDSFeed() const;
+  std::string categoriesOPDSFeed(std::string endpointVersion) const;
 
   /**
    * Dump the languages OPDS feed.
