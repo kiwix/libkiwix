@@ -568,6 +568,28 @@ void InternalServer::setContentServerUrl(std::string url)
   m_contentServerUrl = url;
 }
 
+void InternalServer::setPublicUrl(const std::string& url)
+{
+  std::string normalized = kiwix::trim(url);
+  while (!normalized.empty() && normalized.back() == '/') {
+    normalized.pop_back();
+  }
+  m_publicUrl = normalized;
+}
+
+std::string InternalServer::getCatalogRootLocation() const
+{
+  if (m_publicUrl.empty()) {
+    return m_root;
+  }
+  if (!m_root.empty() &&
+      m_publicUrl.size() >= m_root.size() &&
+      m_publicUrl.compare(m_publicUrl.size() - m_root.size(), m_root.size(), m_root) == 0) {
+    return m_publicUrl;
+  }
+  return m_publicUrl + m_root;
+}
+
 void InternalServer::setIpMode(IpMode mode)
 {
   m_ipModeAsSetByTheUser = mode;
@@ -987,7 +1009,7 @@ void InternalServer::setContentAccessUrl(LibraryDumper& libDumper) const
   if ( !m_contentServerUrl.empty() ) {
     libDumper.setContentAccessUrl(m_contentServerUrl + "/content");
   } else if ( !m_catalogOnlyMode ) {
-    libDumper.setContentAccessUrl(m_root + "/content");
+    libDumper.setContentAccessUrl(getCatalogRootLocation() + "/content");
   }
 }
 
