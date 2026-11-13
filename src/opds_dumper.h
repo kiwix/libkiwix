@@ -75,7 +75,7 @@ class OPDSDumper : public LibraryDumper
    *
    * @return The OPDS feed.
    */
-  std::string languagesOPDSFeed() const;
+  std::string languagesOPDSFeed(std::string endpointVersion) const;
 
   /**
    * Set some information about the search results.

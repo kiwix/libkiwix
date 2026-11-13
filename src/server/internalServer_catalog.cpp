@@ -114,7 +114,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext&
   } else if (url == "categories") {
     return handle_catalog_v_categories(request);
   } else if (url == "languages") {
-    return handle_catalog_v2_languages(request);
+    return handle_catalog_v_languages(request);
   } else if (url == "illustration") {
     return handle_catalog_v2_illustration(request);
   } else {
@@ -178,11 +178,12 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v_categories(const Requ
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_languages(const RequestContext& request)
 {
+  const std::string endpointVersion = request.get_url_part(1);
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   return ContentResponse::build(
-             opdsDumper.languagesOPDSFeed(),
+             opdsDumper.languagesOPDSFeed(endpointVersion),
              opdsMimeType[OPDS_NAVIGATION_FEED]
   );
 }
