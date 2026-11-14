@@ -27,13 +27,36 @@ R"(  <entry>
     <publisher>
       <name>{PUBLISHER}</name>
     </publisher>
-    <dc:issued>{ISSUED}</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/{FILENAME}.zim" length="{SIZE}" />
+    <dc:issued>{ISSUED}</dc:issued>{OPENACCESSLINKS}
   </entry>
 )");
 """
 
 mydir = os.path.dirname(__file__)
+
+def gen_openaccess_link(link_kind, filename, size):
+    https_url_prefix = 'https://github.com/kiwix/libkiwix/raw/master/test/data/'
+    if link_kind == 'DIRECT':
+        mimetype = 'application/x-zim'
+        url =  https_url_prefix + filename + '.zim'
+    elif link_kind == 'META4':
+        mimetype = 'application/metalink4+xml'
+        url =  https_url_prefix + filename + '.zim.meta4'
+    elif link_kind == 'BITTORRENT':
+        mimetype = 'application/x-bittorrent'
+        url =  https_url_prefix + filename + '.zim.torrent'
+    elif link_kind == 'MAGNET':
+        mimetype = 'application/x-magnet'
+        url = f"magnet:?xt=urn:md5:md5sum-of-{filename}.zim&amp;xl={size}&amp;dn={filename}.zim"
+
+    return f'''
+    <link rel="http://opds-spec.org/acquisition/open-access" type="{mimetype}" href="{url}" length="{size}" />'''
+
+def openaccess_links_opds(data):
+    size = data['SIZE']
+    filename = data['FILENAME']
+    gen_link_block = lambda k: gen_openaccess_link(k, filename, size)
+    return "".join([gen_link_block(k) for k in data['OPENACCESSLINKKINDS']])
 
 def illustration_links_opds(data):
     uuid = data['UUID']
@@ -52,6 +75,7 @@ def illustration_links_opds(data):
 
 def generate_opds_entry_building_block(identifier, data):
     data['ILLUSTRATIONLINKS'] = illustration_links_opds(data)
+    data['OPENACCESSLINKS']   = openaccess_links_opds(data)
     return OPDS_ENTRY_TEMPLATE.format(ID=identifier, **data);
 
 def write_file(path, content):
@@ -88,6 +112,7 @@ RAY_CHARLES_DATA = dict(
     ISSUED="2020-03-31T00:00:00Z",
     FILENAME="zimfile_raycharles",
     SIZE="569304",
+    OPENACCESSLINKKINDS=('META4',),
     ILLUSTRATIONS=[{"SIZE": 48}]
 )
 
@@ -105,6 +130,7 @@ UNCATEGORIZED_RAY_CHARLES_DATA = edict(RAY_CHARLES_DATA,
     TAGS="public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no",
     CONTENTID="zimfile_raycharles_uncategorized",
     FILENAME="zimfile_raycharles_uncategorized",
+    OPENACCESSLINKKINDS=('DIRECT',),
     SIZE="125952",
     ILLUSTRATIONS=[]
 )
@@ -119,6 +145,7 @@ CHARLES_RAY_DATA = edict(RAY_CHARLES_DATA,
     TAGS="unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes",
     CONTENTID="zimfile%26other",
     FILENAME="zimfile%26other",
+    OPENACCESSLINKKINDS=('BITTORRENT',),
     ILLUSTRATIONS=[]
 )
 
@@ -142,6 +169,7 @@ INACCESSIBLEZIM_DATA = dict(
     PUBLISHER="Caterpillar",
     ISSUED="2025-09-04T00:00:00Z",
     FILENAME="nosuchzimfile",
+    OPENACCESSLINKKINDS=('MAGNET',),
     SIZE="20736925696",
     ILLUSTRATIONS=[]
 )

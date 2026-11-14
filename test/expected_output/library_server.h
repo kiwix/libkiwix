@@ -338,3 +338,28 @@ const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
   "</body>\n" \
   "</html>"
 
+#define RAY_CHARLES_DOWNLOAD \
+  "<!DOCTYPE html>\n" \
+  "<html lang=\"en\">\n" \
+  "<head>\n" \
+  "    <meta charset=\"UTF-8\">\n" \
+  "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" \
+  "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" \
+  "    <title>Download book</title>\n" \
+  "</head>\n" \
+  "<style>\n" \
+  "    .downloadLinksTitle {\n" \
+  "        text-align: center;\n" \
+  "        font-size: 32px;\n" \
+  "        margin-bottom: 8px;\n" \
+  "    }\n" \
+  "</style>\n" \
+  "<body>\n" \
+  "    <div class=\"downloadLinksTitle\">\n" \
+  "        Download links for <b><i>Ray Charles</i></b>\n" \
+  "    </div>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.meta4\" download>\n" \
+  "        <div>Metalink</div>\n" \
+  "    </a>\n" \
+  "</body>\n" \
+  "</html>"
