@@ -25,9 +25,6 @@ R"(  <entry>
       <name>Kiwix</name>
     </publisher>
     <dc:issued>2020-03-31T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-bittorrent" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.torrent" length="569304" />
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-magnet" href="magnet:?xt=urn:md5:md5sum-of-zimfile_raycharles.zim&amp;xl=569304&amp;dn=zimfile_raycharles.zim" length="569304" />
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/metalink4+xml" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.meta4" length="569304" />
     <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim" length="569304" />
   </entry>
 )");

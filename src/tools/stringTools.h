@@ -97,6 +97,7 @@ template<>
 std::string extractFromString(const std::string& str);
 
 bool startsWith(const std::string& base, const std::string& start);
+bool endsWith(const std::string& base, const std::string& start);
 
 inline bool contains(const std::string& str, const std::string& substr)
 {

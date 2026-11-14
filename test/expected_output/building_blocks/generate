@@ -55,8 +55,11 @@ def gen_openaccess_link(link_kind, filename, size):
 def openaccess_links_opds(data):
     size = data['SIZE']
     filename = data['FILENAME']
+    link_kinds = data['OPENACCESSLINKKINDS']
+    if data['CATALOG_ENDPOINT_VERSION'] == 'v2':
+        link_kinds = link_kinds[-1:]
     gen_link_block = lambda k: gen_openaccess_link(k, filename, size)
-    return "".join([gen_link_block(k) for k in data['OPENACCESSLINKKINDS']])
+    return "".join([gen_link_block(k) for k in link_kinds])
 
 def illustration_links_opds(data):
     uuid = data['UUID']

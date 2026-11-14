@@ -150,6 +150,10 @@ std::string fullEntryOpds(const Book& book,
                          const std::string& localPath,
                          bool isLiveCatalog)
 {
+    auto acqLinkData = getAcquisitionLinkData(book);
+    if ( acqLinkData.size() > 1 && endsWith(endpointRoot, "/catalog/v2") ) {
+      acqLinkData.erase(acqLinkData.begin(), acqLinkData.end() - 1);
+    }
     const auto bookDate = book.getDate() + "T00:00:00Z";
     auto thumbnailLinks
       = getExternalThumbnailLinks(book, endpointRoot, isLiveCatalog);
@@ -177,7 +181,7 @@ std::string fullEntryOpds(const Book& book,
       {"publisher_name", book.getPublisher()},
       {"size", to_string(book.getSize())},
       {"thumbnailLinks", thumbnailLinks},
-      {"acquisitionLinks", getAcquisitionLinkData(book)},
+      {"acquisitionLinks", acqLinkData},
       {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
     return render_template(RESOURCE::templates::catalog::entry_xml, data);
