@@ -695,10 +695,15 @@ TEST_F(LibraryServerTest, noJS) {
             HOME_BODY_0_RESULTS
             FINAL_HTML_TEXT);
 
-  // no_js_download
+  // no_js_download (multiple links)
   r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, RAY_CHARLES_UNCTZ_DOWNLOAD);
+
+  // no_js_download (single link)
+  r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(r->body, RAY_CHARLES_DOWNLOAD);
 }
 
 TEST(NoJSDownloadLinks, eachAcquisitionLinkIsUsedAsIs) {

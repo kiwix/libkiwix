@@ -35,8 +35,8 @@
     <mediaCount>2</mediaCount>
     <link rel="http://opds-spec.org/acquisition/open-access" href="./zimfile_raycharles.zim" />
     <link rel="http://opds-spec.org/acquisition/open-access"
-          type="application/x-zim"
-          href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim"
+          type="application/metalink4+xml"
+          href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.meta4"
           length="569304" />
     <link rel="http://opds-spec.org/image/thumbnail"
           type="image/png;width=48;height=48;scale=1"
@@ -74,8 +74,8 @@
     <mediaCount>2</mediaCount>
     <link rel="http://opds-spec.org/acquisition/open-access" href="./zimfile&amp;other.zim" />
     <link rel="http://opds-spec.org/acquisition/open-access"
-          type="application/x-zim"
-          href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim"
+          type="application/x-bittorrent"
+          href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile%26other.zim.torrent"
           length="569304" />
     <link rel="http://opds-spec.org/image/thumbnail"
           href="https://example.com/favicon/charlesray" />
@@ -94,8 +94,8 @@
     <mediaCount>8</mediaCount>
     <link rel="http://opds-spec.org/acquisition/open-access" href="./nosuchzimfile.zim" />
     <link rel="http://opds-spec.org/acquisition/open-access"
-          type="application/x-zim"
-          href="https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim"
+          type="application/x-magnet"
+          href="magnet:?xt=urn:md5:md5sum-of-nosuchzimfile.zim&amp;xl=20736925696&amp;dn=nosuchzimfile.zim"
           length="20736925696" />
     <link rel="http://opds-spec.org/image/thumbnail"
           href="https://example.com/favicon/inaccessiblezim" />

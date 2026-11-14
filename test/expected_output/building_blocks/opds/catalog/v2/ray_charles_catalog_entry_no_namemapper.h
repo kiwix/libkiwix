@@ -25,6 +25,6 @@ R"(  <entry>
       <name>Kiwix</name>
     </publisher>
     <dc:issued>2020-03-31T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim" length="569304" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/metalink4+xml" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.meta4" length="569304" />
   </entry>
 )");

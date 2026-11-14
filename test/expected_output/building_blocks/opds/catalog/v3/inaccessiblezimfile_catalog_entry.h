@@ -22,6 +22,6 @@ R"(  <entry>
       <name>Caterpillar</name>
     </publisher>
     <dc:issued>2025-09-04T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/nosuchzimfile.zim" length="20736925696" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-magnet" href="magnet:?xt=urn:md5:md5sum-of-nosuchzimfile.zim&amp;xl=20736925696&amp;dn=nosuchzimfile.zim" length="20736925696" />
   </entry>
 )");
