@@ -695,12 +695,12 @@ TEST_F(LibraryServerTest, noJS) {
             HOME_BODY_0_RESULTS
             FINAL_HTML_TEXT);
 
-  // no_js_download (multiple links)
+  // no_js_download (multiple links generated from a single direct link)
   r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles_uncategorized");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, RAY_CHARLES_UNCTZ_DOWNLOAD);
 
-  // no_js_download (single link)
+  // no_js_download (multiple links as specified in library.opds)
   r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, RAY_CHARLES_DOWNLOAD);

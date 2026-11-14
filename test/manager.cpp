@@ -262,10 +262,10 @@ TEST(ManagerTest, readFile)
     EXPECT_EQ(book.getPath(), resolveAbsPath(LIB_OPDS_ABS_PATH, "./zimfile_raycharles.zim"));
     EXPECT_TRUE(book.isPathValid());
 
-    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::META4), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.meta4");
-    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), "");
-    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::BITTORRENT), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.torrent");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET), "magnet:?xt=urn:md5:md5sum-of-zimfile_raycharles.zim&xl=569304&dn=zimfile_raycharles.zim");
     EXPECT_EQ(book.getTitle(), "Ray Charles");
     EXPECT_EQ(book.getDescription(), "Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)");
     EXPECT_EQ(book.getCommaSeparatedLanguages(), "eng");

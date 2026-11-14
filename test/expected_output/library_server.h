@@ -358,8 +358,20 @@ const ExpectedOutputRegistry ExpectedOutputRegistry::initializer;
   "    <div class=\"downloadLinksTitle\">\n" \
   "        Download links for <b><i>Ray Charles</i></b>\n" \
   "    </div>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim\" download>\n" \
+  "        <div>Direct</div>\n" \
+  "    </a>\n" \
   "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.meta4\" download>\n" \
   "        <div>Metalink</div>\n" \
+  "    </a>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.sha256\" download>\n" \
+  "        <div>SHA-256 checksum</div>\n" \
+  "    </a>\n" \
+  "    <a href=\"magnet:?xt=urn:md5:md5sum-of-zimfile_raycharles.zim&amp;xl=569304&amp;dn=zimfile_raycharles.zim\" target=\"_blank\">\n" \
+  "        <div>Magnet link</div>\n" \
+  "    </a>\n" \
+  "    <a href=\"https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim.torrent\" download>\n" \
+  "        <div>BitTorrent</div>\n" \
   "    </a>\n" \
   "</body>\n" \
   "</html>"
