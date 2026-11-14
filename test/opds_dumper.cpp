@@ -216,7 +216,7 @@ class OPDSDumperTest : public ::testing::Test {
 
 TEST_F(OPDSDumperTest, dumpOPDSFeedV2FullEntries)
 {
-  EXPECT_OPDS(dumper->dumpOPDSFeedV2({"book1-id", "book2-id"}, "", /*partial=*/false),
+  EXPECT_OPDS(dumper->dumpOPDSFeed("v2", {"book1-id", "book2-id"}, "", /*partial=*/false),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
@@ -245,7 +245,7 @@ TEST_F(OPDSDumperTest, dumpOPDSFeedV2FullEntries)
 
 TEST_F(OPDSDumperTest, dumpOPDSFeedV2PartialEntries)
 {
-  EXPECT_OPDS(dumper->dumpOPDSFeedV2({"book1-id", "book2-id"}, "", /*partial=*/true),
+  EXPECT_OPDS(dumper->dumpOPDSFeed("v2", {"book1-id", "book2-id"}, "", /*partial=*/true),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
@@ -274,7 +274,7 @@ TEST_F(OPDSDumperTest, dumpOPDSFeedV2PartialEntries)
 
 TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryProducesStandaloneEntryDocument)
 {
-  EXPECT_OPDS(dumper->dumpOPDSCompleteEntry("book2-id"),
+  EXPECT_OPDS(dumper->dumpOPDSCompleteEntry("v2", "book2-id"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     BOOK2_ENTRY
   );
@@ -282,7 +282,7 @@ TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryProducesStandaloneEntryDocument)
 
 TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryThrowsForUnknownBookId)
 {
-  EXPECT_THROW(dumper->dumpOPDSCompleteEntry("no-such-book"), std::out_of_range);
+  EXPECT_THROW(dumper->dumpOPDSCompleteEntry("v2", "no-such-book"), std::out_of_range);
 }
 
 TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
@@ -290,7 +290,7 @@ TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
   // Categories are listed in sorted order: "wikipedia" (from the
   // "_category:" tag on book1) before "wiktionary" (from book2's explicit
   // "category" attribute).
-  EXPECT_OPDS(dumper->categoriesOPDSFeed(),
+  EXPECT_OPDS(dumper->categoriesOPDSFeed("v2"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:opds=\"https://specs.opds.io/opds-1.2\">\n"
@@ -329,7 +329,7 @@ TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
 TEST_F(OPDSDumperTest, languagesOPDSFeedListsLanguagesWithCounts)
 {
   // Languages are listed in sorted order of their ISO code: "eng" before "fra".
-  EXPECT_OPDS(dumper->languagesOPDSFeed(),
+  EXPECT_OPDS(dumper->languagesOPDSFeed("v2"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"

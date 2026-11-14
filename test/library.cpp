@@ -268,12 +268,8 @@ const char * sampleOpdsStream = R"(
 )";
 
 #ifdef _WIN32
-# define ZIMFILE_PATH "zimfile.zim"
-# define EXAMPLE_PATH "example.zim"
 # define OPDS_LIBRARY_PATH "test\\library.opds"
 #else
-# define ZIMFILE_PATH "zimfile.zim"
-# define EXAMPLE_PATH "example.zim"
 # define OPDS_LIBRARY_PATH "test/library.opds"
 #endif
 
@@ -304,7 +300,7 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       <name>Kiwix &amp; Some Enthusiasts</name>
     </publisher>
     <dc:issued>2021-04-11T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" href=")" EXAMPLE_PATH R"(" type="application/x-zim" length="129024"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" href="example.zim" type="application/x-zim" length="129024"/>
   </entry>
   <entry>
     <id>urn:uuid:raycharles</id>
@@ -325,8 +321,8 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       <name>Kiwix</name>
     </publisher>
     <dc:issued>2020-03-31T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569344" />
-    <link rel="http://opds-spec.org/acquisition/open-access" href=")" ZIMFILE_PATH R"(" type="application/x-zim" length="569344"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569304" />
+    <link rel="http://opds-spec.org/acquisition/open-access" href="zimfile.zim" type="application/x-zim" length="569304"/>
   </entry>
 </feed>
 )";

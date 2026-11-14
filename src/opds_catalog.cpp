@@ -27,7 +27,7 @@ namespace kiwix
 
 namespace
 {
-const char opdsSearchEndpoint[] = "/catalog/v2/entries";
+const char opdsSearchEndpoint[] = "/catalog/v3/entries";
 
 enum Separator { AMP };
 

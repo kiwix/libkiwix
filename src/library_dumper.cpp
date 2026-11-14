@@ -44,7 +44,7 @@ std::string getIllustrationMimeTypeStr(const Book::Illustration& illustration)
  * getEmbeddedThumbnailLinks() for those instead).
  */
 kainjow::mustache::list
-getExternalThumbnailLinks(const Book& book, const std::string& rootLocation,
+getExternalThumbnailLinks(const Book& book, const std::string& endpointRoot,
   bool isLiveCatalog = true)
 {
   kainjow::mustache::list thumbnailLinks;
@@ -56,7 +56,7 @@ getExternalThumbnailLinks(const Book& book, const std::string& rootLocation,
     // Book IDs do not contain special characters, so they are HTML-safe.
     // Therefore, no HTML encoding is required.
     const std::string thumbnailUrl = isLiveCatalog
-    ? rootLocation + "/catalog/v2/illustration/" + kiwix::urlEncode(book.getId()) + "/?size=" + iconSizeWidth
+    ? endpointRoot + "/illustration/" + kiwix::urlEncode(book.getId()) + "/?size=" + iconSizeWidth
     : illustration->getUrl();
 
     thumbnailLinks.push_back(kainjow::mustache::object{
@@ -144,15 +144,19 @@ kainjow::mustache::list getAcquisitionLinkData(const Book& book)
 
 
 std::string fullEntryOpds(const Book& book,
-                         const std::string& rootLocation,
+                         const std::string& endpointRoot,
                          const std::string& contentAccessUrl,
                          const std::string& contentId,
                          const std::string& localPath,
                          bool isLiveCatalog)
 {
+    auto acqLinkData = getAcquisitionLinkData(book);
+    if ( acqLinkData.size() > 1 && endsWith(endpointRoot, "/catalog/v2") ) {
+      acqLinkData.erase(acqLinkData.begin(), acqLinkData.end() - 1);
+    }
     const auto bookDate = book.getDate() + "T00:00:00Z";
     auto thumbnailLinks
-      = getExternalThumbnailLinks(book, rootLocation, isLiveCatalog);
+      = getExternalThumbnailLinks(book, endpointRoot, isLiveCatalog);
     auto embeddedThumbnailLinks
       = getEmbeddedThumbnailLinks(book, isLiveCatalog);
     thumbnailLinks.insert(thumbnailLinks.end(),
@@ -177,10 +181,10 @@ std::string fullEntryOpds(const Book& book,
       {"publisher_name", book.getPublisher()},
       {"size", to_string(book.getSize())},
       {"thumbnailLinks", thumbnailLinks},
-      {"acquisitionLinks", getAcquisitionLinkData(book)},
+      {"acquisitionLinks", acqLinkData},
       {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
-    return render_template(RESOURCE::templates::catalog_v2_entry_xml, data);
+    return render_template(RESOURCE::templates::catalog::entry_xml, data);
 }
 
 /* Constructor */

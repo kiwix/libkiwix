@@ -37,12 +37,13 @@ templates/error.xml
 templates/index.html
 templates/suggestion.json
 templates/captured_external.html
-templates/catalog_v2_root.xml
-templates/catalog_v2_entries.xml
-templates/catalog_v2_entry.xml
-templates/catalog_v2_partial_entry.xml
-templates/catalog_v2_categories.xml
-templates/catalog_v2_languages.xml
+templates/catalog/searchdescription.xml
+templates/catalog/root.xml
+templates/catalog/entries.xml
+templates/catalog/entry.xml
+templates/catalog/partial_entry.xml
+templates/catalog/categories.xml
+templates/catalog/languages.xml
 templates/url_of_search_results_css.tmpl
 templates/viewer_settings.js
 templates/no_js_library_page.html
@@ -50,7 +51,6 @@ templates/no_js_download.html
 templates/sexy404.html
 templates/sexy500.html
 ft_opensearchdescription.xml
-catalog_v2_searchdescription.xml
 skin/autoComplete/css/autoComplete.css
 skin/favicon/android-chrome-192x192.png
 skin/favicon/android-chrome-512x512.png

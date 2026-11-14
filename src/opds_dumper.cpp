@@ -47,24 +47,23 @@ const std::string XML_HEADER(R"(<?xml version="1.0" encoding="UTF-8"?>)");
 typedef kainjow::mustache::data MustacheData;
 typedef kainjow::mustache::list BooksData;
 
-std::string partialEntryOpds(const Book& book, const std::string& rootLocation)
+std::string partialEntryOpds(const Book& book, const std::string& endpointRoot)
 {
     const auto bookDate = book.getDate() + "T00:00:00Z";
     const kainjow::mustache::object data{
-      {"root",  rootLocation},
-      {"endpoint_root", rootLocation + "/catalog/v2"},
+      {"endpoint_root", endpointRoot},
       {"id", book.getId()},
       {"title", book.getTitle()},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
     };
-    const auto xmlTemplate = RESOURCE::templates::catalog_v2_partial_entry_xml;
+    const auto xmlTemplate = RESOURCE::templates::catalog::partial_entry_xml;
     return render_template(xmlTemplate, data);
 }
 
 BooksData getBooksData(const Library* library,
                        const NameMapper* nameMapper,
                        const std::vector<std::string>& bookIds,
-                       const std::string& rootLocation,
+                       const std::string& endpointRoot,
                        const std::string& contentAccessUrl,
                        bool partial)
 {
@@ -74,8 +73,8 @@ BooksData getBooksData(const Library* library,
       const Book book = library->getBookByIdThreadSafe(bookId);
       const std::string contentId = nameMapper->getNameForId(bookId);
       const auto entryXML = partial
-                          ? partialEntryOpds(book, rootLocation)
-                          : fullEntryOpds(book, rootLocation, contentAccessUrl, contentId);
+                          ? partialEntryOpds(book, endpointRoot)
+                          : fullEntryOpds(book, endpointRoot, contentAccessUrl, contentId);
       booksData.push_back(kainjow::mustache::object{ {"entry", entryXML} });
     } catch ( const std::out_of_range& ) {
       // the book was removed from the library since its id was obtained
@@ -88,10 +87,13 @@ BooksData getBooksData(const Library* library,
 
 } // unnamed namespace
 
-string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const
+string OPDSDumper::dumpOPDSFeed(const std::string& endpointVersion,
+                                const std::vector<std::string>& bookIds,
+                                const std::string& query,
+                                bool partial) const
 {
-  const auto endpointRoot = rootLocation + "/catalog/v2";
-  const auto booksData = getBooksData(library, nameMapper, bookIds, rootLocation, contentAccessUrl, partial);
+  const auto endpointRoot = rootLocation + "/catalog/" + endpointVersion;
+  const auto booksData = getBooksData(library, nameMapper, bookIds, endpointRoot, contentAccessUrl, partial);
 
   const char* const endpoint = partial ? "/partial_entries" : "/entries";
   const std::string url = endpoint + (query.empty() ? "" : "?" + query);
@@ -107,42 +109,44 @@ string OPDSDumper::dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const
      {"books", booksData }
   };
 
-  return render_template(RESOURCE::templates::catalog_v2_entries_xml, template_data);
+  return render_template(RESOURCE::templates::catalog::entries_xml, template_data);
 }
 
-std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& bookId) const
+std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& endpointVersion,
+                                              const std::string& bookId) const
 {
+  const std::string endpointRoot = rootLocation + "/catalog/" + endpointVersion;
   const auto book = library->getBookById(bookId);
   const std::string contentId = nameMapper->getNameForId(bookId);
   return XML_HEADER
          + "\n"
-         + fullEntryOpds(book, rootLocation, contentAccessUrl, contentId);
+         + fullEntryOpds(book, endpointRoot, contentAccessUrl, contentId);
 }
 
-std::string OPDSDumper::categoriesOPDSFeed() const
+std::string OPDSDumper::categoriesOPDSFeed(std::string endpointVersion) const
 {
   const auto now = gen_date_str();
   kainjow::mustache::list categoryData = getCategoryData();
   return render_template(
-             RESOURCE::templates::catalog_v2_categories_xml,
+             RESOURCE::templates::catalog::categories_xml,
              kainjow::mustache::object{
                {"date", now},
-               {"endpoint_root", rootLocation + "/catalog/v2"},
+               {"endpoint_root", rootLocation + "/catalog/" + endpointVersion},
                {"feed_id", gen_uuid(libraryId + "/categories")},
                {"categories", categoryData }
              }
   );
 }
 
-std::string OPDSDumper::languagesOPDSFeed() const
+std::string OPDSDumper::languagesOPDSFeed(std::string endpointVersion) const
 {
   const auto now = gen_date_str();
   kainjow::mustache::list languageData = getLanguageData();
   return render_template(
-             RESOURCE::templates::catalog_v2_languages_xml,
+             RESOURCE::templates::catalog::languages_xml,
              kainjow::mustache::object{
                {"date", now},
-               {"endpoint_root", rootLocation + "/catalog/v2"},
+               {"endpoint_root", rootLocation + "/catalog/" + endpointVersion},
                {"feed_id", gen_uuid(libraryId + "/languages")},
                {"languages", languageData }
              }
