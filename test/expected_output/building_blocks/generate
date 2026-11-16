@@ -56,21 +56,21 @@ def openaccess_links_opds(data):
     size = data['SIZE']
     filename = data['FILENAME']
     link_kinds = data['OPENACCESSLINKKINDS']
-    if data['CATALOG_ENDPOINT_VERSION'] == 'v2':
+    if data['OPDS_VARIANT'] == 'catalog/v2':
         link_kinds = link_kinds[-1:]
     gen_link_block = lambda k: gen_openaccess_link(k, filename, size)
     return "".join([gen_link_block(k) for k in link_kinds])
 
 def illustration_links_opds(data):
     uuid = data['UUID']
-    endpoint_version = data['CATALOG_ENDPOINT_VERSION']
+    opds_variant = data['OPDS_VARIANT']
     def gen_link_block(illustration_info):
         illustration_info = edict(illustration_info,
-                                  CATALOG_ENDPOINT_VERSION=endpoint_version,
+                                  OPDS_VARIANT=opds_variant,
                                   UUID=uuid)
         link_template="""
     <link rel="http://opds-spec.org/image/thumbnail"
-          href="/ROOT%23%3F/catalog/{CATALOG_ENDPOINT_VERSION}/illustration/{UUID}/?size={SIZE}"
+          href="/ROOT%23%3F/{OPDS_VARIANT}/illustration/{UUID}/?size={SIZE}"
           type="image/png;width={SIZE};height={SIZE};scale=1"/>"""
         return link_template.format(**illustration_info)
 
@@ -86,9 +86,9 @@ def write_file(path, content):
     with open(path, "w") as outfile:
         outfile.write(content)
 
-def write_opds_entry_building_block(v, fname, identifier, data):
-    path = "opds/catalog/" + v + "/" + fname
-    data = edict(data, CATALOG_ENDPOINT_VERSION=v)
+def write_opds_entry_building_block(opds_variant, fname, identifier, data):
+    path = "opds/" + opds_variant + "/" + fname
+    data = edict(data, OPDS_VARIANT=opds_variant)
     content = generate_opds_entry_building_block(identifier, data);
     write_file(path, content)
 
@@ -189,11 +189,13 @@ input_data = (
 
 allinc_file_content = DONOTEDIT_HEADER
 
+ALL_OPDS_VARIANTS = ("catalog/v2", "catalog/v3")
+
 for identifier, data in input_data:
     fname = identifier.lower() + ".h"
     allinc_file_content += f'#include "{fname}"\n'
-    for v in ("v2", "v3"):
+    for v in ALL_OPDS_VARIANTS:
         write_opds_entry_building_block(v, fname, identifier, data)
 
-write_file("opds/catalog/v2/all.inc", allinc_file_content)
-write_file("opds/catalog/v3/all.inc", allinc_file_content)
+for v in ALL_OPDS_VARIANTS:
+    write_file("opds/" + v + "/all.inc", allinc_file_content)
