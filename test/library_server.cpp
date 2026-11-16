@@ -6,6 +6,9 @@
 #define SERVER_PORT 8001
 #include "server_testing_tools.h"
 
+#include "testing_tools.h"
+using namespace kiwix::testing;
+
 #include "../src/tools/stringTools.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,38 +52,6 @@ protected:
     return zfs1_->GET(url.c_str());
   }
 };
-
-// Returns a copy of 'text' where every line that fully matches 'pattern'
-// preceded by optional whitespace is replaced with the fixed string
-// 'replacement' preserving the leading whitespace
-std::string replaceLines(const std::string& text,
-                         const std::string& pattern,
-                         const std::string& replacement)
-{
-  std::regex regex("^ *" + pattern + "$");
-  std::ostringstream oss;
-  std::istringstream iss(text);
-  std::string line;
-  while ( std::getline(iss, line) ) {
-    if ( std::regex_match(line, regex) ) {
-      for ( size_t i = 0; i < line.size() && line[i] == ' '; ++i )
-        oss << ' ';
-      oss << replacement << "\n";
-    } else {
-      oss << line << "\n";
-    }
-  }
-  return oss.str();
-}
-
-std::string maskVariableOPDSFeedData(std::string s)
-{
-  s = replaceLines(s, R"(<updated>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ</updated>)",
-                      "<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
-  s = replaceLines(s, "<id>[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}</id>",
-                      "<id>12345678-90ab-cdef-1234-567890abcdef</id>");
-  return s;
-}
 
 #include "./expected_output/library_server.h"
 

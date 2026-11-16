@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <regex>
 
 namespace kiwix
 {
@@ -49,6 +50,51 @@ public:
 
   operator std::string() const { return buffer.str(); }
 };
+
+// Returns a copy of 'text' where every line that fully matches 'pattern'
+// (preceded by optional whitespace) is replaced with the fixed string
+// 'replacement' preserving the leading whitespace
+inline std::string replaceLines(const std::string& text,
+                         const std::string& pattern,
+                         const std::string& replacement)
+{
+  std::regex regex("^ *" + pattern + "$");
+  std::ostringstream oss;
+  std::istringstream iss(text);
+  std::string line;
+  while ( std::getline(iss, line) ) {
+    if ( std::regex_match(line, regex) ) {
+      for ( size_t i = 0; i < line.size() && line[i] == ' '; ++i )
+        oss << ' ';
+      oss << replacement << "\n";
+    } else {
+      oss << line << "\n";
+    }
+  }
+  return oss.str();
+}
+
+// Masks every <updated>...</updated> timestamp - both the feed-level one
+// (always "now", via gen_date_str()) and the per-entry/per-category/
+// per-language ones used by categoriesOPDSFeed()/languagesOPDSFeed() (also
+// "now" - see LibraryDumper::getCategoryData()/getLanguageData()). Per-book
+// entries elsewhere carry a real, deterministic book date, but this matches
+// them too, same as library_server.cpp's CATALOG_ENTRY does for the live
+// HTTP catalog - the trade-off of a slightly less precise assertion in
+// exchange for a much simpler, more robust one.
+inline std::string maskUpdatedTimestampsInOPDS(std::string s)
+{
+  return replaceLines(s, R"(<updated>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ</updated>)",
+                          "<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
+}
+
+inline std::string maskVariableOPDSFeedData(std::string s)
+{
+  s = maskUpdatedTimestampsInOPDS(s);
+  s = replaceLines(s, "<id>[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}</id>",
+                      "<id>12345678-90ab-cdef-1234-567890abcdef</id>");
+  return s;
+}
 
 } // namespace testing
 

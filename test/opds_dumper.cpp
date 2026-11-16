@@ -30,6 +30,9 @@
 #include "../src/opds_dumper.h"
 #include "../src/tools/otherTools.h"
 
+#include "testing_tools.h"
+using namespace kiwix::testing;
+
 namespace
 {
 
@@ -81,51 +84,12 @@ const char sampleLibraryOpds[] = R"(
 </feed>
 )";
 
-// Returns a copy of 'text' where every line that fully matches 'pattern'
-// (preceded by optional whitespace) is replaced with 'replacement',
-// preserving the leading whitespace. Copied from test/library_server.cpp,
-// which uses the same technique for the same reason (masking timestamps
-// generated from the current wall-clock time).
-std::string replaceLines(const std::string& text,
-                         const std::string& pattern,
-                         const std::string& replacement)
-{
-  std::regex regex("^ *" + pattern + "$");
-  std::ostringstream oss;
-  std::istringstream iss(text);
-  std::string line;
-  while ( std::getline(iss, line) ) {
-    if ( std::regex_match(line, regex) ) {
-      for ( size_t i = 0; i < line.size() && line[i] == ' '; ++i )
-        oss << ' ';
-      oss << replacement << "\n";
-    } else {
-      oss << line << "\n";
-    }
-  }
-  return oss.str();
-}
-
-// Masks every <updated>...</updated> timestamp - both the feed-level one
-// (always "now", via gen_date_str()) and the per-entry/per-category/
-// per-language ones used by categoriesOPDSFeed()/languagesOPDSFeed() (also
-// "now" - see LibraryDumper::getCategoryData()/getLanguageData()). Per-book
-// entries elsewhere carry a real, deterministic book date, but this matches
-// them too, same as library_server.cpp's CATALOG_ENTRY does for the live
-// HTTP catalog - the trade-off of a slightly less precise assertion in
-// exchange for a much simpler, more robust one.
-std::string maskUpdatedTimestamps(std::string s)
-{
-  return replaceLines(s, R"(<updated>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ</updated>)",
-                          "<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
-}
-
 // Compares 'actual' (an OPDS feed/entry string, possibly containing
 // wall-clock-generated <updated> timestamps) against 'expected' after
 // masking those timestamps out of 'actual', so tests don't have to spell
-// out maskUpdatedTimestamps(...) at every assertion.
+// out maskUpdatedTimestampsInOPDS(...) at every assertion.
 #define EXPECT_OPDS(actual, expected) \
-    EXPECT_EQ(maskUpdatedTimestamps(actual), (expected))
+    EXPECT_EQ(maskUpdatedTimestampsInOPDS(actual), (expected))
 
 #define BOOK1_ENTRY \
     "  <entry>\n" \
