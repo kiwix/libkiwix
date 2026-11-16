@@ -1,0 +1,28 @@
+  <entry>
+    <id>urn:uuid:{{id}}</id>
+    <title>{{title}}</title>
+    <updated>{{updated}}</updated>
+    <summary>{{description}}</summary>
+    <language>{{language}}</language>
+    <name>{{name}}</name>
+    <flavour>{{flavour}}</flavour>
+    <category>{{category}}</category>
+    <tags>{{tags}}</tags>
+    <articleCount>{{article_count}}</articleCount>
+    <mediaCount>{{media_count}}</mediaCount>
+    {{#thumbnailLinks}}<link rel="http://opds-spec.org/image/thumbnail"
+          href="{{icon_url}}"
+          type="{{icon_mimetype}}"/>
+    {{/thumbnailLinks}}{{#contentAccessUrl}}
+    <link type="text/html" href="{{contentAccessUrl}}/{{{content_id}}}" />
+    {{/contentAccessUrl}}<author>
+      <name>{{author_name}}</name>
+    </author>
+    <publisher>
+      <name>{{publisher_name}}</name>
+    </publisher>
+    <dc:issued>{{book_date}}</dc:issued>
+    {{#acquisitionLinks}}
+    <link rel="http://opds-spec.org/acquisition/open-access" type="{{mimetype}}" href="{{href}}" length="{{{size}}}" />
+    {{/acquisitionLinks}}{{#local_path}}<link rel="http://opds-spec.org/acquisition/open-access" href="{{local_path}}" type="application/x-zim" length="{{{size}}}"/>{{/local_path}}
+  </entry>

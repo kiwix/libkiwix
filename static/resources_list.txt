@@ -40,7 +40,8 @@ templates/captured_external.html
 templates/catalog/searchdescription.xml
 templates/catalog/root.xml
 templates/catalog/entries.xml
-templates/catalog/entry.xml
+templates/catalog/v2/entry.xml
+templates/catalog/v3/entry.xml
 templates/catalog/partial_entry.xml
 templates/catalog/categories.xml
 templates/catalog/languages.xml

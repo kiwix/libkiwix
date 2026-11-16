@@ -151,7 +151,8 @@ std::string fullEntryOpds(const Book& book,
                          bool isLiveCatalog)
 {
     auto acqLinkData = getAcquisitionLinkData(book);
-    if ( acqLinkData.size() > 1 && endsWith(endpointRoot, "/catalog/v2") ) {
+    const bool outputCatalogV2Variant = endsWith(endpointRoot, "/catalog/v2");
+    if ( acqLinkData.size() > 1 && outputCatalogV2Variant ) {
       acqLinkData.erase(acqLinkData.begin(), acqLinkData.end() - 1);
     }
     const auto bookDate = book.getDate() + "T00:00:00Z";
@@ -184,7 +185,11 @@ std::string fullEntryOpds(const Book& book,
       {"acquisitionLinks", acqLinkData},
       {"local_path", onlyAsNonEmptyMustacheValue(localPath)},
     };
-    return render_template(RESOURCE::templates::catalog::entry_xml, data);
+
+    const auto templateStr = outputCatalogV2Variant
+                           ? RESOURCE::templates::catalog::v2::entry_xml
+                           : RESOURCE::templates::catalog::v3::entry_xml;
+    return render_template(templateStr, data);
 }
 
 /* Constructor */
