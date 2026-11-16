@@ -20,6 +20,9 @@
 #include "gtest/gtest.h"
 #include <string>
 
+#include "testing_tools.h"
+using namespace kiwix::testing;
+
 const char * sampleOpdsStream = R"(
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
@@ -273,11 +276,6 @@ const char * sampleOpdsStream = R"(
 # define OPDS_LIBRARY_PATH "test/library.opds"
 #endif
 
-// The formatting of this OPDS XML (element order, indentation, and
-// whitespace) is intentionally chosen to exactly match Library::dumpOpds()'s
-// output, so that it stays invariant when read via Manager::readOpds() and
-// dumped back via Library::dumpOpds() (see LibraryOpdsExportTest.allInOne
-// below). Reformatting this string may break that round-trip test.
 const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
       xmlns:opds="http://opds-spec.org/2010/catalog">
@@ -1299,16 +1297,22 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
   );
 };
 
+#include "./expected_output/library.h"
+
 TEST(LibraryOpdsExportTest, allInOne)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
-  manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH);
+  manager.readFile(OPDS_LIBRARY_PATH);
 
-  // sampleLibraryOpds is formatted to be round-trip invariant (see comment
-  // above its definition), so dumping what was just read back out should
-  // reproduce it exactly.
-  EXPECT_EQ(lib->dumpOpds(OPDS_LIBRARY_PATH), sampleLibraryOpds);
+  EXPECT_EQ(maskUpdatedTimestampsInOPDS(lib->dumpOpds(OPDS_LIBRARY_PATH)),
+    LIBRARY_ENTRIES_PREAMBLE
+    EO(CHARLES_RAY_OPDS_ENTRY)
+    EO(INACCESSIBLEZIMFILE_OPDS_ENTRY)
+    EO(RAY_CHARLES_OPDS_ENTRY)
+    EO(UNCATEGORIZED_RAY_CHARLES_OPDS_ENTRY)
+    "</feed>\n"
+  );
 }
 
 };
