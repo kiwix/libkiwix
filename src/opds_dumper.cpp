@@ -109,7 +109,10 @@ string OPDSDumper::dumpOPDSFeed(const std::string& endpointVersion,
      {"books", booksData }
   };
 
-  return render_template(RESOURCE::templates::catalog::entries_xml, template_data);
+  const auto& feedTemplate = endpointVersion == "v2"
+                           ? RESOURCE::templates::catalog::v2::entries_xml
+                           : RESOURCE::templates::catalog::v3::entries_xml;
+  return render_template(feedTemplate, template_data);
 }
 
 std::string OPDSDumper::dumpOPDSCompleteEntry(const std::string& endpointVersion,
