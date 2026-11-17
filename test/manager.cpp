@@ -259,7 +259,7 @@ TEST(ManagerTest, readFile)
 
     kiwix::Book book = lib->getBookById("raycharles");
 
-    EXPECT_EQ(book.getPath(), resolveAbsPath(LIB_OPDS_ABS_PATH, "./zimfile_raycharles.zim"));
+    EXPECT_EQ(book.getPath(), resolveAbsPath(LIB_OPDS_ABS_PATH, "zimfile_raycharles.zim"));
     EXPECT_TRUE(book.isPathValid());
 
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile_raycharles.zim");
