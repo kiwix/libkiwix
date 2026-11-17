@@ -168,7 +168,7 @@ std::string fullEntryOpds(const Book& book,
       {"content_id",  urlEncode(contentId)},
       {"updated", bookDate}, // XXX: this should be the entry update datetime
       {"book_date", bookDate},
-      {"category", book.getCategory()},
+      {"category", onlyAsNonEmptyMustacheValue(book.getCategory())},
       {"flavour", book.getFlavour()},
       {"tags", book.getTags()},
       {"article_count", to_string(book.getArticleCount())},

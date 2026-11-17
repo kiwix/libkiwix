@@ -73,6 +73,7 @@ public: // types
   {
     std::string root = "ROOT#?";
     std::string contentServerUrl = "";
+    std::string publicUrl = "";
     Options options = DEFAULT_OPTIONS;
 
     Cfg(Options opts = DEFAULT_OPTIONS) : options(opts) {}
@@ -153,6 +154,7 @@ void ZimFileServer::run(int serverPort, std::string indexTemplateString)
   server->setMultiZimSearchLimit(3);
   server->setCatalogOnlyMode(cfg.options & CATALOG_ONLY_MODE);
   server->setContentServerUrl(cfg.contentServerUrl);
+  server->setPublicUrl(cfg.publicUrl);
   if (!indexTemplateString.empty()) {
     server->setIndexTemplateString(indexTemplateString);
   }

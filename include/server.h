@@ -89,6 +89,21 @@ namespace kiwix
        void setContentServerUrl(std::string url);
 
        /**
+        * Set the public base URL through which the server is accessed.
+        *
+        * Used to build absolute URLs in OPDS/Atom feeds (including thumbnail,
+        * content, navigation, and search links). If configured, this origin
+        * (e.g. "https://library.example.org" or "http://example.org:8080")
+        * is prepended to catalog and content URLs.
+        */
+       void setPublicUrl(const std::string& url);
+
+       /**
+        * Get the configured public base URL.
+        */
+       std::string getPublicUrl() const;
+
+       /**
         * Listen for incoming connections on all IP addresses of the specified
         * IP protocol family.
         */

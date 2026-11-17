@@ -54,7 +54,7 @@ const std::string opdsMimeType[] = {
 OPDSDumper InternalServer::getOPDSDumper() const
 {
   kiwix::OPDSDumper opdsDumper(mp_library.get(), mp_nameMapper.get());
-  opdsDumper.setRootLocation(m_root);
+  opdsDumper.setRootLocation(getCatalogRootLocation());
   opdsDumper.setLibraryId(getLibraryId());
   setContentAccessUrl(opdsDumper);
   return opdsDumper;
@@ -96,7 +96,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
   if (url == "root.xml") {
     return handle_catalog_v2_root(request);
   } else if (url == "searchdescription.xml") {
-    const std::string endpoint_root = m_root + "/catalog/v2";
+    const std::string endpoint_root = getCatalogRootLocation() + "/catalog/v2";
     return ContentResponse::build(
         RESOURCE::catalog_v2_searchdescription_xml,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
@@ -127,7 +127,7 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
              RESOURCE::templates::catalog_v2_root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
-               {"endpoint_root", m_root + "/catalog/v2"},
+               {"endpoint_root", getCatalogRootLocation() + "/catalog/v2"},
                {"feed_id", gen_uuid(libraryId)},
                {"all_entries_feed_id", gen_uuid(libraryId + "/entries")},
                {"partial_entries_feed_id", gen_uuid(libraryId + "/partial_entries")},

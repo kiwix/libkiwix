@@ -59,8 +59,7 @@ Book createBook()
     /* Book::getCategory() only reflects a "_category:" tag/attribute      */ \
     /* resolved during XML/OPDS parsing - it is not derived on the fly    */ \
     /* from setTags(), so a manually-constructed Book always reports an   */ \
-    /* empty category here.                                              */ \
-    "    <category></category>\n" \
+    /* empty category here, which is omitted in the rendered OPDS entry.  */ \
     "    <tags>tag1;tag2;_category:wikipedia</tags>\n" \
     "    <articleCount>42</articleCount>\n" \
     "    <mediaCount>7</mediaCount>\n"
@@ -245,7 +244,6 @@ TEST(FullEntryOpdsTest, rendersThumbnailLinkForBookIllustration)
     "    <language></language>\n"
     "    <name></name>\n"
     "    <flavour></flavour>\n"
-    "    <category></category>\n"
     "    <tags></tags>\n"
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
@@ -298,7 +296,6 @@ TEST(FullEntryOpdsTest, rendersIllustrationUrlDirectlyInFileDump)
     "    <language></language>\n"
     "    <name></name>\n"
     "    <flavour></flavour>\n"
-    "    <category></category>\n"
     "    <tags></tags>\n"
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
@@ -419,7 +416,6 @@ TEST(FullEntryOpdsTest, rendersMultipleBase64Thumbnails)
     "    <language></language>\n"
     "    <name></name>\n"
     "    <flavour></flavour>\n"
-    "    <category></category>\n"
     "    <tags></tags>\n"
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
@@ -472,7 +468,6 @@ TEST(FullEntryOpdsTest, rendersMixedLinkAndBase64ThumbnailsInFileDump)
     "    <language></language>\n"
     "    <name></name>\n"
     "    <flavour></flavour>\n"
-    "    <category></category>\n"
     "    <tags></tags>\n"
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
@@ -524,7 +519,6 @@ TEST(FullEntryOpdsTest, omitsDataUriThumbnailForEmbeddedOnlyIllustrationInLiveCa
     "    <language></language>\n"
     "    <name></name>\n"
     "    <flavour></flavour>\n"
-    "    <category></category>\n"
     "    <tags></tags>\n"
     "    <articleCount>0</articleCount>\n"
     "    <mediaCount>0</mediaCount>\n"
@@ -621,7 +615,6 @@ TEST(FullEntryOpdsTest, specialCharactersInBookMetadataAreEscaped)
     "    <language>eng</language>\n"
     "    <name>some_name</name>\n"
     "    <flavour>nopic</flavour>\n"
-    "    <category></category>\n"
     "    <tags>tag1;tag2;_category:wikipedia</tags>\n"
     "    <articleCount>42</articleCount>\n"
     "    <mediaCount>7</mediaCount>\n"
@@ -635,6 +628,100 @@ TEST(FullEntryOpdsTest, specialCharactersInBookMetadataAreEscaped)
     "    \n"
     "  </entry>\n"
   );
+}
+
+TEST(FullEntryOpdsTest, omitsCategoryWhenEmpty)
+{
+  // A manually created book or a book without a <category> element has empty category
+  const Book book = createBook();
+  ASSERT_TRUE(book.getCategory().empty());
+  const auto xml = fullEntryOpds(book, "http://root.location", "", "book-id");
+  EXPECT_EQ(xml.find("<category"), std::string::npos);
+}
+
+TEST(FullEntryOpdsTest, rendersCategoryWhenNonEmpty)
+{
+  auto lib = Library::create();
+  Manager manager(lib);
+  const char sampleOpds[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>book-with-category</id>
+    <title>Book With Category</title>
+    <category>wikipedia</category>
+  </entry>
+</feed>
+)";
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "/local/path/library.opds"));
+  const Book& book = lib->getBookById("book-with-category");
+  ASSERT_EQ(book.getCategory(), "wikipedia");
+
+  const auto xml = fullEntryOpds(book, "http://root.location", "", "book-with-category");
+  EXPECT_NE(xml.find("    <category>wikipedia</category>\n"), std::string::npos);
+}
+
+TEST(FullEntryOpdsTest, escapesXmlSpecialCharsInCategory)
+{
+  auto lib = Library::create();
+  Manager manager(lib);
+  const char sampleOpds[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>book-with-special-cat</id>
+    <title>Special Category Book</title>
+    <category>Science &amp; Technology &lt;Special&gt; &quot;Books&quot;</category>
+  </entry>
+</feed>
+)";
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "/local/path/library.opds"));
+  const Book& book = lib->getBookById("book-with-special-cat");
+  ASSERT_EQ(book.getCategory(), "Science & Technology <Special> \"Books\"");
+
+  const auto xml = fullEntryOpds(book, "http://root.location", "", "book-with-special-cat");
+  EXPECT_NE(xml.find("    <category>Science &amp; Technology &lt;Special&gt; &quot;Books&quot;</category>\n"), std::string::npos);
+}
+
+TEST(FullEntryOpdsTest, preservesCategoryWithSpaces)
+{
+  auto lib = Library::create();
+  Manager manager(lib);
+  const char sampleOpds[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>book-spaces-cat</id>
+    <title>Category With Spaces Book</title>
+    <category>  category with spaces  </category>
+  </entry>
+</feed>
+)";
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "/local/path/library.opds"));
+  const Book& book = lib->getBookById("book-spaces-cat");
+  ASSERT_EQ(book.getCategory(), "  category with spaces  ");
+
+  const auto xml = fullEntryOpds(book, "http://root.location", "", "book-spaces-cat");
+  EXPECT_NE(xml.find("    <category>  category with spaces  </category>\n"), std::string::npos);
+}
+
+TEST(FullEntryOpdsTest, whitespaceOnlyElementInOpdsProducesNoCategory)
+{
+  auto lib = Library::create();
+  Manager manager(lib);
+  const char sampleOpds[] = R"(
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>book-whitespace-cat</id>
+    <title>Whitespace Category Book</title>
+    <category>   </category>
+  </entry>
+</feed>
+)";
+  ASSERT_TRUE(manager.readOpds(sampleOpds, "/local/path/library.opds"));
+  const Book& book = lib->getBookById("book-whitespace-cat");
+  // pugixml default parse drops whitespace-only text nodes so book category is empty
+  ASSERT_TRUE(book.getCategory().empty());
+
+  const auto xml = fullEntryOpds(book, "http://root.location", "", "book-whitespace-cat");
+  EXPECT_EQ(xml.find("<category"), std::string::npos);
 }
 
 #undef CORE_ENTRY_BODY

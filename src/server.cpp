@@ -150,6 +150,17 @@ void Server::setContentServerUrl(std::string url)
   mp_server->setContentServerUrl(url);
 }
 
+void Server::setPublicUrl(const std::string& url)
+{
+  ENSURE_SERVER_IS_NOT_RUNNING();
+  mp_server->setPublicUrl(url);
+}
+
+std::string Server::getPublicUrl() const
+{
+  return mp_server->getPublicUrl();
+}
+
 void Server::setIpMode(IpMode mode)
 {
   ENSURE_SERVER_IS_NOT_RUNNING();
