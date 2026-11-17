@@ -68,7 +68,7 @@ class Book
 
   typedef std::vector<std::shared_ptr<const Illustration>> Illustrations;
 
-  enum class AcquisitionLinkKind { DIRECT = 0, MAGNET, META4, BITTORRENT, COUNT };
+  enum class AcquisitionLinkKind { DIRECT = 0, META4, MAGNET, BITTORRENT, COUNT };
 
   // Acquisition URLs indexed by AcquisitionLinkKind (empty = not set).
   // Always holds one entry per link kind; its size cannot be changed.

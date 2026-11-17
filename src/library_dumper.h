@@ -37,8 +37,9 @@ class Book;
  * Render the full OPDS entry XML for a book.
  *
  * @param book The book to render the OPDS entry for.
- * @param rootLocation The root URL/path the catalog is served from, used to
- *                 build absolute links within the entry.
+ * @param endpointRoot The root URL/path (including the /catalog/vX part) the
+ *                 catalog is served from, used to build absolute links within
+ *                 the entry.
  * @param contentAccessUrl The URL (or URL prefix) used to access the book's
  *                 content itself (as opposed to the catalog entry).
  * @param contentId The identifier of the book's content, used when building
@@ -54,13 +55,13 @@ class Book;
  *                 catalog (OPDSDumper) as opposed to a local/offline file
  *                 dump (Library::dumpOpds). The live catalog can serve any
  *                 illustration - embedded or remote - through its own
- *                 /catalog/v2/illustration endpoint, but an offline dump has
+ *                 /catalog/v[23]/illustration endpoint, but an offline dump has
  *                 no server behind that endpoint, so only illustrations
  *                 backed by a real external url can produce a working
  *                 thumbnail link there.
  */
 std::string fullEntryOpds(const Book& book,
-                          const std::string& rootLocation,
+                          const std::string& endpointRoot,
                           const std::string& contentAccessUrl,
                           const std::string& contentId,
                           const std::string& localPath = "",

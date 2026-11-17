@@ -30,6 +30,9 @@
 #include "../src/opds_dumper.h"
 #include "../src/tools/otherTools.h"
 
+#include "testing_tools.h"
+using namespace kiwix::testing;
+
 namespace
 {
 
@@ -81,51 +84,12 @@ const char sampleLibraryOpds[] = R"(
 </feed>
 )";
 
-// Returns a copy of 'text' where every line that fully matches 'pattern'
-// (preceded by optional whitespace) is replaced with 'replacement',
-// preserving the leading whitespace. Copied from test/library_server.cpp,
-// which uses the same technique for the same reason (masking timestamps
-// generated from the current wall-clock time).
-std::string replaceLines(const std::string& text,
-                         const std::string& pattern,
-                         const std::string& replacement)
-{
-  std::regex regex("^ *" + pattern + "$");
-  std::ostringstream oss;
-  std::istringstream iss(text);
-  std::string line;
-  while ( std::getline(iss, line) ) {
-    if ( std::regex_match(line, regex) ) {
-      for ( size_t i = 0; i < line.size() && line[i] == ' '; ++i )
-        oss << ' ';
-      oss << replacement << "\n";
-    } else {
-      oss << line << "\n";
-    }
-  }
-  return oss.str();
-}
-
-// Masks every <updated>...</updated> timestamp - both the feed-level one
-// (always "now", via gen_date_str()) and the per-entry/per-category/
-// per-language ones used by categoriesOPDSFeed()/languagesOPDSFeed() (also
-// "now" - see LibraryDumper::getCategoryData()/getLanguageData()). Per-book
-// entries elsewhere carry a real, deterministic book date, but this matches
-// them too, same as library_server.cpp's CATALOG_ENTRY does for the live
-// HTTP catalog - the trade-off of a slightly less precise assertion in
-// exchange for a much simpler, more robust one.
-std::string maskUpdatedTimestamps(std::string s)
-{
-  return replaceLines(s, R"(<updated>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ</updated>)",
-                          "<updated>YYYY-MM-DDThh:mm:ssZ</updated>");
-}
-
 // Compares 'actual' (an OPDS feed/entry string, possibly containing
 // wall-clock-generated <updated> timestamps) against 'expected' after
 // masking those timestamps out of 'actual', so tests don't have to spell
-// out maskUpdatedTimestamps(...) at every assertion.
+// out maskUpdatedTimestampsInOPDS(...) at every assertion.
 #define EXPECT_OPDS(actual, expected) \
-    EXPECT_EQ(maskUpdatedTimestamps(actual), (expected))
+    EXPECT_EQ(maskUpdatedTimestampsInOPDS(actual), (expected))
 
 #define BOOK1_ENTRY \
     "  <entry>\n" \
@@ -216,7 +180,7 @@ class OPDSDumperTest : public ::testing::Test {
 
 TEST_F(OPDSDumperTest, dumpOPDSFeedV2FullEntries)
 {
-  EXPECT_OPDS(dumper->dumpOPDSFeedV2({"book1-id", "book2-id"}, "", /*partial=*/false),
+  EXPECT_OPDS(dumper->dumpOPDSFeed("v2", {"book1-id", "book2-id"}, "", /*partial=*/false),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
@@ -245,7 +209,7 @@ TEST_F(OPDSDumperTest, dumpOPDSFeedV2FullEntries)
 
 TEST_F(OPDSDumperTest, dumpOPDSFeedV2PartialEntries)
 {
-  EXPECT_OPDS(dumper->dumpOPDSFeedV2({"book1-id", "book2-id"}, "", /*partial=*/true),
+  EXPECT_OPDS(dumper->dumpOPDSFeed("v2", {"book1-id", "book2-id"}, "", /*partial=*/true),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
@@ -274,7 +238,7 @@ TEST_F(OPDSDumperTest, dumpOPDSFeedV2PartialEntries)
 
 TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryProducesStandaloneEntryDocument)
 {
-  EXPECT_OPDS(dumper->dumpOPDSCompleteEntry("book2-id"),
+  EXPECT_OPDS(dumper->dumpOPDSCompleteEntry("v2", "book2-id"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     BOOK2_ENTRY
   );
@@ -282,7 +246,7 @@ TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryProducesStandaloneEntryDocument)
 
 TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryThrowsForUnknownBookId)
 {
-  EXPECT_THROW(dumper->dumpOPDSCompleteEntry("no-such-book"), std::out_of_range);
+  EXPECT_THROW(dumper->dumpOPDSCompleteEntry("v2", "no-such-book"), std::out_of_range);
 }
 
 TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
@@ -290,7 +254,7 @@ TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
   // Categories are listed in sorted order: "wikipedia" (from the
   // "_category:" tag on book1) before "wiktionary" (from book2's explicit
   // "category" attribute).
-  EXPECT_OPDS(dumper->categoriesOPDSFeed(),
+  EXPECT_OPDS(dumper->categoriesOPDSFeed("v2"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:opds=\"https://specs.opds.io/opds-1.2\">\n"
@@ -329,7 +293,7 @@ TEST_F(OPDSDumperTest, categoriesOPDSFeedListsDistinctSortedCategories)
 TEST_F(OPDSDumperTest, languagesOPDSFeedListsLanguagesWithCounts)
 {
   // Languages are listed in sorted order of their ISO code: "eng" before "fra".
-  EXPECT_OPDS(dumper->languagesOPDSFeed(),
+  EXPECT_OPDS(dumper->languagesOPDSFeed("v2"),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
     "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"

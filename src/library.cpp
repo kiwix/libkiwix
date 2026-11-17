@@ -1074,9 +1074,10 @@ std::string Library::dumpOpds(const std::string& outputPath) const
   const auto baseDir = kiwix::removeLastPathElement(outputPath);
 
   std::ostringstream ss;
-  ss << R"(<feed xmlns="http://www.w3.org/2005/Atom"
+  ss << R"(<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
-      xmlns:opds="http://opds-spec.org/2010/catalog">
+      xmlns:opds="https://specs.opds.io/opds-1.2">
 )";
 
   for (auto& pair: m_books) {
@@ -1089,7 +1090,7 @@ std::string Library::dumpOpds(const std::string& outputPath) const
         ? ""
         : computeRelativePath(baseDir, book.getPath());
     ss << fullEntryOpds(book,
-                        /*rootLocation=*/"",
+                        /*endpointRoot=*/"",
                         /*contentAccessUrl=*/"",
                         /*contentId=*/book.getId(),
                         localPath,

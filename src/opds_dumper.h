@@ -48,34 +48,36 @@ class OPDSDumper : public LibraryDumper
   /**
    * Dump the OPDS feed.
    *
+   * @param endpointVersion version of the /catalog endpoint to use
    * @param bookIds the ids of the books to include in the feed
    * @param query the query used to obtain the list of book ids
    * @param partial whether the feed should include partial or complete entries
    * @return The OPDS feed.
    */
-  std::string dumpOPDSFeedV2(const std::vector<std::string>& bookIds, const std::string& query, bool partial) const;
+  std::string dumpOPDSFeed(const std::string& endpointVersion, const std::vector<std::string>& bookIds, const std::string& query, bool partial) const;
 
   /**
    * Dump the OPDS complete entry document.
    *
+   * @param endpointVersion version of the /catalog endpoint to use
    * @param bookId the id of the book
    * @return The OPDS complete entry document.
    */
-  std::string dumpOPDSCompleteEntry(const std::string& bookId) const;
+  std::string dumpOPDSCompleteEntry(const std::string& endpointVersion, const std::string& bookId) const;
 
   /**
    * Dump the categories OPDS feed.
    *
    * @return The OPDS feed.
    */
-  std::string categoriesOPDSFeed() const;
+  std::string categoriesOPDSFeed(std::string endpointVersion) const;
 
   /**
    * Dump the languages OPDS feed.
    *
    * @return The OPDS feed.
    */
-  std::string languagesOPDSFeed() const;
+  std::string languagesOPDSFeed(std::string endpointVersion) const;
 
   /**
    * Set some information about the search results.

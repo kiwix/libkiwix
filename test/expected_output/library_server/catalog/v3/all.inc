@@ -1,0 +1,5 @@
+#include "./root.xml.h"
+#include "./searchdescription.xml.h"
+#include "./categories.h"
+#include "./languages.h"
+#include "./partial_entries.h"

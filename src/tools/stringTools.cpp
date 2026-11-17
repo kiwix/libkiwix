@@ -454,6 +454,12 @@ bool kiwix::startsWith(const std::string& base, const std::string& start)
         && std::equal(start.begin(), start.end(), base.begin());
 }
 
+bool kiwix::endsWith(const std::string& base, const std::string& suffix)
+{
+   return suffix.size() <= base.size()
+       && std::equal(suffix.begin(), suffix.end(), base.end() - suffix.size());
+}
+
 std::string kiwix::stripSuffix(const std::string& str, const std::string& suffix)
 {
   if (str.size() >= suffix.size()) {

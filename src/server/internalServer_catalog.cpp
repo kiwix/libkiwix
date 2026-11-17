@@ -73,17 +73,17 @@ std::unique_ptr<Response> InternalServer::handle_catalog(const RequestContext& r
     return UrlNotFoundResponse(request);
   }
 
-  if (url == "v2") {
-    return handle_catalog_v2(request);
+  if (url == "v2" || url == "v3") {
+    return handle_catalog_v(request);
   }
 
   return UrlNotFoundResponse(request);
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext& request)
 {
   if (m_verbose.load()) {
-    printf("** running handle_catalog_v2");
+    printf("** running handle_catalog_v");
   }
 
   std::string url;
@@ -93,41 +93,44 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2(const RequestContext
     return UrlNotFoundResponse(request);
   }
 
+  const std::string endpointVersion = request.get_url_part(1);
+
   if (url == "root.xml") {
-    return handle_catalog_v2_root(request);
+    return handle_catalog_v_root(request);
   } else if (url == "searchdescription.xml") {
-    const std::string endpoint_root = m_root + "/catalog/v2";
+    const std::string endpoint_root = m_root + "/catalog/" + endpointVersion;
     return ContentResponse::build(
-        RESOURCE::catalog_v2_searchdescription_xml,
+        RESOURCE::templates::catalog::searchdescription_xml,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
         "application/opensearchdescription+xml"
     );
   } else if (url == "entry") {
     const std::string entryId  = request.get_url_part(3);
-    return handle_catalog_v2_complete_entry(request, entryId);
+    return handle_catalog_v_complete_entry(request, entryId);
   } else if (url == "entries") {
-    return handle_catalog_v2_entries(request, /*partial=*/false);
+    return handle_catalog_v_entries(request, /*partial=*/false);
   } else if (url == "partial_entries") {
-    return handle_catalog_v2_entries(request, /*partial=*/true);
+    return handle_catalog_v_entries(request, /*partial=*/true);
   } else if (url == "categories") {
-    return handle_catalog_v2_categories(request);
+    return handle_catalog_v_categories(request);
   } else if (url == "languages") {
-    return handle_catalog_v2_languages(request);
+    return handle_catalog_v_languages(request);
   } else if (url == "illustration") {
-    return handle_catalog_v2_illustration(request);
+    return handle_catalog_v_illustration(request);
   } else {
     return UrlNotFoundResponse(request);
   }
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_root(const RequestContext& request)
 {
   const std::string libraryId = getLibraryId();
+  const std::string endpointVersion = request.get_url_part(1);
   return ContentResponse::build(
-             RESOURCE::templates::catalog_v2_root_xml,
+             RESOURCE::templates::catalog::root_xml,
              kainjow::mustache::object{
                {"date", gen_date_str()},
-               {"endpoint_root", m_root + "/catalog/v2"},
+               {"endpoint_root", m_root + "/catalog/" + endpointVersion},
                {"feed_id", gen_uuid(libraryId)},
                {"all_entries_feed_id", gen_uuid(libraryId + "/entries")},
                {"partial_entries_feed_id", gen_uuid(libraryId + "/partial_entries")},
@@ -138,18 +141,22 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_root(const RequestCo
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_entries(const RequestContext& request, bool partial)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_entries(const RequestContext& request, bool partial)
 {
+  const std::string endpointVersion = request.get_url_part(1);
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   const auto bookIds = search_catalog(request, opdsDumper);
-  const auto opdsFeed = opdsDumper.dumpOPDSFeedV2(bookIds, request.get_query(), partial);
+  const auto opdsFeed = opdsDumper.dumpOPDSFeed(endpointVersion,
+                                                bookIds,
+                                                request.get_query(),
+                                                partial);
   return ContentResponse::build(
              opdsFeed,
              opdsMimeType[OPDS_ACQUISITION_FEED]
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const RequestContext& request, const std::string& entryId)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_complete_entry(const RequestContext& request, const std::string& entryId)
 {
   try {
     mp_library->getBookById(entryId);
@@ -157,33 +164,35 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v2_complete_entry(const
     return UrlNotFoundResponse(request);
   }
 
+  const std::string endpointVersion = request.get_url_part(1);
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
-  const auto opdsFeed = opdsDumper.dumpOPDSCompleteEntry(entryId);
   return ContentResponse::build(
-             opdsFeed,
+             opdsDumper.dumpOPDSCompleteEntry(endpointVersion, entryId),
              opdsMimeType[OPDS_ENTRY]
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_categories(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_categories(const RequestContext& request)
 {
+  const std::string endpointVersion = request.get_url_part(1);
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   return ContentResponse::build(
-             opdsDumper.categoriesOPDSFeed(),
+             opdsDumper.categoriesOPDSFeed(endpointVersion),
              opdsMimeType[OPDS_NAVIGATION_FEED]
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_languages(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_languages(const RequestContext& request)
 {
+  const std::string endpointVersion = request.get_url_part(1);
   kiwix::OPDSDumper opdsDumper = getOPDSDumper();
   return ContentResponse::build(
-             opdsDumper.languagesOPDSFeed(),
+             opdsDumper.languagesOPDSFeed(endpointVersion),
              opdsMimeType[OPDS_NAVIGATION_FEED]
   );
 }
 
-std::unique_ptr<Response> InternalServer::handle_catalog_v2_illustration(const RequestContext& request)
+std::unique_ptr<Response> InternalServer::handle_catalog_v_illustration(const RequestContext& request)
 {
   try {
     const auto bookId  = request.get_url_part(3);

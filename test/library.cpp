@@ -20,6 +20,9 @@
 #include "gtest/gtest.h"
 #include <string>
 
+#include "testing_tools.h"
+using namespace kiwix::testing;
+
 const char * sampleOpdsStream = R"(
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
@@ -268,20 +271,11 @@ const char * sampleOpdsStream = R"(
 )";
 
 #ifdef _WIN32
-# define ZIMFILE_PATH "zimfile.zim"
-# define EXAMPLE_PATH "example.zim"
 # define OPDS_LIBRARY_PATH "test\\library.opds"
 #else
-# define ZIMFILE_PATH "zimfile.zim"
-# define EXAMPLE_PATH "example.zim"
 # define OPDS_LIBRARY_PATH "test/library.opds"
 #endif
 
-// The formatting of this OPDS XML (element order, indentation, and
-// whitespace) is intentionally chosen to exactly match Library::dumpOpds()'s
-// output, so that it stays invariant when read via Manager::readOpds() and
-// dumped back via Library::dumpOpds() (see LibraryOpdsExportTest.allInOne
-// below). Reformatting this string may break that round-trip test.
 const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:dc="http://purl.org/dc/terms/"
       xmlns:opds="http://opds-spec.org/2010/catalog">
@@ -304,7 +298,7 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       <name>Kiwix &amp; Some Enthusiasts</name>
     </publisher>
     <dc:issued>2021-04-11T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" href=")" EXAMPLE_PATH R"(" type="application/x-zim" length="129024"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" href="example.zim" type="application/x-zim" length="129024"/>
   </entry>
   <entry>
     <id>urn:uuid:raycharles</id>
@@ -325,8 +319,8 @@ const char sampleLibraryOpds[] = R"(<feed xmlns="http://www.w3.org/2005/Atom"
       <name>Kiwix</name>
     </publisher>
     <dc:issued>2020-03-31T00:00:00Z</dc:issued>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569344" />
-    <link rel="http://opds-spec.org/acquisition/open-access" href=")" ZIMFILE_PATH R"(" type="application/x-zim" length="569344"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="https://github.com/kiwix/libkiwix/raw/master/test/data/zimfile.zim" length="569304" />
+    <link rel="http://opds-spec.org/acquisition/open-access" href="zimfile.zim" type="application/x-zim" length="569304"/>
   </entry>
 </feed>
 )";
@@ -1303,16 +1297,22 @@ TEST_F(LibraryTest, removeBooksNotUpdatedSince)
   );
 };
 
+#include "./expected_output/library.h"
+
 TEST(LibraryOpdsExportTest, allInOne)
 {
   auto lib = kiwix::Library::create();
   kiwix::Manager manager(lib);
-  manager.readOpds(sampleLibraryOpds, OPDS_LIBRARY_PATH);
+  manager.readFile(OPDS_LIBRARY_PATH);
 
-  // sampleLibraryOpds is formatted to be round-trip invariant (see comment
-  // above its definition), so dumping what was just read back out should
-  // reproduce it exactly.
-  EXPECT_EQ(lib->dumpOpds(OPDS_LIBRARY_PATH), sampleLibraryOpds);
+  EXPECT_EQ(maskUpdatedTimestampsInOPDS(lib->dumpOpds(OPDS_LIBRARY_PATH)),
+    LIBRARY_ENTRIES_PREAMBLE
+    EO(CHARLES_RAY_OPDS_ENTRY)
+    EO(INACCESSIBLEZIMFILE_OPDS_ENTRY)
+    EO(RAY_CHARLES_OPDS_ENTRY)
+    EO(UNCATEGORIZED_RAY_CHARLES_OPDS_ENTRY)
+    "</feed>\n"
+  );
 }
 
 };
