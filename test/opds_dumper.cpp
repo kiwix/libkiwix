@@ -236,6 +236,37 @@ TEST_F(OPDSDumperTest, dumpOPDSFeedV2PartialEntries)
   );
 }
 
+// Unlike /catalog/v2, the /catalog/v3 feeds declare the kiwix namespace
+TEST_F(OPDSDumperTest, dumpOPDSFeedV3FullEntries)
+{
+  EXPECT_OPDS(dumper->dumpOPDSFeed("v3", {"book1-id", "book2-id"}, "", /*partial=*/false),
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
+    "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
+    "      xmlns:kiwix=\"https://kiwix.org/namespace/opds\"\n"
+    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\"\n"
+    "      xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\">\n"
+    "  <id>" + gen_uuid("test-library-id/entries?") + "</id>\n"
+    "\n"
+    "  <link rel=\"self\"\n"
+    "        href=\"http://root.location/catalog/v3/entries\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n"
+    "  <link rel=\"start\"\n"
+    "        href=\"http://root.location/catalog/v3/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
+    "  <link rel=\"up\"\n"
+    "        href=\"http://root.location/catalog/v3/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
+    "\n"
+    "  <title>All Entries</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "\n"
+    BOOK1_ENTRY
+    BOOK2_ENTRY
+    "</feed>\n"
+  );
+}
+
 TEST_F(OPDSDumperTest, dumpOPDSCompleteEntryProducesStandaloneEntryDocument)
 {
   EXPECT_OPDS(dumper->dumpOPDSCompleteEntry("v2", "book2-id"),

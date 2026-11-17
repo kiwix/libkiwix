@@ -17,7 +17,7 @@ R"(  <entry>
     <summary>{SUMMARY}</summary>
     <language>{LANG}</language>
     <name>{NAME}</name>
-    <flavour>{FLAVOUR}</flavour>
+    <flavour>{FLAVOUR}</flavour>{POPULARITY}
     <category>{CATEGORY}</category>
     <tags>{TAGS}</tags>
     <articleCount>{ARTICLECOUNT}</articleCount>
@@ -98,7 +98,17 @@ def zimfile_link_opds(data):
     return f'''
     <link rel="http://opds-spec.org/acquisition/open-access" href="{filename}.zim" type="application/x-zim" length="{size}"/>'''
 
+def popularity_opds(data):
+    popularity = data.get('POPULARITY')
+    # catalog/v2 entries are frozen and never expose the popularity
+    if popularity is None or data['OPDS_VARIANT'] == 'catalog/v2':
+        return ""
+
+    return f'''
+    <kiwix:popularity>{popularity}</kiwix:popularity>'''
+
 def generate_opds_entry_building_block(identifier, data):
+    data['POPULARITY'] = popularity_opds(data)
     data['PREVIEWLINK'] = preview_link_opds(data)
     data['ILLUSTRATIONLINKS'] = illustration_links_opds(data)
     data['OPENACCESSLINKS']   = openaccess_links_opds(data)
@@ -140,7 +150,8 @@ RAY_CHARLES_DATA = dict(
     FILENAME="zimfile_raycharles",
     SIZE="569304",
     OPENACCESSLINKKINDS=('BITTORRENT', 'MAGNET', 'META4', 'DIRECT'),
-    ILLUSTRATIONS=[{"SIZE": 48, "URL": "https://example.com/favicon/raycharles.png"}]
+    ILLUSTRATIONS=[{"SIZE": 48, "URL": "https://example.com/favicon/raycharles.png"}],
+    POPULARITY=46
 )
 
 RAY_CHARLES_NO_NAMEMAPPER_DATA = edict(RAY_CHARLES_DATA,
@@ -159,7 +170,8 @@ UNCATEGORIZED_RAY_CHARLES_DATA = edict(RAY_CHARLES_DATA,
     FILENAME="zimfile_raycharles_uncategorized",
     OPENACCESSLINKKINDS=('DIRECT',),
     SIZE="125952",
-    ILLUSTRATIONS=[]
+    ILLUSTRATIONS=[],
+    POPULARITY=None
 )
 
 CHARLES_RAY_DATA = edict(RAY_CHARLES_DATA,
@@ -173,7 +185,8 @@ CHARLES_RAY_DATA = edict(RAY_CHARLES_DATA,
     CONTENTID="zimfile%26other",
     FILENAME="zimfile&other",
     OPENACCESSLINKKINDS=('BITTORRENT',),
-    ILLUSTRATIONS=[]
+    ILLUSTRATIONS=[],
+    POPULARITY=None
 )
 
 CHARLES_RAY_NO_NAMEMAPPER_DATA = edict(CHARLES_RAY_DATA,
