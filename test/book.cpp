@@ -311,6 +311,78 @@ TEST(BookTest, acquisitionLinksHaveOneEmptyEntryPerKind)
     EXPECT_THROW(urls[kiwix::Book::AcquisitionLinkKind::COUNT], std::out_of_range);
 }
 
+TEST(BookTest, digestsAreEmptyByDefault)
+{
+    const kiwix::Book book;
+    const auto digests = book.getDigests();
+    EXPECT_EQ(digests.size(), size_t(kiwix::Book::DigestType::COUNT));
+    for ( size_t i = 0; i < digests.size(); ++i ) {
+      EXPECT_EQ(digests[kiwix::Book::DigestType(i)], "") << i;
+    }
+    EXPECT_THROW(digests[kiwix::Book::DigestType::COUNT], std::out_of_range);
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "");
+}
+
+TEST(BookTest, setDigestStoresDigestPerType)
+{
+    typedef kiwix::Book::DigestType DigestType;
+
+    kiwix::Book book;
+    book.setDigest(DigestType::SHA256, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+    book.setDigest(DigestType::MD5, "8054ec08991a30dafea652998874ead9");
+
+    EXPECT_EQ(book.getDigest(DigestType::MD5), "8054ec08991a30dafea652998874ead9");
+    EXPECT_EQ(book.getDigest(DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(DigestType::SHA256), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+
+    // getDigests() is indexed by DigestType
+    const auto digests = book.getDigests();
+    EXPECT_EQ(digests[DigestType::MD5], "8054ec08991a30dafea652998874ead9");
+    EXPECT_EQ(digests[DigestType::SHA1], "");
+    EXPECT_EQ(digests[DigestType::SHA256], "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+
+    // Setting a digest of an already set type overwrites it
+    book.setDigest(DigestType::MD5, "d41d8cd98f00b204e9800998ecf8427e");
+    EXPECT_EQ(book.getDigest(DigestType::MD5), "d41d8cd98f00b204e9800998ecf8427e");
+
+    // Setting an empty value clears the digest of that type only
+    book.setDigest(DigestType::SHA256, "");
+    EXPECT_EQ(book.getDigest(DigestType::SHA256), "");
+    EXPECT_EQ(book.getDigest(DigestType::MD5), "d41d8cd98f00b204e9800998ecf8427e");
+}
+
+TEST(BookTest, digestsAreCopied)
+{
+    typedef kiwix::Book::DigestType DigestType;
+    const std::string sha256 = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
+
+    kiwix::Book book;
+    book.setId("xyz");
+    book.setDigest(DigestType::SHA256, sha256);
+
+    const kiwix::Book copy(book);
+    EXPECT_EQ(copy.getDigest(DigestType::SHA256), sha256);
+
+    kiwix::Book assigned;
+    assigned = book;
+    EXPECT_EQ(assigned.getDigest(DigestType::SHA256), sha256);
+
+    // update() replaces the digests too, including clearing absent ones
+    kiwix::Book updated;
+    updated.setId("xyz");
+    updated.setDigest(DigestType::MD5, "8054ec08991a30dafea652998874ead9");
+    EXPECT_TRUE(updated.update(book));
+    EXPECT_EQ(updated.getDigest(DigestType::SHA256), sha256);
+    EXPECT_EQ(updated.getDigest(DigestType::MD5), "");
+
+    // Copies are independent of each other
+    assigned.setDigest(DigestType::SHA256, "");
+    EXPECT_EQ(assigned.getDigest(DigestType::SHA256), "");
+    EXPECT_EQ(book.getDigest(DigestType::SHA256), sha256);
+}
+
 TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)
 {
     kiwix::Book book;

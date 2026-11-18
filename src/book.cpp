@@ -214,6 +214,11 @@ Book::AcquisitionLinks::AcquisitionLinks() :
 {
 }
 
+Book::Digests::Digests() :
+  m_values(static_cast<size_t>(DigestType::COUNT))
+{
+}
+
 class Book::Impl
 {
  public:
@@ -236,6 +241,7 @@ class Book::Impl
   uint64_t m_articleCount = 0;
   uint64_t m_mediaCount = 0;
   uint64_t m_size = 0;
+  Digests m_digests;
   Book::Illustrations m_illustrations;
 };
 
@@ -618,6 +624,16 @@ uint64_t Book::getSize() const
   return mp_impl->m_size;
 }
 
+Book::Digests Book::getDigests() const
+{
+  return mp_impl->m_digests;
+}
+
+std::string Book::getDigest(DigestType type) const
+{
+  return mp_impl->m_digests[type];
+}
+
 void Book::setId(const std::string& id)
 {
   mp_impl->m_id = id;
@@ -696,6 +712,11 @@ void Book::setMediaCount(uint64_t mediaCount)
 void Book::setSize(uint64_t size)
 {
   mp_impl->m_size = size;
+}
+
+void Book::setDigest(DigestType type, const std::string& value)
+{
+  mp_impl->m_digests[type] = value;
 }
 
 }

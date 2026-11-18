@@ -87,6 +87,28 @@ class Book
     std::vector<std::string> m_urls;
   };
 
+  // The values of the existing enumerators are part of the ABI and must not
+  // change: new digest types must be added at the end (right before COUNT).
+  enum class DigestType { MD5 = 0, SHA1, SHA256, COUNT };
+
+  // Digests (checksums) of the ZIM file indexed by DigestType
+  // (empty = not set).
+  // Always holds one entry per digest type; its size cannot be changed.
+  class Digests
+  {
+   public:
+    Digests();
+
+    size_t size() const { return m_values.size(); }
+    std::string& operator[](DigestType type)
+    { return m_values.at(static_cast<size_t>(type)); }
+    const std::string& operator[](DigestType type) const
+    { return m_values.at(static_cast<size_t>(type)); }
+
+   private:
+    std::vector<std::string> m_values;
+  };
+
  public: // functions
   Book();
   Book(const Book& other);
@@ -158,6 +180,12 @@ class Book
   uint64_t getMediaCount() const;
   uint64_t getSize() const;
 
+  // Returns the digests of the ZIM file, indexed by DigestType.
+  Digests getDigests() const;
+
+  // Returns the digest of the ZIM file of the given type (empty if not set).
+  std::string getDigest(DigestType type) const;
+
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
 
@@ -190,6 +218,10 @@ class Book
   void setArticleCount(uint64_t articleCount);
   void setMediaCount(uint64_t mediaCount);
   void setSize(uint64_t size);
+
+  // Sets the digest of the ZIM file of the given type.
+  // Setting an empty value clears the digest of that type.
+  void setDigest(DigestType type, const std::string& value);
 
  private: // functions
   std::string getCategoryFromTags() const;
