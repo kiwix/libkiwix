@@ -134,6 +134,76 @@ TEST(FullEntryOpdsTest, rendersPopularityWhenSet)
             entryWithPopularity("0"));
 }
 
+TEST(FullEntryOpdsTest, omitsDigestsWhenNoneIsSet)
+{
+  const Book book = createBook();
+  // digests left at their default (empty) - not even an empty
+  // <kiwix:zimdigests> element is rendered.
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+    "  <entry>\n"
+    CORE_ENTRY_BODY
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n"
+  );
+}
+
+TEST(FullEntryOpdsTest, rendersDigestWhenSet)
+{
+  Book book = createBook();
+  book.setDigest(Book::DigestType::SHA256, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+    "  <entry>\n"
+    CORE_ENTRY_BODY
+    "    <kiwix:zimdigests>\n"
+    "      <kiwix:zimdigest type=\"sha256\">ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</kiwix:zimdigest>\n"
+    "    </kiwix:zimdigests>\n"
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n"
+  );
+}
+
+TEST(FullEntryOpdsTest, rendersOneDigestPerTypeInDigestTypeOrder)
+{
+  Book book = createBook();
+  book.setDigest(Book::DigestType::SHA256, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+  book.setDigest(Book::DigestType::MD5, "8054ec08991a30dafea652998874ead9");
+  book.setDigest(Book::DigestType::SHA1, "a9993e364706816aba3e25717850c26c9cd0d89d");
+
+  EXPECT_EQ(fullEntryOpds(book, "http://root.location", "", "book-id"),
+    "  <entry>\n"
+    CORE_ENTRY_BODY
+    "    <kiwix:zimdigests>\n"
+    "      <kiwix:zimdigest type=\"md5\">8054ec08991a30dafea652998874ead9</kiwix:zimdigest>\n"
+    "      <kiwix:zimdigest type=\"sha1\">a9993e364706816aba3e25717850c26c9cd0d89d</kiwix:zimdigest>\n"
+    "      <kiwix:zimdigest type=\"sha256\">ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</kiwix:zimdigest>\n"
+    "    </kiwix:zimdigests>\n"
+    "    <author>\n"
+    "      <name>Some Creator</name>\n"
+    "    </author>\n"
+    "    <publisher>\n"
+    "      <name>Some Publisher</name>\n"
+    "    </publisher>\n"
+    "    <dc:issued>2021-03-25T00:00:00Z</dc:issued>\n"
+    "    \n"
+    "  </entry>\n"
+  );
+}
+
 TEST(FullEntryOpdsTest, omitsAcquisitionLinkWhenUrlIsEmpty)
 {
   const Book book = createBook();

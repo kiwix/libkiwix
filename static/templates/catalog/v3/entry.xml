@@ -10,7 +10,10 @@
     <category>{{category}}</category>
     <tags>{{tags}}</tags>
     <articleCount>{{article_count}}</articleCount>
-    <mediaCount>{{media_count}}</mediaCount>
+    <mediaCount>{{media_count}}</mediaCount>{{#has_digests}}
+    <kiwix:zimdigests>{{#digests}}
+      <kiwix:zimdigest type="{{type}}">{{value}}</kiwix:zimdigest>{{/digests}}
+    </kiwix:zimdigests>{{/has_digests}}
     {{#thumbnailLinks}}<link rel="http://opds-spec.org/image/thumbnail"
           href="{{icon_url}}"
           type="{{icon_mimetype}}"/>

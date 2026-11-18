@@ -15,6 +15,11 @@ R"(  <entry>
     <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
     <articleCount>284</articleCount>
     <mediaCount>2</mediaCount>
+    <kiwix:zimdigests>
+      <kiwix:zimdigest type="md5">be3812dbff87a353069ee1665db16f5c</kiwix:zimdigest>
+      <kiwix:zimdigest type="sha1">7da297d7ab5a898c1c23f6ae064cfeea3fdda869</kiwix:zimdigest>
+      <kiwix:zimdigest type="sha256">d4368987aa73e7e35af96c660aead3748ac92648b3248b45df5a4c6c34e7f1b9</kiwix:zimdigest>
+    </kiwix:zimdigests>
     <link rel="http://opds-spec.org/image/thumbnail"
           href="/ROOT%23%3F/catalog/v3/illustration/raycharles/?size=48"
           type="image/png;width=48;height=48;scale=1"/>
