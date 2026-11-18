@@ -152,15 +152,12 @@ class Book
    *         (currently 0); use hasPopularity() to distinguish that case.
    */
   uint32_t getPopularity() const;
-  std::string getOrigId() const;
   uint64_t getArticleCount() const;
   uint64_t getMediaCount() const;
   uint64_t getSize() const;
 
   Illustrations getIllustrations() const;
   std::shared_ptr<const Illustration> getIllustration(unsigned int size) const;
-
-  std::string getDownloadId() const;
 
   void setId(const std::string& id);
   void setPath(const std::string& path);
@@ -188,11 +185,9 @@ class Book
    */
   void setPopularity(int popularity);
   void setTags(const std::string& tags);
-  void setOrigId(const std::string& origId);
   void setArticleCount(uint64_t articleCount);
   void setMediaCount(uint64_t mediaCount);
   void setSize(uint64_t size);
-  void setDownloadId(const std::string& downloadId);
 
  private: // functions
   std::string getCategoryFromTags() const;
