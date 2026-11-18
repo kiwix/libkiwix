@@ -135,7 +135,13 @@ function getUserLanguage() {
 function setUserLanguage(lang, callback) {
   window.localStorage.setItem('userlang', lang);
   Translations.load(lang);
-  Translations.whenReady(callback);
+  Translations.whenReady(() => {
+    // Set the page language and text direction (RTL or LTR)
+    const metadata = Translations.data[lang] && Translations.data[lang]['@metadata'];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = metadata && metadata.direction === 'rtl' ? 'rtl' : 'ltr';
+    callback();
+  });
 }
 
 function createModalUILanguageSelector() {
@@ -210,6 +216,9 @@ function translatePageInWindow(w) {
 
     const newHtml = I18n.render(template, params);
     w.document.documentElement.innerHTML = parseDom(newHtml).innerHTML;
+    // Use the same language and text direction as the main page
+    w.document.documentElement.lang = document.documentElement.lang;
+    w.document.documentElement.dir = document.documentElement.dir;
   }
 }
 
