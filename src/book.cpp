@@ -169,6 +169,24 @@ fromMimeTypeToLinkKind(const std::string& mimeType)
   throw std::runtime_error("Unknown acquisition link type: " + mimeType);
 }
 
+// Maps the "type" attribute of a <kiwix:zimdigest> element to a DigestType.
+// Digest type names are case-sensitive (always lowercase).
+kiwix::Book::DigestType
+fromDigestTypeName(const std::string& typeName)
+{
+  if (typeName == "md5") {
+    return kiwix::Book::DigestType::MD5;
+  }
+  if (typeName == "sha1") {
+    return kiwix::Book::DigestType::SHA1;
+  }
+  if (typeName == "sha256") {
+    return kiwix::Book::DigestType::SHA256;
+  }
+
+  throw std::runtime_error("Unknown digest type: '" + typeName + "'");
+}
+
 constexpr uint32_t MAX_POPULARITY = 100;
 
 // Returns false (and sets popularity to 0) if str is not an integer number
@@ -341,6 +359,34 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   mp_impl->m_category = catnode.empty() ? getCategoryFromTags() : catnode.child_value();
   mp_impl->m_articleCount = strtoull(VALUE("articleCount"), 0, 0);
   mp_impl->m_mediaCount = strtoull(VALUE("mediaCount"), 0, 0);
+  mp_impl->m_digests = Digests();
+  const auto digestsNode = node.child("kiwix:zimdigests");
+  for(auto digestNode = digestsNode.child("kiwix:zimdigest"); digestNode;
+           digestNode = digestNode.next_sibling("kiwix:zimdigest")) {
+    const std::string typeName = digestNode.attribute("type").value();
+    const std::string value = trim(digestNode.child_value());
+
+    DigestType type;
+    try {
+      type = fromDigestTypeName(typeName);
+    } catch (const std::runtime_error& e) {
+      std::cerr << "Book '" << mp_impl->m_id << "': ignoring digest '"
+                << value << "': " << e.what() << std::endl;
+      continue;
+    }
+    if (value.empty()) {
+      std::cerr << "Book '" << mp_impl->m_id << "': ignoring empty "
+                << typeName << " digest." << std::endl;
+      continue;
+    }
+    const std::string previousValue = getDigest(type);
+    if (!previousValue.empty()) {
+      std::cerr << "Book '" << mp_impl->m_id << "': " << typeName
+                << " digest '" << previousValue << "' is overridden by '"
+                << value << "'." << std::endl;
+    }
+    setDigest(type, value);
+  }
   mp_impl->m_illustrations.clear();
   mp_impl->m_urls = AcquisitionLinks();
   std::string firstAcquisitionHref;
