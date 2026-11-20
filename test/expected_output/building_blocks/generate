@@ -21,7 +21,7 @@ R"(  <entry>
     <category>{CATEGORY}</category>
     <tags>{TAGS}</tags>
     <articleCount>{ARTICLECOUNT}</articleCount>
-    <mediaCount>{MEDIACOUNT}</mediaCount>{ILLUSTRATIONLINKS}{PREVIEWLINK}
+    <mediaCount>{MEDIACOUNT}</mediaCount>{DIGESTS}{ILLUSTRATIONLINKS}{PREVIEWLINK}
     <author>
       <name>{AUTHOR}</name>
     </author>
@@ -107,8 +107,24 @@ def popularity_opds(data):
     return f'''
     <kiwix:popularity>{popularity}</kiwix:popularity>'''
 
+def digests_opds(data):
+    digests = data.get('DIGESTS')
+    # catalog/v2 entries are frozen and never expose the digests
+    if not digests or data['OPDS_VARIANT'] == 'catalog/v2':
+        return ""
+
+    result = '\n    <kiwix:zimdigests>'
+    # Digests are rendered in the order of the kiwix::Book::DigestType enumerators
+    for digest_type in ('md5', 'sha1', 'sha256'):
+        if digest_type not in digests:
+            continue
+        value = digests[digest_type]
+        result += f'\n      <kiwix:zimdigest type="{digest_type}">{value}</kiwix:zimdigest>'
+    return result + '\n    </kiwix:zimdigests>'
+
 def generate_opds_entry_building_block(identifier, data):
     data['POPULARITY'] = popularity_opds(data)
+    data['DIGESTS'] = digests_opds(data)
     data['PREVIEWLINK'] = preview_link_opds(data)
     data['ILLUSTRATIONLINKS'] = illustration_links_opds(data)
     data['OPENACCESSLINKS']   = openaccess_links_opds(data)
@@ -151,7 +167,12 @@ RAY_CHARLES_DATA = dict(
     SIZE="569304",
     OPENACCESSLINKKINDS=('BITTORRENT', 'MAGNET', 'META4', 'DIRECT'),
     ILLUSTRATIONS=[{"SIZE": 48, "URL": "https://example.com/favicon/raycharles.png"}],
-    POPULARITY=46
+    POPULARITY=46,
+    DIGESTS={
+        "sha256": "d4368987aa73e7e35af96c660aead3748ac92648b3248b45df5a4c6c34e7f1b9",
+        "md5": "be3812dbff87a353069ee1665db16f5c",
+        "sha1": "7da297d7ab5a898c1c23f6ae064cfeea3fdda869",
+    }
 )
 
 RAY_CHARLES_NO_NAMEMAPPER_DATA = edict(RAY_CHARLES_DATA,
@@ -171,7 +192,8 @@ UNCATEGORIZED_RAY_CHARLES_DATA = edict(RAY_CHARLES_DATA,
     OPENACCESSLINKKINDS=('DIRECT',),
     SIZE="125952",
     ILLUSTRATIONS=[],
-    POPULARITY=None
+    POPULARITY=None,
+    DIGESTS=None
 )
 
 CHARLES_RAY_DATA = edict(RAY_CHARLES_DATA,
@@ -186,7 +208,8 @@ CHARLES_RAY_DATA = edict(RAY_CHARLES_DATA,
     FILENAME="zimfile&other",
     OPENACCESSLINKKINDS=('BITTORRENT',),
     ILLUSTRATIONS=[],
-    POPULARITY=None
+    POPULARITY=None,
+    DIGESTS=None
 )
 
 CHARLES_RAY_NO_NAMEMAPPER_DATA = edict(CHARLES_RAY_DATA,

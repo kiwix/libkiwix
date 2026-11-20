@@ -119,6 +119,39 @@ std::string fromLinkKindToMimeType(Book::AcquisitionLinkKind kind)
   throw std::runtime_error("Unknown link kind");
 }
 
+std::string fromDigestTypeToName(Book::DigestType type)
+{
+  switch (type) {
+    case Book::DigestType::MD5:
+      return "md5";
+    case Book::DigestType::SHA1:
+      return "sha1";
+    case Book::DigestType::SHA256:
+      return "sha256";
+    default:
+      break;
+  }
+
+  throw std::runtime_error("Unknown digest type");
+}
+
+// The digests of the book, in the order of the DigestType enumerators.
+kainjow::mustache::list getDigestData(const Book& book)
+{
+  kainjow::mustache::list digests;
+  for (size_t i = 0; i < static_cast<size_t>(Book::DigestType::COUNT); ++i) {
+    const auto type = static_cast<Book::DigestType>(i);
+    const auto value = book.getDigest(type);
+    if (!value.empty()) {
+      digests.push_back(kainjow::mustache::object{
+        {"type", fromDigestTypeToName(type)},
+        {"value", value}
+      });
+    }
+  }
+  return digests;
+}
+
 kainjow::mustache::list getAcquisitionLinkData(const Book& book)
 {
    kainjow::mustache::list acquisitionLinks;
@@ -155,6 +188,7 @@ std::string fullEntryOpds(const Book& book,
     if ( acqLinkData.size() > 1 && outputCatalogV2Variant ) {
       acqLinkData.erase(acqLinkData.begin(), acqLinkData.end() - 1);
     }
+    const auto digests = getDigestData(book);
     const auto bookDate = book.getDate() + "T00:00:00Z";
     auto thumbnailLinks
       = getExternalThumbnailLinks(book, endpointRoot, isLiveCatalog);
@@ -181,6 +215,8 @@ std::string fullEntryOpds(const Book& book,
       {"tags", book.getTags()},
       {"article_count", to_string(book.getArticleCount())},
       {"media_count", to_string(book.getMediaCount())},
+      {"has_digests", !digests.empty()},
+      {"digests", digests},
       {"author_name", book.getCreator()},
       {"publisher_name", book.getPublisher()},
       {"size", to_string(book.getSize())},

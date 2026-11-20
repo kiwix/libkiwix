@@ -39,6 +39,10 @@ TEST(BookTest, updateFromOPDSTest)
         <category>medicine</category>
         <articleCount>123456</articleCount>
         <mediaCount>234567</mediaCount>
+        <kiwix:zimdigests>
+          <kiwix:zimdigest type="sha256">ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</kiwix:zimdigest>
+          <kiwix:zimdigest type="md5">8054ec08991a30dafea652998874ead9</kiwix:zimdigest>
+        </kiwix:zimdigests>
         <link rel="http://opds-spec.org/acquisition/open-access"
               type="application/x-zim"
               href="https://who.org/zara.zim"
@@ -69,6 +73,9 @@ TEST(BookTest, updateFromOPDSTest)
     EXPECT_EQ(book.getCategory(), "medicine");
     EXPECT_EQ(book.getArticleCount(), 123456U);
     EXPECT_EQ(book.getMediaCount(), 234567U);
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "8054ec08991a30dafea652998874ead9");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 
     // The OPDS acquisition link's "length" is taken as-is, in bytes.
     EXPECT_EQ(book.getSize(), 345678U);
@@ -98,6 +105,9 @@ TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "");
     EXPECT_FALSE(book.hasPopularity());
     EXPECT_EQ(book.getPopularity(), 0U);
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "");
 }
 
 TEST(BookTest, updateFromOPDSPopularityTest)
@@ -135,6 +145,123 @@ TEST(BookTest, updateFromOPDSPopularityTest)
     parse(book, "abc");
     EXPECT_FALSE(book.hasPopularity());
     EXPECT_EQ(book.getPopularity(), 0U);
+}
+
+TEST(BookTest, updateFromOPDSDigestsTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <kiwix:zimdigests>
+          <kiwix:zimdigest type="sha1">a9993e364706816aba3e25717850c26c9cd0d89d</kiwix:zimdigest>
+          <kiwix:zimdigest type="sha256">
+            ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+          </kiwix:zimdigest>
+          <kiwix:zimdigest type="md5">8054ec08991a30dafea652998874ead9</kiwix:zimdigest>
+        </kiwix:zimdigests>
+      </entry>
+    )");
+
+    kiwix::Book book;
+    kiwix::testing::CapturedStderr stderror;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", "");
+
+    EXPECT_EQ("", std::string(stderror));
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "8054ec08991a30dafea652998874ead9");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "a9993e364706816aba3e25717850c26c9cd0d89d");
+    // Surrounding whitespace is stripped from the digest value
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+}
+
+TEST(BookTest, updateFromOPDSSkipsInvalidDigestsTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <kiwix:zimdigests>
+          <kiwix:zimdigest type="sha512">cf83e1357eefb8bd</kiwix:zimdigest>
+          <kiwix:zimdigest type="SHA256">ba7816bf8f01cfea</kiwix:zimdigest>
+          <kiwix:zimdigest>0123456789abcdef</kiwix:zimdigest>
+          <kiwix:zimdigest type="sha1">   </kiwix:zimdigest>
+          <kiwix:zimdigest type="md5">8054ec08991a30dafea652998874ead9</kiwix:zimdigest>
+        </kiwix:zimdigests>
+      </entry>
+    )");
+
+    kiwix::Book book;
+    kiwix::testing::CapturedStderr stderror;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", "");
+
+    EXPECT_EQ(
+      "Book 'zara': ignoring digest 'cf83e1357eefb8bd': Unknown digest type: 'sha512'\n"
+      "Book 'zara': ignoring digest 'ba7816bf8f01cfea': Unknown digest type: 'SHA256'\n"
+      "Book 'zara': ignoring digest '0123456789abcdef': Unknown digest type: ''\n"
+      "Book 'zara': ignoring empty sha1 digest.\n",
+      std::string(stderror));
+
+    // The digests after the skipped ones are still read
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "8054ec08991a30dafea652998874ead9");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "");
+}
+
+TEST(BookTest, updateFromOPDSDuplicateDigestWarnsTest)
+{
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+        <kiwix:zimdigests>
+          <kiwix:zimdigest type="md5">8054ec08991a30dafea652998874ead9</kiwix:zimdigest>
+          <kiwix:zimdigest type="md5">d41d8cd98f00b204e9800998ecf8427e</kiwix:zimdigest>
+        </kiwix:zimdigests>
+      </entry>
+    )");
+
+    kiwix::Book book;
+    kiwix::testing::CapturedStderr stderror;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", "");
+
+    EXPECT_EQ(
+      "Book 'zara': md5 digest '8054ec08991a30dafea652998874ead9' is "
+      "overridden by 'd41d8cd98f00b204e9800998ecf8427e'.\n",
+      std::string(stderror));
+    // The last digest of a given type wins
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "d41d8cd98f00b204e9800998ecf8427e");
+}
+
+TEST(BookTest, updateFromOPDSResetsDigestsTest)
+{
+    const auto parse = [](kiwix::Book& book, const std::string& digests) {
+      const XMLDoc opds(
+        "<entry>"
+          "<id>urn:uuid:zara</id>"
+          + digests +
+        "</entry>"
+      );
+      book.updateFromOpds(opds.child("entry"), "http://who.org", "");
+    };
+
+    const char* const withoutDigests[] = {
+      // no digests at all
+      "",
+      // an empty digest list
+      "<kiwix:zimdigests/>",
+      // a digest outside of <kiwix:zimdigests> isn't recognized
+      "<kiwix:zimdigest type=\"sha1\">a9993e364706816aba3e25717850c26c9cd0d89d</kiwix:zimdigest>",
+    };
+
+    for ( const char* digests : withoutDigests ) {
+      kiwix::Book book;
+      parse(book, "<kiwix:zimdigests>"
+                    "<kiwix:zimdigest type=\"md5\">8054ec08991a30dafea652998874ead9</kiwix:zimdigest>"
+                  "</kiwix:zimdigests>");
+      EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "8054ec08991a30dafea652998874ead9");
+
+      parse(book, digests);
+      EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "") << digests;
+      EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "") << digests;
+      EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "") << digests;
+    }
 }
 
 TEST(BookTest, setPopularityTest)
@@ -309,6 +436,78 @@ TEST(BookTest, acquisitionLinksHaveOneEmptyEntryPerKind)
       EXPECT_EQ(urls[kiwix::Book::AcquisitionLinkKind(i)], "") << i;
     }
     EXPECT_THROW(urls[kiwix::Book::AcquisitionLinkKind::COUNT], std::out_of_range);
+}
+
+TEST(BookTest, digestsAreEmptyByDefault)
+{
+    const kiwix::Book book;
+    const auto digests = book.getDigests();
+    EXPECT_EQ(digests.size(), size_t(kiwix::Book::DigestType::COUNT));
+    for ( size_t i = 0; i < digests.size(); ++i ) {
+      EXPECT_EQ(digests[kiwix::Book::DigestType(i)], "") << i;
+    }
+    EXPECT_THROW(digests[kiwix::Book::DigestType::COUNT], std::out_of_range);
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "");
+}
+
+TEST(BookTest, setDigestStoresDigestPerType)
+{
+    typedef kiwix::Book::DigestType DigestType;
+
+    kiwix::Book book;
+    book.setDigest(DigestType::SHA256, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+    book.setDigest(DigestType::MD5, "8054ec08991a30dafea652998874ead9");
+
+    EXPECT_EQ(book.getDigest(DigestType::MD5), "8054ec08991a30dafea652998874ead9");
+    EXPECT_EQ(book.getDigest(DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(DigestType::SHA256), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+
+    // getDigests() is indexed by DigestType
+    const auto digests = book.getDigests();
+    EXPECT_EQ(digests[DigestType::MD5], "8054ec08991a30dafea652998874ead9");
+    EXPECT_EQ(digests[DigestType::SHA1], "");
+    EXPECT_EQ(digests[DigestType::SHA256], "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+
+    // Setting a digest of an already set type overwrites it
+    book.setDigest(DigestType::MD5, "d41d8cd98f00b204e9800998ecf8427e");
+    EXPECT_EQ(book.getDigest(DigestType::MD5), "d41d8cd98f00b204e9800998ecf8427e");
+
+    // Setting an empty value clears the digest of that type only
+    book.setDigest(DigestType::SHA256, "");
+    EXPECT_EQ(book.getDigest(DigestType::SHA256), "");
+    EXPECT_EQ(book.getDigest(DigestType::MD5), "d41d8cd98f00b204e9800998ecf8427e");
+}
+
+TEST(BookTest, digestsAreCopied)
+{
+    typedef kiwix::Book::DigestType DigestType;
+    const std::string sha256 = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
+
+    kiwix::Book book;
+    book.setId("xyz");
+    book.setDigest(DigestType::SHA256, sha256);
+
+    const kiwix::Book copy(book);
+    EXPECT_EQ(copy.getDigest(DigestType::SHA256), sha256);
+
+    kiwix::Book assigned;
+    assigned = book;
+    EXPECT_EQ(assigned.getDigest(DigestType::SHA256), sha256);
+
+    // update() replaces the digests too, including clearing absent ones
+    kiwix::Book updated;
+    updated.setId("xyz");
+    updated.setDigest(DigestType::MD5, "8054ec08991a30dafea652998874ead9");
+    EXPECT_TRUE(updated.update(book));
+    EXPECT_EQ(updated.getDigest(DigestType::SHA256), sha256);
+    EXPECT_EQ(updated.getDigest(DigestType::MD5), "");
+
+    // Copies are independent of each other
+    assigned.setDigest(DigestType::SHA256, "");
+    EXPECT_EQ(assigned.getDigest(DigestType::SHA256), "");
+    EXPECT_EQ(book.getDigest(DigestType::SHA256), sha256);
 }
 
 TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)
