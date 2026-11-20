@@ -110,6 +110,39 @@ TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
     EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "");
 }
 
+TEST(BookTest, updateFromOPDSMissingPropertiesTest)
+{
+    // An entry carrying nothing but the mandatory <id>
+    const XMLDoc opds(R"(
+      <entry>
+        <id>urn:uuid:zara</id>
+      </entry>
+    )");
+
+    kiwix::Book book;
+    book.updateFromOpds(opds.child("entry"), "http://who.org", DATA_ABS_PATH);
+
+    // Properties missing from the OPDS entry must be left empty rather than
+    // initialized to some fictitious values
+    EXPECT_EQ(book.getId(), "zara");
+    EXPECT_EQ(book.getPath(), "");
+    EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "");
+    EXPECT_EQ(book.getTitle(), "");
+    EXPECT_EQ(book.getDescription(), "");
+    EXPECT_EQ(book.getCommaSeparatedLanguages(), "");
+    EXPECT_EQ(book.getCreator(), "");
+    EXPECT_EQ(book.getPublisher(), "");
+    EXPECT_EQ(book.getDate(), "");
+    EXPECT_EQ(book.getName(), "");
+    EXPECT_EQ(book.getFlavour(), "");
+    EXPECT_EQ(book.getTags(), "");
+    EXPECT_EQ(book.getCategory(), "");
+    EXPECT_EQ(book.getArticleCount(), 0U);
+    EXPECT_EQ(book.getMediaCount(), 0U);
+    EXPECT_EQ(book.getSize(), 0U);
+    EXPECT_TRUE(book.getIllustrations().empty());
+}
+
 TEST(BookTest, updateFromOPDSPopularityTest)
 {
     const auto parse = [](kiwix::Book& book, const std::string& popularity) {
