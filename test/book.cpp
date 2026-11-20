@@ -300,6 +300,17 @@ TEST(BookTest, setUrlStoresUrlPerAcquisitionLinkKind)
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::MAGNET), "");
 }
 
+TEST(BookTest, acquisitionLinksHaveOneEmptyEntryPerKind)
+{
+    const kiwix::Book::AcquisitionLinks urls;
+    const size_t kindCount = size_t(kiwix::Book::AcquisitionLinkKind::COUNT);
+    EXPECT_EQ(urls.size(), kindCount);
+    for ( size_t i = 0; i < kindCount; ++i ) {
+      EXPECT_EQ(urls[i], "") << i;
+    }
+    EXPECT_THROW(urls[kindCount], std::out_of_range);
+}
+
 TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)
 {
     kiwix::Book book;
