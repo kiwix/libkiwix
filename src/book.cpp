@@ -36,12 +36,6 @@
 
 namespace
 {
-// Position of an acquisition link kind in Book's acquisition links array.
-constexpr size_t linkIndex(kiwix::Book::AcquisitionLinkKind kind)
-{
-  return static_cast<size_t>(kind);
-}
-
 /**
  * Tells whether a URL string is already absolute (contains a scheme,
  * e.g. "https://example.com/x.png") as opposed to being a relative path
@@ -216,7 +210,7 @@ Book::Illustration::Illustration()
 Book::Illustration::~Illustration() = default;
 
 Book::AcquisitionLinks::AcquisitionLinks() :
-  m_urls(linkIndex(AcquisitionLinkKind::COUNT))
+  m_urls(static_cast<size_t>(AcquisitionLinkKind::COUNT))
 {
 }
 
@@ -445,7 +439,7 @@ void Book::setPath(const std::string& path)
 
 void Book::setUrl(AcquisitionLinkKind linkKind, const std::string& url)
 {
-  mp_impl->m_urls[linkIndex(linkKind)] = url;
+  mp_impl->m_urls[linkKind] = url;
 }
 
 const Book::Illustration Book::missingDefaultIllustration;
@@ -581,7 +575,7 @@ std::string Book::getDate() const
 
 std::string Book::getUrl(AcquisitionLinkKind linkKind) const
 {
-  return mp_impl->m_urls[linkIndex(linkKind)];
+  return mp_impl->m_urls[linkKind];
 }
 
 std::string Book::getName() const
