@@ -85,3 +85,19 @@ float: left;
 .selected {
 background: #ededed;
 }
+
+@media screen and (prefers-color-scheme: dark) {
+    html { color-scheme: dark; }
+
+    body {
+        background-color: #161b22;
+        color: #e6edf3;
+    }
+
+    a { color: #79c0ff; }
+    a:visited { color: #d2a8ff; }
+    .informations { color: #7ee787; }
+    .book-title { color: #ffa657; }
+    .footer a:hover,
+    .selected { background: #37465b; }
+}

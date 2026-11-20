@@ -144,3 +144,41 @@ body {
   font-family: "roboto";
   src: url("../skin/fonts/Roboto.ttf?KIWIXCACHEID") format("truetype");
 }
+
+@media screen and (prefers-color-scheme: dark) {
+    body {
+        background: #161b22;
+        color: #e6edf3;
+    }
+
+    a { color: #79c0ff; }
+    a:visited { color: #d2a8ff; }
+
+    ::selection {
+        background-color: #79c0ff;
+        color: #161b22;
+    }
+
+    .loader { background: rgba(22, 27, 34, 0.9); }
+
+    .spinner {
+        border-color: #68788d;
+        border-top-color: #79c0ff;
+    }
+
+    .modal {
+        color-scheme: dark;
+        color: #e6edf3;
+        background-color: #222a35;
+        border-color: #68788d;
+    }
+
+    .modal-heading {
+        background-color: #283443;
+        border-bottom-color: #68788d;
+    }
+
+    .modal-close-button svg {
+        filter: brightness(0) invert(1);
+    }
+}
