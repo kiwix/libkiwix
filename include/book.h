@@ -78,8 +78,10 @@ class Book
     AcquisitionLinks();
 
     size_t size() const { return m_urls.size(); }
-    std::string& operator[](size_t i) { return m_urls.at(i); }
-    const std::string& operator[](size_t i) const { return m_urls.at(i); }
+    std::string& operator[](AcquisitionLinkKind kind)
+    { return m_urls.at(static_cast<size_t>(kind)); }
+    const std::string& operator[](AcquisitionLinkKind kind) const
+    { return m_urls.at(static_cast<size_t>(kind)); }
 
    private:
     std::vector<std::string> m_urls;

@@ -306,9 +306,9 @@ TEST(BookTest, acquisitionLinksHaveOneEmptyEntryPerKind)
     const size_t kindCount = size_t(kiwix::Book::AcquisitionLinkKind::COUNT);
     EXPECT_EQ(urls.size(), kindCount);
     for ( size_t i = 0; i < kindCount; ++i ) {
-      EXPECT_EQ(urls[i], "") << i;
+      EXPECT_EQ(urls[kiwix::Book::AcquisitionLinkKind(i)], "") << i;
     }
-    EXPECT_THROW(urls[kindCount], std::out_of_range);
+    EXPECT_THROW(urls[kiwix::Book::AcquisitionLinkKind::COUNT], std::out_of_range);
 }
 
 TEST(BookTest, getUrlIgnoresNonZimAcquisitionLinks)

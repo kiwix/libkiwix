@@ -158,7 +158,7 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
                                              const bool checkMetaData)
 {
   Book::AcquisitionLinks urls;
-  urls[static_cast<size_t>(Book::AcquisitionLinkKind::DIRECT)] = url;
+  urls[Book::AcquisitionLinkKind::DIRECT] = url;
   return addBookFromPathAndGetId(pathToOpen, pathToSave, urls, checkMetaData);
 }
 
@@ -185,7 +185,8 @@ std::string Manager::addBookFromPathAndGetId(const std::string& pathToOpen,
         || (!book.getTitle().empty() && !book.getLanguages().empty()
             && !book.getDate().empty())) {
       for (size_t i = 0; i < urls.size(); ++i) {
-        book.setUrl(static_cast<Book::AcquisitionLinkKind>(i), urls[i]);
+        const auto kind = static_cast<Book::AcquisitionLinkKind>(i);
+        book.setUrl(kind, urls[kind]);
       }
       manipulator.addBookToLibrary(book);
       return book.getId();
