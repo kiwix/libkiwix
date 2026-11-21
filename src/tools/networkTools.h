@@ -21,9 +21,31 @@
 #define KIWIX_NETWORKTOOLS_H
 
 #include <string>
+#include <map>
+#include <vector>
 
 namespace kiwix
 {
+struct IpAddress;
+
+struct InterfaceAddresses
+{
+    std::vector<std::string> ipv4;
+    std::vector<std::string> ipv6;
+};
+
+using NetworkInterfaceAddresses = std::map<std::string, InterfaceAddresses>;
+
+NetworkInterfaceAddresses getAllNetworkInterfaceAddresses();
+IpAddress lastAddresses(const InterfaceAddresses& addresses);
+void addNetworkInterfaceAddress(NetworkInterfaceAddresses& interfaces,
+                                const std::string& interfaceName,
+                                const std::string& address,
+                                bool ipv6,
+                                bool linkLocal = false);
+bool hasNetworkInterfaceAddress(const NetworkInterfaceAddresses& interfaces,
+                                const std::string& address);
+
 std::string download(const std::string& url);
 }
 
