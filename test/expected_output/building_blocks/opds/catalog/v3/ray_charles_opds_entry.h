@@ -10,6 +10,7 @@ R"(  <entry>
     <language>eng</language>
     <name>wikipedia_en_ray_charles</name>
     <flavour></flavour>
+    <kiwix:titleid>e0c5b2f4-1d8a-4b6e-9f3c-7a2d5e8b1c90</kiwix:titleid>
     <kiwix:popularity>46</kiwix:popularity>
     <category>wikipedia</category>
     <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
