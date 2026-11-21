@@ -103,11 +103,6 @@ TEST(BookTest, updateFromOPDSLocalPathAcquisitionLinkTest)
 
     EXPECT_EQ(book.getPath(), ZARA_ABS_PATH);
     EXPECT_EQ(book.getUrl(kiwix::Book::AcquisitionLinkKind::DIRECT), "");
-    EXPECT_FALSE(book.hasPopularity());
-    EXPECT_EQ(book.getPopularity(), 0U);
-    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "");
-    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "");
-    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "");
 }
 
 TEST(BookTest, updateFromOPDSMissingPropertiesTest)
@@ -141,6 +136,11 @@ TEST(BookTest, updateFromOPDSMissingPropertiesTest)
     EXPECT_EQ(book.getMediaCount(), 0U);
     EXPECT_EQ(book.getSize(), 0U);
     EXPECT_TRUE(book.getIllustrations().empty());
+    EXPECT_FALSE(book.hasPopularity());
+    EXPECT_EQ(book.getPopularity(), 0U);
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::MD5), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA1), "");
+    EXPECT_EQ(book.getDigest(kiwix::Book::DigestType::SHA256), "");
 }
 
 TEST(BookTest, updateFromOPDSPopularityTest)
