@@ -78,7 +78,7 @@ extern "C" {
 #include "request_context.h"
 #include "response.h"
 
-#define DEFAULT_CACHE_SIZE 2
+#define DEFAULT_CACHE_SIZE 16
 
 namespace kiwix {
 
@@ -496,7 +496,7 @@ InternalServer::InternalServer(LibraryPtr library,
   mp_library(library),
   mp_nameMapper(nameMapper ? nameMapper : std::shared_ptr<NameMapper>(&defaultNameMapper, NoDelete())),
   searchCache(getEnvVar<int>("KIWIX_SEARCH_CACHE_SIZE", DEFAULT_CACHE_SIZE)),
-  suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 1U))),
+  suggestionSearcherCache(getEnvVar<int>("KIWIX_SUGGESTION_SEARCHER_CACHE_SIZE", std::max((unsigned int) (mp_library->getBookCount(true, true)*0.1), 4U))),
   m_customizedResources(new CustomizedResources)
 {
 }
