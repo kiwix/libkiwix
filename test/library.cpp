@@ -63,7 +63,7 @@ const char * sampleOpdsStream = R"(
     <author>
       <name>Wikipedia</name>
     </author>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2019-10.zim.meta4" length="90030080" />
   </entry>
   <entry>
     <title>Encyclopédie de la Tunisie</title>
@@ -77,7 +77,7 @@ const char * sampleOpdsStream = R"(
     <author>
       <name>Wikipedia</name>
     </author>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_other_flavour_2018-10.zim.meta4" length="90030080" />
   </entry>
   <entry>
     <title>Encyclopédie de la Tunisie</title>
@@ -91,7 +91,7 @@ const char * sampleOpdsStream = R"(
     <author>
       <name>Wikipedia</name>
     </author>
-    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_novid_2018-10.zim.meta4" length="90030080" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="http://download.kiwix.org/zim/wikipedia/wikipedia_fr_tunisie_other_flavour_2019-10.zim.meta4" length="90030080" />
   </entry>
   <entry>
     <title>Tania Louis</title>
