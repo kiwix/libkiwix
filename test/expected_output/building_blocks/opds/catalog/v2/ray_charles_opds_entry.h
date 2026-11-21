@@ -9,7 +9,7 @@ R"(  <entry>
     <summary>Wikipedia articles about Ray Charles (not all of them but near to what an average newborn may find more than enough)</summary>
     <language>eng</language>
     <name>wikipedia_en_ray_charles</name>
-    <flavour></flavour>
+    <flavour>maxi</flavour>
     <category>wikipedia</category>
     <tags>public_tag_without_a_value;_private_tag_without_a_value;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
     <articleCount>284</articleCount>

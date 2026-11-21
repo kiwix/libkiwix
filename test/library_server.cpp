@@ -503,6 +503,47 @@ TEST_P(LibraryServerTest, catalog_entries_multiple_filters)
   }
 }
 
+TEST_P(LibraryServerTest, catalog_entries_filtered_by_flavour)
+{
+  {
+    TEST_CATALOG_ENDPOINT("entries?flavour=maxi",
+      CATALOG_ENTRIES_PREAMBLE("?flavour=maxi")
+      "  <title>Filtered Entries (flavour=maxi)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>1</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      EO(RAY_CHARLES_OPDS_ENTRY)
+      "</feed>\n"
+    );
+  }
+
+  {
+    TEST_CATALOG_ENDPOINT("entries?flavour=nopic",
+      CATALOG_ENTRIES_PREAMBLE("?flavour=nopic")
+      "  <title>Filtered Entries (flavour=nopic)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>1</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>1</itemsPerPage>\n"
+      EO(CHARLES_RAY_OPDS_ENTRY)
+      "</feed>\n"
+    );
+  }
+
+  {
+    TEST_CATALOG_ENDPOINT("entries?flavour=mini",
+      CATALOG_ENTRIES_PREAMBLE("?flavour=mini")
+      "  <title>Filtered Entries (flavour=mini)</title>\n"
+      "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+      "  <totalResults>0</totalResults>\n"
+      "  <startIndex>0</startIndex>\n"
+      "  <itemsPerPage>0</itemsPerPage>\n"
+      "</feed>\n"
+    );
+  }
+}
+
 TEST_P(LibraryServerTest, catalog_individual_entry_access)
 {
   TEST_CATALOG_ENDPOINT("entry/raycharles",
