@@ -9,7 +9,7 @@ R"(  <entry>
     <summary>Wikipedia articles about Ray Charles or why and when one should go to library</summary>
     <language>fra</language>
     <name>wikipedia_fr_ray_charles</name>
-    <flavour></flavour>
+    <flavour>nopic</flavour>
     <category>jazz</category>
     <tags>unittest;wikipedia;_category:jazz;_pictures:no;_videos:no;_details:no;_ftindex:yes</tags>
     <articleCount>284</articleCount>
