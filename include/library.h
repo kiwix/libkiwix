@@ -329,7 +329,7 @@ class Library: public std::enable_shared_from_this<Library>
    * If minDate is given, return a book newer than minDate. If not found, return a empty bookId.
    *
    * @param bookName The name of the book
-   * @param preferedFlavour The prefered flavour.
+   * @param preferedFlavour The preferred flavour.
    * @param minDate the minimal book date acceptable. Must be a string in the format "YYYY-MM-DD".
    * @return A bookId corresponding to the query, or empty string if not found.
    */
