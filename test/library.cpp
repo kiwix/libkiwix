@@ -581,7 +581,7 @@ TEST_F(LibraryTest, MigrateBookmark)
     EXPECT_EQ(allBookmarks[4].getBookId(), "wrong-book-id-noname");
     EXPECT_EQ(allBookmarks[5].getBookId(), "wrong-book-flavour-id");
 
-    ASSERT_EQ(lib->migrateBookmarks("no-existant-book"), 0);
+    ASSERT_EQ(lib->migrateBookmarks("no-existent-book"), 0);
 
     ASSERT_EQ(lib->migrateBookmarks(), std::make_tuple(3, 4));
 
@@ -1236,7 +1236,7 @@ TEST_F(LibraryTest, getBookByPath)
   book.setPath(path);
   lib->addBook(book);
   EXPECT_EQ(lib->getBookByPath(path).getId(), book.getId());
-  EXPECT_THROW(lib->getBookByPath("non/existant/path.zim"), std::out_of_range);
+  EXPECT_THROW(lib->getBookByPath("non/existent/path.zim"), std::out_of_range);
 }
 
 TEST_F(LibraryTest, removeBookByIdRemovesTheBook)
