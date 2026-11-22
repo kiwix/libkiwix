@@ -37,7 +37,8 @@ templates/error.xml
 templates/index.html
 templates/suggestion.json
 templates/captured_external.html
-templates/catalog/searchdescription.xml
+templates/catalog/v2/searchdescription.xml
+templates/catalog/v3/searchdescription.xml
 templates/catalog/root.xml
 templates/catalog/v2/entries.xml
 templates/catalog/v3/entries.xml

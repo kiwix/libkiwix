@@ -99,8 +99,11 @@ std::unique_ptr<Response> InternalServer::handle_catalog_v(const RequestContext&
     return handle_catalog_v_root(request);
   } else if (url == "searchdescription.xml") {
     const std::string endpoint_root = m_root + "/catalog/" + endpointVersion;
+    const auto& templateStr = endpointVersion == "v2"
+                            ? RESOURCE::templates::catalog::v2::searchdescription_xml
+                            : RESOURCE::templates::catalog::v3::searchdescription_xml;
     return ContentResponse::build(
-        RESOURCE::templates::catalog::searchdescription_xml,
+        templateStr,
         kainjow::mustache::object({{"endpoint_root", endpoint_root}}),
         "application/opensearchdescription+xml"
     );
