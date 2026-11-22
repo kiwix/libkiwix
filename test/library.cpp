@@ -889,6 +889,22 @@ TEST_F(LibraryTest, filterByFlavour)
   );
 }
 
+TEST_F(LibraryTest, filterByEmptyFlavour)
+{
+  EXPECT_FILTER_RESULTS(kiwix::Filter().flavour(""),
+    /* no results */
+  );
+
+  kiwix::Book book;
+  book.setId("flavourless");
+  book.setTitle("Flavourless book");
+  lib->addBook(book);
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().flavour(""),
+    "Flavourless book"
+  );
+}
+
 TEST_F(LibraryTest, filterByTags)
 {
   EXPECT_FILTER_RESULTS(kiwix::Filter().acceptTags({"stackexchange"}),
