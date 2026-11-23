@@ -211,8 +211,9 @@ std::string Aria2::addUri(const std::vector<std::string>& uris, const std::vecto
   for (auto& uri : uris) {
     uriParams.addValue().set(uri);
   }
+  auto optionsStruct = methodCall.newParamValue().getStruct();
   for (auto& option : options) {
-    methodCall.newParamValue().getStruct().addMember(option.first).getValue().set(option.second);
+    optionsStruct.addMember(option.first).getValue().set(option.second);
   }
   auto ret = doRequest(methodCall);
   MethodResponse response(ret);
