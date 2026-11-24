@@ -103,8 +103,8 @@ LibraryPtr Library::create()
 
 /* Constructor */
 Library::Library()
-  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 1), 1))),
-    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", 1), 1))),
+  : mp_archiveCache(new ArchiveCache(std::max(getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", 4), 1))),
+    mp_searcherCache(new SearcherCache(std::max(getEnvVar<int>("KIWIX_SEARCHER_CACHE_SIZE", 4), 1))),
     m_bookDB(new Xapian::WritableDatabase("", Xapian::DB_BACKEND_INMEMORY))
 {
 }
@@ -130,7 +130,7 @@ bool Library::addBook(const Book& book)
     auto& newEntry = m_books[book.getId()];
     static_cast<Book&>(newEntry) = book;
     newEntry.lastUpdatedRevision = m_revision;
-    size_t new_cache_size = static_cast<size_t>(std::ceil(getBookCount_not_protected(true, true)*0.1));
+    size_t new_cache_size = std::max<size_t>(4, static_cast<size_t>(std::ceil(getBookCount_not_protected(true, true)*0.1)));
     if (getEnvVar<int>("KIWIX_ARCHIVE_CACHE_SIZE", -1) <= 0) {
       mp_archiveCache->setMaxSize(new_cache_size);
     }
