@@ -43,15 +43,11 @@ std::vector<std::string> getAllTitles(const zim::Archive& a)
 void createXapianDB(std::string path, const zim::Archive& archive)
 {
   const int flags = Xapian::DB_BACKEND_GLASS|Xapian::DB_CREATE;
-  const auto tmpDbPath = path + ".tmp";
-  Xapian::WritableDatabase db(tmpDbPath, flags);
+  Xapian::WritableDatabase db(path, flags);
   for (const auto& t : getAllTitles(archive)) {
     db.add_spelling(t);
   }
   db.commit();
-  db.compact(path, Xapian::DBCOMPACT_SINGLE_FILE);
-  db.close();
-  std::filesystem::remove_all(tmpDbPath);
 }
 
 std::string spellingsDBPathForZIMArchive(std::filesystem::path cacheDirPath, const zim::Archive& a)
@@ -59,24 +55,27 @@ std::string spellingsDBPathForZIMArchive(std::filesystem::path cacheDirPath, con
   // The version of spellings DB must be updated each time an important change
   // to the implementation is made that renders using the previous version
   // impossible or undesirable.
-  const char SPELLINGS_DB_VERSION[] = "0.1";
+  const char SPELLINGS_DB_VERSION[] = "0.2";
 
   std::ostringstream filename;
   filename << a.getUuid() << ".spellingsdb.v" << SPELLINGS_DB_VERSION;
   return (cacheDirPath / filename.str()).string();
 }
 
-std::unique_ptr<Xapian::Database> openOrCreateXapianDB(std::filesystem::path cacheDirPath, const zim::Archive& archive)
+std::unique_ptr<Xapian::WritableDatabase> openOrCreateXapianDB(std::filesystem::path cacheDirPath, const zim::Archive& archive)
 {
   const auto path = spellingsDBPathForZIMArchive(cacheDirPath, archive);
   try
   {
-    return std::make_unique<Xapian::Database>(path);
+    {
+      Xapian::Database checkIfDbAlreadyExists(path);
+    }
+    return std::make_unique<Xapian::WritableDatabase>(path);
   }
   catch (const Xapian::DatabaseOpeningError& )
   {
     createXapianDB(path, archive);
-    return std::make_unique<Xapian::Database>(path);
+    return std::make_unique<Xapian::WritableDatabase>(path);
   }
 }
 
@@ -93,15 +92,23 @@ SpellingsDB::~SpellingsDB()
 
 std::vector<std::string> SpellingsDB::getSpellingCorrections(const std::string& word, uint32_t maxCount) const
 {
-  if ( maxCount > 1 ) {
-    throw std::runtime_error("More than one spelling correction was requested");
+  std::vector<std::string> result;
+  while ( result.size() < maxCount ) {
+    const auto term = impl_->get_spelling_suggestion(word, 3);
+    if ( term.empty() )
+      break;
+
+    result.push_back(term);
+
+    // temporarily remove this term so that another spellings could be obtained
+    impl_->remove_spelling(term);
   }
 
-  std::vector<std::string> result;
-  const auto term = impl_->get_spelling_suggestion(word, 3);
-  if ( !term.empty() ) {
-    result.push_back(term);
+  // restore temporarily removed terms
+  for (const auto& t : result) {
+    impl_->add_spelling(t);
   }
+
   return result;
 }
 
