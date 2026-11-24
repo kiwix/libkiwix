@@ -253,6 +253,7 @@ class Book::Impl
   AcquisitionLinks m_urls;
   std::string m_name;
   std::string m_flavour;
+  std::string m_titleId;
   bool m_hasPopularity = false;
   uint32_t m_popularity = 0;
   std::string m_tags;
@@ -352,6 +353,7 @@ void Book::updateFromOpds(const pugi::xml_node& node, const std::string& urlHost
   mp_impl->m_date = fromOpdsDate(mp_impl->m_date);
   mp_impl->m_name = VALUE("name");
   mp_impl->m_flavour = VALUE("flavour");
+  mp_impl->m_titleId = VALUE("kiwix:titleid");
   mp_impl->m_hasPopularity = parsePopularity(VALUE("kiwix:popularity"),
                                              mp_impl->m_popularity);
   mp_impl->m_tags = VALUE("tags");
@@ -645,6 +647,11 @@ std::string Book::getFlavour() const
   return mp_impl->m_flavour;
 }
 
+std::string Book::getTitleId() const
+{
+  return mp_impl->m_titleId;
+}
+
 bool Book::hasPopularity() const
 {
   return mp_impl->m_hasPopularity;
@@ -728,6 +735,11 @@ void Book::setName(const std::string& name)
 void Book::setFlavour(const std::string& flavour)
 {
   mp_impl->m_flavour = flavour;
+}
+
+void Book::setTitleId(const std::string& titleId)
+{
+  mp_impl->m_titleId = titleId;
 }
 
 void Book::setPopularity(int popularity)

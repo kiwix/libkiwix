@@ -1255,7 +1255,13 @@ std::vector<std::string>
 InternalServer::search_catalog(const RequestContext& request,
                                kiwix::OPDSDumper& opdsDumper)
 {
-    const auto filter = get_search_filter(request, "", m_catalogOnlyMode);
+    auto filter = get_search_filter(request, "", m_catalogOnlyMode);
+    // Title IDs are exposed only by the /catalog/v3 endpoint
+    if ( request.get_url_part(1) == "v3" ) {
+      try {
+        filter.titleId(request.get_argument("titleid"));
+      } catch (const std::out_of_range&) {}
+    }
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
     const auto totalResults = bookIdsToDump.size();
     const long count = request.get_optional_param("count", 10L);

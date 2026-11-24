@@ -557,6 +557,42 @@ TEST_P(LibraryServerTest, catalog_entries_filtered_by_flavour)
   }
 }
 
+// Title IDs are exposed only by /catalog/v3, hence the test below is not
+// parameterized by the catalog endpoint version.
+
+TEST_F(LibraryServerTest, catalog_v3_entries_filtered_by_title_id)
+{
+  const auto r = zfs1_->GET("/ROOT%23%3F/catalog/v3/entries?titleid=e0c5b2f4-1d8a-4b6e-9f3c-7a2d5e8b1c90");
+  EXPECT_EQ(r->status, 200);
+  EXPECT_EQ(maskVariableOPDSFeedData(r->body),
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<feed xmlns=\"http://www.w3.org/2005/Atom\"\n"
+    "      xmlns:dc=\"http://purl.org/dc/terms/\"\n"
+    "      xmlns:kiwix=\"https://kiwix.org/namespace/opds\"\n"
+    "      xmlns:opds=\"https://specs.opds.io/opds-1.2\"\n"
+    "      xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\">\n"
+    "  <id>12345678-90ab-cdef-1234-567890abcdef</id>\n"
+    "\n"
+    "  <link rel=\"self\"\n"
+    "        href=\"/ROOT%23%3F/catalog/v3/entries?titleid=e0c5b2f4-1d8a-4b6e-9f3c-7a2d5e8b1c90\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n"
+    "  <link rel=\"start\"\n"
+    "        href=\"/ROOT%23%3F/catalog/v3/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
+    "  <link rel=\"up\"\n"
+    "        href=\"/ROOT%23%3F/catalog/v3/root.xml\"\n"
+    "        type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"/>\n"
+    "\n"
+    "  <title>Filtered Entries (titleid=e0c5b2f4-1d8a-4b6e-9f3c-7a2d5e8b1c90)</title>\n"
+    "  <updated>YYYY-MM-DDThh:mm:ssZ</updated>\n"
+    "  <totalResults>1</totalResults>\n"
+    "  <startIndex>0</startIndex>\n"
+    "  <itemsPerPage>1</itemsPerPage>\n"
+    + ExpectedOutputRegistry::get("v3/RAY_CHARLES_OPDS_ENTRY") +
+    "</feed>\n"
+  );
+}
+
 TEST_P(LibraryServerTest, catalog_individual_entry_access)
 {
   TEST_CATALOG_ENDPOINT("entry/raycharles",
