@@ -35,6 +35,14 @@ namespace Xapian
 class Database;
 }
 
+namespace nuspell
+{
+inline namespace v5
+{
+class Dictionary;
+}
+}
+
 namespace kiwix
 {
 
@@ -51,6 +59,7 @@ public: // functions
 
 private: // data
   std::unique_ptr<Xapian::Database> impl_;
+  std::unique_ptr<nuspell::Dictionary> nuspell_;
 };
 
 } // namespace kiwix

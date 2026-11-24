@@ -78,21 +78,7 @@ void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
   EXPECT_SPELLING_CORRECTION("beissen", 1, ({"beißen"}));
   EXPECT_SPELLING_CORRECTION("Camera", 1, ({"Kamera"}));
   EXPECT_SPELLING_CORRECTION("Kaos", 1, ({"Chaos"}));
-
-  // The spelling correction "Lax -> Lachs" is affected by commit
-  // https://github.com/xapian/xapian/commit/0cbe35de5c392623388946e6769aa03f912fdde4
-  // which caps the edit distance at (length(query_word) - 1). As a result, the
-  // max edit distance parameter that we pass into get_spelling_suggestion() is
-  // reduced from 3 to 2 and is below the edit distance of "Lachs" from "Lax".
-  const auto xapianVersion = std::make_tuple(Xapian::major_version(),
-                                             Xapian::minor_version(),
-                                             Xapian::revision());
-  if ( xapianVersion < std::make_tuple(1, 4, 19) ) {
-    EXPECT_SPELLING_CORRECTION("Lax", 1, ({"Lachs"}));
-  } else {
-    EXPECT_SPELLING_CORRECTION("Lax", 1, ({}));
-  }
-
+  EXPECT_SPELLING_CORRECTION("Lax", 1, ({"Lachs"}));
   EXPECT_SPELLING_CORRECTION("Mont", 1, ({"Mond"}));
   EXPECT_SPELLING_CORRECTION("Umweltstandart", 1, ({"Umweltstandard"}));
   EXPECT_SPELLING_CORRECTION("seid", 1, ({"seit"}));
@@ -144,24 +130,26 @@ void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
   // Exact match is not considered a spelling correction
   EXPECT_SPELLING_CORRECTION("Führerschein", 1, ({}));
 
-  // Max edit distance is 3
+  // Max edit distance can be quite large
   EXPECT_SPELLING_CORRECTION(  "Führersch",    1, ({"Führerschein"}));
-    EXPECT_SPELLING_CORRECTION("Führersc",     1, ({}));
-    // Case matters in edit distance
-    EXPECT_SPELLING_CORRECTION("führersch",    1, ({}));
+    EXPECT_SPELLING_CORRECTION("Führersc",     1, ({"Führerschein"}));
+    EXPECT_SPELLING_CORRECTION("Führ",         1, ({"Führerschein"}));
+    EXPECT_SPELLING_CORRECTION("Füh",          1, ({}));
+    // Case doesn't matter in edit distance
+    EXPECT_SPELLING_CORRECTION("führ",         1, ({"Führerschein"}));
     // Diacritics matters in edit distance
-    EXPECT_SPELLING_CORRECTION("Fuhrersch",    1, ({}));
-    // Mismatch in diacritics counts as 1 in edit distance (this is not trivial,
-    // because from the UTF-8 perspective it is a one-byte vs two-byte encoding
-    // of a Unicode codepoint).
-    EXPECT_SPELLING_CORRECTION("Führersche",   1, ({"Führerschein"}));
+    EXPECT_SPELLING_CORRECTION("Fuhr",         1, ({}));
 
   EXPECT_SPELLING_CORRECTION("Führershine",  1, ({"Führerschein"}));
-    EXPECT_SPELLING_CORRECTION("Führershyne",  1, ({}));
-    EXPECT_SPELLING_CORRECTION("führershine",  1, ({}));
+    EXPECT_SPELLING_CORRECTION("Führershyne",  1, ({"Führerschein"}));
+    EXPECT_SPELLING_CORRECTION("führershine",  1, ({"Führerschein"}));
 
   EXPECT_SPELLING_CORRECTION("Führerschrom", 1, ({"Führerschein"}));
-  EXPECT_SPELLING_CORRECTION("Führerscdrom", 1, ({}));
+  EXPECT_SPELLING_CORRECTION("Führerscdrom", 1, ({"Führerschein"}));
+
+  // More than one spelling correction can be requested
+  EXPECT_SPELLING_CORRECTION("Kung",  2, ({"King", "Kong"}));
+  EXPECT_SPELLING_CORRECTION("Kung",  3, ({"King", "Kong"}));
 
   //////////////////////////////////////////////////////////////////////////////
   // Shortcomings of the proof-of-concept implementation
@@ -171,10 +159,6 @@ void testSpellingCorrections(const kiwix::SpellingsDB& spellingsDB)
   EXPECT_SPELLING_CORRECTION("Laurem", 1, ({}));
   EXPECT_SPELLING_CORRECTION("ibsum",  1, ({}));
   EXPECT_SPELLING_CORRECTION("Loremipsum", 1, ({"Lorem ipsum"}));
-
-  // Only one spelling correction can be requested
-  // EXPECT_SPELLING_CORRECTION("Kung",  2, ({"King", "Kong"}));
-  EXPECT_THROW(spellingsDB.getSpellingCorrections("Kung", 2), std::runtime_error);
 }
 
 using StrCollection = std::vector<std::string>;
