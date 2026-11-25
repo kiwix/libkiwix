@@ -5,6 +5,14 @@ The Libkiwix provides the [Kiwix](https://kiwix.org) software suite
 core. It contains the code shared by all Kiwix ports (Windows,
 GNU/Linux, macOS, Android, iOS, ...).
 
+## Code layout
+
+- `include/` contains the public C++ headers used by applications that link to libkiwix.
+- `src/` contains the library implementation; `src/server/` handles HTTP requests, responses, and catalog endpoints.
+- `static/` contains the server's templates, browser code, styles, and other assets. These files are packaged into the server binary during the build.
+- `test/` contains the GoogleTest suite for the library and server.
+- `docs/` contains the documentation sources.
+
 [![Release](https://img.shields.io/github/v/tag/kiwix/libkiwix?label=release&sort=semver)](https://download.kiwix.org/release/libkiwix/)
 [![Repositories](https://img.shields.io/repology/repositories/libkiwix?label=repositories)](https://github.com/kiwix/libkiwix/wiki/Repology)
 [![Build Status](https://github.com/kiwix/libkiwix/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kiwix/libkiwix/actions?query=branch%3Amain)
