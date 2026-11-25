@@ -255,6 +255,31 @@ TEST(networkTools, getNetworkInterfacesIPv4Or6)
   }
 }
 
+TEST(networkTools, interfaceAddressCollections)
+{
+  kiwix::NetworkInterfaceAddresses interfaces;
+  kiwix::addNetworkInterfaceAddress(interfaces, "lo", "127.0.0.1", false);
+  kiwix::addNetworkInterfaceAddress(interfaces, "lo", "10.255.255.254", false);
+  kiwix::addNetworkInterfaceAddress(interfaces, "lo", "::1", true);
+  kiwix::addNetworkInterfaceAddress(interfaces, "lo", "2001:db8::1", true);
+  kiwix::addNetworkInterfaceAddress(interfaces, "lo", "fe80::1", true, true);
+  kiwix::addNetworkInterfaceAddress(interfaces, "eth0", "192.168.1.2", false);
+
+  EXPECT_EQ(interfaces.at("lo").ipv4,
+            (std::vector<std::string>{"127.0.0.1", "10.255.255.254"}));
+  EXPECT_EQ(interfaces.at("lo").ipv6,
+            (std::vector<std::string>{"::1", "2001:db8::1"}));
+  EXPECT_EQ(interfaces.at("eth0").ipv4,
+            (std::vector<std::string>{"192.168.1.2"}));
+  const auto compatibility = kiwix::lastAddresses(interfaces.at("lo"));
+  EXPECT_EQ(compatibility.addr, "10.255.255.254");
+  EXPECT_EQ(compatibility.addr6, "2001:db8::1");
+  EXPECT_TRUE(kiwix::hasNetworkInterfaceAddress(interfaces, "127.0.0.1"));
+  EXPECT_TRUE(kiwix::hasNetworkInterfaceAddress(interfaces, "10.255.255.254"));
+  EXPECT_TRUE(kiwix::hasNetworkInterfaceAddress(interfaces, "2001:db8::1"));
+  EXPECT_FALSE(kiwix::hasNetworkInterfaceAddress(interfaces, "192.0.2.99"));
+}
+
 TEST(networkTools, getNetworkInterfaces)
 {
   for ( const auto& kv : kiwix::getNetworkInterfaces() ) {
