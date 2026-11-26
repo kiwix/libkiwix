@@ -593,6 +593,71 @@ TEST_F(LibraryServerTest, catalog_v3_entries_filtered_by_title_id)
   );
 }
 
+// Only /catalog/v3 sorts its results by popularity, hence the tests below
+// are not parameterized by the catalog endpoint version.
+
+namespace
+{
+
+// Returns the IDs of the books in an OPDS feed, in the order of the feed
+std::vector<std::string> getBookIdsFromOPDSFeed(const std::string& feed)
+{
+  std::vector<std::string> bookIds;
+  const std::regex entryIdRegex("<entry>\\s*<id>urn:uuid:([^<]*)</id>");
+  for ( std::sregex_iterator it(feed.begin(), feed.end(), entryIdRegex), end;
+        it != end;
+        ++it ) {
+    bookIds.push_back((*it)[1]);
+  }
+  return bookIds;
+}
+
+typedef std::vector<std::string> BookIds;
+
+} // unnamed namespace
+
+TEST_F(LibraryServerTest, catalog_v3_entries_are_sorted_by_decreasing_popularity)
+{
+  ZimFileServer server(8003, ZimFileServer::CATALOG_ONLY_MODE, "./test/lib_for_popularity_sort_test.opds");
+
+  const auto getBookIds = [&server](const std::string& suburl) {
+    const auto url = "/ROOT%23%3F/catalog/v3/" + suburl;
+    const auto r = server.GET(url.c_str());
+    EXPECT_EQ(r->status, 200);
+    return getBookIdsFromOPDSFeed(r->body);
+  };
+
+  // book_b has no popularity, hence is considered as popular as book_d (50).
+  // Equally popular books are in the order of their IDs.
+  EXPECT_EQ(getBookIds("entries"),
+            BookIds({"book_c", "book_b", "book_d", "book_a", "book_e"}));
+  EXPECT_EQ(getBookIds("partial_entries"),
+            BookIds({"book_c", "book_b", "book_d", "book_a", "book_e"}));
+
+  // Pagination applies to the sorted results
+  EXPECT_EQ(getBookIds("entries?start=1&count=3"),
+            BookIds({"book_b", "book_d", "book_a"}));
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_are_not_sorted_by_popularity)
+{
+  ZimFileServer server(8003, ZimFileServer::CATALOG_ONLY_MODE, "./test/lib_for_popularity_sort_test.opds");
+
+  const auto getBookIds = [&server](const std::string& suburl) {
+    const auto url = "/ROOT%23%3F/catalog/v2/" + suburl;
+    const auto r = server.GET(url.c_str());
+    EXPECT_EQ(r->status, 200);
+    return getBookIdsFromOPDSFeed(r->body);
+  };
+
+  EXPECT_EQ(getBookIds("entries"),
+            BookIds({"book_a", "book_b", "book_c", "book_d", "book_e"}));
+  EXPECT_EQ(getBookIds("partial_entries"),
+            BookIds({"book_a", "book_b", "book_c", "book_d", "book_e"}));
+  EXPECT_EQ(getBookIds("entries?start=1&count=3"),
+            BookIds({"book_b", "book_c", "book_d"}));
+}
+
 TEST_P(LibraryServerTest, catalog_individual_entry_access)
 {
   TEST_CATALOG_ENDPOINT("entry/raycharles",
