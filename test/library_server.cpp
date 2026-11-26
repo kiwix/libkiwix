@@ -832,6 +832,28 @@ TEST_F(LibraryServerTest, noJS) {
   EXPECT_EQ(r->body, RAY_CHARLES_DOWNLOAD);
 }
 
+TEST(NoJSLibraryPage, booksAreSortedByDecreasingPopularity) {
+  ZimFileServer server(8003, ZimFileServer::CATALOG_ONLY_MODE, "./test/lib_for_popularity_sort_test.opds");
+
+  const auto r = server.GET("/ROOT%23%3F/nojs");
+  EXPECT_EQ(r->status, 200);
+
+  std::vector<std::string> bookTitles;
+  const std::regex bookTitleRegex("<div id=\"book__title\">([^<]*)</div>");
+  for ( std::sregex_iterator it(r->body.begin(), r->body.end(), bookTitleRegex), end;
+        it != end;
+        ++it ) {
+    bookTitles.push_back((*it)[1]);
+  }
+
+  // Book B has no popularity, hence is considered as popular as Book D (50).
+  // Equally popular books are in the order of their IDs.
+  const std::vector<std::string> expectedTitles{
+    "Book C", "Book B", "Book D", "Book A", "Book E"
+  };
+  EXPECT_EQ(bookTitles, expectedTitles);
+}
+
 TEST(NoJSDownloadLinks, eachAcquisitionLinkIsUsedAsIs) {
   ZimFileServer server(8003, ZimFileServer::DEFAULT_OPTIONS, "./test/nojs_download_links.opds");
 

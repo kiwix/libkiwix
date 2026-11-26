@@ -69,7 +69,10 @@ kainjow::mustache::list getTagList(std::string tags)
 std::string HTMLDumper::dumpPlainHTML(kiwix::Filter filter) const
 {
   kainjow::mustache::list booksData;
-  const auto filteredBooks = library->filter(filter);
+  auto filteredBooks = library->filter(filter);
+  // The most popular books first. The sort is stable, so equally popular
+  // books stay in the order returned by the filter (e.g. by relevance)
+  library->sort(filteredBooks, POPULARITY, false);
   const auto searchQuery = filter.getQuery();
   auto languages = getLanguageData();
   auto categories = getCategoryData();
