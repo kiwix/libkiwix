@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Library whose books are not ordered by popularity (a book without
+  <kiwix:popularity> is considered to have an average popularity of 50).
+  It contains no ZIM files, hence must be served in catalog only mode.
+-->
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:kiwix="https://kiwix.org/namespace/opds"
+      xmlns:opds="https://specs.opds.io/opds-1.2">
+  <id>7f8a2b1e-0000-4000-8000-000000000002</id>
+  <title>Library for testing the sorting by popularity</title>
+  <entry>
+    <id>urn:uuid:book_a</id>
+    <title>Book A</title>
+    <name>book_a</name>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <kiwix:popularity>10</kiwix:popularity>
+  </entry>
+  <entry>
+    <id>urn:uuid:book_b</id>
+    <title>Book B</title>
+    <name>book_b</name>
+    <updated>2020-03-31T00:00:00Z</updated>
+  </entry>
+  <entry>
+    <id>urn:uuid:book_c</id>
+    <title>Book C</title>
+    <name>book_c</name>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <kiwix:popularity>90</kiwix:popularity>
+  </entry>
+  <entry>
+    <id>urn:uuid:book_d</id>
+    <title>Book D</title>
+    <name>book_d</name>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <kiwix:popularity>50</kiwix:popularity>
+  </entry>
+  <entry>
+    <id>urn:uuid:book_e</id>
+    <title>Book E</title>
+    <name>book_e</name>
+    <updated>2020-03-31T00:00:00Z</updated>
+    <kiwix:popularity>10</kiwix:popularity>
+  </entry>
+</feed>

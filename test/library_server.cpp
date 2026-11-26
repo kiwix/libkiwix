@@ -593,6 +593,71 @@ TEST_F(LibraryServerTest, catalog_v3_entries_filtered_by_title_id)
   );
 }
 
+// Only /catalog/v3 sorts its results by popularity, hence the tests below
+// are not parameterized by the catalog endpoint version.
+
+namespace
+{
+
+// Returns the IDs of the books in an OPDS feed, in the order of the feed
+std::vector<std::string> getBookIdsFromOPDSFeed(const std::string& feed)
+{
+  std::vector<std::string> bookIds;
+  const std::regex entryIdRegex("<entry>\\s*<id>urn:uuid:([^<]*)</id>");
+  for ( std::sregex_iterator it(feed.begin(), feed.end(), entryIdRegex), end;
+        it != end;
+        ++it ) {
+    bookIds.push_back((*it)[1]);
+  }
+  return bookIds;
+}
+
+typedef std::vector<std::string> BookIds;
+
+} // unnamed namespace
+
+TEST_F(LibraryServerTest, catalog_v3_entries_are_sorted_by_decreasing_popularity)
+{
+  ZimFileServer server(8003, ZimFileServer::CATALOG_ONLY_MODE, "./test/lib_for_popularity_sort_test.opds");
+
+  const auto getBookIds = [&server](const std::string& suburl) {
+    const auto url = "/ROOT%23%3F/catalog/v3/" + suburl;
+    const auto r = server.GET(url.c_str());
+    EXPECT_EQ(r->status, 200);
+    return getBookIdsFromOPDSFeed(r->body);
+  };
+
+  // book_b has no popularity, hence is considered as popular as book_d (50).
+  // Equally popular books are in the order of their IDs.
+  EXPECT_EQ(getBookIds("entries"),
+            BookIds({"book_c", "book_b", "book_d", "book_a", "book_e"}));
+  EXPECT_EQ(getBookIds("partial_entries"),
+            BookIds({"book_c", "book_b", "book_d", "book_a", "book_e"}));
+
+  // Pagination applies to the sorted results
+  EXPECT_EQ(getBookIds("entries?start=1&count=3"),
+            BookIds({"book_b", "book_d", "book_a"}));
+}
+
+TEST_F(LibraryServerTest, catalog_v2_entries_are_not_sorted_by_popularity)
+{
+  ZimFileServer server(8003, ZimFileServer::CATALOG_ONLY_MODE, "./test/lib_for_popularity_sort_test.opds");
+
+  const auto getBookIds = [&server](const std::string& suburl) {
+    const auto url = "/ROOT%23%3F/catalog/v2/" + suburl;
+    const auto r = server.GET(url.c_str());
+    EXPECT_EQ(r->status, 200);
+    return getBookIdsFromOPDSFeed(r->body);
+  };
+
+  EXPECT_EQ(getBookIds("entries"),
+            BookIds({"book_a", "book_b", "book_c", "book_d", "book_e"}));
+  EXPECT_EQ(getBookIds("partial_entries"),
+            BookIds({"book_a", "book_b", "book_c", "book_d", "book_e"}));
+  EXPECT_EQ(getBookIds("entries?start=1&count=3"),
+            BookIds({"book_b", "book_c", "book_d"}));
+}
+
 TEST_P(LibraryServerTest, catalog_individual_entry_access)
 {
   TEST_CATALOG_ENDPOINT("entry/raycharles",
@@ -765,6 +830,28 @@ TEST_F(LibraryServerTest, noJS) {
   r = zfs1_->GET("/ROOT%23%3F/nojs/download/zimfile_raycharles");
   EXPECT_EQ(r->status, 200);
   EXPECT_EQ(r->body, RAY_CHARLES_DOWNLOAD);
+}
+
+TEST(NoJSLibraryPage, booksAreSortedByDecreasingPopularity) {
+  ZimFileServer server(8003, ZimFileServer::CATALOG_ONLY_MODE, "./test/lib_for_popularity_sort_test.opds");
+
+  const auto r = server.GET("/ROOT%23%3F/nojs");
+  EXPECT_EQ(r->status, 200);
+
+  std::vector<std::string> bookTitles;
+  const std::regex bookTitleRegex("<div id=\"book__title\">([^<]*)</div>");
+  for ( std::sregex_iterator it(r->body.begin(), r->body.end(), bookTitleRegex), end;
+        it != end;
+        ++it ) {
+    bookTitles.push_back((*it)[1]);
+  }
+
+  // Book B has no popularity, hence is considered as popular as Book D (50).
+  // Equally popular books are in the order of their IDs.
+  const std::vector<std::string> expectedTitles{
+    "Book C", "Book B", "Book D", "Book A", "Book E"
+  };
+  EXPECT_EQ(bookTitles, expectedTitles);
 }
 
 TEST(NoJSDownloadLinks, eachAcquisitionLinkIsUsedAsIs) {

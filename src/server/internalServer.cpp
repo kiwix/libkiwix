@@ -1256,13 +1256,20 @@ InternalServer::search_catalog(const RequestContext& request,
                                kiwix::OPDSDumper& opdsDumper)
 {
     auto filter = get_search_filter(request, "", m_catalogOnlyMode);
+    const bool isV3 = request.get_url_part(1) == "v3";
     // Title IDs are exposed only by the /catalog/v3 endpoint
-    if ( request.get_url_part(1) == "v3" ) {
+    if ( isV3 ) {
       try {
         filter.titleId(request.get_argument("titleid"));
       } catch (const std::out_of_range&) {}
     }
     std::vector<std::string> bookIdsToDump = mp_library->filter(filter);
+    // The /catalog/v3 endpoint returns the most popular books first. The
+    // sort is stable, so equally popular books stay in the order returned
+    // by the filter (e.g. by decreasing relevance)
+    if ( isV3 ) {
+      mp_library->sort(bookIdsToDump, POPULARITY, false);
+    }
     const auto totalResults = bookIdsToDump.size();
     const long count = request.get_optional_param("count", 10L);
     const size_t startIndex = request.get_optional_param("start", 0UL);

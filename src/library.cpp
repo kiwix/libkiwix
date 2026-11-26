@@ -867,22 +867,22 @@ void Library::sort(BookIdCollection& bookIds, supportedListSortBy sort, bool asc
   std::lock_guard<std::recursive_mutex> lock(m_mutex);
   switch(sort) {
     case TITLE:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this, ascending));
+      std::stable_sort(bookIds.begin(), bookIds.end(), Comparator<TITLE>(this, ascending));
       break;
     case SIZE:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<SIZE>(this, ascending));
+      std::stable_sort(bookIds.begin(), bookIds.end(), Comparator<SIZE>(this, ascending));
       break;
     case DATE:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<DATE>(this, ascending));
+      std::stable_sort(bookIds.begin(), bookIds.end(), Comparator<DATE>(this, ascending));
       break;
     case CREATOR:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<CREATOR>(this, ascending));
+      std::stable_sort(bookIds.begin(), bookIds.end(), Comparator<CREATOR>(this, ascending));
       break;
     case PUBLISHER:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<PUBLISHER>(this, ascending));
+      std::stable_sort(bookIds.begin(), bookIds.end(), Comparator<PUBLISHER>(this, ascending));
       break;
     case POPULARITY:
-      std::sort(bookIds.begin(), bookIds.end(), Comparator<POPULARITY>(this, ascending));
+      std::stable_sort(bookIds.begin(), bookIds.end(), Comparator<POPULARITY>(this, ascending));
       break;
     default:
       break;
