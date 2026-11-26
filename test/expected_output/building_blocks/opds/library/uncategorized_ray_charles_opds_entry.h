@@ -10,6 +10,7 @@ R"(  <entry>
     <language>rus,eng</language>
     <name>wikipedia_ru_ray_charles</name>
     <flavour></flavour>
+    <kiwix:popularity>46</kiwix:popularity>
     <category></category>
     <tags>public_tag_with_a_value:value_of_a_public_tag;_private_tag_with_a_value:value_of_a_private_tag;wikipedia;_pictures:no;_videos:no;_details:no</tags>
     <articleCount>284</articleCount>
