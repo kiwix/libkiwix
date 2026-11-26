@@ -1397,6 +1397,59 @@ TEST(LibrarySortTest, sortByPopularity)
   EXPECT_EQ(bookIds, BookIdCollection(leastPopularFirst.rbegin(), leastPopularFirst.rend()));
 }
 
+TEST(LibrarySortTest, sortPreservesTheOrderOfEquivalentBooks)
+{
+  typedef kiwix::Library::BookIdCollection BookIdCollection;
+
+  // Enough books so that std::sort doesn't fall back to an insertion sort
+  // (which happens to be stable) for the whole range
+  const size_t N = 300;
+
+  // Books with unknown popularity are sorted as if their popularity was 50,
+  // hence books 0, 3, 6, ... (unknown popularity) and 1, 4, 7, ...
+  // (popularity 50) are all equivalent to each other.
+  const auto popularityGroup = [](size_t i) {
+    return i % 3 == 2 ? 1 : 0;
+  };
+
+  auto lib = kiwix::Library::create();
+  BookIdCollection bookIds;
+  for ( size_t i = 0; i < N; ++i ) {
+    kiwix::Book book;
+    book.setId(std::to_string(i));
+    if ( i % 3 == 1 ) {
+      book.setPopularity(50);
+    } else if ( i % 3 == 2 ) {
+      book.setPopularity(80);
+    }
+    lib->addBook(book);
+    bookIds.push_back(book.getId());
+  }
+
+  const auto booksInGroup = [&](const BookIdCollection& ids, int group) {
+    BookIdCollection result;
+    for ( const auto& id : ids ) {
+      if ( popularityGroup(std::stoul(id)) == group ) {
+        result.push_back(id);
+      }
+    }
+    return result;
+  };
+
+  const BookIdCollection lessPopularBooks = booksInGroup(bookIds, 0);
+  const BookIdCollection morePopularBooks = booksInGroup(bookIds, 1);
+
+  BookIdCollection expected = lessPopularBooks;
+  expected.insert(expected.end(), morePopularBooks.begin(), morePopularBooks.end());
+  lib->sort(bookIds, kiwix::POPULARITY, true);
+  EXPECT_EQ(bookIds, expected);
+
+  expected = morePopularBooks;
+  expected.insert(expected.end(), lessPopularBooks.begin(), lessPopularBooks.end());
+  lib->sort(bookIds, kiwix::POPULARITY, false);
+  EXPECT_EQ(bookIds, expected);
+}
+
 #include "./expected_output/library.h"
 
 TEST(LibraryOpdsExportTest, allInOne)

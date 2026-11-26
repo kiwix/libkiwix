@@ -454,6 +454,9 @@ class Library: public std::enable_shared_from_this<Library>
   /**
    * Sort (in place) bookIds using the given arguments.
    *
+   * The sort is stable: books that are equivalent with respect to the
+   * sorting criterion keep their relative order.
+   *
    * @param bookIds the list of book Ids to sort
    * @param sortBy how to sort the books (UNSORTED, TITLE, SIZE, DATE, CREATOR,
    *               PUBLISHER, POPULARITY). When sorting by POPULARITY, the
