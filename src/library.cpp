@@ -582,7 +582,7 @@ void Library::updateBookDB(const Book& book)
   if ( !book.getTitleId().empty() ) {
     doc.add_boolean_term("XI" + normalizeText(book.getTitleId()));
   }
-  indexer.index_text(normalizeText(book.getCategory()),  1, "XC");
+  doc.add_term("XC" + normalizeText(book.getCategory()));
 
   for ( const auto& tag : split(normalizeText(book.getTags()), ";") ) {
     doc.add_boolean_term("XT" + tag);
@@ -623,7 +623,7 @@ Xapian::Query buildXapianQueryFromFilterQuery(const Filter& filter)
   queryParser.add_prefix("description", "XD");
   queryParser.add_prefix("name", "XN");
   queryParser.add_prefix("flavour", "XF");
-  queryParser.add_prefix("category", "XC");
+  queryParser.add_boolean_prefix("category", "XC");
   queryParser.add_prefix("lang", "L");
   queryParser.add_prefix("publisher", "XP");
   queryParser.add_prefix("creator", "A");
