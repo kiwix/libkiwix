@@ -1229,6 +1229,55 @@ TEST_F(LibraryTest, filterByCategory)
   EXPECT_FILTER_RESULTS(kiwix::Filter().query("category_element_overrides_tags"),
     /* no results */
   );
+
+  kiwix::Manager manager(lib);
+  manager.readOpds(R"(
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="https://specs.opds.io/opds-1.2">
+  <entry>
+    <id>urn:uuid:hyphenated-cat-book</id>
+    <title>Hyphenated Category Book</title>
+    <language>eng</language>
+    <category>science-technology</category>
+  </entry>
+  <entry>
+    <id>urn:uuid:stemmed-cat-book</id>
+    <title>Stemmed Category Book</title>
+    <language>eng</language>
+    <category>politics</category>
+  </entry>
+  <entry>
+    <id>urn:uuid:uri-cat-book</id>
+    <title>URI Category Book</title>
+    <language>eng</language>
+    <category>id.openzim.org/categories/health-medicine</category>
+  </entry>
+</feed>
+  )", "http://foo.urlHost");
+
+  EXPECT_FILTER_RESULTS(kiwix::Filter().category("science-technology"),
+    "Hyphenated Category Book"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("category:science-technology"),
+    "Hyphenated Category Book"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().category("science"),
+    /* no results */
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().category("politics"),
+    "Stemmed Category Book"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("category:politics"),
+    "Stemmed Category Book"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().category("id.openzim.org/categories/health-medicine"),
+    "URI Category Book"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().query("category:id.openzim.org/categories/health-medicine"),
+    "URI Category Book"
+  );
+  EXPECT_FILTER_RESULTS(kiwix::Filter().category("health"),
+    /* no results */
+  );
 }
 
 TEST_F(LibraryTest, filterByMaxSize)
