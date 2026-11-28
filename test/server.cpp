@@ -64,23 +64,23 @@ const ResourceCollection resources200Compressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/error.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/error.css?cacheid=3d50a819" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/i18n.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=469a47e3" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.css?cacheid=d509d1a6" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/index.js" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=3268f438" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/index.js?cacheid=fdf077fc" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/iso6391To3.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/isotope.pkgd.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/kiwix.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/kiwix.css?cacheid=597c9f2a" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/mustache.min.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/mustache.min.js?cacheid=bd23c4fb" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/taskbar.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=42e90cb9" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/taskbar.css?cacheid=7bd9eec8" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/viewer.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/viewer.js?cacheid=9c302db9" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/fonts/Poppins.ttf" },
@@ -164,9 +164,9 @@ const ResourceCollection resources200Uncompressible{
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/polyfills.js" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/polyfills.js?cacheid=a0e0343d" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search-icon.svg" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=b10ae7ed" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/search-icon.svg?cacheid=9084442b" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/search_results.css" },
-  { STATIC_CONTENT,  "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" },
+  { STATIC_CONTENT,  "/ROOT%23%3F/skin/search_results.css?cacheid=f3db310d" },
   { DYNAMIC_CONTENT, "/ROOT%23%3F/skin/print.css" },
   { STATIC_CONTENT,  "/ROOT%23%3F/skin/print.css?cacheid=65b1c1d2" },
 
@@ -349,8 +349,8 @@ TEST_F(ServerTest, CacheIdsOfStaticResources)
   const std::vector<UrlAndExpectedResult> testData{
     {
       /* url */ "/ROOT%23%3F/",
-R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
-      href="/ROOT%23%3F/skin/index.css?cacheid=469a47e3"
+R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=597c9f2a"
+      href="/ROOT%23%3F/skin/index.css?cacheid=d509d1a6"
     <link rel="apple-touch-icon" sizes="180x180" href="/ROOT%23%3F/skin/favicon/apple-touch-icon.png?cacheid=f86f8df3">
     <link rel="icon" type="image/png" sizes="32x32" href="/ROOT%23%3F/skin/favicon/favicon-32x32.png?cacheid=79ded625">
     <link rel="icon" type="image/png" sizes="16x16" href="/ROOT%23%3F/skin/favicon/favicon-16x16.png?cacheid=a986fedc">
@@ -363,7 +363,7 @@ R"EXPECTEDRESULT(      href="/ROOT%23%3F/skin/kiwix.css?cacheid=b4e29e64"
     <script type="text/javascript" src="/ROOT%23%3F/skin/languages.js?cacheid=96e6ab18" defer></script>
     <script src="/ROOT%23%3F/skin/isotope.pkgd.min.js?cacheid=2e48d392" defer></script>
     <script src="/ROOT%23%3F/skin/iso6391To3.js?cacheid=ecde2bb3"></script>
-    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=3268f438" defer></script>
+    <script type="text/javascript" src="/ROOT%23%3F/skin/index.js?cacheid=fdf077fc" defer></script>
         <img src="/ROOT%23%3F/skin/feed.svg?cacheid=055b333f"
         <img src="/ROOT%23%3F/skin/langSelector.svg?cacheid=00b59961"
 )EXPECTEDRESULT"
@@ -376,7 +376,7 @@ R"EXPECTEDRESULT(  src: url("../skin/fonts/Poppins.ttf?cacheid=af705837") format
     },
     {
       /* url */ "/ROOT%23%3F/skin/index.css",
-R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=b10ae7ed');
+R"EXPECTEDRESULT(    background-image: url('../skin/search-icon.svg?cacheid=9084442b');
 )EXPECTEDRESULT"
     },
     {
@@ -390,8 +390,8 @@ R"EXPECTEDRESULT(                  <img src="${root}/skin/download-white.svg?cac
     },
     {
       /* url */ "/ROOT%23%3F/viewer",
-R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e64" rel="Stylesheet" />
-    <link type="text/css" href="./skin/taskbar.css?cacheid=42e90cb9" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=597c9f2a" rel="Stylesheet" />
+    <link type="text/css" href="./skin/taskbar.css?cacheid=7bd9eec8" rel="Stylesheet" />
     <link type="text/css" href="./skin/autoComplete/css/autoComplete.css?cacheid=f2d376c4" rel="Stylesheet" />
     <link type="text/css" href="./skin/print.css?cacheid=65b1c1d2" media="print" rel="Stylesheet" />
     <script type="text/javascript" src="./skin/polyfills.js?cacheid=a0e0343d"></script>
@@ -411,16 +411,16 @@ R"EXPECTEDRESULT(    <link type="text/css" href="./skin/kiwix.css?cacheid=b4e29e
     },
     {
       /* url */ "/ROOT%23%3F/content/invalid-book/whatever",
-R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
-      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;{{404_img_text}}&quot;\n             aria-label=&quot;{{404_img_text}}&quot;\n             title=&quot;{{404_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{path_was_not_found_msg}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;{{advice.p3}}&lt;/li&gt;\n          &lt;li&gt;{{advice.p4}}&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;{{advice.p5}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=3d50a819" rel="Stylesheet" />
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=3d50a819&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;{{404_img_text}}&quot;\n             aria-label=&quot;{{404_img_text}}&quot;\n             title=&quot;{{404_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{path_was_not_found_msg}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;{{advice.p3}}&lt;/li&gt;\n          &lt;li&gt;{{advice.p4}}&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;{{advice.p5}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
         <img src="/ROOT%23%3F/skin/404.svg?cacheid=b6d648af"
 )EXPECTEDRESULT"
     },
     {
       /* url */ "/ROOT%23%3F/catch/external?source=https%3A%2F%2Fkiwix.org",
-R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=3d50a819" rel="Stylesheet" />
     <script type="module" src="/ROOT%23%3F/skin/i18n.js?cacheid=e9a10ac1"></script>
-      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{external_link_detected}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script type=&quot;module&quot; src=&quot;{{root}}/skin/i18n.js?cacheid=e9a10ac1&quot;&gt;&lt;/script&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/blocklink.svg?cacheid=bd56b116&quot;\n             alt=&quot;{{caution_warning}}&quot;\n             aria-label=&quot;{{caution_warning}}&quot;\n             title=&quot;{{caution_warning}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{external_link_detected}}&lt;/h1&gt;\n      &lt;p&gt;{{external_link_intro}}&lt;/p&gt;\n      &lt;p&gt;&lt;a href=&quot;{{url}}&quot;&gt;{{ url }}&lt;/a&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p3}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{external_link_detected}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=3d50a819&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script type=&quot;module&quot; src=&quot;{{root}}/skin/i18n.js?cacheid=e9a10ac1&quot;&gt;&lt;/script&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/blocklink.svg?cacheid=bd56b116&quot;\n             alt=&quot;{{caution_warning}}&quot;\n             aria-label=&quot;{{caution_warning}}&quot;\n             title=&quot;{{caution_warning}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{external_link_detected}}&lt;/h1&gt;\n      &lt;p&gt;{{external_link_intro}}&lt;/p&gt;\n      &lt;p&gt;&lt;a href=&quot;{{url}}&quot;&gt;{{ url }}&lt;/a&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;p&gt;{{advice.p3}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
         <img src="/ROOT%23%3F/skin/blocklink.svg?cacheid=bd56b116"
 )EXPECTEDRESULT"
     },
@@ -428,8 +428,8 @@ R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cach
       // Searching in a ZIM file without a full-text index returns
       // a page rendered from static/templates/no_search_result_html
       /* url */ "/ROOT%23%3F/search?content=poor&pattern=whatever",
-R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" rel="Stylesheet" />
-      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "fulltext-search-unavailable", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-search-results", "params" : { } } } ] };
+R"EXPECTEDRESULT(    <link type="text/css" href="/ROOT%23%3F/skin/search_results.css?cacheid=f3db310d" rel="Stylesheet" />
+      window.KIWIX_RESPONSE_DATA = { "CSS_URL" : "/ROOT%23%3F/skin/search_results.css?cacheid=f3db310d", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "fulltext-search-unavailable", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-search-results", "params" : { } } } ] };
 )EXPECTEDRESULT"
     },
   };
@@ -770,6 +770,11 @@ std::string TestContentIn404HtmlResponse::expectedResponse() const
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+    <style>
+      @media screen and (prefers-color-scheme: dark) {
+        html { color-scheme: dark; }
+      }
+    </style>
     <title>)FRAG",
 
     // frag[1]
@@ -1003,10 +1008,10 @@ TEST_F(ServerTest, Http404HtmlError)
 
     { /* url */ "/ROOT%23%3F/search?content=poor&pattern=whatever",
       expected_page_title=="Fulltext search unavailable" &&
-      expected_css_url=="/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84" &&
+      expected_css_url=="/ROOT%23%3F/skin/search_results.css?cacheid=f3db310d" &&
       book_name=="poor" &&
       book_title=="poor" &&
-      expected_kiwix_response_data==R"({ "CSS_URL" : "/ROOT%23%3F/skin/search_results.css?cacheid=76d39c84", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "fulltext-search-unavailable", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-search-results", "params" : { } } } ] })" &&
+      expected_kiwix_response_data==R"({ "CSS_URL" : "/ROOT%23%3F/skin/search_results.css?cacheid=f3db310d", "PAGE_HEADING" : { "msgid" : "404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "fulltext-search-unavailable", "params" : { } }, "details" : [ { "p" : { "msgid" : "no-search-results", "params" : { } } } ] })" &&
       expected_body==R"(
     <h1>Not Found</h1>
     <p>
@@ -1078,9 +1083,9 @@ std::string expectedSexy404ErrorHtml(const std::string& url)
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>)RAWSTRINGLITERAL" + t[0] + R"RAWSTRINGLITERAL(</title>
-    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
+    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=3d50a819" rel="Stylesheet" />
     <script>
-      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;{{404_img_text}}&quot;\n             aria-label=&quot;{{404_img_text}}&quot;\n             title=&quot;{{404_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{path_was_not_found_msg}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;{{advice.p3}}&lt;/li&gt;\n          &lt;li&gt;{{advice.p4}}&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;{{advice.p5}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=3d50a819&quot; rel=&quot;Stylesheet&quot; /&gt;\n{{#KIWIX_RESPONSE_DATA}}    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;{{/KIWIX_RESPONSE_DATA}}\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/404.svg?cacheid=b6d648af&quot;\n             alt=&quot;{{404_img_text}}&quot;\n             aria-label=&quot;{{404_img_text}}&quot;\n             title=&quot;{{404_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{path_was_not_found_msg}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{advice.p1}}&lt;/p&gt;\n      &lt;p class=&quot;list-intro&quot;&gt;{{advice.p2}}&lt;/p&gt;\n      &lt;ul&gt;\n          &lt;li&gt;{{advice.p3}}&lt;/li&gt;\n          &lt;li&gt;{{advice.p4}}&lt;/li&gt;\n      &lt;/ul&gt;\n      &lt;p&gt;{{advice.p5}}&lt;/p&gt;\n    &lt;/section&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n";
       window.KIWIX_RESPONSE_DATA = { "404_img_text" : { "msgid" : "404-img-text", "params" : { } }, "PAGE_HEADING" : { "msgid" : "new-404-page-heading", "params" : { } }, "PAGE_TITLE" : { "msgid" : "new-404-page-title", "params" : { } }, "advice" : { "p1" : { "msgid" : "404-advice.p1", "params" : { } }, "p2" : { "msgid" : "404-advice.p2", "params" : { } }, "p3" : { "msgid" : "404-advice.p3", "params" : { } }, "p4" : { "msgid" : "404-advice.p4", "params" : { } }, "p5" : { "msgid" : "404-advice.p5", "params" : { } } }, "path_was_not_found_msg" : { "msgid" : "path-was-not-found", "params" : { } }, "root" : "/ROOT%23%3F", "url_path" : ")RAWSTRINGLITERAL"
   +         // inject the URL
   jsSafeUrl // inject the URL
@@ -1291,9 +1296,9 @@ std::string expectedSexy500ErrorHtml(const std::string& url,
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>)RAWSTRINGLITERAL" + t[0] + R"RAWSTRINGLITERAL(</title>
-    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=b3fa90cf" rel="Stylesheet" />
+    <link type="text/css" href="/ROOT%23%3F/skin/error.css?cacheid=3d50a819" rel="Stylesheet" />
     <script>
-      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=b3fa90cf&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/500.svg?cacheid=32eb0f20&quot;\n             alt=&quot;{{500_img_text}}&quot;\n             aria-label=&quot;{{500_img_text}}&quot;\n             title=&quot;{{500_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{PAGE_TEXT}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n{{#error}}\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{error}}&lt;/p&gt;\n    &lt;/section&gt;\n{{/error}}\n  &lt;/body&gt;\n&lt;/html&gt;\n";
+      window.KIWIX_RESPONSE_TEMPLATE = "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;\n    &lt;title&gt;{{PAGE_TITLE}}&lt;/title&gt;\n    &lt;link type=&quot;text/css&quot; href=&quot;{{root}}/skin/error.css?cacheid=3d50a819&quot; rel=&quot;Stylesheet&quot; /&gt;\n    &lt;script&gt;\n      window.KIWIX_RESPONSE_TEMPLATE = &quot;{{KIWIX_RESPONSE_TEMPLATE}}&quot;;\n      window.KIWIX_RESPONSE_DATA = {{{KIWIX_RESPONSE_DATA}}};\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;header&gt;\n        &lt;img src=&quot;{{root}}/skin/500.svg?cacheid=32eb0f20&quot;\n             alt=&quot;{{500_img_text}}&quot;\n             aria-label=&quot;{{500_img_text}}&quot;\n             title=&quot;{{500_img_text}}&quot;&gt;\n    &lt;/header&gt;\n    &lt;section class=&quot;intro&quot;&gt;\n      &lt;h1&gt;{{PAGE_HEADING}}&lt;/h1&gt;\n      &lt;p&gt;{{PAGE_TEXT}}&lt;/p&gt;\n      &lt;p&gt;&lt;code&gt;{{url_path}}&lt;/code&gt;&lt;/p&gt;\n    &lt;/section&gt;\n{{#error}}\n    &lt;section class=&quot;advice&quot;&gt;\n      &lt;p&gt;{{error}}&lt;/p&gt;\n    &lt;/section&gt;\n{{/error}}\n  &lt;/body&gt;\n&lt;/html&gt;\n";
       window.KIWIX_RESPONSE_DATA = { "500_img_text" : { "msgid" : "500-img-text", "params" : { } }, "PAGE_HEADING" : { "msgid" : "500-page-heading", "params" : { } }, "PAGE_TEXT" : { "msgid" : "500-page-text", "params" : { } }, "PAGE_TITLE" : { "msgid" : "500-page-title", "params" : { } }, "error" : ")RAWSTRINGLITERAL"
   +                     // inject the error
   escapeJsString(error) // inject the error

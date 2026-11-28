@@ -157,3 +157,26 @@ header, .intro {
     max-width: 500px;
   }
 }
+
+@media screen and (prefers-color-scheme: dark) {
+    html {
+        color-scheme: dark;
+        min-height: 100vh;
+        background: #161b22 linear-gradient(to bottom right, #222a35, #161b22);
+        background-attachment: fixed;
+    }
+
+    body {
+        background: transparent;
+        color: #e6edf3;
+    }
+
+    .intro a,
+    .intro a:active,
+    .intro a:visited { color: #79c0ff; }
+
+    .advice {
+        background-color: #222a35;
+        border-color: #68788d;
+    }
+}
